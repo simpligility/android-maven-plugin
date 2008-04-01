@@ -27,8 +27,8 @@
     <url>http://code.google.com/p/masa</url>
     <inceptionYear>2008</inceptionYear>
     <scm>
-        <url>https://masa.googlecode.com/svn/trunk</url>
-        <connection>scm:svn:https://masa.googlecode.com/svn/trunk</connection>
+        <url>http://masa.googlecode.com/svn/trunk</url>
+        <connection>scm:svn:http://masa.googlecode.com/svn/trunk</connection>
         <developerConnection>scm:svn:https://masa.googlecode.com/svn/trunk</developerConnection>
     </scm>
     <issueManagement>
@@ -74,7 +74,7 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
                     <configuration>
-                        <tagBase>http://masa.googlecode.com/svn/tags</tagBase>
+                        <tagBase>https://masa.googlecode.com/svn/tags</tagBase>
                         <useReleaseProfile>false</useReleaseProfile>
                         <preparationGoals>clean install</preparationGoals>
                         <goals>deploy</goals>
