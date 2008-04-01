@@ -112,12 +112,12 @@
         <snapshotRepository>
             <id>m2-repo.snapshots</id>
             <name>Maven SNAPSHOT Repository</name>
-            <url>https://m2-repo.googlecode.com/svn/snapshot</url>
+            <url>svn:svn+ssh://m2-repo.googlecode.com/svn/snapshot</url>
         </snapshotRepository>
         <repository>
             <id>m2-repo.release</id>
             <name>Maven Release Repository</name>
-            <url>https://m2-repo.googlecode.com/svn/release</url>
+            <url>svn:svn+ssh://m2-repo.googlecode.com/svn/release</url>
         </repository>
     </distributionManagement>
     <repositories>
