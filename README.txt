@@ -27,7 +27,7 @@ Sample POM
       <dependency>
          <groupId>android</groupId>
          <artifactId>android</artifactId>
-         <version>m3-rc20a</version>
+         <version>m5-rc15</version>
       </dependency>
    </dependencies>
    <build>

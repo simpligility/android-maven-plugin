@@ -44,4 +44,32 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/src.xml</descriptor>
+                            </descriptors>
+                            <tarLongFileMode>gnu</tarLongFileMode>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
