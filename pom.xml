@@ -15,20 +15,21 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jvending.masa</groupId>
     <artifactId>masa-project</artifactId>
-    <version>1.0</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>JVending Masa: masa-project</name>
     <description>Maven Plugins Project for Android</description>
     <url>http://code.google.com/p/masa</url>
     <inceptionYear>2008</inceptionYear>
     <scm>
-        <url>http://masa.googlecode.com/svn/tags/masa-project-1.0</url>
-        <connection>scm:svn:http://masa.googlecode.com/svn/tags/masa-project-1.0</connection>
-        <developerConnection>scm:svn:http://masa.googlecode.com/svn/tags/masa-project-1.0</developerConnection>
+        <url>https://masa.googlecode.com/svn/trunk</url>
+        <connection>scm:svn:https://masa.googlecode.com/svn/trunk</connection>
+        <developerConnection>scm:svn:https://masa.googlecode.com/svn/trunk</developerConnection>
     </scm>
     <issueManagement>
         <system>Issue Tracking</system>
