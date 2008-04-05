@@ -41,13 +41,14 @@
          <role-hint>android:par</role-hint>
          <implementation>
             org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping
-         </implementation>
+         </implementation>                                                
          <configuration>
             <phases>
                <process-resources>org.jvending.masa.plugins:maven-par-plugin:resources</process-resources>
                <package>
                   org.jvending.masa.plugins:maven-par-plugin:package
                </package>
+                <deploy>org.jvending.masa.plugins:maven-par-plugin:deploy</deploy>
             </phases>
          </configuration>
       </component>

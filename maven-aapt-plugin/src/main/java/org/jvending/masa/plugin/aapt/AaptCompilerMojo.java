@@ -58,7 +58,7 @@ public class AaptCompilerMojo extends AbstractMojo {
     private ArtifactFactory artifactFactory;
 
     /**
-     * @parameter default-value = "m3-rc20a"
+     * @parameter default-value = "m5-rc15"
      */
     private String androidVersion;
 
