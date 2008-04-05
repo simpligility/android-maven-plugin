@@ -69,6 +69,13 @@ public class AaptCompilerMojo extends AbstractMojo {
 
         File resourceDirectory = new File(project.getBasedir(), "res");
 
+        //Get rid of this annoying Thumbs.db problem on windows
+        File thumbs = new File(resourceDirectory, "drawable/Thumbs.db");
+        if (thumbs.exists()) {
+            getLog().info("Deleting thumbs.db from resource directory");
+            thumbs.delete();
+        }
+
         Artifact artifact = artifactFactory.createArtifact("android", "android", androidVersion, "jar", "jar");
         ArtifactRepositoryLayout defaultLayout = new DefaultRepositoryLayout();
         System.out.println(defaultLayout.pathOf(artifact));
