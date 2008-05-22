@@ -69,6 +69,7 @@ public class AidlGeneratorMojo extends AbstractMojo {
 
         for (String file : files) {
             List<String> commands = new ArrayList<String>();
+            commands.add("-p" + System.getenv().get("ANDROID_SDK") + "/tools/lib/framework.aidl");
             commands.add("-I" + project.getBuild().getSourceDirectory());
             commands.add((new File(project.getBuild().getSourceDirectory(), file).getAbsolutePath()));
             try {
