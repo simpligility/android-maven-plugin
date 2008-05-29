@@ -72,6 +72,11 @@ public class AaptCompilerMojo extends AbstractMojo {
      */
     private File androidManifestFile;
 
+    /**
+     * @parameter default-value=true
+     */
+    private boolean createPackageDirectories;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         // System.out.println("RS = " + resourceDirectory.getAbsolutePath());
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
@@ -96,7 +101,9 @@ public class AaptCompilerMojo extends AbstractMojo {
 
         List<String> commands = new ArrayList<String>();
         commands.add("compile");
-        commands.add("-m");
+        if (createPackageDirectories) {
+            commands.add("-m");
+        }
         commands.add("-J");
         commands.add(project.getBuild().getSourceDirectory());
 
