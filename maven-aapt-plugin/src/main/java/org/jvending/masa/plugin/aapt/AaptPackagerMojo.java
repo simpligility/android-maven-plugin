@@ -66,10 +66,25 @@ public class AaptPackagerMojo extends AbstractMojo {
      */
     private ArtifactFactory artifactFactory;
 
+    /**
+     * @parameter default-value="res"
+     */
+    private File resourceDirectory;
+
+    /**
+     * @parameter
+     */
+    private File androidManifestFile;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
+
+        if (androidManifestFile == null) {
+            androidManifestFile = new File(resourceDirectory.getParent(), "AndroidManifest.xml");
+        }
+
         File tmpOutputFile;
         try {
             tmpOutputFile = File.createTempFile("android", "apk");
@@ -84,16 +99,15 @@ public class AaptPackagerMojo extends AbstractMojo {
         artifact.setFile(androidJar);
 
         tmpOutputFile.deleteOnExit();
-        File outputFile = new File(project.getBasedir(), "target" + File.separator + project.getArtifactId() + "-"
+        File outputFile = new File(project.getBuild().getDirectory(),  project.getArtifactId() + "-"
                 + project.getVersion() + ".apk");
-        File resourceDirectory = new File(project.getBasedir(), "res");
 
         List<String> commands = new ArrayList<String>();
         commands.add("package");
         commands.add("-f");
         commands.add("-c");
         commands.add("-M");
-        commands.add(project.getBasedir().getAbsolutePath() + File.separatorChar + "AndroidManifest.xml");
+        commands.add(androidManifestFile.getAbsolutePath());
         if (resourceDirectory.exists()) {
             commands.add("-S");
             commands.add(resourceDirectory.getAbsolutePath());

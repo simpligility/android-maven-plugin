@@ -62,18 +62,31 @@ public class AaptCompilerMojo extends AbstractMojo {
      */
     private String androidVersion;
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    /**
+     * @parameter default-value="res"
+     */
+    private File resourceDirectory;
 
+    /**
+     * @parameter
+     */
+    private File androidManifestFile;
+
+    public void execute() throws MojoExecutionException, MojoFailureException {
+        // System.out.println("RS = " + resourceDirectory.getAbsolutePath());
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
-        File resourceDirectory = new File(project.getBasedir(), "res");
-
         //Get rid of this annoying Thumbs.db problem on windows
+
         File thumbs = new File(resourceDirectory, "drawable/Thumbs.db");
         if (thumbs.exists()) {
             getLog().info("Deleting thumbs.db from resource directory");
             thumbs.delete();
+        }
+
+        if (androidManifestFile == null) {
+            androidManifestFile = new File(resourceDirectory.getParent(), "AndroidManifest.xml");
         }
 
         Artifact artifact = artifactFactory.createArtifact("android", "android", androidVersion, "jar", "jar");
@@ -88,7 +101,7 @@ public class AaptCompilerMojo extends AbstractMojo {
         commands.add(project.getBuild().getSourceDirectory());
 
         commands.add("-M");
-        commands.add(project.getBasedir().getAbsolutePath() + File.separatorChar + "AndroidManifest.xml");
+        commands.add(androidManifestFile.getAbsolutePath());
         if (resourceDirectory.exists()) {
             commands.add("-S");
             commands.add(resourceDirectory.getAbsolutePath());
