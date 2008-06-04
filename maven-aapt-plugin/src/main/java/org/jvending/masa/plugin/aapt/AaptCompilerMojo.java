@@ -33,6 +33,7 @@ import java.util.List;
 /**
  * @goal compile
  * @phase compile
+ * @requiresDependencyResolution compile
  * @description
  */
 public class AaptCompilerMojo extends AbstractMojo {
