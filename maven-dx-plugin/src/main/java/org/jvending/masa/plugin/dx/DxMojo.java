@@ -71,10 +71,16 @@ public class DxMojo extends AbstractMojo {
             if (artifact.getGroupId().equals("android")) {
                 continue;
             }
+            
+            if(artifact.getFile().isDirectory())  {
+                throw new MojoExecutionException("Dependent artifact is directory: Directory = "
+                        + artifact.getFile().getAbsolutePath());
+            }
+
             try {
                 unjar(new JarFile(artifact.getFile()), outputDirectory);
             } catch (IOException e) {
-                throw new MojoExecutionException("", e);
+                throw new MojoExecutionException("Unable to jar file: File = " + artifact.getFile().getAbsolutePath(), e);
             }
         }
 
