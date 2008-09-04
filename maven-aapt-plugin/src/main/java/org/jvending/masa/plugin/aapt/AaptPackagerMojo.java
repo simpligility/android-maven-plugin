@@ -57,7 +57,7 @@ public class AaptPackagerMojo extends AbstractMojo {
     private File localRepository;
 
     /**
-     * @parameter default-value = "m5-rc15"
+     * @parameter default-value = "0.9_beta"
      */
     private String androidVersion;
 
@@ -105,7 +105,6 @@ public class AaptPackagerMojo extends AbstractMojo {
         List<String> commands = new ArrayList<String>();
         commands.add("package");
         commands.add("-f");
-        commands.add("-c");
         commands.add("-M");
         commands.add(androidManifestFile.getAbsolutePath());
         if (resourceDirectory.exists()) {
@@ -114,6 +113,7 @@ public class AaptPackagerMojo extends AbstractMojo {
         }
         commands.add("-I");
         commands.add(androidJar.getAbsolutePath());
+        commands.add("-F");
         commands.add(tmpOutputFile.getAbsolutePath());
         getLog().info("aapt " + commands.toString());
         try {

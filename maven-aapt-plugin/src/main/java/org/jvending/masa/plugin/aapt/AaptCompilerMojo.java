@@ -59,7 +59,7 @@ public class AaptCompilerMojo extends AbstractMojo {
     private ArtifactFactory artifactFactory;
 
     /**
-     * @parameter default-value = "m5-rc15"
+     * @parameter default-value = "0.9_beta"
      */
     private String androidVersion;
 
@@ -101,7 +101,7 @@ public class AaptCompilerMojo extends AbstractMojo {
         File androidJar = new File(localRepository, defaultLayout.pathOf(artifact));
 
         List<String> commands = new ArrayList<String>();
-        commands.add("compile");
+        commands.add("package");
         if (createPackageDirectories) {
             commands.add("-m");
         }
