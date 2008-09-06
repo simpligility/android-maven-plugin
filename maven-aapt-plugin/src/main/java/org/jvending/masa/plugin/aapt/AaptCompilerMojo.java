@@ -106,8 +106,7 @@ public class AaptCompilerMojo extends AbstractMojo {
             commands.add("-m");
         }
         commands.add("-J");
-        commands.add(project.getBuild().getSourceDirectory());
-
+        commands.add(project.getBuild().getDirectory() + File.separator + "generated-sources");
         commands.add("-M");
         commands.add(androidManifestFile.getAbsolutePath());
         if (resourceDirectory.exists()) {
@@ -122,5 +121,7 @@ public class AaptCompilerMojo extends AbstractMojo {
         } catch (ExecutionException e) {
             throw new MojoExecutionException("", e);
         }
+
+        project.addCompileSourceRoot(project.getBuild().getDirectory() + File.separator + "generated-sources");
     }
 }

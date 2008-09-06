@@ -72,8 +72,17 @@ public class AidlGeneratorMojo extends AbstractMojo {
             if (System.getenv().get("ANDROID_SDK") != null) {
                 commands.add("-p" + System.getenv().get("ANDROID_SDK") + "/tools/lib/framework.aidl");
             }
+            File targetDirectory = new File(project.getBuild().getDirectory() + File.separator  + "generated-sources",
+                    new File(file).getParent());
+            if(!targetDirectory.exists()) {
+                targetDirectory.mkdirs();
+            }
+
+            String fileName = new File(file).getName();
+
             commands.add("-I" + project.getBuild().getSourceDirectory());
             commands.add((new File(project.getBuild().getSourceDirectory(), file).getAbsolutePath()));
+            commands.add(new File(targetDirectory , fileName.substring(0, fileName.lastIndexOf(".")) + ".java").getAbsolutePath());
             try {
                 executor.executeCommand("aidl", commands, project.getBasedir(), false);
             } catch (ExecutionException e) {
