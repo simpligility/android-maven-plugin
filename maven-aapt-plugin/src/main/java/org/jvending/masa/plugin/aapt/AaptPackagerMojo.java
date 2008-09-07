@@ -85,22 +85,13 @@ public class AaptPackagerMojo extends AbstractMojo {
             androidManifestFile = new File(resourceDirectory.getParent(), "AndroidManifest.xml");
         }
 
-        File tmpOutputFile;
-        try {
-            tmpOutputFile = File.createTempFile("android", "apk");
-        } catch (IOException e) {
-            throw new MojoExecutionException("", e);
-        }
-
         Artifact artifact = artifactFactory.createArtifact("android", "android", androidVersion, "jar", "jar");
         ArtifactRepositoryLayout defaultLayout = new DefaultRepositoryLayout();
 
         File androidJar = new File(localRepository, defaultLayout.pathOf(artifact));
         artifact.setFile(androidJar);
 
-        tmpOutputFile.deleteOnExit();
-        File outputFile = new File(project.getBuild().getDirectory(),  project.getArtifactId() + "-"
-                + project.getVersion() + ".apk");
+        File outputFile = new File(project.getBuild().getDirectory(),  project.getBuild().getFinalName() + ".ap_");
 
         List<String> commands = new ArrayList<String>();
         commands.add("package");
@@ -114,16 +105,15 @@ public class AaptPackagerMojo extends AbstractMojo {
         commands.add("-I");
         commands.add(androidJar.getAbsolutePath());
         commands.add("-F");
-        commands.add(tmpOutputFile.getAbsolutePath());
+        commands.add(outputFile.getAbsolutePath());
         getLog().info("aapt " + commands.toString());
         try {
             executor.executeCommand("aapt", commands, project.getBasedir(), false);
         } catch (ExecutionException e) {
             throw new MojoExecutionException("", e);
         }
-
-        File dexClassesFile = new File(project.getBasedir(), "target" + File.separator + project.getArtifactId() + "-"
-                + project.getVersion() + "-classes.dex");
+        /*
+        File dexClassesFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".classes-dex");
 
         ZipOutputStream os = null;
         InputStream is = null;
@@ -169,8 +159,7 @@ public class AaptPackagerMojo extends AbstractMojo {
                 }
             }
         }
-
-        project.getArtifact().setFile(outputFile);
-
+        */
+       // project.getArtifact().setFile(outputFile);
     }
 }

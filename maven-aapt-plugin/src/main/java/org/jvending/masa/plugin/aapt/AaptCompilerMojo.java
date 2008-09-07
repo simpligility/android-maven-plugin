@@ -23,8 +23,10 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.model.Profile;
 import org.jvending.masa.CommandExecutor;
 import org.jvending.masa.ExecutionException;
+import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -78,6 +80,11 @@ public class AaptCompilerMojo extends AbstractMojo {
      */
     private boolean createPackageDirectories;
 
+    /**
+     * @parameter default-value=tests
+     */
+    private File platformUnitTestDirectory;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         // System.out.println("RS = " + resourceDirectory.getAbsolutePath());
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
@@ -90,11 +97,15 @@ public class AaptCompilerMojo extends AbstractMojo {
             getLog().info("Deleting thumbs.db from resource directory");
             thumbs.delete();
         }
-
+        
         if (androidManifestFile == null) {
             androidManifestFile = new File(resourceDirectory.getParent(), "AndroidManifest.xml");
         }
 
+        String generatedSourceDirectoryName = project.getBuild().getDirectory() + File.separator + "generated-sources";
+        if(!new File(generatedSourceDirectoryName).exists()) {
+            new File(generatedSourceDirectoryName).mkdirs();
+        }
         Artifact artifact = artifactFactory.createArtifact("android", "android", androidVersion, "jar", "jar");
         ArtifactRepositoryLayout defaultLayout = new DefaultRepositoryLayout();
         System.out.println(defaultLayout.pathOf(artifact));
@@ -106,7 +117,7 @@ public class AaptCompilerMojo extends AbstractMojo {
             commands.add("-m");
         }
         commands.add("-J");
-        commands.add(project.getBuild().getDirectory() + File.separator + "generated-sources");
+        commands.add(generatedSourceDirectoryName);
         commands.add("-M");
         commands.add(androidManifestFile.getAbsolutePath());
         if (resourceDirectory.exists()) {
@@ -122,6 +133,11 @@ public class AaptCompilerMojo extends AbstractMojo {
             throw new MojoExecutionException("", e);
         }
 
-        project.addCompileSourceRoot(project.getBuild().getDirectory() + File.separator + "generated-sources");
+        project.addCompileSourceRoot(generatedSourceDirectoryName);
+
+        if(System.getProperty("masa.debug") != null && platformUnitTestDirectory.exists())
+        {
+            project.addCompileSourceRoot(platformUnitTestDirectory.getAbsolutePath());
+        }
     }
 }

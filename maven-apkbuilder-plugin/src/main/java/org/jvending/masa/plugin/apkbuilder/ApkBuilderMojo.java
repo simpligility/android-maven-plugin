@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jvending.masa.plugin.adb;
+package org.jvending.masa.plugin.apkbuilder;
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -22,17 +26,20 @@ import org.apache.maven.project.MavenProject;
 import org.jvending.masa.CommandExecutor;
 import org.jvending.masa.ExecutionException;
 
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 /**
- * @goal install
- * @phase install
+ * @goal build
+ * @phase package
  * @description
  */
-public class DeviceInstallerMojo extends AbstractMojo {
+public class ApkBuilderMojo extends AbstractMojo {
 
     /**
      * The maven project.
@@ -44,22 +51,28 @@ public class DeviceInstallerMojo extends AbstractMojo {
     private MavenProject project;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if(System.getProperty("masa.debug") == null) {
-            getLog().info("Debug flag not set. Skipping emulator install");
-            return;
-        }
+
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
-        File inputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apk");
+
+        File outputFile = new File(project.getBuild().getDirectory(),  project.getBuild().getFinalName() + ".apk");
 
         List<String> commands = new ArrayList<String>();
-        commands.add("install");
-        commands.add("-r");
-        commands.add(inputFile.getAbsolutePath());
-        getLog().info("adb " + commands.toString());
+        commands.add(outputFile.getAbsolutePath());
+        commands.add("-z");
+        commands.add(new File(project.getBuild().getDirectory(),  project.getBuild().getFinalName() + ".ap_").getAbsolutePath());
+        commands.add("-f");
+        commands.add( new File(project.getBuild().getDirectory(),  "classes.dex").getAbsolutePath());
+        commands.add("-rf");
+        commands.add(new File(project.getBuild().getSourceDirectory()).getAbsolutePath());
+        
+        getLog().info("apkbuilder " + commands.toString());
         try {
-            executor.executeCommand("adb", commands);
+            executor.executeCommand("apkbuilder", commands, project.getBasedir(), false);
         } catch (ExecutionException e) {
+            throw new MojoExecutionException("", e);
         }
+
+       // project.getArtifact().setFile(outputFile);
     }
 }

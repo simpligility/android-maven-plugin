@@ -53,6 +53,7 @@
     </developers>
     <modules>
         <module>maven-aapt-plugin</module>
+        <module>maven-apkbuilder-plugin</module>
         <module>maven-adb-plugin</module>
         <module>maven-aidl-plugin</module>
         <module>masa-core</module>

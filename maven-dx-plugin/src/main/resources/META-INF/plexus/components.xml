@@ -26,11 +26,12 @@
                <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
                <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
                <package>
-                  org.jvending.masa.plugins:maven-aapt-plugin:package
+                  org.jvending.masa.plugins:maven-aapt-plugin:package,
+                  org.jvending.masa.plugins:maven-apkbuilder-plugin:build
                </package>
+               <integration-test>org.jvending.masa.plugins:maven-adb-plugin:install</integration-test>
                <install>
-                  org.apache.maven.plugins:maven-install-plugin:install,
-                  org.jvending.masa.plugins:maven-adb-plugin:install
+                  org.apache.maven.plugins:maven-install-plugin:install
                </install>
                <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
             </phases>
