@@ -48,7 +48,7 @@ public class PlatformTesterMojo extends AbstractMojo {
     private MavenProject project;
 
     /**
-     * @parameter
+     * @parameter expression = "${package}
      */
     private String targetPackage;
 
