@@ -59,7 +59,10 @@
                   org.jvending.masa.plugins:maven-aapt-plugin:package,
                   org.jvending.masa.plugins:maven-apkbuilder-plugin:build
                </package>
-               <integration-test>org.jvending.masa.plugins:maven-adb-plugin:install</integration-test>
+               <integration-test>
+                   org.jvending.masa.plugins:maven-adb-plugin:install,
+                   org.jvending.masa.plugins:maven-platformtest-plugin:test
+               </integration-test>
             </phases>
          </configuration>
       </component>

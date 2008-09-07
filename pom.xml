@@ -59,6 +59,7 @@
         <module>masa-core</module>
         <module>maven-dx-plugin</module>
         <module>maven-par-plugin</module>
+        <module>maven-platformtest-plugin</module>
     </modules>
     <build>
         <extensions>
