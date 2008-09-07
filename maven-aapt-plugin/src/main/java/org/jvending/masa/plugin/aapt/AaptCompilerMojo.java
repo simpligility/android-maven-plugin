@@ -83,7 +83,7 @@ public class AaptCompilerMojo extends AbstractMojo {
     /**
      * @parameter default-value=tests
      */
-    private File platformUnitTestDirectory;
+  //  private File platformUnitTestDirectory;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         // System.out.println("RS = " + resourceDirectory.getAbsolutePath());
@@ -135,9 +135,9 @@ public class AaptCompilerMojo extends AbstractMojo {
 
         project.addCompileSourceRoot(generatedSourceDirectoryName);
 
-        if(System.getProperty("masa.debug") != null && platformUnitTestDirectory.exists())
-        {
-            project.addCompileSourceRoot(platformUnitTestDirectory.getAbsolutePath());
-        }
+//        if(System.getProperty("masa.debug") != null && platformUnitTestDirectory.exists())
+//        {
+//            project.addCompileSourceRoot(platformUnitTestDirectory.getAbsolutePath());
+//        }
     }
 }

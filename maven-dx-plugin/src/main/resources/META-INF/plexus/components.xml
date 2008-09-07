@@ -39,6 +39,32 @@
       </component>
       <component>
          <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+         <role-hint>android:apk:platformTest</role-hint>
+         <implementation>
+            org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping
+         </implementation>
+         <configuration>
+            <phases>
+               <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
+               <compile>
+                  org.jvending.masa.plugins:maven-aapt-plugin:compile,
+                  org.apache.maven.plugins:maven-compiler-plugin:compile
+               </compile>
+               <process-classes>
+                   org.apache.maven.plugins:maven-jar-plugin:jar,
+                   org.jvending.masa.plugins:maven-dx-plugin:dx
+               </process-classes>
+               <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
+               <package>
+                  org.jvending.masa.plugins:maven-aapt-plugin:package,
+                  org.jvending.masa.plugins:maven-apkbuilder-plugin:build
+               </package>
+               <integration-test>org.jvending.masa.plugins:maven-adb-plugin:install</integration-test>
+            </phases>
+         </configuration>
+      </component>
+      <component>
+         <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
          <role-hint>android:par</role-hint>
          <implementation>
             org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping
