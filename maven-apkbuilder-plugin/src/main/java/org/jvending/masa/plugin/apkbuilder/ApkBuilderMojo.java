@@ -50,6 +50,11 @@ public class ApkBuilderMojo extends AbstractMojo {
      */
     private MavenProject project;
 
+    /**
+     * @parameter default-value = "false"
+     */
+    private boolean isDelaySigned;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
@@ -59,6 +64,11 @@ public class ApkBuilderMojo extends AbstractMojo {
 
         List<String> commands = new ArrayList<String>();
         commands.add(outputFile.getAbsolutePath());
+
+        if(isDelaySigned) {
+            commands.add("-u");
+        }
+        
         commands.add("-z");
         commands.add(new File(project.getBuild().getDirectory(),  project.getBuild().getFinalName() + ".ap_").getAbsolutePath());
         commands.add("-f");
