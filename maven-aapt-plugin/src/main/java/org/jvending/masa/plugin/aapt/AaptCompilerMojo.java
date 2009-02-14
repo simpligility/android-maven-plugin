@@ -61,7 +61,7 @@ public class AaptCompilerMojo extends AbstractMojo {
     private ArtifactFactory artifactFactory;
 
     /**
-     * @parameter default-value = "0.9_beta"
+     * @parameter default-value = "${androidVersion}"
      */
     private String androidVersion;
 

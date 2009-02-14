@@ -57,7 +57,7 @@ public class AaptPackagerMojo extends AbstractMojo {
     private File localRepository;
 
     /**
-     * @parameter default-value = "0.9_beta"
+     * @parameter default-value = "${androidVersion}"
      */
     private String androidVersion;
 
