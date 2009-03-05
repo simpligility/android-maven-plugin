@@ -15,66 +15,22 @@
  */
 package org.jvending.masa.plugin.aapt;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
 import org.jvending.masa.CommandExecutor;
 import org.jvending.masa.ExecutionException;
 
-import java.io.*;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
 
 /**
  * @goal package
  * @phase package
  * @description
  */
-public class AaptPackagerMojo extends AbstractMojo {
+public class AaptPackagerMojo extends AbstractAaptMojo {
 
-    /**
-     * The maven project.
-     *
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
-     */
-    private MavenProject project;
-
-    /**
-     * @parameter expression="${settings.localRepository}"
-     * @required
-     */
-    private File localRepository;
-
-    /**
-     * @parameter default-value = "${androidVersion}"
-     */
-    private String androidVersion;
-
-    /**
-     * @component
-     */
-    private ArtifactFactory artifactFactory;
-
-    /**
-     * @parameter default-value="res"
-     */
-    private File resourceDirectory;
-
-    /**
-     * @parameter
-     */
-    private File androidManifestFile;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -85,12 +41,7 @@ public class AaptPackagerMojo extends AbstractMojo {
             androidManifestFile = new File(resourceDirectory.getParent(), "AndroidManifest.xml");
         }
 
-        Artifact artifact = artifactFactory.createArtifact("android", "android", androidVersion, "jar", "jar");
-        ArtifactRepositoryLayout defaultLayout = new DefaultRepositoryLayout();
-
-        File androidJar = new File(localRepository, defaultLayout.pathOf(artifact));
-        artifact.setFile(androidJar);
-
+        File androidJar = resolveAndroidJar();
         File outputFile = new File(project.getBuild().getDirectory(),  project.getBuild().getFinalName() + ".ap_");
 
         List<String> commands = new ArrayList<String>();
