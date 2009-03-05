@@ -23,6 +23,7 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 import org.jvending.masa.CommandExecutor;
 import org.jvending.masa.ExecutionException;
 
@@ -49,6 +50,14 @@ public class ApkBuilderMojo extends AbstractMojo {
      * @readonly
      */
     private MavenProject project;
+
+    /**
+     * Maven ProjectHelper.
+     * 
+     * @component
+     * @readonly
+     */
+    private MavenProjectHelper projectHelper;
 
     /**
      * @parameter default-value = "false"
@@ -83,6 +92,6 @@ public class ApkBuilderMojo extends AbstractMojo {
             throw new MojoExecutionException("", e);
         }
 
-       // project.getArtifact().setFile(outputFile);
+        projectHelper.attachArtifact(project, "apk", outputFile);
     }
 }
