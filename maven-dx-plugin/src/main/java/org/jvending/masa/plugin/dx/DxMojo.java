@@ -60,9 +60,8 @@ public class DxMojo extends AbstractMojo {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
-        File outputFile = new File(project.getBasedir(), "target" + File.separator + "classes.dex");
-        File inputFile = new File(project.getBasedir(), "target" + File.separator + project.getArtifactId() + "-"
-                + project.getVersion() + ".jar");
+        File outputFile = new File(project.getBuild().getDirectory() + File.separator + "classes.dex");
+        File inputFile  = new File(project.getBuild().getDirectory() + File.separator + project.getBuild().getFinalName() + ".jar");
 
         //Unpackage all dependent and main classes
         File outputDirectory = new File(project.getBuild().getDirectory(), "android-classes");
