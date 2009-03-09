@@ -51,6 +51,11 @@ public abstract class AbstractAaptMojo extends AbstractMojo {
     protected File resourceDirectory;
 
     /**
+     * @parameter default-value="assets"
+     */
+    protected File assetsDirectory;
+
+    /**
      * @parameter
      */
     protected File androidManifestFile;

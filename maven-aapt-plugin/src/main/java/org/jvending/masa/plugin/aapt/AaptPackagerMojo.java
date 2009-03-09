@@ -53,6 +53,10 @@ public class AaptPackagerMojo extends AbstractAaptMojo {
             commands.add("-S");
             commands.add(resourceDirectory.getAbsolutePath());
         }
+        if (assetsDirectory.exists()) {
+            commands.add("-A");
+            commands.add(assetsDirectory.getAbsolutePath());
+        }
         commands.add("-I");
         commands.add(androidJar.getAbsolutePath());
         commands.add("-F");
