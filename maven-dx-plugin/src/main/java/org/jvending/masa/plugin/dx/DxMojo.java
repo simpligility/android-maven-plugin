@@ -55,6 +55,14 @@ public class DxMojo extends AbstractMojo {
      */
     private MavenProjectHelper mavenProjectHelper;
 
+    /**
+     * Extra JVM Arguments
+     *
+     * @parameter
+     * @optional
+     */
+    private String[] jvmArguments;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
@@ -89,6 +97,16 @@ public class DxMojo extends AbstractMojo {
         }
 
         List<String> commands = new ArrayList<String>();
+        if (jvmArguments != null){
+            for (String jvmArgument : jvmArguments) {
+                if (jvmArgument != null){
+                    if (jvmArgument.startsWith("-")){
+                        jvmArgument = jvmArgument.substring(1);
+                    }
+                    commands.add("-J" + jvmArgument);
+                }
+            }
+        }
         commands.add("--dex");
         commands.add("--output=" + outputFile.getAbsolutePath());
         commands.add(outputDirectory.getAbsolutePath());
