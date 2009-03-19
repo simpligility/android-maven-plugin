@@ -16,11 +16,8 @@
 package org.jvending.masa.plugin.dx;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.IOUtil;
 import org.jvending.masa.CommandExecutor;
 import org.jvending.masa.ExecutionException;
@@ -41,11 +38,6 @@ import java.util.jar.JarFile;
  * @description
  */
 public class DxMojo extends AbstractAndroidMojo {
-
-    /**
-     * @component
-     */
-    private MavenProjectHelper mavenProjectHelper;
 
     /**
      * Extra JVM Arguments
@@ -109,7 +101,7 @@ public class DxMojo extends AbstractAndroidMojo {
             throw new MojoExecutionException("", e);
         }
 
-        mavenProjectHelper.attachArtifact(project, "jar", project.getArtifact().getClassifier(), inputFile);
+        projectHelper.attachArtifact(project, "jar", project.getArtifact().getClassifier(), inputFile);
     }
 
     private static void unjar(JarFile jarFile, File outputDirectory) throws IOException {

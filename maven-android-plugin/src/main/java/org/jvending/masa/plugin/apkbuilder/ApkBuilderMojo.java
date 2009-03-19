@@ -44,14 +44,6 @@ import java.util.zip.ZipOutputStream;
 public class ApkBuilderMojo extends AbstractAndroidMojo {
 
     /**
-     * Maven ProjectHelper.
-     * 
-     * @component
-     * @readonly
-     */
-    private MavenProjectHelper projectHelper;
-
-    /**
      * @parameter default-value = "false"
      */
     private boolean isDelaySigned;

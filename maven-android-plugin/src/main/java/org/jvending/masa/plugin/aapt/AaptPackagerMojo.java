@@ -19,6 +19,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.jvending.masa.CommandExecutor;
 import org.jvending.masa.ExecutionException;
+import org.jvending.masa.plugin.AbstractAndroidMojo;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ import java.util.List;
  * @phase package
  * @description
  */
-public class AaptPackagerMojo extends AbstractAaptMojo {
+public class AaptPackagerMojo extends AbstractAndroidMojo {
 
 
     public void execute() throws MojoExecutionException, MojoFailureException {
