@@ -89,9 +89,5 @@ public class AaptCompilerMojo extends AbstractAndroidMojo {
 
         project.addCompileSourceRoot(generatedSourceDirectoryName);
 
-//        if(System.getProperty("masa.debug") != null && platformUnitTestDirectory.exists())
-//        {
-//            project.addCompileSourceRoot(platformUnitTestDirectory.getAbsolutePath());
-//        }
     }
 }
