@@ -19,12 +19,12 @@
     <parent>
         <groupId>org.jvending.masa</groupId>
         <artifactId>masa-project</artifactId>
-        <version>1.1-SNAPSHOT</version>
+        <version>2.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jvending.masa</groupId>
     <artifactId>masa-core</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
     <name>JVending Masa: masa-core</name>
     <dependencies>
         <dependency>
