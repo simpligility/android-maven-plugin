@@ -37,11 +37,6 @@ public class AaptCompilerMojo extends AbstractAaptMojo {
      */
     private boolean createPackageDirectories;
 
-    /**
-     * @parameter default-value=tests
-     */
-  //  private File platformUnitTestDirectory;
-
     public void execute() throws MojoExecutionException, MojoFailureException {
         // System.out.println("RS = " + resourceDirectory.getAbsolutePath());
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
