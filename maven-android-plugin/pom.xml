@@ -23,10 +23,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jvending.masa.plugins</groupId>
-    <artifactId>maven-dx-plugin</artifactId>
+    <artifactId>maven-android-plugin</artifactId>
     <version>1.1-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
-    <name>JVending Masa: maven-dx-plugin</name>
+    <name>JVending Masa: maven-android-plugin</name>
     <description>Maven Plugin for Android DX</description>
     <dependencies>
         <dependency>

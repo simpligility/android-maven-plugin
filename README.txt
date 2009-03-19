@@ -43,7 +43,7 @@ Sample POM
          </plugin>
          <plugin>
             <groupId>org.jvending.masa.plugins</groupId>
-            <artifactId>maven-dx-plugin</artifactId>
+            <artifactId>maven-android-plugin</artifactId>
             <extensions>true</extensions>
          </plugin>
       </plugins>
