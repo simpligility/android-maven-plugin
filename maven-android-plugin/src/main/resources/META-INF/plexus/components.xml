@@ -9,7 +9,7 @@
          <configuration>
             <phases>
                <generate-sources>
-                   org.jvending.masa.plugins:maven-aidl-plugin:generate
+                   org.jvending.masa.plugins:maven-android-plugin:aidlGenerate
                </generate-sources>
                <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
                <compile>

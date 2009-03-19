@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @goal generate
+ * @goal aidlGenerate
  * @requiresProject true
  * @description
  */

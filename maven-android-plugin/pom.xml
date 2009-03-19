@@ -59,5 +59,10 @@
             <artifactId>maven-dependency-plugin</artifactId>
             <version>2.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-utils</artifactId>
+            <version>1.4.6</version>
+        </dependency>
     </dependencies>
 </project>
