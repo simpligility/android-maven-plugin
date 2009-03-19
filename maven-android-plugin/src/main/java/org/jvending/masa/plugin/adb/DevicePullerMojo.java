@@ -18,44 +18,41 @@ package org.jvending.masa.plugin.adb;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
 import org.jvending.masa.CommandExecutor;
 import org.jvending.masa.ExecutionException;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
- * @goal install
- * @phase install
+ * @goal adbPull
+ * @requiresProject false
  * @description
  */
-public class DeviceInstallerMojo extends AbstractMojo {
+public class DevicePullerMojo extends AbstractMojo {
 
     /**
-     * The maven project.
-     *
-     * @parameter expression="${project}"
+     * @parameter expression="${source}"
      * @required
-     * @readonly
      */
-    private MavenProject project;
+    private File sourceFileOrDirectory;
+
+    /**
+     * @parameter expression="${destination}"
+     * @required
+     */
+    private File destinationFileOrDirectory;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if(System.getProperty("masa.debug") == null) {
-            getLog().info("Debug flag not set. Skipping emulator install");
-            return;
-        }
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
-        File inputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apk");
 
         List<String> commands = new ArrayList<String>();
-        commands.add("install");
-        commands.add("-r");
-        commands.add(inputFile.getAbsolutePath());
+        commands.add("pull");
+        commands.add(sourceFileOrDirectory.getAbsolutePath());
+        commands.add(destinationFileOrDirectory.getAbsolutePath());
+
         getLog().info("adb " + commands.toString());
         try {
             executor.executeCommand("adb", commands);

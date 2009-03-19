@@ -26,11 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @goal pull
+ * @goal adbPush
  * @requiresProject false
  * @description
  */
-public class DevicePullerMojo extends AbstractMojo {
+public class DevicePusherMojo extends AbstractMojo {
 
     /**
      * @parameter expression="${source}"
@@ -49,7 +49,7 @@ public class DevicePullerMojo extends AbstractMojo {
         executor.setLogger(this.getLog());
 
         List<String> commands = new ArrayList<String>();
-        commands.add("pull");
+        commands.add("push");
         commands.add(sourceFileOrDirectory.getAbsolutePath());
         commands.add(destinationFileOrDirectory.getAbsolutePath());
 
