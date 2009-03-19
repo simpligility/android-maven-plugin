@@ -52,11 +52,8 @@
         </developer>
     </developers>
     <modules>
-        <module>maven-apkbuilder-plugin</module>
-        <module>masa-core</module>
         <module>maven-android-plugin</module>
         <module>maven-par-plugin</module>
-        <module>maven-platformtest-plugin</module>
     </modules>
     <build>
         <extensions>

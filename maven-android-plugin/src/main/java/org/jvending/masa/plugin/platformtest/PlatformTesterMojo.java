@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @goal test
+ * @goal platformtestTest
  * @phase integration-test
  * @description
  */

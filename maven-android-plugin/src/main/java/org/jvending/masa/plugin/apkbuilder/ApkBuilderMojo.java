@@ -36,7 +36,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 /**
- * @goal build
+ * @goal apkbuilderBuild
  * @phase package
  * @description
  */

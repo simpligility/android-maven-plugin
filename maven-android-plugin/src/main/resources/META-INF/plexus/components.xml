@@ -27,7 +27,7 @@
                <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
                <package>
                   org.jvending.masa.plugins:maven-android-plugin:aaptPackage,
-                  org.jvending.masa.plugins:maven-apkbuilder-plugin:build
+                  org.jvending.masa.plugins:maven-android-plugin:apkbuilderBuild
                </package>
                <integration-test>org.jvending.masa.plugins:maven-android-plugin:adbInstall</integration-test>
                <install>
@@ -57,11 +57,11 @@
                <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
                <package>
                   org.jvending.masa.plugins:maven-android-plugin:aaptPackage,
-                  org.jvending.masa.plugins:maven-apkbuilder-plugin:build
+                  org.jvending.masa.plugins:maven-android-plugin:apkbuilderBuild
                </package>
                <integration-test>
                    org.jvending.masa.plugins:maven-android-plugin:adbInstall,
-                   org.jvending.masa.plugins:maven-platformtest-plugin:test
+                   org.jvending.masa.plugins:maven-android-plugin:platformtestTest
                </integration-test>
             </phases>
          </configuration>
