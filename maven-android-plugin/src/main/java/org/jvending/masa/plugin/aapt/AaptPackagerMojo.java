@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @goal package
+ * @goal aaptPackage
  * @phase package
  * @description
  */

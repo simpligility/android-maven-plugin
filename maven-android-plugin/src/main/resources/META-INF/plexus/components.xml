@@ -13,7 +13,7 @@
                </generate-sources>
                <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
                <compile>
-                  org.jvending.masa.plugins:maven-aapt-plugin:compile,
+                  org.jvending.masa.plugins:maven-android-plugin:aaptCompile,
                   org.apache.maven.plugins:maven-compiler-plugin:compile
                </compile>
                <process-classes>
@@ -26,7 +26,7 @@
                <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
                <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
                <package>
-                  org.jvending.masa.plugins:maven-aapt-plugin:package,
+                  org.jvending.masa.plugins:maven-android-plugin:aaptPackage,
                   org.jvending.masa.plugins:maven-apkbuilder-plugin:build
                </package>
                <integration-test>org.jvending.masa.plugins:maven-adb-plugin:install</integration-test>
@@ -47,7 +47,7 @@
             <phases>
                <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
                <compile>
-                  org.jvending.masa.plugins:maven-aapt-plugin:compile,
+                  org.jvending.masa.plugins:maven-android-plugin:aaptCompile,
                   org.apache.maven.plugins:maven-compiler-plugin:compile
                </compile>
                <process-classes>
@@ -56,7 +56,7 @@
                </process-classes>
                <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
                <package>
-                  org.jvending.masa.plugins:maven-aapt-plugin:package,
+                  org.jvending.masa.plugins:maven-android-plugin:aaptPackage,
                   org.jvending.masa.plugins:maven-apkbuilder-plugin:build
                </package>
                <integration-test>
