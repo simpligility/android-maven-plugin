@@ -22,6 +22,7 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.jvending.masa.CommandExecutor;
 import org.jvending.masa.ExecutionException;
+import org.jvending.masa.plugin.AbstractAndroidMojo;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,16 +33,7 @@ import java.util.List;
  * @requiresProject true
  * @description
  */
-public class AidlGeneratorMojo extends AbstractMojo {
-
-    /**
-     * The maven project.
-     *
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
-     */
-    private MavenProject project;
+public class AidlGeneratorMojo extends AbstractAndroidMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         DirectoryScanner directoryScanner = new DirectoryScanner();

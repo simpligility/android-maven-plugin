@@ -26,6 +26,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.jvending.masa.CommandExecutor;
 import org.jvending.masa.ExecutionException;
+import org.jvending.masa.plugin.AbstractAndroidMojo;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -40,16 +41,7 @@ import java.util.zip.ZipOutputStream;
  * @phase package
  * @description
  */
-public class ApkBuilderMojo extends AbstractMojo {
-
-    /**
-     * The maven project.
-     *
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
-     */
-    private MavenProject project;
+public class ApkBuilderMojo extends AbstractAndroidMojo {
 
     /**
      * Maven ProjectHelper.

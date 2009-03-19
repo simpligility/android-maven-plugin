@@ -25,6 +25,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.jvending.masa.CommandExecutor;
 import org.jvending.masa.ExecutionException;
+import org.jvending.masa.plugin.AbstractAndroidMojo;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -36,16 +37,7 @@ import java.util.List;
  * @phase integration-test
  * @description
  */
-public class PlatformTesterMojo extends AbstractMojo {
-
-    /**
-     * The maven project.
-     *
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
-     */
-    private MavenProject project;
+public class PlatformTesterMojo extends AbstractAndroidMojo {
 
     /**
      * @parameter expression = "${package}

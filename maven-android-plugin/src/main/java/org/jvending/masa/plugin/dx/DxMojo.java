@@ -24,6 +24,7 @@ import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.IOUtil;
 import org.jvending.masa.CommandExecutor;
 import org.jvending.masa.ExecutionException;
+import org.jvending.masa.plugin.AbstractAndroidMojo;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,16 +40,7 @@ import java.util.jar.JarFile;
  * @phase process-classes
  * @description
  */
-public class DxMojo extends AbstractMojo {
-
-    /**
-     * The maven project.
-     *
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
-     */
-    private MavenProject project;
+public class DxMojo extends AbstractAndroidMojo {
 
     /**
      * @component

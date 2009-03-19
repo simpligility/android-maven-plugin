@@ -23,6 +23,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.dependency.utils.resolvers.ArtifactsResolver;
 import org.apache.maven.plugin.dependency.utils.resolvers.DefaultArtifactsResolver;
 import org.apache.maven.project.MavenProject;
+import org.jvending.masa.plugin.AbstractAndroidMojo;
 
 import java.io.File;
 import java.util.HashSet;
@@ -34,16 +35,7 @@ import java.util.Set;
  *
  * @author hugo.josefson@jayway.se
  */
-public abstract class AbstractAaptMojo extends AbstractMojo {
-
-    /**
-     * The maven project.
-     *
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
-     */
-    protected MavenProject project;
+public abstract class AbstractAaptMojo extends AbstractAndroidMojo {
 
     /**
      * @parameter default-value="res"
