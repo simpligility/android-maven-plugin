@@ -53,7 +53,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      */
     protected File assetsDirectory;
     /**
-     * @parameter
+     * @parameter default-value="${project.basedir}/AndroidManifest.xml"
      */
     protected File androidManifestFile;
     /**

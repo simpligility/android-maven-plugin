@@ -51,10 +51,6 @@ public class AaptCompilerMojo extends AbstractAndroidMojo {
             thumbs.delete();
         }
         
-        if (androidManifestFile == null) {
-            androidManifestFile = new File(resourceDirectory.getParent(), "AndroidManifest.xml");
-        }
-
         String generatedSourceDirectoryName = project.getBuild().getDirectory() + File.separator + "generated-sources"
                 + File.separator + "r";
         new File(generatedSourceDirectoryName).mkdirs();

@@ -38,10 +38,6 @@ public class AaptPackagerMojo extends AbstractAndroidMojo {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
-        if (androidManifestFile == null) {
-            androidManifestFile = new File(resourceDirectory.getParent(), "AndroidManifest.xml");
-        }
-
         File androidJar = resolveAndroidJar();
         File outputFile = new File(project.getBuild().getDirectory(),  project.getBuild().getFinalName() + ".ap_");
 
