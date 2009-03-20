@@ -150,7 +150,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         try {
             executor.executeCommand("adb", commands, false);
             getLog().debug(executor.getStandardOut());
-            getLog().error(executor.getStandardError());
+            getLog().debug(executor.getStandardError());
         } catch (ExecutionException e) {
             getLog().error(executor.getStandardOut());
             getLog().error(executor.getStandardError());
