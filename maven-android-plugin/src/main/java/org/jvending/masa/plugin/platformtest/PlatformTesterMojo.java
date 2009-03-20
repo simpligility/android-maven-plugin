@@ -26,11 +26,13 @@ import org.apache.maven.project.MavenProject;
 import org.jvending.masa.CommandExecutor;
 import org.jvending.masa.ExecutionException;
 import org.jvending.masa.plugin.AbstractAndroidMojo;
+import org.codehaus.plexus.util.FileUtils;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @goal platformtestTest
@@ -40,7 +42,7 @@ import java.util.List;
 public class PlatformTesterMojo extends AbstractAndroidMojo {
 
     /**
-     * @parameter expression = "${package}
+     * @parameter expression = "${masa.test.targetPackage}
      */
     private String targetPackage;
 
@@ -53,6 +55,21 @@ public class PlatformTesterMojo extends AbstractAndroidMojo {
         if(targetPackage == null || testRunnerName == null) {
             return;
         }
+
+        // Install any target apk's to device
+        Set<Artifact> directDependentArtifacts = project.getDependencyArtifacts();
+        if (directDependentArtifacts != null) {
+            for (Artifact artifact : directDependentArtifacts) {
+                String type = artifact.getType();
+                if (type.equals("android:apk")) {
+                    getLog().debug("Detected android:apk dependency " + artifact + ". Will resolve and install to device...");
+                    final File targetApkFile = resolveArtifactToFile(artifact);
+                    getLog().debug("Installing " + targetApkFile + " to device...");
+                    installApkToDevice(targetApkFile);
+                }
+            }
+        }
+
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());

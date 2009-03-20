@@ -35,18 +35,9 @@ import java.util.Set;
 public class DeviceInstallerMojo extends AbstractAndroidMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
         File inputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apk");
 
-        List<String> commands = new ArrayList<String>();
-        commands.add("install");
-        commands.add("-r");
-        commands.add(inputFile.getAbsolutePath());
-        getLog().info("adb " + commands.toString());
-        try {
-            executor.executeCommand("adb", commands);
-        } catch (ExecutionException e) {
-        }
+        installApkToDevice(inputFile);
     }
+
 }

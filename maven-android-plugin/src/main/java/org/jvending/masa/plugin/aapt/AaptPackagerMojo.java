@@ -68,54 +68,5 @@ public class AaptPackagerMojo extends AbstractAndroidMojo {
         } catch (ExecutionException e) {
             throw new MojoExecutionException("", e);
         }
-        /*
-        File dexClassesFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".classes-dex");
-
-        ZipOutputStream os = null;
-        InputStream is = null;
-
-        try {
-            ZipFile zipFile = new ZipFile(tmpOutputFile);
-            os = new ZipOutputStream(new FileOutputStream(outputFile));
-
-            for (ZipEntry entry : (List<ZipEntry>) Collections.list(zipFile.entries())) {
-                os.putNextEntry(new ZipEntry(entry.getName()));
-                is = zipFile.getInputStream(entry);
-                byte[] buffer = new byte[1024];
-                int i;
-                while ((i = is.read(buffer)) > 0) {
-                    os.write(buffer, 0, i);
-                }
-                is.close();
-            }
-            os.putNextEntry(new ZipEntry("classes.dex"));
-            is = new FileInputStream(dexClassesFile);
-            byte[] buffer = new byte[1024];
-            int i;
-            while ((i = is.read(buffer)) > 0) {
-                os.write(buffer, 0, i);
-            }
-            is.close();
-            os.close();
-        } catch (IOException e) {
-            throw new MojoExecutionException("", e);
-        }
-        finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e) {
-
-                }
-            }
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                }
-            }
-        }
-        */
-       // project.getArtifact().setFile(outputFile);
     }
 }
