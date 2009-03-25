@@ -16,18 +16,23 @@
  */
 package org.jvending.masa.plugin;
 
+import org.apache.commons.jxpath.JXPathContext;
+import org.apache.commons.jxpath.xml.DocumentContainer;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.dependency.utils.resolvers.ArtifactsResolver;
 import org.apache.maven.plugin.dependency.utils.resolvers.DefaultArtifactsResolver;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.jvending.masa.CommandExecutor;
 import org.jvending.masa.ExecutionException;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -36,6 +41,7 @@ import java.util.*;
  * @author hugo.josefson@jayway.se
  */
 public abstract class AbstractAndroidMojo extends AbstractMojo {
+
     /**
      * The maven project.
      *
@@ -44,24 +50,38 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @readonly
      */
     protected MavenProject project;
+
+    /**
+     * The maven session.
+     *
+     * @parameter expression="${session}"
+     * @required
+     * @readonly
+     */
+    protected MavenSession session;
+
     /**
      * @parameter default-value="res"
      */
     protected File resourceDirectory;
+
     /**
      * @parameter default-value="assets"
      */
     protected File assetsDirectory;
+
     /**
      * @parameter default-value="${project.basedir}/AndroidManifest.xml"
      */
     protected File androidManifestFile;
+
     /**
      * Used to look up Artifacts in the remote repository.
      *
      * @component
      */
     protected org.apache.maven.artifact.resolver.ArtifactResolver artifactResolver;
+
     /**
      * Location of the local repository.
      *
@@ -70,6 +90,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @required
      */
     private org.apache.maven.artifact.repository.ArtifactRepository localRepository;
+
     /**
      * List of Remote Repositories used by the resolver
      *
@@ -78,15 +99,18 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @required
      */
     private java.util.List remoteRepositories;
+
     /**
      * @component
      */
     private ArtifactFactory artifactFactory;
+
     /**
      * @parameter expression="${androidVersion}"
      *            default-value="1.1_r1"
      */
     private String androidVersion;
+    
     /**
      * Maven ProjectHelper.
      *
@@ -94,6 +118,16 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @readonly
      */
     protected MavenProjectHelper projectHelper;
+
+    /**
+     * When installing an apk to the device, you may use this parameter to perform an uninstall of the apk before
+     * attempting to install it to the device. It is useful to keep this set to <code>true</code> at all times, because
+     * if an apk with the same package was previously signed with a different keystore, and installed to the device,
+     * installation will fail becuase your keystore is different.
+     * @parameter
+     *            
+     */
+    private boolean uninstallApkBeforeInstallingToDevice;
 
     /**
      * Resolves the android.jar, using {@link #androidVersion} as the artifact's version.
@@ -119,18 +153,17 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      */
     protected File resolveArtifactToFile(Artifact artifact) throws MojoExecutionException {
         final ArtifactsResolver artifactsResolver = new DefaultArtifactsResolver( this.artifactResolver, this.localRepository, this.remoteRepositories, true );
-        final HashSet artifacts = new HashSet();
+        final HashSet<Artifact> artifacts = new HashSet<Artifact>();
         artifacts.add(artifact);
         File jar = null;
-        final Set resolvedArtifacts = artifactsResolver.resolve(artifacts, getLog());
-        for (Iterator it = resolvedArtifacts.iterator(); it.hasNext();) {
-            Artifact resolvedArtifact = (Artifact) it.next();
+        final Set<Artifact> resolvedArtifacts = artifactsResolver.resolve(artifacts, getLog());
+        for (Artifact resolvedArtifact : resolvedArtifacts) {
             jar = resolvedArtifact.getFile();
         }
         if (jar == null){
             throw new MojoExecutionException("Could not resolve artifact " + artifact.getId() + ". Please install it with \"mvn install:install-file ...\" or deploy it to a repository with \"mvn deploy:deploy-file ...\"");
         }
-        
+
         return jar;
     }
 
@@ -149,12 +182,136 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         getLog().info("adb " + commands.toString());
         try {
             executor.executeCommand("adb", commands, false);
-            getLog().debug(executor.getStandardOut());
-            getLog().debug(executor.getStandardError());
+            final String standardOut = executor.getStandardOut();
+            if (standardOut != null && standardOut.contains("Failure")){
+                throw new MojoExecutionException("Error installing " + apkFile + " to device. You might want to add command line parameter -Dmasa.uninstallApkBeforeInstallingToDevice=true or add plugin configuration tag <uninstallApkBeforeInstallingToDevice>true</uninstallApkBeforeInstallingToDevice>\n" + standardOut);
+            }
         } catch (ExecutionException e) {
             getLog().error(executor.getStandardOut());
             getLog().error(executor.getStandardError());
             throw new MojoExecutionException("Error installing " + apkFile + " to device.", e);
         }
+    }
+
+    /**
+     * Uninstalls an apk from a connected emulator or usb device. Also deletes the application's data and cache
+     * directories on the device.
+     * @param apkFile the file to uninstall
+     * @return <code>true</code> if successfully uninstalled, <code>false</code> otherwise.
+     */
+    protected boolean uninstallApkFromDevice(File apkFile) throws MojoExecutionException {
+        return uninstallApkFromDevice(apkFile, true);
+    }
+
+    /**
+     * Uninstalls an apk from a connected emulator or usb device. Also deletes the application's data and cache
+     * directories on the device.
+     * @param apkFile the file to uninstall
+     * @param deleteDataAndCacheDirectoriesOnDevice <code>true</code> to delete the application's data and cache
+     * directories on the device, <code>false</code> to keep them.
+     * @return <code>true</code> if successfully uninstalled, <code>false</code> otherwise.
+     */
+    protected boolean uninstallApkFromDevice(File apkFile, boolean deleteDataAndCacheDirectoriesOnDevice) throws MojoExecutionException {
+        final String packageName;
+        packageName = extractPackageNameFromApk(apkFile);
+        return uninstallApkFromDevice(packageName, deleteDataAndCacheDirectoriesOnDevice);
+    }
+
+    /**
+     * Uninstalls an apk, specified by package name, from a connected emulator or usb device. Also deletes the
+     * application's data and cache directories on the device.
+     * @param packageName the package name to uninstall.
+     * @return <code>true</code> if successfully uninstalled, <code>false</code> otherwise.
+     */
+    protected boolean uninstallApkFromDevice(String packageName) {
+        return uninstallApkFromDevice(packageName, true);
+    }
+
+    /**
+     * Uninstalls an apk, specified by package name, from a connected emulator or usb device.
+     * @param packageName the package name to uninstall.
+     * @param deleteDataAndCacheDirectoriesOnDevice <code>true</code> to delete the application's data and cache
+     * directories on the device, <code>false</code> to keep them.
+     * @return <code>true</code> if successfully uninstalled, <code>false</code> otherwise.
+     */
+    protected boolean uninstallApkFromDevice(String packageName, boolean deleteDataAndCacheDirectoriesOnDevice) {
+        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        executor.setLogger(this.getLog());
+        List<String> commands = new ArrayList<String>();
+        commands.add("uninstall");
+        if (!deleteDataAndCacheDirectoriesOnDevice){
+            commands.add("-k");  // ('-k' means keep the data and cache directories)
+        }
+        commands.add(packageName);
+        getLog().info("adb " + commands.toString());
+        try {
+            executor.executeCommand("adb", commands, false);
+            getLog().debug(executor.getStandardOut());
+            getLog().debug(executor.getStandardError());
+            return true;
+        } catch (ExecutionException e) {
+            getLog().error(executor.getStandardOut());
+            getLog().error(executor.getStandardError());
+            return false;
+        }
+    }
+
+    /**
+     * Extracts the package name from an apk file.
+     * @param apkFile apk file to extract package name from.
+     * @return the package name from inside the apk file.
+     */
+    protected String extractPackageNameFromApk(File apkFile) throws MojoExecutionException {
+        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        executor.setLogger(this.getLog());
+        List<String> commands = new ArrayList<String>();
+        commands.add("dump");
+        commands.add("xmltree");
+        commands.add(apkFile.getAbsolutePath());
+        commands.add("AndroidManifest.xml");
+        getLog().info("aapt " + commands.toString());
+        try {
+            executor.executeCommand("aapt", commands, true);
+            final String xmlTree = executor.getStandardOut();
+            return extractPackageNameFromAndroidManifestXmlTree(xmlTree);
+        } catch (ExecutionException e) {
+            throw new MojoExecutionException("Error while trying to figure out package name from inside apk file " + apkFile);
+        }finally{
+            getLog().error(executor.getStandardError());
+        }
+    }
+
+    /**
+     * Extracts the package name from an XmlTree dump of AndroidManifest.xml by the <code>aapt</code> tool.
+     * @param aaptDumpXmlTree output from <code>aapt dump xmltree &lt;apkFile&gt; AndroidManifest.xml
+     * @return the package name from inside the apkFile.
+     */
+    protected String extractPackageNameFromAndroidManifestXmlTree(String aaptDumpXmlTree){
+        final Scanner scanner = new Scanner(aaptDumpXmlTree);
+        // Finds the root element named "manifest".
+        scanner.findWithinHorizon("^E: manifest", 0);
+        // Finds the manifest element's attribute named "package".
+        scanner.findWithinHorizon("  A: package=\"", 0);
+        // Extracts the package value including the trailing double quote.
+        String packageName =  scanner.next(".*?\"");
+        // Removes the double quote.
+        packageName = packageName.substring(0, packageName.length() - 1);
+        return packageName;
+    }
+
+    protected String extractPackageNameFromAndroidManifest(File androidManifestFile) throws MojoExecutionException {
+        final URL xmlURL;
+        try {
+            xmlURL = androidManifestFile.toURI().toURL();
+        } catch (MalformedURLException e) {
+            throw new MojoExecutionException("Error while trying to figure out package name from inside apk file " + androidManifestFile, e);
+        }
+        final DocumentContainer documentContainer = new DocumentContainer(xmlURL);
+        final Object            packageName       = JXPathContext.newContext(documentContainer).getValue("manifest/@package", String.class);
+        return (String) packageName;
+    }
+
+    protected boolean isUninstallApkBeforeInstallingToDevice() {
+        return uninstallApkBeforeInstallingToDevice || Boolean.valueOf(session.getExecutionProperties().getProperty("masa.uninstallApkBeforeInstallingToDevice", "false"));
     }
 }

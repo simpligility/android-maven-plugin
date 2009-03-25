@@ -15,10 +15,8 @@
  */
 package org.jvending.masa.plugin.aidl;
 
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.jvending.masa.CommandExecutor;
 import org.jvending.masa.ExecutionException;

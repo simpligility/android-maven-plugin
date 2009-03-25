@@ -15,18 +15,11 @@
  */
 package org.jvending.masa.plugin.adb;
 
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
-import org.jvending.masa.CommandExecutor;
-import org.jvending.masa.ExecutionException;
 import org.jvending.masa.plugin.AbstractAndroidMojo;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @goal adbInstall
@@ -36,7 +29,9 @@ public class DeviceInstallerMojo extends AbstractAndroidMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         File inputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apk");
-
+        if (isUninstallApkBeforeInstallingToDevice()){
+            uninstallApkFromDevice(inputFile);
+        }
         installApkToDevice(inputFile);
     }
 

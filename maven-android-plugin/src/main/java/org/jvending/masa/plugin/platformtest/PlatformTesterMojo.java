@@ -18,17 +18,14 @@ package org.jvending.masa.plugin.platformtest;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.commons.jxpath.JXPathContext;
-import org.apache.commons.jxpath.xml.DocumentContainer;
 import org.jvending.masa.CommandExecutor;
 import org.jvending.masa.ExecutionException;
 import org.jvending.masa.plugin.AbstractAndroidMojo;
 
-import java.io.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.net.MalformedURLException;
 
 /**
  * @goal platformtestTest
@@ -53,11 +50,7 @@ public class PlatformTesterMojo extends AbstractAndroidMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         if(testsPackage == null) {
-            try {
-                testsPackage = extractPackage(androidManifestFile);
-            } catch (MalformedURLException e) {
-                throw new MojoExecutionException("package was not found in AndroidManifest.xml file " + androidManifestFile, e);
-            }
+            testsPackage = extractPackageNameFromAndroidManifest(androidManifestFile);
         }
 
         // Install any target apk's to device
@@ -68,6 +61,10 @@ public class PlatformTesterMojo extends AbstractAndroidMojo {
                 if (type.equals("android:apk")) {
                     getLog().debug("Detected android:apk dependency " + artifact + ". Will resolve and install to device...");
                     final File targetApkFile = resolveArtifactToFile(artifact);
+                    if (isUninstallApkBeforeInstallingToDevice()){
+                        getLog().debug("Attempting uninstall of " + targetApkFile + " from device...");
+                        uninstallApkFromDevice(targetApkFile);
+                    }
                     getLog().debug("Installing " + targetApkFile + " to device...");
                     installApkToDevice(targetApkFile);
                 }
@@ -103,9 +100,4 @@ public class PlatformTesterMojo extends AbstractAndroidMojo {
         }
     }
 
-    protected String extractPackage(File androidManifestFile) throws MalformedURLException {
-        final DocumentContainer documentContainer = new DocumentContainer(androidManifestFile.toURI().toURL());
-        final Object targetPackage = JXPathContext.newContext(documentContainer).getValue("manifest/@package", String.class);
-        return (String) targetPackage;
-    }
 }
