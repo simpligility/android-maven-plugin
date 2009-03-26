@@ -27,9 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Generates java files based on aidl files.
  * @goal aidlGenerate
  * @requiresProject true
- * @description
  */
 public class AidlGeneratorMojo extends AbstractAndroidMojo {
 
@@ -37,6 +37,7 @@ public class AidlGeneratorMojo extends AbstractAndroidMojo {
         DirectoryScanner directoryScanner = new DirectoryScanner();
         directoryScanner.setBasedir(project.getBuild().getSourceDirectory());
 
+        //TODO: this exclusion should not be needed if project.getBuild().getSourceDirectory() defaults to src/main/java 
         List<String> excludeList = new ArrayList<String>();
         //target files
         excludeList.add("target/**");
@@ -63,6 +64,8 @@ public class AidlGeneratorMojo extends AbstractAndroidMojo {
 
         for (String file : files) {
             List<String> commands = new ArrayList<String>();
+            // TODO: DON'T use System.getenv for this! Use proper plugin configuration parameters,
+            // TODO: (which may pull from environment/ANDROID_SDK for their default values.)
             if (System.getenv().get("ANDROID_SDK") != null) {
                 commands.add("-p" + System.getenv().get("ANDROID_SDK") + "/tools/lib/framework.aidl");
             }

@@ -26,13 +26,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Creates the apk file. By default signs it with debug keystore. Change that with configuration parameter
+ * <code>isDelaySigned</code>
  * @goal apkbuilderBuild
  * @phase package
- * @description
  */
 public class ApkBuilderMojo extends AbstractAndroidMojo {
 
     /**
+     * Whether to <em>not</em> sign with the debug key.
+     * TODO: rename to signWithDebugKeystore, and invert meaning of parameter
      * @parameter default-value = "false"
      */
     private boolean isDelaySigned;
@@ -56,6 +59,7 @@ public class ApkBuilderMojo extends AbstractAndroidMojo {
         commands.add("-f");
         commands.add( new File(project.getBuild().getDirectory(),  "classes.dex").getAbsolutePath());
         commands.add("-rf");
+        //TODO: This should be src/main/resources instead:
         commands.add(new File(project.getBuild().getSourceDirectory()).getAbsolutePath());
         
         getLog().info("apkbuilder " + commands.toString());

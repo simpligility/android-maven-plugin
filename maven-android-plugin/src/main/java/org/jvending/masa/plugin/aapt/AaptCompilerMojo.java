@@ -26,14 +26,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Generates <code>R.java</code> based on resources specified by the <code>resources</code> configuration parameter.
+ * As a side-effect, also deletes any <code>Thumbs.db</code> files found in the resource directory.
+ * TODO: rename to generateR
+ * TODO: move to phase generate-sources
  * @goal aaptCompile
  * @phase compile
  * @requiresDependencyResolution compile
- * @description
  */
 public class AaptCompilerMojo extends AbstractAndroidMojo {
 
     /**
+     * Make package directories in the directory where files are copied to.
      * @parameter default-value=true
      */
     private boolean createPackageDirectories;
@@ -43,8 +47,11 @@ public class AaptCompilerMojo extends AbstractAndroidMojo {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
+        // TODO: don't mess with the resource directory directly,
+        // TODO: but copy it to target,
+        // TODO: delete Thumbs.db there,
+        // TODO: and then generate R.java from that directory 
         //Get rid of this annoying Thumbs.db problem on windows
-
         File thumbs = new File(resourceDirectory, "drawable/Thumbs.db");
         if (thumbs.exists()) {
             getLog().info("Deleting thumbs.db from resource directory");

@@ -61,16 +61,19 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected MavenSession session;
 
     /**
+     * The android resources directory.
      * @parameter default-value="res"
      */
     protected File resourceDirectory;
 
     /**
+     * The android assets directory.
      * @parameter default-value="assets"
      */
     protected File assetsDirectory;
 
     /**
+     * The <code>AndroidManifest.xml</code> file.
      * @parameter default-value="${project.basedir}/AndroidManifest.xml"
      */
     protected File androidManifestFile;
@@ -102,10 +105,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
 
     /**
      * @component
+     * @readonly
+     * @required
      */
     private ArtifactFactory artifactFactory;
 
     /**
+     * Which version of Android SDK to use.
      * @parameter expression="${androidVersion}"
      *            default-value="1.1_r1"
      */
@@ -120,12 +126,18 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected MavenProjectHelper projectHelper;
 
     /**
-     * When installing an apk to the device, you may use this parameter to perform an uninstall of the apk before
-     * attempting to install it to the device. It is useful to keep this set to <code>true</code> at all times, because
-     * if an apk with the same package was previously signed with a different keystore, and installed to the device,
-     * installation will fail becuase your keystore is different.
-     * @parameter
-     *            
+     * Whether to uninstall an apk from the device before installing it.
+     *
+     * Only has effect when running <code>mvn android:installApkToDevice</code> in a project with
+     * <code>&lt;packaging&gt;android:apk&lt;/packaging&gt;</code> manually, or when running
+     * <code>mvn integration-test</code> (or <code>mvn install</code>) in a project with
+     * <code>&lt;packaging&gt;android:apk:platformTest&lt;/packaging&gt;</code>. 
+     *
+     * It is useful to keep this set to <code>true</code> at all times, because if an apk with the same package was
+     * previously signed with a different keystore, and installed to the device, installation will fail becuase your
+     * keystore is different.
+     *
+     * @parameter default-value=false
      */
     private boolean uninstallApkBeforeInstallingToDevice;
 

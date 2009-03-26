@@ -28,9 +28,14 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Installs relevant apk files to device, and runs the tests on device. Apk files that are installed to the device are:
+ * <ul>
+ * <li>the platformtest apk itself,</li>
+ * <li>any dependencies of &lt;type&gt;android:apk&lt;/type&gt; in the platformtest pom.</li>
+ * </ul>
+ *
  * @goal platformtestTest
  * @phase integration-test
- * @description
  */
 public class PlatformTesterMojo extends AbstractAndroidMojo {
 

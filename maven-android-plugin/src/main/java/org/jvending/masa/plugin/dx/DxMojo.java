@@ -33,9 +33,9 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
+ * Converts compiled Java classes to the Android dex format.
  * @goal dx
  * @phase process-classes
- * @description
  */
 public class DxMojo extends AbstractAndroidMojo {
 

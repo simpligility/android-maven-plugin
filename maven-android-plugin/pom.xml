@@ -15,7 +15,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.jvending.masa</groupId>
         <artifactId>masa-project</artifactId>
@@ -27,7 +28,7 @@
     <version>2.0.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
     <name>JVending Masa: maven-android-plugin</name>
-    <description>Maven Plugin for Android DX</description>
+    <description>Maven Plugin for Android</description>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -76,4 +77,11 @@
             <version>1.4</version>
         </dependency>
     </dependencies>
+    <reporting>
+        <plugins>
+            <plugin>
+                <artifactId>maven-plugin-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>
