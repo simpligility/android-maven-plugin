@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2007-2008 JVending Masa
+ * Copyright (C) 2009 Jayway AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +31,7 @@ import java.util.List;
  * <em>TODO: this should not need to be a separate goal. it confuses the user. it should be integrated with apkbuilderBuild.</em>
  * @goal aaptPackage
  * @phase package
+ * @author hugo.josefson@jayway.com
  */
 public class AaptPackagerMojo extends AbstractAndroidMojo {
 

@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2007-2008 JVending Masa
+ * Copyright (C) 2009 Jayway AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +27,7 @@ import java.io.File;
  * (or <code>mvn install</code>) on a project with
  * <code>&lt;packaging&gt;android:apk:platformTest&lt;/packaging&gt;</code>.
  * @goal adbInstall
+ * @author hugo.josefson@jayway.com
  */
 public class DeviceInstallerMojo extends AbstractAndroidMojo {
 
