@@ -126,20 +126,22 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected MavenProjectHelper projectHelper;
 
     /**
-     * Whether to uninstall an apk from the device before installing it.
+     * <p>Whether to uninstall an apk from the device before installing it.</p>
      *
-     * Only has effect when running <code>mvn android:installApkToDevice</code> in a project with
+     * <p>Only has effect when running <code>mvn android:installApkToDevice</code> in a project with
      * <code>&lt;packaging&gt;android:apk&lt;/packaging&gt;</code> manually, or when running
      * <code>mvn integration-test</code> (or <code>mvn install</code>) in a project with
-     * <code>&lt;packaging&gt;android:apk:platformTest&lt;/packaging&gt;</code>. 
+     * <code>&lt;packaging&gt;android:apk:platformTest&lt;/packaging&gt;</code>.</p>
      *
-     * It is useful to keep this set to <code>true</code> at all times, because if an apk with the same package was
+     * <p>It is useful to keep this set to <code>true</code> at all times, because if an apk with the same package was
      * previously signed with a different keystore, and installed to the device, installation will fail becuase your
-     * keystore is different.
+     * keystore is different.</p>
      *
      * @parameter default-value=false
+     *            expression="${masa.uninstallApkBeforeInstallingToDevice}"
+     *
      */
-    private boolean uninstallApkBeforeInstallingToDevice;
+    protected boolean uninstallApkBeforeInstallingToDevice;
 
     /**
      * Resolves the android.jar, using {@link #androidVersion} as the artifact's version.
@@ -323,7 +325,4 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         return (String) packageName;
     }
 
-    protected boolean isUninstallApkBeforeInstallingToDevice() {
-        return uninstallApkBeforeInstallingToDevice || Boolean.valueOf(session.getExecutionProperties().getProperty("masa.uninstallApkBeforeInstallingToDevice", "false"));
-    }
 }

@@ -31,7 +31,7 @@ public class DeviceInstallerMojo extends AbstractAndroidMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         File inputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apk");
-        if (isUninstallApkBeforeInstallingToDevice()){
+        if (uninstallApkBeforeInstallingToDevice){
             uninstallApkFromDevice(inputFile);
         }
         installApkToDevice(inputFile);

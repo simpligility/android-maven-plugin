@@ -28,10 +28,11 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Installs relevant apk files to device, and runs the tests on device. Apk files that are installed to the device are:
+ * Installs relevant apk files to device, and runs the tests on device.<br/>
+ * Apk files that are installed to the device are:
  * <ul>
- * <li>the platformtest apk itself,</li>
- * <li>any dependencies of &lt;type&gt;android:apk&lt;/type&gt; in the platformtest pom.</li>
+ *     <li>the platformtest apk itself,</li>
+ *     <li>any dependencies of &lt;type&gt;android:apk&lt;/type&gt; in the platformtest pom.</li>
  * </ul>
  *
  * @goal platformtestTest
@@ -49,7 +50,7 @@ public class PlatformTesterMojo extends AbstractAndroidMojo {
     /**
      * Class name of test runner.
      * @optional
-     * @parameter default-value="android.test.InstrumentationTestRunner" expression=${masa.test.testRunner}
+     * @parameter default-value="android.test.InstrumentationTestRunner" expression="${masa.test.testRunner}"
      */
     private String testRunner;
 
@@ -66,7 +67,7 @@ public class PlatformTesterMojo extends AbstractAndroidMojo {
                 if (type.equals("android:apk")) {
                     getLog().debug("Detected android:apk dependency " + artifact + ". Will resolve and install to device...");
                     final File targetApkFile = resolveArtifactToFile(artifact);
-                    if (isUninstallApkBeforeInstallingToDevice()){
+                    if (uninstallApkBeforeInstallingToDevice){
                         getLog().debug("Attempting uninstall of " + targetApkFile + " from device...");
                         uninstallApkFromDevice(targetApkFile);
                     }
