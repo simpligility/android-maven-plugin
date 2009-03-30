@@ -1,0 +1,69 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.jayway.maven.plugins.android.samples.apidemos</groupId>
+    <artifactId>apidemos-platformtests</artifactId>
+    <packaging>android:apk:platformTest</packaging>
+    <version>0.1.0-SNAPSHOT</version>
+    <name>ApiDemos using maven-android-plugin - Platformtests</name>
+
+    <prerequisites>
+        <maven>2.0.9</maven>
+    </prerequisites>
+
+    <dependencies>
+        <dependency>
+            <groupId>android</groupId>
+            <artifactId>android</artifactId>
+            <version>1.1_r1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <!-- the target apk, which we will test. will automatically be deployed to device in pre-integration-test
+            phase. -->
+            <groupId>com.jayway.maven.plugins.android.samples.apidemos</groupId>
+            <artifactId>apidemos</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+            <type>android:apk</type>
+        </dependency>
+
+        <dependency>
+            <!-- optional: compile time dependency, in this case so that we can read from the R.java for example. -->
+            <groupId>com.jayway.maven.plugins.android.samples.apidemos</groupId>
+            <artifactId>apidemos</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <!--<finalName>${artifactId}</finalName>-->
+        <plugins>
+            <!--
+            maven-android-plugin require environment variable ANDROID_SDK to be set appropriately,
+            and PATH to include $ANDROID_SDK/tools
+            -->
+            <plugin>
+                <groupId>com.jayway.maven.plugins.android</groupId>
+                <artifactId>maven-android-plugin</artifactId>
+                <version>2.0.0-SNAPSHOT</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <uninstallApkBeforeInstallingToDevice>true</uninstallApkBeforeInstallingToDevice>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
