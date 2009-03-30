@@ -34,8 +34,8 @@ import java.util.List;
 public class ApkBuilderMojo extends AbstractAndroidMojo {
 
     /**
-     * Whether to <em>not</em> sign with the debug key.
-     * TODO: rename to signWithDebugKeystore, and invert meaning of parameter
+     * <p>Whether to <em>not</em> sign with the debug key.</p>
+     * <p><em>TODO: rename to signWithDebugKeystore, and invert meaning of parameter</em></p>
      * @parameter default-value = "false"
      */
     private boolean isDelaySigned;
@@ -59,7 +59,7 @@ public class ApkBuilderMojo extends AbstractAndroidMojo {
         commands.add("-f");
         commands.add( new File(project.getBuild().getDirectory(),  "classes.dex").getAbsolutePath());
         commands.add("-rf");
-        //TODO: This should be src/main/resources instead:
+        // TODO: This should be src/main/resources instead:
         commands.add(new File(project.getBuild().getSourceDirectory()).getAbsolutePath());
         
         getLog().info("apkbuilder " + commands.toString());

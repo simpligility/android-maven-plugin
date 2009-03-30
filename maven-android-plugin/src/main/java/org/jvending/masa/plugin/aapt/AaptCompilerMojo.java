@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Generates <code>R.java</code> based on resources specified by the <code>resources</code> configuration parameter.
- * As a side-effect, also deletes any <code>Thumbs.db</code> files found in the resource directory.
- * TODO: rename to generateR
- * TODO: move to phase generate-sources
+ * Generates <code>R.java</code> based on resources specified by the <code>resources</code> configuration parameter.<br/>
+ * As a side-effect, also deletes any <code>Thumbs.db</code> files found in the resource directory.<br/>
+ * <em>TODO: rename to generateR</em><br/>
+ * <em>TODO: move to phase generate-sources</em>
  * @goal aaptCompile
  * @phase compile
  * @requiresDependencyResolution compile
