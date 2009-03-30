@@ -18,22 +18,22 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.jvending.masa</groupId>
-    <artifactId>masa-project</artifactId>
+    <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+    <artifactId>generation2-parent</artifactId>
     <version>2.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>JVending Masa: masa-project</name>
-    <description>Maven Plugins Project for Android</description>
-    <url>http://code.google.com/p/masa</url>
+    <name>Generation2: Parent</name>
+    <description>Maven Plugins Project for Android - Generation2</description>
+    <url>http://code.google.com/p/maven-android-plugin</url>
     <inceptionYear>2008</inceptionYear>
     <scm>
-        <url>http://masa.googlecode.com/svn/trunk</url>
-        <connection>scm:svn:http://masa.googlecode.com/svn/trunk</connection>
-        <developerConnection>scm:svn:https://masa.googlecode.com/svn/trunk</developerConnection>
+        <url>http://code.google.com/p/maven-android-plugin/source/browse/#svn/trunk</url>
+        <connection>scm:svn:http://maven-android-plugin.googlecode.com/svn/trunk</connection>
+        <developerConnection>scm:svn:https://maven-android-plugin.googlecode.com/svn/trunk</developerConnection>
     </scm>
     <issueManagement>
-        <system>Issue Tracking</system>
-        <url>http://code.google.com/p/masa/issues/list</url>
+        <system>Google Code Issue Tracking</system>
+        <url>http://code.google.com/p/maven-android-plugin/issues/list</url>
     </issueManagement>
     <licenses>
         <license>
@@ -43,12 +43,12 @@
     </licenses>
     <developers>
         <developer>
-            <name>Shane Isbell</name>
-            <id>sisbell</id>
-            <email>shane.isbell@gmail.com</email>
-            <url>http://jroller.com/page/random7</url>
+            <name>Hugo Josefson</name>
+            <id>hugojosefson</id>
+            <email>hugo@josefson.org</email>
+            <url>http://blog.jayway.com/</url>
             <roles>
-                <role>committer</role>
+                <role>Developer</role>
             </roles>
         </developer>
     </developers>
@@ -57,27 +57,8 @@
         <module>maven-par-plugin</module>
     </modules>
     <build>
-        <extensions>
-            <extension>
-                <groupId>org.jvnet.wagon-svn</groupId>
-                <artifactId>wagon-svn</artifactId>
-                <version>1.8</version>
-            </extension>
-        </extensions>
         <pluginManagement>
             <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <configuration>
-                        <tagBase>https://masa.googlecode.com/svn/tags</tagBase>
-                        <useReleaseProfile>false</useReleaseProfile>
-                        <preparationGoals>clean install</preparationGoals>
-                        <goals>deploy</goals>
-                        <arguments>-Prelease,deploy</arguments>
-                        <autoVersionSubmodules>true</autoVersionSubmodules>
-                    </configuration>
-                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
@@ -104,68 +85,4 @@
             </plugin>
         </plugins>
     </build>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>m2-repo.snapshots</id>
-            <name>Maven SNAPSHOT Repository</name>
-            <url>svn:svn+ssh://m2-repo.googlecode.com/svn/snapshot</url>
-        </snapshotRepository>
-        <repository>
-            <id>m2-repo.release</id>
-            <name>Maven Release Repository</name>
-            <url>svn:svn+ssh://m2-repo.googlecode.com/svn/release</url>
-        </repository>
-    </distributionManagement>
-    <repositories>
-        <repository>
-            <id>m2-repo.snapshots</id>
-            <name>Maven SNAPSHOT Repository</name>
-            <url>http://m2-repo.googlecode.com/svn/snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-        <repository>
-            <id>m2-repo.release</id>
-            <name>Maven Release Repository</name>
-            <url>http://m2-repo.googlecode.com/svn/release</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-    </repositories>
-    <profiles>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <inherited>false</inherited>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>src/main/assembly/src.xml</descriptor>
-                            </descriptors>
-                            <tarLongFileMode>gnu</tarLongFileMode>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>make-assembly</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
