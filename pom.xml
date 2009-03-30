@@ -54,7 +54,6 @@
     </developers>
     <modules>
         <module>maven-android-plugin</module>
-        <module>maven-par-plugin</module>
     </modules>
     <build>
         <pluginManagement>
