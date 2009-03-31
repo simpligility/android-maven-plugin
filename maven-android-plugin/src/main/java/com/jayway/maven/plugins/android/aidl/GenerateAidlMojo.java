@@ -29,11 +29,11 @@ import java.util.List;
 
 /**
  * Generates java files based on aidl files.
- * @goal aidlGenerate
+ * @goal generateAidl
  * @requiresProject true
  * @author hugo.josefson@jayway.com
  */
-public class AidlGeneratorMojo extends AbstractAndroidMojo {
+public class GenerateAidlMojo extends AbstractAndroidMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         DirectoryScanner directoryScanner = new DirectoryScanner();
