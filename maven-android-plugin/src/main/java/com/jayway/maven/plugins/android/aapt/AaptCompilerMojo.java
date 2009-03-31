@@ -30,9 +30,8 @@ import java.util.List;
  * Generates <code>R.java</code> based on resources specified by the <code>resources</code> configuration parameter.<br/>
  * As a side-effect, also deletes any <code>Thumbs.db</code> files found in the resource directory.<br/>
  * <em>TODO: rename to generateR</em><br/>
- * <em>TODO: move to phase generate-sources</em>
  * @goal aaptCompile
- * @phase compile
+ * @phase generate-sources
  * @requiresDependencyResolution compile
  * @author hugo.josefson@jayway.com
  */

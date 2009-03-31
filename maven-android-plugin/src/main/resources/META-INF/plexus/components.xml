@@ -9,12 +9,11 @@
          <configuration>
             <phases>
                <generate-sources>
+                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:aaptCompile,
                    com.jayway.maven.plugins.android.generation2:maven-android-plugin:aidlGenerate
                </generate-sources>
                <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
-                <!-- TODO: move aaptCompile to generate-sources --> 
                <compile>
-                  com.jayway.maven.plugins.android.generation2:maven-android-plugin:aaptCompile,
                   org.apache.maven.plugins:maven-compiler-plugin:compile
                </compile>
                <process-classes>
@@ -27,6 +26,7 @@
                <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
                <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
                <package>
+                  org.apache.maven.plugins:maven-jar-plugin:jar,                  
                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:aaptPackage,
                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:apkbuilderBuild
                </package>
@@ -45,24 +45,38 @@
          </implementation>
          <configuration>
             <phases>
+                <generate-sources>
+                    com.jayway.maven.plugins.android.generation2:maven-android-plugin:aaptCompile,
+                    com.jayway.maven.plugins.android.generation2:maven-android-plugin:aidlGenerate
+                </generate-sources>
                <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
                <compile>
-                  com.jayway.maven.plugins.android.generation2:maven-android-plugin:aaptCompile,
                   org.apache.maven.plugins:maven-compiler-plugin:compile
                </compile>
                <process-classes>
                    org.apache.maven.plugins:maven-jar-plugin:jar,
                    com.jayway.maven.plugins.android.generation2:maven-android-plugin:dx
                </process-classes>
+                <process-test-resources>
+                   org.apache.maven.plugins:maven-resources-plugin:testResources
+                </process-test-resources>
                <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
+                <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
                <package>
+                  org.apache.maven.plugins:maven-jar-plugin:jar,                  
                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:aaptPackage,
                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:apkbuilderBuild
                </package>
+                <install>
+                   org.apache.maven.plugins:maven-install-plugin:install
+                </install>
+               <pre-integration-test>
+                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:adbInstall
+               </pre-integration-test>
                <integration-test>
-                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:adbInstall,
                    com.jayway.maven.plugins.android.generation2:maven-android-plugin:platformtestTest
                </integration-test>
+                <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
             </phases>
          </configuration>
       </component>
