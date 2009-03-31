@@ -26,11 +26,11 @@ import java.io.File;
  * Installs the apk file to a connected device. Automatically performed when running <code>mvn integration-test</code>
  * (or <code>mvn install</code>) on a project with
  * <code>&lt;packaging&gt;android:apk:platformTest&lt;/packaging&gt;</code>.
- * @goal adbInstall
+ * @goal installApkToDevice
  * @phase pre-integration-test
  * @author hugo.josefson@jayway.com
  */
-public class DeviceInstallerMojo extends AbstractAndroidMojo {
+public class InstallApkToDeviceMojo extends AbstractAndroidMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         File inputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apk");

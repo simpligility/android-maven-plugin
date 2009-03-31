@@ -71,7 +71,7 @@
                    org.apache.maven.plugins:maven-install-plugin:install
                 </install>
                <pre-integration-test>
-                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:adbInstall
+                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:installApkToDevice
                </pre-integration-test>
                <integration-test>
                    com.jayway.maven.plugins.android.generation2:maven-android-plugin:platformtestTest
