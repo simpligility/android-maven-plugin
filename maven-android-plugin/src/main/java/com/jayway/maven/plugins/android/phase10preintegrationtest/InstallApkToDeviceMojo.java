@@ -28,6 +28,7 @@ import java.io.File;
  * <code>&lt;packaging&gt;android:apk:platformTest&lt;/packaging&gt;</code>.
  * @goal installApkToDevice
  * @phase pre-integration-test
+ * @requiresDependencyResolution runtime
  * @author hugo.josefson@jayway.com
  */
 public class InstallApkToDeviceMojo extends AbstractAndroidMojo {

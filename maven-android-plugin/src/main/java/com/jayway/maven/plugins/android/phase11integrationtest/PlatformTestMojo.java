@@ -61,26 +61,6 @@ public class PlatformTestMojo extends AbstractAndroidMojo {
             testsPackage = extractPackageNameFromAndroidManifest(androidManifestFile);
         }
 
-        // TODO: Break out to its own goal in phase10preintegrationtest 
-        // Install any target apk's to device
-        Set<Artifact> directDependentArtifacts = project.getDependencyArtifacts();
-        if (directDependentArtifacts != null) {
-            for (Artifact artifact : directDependentArtifacts) {
-                String type = artifact.getType();
-                if (type.equals("android:apk")) {
-                    getLog().debug("Detected android:apk dependency " + artifact + ". Will resolve and install to device...");
-                    final File targetApkFile = resolveArtifactToFile(artifact);
-                    if (uninstallApkBeforeInstallingToDevice){
-                        getLog().debug("Attempting uninstall of " + targetApkFile + " from device...");
-                        uninstallApkFromDevice(targetApkFile);
-                    }
-                    getLog().debug("Installing " + targetApkFile + " to device...");
-                    installApkToDevice(targetApkFile);
-                }
-            }
-        }
-
-
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
