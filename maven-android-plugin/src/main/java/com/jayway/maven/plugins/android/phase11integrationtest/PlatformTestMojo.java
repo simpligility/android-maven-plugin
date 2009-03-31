@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jayway.maven.plugins.android.platformtest;
+package com.jayway.maven.plugins.android.phase11integrationtest;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
@@ -36,11 +36,11 @@ import java.util.Set;
  *     <li>any dependencies of &lt;type&gt;android:apk&lt;/type&gt; in the platformtest pom.</li>
  * </ul>
  *
- * @goal platformtestTest
+ * @goal platformTest
  * @phase integration-test
  * @author hugo.josefson@jayway.com
  */
-public class PlatformTesterMojo extends AbstractAndroidMojo {
+public class PlatformTestMojo extends AbstractAndroidMojo {
 
     /**
      * Package name of the apk we wish to test.
@@ -61,6 +61,7 @@ public class PlatformTesterMojo extends AbstractAndroidMojo {
             testsPackage = extractPackageNameFromAndroidManifest(androidManifestFile);
         }
 
+        // TODO: Break out to its own goal in phase10preintegrationtest 
         // Install any target apk's to device
         Set<Artifact> directDependentArtifacts = project.getDependencyArtifacts();
         if (directDependentArtifacts != null) {

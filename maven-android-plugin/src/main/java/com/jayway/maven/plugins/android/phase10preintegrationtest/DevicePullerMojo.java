@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jayway.maven.plugins.android.adb;
+package com.jayway.maven.plugins.android.phase10preintegrationtest;
 
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
@@ -26,11 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @goal adbPush
+ * @goal adbPull
  * @requiresProject false
  * @description
  */
-public class DevicePusherMojo extends AbstractMojo {
+public class DevicePullerMojo extends AbstractMojo {
 
     /**
      * @parameter expression="${source}"
@@ -49,7 +49,7 @@ public class DevicePusherMojo extends AbstractMojo {
         executor.setLogger(this.getLog());
 
         List<String> commands = new ArrayList<String>();
-        commands.add("push");
+        commands.add("pull");
         commands.add(sourceFileOrDirectory.getAbsolutePath());
         commands.add(destinationFileOrDirectory.getAbsolutePath());
 

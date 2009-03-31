@@ -72,7 +72,7 @@
                    com.jayway.maven.plugins.android.generation2:maven-android-plugin:installApkToDevice
                </pre-integration-test>
                <integration-test>
-                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:platformtestTest
+                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:platformTest
                </integration-test>
                 <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
             </phases>
