@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Creates the apk file. By default signs it with debug keystore. Change that with configuration parameter
- * <code>isDelaySigned</code>.
+ * Creates the apk file. By default signs it with debug keystore. Change that by setting configuration parameter
+ * <code>signWithDebugKeystore</code> to <code>false</code>.
  * @goal apk
  * @phase package
  * @author hugo.josefson@jayway.com
@@ -36,11 +36,10 @@ import java.util.List;
 public class ApkMojo extends AbstractAndroidMojo {
 
     /**
-     * <p>Whether to <em>not</em> sign with the debug key.</p>
-     * <p><em>TODO: rename to signWithDebugKeystore, and invert meaning of parameter</em></p>
-     * @parameter default-value = "false"
+     * <p>Whether to sign with the debug key.</p>
+     * @parameter default-value = "true"
      */
-    private boolean isDelaySigned;
+    private boolean signWithDebugKeystore;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -54,7 +53,7 @@ public class ApkMojo extends AbstractAndroidMojo {
         List<String> commands = new ArrayList<String>();
         commands.add(outputFile.getAbsolutePath());
 
-        if(isDelaySigned) {
+        if(!signWithDebugKeystore) {
             commands.add("-u");
         }
         
