@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * Generates an intermediate apk file (actually .ap_) containing the resources and assets.<br/>
- * <em>TODO: this should not need to be a separate goal. it confuses the user. it should be integrated with apkbuilderBuild.</em>
+ * <em>TODO: this should not need to be a separate goal. it confuses the user. it should be integrated with apk.</em>
  * @goal aaptPackage
  * @phase package
  * @author hugo.josefson@jayway.com

@@ -29,11 +29,11 @@ import java.util.List;
 /**
  * Creates the apk file. By default signs it with debug keystore. Change that with configuration parameter
  * <code>isDelaySigned</code>
- * @goal apkbuilderBuild
+ * @goal apk
  * @phase package
  * @author hugo.josefson@jayway.com
  */
-public class ApkBuilderMojo extends AbstractAndroidMojo {
+public class ApkMojo extends AbstractAndroidMojo {
 
     /**
      * <p>Whether to <em>not</em> sign with the debug key.</p>
