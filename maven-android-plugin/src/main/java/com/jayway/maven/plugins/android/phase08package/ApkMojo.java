@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Creates the apk file. By default signs it with debug keystore. Change that by setting configuration parameter
- * <code>signWithDebugKeystore</code> to <code>false</code>.
+ * Creates the apk file. By default signs it with debug keystore.<br/>
+ * Change that by setting configuration parameter <code>signWithDebugKeystore</code> to <code>false</code>.
  * @goal apk
  * @phase package
  * @author hugo.josefson@jayway.com

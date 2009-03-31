@@ -23,9 +23,9 @@ import org.apache.maven.plugin.MojoFailureException;
 import java.io.File;
 
 /**
- * Installs the apk file to a connected device. Automatically performed when running <code>mvn integration-test</code>
- * (or <code>mvn install</code>) on a project with
- * <code>&lt;packaging&gt;android:apk:platformTest&lt;/packaging&gt;</code>.
+ * Installs the apk file to a connected device.<br/>
+ * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on a project
+ * with <code>&lt;packaging&gt;android:apk:platformTest&lt;/packaging&gt;</code>.
  * @goal installApkToDevice
  * @phase pre-integration-test
  * @requiresDependencyResolution runtime
