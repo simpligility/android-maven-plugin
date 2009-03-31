@@ -9,7 +9,7 @@
          <configuration>
             <phases>
                <generate-sources>
-                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:aaptCompile,
+                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:generateR,
                    com.jayway.maven.plugins.android.generation2:maven-android-plugin:aidlGenerate
                </generate-sources>
                <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
@@ -46,7 +46,7 @@
          <configuration>
             <phases>
                 <generate-sources>
-                    com.jayway.maven.plugins.android.generation2:maven-android-plugin:aaptCompile,
+                    com.jayway.maven.plugins.android.generation2:maven-android-plugin:generateR,
                     com.jayway.maven.plugins.android.generation2:maven-android-plugin:aidlGenerate
                 </generate-sources>
                <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
