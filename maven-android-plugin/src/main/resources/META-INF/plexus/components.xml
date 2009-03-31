@@ -27,7 +27,6 @@
                <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
                <package>
                   org.apache.maven.plugins:maven-jar-plugin:jar,                  
-                  com.jayway.maven.plugins.android.generation2:maven-android-plugin:aaptPackage,
                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:apk
                </package>
                <install>
@@ -64,7 +63,6 @@
                 <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
                <package>
                   org.apache.maven.plugins:maven-jar-plugin:jar,                  
-                  com.jayway.maven.plugins.android.generation2:maven-android-plugin:aaptPackage,
                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:apk
                </package>
                 <install>

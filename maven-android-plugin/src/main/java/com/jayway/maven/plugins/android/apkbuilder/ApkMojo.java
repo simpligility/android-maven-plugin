@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * Creates the apk file. By default signs it with debug keystore. Change that with configuration parameter
- * <code>isDelaySigned</code>
+ * <code>isDelaySigned</code>.
  * @goal apk
  * @phase package
  * @author hugo.josefson@jayway.com
@@ -43,6 +43,8 @@ public class ApkMojo extends AbstractAndroidMojo {
     private boolean isDelaySigned;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+
+        generateIntermediateAp_();
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
@@ -76,5 +78,42 @@ public class ApkMojo extends AbstractAndroidMojo {
 
         //Also attach the normal .jar, so it can be depended on by for example android:apk:platformTest projects if they need access to our R.java and other things.
         projectHelper.attachArtifact(project, "jar", new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".jar"));
+    }
+
+    /**
+     * Generates an intermediate apk file (actually .ap_) containing the resources and assets.
+     * @throws MojoExecutionException
+     */
+    private void generateIntermediateAp_() throws MojoExecutionException {
+
+        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        executor.setLogger(this.getLog());
+
+        File androidJar = resolveAndroidJar();
+        File outputFile = new File(project.getBuild().getDirectory(),  project.getBuild().getFinalName() + ".ap_");
+
+        List<String> commands = new ArrayList<String>();
+        commands.add("package");
+        commands.add("-f");
+        commands.add("-M");
+        commands.add(androidManifestFile.getAbsolutePath());
+        if (resourceDirectory.exists()) {
+            commands.add("-S");
+            commands.add(resourceDirectory.getAbsolutePath());
+        }
+        if (assetsDirectory.exists()) {
+            commands.add("-A");
+            commands.add(assetsDirectory.getAbsolutePath());
+        }
+        commands.add("-I");
+        commands.add(androidJar.getAbsolutePath());
+        commands.add("-F");
+        commands.add(outputFile.getAbsolutePath());
+        getLog().info("aapt " + commands.toString());
+        try {
+            executor.executeCommand("aapt", commands, project.getBasedir(), false);
+        } catch (ExecutionException e) {
+            throw new MojoExecutionException("", e);
+        }
     }
 }
