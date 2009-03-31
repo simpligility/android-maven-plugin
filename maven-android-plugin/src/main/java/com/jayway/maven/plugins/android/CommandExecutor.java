@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2007-2008 JVending Masa
+ * Copyright (C) 2009 Jayway AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -188,13 +189,13 @@ public interface CommandExecutor
                         if ( ( failsOnErrorOutput && stdErr.hasError() ) || result != 0 )
                         {
                             throw new ExecutionException( "ANDROID-040-001: Could not execute: Command = " +
-                                commandline.toString() + ", Result = " + result );
+                                commandline.toString() + ", Result = " + result);
                         }
                     }
                     catch ( CommandLineException e )
                     {
                         throw new ExecutionException(
-                            "ANDROID-040-002: Could not execute: Command = " + commandline.toString() );
+                            "ANDROID-040-002: Could not execute: Command = " + commandline.toString() + ", Error message = " + e.getMessage());
                     }
                 }
 
