@@ -18,7 +18,7 @@
                </compile>
                <process-classes>
                    org.apache.maven.plugins:maven-jar-plugin:jar,
-                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:dx
+                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:dex
                </process-classes>
                <process-test-resources>
                   org.apache.maven.plugins:maven-resources-plugin:testResources
@@ -55,7 +55,7 @@
                </compile>
                <process-classes>
                    org.apache.maven.plugins:maven-jar-plugin:jar,
-                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:dx
+                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:dex
                </process-classes>
                 <process-test-resources>
                    org.apache.maven.plugins:maven-resources-plugin:testResources
