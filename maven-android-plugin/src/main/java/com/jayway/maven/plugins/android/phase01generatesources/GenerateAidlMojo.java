@@ -21,14 +21,19 @@ import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.codehaus.plexus.util.DirectoryScanner;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Generates java files based on aidl files.
+ * Generates java files based on aidl files.<br/>
+ * If the configuration parameter <code>deleteMalplacedFiles</code> is <code>true</code> (which it is by default), this
+ * goal has the following side-effect:
+ * <ul>
+ * <li>deletes any <code>.java</code> files with the same name as an <code>.aidl</code> file found in the source
+ * directory.</li>
+ * </ul>
  * @goal generateAidl
  * @requiresProject true
  * @author hugo.josefson@jayway.com
@@ -36,22 +41,9 @@ import java.util.List;
 public class GenerateAidlMojo extends AbstractAndroidMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        DirectoryScanner directoryScanner = new DirectoryScanner();
-        directoryScanner.setBasedir(project.getBuild().getSourceDirectory());
+        final String sourceDirectory = project.getBuild().getSourceDirectory();
 
-        //TODO: this exclusion should not be needed if project.getBuild().getSourceDirectory() defaults to src/main/java 
-        List<String> excludeList = new ArrayList<String>();
-        //target files
-        excludeList.add("target/**");
-
-        List<String> includeList = new ArrayList<String>();
-        includeList.add("**/*.aidl");
-        String[] includes = new String[includeList.size()];
-        directoryScanner.setIncludes((includeList.toArray(includes)));
-        directoryScanner.addDefaultExcludes();
-
-        directoryScanner.scan();
-        String[] files = directoryScanner.getIncludedFiles();
+        String[] files = findFilesInDirectory(sourceDirectory, "**/*.aidl");
         getLog().info("ANDROID-904-002: Found aidl files: Count = " + files.length);
         if (files.length == 0) {
             return;
@@ -60,30 +52,50 @@ public class GenerateAidlMojo extends AbstractAndroidMojo {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
-        File generatedSourcesDirectory = new File(project.getBuild().getDirectory() + File.separator
-                + "generated-sources" + File.separator + "aidl");
+        File generatedSourcesDirectory = new File(project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "aidl");
         generatedSourcesDirectory.mkdirs();
 
-        for (String file : files) {
+        int numberOfFilesDeleted = 0;
+        for (String relativeAidlFileName : files) {
             List<String> commands = new ArrayList<String>();
             // TODO: DON'T use System.getenv for this! Use proper plugin configuration parameters,
             // TODO: (which may pull from environment/ANDROID_SDK for their default values.)
             if (System.getenv().get("ANDROID_SDK") != null) {
                 commands.add("-p" + System.getenv().get("ANDROID_SDK") + "/tools/lib/framework.aidl");
             }
-            File targetDirectory = new File(generatedSourcesDirectory, new File(file).getParent());
+            File targetDirectory = new File(generatedSourcesDirectory, new File(relativeAidlFileName).getParent());
             targetDirectory.mkdirs();
 
-            String fileName = new File(file).getName();
+            final String shortAidlFileName         = new File(relativeAidlFileName).getName();
+            final String shortJavaFileName         = shortAidlFileName.substring(0, shortAidlFileName.lastIndexOf("."))       + ".java";
+            final String relativeJavaFileName      = relativeAidlFileName.substring(0, relativeAidlFileName.lastIndexOf(".")) + ".java";
+            final File   aidlFileInSourceDirectory = new File(sourceDirectory, relativeAidlFileName);
 
-            commands.add("-I" + project.getBuild().getSourceDirectory());
-            commands.add((new File(project.getBuild().getSourceDirectory(), file).getAbsolutePath()));
-            commands.add(new File(targetDirectory , fileName.substring(0, fileName.lastIndexOf(".")) + ".java").getAbsolutePath());
+            if (deleteMalplacedFiles) {
+                final File javaFileInSourceDirectory = new File(sourceDirectory, relativeJavaFileName);
+
+                if (javaFileInSourceDirectory.exists()) {
+                    final boolean successfullyDeleted = javaFileInSourceDirectory.delete();
+                    if (successfullyDeleted) {
+                        numberOfFilesDeleted++;
+                    } else {
+                        throw new MojoExecutionException("Failed to delete \"" + javaFileInSourceDirectory + "\"");
+                    }
+                }
+            }
+
+            commands.add("-I" + sourceDirectory);
+            commands.add(aidlFileInSourceDirectory.getAbsolutePath());
+            commands.add(new File(targetDirectory , shortJavaFileName).getAbsolutePath());
             try {
                 executor.executeCommand("aidl", commands, project.getBasedir(), false);
             } catch (ExecutionException e) {
                 throw new MojoExecutionException("", e);
             }
+        }
+
+        if (numberOfFilesDeleted > 0){
+            getLog().info("Deleted " + numberOfFilesDeleted + " malplaced aidl-generated *.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain them.");
         }
 
         project.addCompileSourceRoot(generatedSourcesDirectory.getPath());

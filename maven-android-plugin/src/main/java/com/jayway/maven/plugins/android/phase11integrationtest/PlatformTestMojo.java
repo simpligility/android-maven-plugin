@@ -19,14 +19,11 @@ package com.jayway.maven.plugins.android.phase11integrationtest;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Runs the platformTest apk on device.
@@ -40,14 +37,14 @@ public class PlatformTestMojo extends AbstractAndroidMojo {
     /**
      * Package name of the apk we wish to test.
      * @optional
-     * @parameter expression="${masa.test.targetPackage}
+     * @parameter expression="${android.test.targetPackage}
      */
     private String testsPackage;
 
     /**
      * Class name of test runner.
      * @optional
-     * @parameter default-value="android.test.InstrumentationTestRunner" expression="${masa.test.testRunner}"
+     * @parameter default-value="android.test.InstrumentationTestRunner" expression="${android.test.testRunner}"
      */
     private String testRunner;
 

@@ -27,6 +27,7 @@ import org.apache.maven.plugin.dependency.utils.resolvers.ArtifactsResolver;
 import org.apache.maven.plugin.dependency.utils.resolvers.DefaultArtifactsResolver;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.codehaus.plexus.util.DirectoryScanner;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -136,10 +137,25 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * keystore is different.</p>
      *
      * @parameter default-value=false
-     *            expression="${masa.uninstallApkBeforeInstallingToDevice}"
+     *            expression="${android.uninstallApkBeforeInstallingToDevice}"
      *
      */
     protected boolean uninstallApkBeforeInstallingToDevice;
+
+    /**
+     * <p>Whether to delete any <code>R.java</code> file, and <code>.java</code> files with the same name as
+     * <code>.aidl</code> files, found in the source directory.</p>
+     *
+     * <p>Enable when using Eclipse and the standard Eclipse Android plugin, to work around the fact that it creates
+     * <code>R.java</code>, and <code>.java</code> files from your <code>.aidl</code> files, in the wrong place
+     * (from a Maven perspective.) Don't worry, Eclipse automatically recreates them when you refresh the Eclipse
+     * project.</p>
+     *
+     * @parameter default-value=true
+     *            expression="${android.deleteMalplacedFiles}"
+     *
+     */
+    protected boolean deleteMalplacedFiles;
 
     /**
      * Resolves the android.jar, using {@link #androidVersion} as the artifact's version.
@@ -196,7 +212,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
             executor.executeCommand("adb", commands, false);
             final String standardOut = executor.getStandardOut();
             if (standardOut != null && standardOut.contains("Failure")){
-                throw new MojoExecutionException("Error installing " + apkFile + " to device. You might want to add command line parameter -Dmasa.uninstallApkBeforeInstallingToDevice=true or add plugin configuration tag <uninstallApkBeforeInstallingToDevice>true</uninstallApkBeforeInstallingToDevice>\n" + standardOut);
+                throw new MojoExecutionException("Error installing " + apkFile + " to device. You might want to add command line parameter -Dandroid.uninstallApkBeforeInstallingToDevice=true or add plugin configuration tag <uninstallApkBeforeInstallingToDevice>true</uninstallApkBeforeInstallingToDevice>\n" + standardOut);
             }
         } catch (ExecutionException e) {
             getLog().error(executor.getStandardOut());
@@ -323,4 +339,31 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         return (String) packageName;
     }
 
+    protected int deleteFilesFromDirectory(String baseDirectory, String... includes) throws MojoExecutionException {
+        final String[] files = findFilesInDirectory(baseDirectory, includes);
+        if (files == null){
+            return 0;
+        }
+        
+        for (String file : files) {
+            final boolean successfullyDeleted = new File(baseDirectory, file).delete();
+            if (!successfullyDeleted){
+                throw new MojoExecutionException("Failed to delete \"" + file +"\"");
+            }
+        }
+        return files.length;
+    }
+
+    protected String[] findFilesInDirectory(String baseDirectory, String... includes) {
+        DirectoryScanner directoryScanner = new DirectoryScanner();
+        directoryScanner.setBasedir(baseDirectory);
+
+        directoryScanner.setIncludes(includes);
+        directoryScanner.addDefaultExcludes();
+
+        directoryScanner.scan();
+        String[] files = directoryScanner.getIncludedFiles();
+        return files;
+
+    }
 }

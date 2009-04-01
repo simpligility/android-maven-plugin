@@ -28,7 +28,12 @@ import java.util.List;
 
 /**
  * Generates <code>R.java</code> based on resources specified by the <code>resources</code> configuration parameter.<br/>
- * As a side-effect, also deletes any <code>Thumbs.db</code> files found in the resource directory.<br/>
+ * If the configuration parameter <code>deleteMalplacedFiles</code> is <code>true</code> (which it is by default), this
+ * goal has the following side-effects:
+ * <ul>
+ * <li>deletes any <code>Thumbs.db</code> files found in the resource directory.</li>
+ * <li>deletes any <code>R.java</code> files found in the source directory.</li>
+ * </ul>
  * @goal generateR
  * @phase generate-sources
  * @requiresDependencyResolution compile
@@ -47,19 +52,22 @@ public class GenerateRMojo extends AbstractAndroidMojo {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
-        // TODO: don't mess with the resource directory directly,
-        // TODO: but copy it to target,
-        // TODO: delete Thumbs.db there,
-        // TODO: and then generate R.java from that directory 
-        //Get rid of this annoying Thumbs.db problem on windows
-        File thumbs = new File(resourceDirectory, "drawable/Thumbs.db");
-        if (thumbs.exists()) {
-            getLog().info("Deleting thumbs.db from resource directory");
-            thumbs.delete();
+        if (deleteMalplacedFiles){
+            final int numberOfFilesDeleted = deleteFilesFromDirectory(project.getBuild().getSourceDirectory(), "**/R.java");
+            if (numberOfFilesDeleted > 0){
+                getLog().info("Deleted " + numberOfFilesDeleted + " malplaced R.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain it.");   
+            }
+
+            //Get rid of this annoying Thumbs.db problem on windows
+            File thumbs = new File(resourceDirectory, "drawable/Thumbs.db");
+            if (thumbs.exists()) {
+                getLog().info("Deleting thumbs.db from resource directory");
+                thumbs.delete();
+            }
         }
-        
-        String generatedSourceDirectoryName = project.getBuild().getDirectory() + File.separator + "generated-sources"
-                + File.separator + "r";
+
+
+        String generatedSourceDirectoryName = project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "r";
         new File(generatedSourceDirectoryName).mkdirs();
 
         File androidJar = resolveAndroidJar();
@@ -93,4 +101,5 @@ public class GenerateRMojo extends AbstractAndroidMojo {
         project.addCompileSourceRoot(generatedSourceDirectoryName);
 
     }
+
 }

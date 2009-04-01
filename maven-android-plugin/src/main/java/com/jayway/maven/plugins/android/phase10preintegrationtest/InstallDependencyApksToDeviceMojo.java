@@ -17,9 +17,9 @@
 package com.jayway.maven.plugins.android.phase10preintegrationtest;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.artifact.Artifact;
 
 import java.io.File;
 import java.util.Set;
