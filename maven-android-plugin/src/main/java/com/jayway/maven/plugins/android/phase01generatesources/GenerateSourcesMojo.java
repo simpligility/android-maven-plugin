@@ -70,19 +70,18 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     protected boolean deleteConflictingFiles;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+
+        deleteConflictingRFiles();
         generateR();
+        
         generateAidl();
     }
 
-    private void generateR() throws MojoExecutionException {
-        // System.out.println("RS = " + resourceDirectory.getAbsolutePath());
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
-
+    private void deleteConflictingRFiles() throws MojoExecutionException {
         if (deleteConflictingFiles){
-            final int numberOfFilesDeleted = deleteFilesFromDirectory(project.getBuild().getSourceDirectory(), "**/R.java");
-            if (numberOfFilesDeleted > 0){
-                getLog().info("Deleted " + numberOfFilesDeleted + " conflicting R.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain it.");
+            final int numberOfRFilesDeleted = deleteFilesFromDirectory(project.getBuild().getSourceDirectory(), "**/R.java");
+            if (numberOfRFilesDeleted > 0){
+                getLog().info("Deleted " + numberOfRFilesDeleted + " conflicting R.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain it.");
             }
 
             //Get rid of this annoying Thumbs.db problem on windows
@@ -92,12 +91,19 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
                 thumbs.delete();
             }
         }
+    }
+
+    private void generateR() throws MojoExecutionException {
 
 
-        String generatedSourceDirectoryName = project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "r";
-        new File(generatedSourceDirectoryName).mkdirs();
+
+        String generatedSourcesRDirectoryName = project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "r";
+        new File(generatedSourcesRDirectoryName).mkdirs();
 
         File androidJar = resolveAndroidJar();
+
+        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        executor.setLogger(this.getLog());
 
         List<String> commands = new ArrayList<String>();
         commands.add("package");
@@ -105,7 +111,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             commands.add("-m");
         }
         commands.add("-J");
-        commands.add(generatedSourceDirectoryName);
+        commands.add(generatedSourcesRDirectoryName);
         commands.add("-M");
         commands.add(androidManifestFile.getAbsolutePath());
         if (resourceDirectory.exists()) {
@@ -125,33 +131,33 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             throw new MojoExecutionException("", e);
         }
 
-        project.addCompileSourceRoot(generatedSourceDirectoryName);
+        project.addCompileSourceRoot(generatedSourcesRDirectoryName);
     }
 
     private void generateAidl() throws MojoExecutionException {
         final String sourceDirectory = project.getBuild().getSourceDirectory();
 
-        String[] files = findFilesInDirectory(sourceDirectory, "**/*.aidl");
-        getLog().info("ANDROID-904-002: Found aidl files: Count = " + files.length);
-        if (files.length == 0) {
+        String[] relativeAidlFileNames = findFilesInDirectory(sourceDirectory, "**/*.aidl");
+        getLog().info("ANDROID-904-002: Found aidl files: Count = " + relativeAidlFileNames.length);
+        if (relativeAidlFileNames.length == 0) {
             return;
         }
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
-        File generatedSourcesDirectory = new File(project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "aidl");
-        generatedSourcesDirectory.mkdirs();
+        File generatedSourcesAidlDirectory = new File(project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "aidl");
+        generatedSourcesAidlDirectory.mkdirs();
 
-        int numberOfFilesDeleted = 0;
-        for (String relativeAidlFileName : files) {
+        int numberOfAidlJavaFilesDeleted = 0;
+        for (String relativeAidlFileName : relativeAidlFileNames) {
             List<String> commands = new ArrayList<String>();
             // TODO: DON'T use System.getenv for this! Use proper plugin configuration parameters,
             // TODO: (which may pull from environment/ANDROID_SDK for their default values.)
             if (System.getenv().get("ANDROID_SDK") != null) {
                 commands.add("-p" + System.getenv().get("ANDROID_SDK") + "/tools/lib/framework.aidl");
             }
-            File targetDirectory = new File(generatedSourcesDirectory, new File(relativeAidlFileName).getParent());
+            File targetDirectory = new File(generatedSourcesAidlDirectory, new File(relativeAidlFileName).getParent());
             targetDirectory.mkdirs();
 
             final String shortAidlFileName         = new File(relativeAidlFileName).getName();
@@ -165,7 +171,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
                 if (javaFileInSourceDirectory.exists()) {
                     final boolean successfullyDeleted = javaFileInSourceDirectory.delete();
                     if (successfullyDeleted) {
-                        numberOfFilesDeleted++;
+                        numberOfAidlJavaFilesDeleted++;
                     } else {
                         throw new MojoExecutionException("Failed to delete \"" + javaFileInSourceDirectory + "\"");
                     }
@@ -182,10 +188,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             }
         }
 
-        if (numberOfFilesDeleted > 0){
-            getLog().info("Deleted " + numberOfFilesDeleted + " conflicting aidl-generated *.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain them.");
+        if (numberOfAidlJavaFilesDeleted > 0){
+            getLog().info("Deleted " + numberOfAidlJavaFilesDeleted + " conflicting aidl-generated *.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain them.");
         }
 
-        project.addCompileSourceRoot(generatedSourcesDirectory.getPath());
+        project.addCompileSourceRoot(generatedSourcesAidlDirectory.getPath());
     }
 }
