@@ -346,16 +346,26 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         return files.length;
     }
 
+    /**
+     * Finds files.
+     * @param baseDirectory Directory to find files in.
+     * @param includes Ant-style include statements, for example <code>"** /*.aidl"</code> (but without the space in the middle)
+     * @return <code>String[]</code> of the files' paths and names, relative to <code>baseDirectory</code>. Empty <code>String[]</code> if <code>baseDirectory</code> does not exist.
+     */
     protected String[] findFilesInDirectory(File baseDirectory, String... includes) {
-        DirectoryScanner directoryScanner = new DirectoryScanner();
-        directoryScanner.setBasedir(baseDirectory);
+        if (baseDirectory.exists()){
+            DirectoryScanner directoryScanner = new DirectoryScanner();
+            directoryScanner.setBasedir(baseDirectory);
 
-        directoryScanner.setIncludes(includes);
-        directoryScanner.addDefaultExcludes();
+            directoryScanner.setIncludes(includes);
+            directoryScanner.addDefaultExcludes();
 
-        directoryScanner.scan();
-        String[] files = directoryScanner.getIncludedFiles();
-        return files;
+            directoryScanner.scan();
+            String[] files = directoryScanner.getIncludedFiles();
+            return files;
+        }else{
+            return new String[0];
+        }
 
     }
 }
