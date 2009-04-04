@@ -34,13 +34,86 @@ import java.util.List;
  * <li>deletes any <code>.java</code> files with the same name as an <code>.aidl</code> file found in the source
  * directory.</li>
  * </ul>
- * @goal generateAidl
+ * Generates <code>R.java</code> based on resources specified by the <code>resources</code> configuration parameter.<br/>
+ * If the configuration parameter <code>deleteConflictingFiles</code> is <code>true</code> (which it is by default), this
+ * goal has the following side-effects:
+ * <ul>
+ * <li>deletes any <code>Thumbs.db</code> files found in the resource directory.</li>
+ * <li>deletes any <code>R.java</code> files found in the source directory.</li>
+ * </ul>
+ * @goal generate-sources
+ * @phase generate-sources
  * @requiresProject true
  * @author hugo.josefson@jayway.com
  */
-public class GenerateAidlMojo extends AbstractAndroidMojo {
+public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
+    /**
+     * Make package directories in the directory where files are copied to.
+     * @parameter default-value=true
+     */
+    private boolean createPackageDirectories;
+         
     public void execute() throws MojoExecutionException, MojoFailureException {
+        generateR();
+        generateAidl();
+    }
+
+    private void generateR() throws MojoExecutionException {
+        // System.out.println("RS = " + resourceDirectory.getAbsolutePath());
+        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        executor.setLogger(this.getLog());
+
+        if (deleteConflictingFiles){
+            final int numberOfFilesDeleted = deleteFilesFromDirectory(project.getBuild().getSourceDirectory(), "**/R.java");
+            if (numberOfFilesDeleted > 0){
+                getLog().info("Deleted " + numberOfFilesDeleted + " conflicting R.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain it.");
+            }
+
+            //Get rid of this annoying Thumbs.db problem on windows
+            File thumbs = new File(resourceDirectory, "drawable/Thumbs.db");
+            if (thumbs.exists()) {
+                getLog().info("Deleting thumbs.db from resource directory");
+                thumbs.delete();
+            }
+        }
+
+
+        String generatedSourceDirectoryName = project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "r";
+        new File(generatedSourceDirectoryName).mkdirs();
+
+        File androidJar = resolveAndroidJar();
+
+        List<String> commands = new ArrayList<String>();
+        commands.add("package");
+        if (createPackageDirectories) {
+            commands.add("-m");
+        }
+        commands.add("-J");
+        commands.add(generatedSourceDirectoryName);
+        commands.add("-M");
+        commands.add(androidManifestFile.getAbsolutePath());
+        if (resourceDirectory.exists()) {
+            commands.add("-S");
+            commands.add(resourceDirectory.getAbsolutePath());
+        }
+        if (assetsDirectory.exists()) {
+            commands.add("-A");
+            commands.add(assetsDirectory.getAbsolutePath());
+        }
+        commands.add("-I");
+        commands.add(androidJar.getAbsolutePath());
+        getLog().info("aapt " + commands.toString());
+        try {
+            executor.executeCommand("aapt", commands, project.getBasedir(), false);
+        } catch (ExecutionException e) {
+            throw new MojoExecutionException("", e);
+        }
+
+        project.addCompileSourceRoot(generatedSourceDirectoryName);
+    }
+
+    private void generateAidl() throws MojoExecutionException {
         final String sourceDirectory = project.getBuild().getSourceDirectory();
 
         String[] files = findFilesInDirectory(sourceDirectory, "**/*.aidl");
@@ -99,6 +172,5 @@ public class GenerateAidlMojo extends AbstractAndroidMojo {
         }
 
         project.addCompileSourceRoot(generatedSourcesDirectory.getPath());
-        
     }
 }
