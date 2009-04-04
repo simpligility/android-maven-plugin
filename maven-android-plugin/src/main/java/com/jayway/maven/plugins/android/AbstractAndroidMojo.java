@@ -61,7 +61,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
 
     /**
      * The java sources directory.
-     * @parameter default-value="${project.basedir}/${project.build.sourceDirectory}"
+     * @parameter default-value="${project.build.sourceDirectory}"
      */
     protected File sourceDirectory;
 
