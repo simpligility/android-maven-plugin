@@ -53,7 +53,22 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
      * @parameter default-value=true
      */
     private boolean createPackageDirectories;
-         
+    
+    /**
+     * <p>Whether to delete any <code>R.java</code> file, and <code>.java</code> files with the same name as
+     * <code>.aidl</code> files, found in the source directory.</p>
+     *
+     * <p>Enable when using Eclipse and the standard Eclipse Android plugin, to work around the fact that it creates
+     * <code>R.java</code>, and <code>.java</code> files from your <code>.aidl</code> files, in the wrong place
+     * (from a Maven perspective.) Don't worry, Eclipse automatically recreates them when you refresh the Eclipse
+     * project.</p>
+     *
+     * @parameter default-value=true
+     *            expression="${android.deleteConflictingFiles}"
+     *
+     */
+    protected boolean deleteConflictingFiles;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         generateR();
         generateAidl();
