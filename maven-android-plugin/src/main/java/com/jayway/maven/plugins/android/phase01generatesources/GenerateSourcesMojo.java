@@ -73,7 +73,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         String[] relativeAidlFileNames = findRelativeAidlFileNames();
 
         if (deleteConflictingFiles) {
-            deleteConflictingRFiles();
+            deleteConflictingRJavaFiles();
+            deleteConflictingManifestJavaFiles();
             deleteConflictingThumbsDb();
             deleteConflictingAidlJavaFiles(relativeAidlFileNames);
         }
@@ -83,7 +84,13 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
     }
 
-    private void deleteConflictingRFiles() throws MojoExecutionException {
+    private void deleteConflictingManifestJavaFiles() throws MojoExecutionException {
+        final int numberOfRFilesDeleted = deleteFilesFromDirectory(project.getBuild().getSourceDirectory(), "**/Manifest.java");
+        if (numberOfRFilesDeleted > 0) {
+            getLog().info("Deleted " + numberOfRFilesDeleted + " conflicting Manifest.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain it.");
+        }
+    }
+    private void deleteConflictingRJavaFiles() throws MojoExecutionException {
         final int numberOfRFilesDeleted = deleteFilesFromDirectory(project.getBuild().getSourceDirectory(), "**/R.java");
         if (numberOfRFilesDeleted > 0) {
             getLog().info("Deleted " + numberOfRFilesDeleted + " conflicting R.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain it.");
