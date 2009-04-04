@@ -137,8 +137,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     private void generateAidl() throws MojoExecutionException {
         final String sourceDirectory = project.getBuild().getSourceDirectory();
 
-        String[] relativeAidlFileNames = findFilesInDirectory(sourceDirectory, "**/*.aidl");
-        getLog().info("ANDROID-904-002: Found aidl files: Count = " + relativeAidlFileNames.length);
+        String[] relativeAidlFileNames = findRelativeAidlFileNames(sourceDirectory);
         if (relativeAidlFileNames.length == 0) {
             return;
         }
@@ -193,5 +192,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         }
 
         project.addCompileSourceRoot(generatedSourcesAidlDirectory.getPath());
+    }
+
+    private String[] findRelativeAidlFileNames(String sourceDirectory) {
+        String[] relativeAidlFileNames = findFilesInDirectory(sourceDirectory, "**/*.aidl");
+        getLog().info("ANDROID-904-002: Found aidl files: Count = " + relativeAidlFileNames.length);
+        return relativeAidlFileNames;
     }
 }
