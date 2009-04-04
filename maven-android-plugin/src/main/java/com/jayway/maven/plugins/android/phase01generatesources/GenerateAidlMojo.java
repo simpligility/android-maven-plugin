@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * Generates java files based on aidl files.<br/>
- * If the configuration parameter <code>deleteMalplacedFiles</code> is <code>true</code> (which it is by default), this
+ * If the configuration parameter <code>deleteConflictingFiles</code> is <code>true</code> (which it is by default), this
  * goal has the following side-effect:
  * <ul>
  * <li>deletes any <code>.java</code> files with the same name as an <code>.aidl</code> file found in the source
@@ -71,7 +71,7 @@ public class GenerateAidlMojo extends AbstractAndroidMojo {
             final String relativeJavaFileName      = relativeAidlFileName.substring(0, relativeAidlFileName.lastIndexOf(".")) + ".java";
             final File   aidlFileInSourceDirectory = new File(sourceDirectory, relativeAidlFileName);
 
-            if (deleteMalplacedFiles) {
+            if (deleteConflictingFiles) {
                 final File javaFileInSourceDirectory = new File(sourceDirectory, relativeJavaFileName);
 
                 if (javaFileInSourceDirectory.exists()) {
@@ -95,7 +95,7 @@ public class GenerateAidlMojo extends AbstractAndroidMojo {
         }
 
         if (numberOfFilesDeleted > 0){
-            getLog().info("Deleted " + numberOfFilesDeleted + " malplaced aidl-generated *.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain them.");
+            getLog().info("Deleted " + numberOfFilesDeleted + " conflicting aidl-generated *.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain them.");
         }
 
         project.addCompileSourceRoot(generatedSourcesDirectory.getPath());

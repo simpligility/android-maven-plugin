@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * Generates <code>R.java</code> based on resources specified by the <code>resources</code> configuration parameter.<br/>
- * If the configuration parameter <code>deleteMalplacedFiles</code> is <code>true</code> (which it is by default), this
+ * If the configuration parameter <code>deleteConflictingFiles</code> is <code>true</code> (which it is by default), this
  * goal has the following side-effects:
  * <ul>
  * <li>deletes any <code>Thumbs.db</code> files found in the resource directory.</li>
@@ -52,10 +52,10 @@ public class GenerateRMojo extends AbstractAndroidMojo {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
-        if (deleteMalplacedFiles){
+        if (deleteConflictingFiles){
             final int numberOfFilesDeleted = deleteFilesFromDirectory(project.getBuild().getSourceDirectory(), "**/R.java");
             if (numberOfFilesDeleted > 0){
-                getLog().info("Deleted " + numberOfFilesDeleted + " malplaced R.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain it.");   
+                getLog().info("Deleted " + numberOfFilesDeleted + " conflicting R.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain it.");
             }
 
             //Get rid of this annoying Thumbs.db problem on windows

@@ -152,10 +152,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * project.</p>
      *
      * @parameter default-value=true
-     *            expression="${android.deleteMalplacedFiles}"
+     *            expression="${android.deleteConflictingFiles}"
      *
      */
-    protected boolean deleteMalplacedFiles;
+    protected boolean deleteConflictingFiles;
 
     /**
      * Resolves the android.jar, using {@link #androidVersion} as the artifact's version.
