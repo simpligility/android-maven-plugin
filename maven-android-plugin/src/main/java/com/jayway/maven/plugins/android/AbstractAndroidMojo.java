@@ -60,14 +60,20 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected MavenSession session;
 
     /**
+     * The java sources directory.
+     * @parameter default-value="${project.basedir}/${project.build.sourceDirectory}"
+     */
+    protected File sourceDirectory;
+
+    /**
      * The android resources directory.
-     * @parameter default-value="res"
+     * @parameter default-value="${project.basedir}/res"
      */
     protected File resourceDirectory;
 
     /**
      * The android assets directory.
-     * @parameter default-value="assets"
+     * @parameter default-value="${project.basedir}/assets"
      */
     protected File assetsDirectory;
 
@@ -324,13 +330,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         final Object            packageName       = JXPathContext.newContext(documentContainer).getValue("manifest/@package", String.class);
         return (String) packageName;
     }
-
-    protected int deleteFilesFromDirectory(String baseDirectory, String... includes) throws MojoExecutionException {
+    
+    protected int deleteFilesFromDirectory(File baseDirectory, String... includes) throws MojoExecutionException {
         final String[] files = findFilesInDirectory(baseDirectory, includes);
         if (files == null){
             return 0;
         }
-        
+
         for (String file : files) {
             final boolean successfullyDeleted = new File(baseDirectory, file).delete();
             if (!successfullyDeleted){
@@ -340,7 +346,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         return files.length;
     }
 
-    protected String[] findFilesInDirectory(String baseDirectory, String... includes) {
+    protected String[] findFilesInDirectory(File baseDirectory, String... includes) {
         DirectoryScanner directoryScanner = new DirectoryScanner();
         directoryScanner.setBasedir(baseDirectory);
 

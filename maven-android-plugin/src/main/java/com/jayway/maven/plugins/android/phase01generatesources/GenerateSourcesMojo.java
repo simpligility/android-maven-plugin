@@ -85,30 +85,27 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     }
 
     private void deleteConflictingManifestJavaFiles() throws MojoExecutionException {
-        final int numberOfRFilesDeleted = deleteFilesFromDirectory(project.getBuild().getSourceDirectory(), "**/Manifest.java");
-        if (numberOfRFilesDeleted > 0) {
-            getLog().info("Deleted " + numberOfRFilesDeleted + " conflicting Manifest.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain it.");
+        final int numberOfFilesDeleted = deleteFilesFromDirectory(sourceDirectory, "**/Manifest.java");
+        if (numberOfFilesDeleted > 0) {
+            getLog().info("Deleted " + numberOfFilesDeleted + " conflicting Manifest.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain it.");
         }
     }
     private void deleteConflictingRJavaFiles() throws MojoExecutionException {
-        final int numberOfRFilesDeleted = deleteFilesFromDirectory(project.getBuild().getSourceDirectory(), "**/R.java");
-        if (numberOfRFilesDeleted > 0) {
-            getLog().info("Deleted " + numberOfRFilesDeleted + " conflicting R.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain it.");
+        final int numberOfFilesDeleted = deleteFilesFromDirectory(sourceDirectory, "**/R.java");
+        if (numberOfFilesDeleted > 0) {
+            getLog().info("Deleted " + numberOfFilesDeleted + " conflicting R.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain it.");
         }
     }
 
-    private void deleteConflictingThumbsDb() {
+    private void deleteConflictingThumbsDb() throws MojoExecutionException {
         //Get rid of this annoying Thumbs.db problem on windows
-        File thumbs = new File(resourceDirectory, "drawable/Thumbs.db");
-        if (thumbs.exists()) {
-            getLog().info("Deleting thumbs.db from resource directory");
-            thumbs.delete();
+        final int numberOfFilesDeleted = deleteFilesFromDirectory(resourceDirectory, "**/Thumbs.db");
+        if (numberOfFilesDeleted > 0) {
+            getLog().info("Deleted " + numberOfFilesDeleted + " Thumbs.db file(s) in resource directory.");
         }
     }
 
     private void deleteConflictingAidlJavaFiles(String[] relativeAidlFileNames) throws MojoExecutionException {
-        String sourceDirectory = project.getBuild().getSourceDirectory();
-
         for (String relativeAidlFileName : relativeAidlFileNames) {
 
             final String relativeJavaFileName = relativeAidlFileName.substring(0, relativeAidlFileName.lastIndexOf(".")) + ".java";
@@ -168,8 +165,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     }
 
     private void generateAidlFiles(String[] relativeAidlFileNames) throws MojoExecutionException {
-        String sourceDirectory = project.getBuild().getSourceDirectory();
-
         for (String relativeAidlFileName : relativeAidlFileNames) {
             List<String> commands = new ArrayList<String>();
             // TODO: DON'T use System.getenv for this! Use proper plugin configuration parameters,
@@ -204,7 +199,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     }
 
     private String[] findRelativeAidlFileNames() {
-        String   sourceDirectory       = project.getBuild().getSourceDirectory();
         String[] relativeAidlFileNames = findFilesInDirectory(sourceDirectory, "**/*.aidl");
         getLog().info("ANDROID-904-002: Found aidl files: Count = " + relativeAidlFileNames.length);
         return relativeAidlFileNames;
