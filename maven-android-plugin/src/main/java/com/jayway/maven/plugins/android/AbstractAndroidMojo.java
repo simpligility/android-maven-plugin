@@ -131,22 +131,22 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected MavenProjectHelper projectHelper;
 
     /**
-     * <p>Whether to uninstall an apk from the device before installing it.</p>
+     * <p>Whether to undeploy an apk from the device before deploying it.</p>
      *
-     * <p>Only has effect when running <code>mvn android:installApkToDevice</code> in a project with
+     * <p>Only has effect when running <code>mvn android:deployApk</code> in a project with
      * <code>&lt;packaging&gt;android:apk&lt;/packaging&gt;</code> manually, or when running
      * <code>mvn integration-test</code> (or <code>mvn install</code>) in a project with
      * <code>&lt;packaging&gt;android:apk:platformTest&lt;/packaging&gt;</code>.</p>
      *
      * <p>It is useful to keep this set to <code>true</code> at all times, because if an apk with the same package was
-     * previously signed with a different keystore, and installed to the device, installation will fail becuase your
+     * previously signed with a different keystore, and deployed to the device, deployment will fail becuase your
      * keystore is different.</p>
      *
      * @parameter default-value=false
-     *            expression="${android.uninstallApkBeforeInstallingToDevice}"
+     *            expression="${android.undeployApkBeforeDeploying}"
      *
      */
-    protected boolean uninstallApkBeforeInstallingToDevice;
+    protected boolean undeployApkBeforeDeploying;
 
 
     /**
@@ -188,11 +188,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     }
 
     /**
-     * Installs an apk file to a connected emulator or usb device.
-     * @param apkFile the file to install
-     * @throws MojoExecutionException If there is a problem installing the apk file.
+     * Deploys an apk file to a connected emulator or usb device.
+     * @param apkFile the file to deploy
+     * @throws MojoExecutionException If there is a problem deploying the apk file.
      */
-    protected void installApkToDevice(File apkFile) throws MojoExecutionException {
+    protected void deployApk(File apkFile) throws MojoExecutionException {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
         List<String> commands = new ArrayList<String>();
@@ -204,57 +204,57 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
             executor.executeCommand("adb", commands, false);
             final String standardOut = executor.getStandardOut();
             if (standardOut != null && standardOut.contains("Failure")){
-                throw new MojoExecutionException("Error installing " + apkFile + " to device. You might want to add command line parameter -Dandroid.uninstallApkBeforeInstallingToDevice=true or add plugin configuration tag <uninstallApkBeforeInstallingToDevice>true</uninstallApkBeforeInstallingToDevice>\n" + standardOut);
+                throw new MojoExecutionException("Error deploying " + apkFile + " to device. You might want to add command line parameter -Dandroid.undeployApkBeforeDeploying=true or add plugin configuration tag <undeployApkBeforeDeploying>true</undeployApkBeforeDeploying>\n" + standardOut);
             }
         } catch (ExecutionException e) {
             getLog().error(executor.getStandardOut());
             getLog().error(executor.getStandardError());
-            throw new MojoExecutionException("Error installing " + apkFile + " to device.", e);
+            throw new MojoExecutionException("Error deploying " + apkFile + " to device.", e);
         }
     }
 
     /**
-     * Uninstalls an apk from a connected emulator or usb device. Also deletes the application's data and cache
+     * Undeploys an apk from a connected emulator or usb device. Also deletes the application's data and cache
      * directories on the device.
-     * @param apkFile the file to uninstall
+     * @param apkFile the file to undeploy
      * @return <code>true</code> if successfully uninstalled, <code>false</code> otherwise.
      */
-    protected boolean uninstallApkFromDevice(File apkFile) throws MojoExecutionException {
-        return uninstallApkFromDevice(apkFile, true);
+    protected boolean undeployApk(File apkFile) throws MojoExecutionException {
+        return undeployApk(apkFile, true);
     }
 
     /**
-     * Uninstalls an apk from a connected emulator or usb device. Also deletes the application's data and cache
+     * Undeploys an apk from a connected emulator or usb device. Also deletes the application's data and cache
      * directories on the device.
-     * @param apkFile the file to uninstall
+     * @param apkFile the file to undeploy
      * @param deleteDataAndCacheDirectoriesOnDevice <code>true</code> to delete the application's data and cache
      * directories on the device, <code>false</code> to keep them.
-     * @return <code>true</code> if successfully uninstalled, <code>false</code> otherwise.
+     * @return <code>true</code> if successfully undeployed, <code>false</code> otherwise.
      */
-    protected boolean uninstallApkFromDevice(File apkFile, boolean deleteDataAndCacheDirectoriesOnDevice) throws MojoExecutionException {
+    protected boolean undeployApk(File apkFile, boolean deleteDataAndCacheDirectoriesOnDevice) throws MojoExecutionException {
         final String packageName;
         packageName = extractPackageNameFromApk(apkFile);
-        return uninstallApkFromDevice(packageName, deleteDataAndCacheDirectoriesOnDevice);
+        return undeployApk(packageName, deleteDataAndCacheDirectoriesOnDevice);
     }
 
     /**
-     * Uninstalls an apk, specified by package name, from a connected emulator or usb device. Also deletes the
+     * Undeploys an apk, specified by package name, from a connected emulator or usb device. Also deletes the
      * application's data and cache directories on the device.
-     * @param packageName the package name to uninstall.
-     * @return <code>true</code> if successfully uninstalled, <code>false</code> otherwise.
+     * @param packageName the package name to undeploy.
+     * @return <code>true</code> if successfully undeployed, <code>false</code> otherwise.
      */
-    protected boolean uninstallApkFromDevice(String packageName) {
-        return uninstallApkFromDevice(packageName, true);
+    protected boolean undeployApk(String packageName) {
+        return undeployApk(packageName, true);
     }
 
     /**
-     * Uninstalls an apk, specified by package name, from a connected emulator or usb device.
-     * @param packageName the package name to uninstall.
+     * Undeploys an apk, specified by package name, from a connected emulator or usb device.
+     * @param packageName the package name to undeploy.
      * @param deleteDataAndCacheDirectoriesOnDevice <code>true</code> to delete the application's data and cache
      * directories on the device, <code>false</code> to keep them.
-     * @return <code>true</code> if successfully uninstalled, <code>false</code> otherwise.
+     * @return <code>true</code> if successfully undeployed, <code>false</code> otherwise.
      */
-    protected boolean uninstallApkFromDevice(String packageName, boolean deleteDataAndCacheDirectoriesOnDevice) {
+    protected boolean undeployApk(String packageName, boolean deleteDataAndCacheDirectoriesOnDevice) {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
         List<String> commands = new ArrayList<String>();

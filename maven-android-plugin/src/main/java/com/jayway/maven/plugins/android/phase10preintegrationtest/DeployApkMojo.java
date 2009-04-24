@@ -17,46 +17,32 @@
 package com.jayway.maven.plugins.android.phase10preintegrationtest;
 
 import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import java.io.File;
-import java.util.Set;
 
 /**
- * Installs the apk we are about to test on the connected device. All directly declared dependencies of
- * <code>&lt;type&gt;android:apk&lt;/type&gt;</code> in this project's pom are presumed to be the apk's to install.<br/>
+ * Deploys the apk file to a connected device.<br/>
  * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on a project
  * with <code>&lt;packaging&gt;android:apk:platformTest&lt;/packaging&gt;</code>.
- * @goal installDependencyApksToDevice
+ * @goal deployApk
  * @phase pre-integration-test
  * @requiresDependencyResolution runtime
  * @author hugo.josefson@jayway.com
  */
-public class InstallDependencyApksToDeviceMojo extends AbstractIntegrationtestMojo {
+public class DeployApkMojo extends AbstractIntegrationtestMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (!isEnableIntegrationTest()){
             return;
         }
-
-        Set<Artifact> directDependentArtifacts = project.getDependencyArtifacts();
-        if (directDependentArtifacts != null) {
-            for (Artifact artifact : directDependentArtifacts) {
-                String type = artifact.getType();
-                if (type.equals("android:apk")) {
-                    getLog().debug("Detected android:apk dependency " + artifact + ". Will resolve and install to device...");
-                    final File targetApkFile = resolveArtifactToFile(artifact);
-                    if (uninstallApkBeforeInstallingToDevice){
-                        getLog().debug("Attempting uninstall of " + targetApkFile + " from device...");
-                        uninstallApkFromDevice(targetApkFile);
-                    }
-                    getLog().debug("Installing " + targetApkFile + " to device...");
-                    installApkToDevice(targetApkFile);
-                }
-            }
+        
+        File inputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apk");
+        if (undeployApkBeforeDeploying){
+            undeployApk(inputFile);
         }
+        deployApk(inputFile);
     }
 
 }
