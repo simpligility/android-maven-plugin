@@ -24,7 +24,7 @@ import java.io.File;
 
 /**
  * Deploys a separate apk file to a connected device.<br/>
- * @goal deployFile
+ * @goal deploy-file
  * @author hugo.josefson@jayway.com
  */
 public class DeployFileMojo extends AbstractAndroidMojo {
