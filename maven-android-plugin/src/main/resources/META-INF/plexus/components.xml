@@ -68,7 +68,7 @@
                 </install>
                <pre-integration-test>
                    com.jayway.maven.plugins.android.generation2:maven-android-plugin:deployDependencies,
-                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:deployApk
+                   com.jayway.maven.plugins.android.generation2:maven-android-plugin:deploy
                </pre-integration-test>
                <integration-test>
                    com.jayway.maven.plugins.android.generation2:maven-android-plugin:platformTest

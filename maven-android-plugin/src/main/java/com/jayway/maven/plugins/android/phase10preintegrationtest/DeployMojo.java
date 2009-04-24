@@ -26,7 +26,7 @@ import java.io.File;
  * Deploys the apk file to a connected device.<br/>
  * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on a project
  * with <code>&lt;packaging&gt;android:apk:platformTest&lt;/packaging&gt;</code>.
- * @goal deployApk
+ * @goal deploy
  * @phase pre-integration-test
  * @requiresDependencyResolution runtime
  * @author hugo.josefson@jayway.com
