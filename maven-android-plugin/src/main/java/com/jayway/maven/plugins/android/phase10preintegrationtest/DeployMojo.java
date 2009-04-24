@@ -31,7 +31,7 @@ import java.io.File;
  * @requiresDependencyResolution runtime
  * @author hugo.josefson@jayway.com
  */
-public class DeployApkMojo extends AbstractIntegrationtestMojo {
+public class DeployMojo extends AbstractIntegrationtestMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (!isEnableIntegrationTest()){
