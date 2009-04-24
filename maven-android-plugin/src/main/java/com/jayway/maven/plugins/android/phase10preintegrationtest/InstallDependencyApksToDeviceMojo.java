@@ -16,7 +16,7 @@
  */
 package com.jayway.maven.plugins.android.phase10preintegrationtest;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -34,9 +34,13 @@ import java.util.Set;
  * @requiresDependencyResolution runtime
  * @author hugo.josefson@jayway.com
  */
-public class InstallDependencyApksToDeviceMojo extends AbstractAndroidMojo {
+public class InstallDependencyApksToDeviceMojo extends AbstractIntegrationtestMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (!isEnableIntegrationTest()){
+            return;
+        }
+
         Set<Artifact> directDependentArtifacts = project.getDependencyArtifacts();
         if (directDependentArtifacts != null) {
             for (Artifact artifact : directDependentArtifacts) {

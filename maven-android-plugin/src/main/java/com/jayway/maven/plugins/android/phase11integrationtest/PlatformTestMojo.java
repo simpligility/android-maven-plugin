@@ -16,7 +16,7 @@
  */
 package com.jayway.maven.plugins.android.phase11integrationtest;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -32,7 +32,7 @@ import java.util.List;
  * @phase integration-test
  * @author hugo.josefson@jayway.com
  */
-public class PlatformTestMojo extends AbstractAndroidMojo {
+public class PlatformTestMojo extends AbstractIntegrationtestMojo {
 
     /**
      * Package name of the apk we wish to test.
@@ -49,6 +49,10 @@ public class PlatformTestMojo extends AbstractAndroidMojo {
     private String testRunner;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (!isEnableIntegrationTest()){
+            return;
+        }
+
         if(testsPackage == null) {
             testsPackage = extractPackageNameFromAndroidManifest(androidManifestFile);
         }

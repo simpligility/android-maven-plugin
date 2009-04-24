@@ -16,7 +16,7 @@
  */
 package com.jayway.maven.plugins.android.phase10preintegrationtest;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -31,9 +31,13 @@ import java.io.File;
  * @requiresDependencyResolution runtime
  * @author hugo.josefson@jayway.com
  */
-public class InstallApkToDeviceMojo extends AbstractAndroidMojo {
+public class InstallApkToDeviceMojo extends AbstractIntegrationtestMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (!isEnableIntegrationTest()){
+            return;
+        }
+        
         File inputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apk");
         if (uninstallApkBeforeInstallingToDevice){
             uninstallApkFromDevice(inputFile);
