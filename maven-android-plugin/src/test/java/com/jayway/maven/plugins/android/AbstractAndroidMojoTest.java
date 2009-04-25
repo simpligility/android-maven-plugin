@@ -51,6 +51,15 @@ public class AbstractAndroidMojoTest {
     }
 
     @Test
+    public void givenAndroidManifestThenTestRunnerIsFound() throws MalformedURLException, URISyntaxException, MojoExecutionException {
+        final URL    url             = this.getClass().getResource("AndroidManifest.xml");
+        final URI    uri             = url.toURI();
+        final File   file            = new File(uri);
+        final String foundTestRunner = androidMojo.extractTestRunnerFromAndroidManifest(file);
+        Assert.assertEquals("android.test.InstrumentationTestRunner", foundTestRunner);
+    }
+
+    @Test
     public void givenValidAndroidManifestXmlTreeThenPackageIsFound() throws IOException {
         final URL         resource               = this.getClass().getResource("AndroidManifestXmlTree.txt");
         final InputStream inputStream            = resource.openStream();

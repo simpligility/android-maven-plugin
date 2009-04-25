@@ -35,16 +35,16 @@ import java.util.List;
 public class PlatformTestMojo extends AbstractIntegrationtestMojo {
 
     /**
-     * Package name of the apk we wish to test.
+     * Package name of the apk we wish to test. If not specified, it is inferred from <code>AndroidManifest.xml</code>.
      * @optional
      * @parameter expression="${android.test.targetPackage}
      */
     private String testsPackage;
 
     /**
-     * Class name of test runner.
+     * Class name of test runner. If not specified, it is inferred from <code>AndroidManifest.xml</code>.
      * @optional
-     * @parameter default-value="android.test.InstrumentationTestRunner" expression="${android.test.testRunner}"
+     * @parameter expression="${android.test.testRunner}"
      */
     private String testRunner;
 
@@ -55,6 +55,10 @@ public class PlatformTestMojo extends AbstractIntegrationtestMojo {
 
         if(testsPackage == null) {
             testsPackage = extractPackageNameFromAndroidManifest(androidManifestFile);
+        }
+
+        if(testRunner == null) {
+            testRunner = extractTestRunnerFromAndroidManifest(androidManifestFile);
         }
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
