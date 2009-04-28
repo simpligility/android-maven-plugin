@@ -132,4 +132,16 @@
             </plugin>
         </plugins>
     </reporting>
+	<distributionManagement>
+        <repository>
+            <id>internal</id>
+            <name>Software releases by Jayway</name>
+            <url>sftp://mavenrepo.waydemo.info:443/srv/mavenrepos/internal</url>
+        </repository>
+        <snapshotRepository>
+            <id>internal-snapshot</id>
+            <name>Software releases by Jayway - SNAPSHOTs</name>
+            <url>sftp://mavenrepo.waydemo.info:443/srv/mavenrepos/internal-snapshot</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
