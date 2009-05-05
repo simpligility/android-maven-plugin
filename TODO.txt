@@ -36,9 +36,6 @@ start/stop emulator (headless) from plugin
 add goalPrefix? and document groupId shortcut in settings.xml
     http://maven.apache.org/guides/plugin/guide-ant-plugin-development.html
 
-standalone goals should not require a project
-    @requiresProject false
-
 convert mojo configuration to annotations
     http://www.jfrog.org/sites/mvn-anno-mojo/latest/
 

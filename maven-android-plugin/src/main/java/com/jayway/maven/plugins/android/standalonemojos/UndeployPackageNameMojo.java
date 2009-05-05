@@ -23,6 +23,7 @@ import org.apache.maven.plugin.MojoFailureException;
 /**
  * Undeploys a specific package name from a connected device.<br/>
  * @goal undeploy-packageName
+ * @requiresProject false
  * @author hugo.josefson@jayway.com
  */
 public class UndeployPackageNameMojo extends AbstractAndroidMojo {

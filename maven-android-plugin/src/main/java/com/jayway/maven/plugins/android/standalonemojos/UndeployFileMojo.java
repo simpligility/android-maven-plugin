@@ -25,6 +25,7 @@ import java.io.File;
 /**
  * Undeploys a separate apk file from a connected device.<br/>
  * @goal undeploy-file
+ * @requiresProject false
  * @author hugo.josefson@jayway.com
  */
 public class UndeployFileMojo extends AbstractAndroidMojo {
