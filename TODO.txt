@@ -1,0 +1,55 @@
+====================
+TODO
+====================
+
+Support 1.5!!
+
+
+SignMojo, @goal sign
+    Copy config from jarsigner plugin's JarSignMojo
+
+        include in lifecycle
+            last, after package
+
+        * parameter debugSign
+            default true  when no other keystores
+                default false when    other keystores
+
+        * sign with different keystore:
+            skip debug sign when creating apk
+                execute jarsigner against apk with separate keystore
+
+        * multiple keystores possible
+        <keystores>
+            <keystore>
+                    <
+                </keystore>
+        </keystores>
+
+SignFileMojo, @goal sign-file
+        standalone
+        parameters with "expression" to sign from command line
+
+start/stop emulator (headless) from plugin
+    see how cargo runs a detached process for this, with for example tomcat
+
+add goalPrefix? and document groupId shortcut in settings.xml
+    http://maven.apache.org/guides/plugin/guide-ant-plugin-development.html
+
+standalone goals should not require a project
+    @requiresProject false
+
+convert mojo configuration to annotations
+    http://www.jfrog.org/sites/mvn-anno-mojo/latest/
+
+look over parameter names and expressions.
+    make sure they are consistent and easily understandable
+
+Set up public space for deploying artifacts.
+
+Test deploy and site:deploy from trunk and tag using a temporary svn repo.
+
+Test release using a temporary svn repo.
+
+Tell compiler to exclude specific .java files in source directory if there are corresponding .aidl files.
+Tell compiler to exclude any R.java files in source directory.
