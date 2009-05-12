@@ -3,6 +3,9 @@ TODO
 ====================
 
 Support 1.5!!
+	Support pulling Android SDK from maven repo,
+	unpacking in temporary or configured directory (if not already there),
+	using from there.
 
 
 SignMojo, @goal sign
