@@ -199,9 +199,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         commands.add("install");
         commands.add("-r");
         commands.add(apkFile.getAbsolutePath());
-        getLog().info("adb " + commands.toString());
+        getLog().info(getAndroidSdkPath() + "/tools/adb " + commands.toString());
         try {
-            executor.executeCommand("adb", commands, false);
+            executor.executeCommand(getAndroidSdkPath() + "/tools/adb", commands, false);
             final String standardOut = executor.getStandardOut();
             if (standardOut != null && standardOut.contains("Failure")){
                 throw new MojoExecutionException("Error deploying " + apkFile + " to device. You might want to add command line parameter -Dandroid.undeployApkBeforeDeploying=true or add plugin configuration tag <undeployApkBeforeDeploying>true</undeployApkBeforeDeploying>\n" + standardOut);
@@ -263,9 +263,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
             commands.add("-k");  // ('-k' means keep the data and cache directories)
         }
         commands.add(packageName);
-        getLog().info("adb " + commands.toString());
+        getLog().info(getAndroidSdkPath() + "/tools/adb " + commands.toString());
         try {
-            executor.executeCommand("adb", commands, false);
+            executor.executeCommand(getAndroidSdkPath() + "/tools/adb", commands, false);
             getLog().debug(executor.getStandardOut());
             getLog().debug(executor.getStandardError());
             return true;
@@ -289,9 +289,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         commands.add("xmltree");
         commands.add(apkFile.getAbsolutePath());
         commands.add("AndroidManifest.xml");
-        getLog().info("aapt " + commands.toString());
+        getLog().info(getAndroidSdkPath() + "/tools/aapt " + commands.toString());
         try {
-            executor.executeCommand("aapt", commands, true);
+            executor.executeCommand(getAndroidSdkPath() + "/tools/aapt", commands, true);
             final String xmlTree = executor.getStandardOut();
             return extractPackageNameFromAndroidManifestXmlTree(xmlTree);
         } catch (ExecutionException e) {
@@ -380,4 +380,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         }
 
     }
+
+    // TODO: DON'T use System.getenv for this! Use proper plugin configuration parameters,
+    // TODO: (which may pull from environment/ANDROID_SDK for their default values.)
+    public static String getAndroidSdkPath() {
+        return System.getenv().get("ANDROID_SDK");
+}
 }

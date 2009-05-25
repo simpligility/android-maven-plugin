@@ -167,10 +167,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     private void generateAidlFiles(String[] relativeAidlFileNames) throws MojoExecutionException {
         for (String relativeAidlFileName : relativeAidlFileNames) {
             List<String> commands = new ArrayList<String>();
-            // TODO: DON'T use System.getenv for this! Use proper plugin configuration parameters,
-            // TODO: (which may pull from environment/ANDROID_SDK for their default values.)
-            if (System.getenv().get("ANDROID_SDK") != null) {
-                commands.add("-p" + System.getenv().get("ANDROID_SDK") + "/tools/lib/framework.aidl");
+            final String androidSdkPath = getAndroidSdkPath();
+            if (androidSdkPath != null) {
+                commands.add("-p" + androidSdkPath + "/tools/lib/framework.aidl");
             }
 
             File generatedSourcesAidlDirectory = new File(project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "aidl");
