@@ -27,9 +27,9 @@
     <url>http://code.google.com/p/maven-android-plugin</url>
     <inceptionYear>2008</inceptionYear>
     <scm>
-        <url>http://code.google.com/p/maven-android-plugin/source/browse/#svn/trunk</url>
-        <connection>scm:svn:http://maven-android-plugin.googlecode.com/svn/trunk</connection>
-        <developerConnection>scm:svn:https://maven-android-plugin.googlecode.com/svn/trunk</developerConnection>
+        <url>http://github.com/jayway/maven-android-plugin/tree/master</url>
+        <connection>scm:git:git://github.com/jayway/maven-android-plugin.git</connection>
+        <developerConnection>scm:git:git://git@github.com/jayway/maven-android-plugin.git</developerConnection>
     </scm>
     <issueManagement>
         <system>Google Code Issue Tracking</system>
@@ -134,14 +134,19 @@
     </reporting>
 	<distributionManagement>
         <repository>
-            <id>internal</id>
-            <name>Software releases by Jayway</name>
-            <url>sftp://mavenrepo.waydemo.info:443/srv/mavenrepos/internal</url>
+            <id>maven-android-plugin-m2repo.googlecode.com</id>
+            <name>maven-android-plugin-m2repo on Google Code</name>
+            <url>${env.MAVEN_ANDROID_PLUGIN_M2REPO_SVN_WORKINGCOPY}/releases</url>
         </repository>
         <snapshotRepository>
-            <id>internal-snapshot</id>
-            <name>Software releases by Jayway - SNAPSHOTs</name>
-            <url>sftp://mavenrepo.waydemo.info:443/srv/mavenrepos/internal-snapshot</url>
+            <id>maven-android-plugin-m2repo.googlecode.com</id>
+            <name>maven-android-plugin-m2repo on Google Code - SNAPSHOTs</name>
+            <url>${env.MAVEN_ANDROID_PLUGIN_M2REPO_SVN_WORKINGCOPY}/snapshots</url>
         </snapshotRepository>
+        <site>
+            <id>maven-android-plugin-m2site.googlecode.com</id>
+            <name>maven-android-plugin-m2site on Google Code</name>
+			<url>${env.MAVEN_ANDROID_PLUGIN_M2SITE_SVN_WORKINGCOPY}</url>
+        </site>
     </distributionManagement>
 </project>
