@@ -37,7 +37,7 @@ import java.util.*;
 /**
  * Contains common fields and methods for android mojos.
  *
- * @author hugo.josefson@jayway.se
+ * @author hugo.josefson@jayway.com
  */
 public abstract class AbstractAndroidMojo extends AbstractMojo {
 
