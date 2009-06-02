@@ -146,7 +146,7 @@
         <site>
             <id>maven-android-plugin-m2site.googlecode.com</id>
             <name>maven-android-plugin-m2site on Google Code</name>
-			<url>${env.MAVEN_ANDROID_PLUGIN_M2SITE_SVN_WORKINGCOPY}</url>
+            <url>${env.MAVEN_ANDROID_PLUGIN_M2SITE_SVN_WORKINGCOPY}</url>
         </site>
     </distributionManagement>
 </project>
