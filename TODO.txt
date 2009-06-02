@@ -3,6 +3,8 @@ TODO
 ====================
 
 Support 1.5!!
+	Allow declaration of Android SDK install location, and automatically detect where the tools are (because 1.1 and 1.5 have different directory structure).
+
 	Support pulling Android SDK from maven repo,
 	unpacking in temporary or configured directory (if not already there),
 	using from there.
