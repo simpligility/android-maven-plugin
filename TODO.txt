@@ -47,11 +47,5 @@ convert mojo configuration to annotations
 look over parameter names and expressions.
     make sure they are consistent and easily understandable
 
-Set up public space for deploying artifacts.
-
-Test deploy and site:deploy from trunk and tag using a temporary svn repo.
-
-Test release using a temporary svn repo.
-
 Tell compiler to exclude specific .java files in source directory if there are corresponding .aidl files.
 Tell compiler to exclude any R.java files in source directory.
