@@ -154,9 +154,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         }
         commands.add("-I"                        );
         commands.add(resolveAndroidJar().getAbsolutePath());
-        getLog().info("aapt " + commands.toString());
+        getLog().info(getAndroidSdkPath() + "/tools/aapt " + commands.toString());
         try {
-            executor.executeCommand("aapt", commands, project.getBasedir(), false);
+            executor.executeCommand(getAndroidSdkPath() + "/tools/aapt", commands, project.getBasedir(), false);
         } catch (ExecutionException e) {
             throw new MojoExecutionException("", e);
         }
@@ -189,7 +189,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
                 CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
                 executor.setLogger(this.getLog());
 
-                executor.executeCommand("aidl", commands, project.getBasedir(), false);
+                executor.executeCommand(getAndroidSdkPath() + "/tools/aidl", commands, project.getBasedir(), false);
             } catch (ExecutionException e) {
                 throw new MojoExecutionException("", e);
             }

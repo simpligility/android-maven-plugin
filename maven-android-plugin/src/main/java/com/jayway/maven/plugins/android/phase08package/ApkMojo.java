@@ -65,9 +65,9 @@ public class ApkMojo extends AbstractAndroidMojo {
         // TODO: This should be src/main/resources instead:
         commands.add(new File(project.getBuild().getSourceDirectory()).getAbsolutePath());
         
-        getLog().info("apkbuilder " + commands.toString());
+        getLog().info(getAndroidSdkPath() + "/tools/apkbuilder " + commands.toString());
         try {
-            executor.executeCommand("apkbuilder", commands, project.getBasedir(), false);
+            executor.executeCommand(getAndroidSdkPath() + "/tools/apkbuilder", commands, project.getBasedir(), false);
         } catch (ExecutionException e) {
             throw new MojoExecutionException("", e);
         }
@@ -108,9 +108,9 @@ public class ApkMojo extends AbstractAndroidMojo {
         commands.add(androidJar.getAbsolutePath());
         commands.add("-F");
         commands.add(outputFile.getAbsolutePath());
-        getLog().info("aapt " + commands.toString());
+        getLog().info(getAndroidSdkPath() + "/tools/aapt " + commands.toString());
         try {
-            executor.executeCommand("aapt", commands, project.getBasedir(), false);
+            executor.executeCommand(getAndroidSdkPath() + "/tools/aapt", commands, project.getBasedir(), false);
         } catch (ExecutionException e) {
             throw new MojoExecutionException("", e);
         }
