@@ -52,8 +52,7 @@
         <!--<finalName>${artifactId}</finalName>-->
         <plugins>
             <!--
-            maven-android-plugin require environment variable ANDROID_SDK to be set appropriately,
-            and PATH to include $ANDROID_SDK/tools 
+            maven-android-plugin requires environment variable ANDROID_SDK to be set appropriately.
             -->
             <plugin>
                 <groupId>com.jayway.maven.plugins.android.generation2</groupId>
