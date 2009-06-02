@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
+ Copyright (C) 2009 Jayway AB
  Copyright (C) 2007-2008 JVending Masa
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,12 +18,12 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.jvending.masa</groupId>
+        <groupId>com.jayway.maven.plugins.android.generation1</groupId>
         <artifactId>masa-project</artifactId>
         <version>1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.jvending.masa.plugins</groupId>
+    <groupId>com.jayway.maven.plugins.android.generation1.plugins</groupId>
     <artifactId>maven-aidl-plugin</artifactId>
     <version>1.1-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
@@ -30,7 +31,7 @@
     <description>JVending Masa: Maven Plugin for AIDL Generation</description>
     <dependencies>
         <dependency>
-            <groupId>org.jvending.masa</groupId>
+            <groupId>com.jayway.maven.plugins.android.generation1</groupId>
             <artifactId>masa-core</artifactId>
             <version>${project.version}</version>
         </dependency>
