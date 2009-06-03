@@ -9,16 +9,16 @@
          <configuration>
             <phases>
                <generate-sources>
-                   org.jvending.masa.plugins:maven-aidl-plugin:generate
+                   com.jayway.maven.plugins.android.generation1.plugins:maven-aidl-plugin:generate
                </generate-sources>
                <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
                <compile>
-                  org.jvending.masa.plugins:maven-aapt-plugin:compile,
+                  com.jayway.maven.plugins.android.generation1.plugins:maven-aapt-plugin:compile,
                   org.apache.maven.plugins:maven-compiler-plugin:compile
                </compile>
                <process-classes>
                    org.apache.maven.plugins:maven-jar-plugin:jar,
-                   org.jvending.masa.plugins:maven-dx-plugin:dx
+                   com.jayway.maven.plugins.android.generation1.plugins:maven-dx-plugin:dx
                </process-classes>
                <process-test-resources>
                   org.apache.maven.plugins:maven-resources-plugin:testResources
@@ -26,10 +26,10 @@
                <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
                <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
                <package>
-                  org.jvending.masa.plugins:maven-aapt-plugin:package,
-                  org.jvending.masa.plugins:maven-apkbuilder-plugin:build
+                  com.jayway.maven.plugins.android.generation1.plugins:maven-aapt-plugin:package,
+                  com.jayway.maven.plugins.android.generation1.plugins:maven-apkbuilder-plugin:build
                </package>
-               <integration-test>org.jvending.masa.plugins:maven-adb-plugin:install</integration-test>
+               <integration-test>com.jayway.maven.plugins.android.generation1.plugins:maven-adb-plugin:install</integration-test>
                <install>
                   org.apache.maven.plugins:maven-install-plugin:install
                </install>
@@ -47,21 +47,21 @@
             <phases>
                <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
                <compile>
-                  org.jvending.masa.plugins:maven-aapt-plugin:compile,
+                  com.jayway.maven.plugins.android.generation1.plugins:maven-aapt-plugin:compile,
                   org.apache.maven.plugins:maven-compiler-plugin:compile
                </compile>
                <process-classes>
                    org.apache.maven.plugins:maven-jar-plugin:jar,
-                   org.jvending.masa.plugins:maven-dx-plugin:dx
+                   com.jayway.maven.plugins.android.generation1.plugins:maven-dx-plugin:dx
                </process-classes>
                <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
                <package>
-                  org.jvending.masa.plugins:maven-aapt-plugin:package,
-                  org.jvending.masa.plugins:maven-apkbuilder-plugin:build
+                  com.jayway.maven.plugins.android.generation1.plugins:maven-aapt-plugin:package,
+                  com.jayway.maven.plugins.android.generation1.plugins:maven-apkbuilder-plugin:build
                </package>
                <integration-test>
-                   org.jvending.masa.plugins:maven-adb-plugin:install,
-                   org.jvending.masa.plugins:maven-platformtest-plugin:test
+                   com.jayway.maven.plugins.android.generation1.plugins:maven-adb-plugin:install,
+                   com.jayway.maven.plugins.android.generation1.plugins:maven-platformtest-plugin:test
                </integration-test>
             </phases>
          </configuration>
@@ -74,11 +74,11 @@
          </implementation>                                                
          <configuration>
             <phases>
-               <process-resources>org.jvending.masa.plugins:maven-par-plugin:resources</process-resources>
+               <process-resources>com.jayway.maven.plugins.android.generation1.plugins:maven-par-plugin:resources</process-resources>
                <package>
-                  org.jvending.masa.plugins:maven-par-plugin:package
+                  com.jayway.maven.plugins.android.generation1.plugins:maven-par-plugin:package
                </package>
-                <deploy>org.jvending.masa.plugins:maven-par-plugin:deploy</deploy>
+                <deploy>com.jayway.maven.plugins.android.generation1.plugins:maven-par-plugin:deploy</deploy>
             </phases>
          </configuration>
       </component>
