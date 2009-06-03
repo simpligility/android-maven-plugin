@@ -33,7 +33,10 @@ the Maven repository where maven-android-plugin is deployed:
 You must also update your pom.xml to use the new groupId:
 
   <plugin>
-    <groupId>com.jayway.maven.plugins.android.generation1</groupId>
+    <groupId>com.jayway.maven.plugins.android.generation1.plugins</groupId>
     <artifactId>maven-dx-plugin</artifactId>
     <extensions>true</extensions>
   </plugin>
+
+You should also remove any <version> tag, because leaving it out
+will use the latest bugfix release of version 1.
