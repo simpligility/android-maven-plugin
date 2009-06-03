@@ -25,8 +25,11 @@
     <description>Maven Plugins Project for Android</description>
     <url>http://maven-android-plugin.googlecode.com/</url>
     <inceptionYear>2008</inceptionYear>
+    <properties>
+        <scm.branch>maven-android-plugin-1-SNAPSHOT</scm.branch>
+    </properties>
     <scm>
-        <url>http://github.com/jayway/maven-android-plugin/tree/maven-android-plugin-1-SNAPSHOT</url>
+        <url>http://github.com/jayway/maven-android-plugin/tree/${scm.branch}</url>
         <connection>scm:git:git://github.com/jayway/maven-android-plugin.git</connection>
         <developerConnection>scm:git:git://git@github.com/jayway/maven-android-plugin.git</developerConnection>
     </scm>
@@ -78,7 +81,7 @@
                     <artifactId>maven-scm-plugin</artifactId>
                     <configuration>
                         <scmVersionType>branch</scmVersionType>
-                        <scmVersion>maven-android-plugin-1-SNAPSHOT</scmVersion>
+                        <scmVersion>${scm.branch}</scmVersion>
                     </configuration>
                 </plugin>
                 <plugin>
