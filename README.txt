@@ -38,5 +38,5 @@ You must also update your pom.xml to use the new groupId:
     <extensions>true</extensions>
   </plugin>
 
-You should also remove any <version> tag, because leaving it out
-will use the latest bugfix release of version 1.
+You should also remove any <version> tag from the <plugin> tag,
+because removing it will use the latest bugfix release of version 1.
