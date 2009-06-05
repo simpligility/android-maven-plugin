@@ -2,6 +2,10 @@
 TODO
 ====================
 
+Move these TODOs to Issue tracker:
+    http://code.google.com/p/maven-android-plugin/issues/list
+
+
 Support 1.5!!
 	Allow declaration of Android SDK install location,
     and automatically detect where the tools are
