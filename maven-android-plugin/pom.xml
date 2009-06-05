@@ -55,6 +55,12 @@
             </roles>
         </developer>
     </developers>
+    <mailingLists>
+        <mailingList>
+            <name>Maven Android Developers</name>
+            <archive>http://groups.google.com/group/maven-android-developers/topics</archive>
+        </mailingList>
+    </mailingLists>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
