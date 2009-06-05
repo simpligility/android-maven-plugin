@@ -26,7 +26,7 @@
     <url>http://maven-android-plugin.googlecode.com/</url>
     <inceptionYear>2008</inceptionYear>
     <properties>
-        <scm.branch>maven-android-plugin-1-SNAPSHOT</scm.branch>
+        <scm.branch>maven-android-plugin-1.x</scm.branch>
     </properties>
     <scm>
         <url>http://github.com/jayway/maven-android-plugin/tree/${scm.branch}</url>
