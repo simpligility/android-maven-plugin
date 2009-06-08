@@ -23,43 +23,6 @@
     <packaging>maven-plugin</packaging>
     <name>Maven Android Plugin - maven-android-plugin</name>
     <description>Maven Plugin for Android</description>
-    <url>http://code.google.com/p/maven-android-plugin</url>
-    <inceptionYear>2008</inceptionYear>
-    <properties>
-        <scm.branch>master</scm.branch>
-    </properties>
-    <scm>
-        <url>http://github.com/jayway/maven-android-plugin/tree/${scm.branch}</url>
-        <connection>scm:git:git://github.com/jayway/maven-android-plugin.git</connection>
-        <developerConnection>scm:git:git://git@github.com/jayway/maven-android-plugin.git</developerConnection>
-    </scm>
-    <issueManagement>
-        <system>Google Code Issue Tracking</system>
-        <url>http://code.google.com/p/maven-android-plugin/issues/list</url>
-    </issueManagement>
-    <licenses>
-        <license>
-            <name>Apache 2.0</name>
-            <url>LICENSE.txt</url>
-        </license>
-    </licenses>
-    <developers>
-        <developer>
-            <name>Hugo Josefson</name>
-            <id>hugojosefson</id>
-            <email>hugo.josefson@jayway.com</email>
-            <url>http://blog.jayway.com/</url>
-            <roles>
-                <role>Developer</role>
-            </roles>
-        </developer>
-    </developers>
-    <mailingLists>
-        <mailingList>
-            <name>Maven Android Developers</name>
-            <archive>http://groups.google.com/group/maven-android-developers/topics</archive>
-        </mailingList>
-    </mailingLists>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -109,39 +72,32 @@
         </dependency>
     </dependencies>
     <build>
-            <plugins>
-                <plugin>
-                    <artifactId>maven-scm-plugin</artifactId>
-                    <configuration>
-                        <scmVersionType>branch</scmVersionType>
-                        <scmVersion>${scm.branch}</scmVersion>
-                    </configuration>
-                </plugin>                
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.5</source>
-                        <target>1.5</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <configuration>
-                        <archive>
-                            <manifestEntries>
-                                <Build-Source-Version>1.5</Build-Source-Version>
-                                <Build-Target-Version>1.5</Build-Target-Version>
-                            </manifestEntries>
-                        </archive>
-                    </configuration>
-                    <version>2.2</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-plugin-plugin</artifactId>
-                </plugin>
-            </plugins>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Build-Source-Version>1.5</Build-Source-Version>
+                            <Build-Target-Version>1.5</Build-Target-Version>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+                <version>2.2</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-plugin-plugin</artifactId>
+            </plugin>
+        </plugins>
     </build>
     <reporting>
         <plugins>
@@ -150,21 +106,4 @@
             </plugin>
         </plugins>
     </reporting>
-	<distributionManagement>
-        <repository>
-            <id>maven-android-plugin-m2repo.googlecode.com</id>
-            <name>maven-android-plugin-m2repo on Google Code</name>
-            <url>${env.MAVEN_ANDROID_PLUGIN_M2REPO_SVN_WORKINGCOPY}/release</url>
-        </repository>
-        <snapshotRepository>
-            <id>maven-android-plugin-m2repo.googlecode.com</id>
-            <name>maven-android-plugin-m2repo on Google Code - SNAPSHOT</name>
-            <url>${env.MAVEN_ANDROID_PLUGIN_M2REPO_SVN_WORKINGCOPY}/snapshot</url>
-        </snapshotRepository>
-        <site>
-            <id>maven-android-plugin-m2site.googlecode.com</id>
-            <name>maven-android-plugin-m2site on Google Code</name>
-            <url>${env.MAVEN_ANDROID_PLUGIN_M2SITE_SVN_WORKINGCOPY}</url>
-        </site>
-    </distributionManagement>
 </project>
