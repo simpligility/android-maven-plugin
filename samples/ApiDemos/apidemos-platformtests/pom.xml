@@ -86,4 +86,12 @@
         </plugins>
     </build>
 
+    <pluginRepositories>
+       <pluginRepository>
+         <id>maven-android-plugin-m2repo.googlecode.com</id>
+         <name>Maven Android Plugin Release Repository</name>
+         <url>http://maven-android-plugin-m2repo.googlecode.com/svn/release</url>
+       </pluginRepository>
+   </pluginRepositories>
+
 </project>
