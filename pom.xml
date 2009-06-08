@@ -17,13 +17,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.jayway.maven.plugins.android.generation2.samples.apidemos</groupId>
+	<groupId>com.jayway.maven.plugins.android.generation2</groupId>
 	<artifactId>build-root</artifactId>
 	<version>2.0.0-alpha1</version>
 	<packaging>pom</packaging>
-    <name>ApiDemos build-root</name>
+    <name>Maven-Android-Plugin build-root</name>
 	<modules>
-		<module>apidemos</module>
-		<module>apidemos-platformtests</module>
+		<module>maven-android-plugin</module>
+		<module>samples/ApiDemos</module>
 	</modules>
 </project>
