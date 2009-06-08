@@ -19,6 +19,7 @@ package com.jayway.maven.plugins.android.phase01generatesources;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.AndroidSdk;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -73,13 +74,13 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         String[] relativeAidlFileNames = findRelativeAidlFileNames();
 
         if (deleteConflictingFiles) {
-            deleteConflictingRJavaFiles();
-            deleteConflictingManifestJavaFiles();
-            deleteConflictingThumbsDb();
-            deleteConflictingAidlJavaFiles(relativeAidlFileNames);
+            deleteConflictingRJavaFiles       (                     );
+            deleteConflictingManifestJavaFiles(                     );
+            deleteConflictingThumbsDb         (                     );
+            deleteConflictingAidlJavaFiles    (relativeAidlFileNames);
         }
-        
-        generateR();
+
+        generateR        (                     );
         generateAidlFiles(relativeAidlFileNames);
 
     }
@@ -108,10 +109,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     private void deleteConflictingAidlJavaFiles(String[] relativeAidlFileNames) throws MojoExecutionException {
         for (String relativeAidlFileName : relativeAidlFileNames) {
 
-            final String relativeJavaFileName = relativeAidlFileName.substring(0, relativeAidlFileName.lastIndexOf(".")) + ".java";
+            final String relativeJavaFileName                 = relativeAidlFileName.substring(0, relativeAidlFileName.lastIndexOf(".")) + ".java";
 
 
-            final File conflictingJavaFileInSourceDirectory = new File(sourceDirectory, relativeJavaFileName);
+            final File   conflictingJavaFileInSourceDirectory = new File(sourceDirectory, relativeJavaFileName);
 
             if (conflictingJavaFileInSourceDirectory.exists()) {
                 final boolean successfullyDeleted = conflictingJavaFileInSourceDirectory.delete();
@@ -132,7 +133,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         String generatedSourcesRDirectoryName = project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "r";
         new File(generatedSourcesRDirectoryName).mkdirs();
 
-        CommandExecutor executor   = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
         List<String> commands = new ArrayList<String>();
@@ -152,11 +153,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             commands.add("-A"                             );
             commands.add(assetsDirectory.getAbsolutePath());
         }
-        commands.add("-I"                        );
+        commands.add("-I"                                 );
         commands.add(resolveAndroidJar().getAbsolutePath());
-        getLog().info(getAndroidSdkPath() + "/tools/aapt " + commands.toString());
+        getLog().info(androidSdk.getPathForTool("aapt") + " " + commands.toString());
         try {
-            executor.executeCommand(getAndroidSdkPath() + "/tools/aapt", commands, project.getBasedir(), false);
+            executor.executeCommand(androidSdk.getPathForTool("aapt"), commands, project.getBasedir(), false);
         } catch (ExecutionException e) {
             throw new MojoExecutionException("", e);
         }
@@ -166,15 +167,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
     private void generateAidlFiles(String[] relativeAidlFileNames) throws MojoExecutionException {
         for (String relativeAidlFileName : relativeAidlFileNames) {
-            List<String> commands = new ArrayList<String>();
-            final String androidSdkPath = getAndroidSdkPath();
-            if (androidSdkPath != null) {
-                // TODO should be configurable which version of the tools should be used.
-                // Location for Android 1.5
-                commands.add("-p" + System.getenv().get("ANDROID_SDK") + "/platforms/android-1.5/framework.aidl");
-                // Location for Android 1.1
-                //commands.add("-p" + androidSdkPath + "/tools/lib/framework.aidl");
-            }
+            List<String> commands       = new ArrayList<String>();
+            commands.add("-p" + androidSdk.getPathForFrameworkAidl());
 
             File generatedSourcesAidlDirectory = new File(project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "aidl");
             generatedSourcesAidlDirectory.mkdirs();
@@ -193,7 +187,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
                 CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
                 executor.setLogger(this.getLog());
 
-                executor.executeCommand(getAndroidSdkPath() + "/tools/aidl", commands, project.getBasedir(), false);
+                executor.executeCommand(androidSdk.getPathForTool("aidl"), commands, project.getBasedir(), false);
             } catch (ExecutionException e) {
                 throw new MojoExecutionException("", e);
             }
