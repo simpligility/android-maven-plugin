@@ -169,7 +169,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             List<String> commands = new ArrayList<String>();
             final String androidSdkPath = getAndroidSdkPath();
             if (androidSdkPath != null) {
-                commands.add("-p" + androidSdkPath + "/tools/lib/framework.aidl");
+                // TODO should be configurable which version of the tools should be used.
+                // Location for Android 1.5
+                commands.add("-p" + System.getenv().get("ANDROID_SDK") + "/platforms/android-1.5/framework.aidl");
+                // Location for Android 1.1
+                //commands.add("-p" + androidSdkPath + "/tools/lib/framework.aidl");
             }
 
             File generatedSourcesAidlDirectory = new File(project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "aidl");
