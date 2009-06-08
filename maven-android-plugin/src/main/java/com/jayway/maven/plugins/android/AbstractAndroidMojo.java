@@ -131,6 +131,12 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected MavenProjectHelper projectHelper;
 
     /**
+     * The Android SDK to use.
+     * @parameter
+     */
+    protected AndroidSdk androidSdk;
+
+    /**
      * <p>Whether to undeploy an apk from the device before deploying it.</p>
      *
      * <p>Only has effect when running <code>mvn android:deploy</code> in a project with
@@ -199,9 +205,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         commands.add("install");
         commands.add("-r");
         commands.add(apkFile.getAbsolutePath());
-        getLog().info(getAndroidSdkPath() + "/tools/adb " + commands.toString());
+        getLog().info(androidSdk.getPathForTool("adb")+" " + commands.toString());
         try {
-            executor.executeCommand(getAndroidSdkPath() + "/tools/adb", commands, false);
+            executor.executeCommand(androidSdk.getPathForTool("adb"), commands, false);
             final String standardOut = executor.getStandardOut();
             if (standardOut != null && standardOut.contains("Failure")){
                 throw new MojoExecutionException("Error deploying " + apkFile + " to device. You might want to add command line parameter -Dandroid.undeployApkBeforeDeploying=true or add plugin configuration tag <undeployApkBeforeDeploying>true</undeployApkBeforeDeploying>\n" + standardOut);
@@ -243,7 +249,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @param packageName the package name to undeploy.
      * @return <code>true</code> if successfully undeployed, <code>false</code> otherwise.
      */
-    protected boolean undeployApk(String packageName) {
+    protected boolean undeployApk(String packageName) throws MojoExecutionException {
         return undeployApk(packageName, true);
     }
 
@@ -254,7 +260,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * directories on the device, <code>false</code> to keep them.
      * @return <code>true</code> if successfully undeployed, <code>false</code> otherwise.
      */
-    protected boolean undeployApk(String packageName, boolean deleteDataAndCacheDirectoriesOnDevice) {
+    protected boolean undeployApk(String packageName, boolean deleteDataAndCacheDirectoriesOnDevice) throws MojoExecutionException {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
         List<String> commands = new ArrayList<String>();
@@ -263,9 +269,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
             commands.add("-k");  // ('-k' means keep the data and cache directories)
         }
         commands.add(packageName);
-        getLog().info(getAndroidSdkPath() + "/tools/adb " + commands.toString());
+        getLog().info(androidSdk.getPathForTool("adb")+" " + commands.toString());
         try {
-            executor.executeCommand(getAndroidSdkPath() + "/tools/adb", commands, false);
+            executor.executeCommand(androidSdk.getPathForTool("adb"), commands, false);
             getLog().debug(executor.getStandardOut());
             getLog().debug(executor.getStandardError());
             return true;
@@ -289,9 +295,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         commands.add("xmltree");
         commands.add(apkFile.getAbsolutePath());
         commands.add("AndroidManifest.xml");
-        getLog().info(getAndroidSdkPath() + "/tools/aapt " + commands.toString());
+        getLog().info(androidSdk.getPathForTool("aapt")+" " + commands.toString());
         try {
-            executor.executeCommand(getAndroidSdkPath() + "/tools/aapt", commands, true);
+            executor.executeCommand(androidSdk.getPathForTool("aapt"), commands, true);
             final String xmlTree = executor.getStandardOut();
             return extractPackageNameFromAndroidManifestXmlTree(xmlTree);
         } catch (ExecutionException e) {
@@ -381,9 +387,4 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
 
     }
 
-    // TODO: DON'T use System.getenv for this! Use proper plugin configuration parameters,
-    // TODO: (which may pull from environment/ANDROID_SDK for their default values.)
-    public static String getAndroidSdkPath() {
-        return System.getenv().get("ANDROID_SDK");
-}
 }
