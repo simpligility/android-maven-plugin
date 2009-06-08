@@ -152,12 +152,12 @@
         <repository>
             <id>maven-android-plugin-m2repo.googlecode.com</id>
             <name>maven-android-plugin-m2repo on Google Code</name>
-            <url>${env.MAVEN_ANDROID_PLUGIN_M2REPO_SVN_WORKINGCOPY}/releases</url>
+            <url>${env.MAVEN_ANDROID_PLUGIN_M2REPO_SVN_WORKINGCOPY}/release</url>
         </repository>
         <snapshotRepository>
             <id>maven-android-plugin-m2repo.googlecode.com</id>
-            <name>maven-android-plugin-m2repo on Google Code - SNAPSHOTs</name>
-            <url>${env.MAVEN_ANDROID_PLUGIN_M2REPO_SVN_WORKINGCOPY}/snapshots</url>
+            <name>maven-android-plugin-m2repo on Google Code - SNAPSHOT</name>
+            <url>${env.MAVEN_ANDROID_PLUGIN_M2REPO_SVN_WORKINGCOPY}/snapshot</url>
         </snapshotRepository>
         <site>
             <id>maven-android-plugin-m2site.googlecode.com</id>
