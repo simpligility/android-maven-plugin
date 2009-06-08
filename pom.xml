@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jayway.maven.plugins.android.generation1</groupId>
     <artifactId>masa-project</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>JVending Masa: masa-project</name>
     <description>Maven Plugins Project for Android</description>
