@@ -26,7 +26,7 @@
     <artifactId>apidemos</artifactId>
     <version>2.0.0-alpha2-SNAPSHOT</version>
     <packaging>android:apk</packaging>
-    <name>ApiDemos using maven-android-plugin</name>
+    <name>Maven Android Plugin - samples - ApiDemos</name>
 
     <prerequisites>
         <maven>2.0.9</maven>
