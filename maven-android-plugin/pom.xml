@@ -138,6 +138,9 @@
                     </configuration>
                     <version>2.2</version>
                 </plugin>
+                <plugin>
+                    <artifactId>maven-plugin-plugin</artifactId>
+                </plugin>
             </plugins>
     </build>
     <reporting>
