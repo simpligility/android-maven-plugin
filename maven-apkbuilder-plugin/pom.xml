@@ -20,12 +20,12 @@
     <parent>
         <groupId>com.jayway.maven.plugins.android.generation1</groupId>
         <artifactId>masa-project</artifactId>
-        <version>1.1-SNAPSHOT</version>
+        <version>1.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jayway.maven.plugins.android.generation1.plugins</groupId>
     <artifactId>maven-apkbuilder-plugin</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <packaging>maven-plugin</packaging>
     <name>JVending Masa: maven-apkbuilder-plugin</name>
     <description>Maven Plugin for APK Builder</description>
