@@ -21,7 +21,7 @@
     <artifactId>maven-android-plugin</artifactId>
     <version>2.0.0-alpha2-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
-    <name>Maven Android Plugin - Generation2 - plugin</name>
+    <name>Maven Android Plugin - maven-android-plugin</name>
     <description>Maven Plugin for Android</description>
     <url>http://code.google.com/p/maven-android-plugin</url>
     <inceptionYear>2008</inceptionYear>
