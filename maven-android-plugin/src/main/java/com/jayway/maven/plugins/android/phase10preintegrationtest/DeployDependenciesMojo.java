@@ -25,7 +25,7 @@ import java.io.File;
 import java.util.Set;
 
 /**
- * Deplooys the apk we are about to test on the connected device. All directly declared dependencies of
+ * Deploys the apk we are about to test on the connected device. All directly declared dependencies of
  * <code>&lt;type&gt;android:apk&lt;/type&gt;</code> in this project's pom are presumed to be the apk's to deploy.<br/>
  * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on a project
  * with <code>&lt;packaging&gt;android:apk:platformTest&lt;/packaging&gt;</code>.
