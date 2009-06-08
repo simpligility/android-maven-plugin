@@ -46,7 +46,7 @@ repository where maven-android-plugin is deployed:
     <pluginRepository>
       <id>maven-android-plugin-m2repo.googlecode.com</id>
       <name>Maven Android Plugin Release Repository</name>
-      <url>http://maven-android-plugin-m2repo.googlecode.com/svn/trunk/releases</url>
+      <url>http://maven-android-plugin-m2repo.googlecode.com/svn/release</url>
     </pluginRepository>
   </pluginRepositories>
 
