@@ -18,17 +18,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.jayway.maven.plugins.android.generation2.samples</groupId>
+        <groupId>com.jayway.maven.plugins.android.generation2</groupId>
         <artifactId>build-root</artifactId>
         <version>2.0.0-alpha2-SNAPSHOT</version>
     </parent>
-	<groupId>com.jayway.maven.plugins.android.generation2.samples.apidemos</groupId>
+	<groupId>com.jayway.maven.plugins.android.generation2.samples</groupId>
 	<artifactId>build-root</artifactId>
 	<version>2.0.0-alpha2-SNAPSHOT</version>
 	<packaging>pom</packaging>
-    <name>Maven Android Plugin - samples - ApiDemos - build-root</name>
+    <name>Maven Android Plugin - samples - build-root</name>
 	<modules>
-		<module>apidemos</module>
-		<module>apidemos-platformtests</module>
+		<module>ApiDemos</module>
 	</modules>
 </project>
