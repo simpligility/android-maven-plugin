@@ -24,7 +24,7 @@
     <name>Maven Android Plugin - samples</name>
 
     <modules>
-		<module>ApiDemos</module>
+		<module>apidemos</module>
 	</modules>
 
     <url>http://code.google.com/p/maven-android-plugin</url>
