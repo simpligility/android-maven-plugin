@@ -39,9 +39,9 @@ Setup your development environment
 -------------------------------------------------------------------------------
 Test your development environment
 -------------------------------------------------------------------------------
-Try building the mavenized ApiDemos sample:
+Try building the mavenized apidemos sample:
 
-1) cd samples/ApiDemos
+1) cd samples/apidemos
 
 2) Connect an Android device via USB, or start an emulator.
 
@@ -62,7 +62,7 @@ Create your own Android application (apk)
      Example:
      activitycreator -o yourproject com.yourcompany.yourproject.YourActivityName
 
-2) Create a pom.xml in your project, using the samples/ApiDemos/apidemos/pom.xml
+2) Create a pom.xml in your project, using the samples/apidemos/apidemos/pom.xml
    as template.
      Remove the entire <parent> tag.
      Change <groupId>, <artifactId>, <version> and <name> to your own.
