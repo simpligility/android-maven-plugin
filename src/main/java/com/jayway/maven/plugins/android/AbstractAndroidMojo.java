@@ -118,7 +118,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     /**
      * Which version of Android SDK to use.
      * @parameter expression="${androidVersion}"
-     *            default-value="1.1_r1"
+     *            default-value="1.5_r1"
      */
     private String androidVersion;
     
