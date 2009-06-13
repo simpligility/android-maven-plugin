@@ -112,7 +112,7 @@ public class AndroidSdkTest {
      * @param platform The <code>platform</code> value to set inside the <code>AndroidSdk</code>.
      * @return an instance to test
      */
-    protected AndroidSdk constructAndroidSdkWith(String layout, File path, String platform) {
+    protected static AndroidSdk constructAndroidSdkWith(String layout, File path, String platform) {
         final AndroidSdk sdk = new AndroidSdk();
         try {
             ReflectionUtils.setVariableValueInObject(sdk, "layout", layout);
