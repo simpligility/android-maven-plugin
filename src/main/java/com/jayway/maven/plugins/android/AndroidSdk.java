@@ -37,21 +37,21 @@ public class AndroidSdk {
      *            default-value="${env.ANDROID_SDK}"
      *            property="path"
      */
-    private File _path;
+    private File path;
 
     /**
      * Directory layout of this SDK. Valid values are <code>1.1</code> and <code>1.5</code>.
      *
      * @parameter property="layout"
      */
-    private String _layout;
+    private String layout;
 
     /**
      * Chosen platform version. Valid values are same as <code>layout</code>, and lower.
      *
      * @parameter property="platform"
      */
-    private String _platform;
+    private String platform;
 
     private static final Set<String> commonToolsIn11And15 = new HashSet<String>() {
         {
@@ -78,22 +78,22 @@ public class AndroidSdk {
      * @throws MojoExecutionException if the combinations of this SDK's parameters and the tool do not match.
      */
     public String getPathForTool(String tool) throws MojoExecutionException {
-        if ("1.1".equals(_layout)) {
-            return _path + "/tools/" + tool;
+        if ("1.1".equals(layout)) {
+            return path + "/tools/" + tool;
         }
 
-        if ("1.5".equals(_layout)) {
+        if ("1.5".equals(layout)) {
             if (commonToolsIn11And15.contains(tool)) {
-                return _path + "/tools/" + tool;
+                return path + "/tools/" + tool;
             }else {
-                if (_layout.compareTo(_platform) < 0) {
-                    throw new MojoExecutionException("Platform version \""+ _platform +"\" must not be greater than layout \"" + _layout + "\"!");
+                if (layout.compareTo(platform) < 0) {
+                    throw new MojoExecutionException("Platform version \""+ platform +"\" must not be greater than layout \"" + layout + "\"!");
                 }
-                return _path + "/platforms/android-" + _platform + "/tools/" + tool;
+                return path + "/platforms/android-" + platform + "/tools/" + tool;
             }
         }
 
-        throw new MojoExecutionException("Invalid Layout \"" + _layout + "\"!");
+        throw new MojoExecutionException("Invalid Layout \"" + layout + "\"!");
     }
 
     /**
@@ -102,18 +102,18 @@ public class AndroidSdk {
      * @throws MojoExecutionException if the combination of this SDK's parameters do not match.
      */
     public String getPathForFrameworkAidl() throws MojoExecutionException {
-        if ("1.1".equals(_layout)) {
-            return _path + "/tools/lib/framework.aidl";
+        if ("1.1".equals(layout)) {
+            return path + "/tools/lib/framework.aidl";
         }
 
-        if ("1.5".equals(_layout)) {
-            if (_layout.compareTo(_platform) < 0) {
-                throw new MojoExecutionException("Platform version \""+ _platform +"\" must not be greater than layout \"" + _layout + "\"!");
+        if ("1.5".equals(layout)) {
+            if (layout.compareTo(platform) < 0) {
+                throw new MojoExecutionException("Platform version \""+ platform +"\" must not be greater than layout \"" + layout + "\"!");
             }
-            return _path + "/platforms/android-" + _platform + "/framework.aidl";
+            return path + "/platforms/android-" + platform + "/framework.aidl";
         }
 
-        throw new MojoExecutionException("Invalid Layout \"" + _layout + "\"!");
+        throw new MojoExecutionException("Invalid Layout \"" + layout + "\"!");
     }
 
     /**
@@ -123,42 +123,42 @@ public class AndroidSdk {
      * @throws org.apache.maven.plugin.MojoExecutionException if the file can not be resolved.
      */
     public File getAndroidJar() throws MojoExecutionException {
-        if ("1.1".equals(_layout)) {
-            return new File(_path + "/android.jar");
+        if ("1.1".equals(layout)) {
+            return new File(path + "/android.jar");
         }
 
-        if ("1.5".equals(_layout)) {
-            if (_layout.compareTo(_platform) < 0) {
-                throw new MojoExecutionException("Platform version \"" + _platform + "\" must not be greater than layout \"" + _layout + "\"!");
+        if ("1.5".equals(layout)) {
+            if (layout.compareTo(platform) < 0) {
+                throw new MojoExecutionException("Platform version \"" + platform + "\" must not be greater than layout \"" + layout + "\"!");
             }
-            return new File(_path + "/platforms/android-" + _platform + "/android.jar");
+            return new File(path + "/platforms/android-" + platform + "/android.jar");
         }
 
-        throw new MojoExecutionException("Invalid Layout \"" + _layout + "\"!");
+        throw new MojoExecutionException("Invalid Layout \"" + layout + "\"!");
     }
 
     public File getPath() {
-        return _path;
+        return path;
     }
 
     public void setPath(File path) {
-        this._path = path;
+        this.path = path;
     }
 
     public String getLayout() {
-        return _layout;
+        return layout;
     }
 
     public void setLayout(String layout) {
-        this._layout = layout;
+        this.layout = layout;
     }
 
     public String getPlatform() {
-        return _platform;
+        return platform;
     }
 
 
     public void setPlatform(String platform) {
-        this._platform = platform;
+        this.platform = platform;
     }
 }

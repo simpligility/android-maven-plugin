@@ -115,9 +115,9 @@ public class AndroidSdkTest {
     protected static AndroidSdk constructAndroidSdkWith(String layout, File path, String platform) {
         final AndroidSdk sdk = new AndroidSdk();
         try {
-            ReflectionUtils.setVariableValueInObject(sdk, "_layout", layout);
-            ReflectionUtils.setVariableValueInObject(sdk, "_path", path);
-            ReflectionUtils.setVariableValueInObject(sdk, "_platform", platform);
+            ReflectionUtils.setVariableValueInObject(sdk, "layout", layout);
+            ReflectionUtils.setVariableValueInObject(sdk, "path", path);
+            ReflectionUtils.setVariableValueInObject(sdk, "platform", platform);
         } catch (IllegalAccessException e) {
             // Retrow unchecked, so callers won't have to care.
             throw new RuntimeException(e);
