@@ -84,9 +84,7 @@ public class AbstractAndroidMojoTest {
 
     private static class MyAbstractAndroidMojo extends AbstractAndroidMojo {
         private MyAbstractAndroidMojo() {
-            final String androidSdk15Environment = System.getenv("ANDROID_SDK_15");
-            Assert.assertNotNull("For running the tests, you must have environment variable ANDROID_SDK_15 set to a valid Android SDK 1.5 directory.", androidSdk15Environment);
-            super.androidSdk = AndroidSdkTest.constructAndroidSdkWith("1.5", new File(androidSdk15Environment), "1.5");
+            super.androidSdk = AndroidSdkTest.SDK_1_5;
         }
 
         public void execute() throws MojoExecutionException, MojoFailureException {

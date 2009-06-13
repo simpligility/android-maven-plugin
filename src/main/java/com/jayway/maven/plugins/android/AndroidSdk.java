@@ -34,22 +34,33 @@ public class AndroidSdk {
      * Directory of the installed Android SDK, for example <code>/opt/android-sdk-linux_x86-1.5_r1</code>
      *
      * @parameter expression="${android.sdk.path}"
-     *            default-value="${env.ANDROID_SDK}"
-     *            property="path"
      */
     private File path;
 
-    /**
-     * Directory layout of this SDK. Valid values are <code>1.1</code> and <code>1.5</code>.
-     *
-     * @parameter property="layout"
-     */
-    private String layout;
+    public enum Layout{LAYOUT_1_1, LAYOUT_1_5};
+
+    public Layout getLayout() {
+
+        if (path == null) throw new InvalidSdkException("Path is null!");
+        if (!path.isDirectory()) throw new InvalidSdkException("Path \"" + path + "\" is not a directory.");
+
+        final File platforms = new File(path, "platforms");
+        if (platforms.exists() && platforms.isDirectory()){
+            return Layout.LAYOUT_1_5;
+        }
+
+        final File androidJar = new File(path, "android.jar");
+        if (androidJar.exists() && androidJar.isFile()) {
+            return Layout.LAYOUT_1_1;
+        }
+
+        throw new InvalidSdkException("Android SDK could not be identified from path \"" + path +"\"");
+    }
 
     /**
      * Chosen platform version. Valid values are same as <code>layout</code>, and lower.
      *
-     * @parameter property="platform"
+     * @parameter
      */
     private String platform;
 
@@ -75,45 +86,38 @@ public class AndroidSdk {
      * Returns the complete path for a tool, based on this SDK.
      * @param tool which tool, for example <code>adb</code>.
      * @return the complete path as a <code>String</code>, including the tool's filename.
-     * @throws MojoExecutionException if the combinations of this SDK's parameters and the tool do not match.
      */
-    public String getPathForTool(String tool) throws MojoExecutionException {
-        if ("1.1".equals(layout)) {
+    public String getPathForTool(String tool) {
+        if (getLayout() == Layout.LAYOUT_1_1) {
             return path + "/tools/" + tool;
         }
 
-        if ("1.5".equals(layout)) {
+        if (getLayout() == Layout.LAYOUT_1_5) {
             if (commonToolsIn11And15.contains(tool)) {
                 return path + "/tools/" + tool;
             }else {
-                if (layout.compareTo(platform) < 0) {
-                    throw new MojoExecutionException("Platform version \""+ platform +"\" must not be greater than layout \"" + layout + "\"!");
-                }
+                
                 return path + "/platforms/android-" + platform + "/tools/" + tool;
             }
         }
 
-        throw new MojoExecutionException("Invalid Layout \"" + layout + "\"!");
+        throw new InvalidSdkException("Unsupported layout \"" + getLayout() + "\"!");
     }
 
     /**
      * Returns the complete path for <code>framework.aidl</code>, based on this SDK.
      * @return the complete path as a <code>String</code>, including the filename.
-     * @throws MojoExecutionException if the combination of this SDK's parameters do not match.
      */
-    public String getPathForFrameworkAidl() throws MojoExecutionException {
-        if ("1.1".equals(layout)) {
+    public String getPathForFrameworkAidl() {
+        if (getLayout() == Layout.LAYOUT_1_1) {
             return path + "/tools/lib/framework.aidl";
         }
 
-        if ("1.5".equals(layout)) {
-            if (layout.compareTo(platform) < 0) {
-                throw new MojoExecutionException("Platform version \""+ platform +"\" must not be greater than layout \"" + layout + "\"!");
-            }
+        if (getLayout() == Layout.LAYOUT_1_5) {
             return path + "/platforms/android-" + platform + "/framework.aidl";
         }
 
-        throw new MojoExecutionException("Invalid Layout \"" + layout + "\"!");
+        throw new InvalidSdkException("Unsupported layout \"" + getLayout() + "\"!");
     }
 
     /**
@@ -123,17 +127,14 @@ public class AndroidSdk {
      * @throws org.apache.maven.plugin.MojoExecutionException if the file can not be resolved.
      */
     public File getAndroidJar() throws MojoExecutionException {
-        if ("1.1".equals(layout)) {
+        if (getLayout() == Layout.LAYOUT_1_1) {
             return new File(path + "/android.jar");
         }
 
-        if ("1.5".equals(layout)) {
-            if (layout.compareTo(platform) < 0) {
-                throw new MojoExecutionException("Platform version \"" + platform + "\" must not be greater than layout \"" + layout + "\"!");
-            }
+        if (getLayout() == Layout.LAYOUT_1_5) {
             return new File(path + "/platforms/android-" + platform + "/android.jar");
         }
 
-        throw new MojoExecutionException("Invalid Layout \"" + layout + "\"!");
+        throw new MojoExecutionException("Invalid Layout \"" + getLayout() + "\"!");
     }
 }
