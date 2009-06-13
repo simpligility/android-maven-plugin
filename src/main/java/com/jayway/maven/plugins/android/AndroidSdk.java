@@ -68,6 +68,12 @@ public class AndroidSdk {
     };
 
 
+    /**
+     * Returns the complete path for a tool, based on this SDK.
+     * @param tool which tool, for example <code>adb</code>.
+     * @return the complete path as a <code>String</code>, including the tool's filename.
+     * @throws MojoExecutionException if the combinations of this SDK's parameters and the tool do not match.
+     */
     public String getPathForTool(String tool) throws MojoExecutionException {
         if ("1.1".equals(layout)) {
             return path + "/tools/" + tool;
@@ -87,6 +93,11 @@ public class AndroidSdk {
         throw new MojoExecutionException("Invalid Layout \"" + layout + "\"!");
     }
 
+    /**
+     * Returns the complete path for <code>framework.aidl</code>, based on this SDK.
+     * @return the complete path as a <code>String</code>, including the filename.
+     * @throws MojoExecutionException if the combination of this SDK's parameters do not match.
+     */
     public String getPathForFrameworkAidl() throws MojoExecutionException {
         if ("1.1".equals(layout)) {
             return path + "/tools/lib/framework.aidl";
