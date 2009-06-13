@@ -17,8 +17,8 @@ package com.jayway.maven.plugins.android;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.util.ReflectionUtils;
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
 
 import java.io.File;
 
@@ -91,11 +91,17 @@ public class AndroidSdkTest {
         final String pathForTool = sdk.getPathForTool("aapt");
         Assert.assertEquals("THEPATH/platforms/android-1.1/tools/aapt", pathForTool);
     }
+
     @Test
     public void givenLayout1dot5AndToolAaptAndPlatform1dot5ThenPathIsPlatform1dot5() throws MojoExecutionException {
         final AndroidSdk sdk = constructAndroidSdkWith("1.5", THEPATH, "1.5");
         final String pathForTool = sdk.getPathForTool("aapt");
         Assert.assertEquals("THEPATH/platforms/android-1.5/tools/aapt", pathForTool);
+    }
+
+    @Test(expected = MojoExecutionException.class)
+    public void givenLayout1dot5AndToolAaptAndPlatform1dot6ThenException() throws MojoExecutionException {
+        constructAndroidSdkWith("1.5", null, "1.6").getPathForTool("aapt");
     }
 
     /**
