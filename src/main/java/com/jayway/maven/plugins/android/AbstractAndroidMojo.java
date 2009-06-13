@@ -154,23 +154,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      */
     protected boolean undeployApkBeforeDeploying;
 
-
-    /**
-     * Resolves the android.jar, using {@link #androidVersion} as the artifact's version.
-     *
-     * @return a <code>File</code> pointing to the android.jar file.
-     * @throws org.apache.maven.plugin.MojoExecutionException if the artifact can not be resolved.
-     */
-    protected File resolveAndroidJar() throws MojoExecutionException {
-        Artifact artifact = artifactFactory.createArtifact("android", "android", androidVersion, "jar", "jar");
-
-        // resolve the android jar artifact
-        File androidJar = resolveArtifactToFile(artifact);
-
-        getLog().debug("Found android.jar at " + androidJar);
-        return androidJar;
-    }
-
     /**
      * Attempts to resolve an {@link Artifact} to a {@link File}.
      * @param artifact to resolve

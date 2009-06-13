@@ -19,7 +19,6 @@ package com.jayway.maven.plugins.android.phase01generatesources;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
-import com.jayway.maven.plugins.android.AndroidSdk;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -154,7 +153,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             commands.add(assetsDirectory.getAbsolutePath());
         }
         commands.add("-I"                                 );
-        commands.add(resolveAndroidJar().getAbsolutePath());
+        commands.add(androidSdk.getAndroidJar().getAbsolutePath());
         getLog().info(androidSdk.getPathForTool("aapt") + " " + commands.toString());
         try {
             executor.executeCommand(androidSdk.getPathForTool("aapt"), commands, project.getBasedir(), false);

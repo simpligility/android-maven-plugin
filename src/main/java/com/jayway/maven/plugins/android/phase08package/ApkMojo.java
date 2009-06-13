@@ -88,7 +88,7 @@ public class ApkMojo extends AbstractAndroidMojo {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
-        File androidJar = resolveAndroidJar();
+        File androidJar = androidSdk.getAndroidJar();
         File outputFile = new File(project.getBuild().getDirectory(),  project.getBuild().getFinalName() + ".ap_");
 
         List<String> commands = new ArrayList<String>();

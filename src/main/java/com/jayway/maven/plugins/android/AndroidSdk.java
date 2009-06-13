@@ -116,6 +116,27 @@ public class AndroidSdk {
         throw new MojoExecutionException("Invalid Layout \"" + _layout + "\"!");
     }
 
+    /**
+     * Resolves the android.jar from this SDK.
+     *
+     * @return a <code>File</code> pointing to the android.jar file.
+     * @throws org.apache.maven.plugin.MojoExecutionException if the file can not be resolved.
+     */
+    public File getAndroidJar() throws MojoExecutionException {
+        if ("1.1".equals(_layout)) {
+            return new File(_path + "/android.jar");
+        }
+
+        if ("1.5".equals(_layout)) {
+            if (_layout.compareTo(_platform) < 0) {
+                throw new MojoExecutionException("Platform version \"" + _platform + "\" must not be greater than layout \"" + _layout + "\"!");
+            }
+            return new File(_path + "/platforms/android-" + _platform + "/android.jar");
+        }
+
+        throw new MojoExecutionException("Invalid Layout \"" + _layout + "\"!");
+    }
+
     public File getPath() {
         return _path;
     }
@@ -135,6 +156,7 @@ public class AndroidSdk {
     public String getPlatform() {
         return _platform;
     }
+
 
     public void setPlatform(String platform) {
         this._platform = platform;
