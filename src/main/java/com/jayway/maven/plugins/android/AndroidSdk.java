@@ -136,29 +136,4 @@ public class AndroidSdk {
 
         throw new MojoExecutionException("Invalid Layout \"" + layout + "\"!");
     }
-
-    public File getPath() {
-        return path;
-    }
-
-    public void setPath(File path) {
-        this.path = path;
-    }
-
-    public String getLayout() {
-        return layout;
-    }
-
-    public void setLayout(String layout) {
-        this.layout = layout;
-    }
-
-    public String getPlatform() {
-        return platform;
-    }
-
-
-    public void setPlatform(String platform) {
-        this.platform = platform;
-    }
 }
