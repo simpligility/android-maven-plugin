@@ -24,7 +24,7 @@ import java.util.HashSet;
 /**
  * Configuration for an Android SDK.
  *
- * TODO: do more thourough parameter checking
+ * TODO: do more thorough parameter checking
  *
  * @author hugo.josefson@jayway.com
  */
