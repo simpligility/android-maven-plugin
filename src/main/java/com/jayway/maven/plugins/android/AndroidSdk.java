@@ -16,10 +16,13 @@
 package com.jayway.maven.plugins.android;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.commons.io.filefilter.NameFileFilter;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Arrays;
 
 /**
  * Configuration for an Android SDK.
@@ -37,12 +40,12 @@ public class AndroidSdk {
      */
     private File path;
 
+
     public enum Layout{LAYOUT_1_1, LAYOUT_1_5};
 
     public Layout getLayout() {
 
-        if (path == null) throw new InvalidSdkException("Path is null!");
-        if (!path.isDirectory()) throw new InvalidSdkException("Path \"" + path + "\" is not a directory.");
+        assertPathIsDirectory(path);
 
         final File platforms = new File(path, "platforms");
         if (platforms.exists() && platforms.isDirectory()){
@@ -55,6 +58,11 @@ public class AndroidSdk {
         }
 
         throw new InvalidSdkException("Android SDK could not be identified from path \"" + path +"\"");
+    }
+
+    private void assertPathIsDirectory(final File path) {
+        if (path == null) throw new InvalidSdkException("Path is null!");
+        if (!path.isDirectory()) throw new InvalidSdkException("Path \"" + path + "\" is not a directory.");
     }
 
     /**
@@ -81,7 +89,6 @@ public class AndroidSdk {
         }
     };
 
-
     /**
      * Returns the complete path for a tool, based on this SDK.
      * @param tool which tool, for example <code>adb</code>.
@@ -96,13 +103,14 @@ public class AndroidSdk {
             if (commonToolsIn11And15.contains(tool)) {
                 return path + "/tools/" + tool;
             }else {
-                
-                return path + "/platforms/android-" + platform + "/tools/" + tool;
+
+                return getPlatform() + "/tools/" + tool;
             }
         }
 
         throw new InvalidSdkException("Unsupported layout \"" + getLayout() + "\"!");
     }
+
 
     /**
      * Returns the complete path for <code>framework.aidl</code>, based on this SDK.
@@ -114,7 +122,7 @@ public class AndroidSdk {
         }
 
         if (getLayout() == Layout.LAYOUT_1_5) {
-            return path + "/platforms/android-" + platform + "/framework.aidl";
+            return getPlatform() + "/framework.aidl";
         }
 
         throw new InvalidSdkException("Unsupported layout \"" + getLayout() + "\"!");
@@ -132,9 +140,26 @@ public class AndroidSdk {
         }
 
         if (getLayout() == Layout.LAYOUT_1_5) {
-            return new File(path + "/platforms/android-" + platform + "/android.jar");
+            return new File(getPlatform() + "/android.jar");
         }
 
         throw new MojoExecutionException("Invalid Layout \"" + getLayout() + "\"!");
+    }
+
+    public File getPlatform() {
+        assertPathIsDirectory(path);
+
+        final File platformsDirectory = new File(path, "platforms");
+        assertPathIsDirectory(platformsDirectory);
+
+        if (platform == null){
+            final File[] platformDirectories = platformsDirectory.listFiles();
+            Arrays.sort(platformDirectories);
+            return platformDirectories[platformDirectories.length-1];
+        }else{
+            final File platformDirectory = new File(platformsDirectory, "android-" + platform);
+            assertPathIsDirectory(platformDirectory);
+            return platformDirectory;
+        }
     }
 }
