@@ -66,9 +66,10 @@ public class AndroidSdk {
     }
 
     /**
-     * Chosen platform version. Valid values are whichever platforms are available in the SDK, under the directory
-     * <code>platforms</code>. Note: this parameter is just the version number, without <code>"android-"</code> in the
-     * beginning.
+     * <p>Chosen platform version. Valid values are whichever platforms are available in the SDK, under the directory
+     * <code>platforms</code>. Defaults to the highest available one if not set.</p>
+     * <p>Note: this parameter is just the version number, without <code>"android-"</code> in the
+     * beginning.</p>
      *
      * @parameter expression="${android.sdk.platform}
      */
@@ -150,6 +151,10 @@ public class AndroidSdk {
 
     public File getPlatform() {
         assertPathIsDirectory(path);
+
+        if (getLayout() == Layout.LAYOUT_1_1){
+            return path;
+        }
 
         final File platformsDirectory = new File(path, "platforms");
         assertPathIsDirectory(platformsDirectory);
