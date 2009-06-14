@@ -84,7 +84,7 @@ public class AbstractAndroidMojoTest {
 
     private static class MyAbstractAndroidMojo extends AbstractAndroidMojo {
         private MyAbstractAndroidMojo() {
-            super.androidSdk = AndroidSdkTest.SDK_1_5_PLATFORM_1_5;
+            super.sdk = SdkTest.SDK_1_5_PLATFORM_1_5;
         }
 
         public void execute() throws MojoExecutionException, MojoFailureException {

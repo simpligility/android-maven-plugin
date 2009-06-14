@@ -31,7 +31,7 @@ import java.util.Arrays;
  *
  * @author hugo.josefson@jayway.com
  */
-public class AndroidSdk {
+public class Sdk {
 
     /**
      * Directory of the installed Android SDK, for example <code>/opt/android-sdk-linux_x86-1.5_r1</code>
