@@ -110,6 +110,24 @@ public class AndroidSdkTest {
         Assert.assertEquals(constructAndroidSdkWith(new File(ENV_ANDROID_SDK_15), null).getLayout(), AndroidSdk.Layout.LAYOUT_1_5);
     }
 
+    @Test
+    public void givenAndroidSdk1dodt1ThenPlatformEqualsPath() throws IllegalAccessException {
+        final File path = (File) ReflectionUtils.getValueIncludingSuperclasses("path", SDK_1_1);
+        Assert.assertEquals(path, SDK_1_1.getPlatform());
+    }
+
+    @Test
+    public void givenAndroidSdk1dodt5AndPlatform1dot5ThenPlatformis1dot5() throws IllegalAccessException {
+        final File path = (File) ReflectionUtils.getValueIncludingSuperclasses("path", SDK_1_5);
+        Assert.assertEquals(new File(path, "/platforms/android-1.5"), SDK_1_5.getPlatform());
+    }
+
+    @Test
+    public void givenAndroidSdk1dodt5AndPlatformNullThenPlatformis1dot5() throws IllegalAccessException {
+        AndroidSdk sdk = constructAndroidSdkWith(new File(ENV_ANDROID_SDK_15), null);
+        final File path = (File) ReflectionUtils.getValueIncludingSuperclasses("path", sdk);
+        Assert.assertEquals(new File(path, "/platforms/android-1.5"), sdk.getPlatform());
+    }
     /**
      * Constructs a testable instance of {@link AndroidSdk} with specified values set.
      *
