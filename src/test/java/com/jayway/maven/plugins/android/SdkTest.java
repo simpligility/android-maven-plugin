@@ -23,32 +23,32 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Excercises the {@link AndroidSdk} class.
+ * Excercises the {@link Sdk} class.
  *
  * @author hugo.josefson@jayway.com
  */
-public class AndroidSdkTest {
+public class SdkTest {
     private static final String ENV_ANDROID_SDK_11 = System.getenv("ANDROID_SDK_11");
     private static final String ENV_ANDROID_SDK_15 = System.getenv("ANDROID_SDK_15");
 
-    public static final AndroidSdk SDK_1_1;
+    public static final Sdk SDK_1_1;
     static{
         Assert.assertNotNull("For running the tests, you must have environment variable ANDROID_SDK_11 set to a valid Android SDK 1.1 directory.", ENV_ANDROID_SDK_11);
-        SDK_1_1 = constructAndroidSdkWith(new File(ENV_ANDROID_SDK_11), "1.1");
+        SDK_1_1 = constructSdkWith(new File(ENV_ANDROID_SDK_11), "1.1");
         
     }
 
-    public static final AndroidSdk SDK_1_5_PLATFORM_1_5;
+    public static final Sdk SDK_1_5_PLATFORM_1_5;
     static{
         Assert.assertNotNull("For running the tests, you must have environment variable ANDROID_SDK_15 set to a valid Android SDK 1.5 directory.", ENV_ANDROID_SDK_15);
-        SDK_1_5_PLATFORM_1_5 = constructAndroidSdkWith(new File(ENV_ANDROID_SDK_15), "1.5");
+        SDK_1_5_PLATFORM_1_5 = constructSdkWith(new File(ENV_ANDROID_SDK_15), "1.5");
         
     }
 
-    public static final AndroidSdk SDK_1_5_PLATFORM_DEFAULT;
+    public static final Sdk SDK_1_5_PLATFORM_DEFAULT;
     static{
         Assert.assertNotNull("For running the tests, you must have environment variable ANDROID_SDK_15 set to a valid Android SDK 1.5 directory.", ENV_ANDROID_SDK_15);
-        SDK_1_5_PLATFORM_DEFAULT = constructAndroidSdkWith(new File(ENV_ANDROID_SDK_15), null);
+        SDK_1_5_PLATFORM_DEFAULT = constructSdkWith(new File(ENV_ANDROID_SDK_15), null);
 
     }
 
@@ -84,64 +84,64 @@ public class AndroidSdkTest {
 
     @Test
     public void givenLayout1dot5AndToolAaptAndPlatform1dot1ThenPathIsPlatform1dot1() {
-        final AndroidSdk sdk = constructAndroidSdkWith(new File(ENV_ANDROID_SDK_15), "1.1");
+        final Sdk sdk = constructSdkWith(new File(ENV_ANDROID_SDK_15), "1.1");
         final String pathForTool = sdk.getPathForTool("aapt");
         Assert.assertEquals(ENV_ANDROID_SDK_15 + "/platforms/android-1.1/tools/aapt", pathForTool);
     }
 
     @Test
     public void givenLayout1dot5AndToolAaptAndPlatform1dot5ThenPathIsPlatform1dot5() {
-        final AndroidSdk sdk = constructAndroidSdkWith(new File(ENV_ANDROID_SDK_15), "1.5");
+        final Sdk sdk = constructSdkWith(new File(ENV_ANDROID_SDK_15), "1.5");
         final String pathForTool = sdk.getPathForTool("aapt");
         Assert.assertEquals(ENV_ANDROID_SDK_15 + "/platforms/android-1.5/tools/aapt", pathForTool);
     }
 
     @Test(expected = InvalidSdkException.class)
     public void givenLayout1dot5AndToolAaptAndPlatform1dot6ThenException() {
-        constructAndroidSdkWith(new File(ENV_ANDROID_SDK_15), "1.6").getPathForTool("aapt");
+        constructSdkWith(new File(ENV_ANDROID_SDK_15), "1.6").getPathForTool("aapt");
     }
 
     @Test(expected = InvalidSdkException.class)
-    public void givenInvalidAndroidSdkPathThenException() throws IOException {
-        constructAndroidSdkWith(File.createTempFile("maven-android-plugin", "test"), null).getLayout();
+    public void givenInvalidSdkPathThenException() throws IOException {
+        constructSdkWith(File.createTempFile("maven-android-plugin", "test"), null).getLayout();
     }
 
     @Test
-    public void givenAndroidSdk11PathThenLayoutIs11(){
-        Assert.assertEquals(constructAndroidSdkWith(new File(ENV_ANDROID_SDK_11), null).getLayout(), AndroidSdk.Layout.LAYOUT_1_1);
+    public void givenSdk11PathThenLayoutIs11(){
+        Assert.assertEquals(constructSdkWith(new File(ENV_ANDROID_SDK_11), null).getLayout(), Sdk.Layout.LAYOUT_1_1);
     }
 
     @Test
-    public void givenAndroidSdk15PathThenLayoutIs15(){
-        Assert.assertEquals(SDK_1_5_PLATFORM_DEFAULT.getLayout(), AndroidSdk.Layout.LAYOUT_1_5);
+    public void givenSdk15PathThenLayoutIs15(){
+        Assert.assertEquals(SDK_1_5_PLATFORM_DEFAULT.getLayout(), Sdk.Layout.LAYOUT_1_5);
     }
 
     @Test
-    public void givenAndroidSdk1dodt1ThenPlatformEqualsPath() throws IllegalAccessException {
+    public void givenSdk1dodt1ThenPlatformEqualsPath() throws IllegalAccessException {
         final File path = (File) ReflectionUtils.getValueIncludingSuperclasses("path", SDK_1_1);
         Assert.assertEquals(path, SDK_1_1.getPlatform());
     }
 
     @Test
-    public void givenAndroidSdk1dodt5AndPlatform1dot5ThenPlatformis1dot5() throws IllegalAccessException {
+    public void givenSdk1dodt5AndPlatform1dot5ThenPlatformis1dot5() throws IllegalAccessException {
         final File path = (File) ReflectionUtils.getValueIncludingSuperclasses("path", SDK_1_5_PLATFORM_1_5);
         Assert.assertEquals(new File(path, "/platforms/android-1.5"), SDK_1_5_PLATFORM_1_5.getPlatform());
     }
 
     @Test
-    public void givenAndroidSdk1dodt5AndPlatformNullThenPlatformis1dot5() throws IllegalAccessException {
+    public void givenSdk1dodt5AndPlatformNullThenPlatformis1dot5() throws IllegalAccessException {
         final File path = (File) ReflectionUtils.getValueIncludingSuperclasses("path", SDK_1_5_PLATFORM_DEFAULT);
         Assert.assertEquals(new File(path, "/platforms/android-1.5"), SDK_1_5_PLATFORM_DEFAULT.getPlatform());
     }
     /**
-     * Constructs a testable instance of {@link AndroidSdk} with specified values set.
+     * Constructs a testable instance of {@link Sdk} with specified values set.
      *
-     * @param path     The <code>path</code> value to set inside the <code>AndroidSdk</code>.
-     * @param platform The <code>platform</code> value to set inside the <code>AndroidSdk</code>.
+     * @param path     The <code>path</code> value to set inside the <code>Sdk</code>.
+     * @param platform The <code>platform</code> value to set inside the <code>Sdk</code>.
      * @return an instance to test
      */
-    protected static AndroidSdk constructAndroidSdkWith(File path, String platform) {
-        final AndroidSdk sdk = new AndroidSdk();
+    protected static Sdk constructSdkWith(File path, String platform) {
+        final Sdk sdk = new Sdk();
         try {
             ReflectionUtils.setVariableValueInObject(sdk, "path", path);
             ReflectionUtils.setVariableValueInObject(sdk, "platform", platform);

@@ -134,7 +134,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * The Android SDK to use.
      * @parameter
      */
-    protected AndroidSdk androidSdk;
+    protected Sdk sdk;
 
     /**
      * <p>Whether to undeploy an apk from the device before deploying it.</p>
@@ -188,9 +188,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         commands.add("install");
         commands.add("-r");
         commands.add(apkFile.getAbsolutePath());
-        getLog().info(androidSdk.getPathForTool("adb")+" " + commands.toString());
+        getLog().info(sdk.getPathForTool("adb")+" " + commands.toString());
         try {
-            executor.executeCommand(androidSdk.getPathForTool("adb"), commands, false);
+            executor.executeCommand(sdk.getPathForTool("adb"), commands, false);
             final String standardOut = executor.getStandardOut();
             if (standardOut != null && standardOut.contains("Failure")){
                 throw new MojoExecutionException("Error deploying " + apkFile + " to device. You might want to add command line parameter -Dandroid.undeployApkBeforeDeploying=true or add plugin configuration tag <undeployApkBeforeDeploying>true</undeployApkBeforeDeploying>\n" + standardOut);
@@ -252,9 +252,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
             commands.add("-k");  // ('-k' means keep the data and cache directories)
         }
         commands.add(packageName);
-        getLog().info(androidSdk.getPathForTool("adb")+" " + commands.toString());
+        getLog().info(sdk.getPathForTool("adb")+" " + commands.toString());
         try {
-            executor.executeCommand(androidSdk.getPathForTool("adb"), commands, false);
+            executor.executeCommand(sdk.getPathForTool("adb"), commands, false);
             getLog().debug(executor.getStandardOut());
             getLog().debug(executor.getStandardError());
             return true;
@@ -278,9 +278,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         commands.add("xmltree");
         commands.add(apkFile.getAbsolutePath());
         commands.add("AndroidManifest.xml");
-        getLog().info(androidSdk.getPathForTool("aapt")+" " + commands.toString());
+        getLog().info(sdk.getPathForTool("aapt")+" " + commands.toString());
         try {
-            executor.executeCommand(androidSdk.getPathForTool("aapt"), commands, true);
+            executor.executeCommand(sdk.getPathForTool("aapt"), commands, true);
             final String xmlTree = executor.getStandardOut();
             return extractPackageNameFromAndroidManifestXmlTree(xmlTree);
         } catch (ExecutionException e) {
