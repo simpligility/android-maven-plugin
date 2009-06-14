@@ -21,6 +21,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Excercises the {@link AndroidSdk} class.
@@ -92,6 +93,21 @@ public class AndroidSdkTest {
     @Test(expected = InvalidSdkException.class)
     public void givenLayout1dot5AndToolAaptAndPlatform1dot6ThenException() {
         constructAndroidSdkWith(new File(ENV_ANDROID_SDK_15), "1.6").getPathForTool("aapt");
+    }
+
+    @Test(expected = InvalidSdkException.class)
+    public void givenInvalidAndroidSdkPathThenException() throws IOException {
+        constructAndroidSdkWith(File.createTempFile("maven-android-plugin", "test"), null).getLayout();
+    }
+
+    @Test
+    public void givenAndroidSdk11PathThenLayoutIs11(){
+        Assert.assertEquals(constructAndroidSdkWith(new File(ENV_ANDROID_SDK_11), null).getLayout(), AndroidSdk.Layout.LAYOUT_1_1);
+    }
+
+    @Test
+    public void givenAndroidSdk15PathThenLayoutIs15(){
+        Assert.assertEquals(constructAndroidSdkWith(new File(ENV_ANDROID_SDK_15), null).getLayout(), AndroidSdk.Layout.LAYOUT_1_5);
     }
 
     /**
