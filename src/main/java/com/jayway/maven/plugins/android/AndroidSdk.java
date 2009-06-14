@@ -66,9 +66,11 @@ public class AndroidSdk {
     }
 
     /**
-     * Chosen platform version. Valid values are same as <code>layout</code>, and lower.
+     * Chosen platform version. Valid values are whichever platforms are available in the SDK, under the directory
+     * <code>platforms</code>. Note: this parameter is just the version number, without <code>"android-"</code> in the
+     * beginning.
      *
-     * @parameter
+     * @parameter expression="${android.sdk.platform}
      */
     private String platform;
 
