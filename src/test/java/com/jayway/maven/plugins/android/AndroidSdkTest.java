@@ -15,7 +15,6 @@
  */
 package com.jayway.maven.plugins.android;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.util.ReflectionUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -39,11 +38,18 @@ public class AndroidSdkTest {
         
     }
 
-    public static final AndroidSdk SDK_1_5;
+    public static final AndroidSdk SDK_1_5_PLATFORM_1_5;
     static{
         Assert.assertNotNull("For running the tests, you must have environment variable ANDROID_SDK_15 set to a valid Android SDK 1.5 directory.", ENV_ANDROID_SDK_15);
-        SDK_1_5 = constructAndroidSdkWith(new File(ENV_ANDROID_SDK_15), "1.5");
+        SDK_1_5_PLATFORM_1_5 = constructAndroidSdkWith(new File(ENV_ANDROID_SDK_15), "1.5");
         
+    }
+
+    public static final AndroidSdk SDK_1_5_PLATFORM_DEFAULT;
+    static{
+        Assert.assertNotNull("For running the tests, you must have environment variable ANDROID_SDK_15 set to a valid Android SDK 1.5 directory.", ENV_ANDROID_SDK_15);
+        SDK_1_5_PLATFORM_DEFAULT = constructAndroidSdkWith(new File(ENV_ANDROID_SDK_15), null);
+
     }
 
     @Test
@@ -66,13 +72,13 @@ public class AndroidSdkTest {
 
     @Test
     public void givenLayout1dot5AndToolAdbThenPathIsCommon() {
-        final String pathForTool = SDK_1_5.getPathForTool("adb");
+        final String pathForTool = SDK_1_5_PLATFORM_1_5.getPathForTool("adb");
         Assert.assertEquals(ENV_ANDROID_SDK_15 + "/tools/adb", pathForTool);
     }
 
     @Test
     public void givenLayout1dot5AndToolAndroidThenPathIsCommon() {
-        final String pathForTool = SDK_1_5.getPathForTool("android");
+        final String pathForTool = SDK_1_5_PLATFORM_1_5.getPathForTool("android");
         Assert.assertEquals(ENV_ANDROID_SDK_15 + "/tools/android", pathForTool);
     }
 
@@ -107,7 +113,7 @@ public class AndroidSdkTest {
 
     @Test
     public void givenAndroidSdk15PathThenLayoutIs15(){
-        Assert.assertEquals(constructAndroidSdkWith(new File(ENV_ANDROID_SDK_15), null).getLayout(), AndroidSdk.Layout.LAYOUT_1_5);
+        Assert.assertEquals(SDK_1_5_PLATFORM_DEFAULT.getLayout(), AndroidSdk.Layout.LAYOUT_1_5);
     }
 
     @Test
@@ -118,15 +124,14 @@ public class AndroidSdkTest {
 
     @Test
     public void givenAndroidSdk1dodt5AndPlatform1dot5ThenPlatformis1dot5() throws IllegalAccessException {
-        final File path = (File) ReflectionUtils.getValueIncludingSuperclasses("path", SDK_1_5);
-        Assert.assertEquals(new File(path, "/platforms/android-1.5"), SDK_1_5.getPlatform());
+        final File path = (File) ReflectionUtils.getValueIncludingSuperclasses("path", SDK_1_5_PLATFORM_1_5);
+        Assert.assertEquals(new File(path, "/platforms/android-1.5"), SDK_1_5_PLATFORM_1_5.getPlatform());
     }
 
     @Test
     public void givenAndroidSdk1dodt5AndPlatformNullThenPlatformis1dot5() throws IllegalAccessException {
-        AndroidSdk sdk = constructAndroidSdkWith(new File(ENV_ANDROID_SDK_15), null);
-        final File path = (File) ReflectionUtils.getValueIncludingSuperclasses("path", sdk);
-        Assert.assertEquals(new File(path, "/platforms/android-1.5"), sdk.getPlatform());
+        final File path = (File) ReflectionUtils.getValueIncludingSuperclasses("path", SDK_1_5_PLATFORM_DEFAULT);
+        Assert.assertEquals(new File(path, "/platforms/android-1.5"), SDK_1_5_PLATFORM_DEFAULT.getPlatform());
     }
     /**
      * Constructs a testable instance of {@link AndroidSdk} with specified values set.
