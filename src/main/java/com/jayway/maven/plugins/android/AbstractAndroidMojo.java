@@ -116,13 +116,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     private ArtifactFactory artifactFactory;
 
     /**
-     * Which version of Android SDK to use.
-     * @parameter expression="${androidVersion}"
-     *            default-value="1.5_r1"
-     */
-    private String androidVersion;
-    
-    /**
      * Maven ProjectHelper.
      *
      * @component
