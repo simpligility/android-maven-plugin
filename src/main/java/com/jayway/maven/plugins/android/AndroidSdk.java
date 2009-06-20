@@ -34,6 +34,7 @@ import java.util.Arrays;
 public class AndroidSdk {
     private final File   path;
     private final String platform;
+    private static final String PARAMETER_MESSAGE = "Please provide a proper Android SDK directory path as configuration parameter <sdk><path>...</path></sdk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.sdk.path=...";
 
     public AndroidSdk(File path, String platform) {
         this.path = path;
@@ -56,12 +57,16 @@ public class AndroidSdk {
             return Layout.LAYOUT_1_1;
         }
 
-        throw new InvalidSdkException("Android SDK could not be identified from path \"" + path +"\"");
+        throw new InvalidSdkException("Android SDK could not be identified from path \"" + path +"\". " + PARAMETER_MESSAGE);
     }
 
     private void assertPathIsDirectory(final File path) {
-        if (path == null) throw new InvalidSdkException("Path is null!");
-        if (!path.isDirectory()) throw new InvalidSdkException("Path \"" + path + "\" is not a directory.");
+        if (path == null) {
+            throw new InvalidSdkException(PARAMETER_MESSAGE);
+        }
+        if (!path.isDirectory()) {
+            throw new InvalidSdkException("Path \"" + path + "\" is not a directory. " + PARAMETER_MESSAGE);
+        }
     }
 
     private static final Set<String> commonToolsIn11And15 = new HashSet<String>() {
@@ -100,7 +105,7 @@ public class AndroidSdk {
             }
         }
 
-        throw new InvalidSdkException("Unsupported layout \"" + getLayout() + "\"!");
+        throw new InvalidSdkException("Unsupported layout \"" + getLayout() + "\"! " + PARAMETER_MESSAGE);
     }
 
 
@@ -117,7 +122,7 @@ public class AndroidSdk {
             return getPlatform() + "/framework.aidl";
         }
 
-        throw new InvalidSdkException("Unsupported layout \"" + getLayout() + "\"!");
+        throw new InvalidSdkException("Unsupported layout \"" + getLayout() + "\"! " + PARAMETER_MESSAGE);
     }
 
     /**
@@ -135,7 +140,7 @@ public class AndroidSdk {
             return new File(getPlatform() + "/android.jar");
         }
 
-        throw new MojoExecutionException("Invalid Layout \"" + getLayout() + "\"!");
+        throw new MojoExecutionException("Invalid Layout \"" + getLayout() + "\"! " + PARAMETER_MESSAGE);
     }
 
     public File getPlatform() {
