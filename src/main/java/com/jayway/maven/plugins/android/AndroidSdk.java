@@ -40,7 +40,7 @@ public class AndroidSdk {
         this.platform = platform;
     }
 
-    public enum Layout{LAYOUT_1_1, LAYOUT_1_5}
+    public enum Layout{LAYOUT_1_1, LAYOUT_1_5};
 
     public Layout getLayout() {
 
