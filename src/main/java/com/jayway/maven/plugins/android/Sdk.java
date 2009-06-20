@@ -29,6 +29,10 @@ import java.util.Arrays;
  *
  * TODO: do more thorough parameter checking
  *
+ * TODO: split this up into:
+ * TODO:     one parameter java bean, and
+ * TODO:     one object with functionality which reads parameters from parameter values, and then we have all this functionality there
+ *
  * @author hugo.josefson@jayway.com
  */
 public class Sdk {
