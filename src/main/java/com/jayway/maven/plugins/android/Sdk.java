@@ -37,6 +37,7 @@ public class Sdk {
      * Directory of the installed Android SDK, for example <code>/opt/android-sdk-linux_x86-1.5_r1</code>
      *
      * @parameter expression="${android.sdk.path}"
+     * @required
      */
     private File path;
 
