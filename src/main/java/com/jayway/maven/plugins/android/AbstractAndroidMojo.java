@@ -126,8 +126,31 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     /**
      * The Android SDK to use.
      * @parameter
+     * @required
      */
-    protected Sdk sdk;
+    private Sdk sdk;
+
+    /**
+     * <p>Parameter designed to pick up <code>-Dandroid.sdk.path</code> in case there is no pom with an
+     * <code>&lt;sdk&gt;</code> configuration tag.</p>
+     * <p>Corresponds to {@link Sdk#path}.</p>
+     *
+     * @parameter expression="${android.sdk.path}"
+     * @readonly
+     */
+    private File sdkPath;
+
+
+
+    /**
+     * <p>Parameter designed to pick up <code>-Dandroid.sdk.platform</code> in case there is no pom with an
+     * <code>&lt;sdk&gt;</code> configuration tag.</p>
+     * <p>Corresponds to {@link Sdk#platform}.</p>
+     *
+     * @parameter expression="${android.sdk.platform}"
+     * @readonly
+     */
+    private String sdkPlatform;
 
     /**
      * <p>Whether to undeploy an apk from the device before deploying it.</p>
@@ -181,9 +204,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         commands.add("install");
         commands.add("-r");
         commands.add(apkFile.getAbsolutePath());
-        getLog().info(sdk.getPathForTool("adb")+" " + commands.toString());
+        getLog().info(getAndroidSdk().getPathForTool("adb")+" " + commands.toString());
         try {
-            executor.executeCommand(sdk.getPathForTool("adb"), commands, false);
+            executor.executeCommand(getAndroidSdk().getPathForTool("adb"), commands, false);
             final String standardOut = executor.getStandardOut();
             if (standardOut != null && standardOut.contains("Failure")){
                 throw new MojoExecutionException("Error deploying " + apkFile + " to device. You might want to add command line parameter -Dandroid.undeployApkBeforeDeploying=true or add plugin configuration tag <undeployApkBeforeDeploying>true</undeployApkBeforeDeploying>\n" + standardOut);
@@ -245,9 +268,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
             commands.add("-k");  // ('-k' means keep the data and cache directories)
         }
         commands.add(packageName);
-        getLog().info(sdk.getPathForTool("adb")+" " + commands.toString());
+        getLog().info(getAndroidSdk().getPathForTool("adb")+" " + commands.toString());
         try {
-            executor.executeCommand(sdk.getPathForTool("adb"), commands, false);
+            executor.executeCommand(getAndroidSdk().getPathForTool("adb"), commands, false);
             getLog().debug(executor.getStandardOut());
             getLog().debug(executor.getStandardError());
             return true;
@@ -271,9 +294,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         commands.add("xmltree");
         commands.add(apkFile.getAbsolutePath());
         commands.add("AndroidManifest.xml");
-        getLog().info(sdk.getPathForTool("aapt")+" " + commands.toString());
+        getLog().info(getAndroidSdk().getPathForTool("aapt")+" " + commands.toString());
         try {
-            executor.executeCommand(sdk.getPathForTool("aapt"), commands, true);
+            executor.executeCommand(getAndroidSdk().getPathForTool("aapt"), commands, true);
             final String xmlTree = executor.getStandardOut();
             return extractPackageNameFromAndroidManifestXmlTree(xmlTree);
         } catch (ExecutionException e) {
@@ -361,6 +384,18 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
             return new String[0];
         }
 
+    }
+
+    /**
+     * Returns the Android SDK to use.
+     * @return the Android SDK to use.
+     */
+    protected AndroidSdk getAndroidSdk(){
+        if (sdk==null){
+            return new AndroidSdk(sdkPath, sdkPlatform);
+        }else{
+            return new AndroidSdk(sdk.getPath(), sdk.getPlatform());
+        }
     }
 
 }
