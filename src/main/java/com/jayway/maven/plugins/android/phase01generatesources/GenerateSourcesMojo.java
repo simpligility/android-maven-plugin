@@ -153,10 +153,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             commands.add(assetsDirectory.getAbsolutePath());
         }
         commands.add("-I"                                 );
-        commands.add(sdk.getAndroidJar().getAbsolutePath());
-        getLog().info(sdk.getPathForTool("aapt") + " " + commands.toString());
+        commands.add(getAndroidSdk().getAndroidJar().getAbsolutePath());
+        getLog().info(getAndroidSdk().getPathForTool("aapt") + " " + commands.toString());
         try {
-            executor.executeCommand(sdk.getPathForTool("aapt"), commands, project.getBasedir(), false);
+            executor.executeCommand(getAndroidSdk().getPathForTool("aapt"), commands, project.getBasedir(), false);
         } catch (ExecutionException e) {
             throw new MojoExecutionException("", e);
         }
@@ -167,7 +167,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     private void generateAidlFiles(String[] relativeAidlFileNames) throws MojoExecutionException {
         for (String relativeAidlFileName : relativeAidlFileNames) {
             List<String> commands       = new ArrayList<String>();
-            commands.add("-p" + sdk.getPathForFrameworkAidl());
+            commands.add("-p" + getAndroidSdk().getPathForFrameworkAidl());
 
             File generatedSourcesAidlDirectory = new File(project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "aidl");
             generatedSourcesAidlDirectory.mkdirs();
@@ -186,7 +186,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
                 CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
                 executor.setLogger(this.getLog());
 
-                executor.executeCommand(sdk.getPathForTool("aidl"), commands, project.getBasedir(), false);
+                executor.executeCommand(getAndroidSdk().getPathForTool("aidl"), commands, project.getBasedir(), false);
             } catch (ExecutionException e) {
                 throw new MojoExecutionException("", e);
             }
