@@ -71,7 +71,7 @@ public class Sdk {
      * <p>Note: this parameter is just the version number, without <code>"android-"</code> in the
      * beginning.</p>
      *
-     * @parameter expression="${android.sdk.platform}
+     * @parameter expression="${android.sdk.platform}"
      */
     private String platform;
 
