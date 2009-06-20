@@ -126,7 +126,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     /**
      * The Android SDK to use.
      * @parameter
-     * @required
      */
     private Sdk sdk;
 
