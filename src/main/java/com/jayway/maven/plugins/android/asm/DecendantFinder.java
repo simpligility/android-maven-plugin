@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author hugo.josefson@jayway.com
  */
-public class DecendantFinder implements ClassVisitor {
+class DecendantFinder implements ClassVisitor {
 
     /**
      * Constructs this finder.
