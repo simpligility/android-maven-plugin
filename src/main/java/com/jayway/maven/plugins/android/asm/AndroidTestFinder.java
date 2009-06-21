@@ -53,7 +53,7 @@ public class AndroidTestFinder {
 
                 classReader.accept(decendantFinder, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES | ClassReader.SKIP_CODE);
             } catch (IOException e) {
-                throw new MojoExecutionException("Error reading " + classFile + ".\nCould not determine whether it contains tests. Please specify with plugin config parameter <enablePlatformTest>true|false</enablePlatformTest>.", e);
+                throw new MojoExecutionException("Error reading " + classFile + ".\nCould not determine whether it contains tests. Please specify with plugin config parameter <enableIntegrationTest>true|false</enableIntegrationTest>.", e);
             } finally {
                 org.apache.commons.io.IOUtils.closeQuietly(inputStream);
             }
