@@ -49,7 +49,7 @@ public class AndroidTestFinder {
             try {
                 classReader = new ClassReader(new FileInputStream(classFile));
             } catch (IOException e) {
-                throw new MojoExecutionException("Error reading " + classFile + ".\nCould not determine whether it contains tests. Please specify with plugin config parameter <containsPlatformTests>true|false</containsPlatformTests>.", e);
+                throw new MojoExecutionException("Error reading " + classFile + ".\nCould not determine whether it contains tests. Please specify with plugin config parameter <enablePlatformTest>true|false</enablePlatformTest>.", e);
             }
             classReader.accept(decendantFinder, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES | ClassReader.SKIP_CODE);
         }
