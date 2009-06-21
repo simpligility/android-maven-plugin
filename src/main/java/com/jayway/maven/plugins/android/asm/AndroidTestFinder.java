@@ -1,25 +1,49 @@
 package com.jayway.maven.plugins.android.asm;
 
-import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.util.DirectoryWalkListener;
 import org.codehaus.plexus.util.DirectoryWalker;
-import org.objectweb.asm.*;
+import org.objectweb.asm.ClassReader;
+import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-public class AndroidTestFinder implements ClassVisitor {
+/**
+ * Finds Android platformtest classes in a directory of compiled Java classes.
+ */
+public class AndroidTestFinder {
 
-    public static void main(String[] args) throws IOException {
-        final List<File> classFiles = new LinkedList<File>();
+    private static final String[] TEST_PACKAGES = {"junit/framework/", "android/test/"};
 
-        DirectoryWalker walker = new DirectoryWalker();
-//        walker.setBaseDir(new File("/home/hugo/code/way/maven-android-plugin-samples/apidemos-15/apidemos-15-app/target/android-classes"));
-        walker.setBaseDir(new File("/home/hugo/code/way/maven-android-plugin-samples/apidemos-15/apidemos-15-platformtests/target/android-classes"));
+    public static boolean containsAndroidTests(File classesBaseDirectory) throws MojoExecutionException {
+
+        if (classesBaseDirectory == null || !classesBaseDirectory.isDirectory()) {
+            throw new IllegalArgumentException("classesBaseDirectory must be a valid directory!");
+        }
+
+        final List<File>      classFiles      = findEligebleClassFiles(classesBaseDirectory);
+        final DecendantFinder decendantFinder = new DecendantFinder(TEST_PACKAGES);
+
+        for (File classFile : classFiles) {
+            ClassReader classReader;
+            try {
+                classReader = new ClassReader(new FileInputStream(classFile));
+            } catch (IOException e) {
+                throw new MojoExecutionException("Error reading " + classFile + ".\nCould not determine whether it contains tests. Please specify with plugin config parameter <containsPlatformTests>true|false</containsPlatformTests>.", e);
+            }
+            classReader.accept(decendantFinder, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES | ClassReader.SKIP_CODE);
+        }
+
+        return decendantFinder.isDecendantFound();
+    }
+
+    private static List<File> findEligebleClassFiles(File classesBaseDirectory) {
+        final List<File>      classFiles = new LinkedList<File>();
+        final DirectoryWalker walker     = new DirectoryWalker();
+        walker.setBaseDir(classesBaseDirectory);
         walker.addSCMExcludes();
         walker.addInclude("**/*.class");
         walker.addDirectoryWalkListener(new DirectoryWalkListener() {
@@ -37,65 +61,8 @@ public class AndroidTestFinder implements ClassVisitor {
             }
         });
         walker.scan();
-
-
-
-        AndroidTestFinder androidTestFinder = new AndroidTestFinder();
-
-        for (File classFile : classFiles) {
-            ClassReader classReader = new ClassReader(new FileInputStream(classFile));
-            classReader.accept(androidTestFinder, 0);
-        }
-
-        boolean isTestFound = androidTestFinder.isTestFound();
-        System.out.println(isTestFound?"Yes, this is a platformtest project.":"No, it's just a regular Android app.");
-
+        return classFiles;
     }
 
-    private static final String[] TEST_PACKAGES = {"junit/framework/", "android/test/"};
-    private final AtomicBoolean isTestFound = new AtomicBoolean(false);
 
-    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        for (String testPackage : TEST_PACKAGES) {
-            if (StringUtils.startsWith(superName, testPackage)){
-                flagAsTest();
-                System.out.println(name + " is a test because it extends " + superName);
-            }
-        }
-    }
-
-    private void flagAsTest() {
-        isTestFound.set(true);
-    }
-
-    public boolean isTestFound(){
-        return isTestFound.get();
-    }
-
-    public void visitSource(String source, String debug) {
-    }
-
-    public void visitOuterClass(String owner, String name, String desc) {
-    }
-
-    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-        return null;
-    }
-
-    public void visitAttribute(Attribute attr) {
-    }
-
-    public void visitInnerClass(String name, String outerName, String innerName, int access) {
-    }
-
-    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-        return null;
-    }
-
-    public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        return null;
-    }
-
-    public void visitEnd() {
-    }
 }
