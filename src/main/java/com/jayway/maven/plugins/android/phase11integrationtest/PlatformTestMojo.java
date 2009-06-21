@@ -71,9 +71,9 @@ public class PlatformTestMojo extends AbstractIntegrationtestMojo {
         commands.add( "-w");
         commands.add( testsPackage + "/" + testRunner);
         
-        getLog().info("adb " + commands.toString());
+        getLog().info(getAndroidSdk().getPathForTool("adb") + " " + commands.toString());
         try {
-            executor.executeCommand("adb", commands, project.getBasedir(), true);
+            executor.executeCommand(getAndroidSdk().getPathForTool("adb"), commands, project.getBasedir(), true);
             final String standardOut   = executor.getStandardOut  ();
             final String standardError = executor.getStandardError();
             getLog().debug(standardOut);
