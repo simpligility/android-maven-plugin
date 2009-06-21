@@ -15,6 +15,12 @@
  */
 package com.jayway.maven.plugins.android;
 
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.MojoExecutionException;
+import com.jayway.maven.plugins.android.asm.AndroidTestFinder;
+
+import java.io.File;
+
 /**
  * For integrationtest related Mojos.
  * 
@@ -30,21 +36,36 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
     private boolean mavenTestSkip;
 
     /**
-     * Enables integration test related goals. If <code>false</code>, they will be skipped.
-     * @parameter expression="${android.enableIntegrationTest}" default-value=true
+     * Enables or disables integration test related goals. If <code>true</code> they will be run; if <code>false</code>,
+     * they will be skipped. If <code>auto</code>, they will run if any of the classes inherit from any class in
+     * <code>junit.framework.**</code> or <code>android.test.**</code>.
+     * @parameter expression="${android.enableIntegrationTest}" default-value="auto"
      */
-    private boolean enableIntegrationTest;
+    private String enableIntegrationTest;
 
     /**
      * Whether or not to execute integration test related goals. Reads from configuration parameter
      * <code>enableIntegrationTest</code>, but can be overridden with <code>-Dmaven.test.skip</code>.
      * @return <code>true</code> if integration test goals should be executed, <code>false</code> otherwise.
      */
-    protected boolean isEnableIntegrationTest() {
+    protected boolean isEnableIntegrationTest() throws MojoFailureException, MojoExecutionException {
         if (mavenTestSkip){
             return false;
         }
 
-        return enableIntegrationTest;
+        if ("false".equalsIgnoreCase(enableIntegrationTest)){
+            return false;
+        }
+
+        if ("true".equalsIgnoreCase(enableIntegrationTest)){
+            return true;
+        }
+
+        if ("auto".equalsIgnoreCase(enableIntegrationTest)){
+            return AndroidTestFinder.containsAndroidTests(new File(project.getBuild().getDirectory(), "android-classes"));
+        }
+
+        throw new MojoFailureException("enableIntegrationTest must be configured as 'true', 'false' or 'auto'.");
+
     }
 }
