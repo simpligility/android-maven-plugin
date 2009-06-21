@@ -26,9 +26,9 @@ import java.util.Set;
 
 /**
  * Deploys the apk we are about to test on the connected device. All directly declared dependencies of
- * <code>&lt;type&gt;android:apk&lt;/type&gt;</code> in this project's pom are presumed to be the apk's to deploy.<br/>
- * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on a project
- * with <code>&lt;packaging&gt;android:apk:platformTest&lt;/packaging&gt;</code>.
+ * <code>&lt;type&gt;apk&lt;/type&gt;</code> in this project's pom are presumed to be the apk's to deploy.<br/>
+ * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on an Android
+ * platformtest project.
  * @goal deployDependencies
  * @phase pre-integration-test
  * @requiresDependencyResolution runtime
@@ -45,8 +45,8 @@ public class DeployDependenciesMojo extends AbstractIntegrationtestMojo {
         if (directDependentArtifacts != null) {
             for (Artifact artifact : directDependentArtifacts) {
                 String type = artifact.getType();
-                if (type.equals("android:apk")) {
-                    getLog().debug("Detected android:apk dependency " + artifact + ". Will resolve and deploy to device...");
+                if (type.equals("apk")) {
+                    getLog().debug("Detected apk dependency " + artifact + ". Will resolve and deploy to device...");
                     final File targetApkFile = resolveArtifactToFile(artifact);
                     if (undeployApkBeforeDeploying){
                         getLog().debug("Attempting undeploy of " + targetApkFile + " from device...");
