@@ -46,12 +46,17 @@ public class AndroidTestFinder {
 
         for (File classFile : classFiles) {
             ClassReader classReader;
+            FileInputStream inputStream = null;
             try {
-                classReader = new ClassReader(new FileInputStream(classFile));
+                inputStream = new FileInputStream(classFile);
+                classReader = new ClassReader(inputStream);
+
+                classReader.accept(decendantFinder, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES | ClassReader.SKIP_CODE);
             } catch (IOException e) {
                 throw new MojoExecutionException("Error reading " + classFile + ".\nCould not determine whether it contains tests. Please specify with plugin config parameter <enablePlatformTest>true|false</enablePlatformTest>.", e);
+            } finally {
+                org.apache.commons.io.IOUtils.closeQuietly(inputStream);
             }
-            classReader.accept(decendantFinder, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES | ClassReader.SKIP_CODE);
         }
 
         return decendantFinder.isDecendantFound();
