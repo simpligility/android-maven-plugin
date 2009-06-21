@@ -18,6 +18,7 @@ public class AndroidTestFinder implements ClassVisitor {
         final List<File> classFiles = new LinkedList<File>();
 
         DirectoryWalker walker = new DirectoryWalker();
+//        walker.setBaseDir(new File("/home/hugo/code/way/maven-android-plugin-samples/apidemos-15/apidemos-15-app/target/android-classes"));
         walker.setBaseDir(new File("/home/hugo/code/way/maven-android-plugin-samples/apidemos-15/apidemos-15-platformtests/target/android-classes"));
         walker.addSCMExcludes();
         walker.addInclude("**/*.class");
@@ -39,12 +40,15 @@ public class AndroidTestFinder implements ClassVisitor {
 
 
 
-        AndroidTestFinder cp = new AndroidTestFinder();
+        AndroidTestFinder androidTestFinder = new AndroidTestFinder();
 
         for (File classFile : classFiles) {
-            ClassReader cr = new ClassReader(new FileInputStream(classFile));
-            cr.accept(cp, 0);
+            ClassReader classReader = new ClassReader(new FileInputStream(classFile));
+            classReader.accept(androidTestFinder, 0);
         }
+
+        boolean isTestFound = androidTestFinder.isTestFound();
+        System.out.println(isTestFound?"Yes, this is a platformtest project.":"No, it's just a regular Android app.");
 
     }
 
