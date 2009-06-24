@@ -17,9 +17,11 @@ package com.jayway.maven.plugins.android;
 
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.artifact.Artifact;
 import com.jayway.maven.plugins.android.asm.AndroidTestFinder;
 
 import java.io.File;
+import java.util.Set;
 
 /**
  * For integrationtest related Mojos.
@@ -68,4 +70,33 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
         throw new MojoFailureException("enableIntegrationTest must be configured as 'true', 'false' or 'auto'.");
 
     }
+
+    protected void deployDependencies() throws MojoExecutionException {
+        Set<Artifact> directDependentArtifacts = project.getDependencyArtifacts();
+        if (directDependentArtifacts != null) {
+            for (Artifact artifact : directDependentArtifacts) {
+                String type = artifact.getType();
+                if (type.equals("apk")) {
+                    getLog().debug("Detected apk dependency " + artifact + ". Will resolve and deploy to device...");
+                    final File targetApkFile = resolveArtifactToFile(artifact);
+                    if (undeployApkBeforeDeploying){
+                        getLog().debug("Attempting undeploy of " + targetApkFile + " from device...");
+                        undeployApk(targetApkFile);
+                    }
+                    getLog().debug("Deploying " + targetApkFile + " to device...");
+                    deployApk(targetApkFile);
+                }
+            }
+        }
+    }
+
+    protected void deploy() throws MojoExecutionException {
+        File inputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apk");
+        if (undeployApkBeforeDeploying){
+            undeployApk(inputFile);
+        }
+        deployApk(inputFile);
+    }
+
+
 }
