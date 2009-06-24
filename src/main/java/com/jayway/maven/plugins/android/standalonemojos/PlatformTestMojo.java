@@ -16,20 +16,14 @@
  */
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
-import com.jayway.maven.plugins.android.CommandExecutor;
-import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.AbstractPlatformTestMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Runs the platformTest apk on device.
  *
  * @goal platformTest
- * @phase integration-test
  * @author hugo.josefson@jayway.com
  */
 public class PlatformTestMojo extends AbstractPlatformTestMojo {
