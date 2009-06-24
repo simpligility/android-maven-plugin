@@ -39,7 +39,7 @@ public class DeployFileMojo extends AbstractAndroidMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        if (undeployApkBeforeDeploying){
+        if (undeployBeforeDeploy){
             undeployApk(file);
         }
         deployApk(file);

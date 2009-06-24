@@ -163,10 +163,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * keystore is different.</p>
      *
      * @parameter default-value=false
-     *            expression="${android.undeployApkBeforeDeploying}"
+     *            expression="${android.undeployBeforeDeploy}"
      *
      */
-    protected boolean undeployApkBeforeDeploying;
+    protected boolean undeployBeforeDeploy;
 
     /**
      * Attempts to resolve an {@link Artifact} to a {@link File}.
@@ -207,7 +207,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
             executor.executeCommand(getAndroidSdk().getPathForTool("adb"), commands, false);
             final String standardOut = executor.getStandardOut();
             if (standardOut != null && standardOut.contains("Failure")){
-                throw new MojoExecutionException("Error deploying " + apkFile + " to device. You might want to add command line parameter -Dandroid.undeployApkBeforeDeploying=true or add plugin configuration tag <undeployApkBeforeDeploying>true</undeployApkBeforeDeploying>\n" + standardOut);
+                throw new MojoExecutionException("Error deploying " + apkFile + " to device. You might want to add command line parameter -Dandroid.undeployBeforeDeploy=true or add plugin configuration tag <undeployBeforeDeploy>true</undeployBeforeDeploy>\n" + standardOut);
             }
         } catch (ExecutionException e) {
             getLog().error(executor.getStandardOut());
