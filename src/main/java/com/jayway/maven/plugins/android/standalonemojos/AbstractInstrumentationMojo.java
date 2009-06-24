@@ -34,7 +34,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
      * @optional
      * @parameter expression="${android.test.targetPackage}
      */
-    private String testsPackage;
+    private String testPackage;
     /**
      * Class name of test runner. If not specified, it is inferred from <code>AndroidManifest.xml</code>.
      * @optional
@@ -43,8 +43,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
     private String testRunner;
 
     protected void instrument() throws MojoExecutionException, MojoFailureException {
-        if(testsPackage == null) {
-            testsPackage = extractPackageNameFromAndroidManifest(androidManifestFile);
+        if(testPackage == null) {
+            testPackage = extractPackageNameFromAndroidManifest(androidManifestFile);
         }
 
         if(testRunner == null) {
@@ -59,7 +59,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         commands.add("am");
         commands.add("instrument");
         commands.add( "-w");
-        commands.add( testsPackage + "/" + testRunner);
+        commands.add( testPackage + "/" + testRunner);
 
         getLog().info(getAndroidSdk().getPathForTool("adb") + " " + commands.toString());
         try {
