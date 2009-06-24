@@ -22,8 +22,8 @@ import com.jayway.maven.plugins.android.ExecutionException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author hugo.josefson@jayway.com

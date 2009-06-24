@@ -15,10 +15,10 @@
  */
 package com.jayway.maven.plugins.android;
 
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.artifact.Artifact;
 import com.jayway.maven.plugins.android.asm.AndroidTestFinder;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 
 import java.io.File;
 import java.util.Set;

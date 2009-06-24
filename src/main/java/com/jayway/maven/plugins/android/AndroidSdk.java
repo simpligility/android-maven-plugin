@@ -16,13 +16,11 @@
 package com.jayway.maven.plugins.android;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.commons.io.filefilter.NameFileFilter;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Represents an Android SDK.

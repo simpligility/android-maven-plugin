@@ -17,8 +17,8 @@ package com.jayway.maven.plugins.android;
 
 import org.codehaus.plexus.util.ReflectionUtils;
 import org.junit.Assert;
-import org.junit.Test;
 import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;

@@ -15,10 +15,10 @@
  */
 package com.jayway.maven.plugins.android.asm;
 
+import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.util.DirectoryWalkListener;
 import org.codehaus.plexus.util.DirectoryWalker;
 import org.objectweb.asm.ClassReader;
-import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -16,16 +16,9 @@
  */
 package com.jayway.maven.plugins.android.phase10preintegrationtest;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.CommandExecutor;
-import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <p>Internal. Do not use.</p>
