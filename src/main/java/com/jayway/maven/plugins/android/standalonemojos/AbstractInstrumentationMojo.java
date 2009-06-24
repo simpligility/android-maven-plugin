@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * @author hugo.josefson@jayway.com
  */
-public abstract class AbstractPlatformTestMojo extends AbstractIntegrationtestMojo {
+public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtestMojo {
     /**
      * Package name of the apk we wish to test. If not specified, it is inferred from <code>AndroidManifest.xml</code>.
      * @optional
@@ -42,7 +42,7 @@ public abstract class AbstractPlatformTestMojo extends AbstractIntegrationtestMo
      */
     private String testRunner;
 
-    protected void platformTest() throws MojoExecutionException, MojoFailureException {
+    protected void instrument() throws MojoExecutionException, MojoFailureException {
         if(testsPackage == null) {
             testsPackage = extractPackageNameFromAndroidManifest(androidManifestFile);
         }

@@ -20,15 +20,15 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 /**
- * Runs the platformTest apk on device.
+ * Runs the instrument apk on device.
  *
- * @goal platformTest
+ * @goal instrument
  * @author hugo.josefson@jayway.com
  */
-public class PlatformTestMojo extends AbstractPlatformTestMojo {
+public class InstrumentMojo extends AbstractInstrumentationMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        platformTest();
+        instrument();
     }
 
 }
