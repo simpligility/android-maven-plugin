@@ -26,23 +26,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @goal adbPull
+ * @goal pull
  * @requiresProject false
- * @description
+ * @description Copy file/dir from device.
  */
-public class DevicePullerMojo extends AbstractMojo {
+public class PullMojo extends AbstractMojo {
 
     /**
      * @parameter expression="${source}"
      * @required
      */
-    private File sourceFileOrDirectory;
+    private File source;
 
     /**
      * @parameter expression="${destination}"
      * @required
      */
-    private File destinationFileOrDirectory;
+    private File destination;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
@@ -50,13 +50,14 @@ public class DevicePullerMojo extends AbstractMojo {
 
         List<String> commands = new ArrayList<String>();
         commands.add("pull");
-        commands.add(sourceFileOrDirectory.getAbsolutePath());
-        commands.add(destinationFileOrDirectory.getAbsolutePath());
+        commands.add(source.getAbsolutePath());
+        commands.add(destination.getAbsolutePath());
 
         getLog().info("adb " + commands.toString());
         try {
             executor.executeCommand("adb", commands);
         } catch (ExecutionException e) {
+            throw new MojoExecutionException("Pull failed.", e);
         }
     }
 }
