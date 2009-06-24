@@ -82,11 +82,11 @@ public class AbstractAndroidMojoTest {
         Assert.assertEquals("com.example.android.apis.tests", foundPackage);
     }
 
-    private static class MyAbstractAndroidMojo extends AbstractAndroidMojo {
+    private class MyAbstractAndroidMojo extends AbstractAndroidMojo {
 
         @Override
         protected AndroidSdk getAndroidSdk() {
-            return AndroidSdkTest.SDK_1_5_PLATFORM_1_5;
+            return new SdkTestSupport().getSdk_1_5_platform_1_5();
         }
 
         public void execute() throws MojoExecutionException, MojoFailureException {
