@@ -14,29 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jayway.maven.plugins.android.standalonemojos;
+package com.jayway.maven.plugins.android.phase10preintegrationtest;
 
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Deploys the apk file to a connected device.<br/>
- * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on an Android
- * platformtest project.
- * @goal deploy
+ * <p>Internal. Do not use.</p>
+ * <p>Called automatically when the lifecycle reaches phase <code>pre-integration-test</code>. Figures out whether to
+ * call goals in this phase, and calls them.</p>
+ *
+ * @goal internal-pre-integration-test
  * @phase pre-integration-test
- * @requiresDependencyResolution runtime
  * @author hugo.josefson@jayway.com
  */
-public class DeployMojo extends AbstractIntegrationtestMojo {
+public class InternalPreIntegrationTestMojo extends AbstractIntegrationtestMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-
-        deploy();
+        if (isEnableIntegrationTest()){
+            deployDependencies();
+            deploy();
+        }
     }
-
 
 }

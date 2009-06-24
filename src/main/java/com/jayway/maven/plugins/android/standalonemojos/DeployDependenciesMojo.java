@@ -37,26 +37,8 @@ import java.util.Set;
 public class DeployDependenciesMojo extends AbstractIntegrationtestMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if (!isEnableIntegrationTest()){
-            return;
-        }
-
-        Set<Artifact> directDependentArtifacts = project.getDependencyArtifacts();
-        if (directDependentArtifacts != null) {
-            for (Artifact artifact : directDependentArtifacts) {
-                String type = artifact.getType();
-                if (type.equals("apk")) {
-                    getLog().debug("Detected apk dependency " + artifact + ". Will resolve and deploy to device...");
-                    final File targetApkFile = resolveArtifactToFile(artifact);
-                    if (undeployApkBeforeDeploying){
-                        getLog().debug("Attempting undeploy of " + targetApkFile + " from device...");
-                        undeployApk(targetApkFile);
-                    }
-                    getLog().debug("Deploying " + targetApkFile + " to device...");
-                    deployApk(targetApkFile);
-                }
-            }
-        }
+        deployDependencies();
     }
+
 
 }

@@ -32,61 +32,10 @@ import java.util.List;
  * @phase integration-test
  * @author hugo.josefson@jayway.com
  */
-public class PlatformTestMojo extends AbstractIntegrationtestMojo {
-
-    /**
-     * Package name of the apk we wish to test. If not specified, it is inferred from <code>AndroidManifest.xml</code>.
-     * @optional
-     * @parameter expression="${android.test.targetPackage}
-     */
-    private String testsPackage;
-
-    /**
-     * Class name of test runner. If not specified, it is inferred from <code>AndroidManifest.xml</code>.
-     * @optional
-     * @parameter expression="${android.test.testRunner}"
-     */
-    private String testRunner;
+public class PlatformTestMojo extends AbstractPlatformTestMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if (!isEnableIntegrationTest()){
-            return;
-        }
-
-        if(testsPackage == null) {
-            testsPackage = extractPackageNameFromAndroidManifest(androidManifestFile);
-        }
-
-        if(testRunner == null) {
-            testRunner = extractTestRunnerFromAndroidManifest(androidManifestFile);
-        }
-
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
-
-        List<String> commands = new ArrayList<String>();
-        commands.add("shell");
-        commands.add("am");
-        commands.add("instrument");
-        commands.add( "-w");
-        commands.add( testsPackage + "/" + testRunner);
-        
-        getLog().info(getAndroidSdk().getPathForTool("adb") + " " + commands.toString());
-        try {
-            executor.executeCommand(getAndroidSdk().getPathForTool("adb"), commands, project.getBasedir(), true);
-            final String standardOut   = executor.getStandardOut  ();
-            final String standardError = executor.getStandardError();
-            getLog().debug(standardOut);
-            getLog().debug(standardError);
-            // Fail when tests on device fail. adb does not exit with errorcode!=0 or even print to stderr, so we have to parse stdout.
-            if (standardOut == null || !standardOut.matches(".*?OK \\([0-9]+ tests?\\)\\s*")){
-                throw new MojoFailureException("Tests failed on device.");
-            }
-        } catch (ExecutionException e) {
-            getLog().error(executor.getStandardOut());
-            getLog().error(executor.getStandardError());
-            throw new MojoFailureException("Tests failed on device.");
-        }
+        platformTest();
     }
 
 }
