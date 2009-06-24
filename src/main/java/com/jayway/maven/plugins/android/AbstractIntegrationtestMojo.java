@@ -79,7 +79,7 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
                 if (type.equals("apk")) {
                     getLog().debug("Detected apk dependency " + artifact + ". Will resolve and deploy to device...");
                     final File targetApkFile = resolveArtifactToFile(artifact);
-                    if (undeployApkBeforeDeploying){
+                    if (undeployBeforeDeploy){
                         getLog().debug("Attempting undeploy of " + targetApkFile + " from device...");
                         undeployApk(targetApkFile);
                     }
@@ -92,7 +92,7 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
 
     protected void deploy() throws MojoExecutionException {
         File inputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apk");
-        if (undeployApkBeforeDeploying){
+        if (undeployBeforeDeploy){
             undeployApk(inputFile);
         }
         deployApk(inputFile);

@@ -25,7 +25,7 @@ import org.apache.maven.plugin.MojoFailureException;
  * <code>&lt;type&gt;apk&lt;/type&gt;</code> in this project's pom are presumed to be the apk's to deploy.<br/>
  * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on an Android
  * platformtest project.
- * @goal deployDependencies
+ * @goal deploy-dependencies
  * @requiresDependencyResolution runtime
  * @author hugo.josefson@jayway.com
  */
