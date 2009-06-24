@@ -34,7 +34,6 @@ import java.io.File;
 public class DeployMojo extends AbstractIntegrationtestMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-
         deploy();
     }
 
