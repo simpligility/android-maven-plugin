@@ -16,7 +16,7 @@
  */
 package com.jayway.maven.plugins.android.phase11integrationtest;
 
-import com.jayway.maven.plugins.android.AbstractPlatformTestMojo;
+import com.jayway.maven.plugins.android.standalonemojos.AbstractPlatformTestMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
