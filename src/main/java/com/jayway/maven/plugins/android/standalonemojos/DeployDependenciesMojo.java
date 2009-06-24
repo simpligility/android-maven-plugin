@@ -30,7 +30,6 @@ import java.util.Set;
  * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on an Android
  * platformtest project.
  * @goal deployDependencies
- * @phase pre-integration-test
  * @requiresDependencyResolution runtime
  * @author hugo.josefson@jayway.com
  */
