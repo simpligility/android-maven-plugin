@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jayway.maven.plugins.android.phase10preintegrationtest;
+package com.jayway.maven.plugins.android.standalonemojos;
 
 import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
 import org.apache.maven.artifact.Artifact;
