@@ -21,16 +21,16 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 /**
- * Undeploys a specific package name from a connected device.<br/>
- * @goal undeploy-packageName
+ * Undeploys an application from a connected device, based on <code>package</code>.<br/>
+ * @goal undeploy-package
  * @requiresProject false
  * @author hugo.josefson@jayway.com
  */
-public class UndeployPackageNameMojo extends AbstractAndroidMojo {
+public class UndeployPackageMojo extends AbstractAndroidMojo {
 
     /**
-     * The package name to undeploy from a connected emulator or usb device.
-     * @parameter expression="${packageName}"
+     * The package to undeploy from a connected emulator or usb device.
+     * @parameter property="package" expression="${package}"
      * @required
      */
     private String packageName;
