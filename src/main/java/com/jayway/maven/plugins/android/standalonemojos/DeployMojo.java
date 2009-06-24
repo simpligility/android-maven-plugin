@@ -20,8 +20,6 @@ import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import java.io.File;
-
 /**
  * Deploys the apk file to a connected device.<br/>
  * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on an Android

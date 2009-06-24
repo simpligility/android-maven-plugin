@@ -15,14 +15,7 @@
  */
 package com.jayway.maven.plugins.android;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.commons.io.filefilter.NameFileFilter;
-
 import java.io.File;
-import java.io.FilenameFilter;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Arrays;
 
 /**
  * Configuration for an Android SDK. Only receives config parameter values, and there is no logic in here. Logic is in

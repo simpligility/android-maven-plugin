@@ -17,12 +17,8 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
 import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-
-import java.io.File;
-import java.util.Set;
 
 /**
  * Deploys the apk we are about to test on the connected device. All directly declared dependencies of

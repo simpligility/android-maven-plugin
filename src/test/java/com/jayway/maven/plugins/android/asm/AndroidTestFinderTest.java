@@ -15,9 +15,9 @@
  */
 package com.jayway.maven.plugins.android.asm;
 
-import org.junit.Test;
-import org.junit.Assert;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.io.File;
 
