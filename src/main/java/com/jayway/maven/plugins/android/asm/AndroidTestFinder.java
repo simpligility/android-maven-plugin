@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Finds Android platformtest classes in a directory of compiled Java classes.
+ * Finds Android instrumentation test classes in a directory of compiled Java classes.
  *
  * @author hugo.josefson@jayway.com
  */

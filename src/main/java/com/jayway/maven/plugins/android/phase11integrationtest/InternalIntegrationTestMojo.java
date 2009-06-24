@@ -16,7 +16,7 @@
  */
 package com.jayway.maven.plugins.android.phase11integrationtest;
 
-import com.jayway.maven.plugins.android.standalonemojos.AbstractPlatformTestMojo;
+import com.jayway.maven.plugins.android.standalonemojos.AbstractInstrumentationMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -29,11 +29,11 @@ import org.apache.maven.plugin.MojoFailureException;
  * @phase integration-test
  * @author hugo.josefson@jayway.com
  */
-public class InternalIntegrationTestMojo extends AbstractPlatformTestMojo {
+public class InternalIntegrationTestMojo extends AbstractInstrumentationMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (isEnableIntegrationTest()){
-            platformTest();
+            instrument();
         }
     }
 

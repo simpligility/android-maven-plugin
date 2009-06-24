@@ -22,8 +22,8 @@ import org.apache.maven.plugin.MojoFailureException;
 
 /**
  * Deploys the apk file to a connected device.<br/>
- * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on an Android
- * platformtest project.
+ * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on a project
+ * with instrumentation tests.
  * @goal deploy
  * @phase pre-integration-test
  * @requiresDependencyResolution runtime
@@ -34,6 +34,5 @@ public class DeployMojo extends AbstractIntegrationtestMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         deploy();
     }
-
 
 }

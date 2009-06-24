@@ -155,7 +155,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * <p>Whether to undeploy an apk from the device before deploying it.</p>
      *
      * <p>Only has effect when running <code>mvn android:deploy</code> in an Android application project manually, or
-     * when running <code>mvn integration-test</code> (or <code>mvn install</code>) in an Android platformtest project.
+     * when running <code>mvn integration-test</code> (or <code>mvn install</code>) in a project with instrumentation
+     * tests.
      * </p>
      *
      * <p>It is useful to keep this set to <code>true</code> at all times, because if an apk with the same package was
