@@ -20,7 +20,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 /**
- * Runs the instrument apk on device.
+ * Runs the instrumentation apk on device.
  *
  * @goal instrument
  * @author hugo.josefson@jayway.com

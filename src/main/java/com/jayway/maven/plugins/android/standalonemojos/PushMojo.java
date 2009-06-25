@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Copy file/dir to device.
  * @goal push
  * @requiresProject false
- * @description Copy file/dir to device.
  */
 public class PushMojo extends AbstractMojo {
 

@@ -28,18 +28,15 @@ import java.util.List;
 
 /**
  * Generates java files based on aidl files.<br/>
+ * Generates <code>R.java</code> based on resources specified by the <code>resources</code> configuration parameter.<br/>
+ * <br/>
  * If the configuration parameter <code>deleteConflictingFiles</code> is <code>true</code> (which it is by default), this
  * goal has the following side-effect:
  * <ul>
+ * <li>deletes any <code>R.java</code> files found in the source directory.</li>
  * <li>deletes any <code>.java</code> files with the same name as an <code>.aidl</code> file found in the source
  * directory.</li>
- * </ul>
- * Generates <code>R.java</code> based on resources specified by the <code>resources</code> configuration parameter.<br/>
- * If the configuration parameter <code>deleteConflictingFiles</code> is <code>true</code> (which it is by default), this
- * goal has the following side-effects:
- * <ul>
  * <li>deletes any <code>Thumbs.db</code> files found in the resource directory.</li>
- * <li>deletes any <code>R.java</code> files found in the source directory.</li>
  * </ul>
  * @goal generate-sources
  * @phase generate-sources
