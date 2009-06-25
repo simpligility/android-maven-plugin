@@ -335,16 +335,16 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         return (String) packageName;
     }
 
-    protected String extractTestRunnerFromAndroidManifest(File androidManifestFile) throws MojoExecutionException {
+    protected String extractInstrumentationRunnerFromAndroidManifest(File androidManifestFile) throws MojoExecutionException {
         final URL xmlURL;
         try {
             xmlURL = androidManifestFile.toURI().toURL();
         } catch (MalformedURLException e) {
-            throw new MojoExecutionException("Error while trying to figure out test runner from inside AndroidManifest.xml file " + androidManifestFile, e);
+            throw new MojoExecutionException("Error while trying to figure out instrumentation runner from inside AndroidManifest.xml file " + androidManifestFile, e);
         }
         final DocumentContainer documentContainer = new DocumentContainer(xmlURL);
-        final Object            testRunner        = JXPathContext.newContext(documentContainer).getValue("manifest//instrumentation/@android:name", String.class);
-        return (String) testRunner;
+        final Object            instrumentationRunner        = JXPathContext.newContext(documentContainer).getValue("manifest//instrumentation/@android:name", String.class);
+        return (String) instrumentationRunner;
     }
 
     protected int deleteFilesFromDirectory(File baseDirectory, String... includes) throws MojoExecutionException {
