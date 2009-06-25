@@ -30,25 +30,27 @@ import java.util.List;
  */
 public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtestMojo {
     /**
-     * Package name of the apk we wish to test. If not specified, it is inferred from <code>AndroidManifest.xml</code>.
+     * Package name of the apk we wish to instrument. If not specified, it is inferred from
+     * <code>AndroidManifest.xml</code>.
      * @optional
-     * @parameter expression="${android.test.targetPackage}
+     * @parameter expression="${android.instrumentationPackage}
      */
-    private String testPackage;
+    private String instrumentationPackage;
+    
     /**
      * Class name of test runner. If not specified, it is inferred from <code>AndroidManifest.xml</code>.
      * @optional
-     * @parameter expression="${android.test.testRunner}"
+     * @parameter expression="${android.instrumentationRunner}"
      */
-    private String testRunner;
+    private String instrumentationRunner;
 
     protected void instrument() throws MojoExecutionException, MojoFailureException {
-        if(testPackage == null) {
-            testPackage = extractPackageNameFromAndroidManifest(androidManifestFile);
+        if(instrumentationPackage == null) {
+            instrumentationPackage = extractPackageNameFromAndroidManifest(androidManifestFile);
         }
 
-        if(testRunner == null) {
-            testRunner = extractTestRunnerFromAndroidManifest(androidManifestFile);
+        if(instrumentationRunner == null) {
+            instrumentationRunner = extractInstrumentationRunnerFromAndroidManifest(androidManifestFile);
         }
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
@@ -59,7 +61,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         commands.add("am");
         commands.add("instrument");
         commands.add( "-w");
-        commands.add( testPackage + "/" + testRunner);
+        commands.add( instrumentationPackage + "/" + instrumentationRunner);
 
         getLog().info(getAndroidSdk().getPathForTool("adb") + " " + commands.toString());
         try {
