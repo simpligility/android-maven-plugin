@@ -21,9 +21,9 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 /**
- * <p>Internal. Do not use.</p>
- * <p>Called automatically when the lifecycle reaches phase <code>integration-test</code>. Figures out whether to
- * call goals in this phase, and calls them.</p>
+ * Internal. Do not use.<br/>
+ * Called automatically when the lifecycle reaches phase <code>integration-test</code>. Figures out whether to
+ * call goals in this phase, and calls them.
  *
  * @goal internal-integration-test
  * @phase integration-test

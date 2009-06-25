@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Copy file/dir from device.
  * @goal pull
  * @requiresProject false
- * @description Copy file/dir from device.
  */
 public class PullMojo extends AbstractMojo {
 
