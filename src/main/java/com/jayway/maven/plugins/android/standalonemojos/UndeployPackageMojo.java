@@ -29,13 +29,16 @@ import org.apache.maven.plugin.MojoFailureException;
 public class UndeployPackageMojo extends AbstractAndroidMojo {
 
     /**
-     * The package to undeploy from a connected emulator or usb device.
-     * @parameter property="package" expression="${package}"
-     * @required
+     * The package to undeploy from a connected emulator or usb device. If not defined, will use package from
+     * <code>AndroidManifest.xml</code>.
+     * @parameter property="package" expression="${android.package}"
      */
     private String packageName;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (packageName == null){
+            extractPackageNameFromAndroidManifest(androidManifestFile);
+        }
         undeployApk(packageName);
     }
 
