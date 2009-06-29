@@ -37,6 +37,10 @@
         <system>Google Code Issue Tracking</system>
         <url>http://code.google.com/p/maven-android-plugin/issues/list</url>
     </issueManagement>
+    <ciManagement>
+        <system>Hudson</system>
+        <url>http://hudson.josefson.org/view/Maven%20Android%20Plugin%202.x/</url>
+    </ciManagement>
     <licenses>
         <license>
             <name>Apache 2.0</name>
