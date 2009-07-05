@@ -46,12 +46,6 @@ import java.util.List;
 public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
     /**
-     * Make package directories in the directory where files are copied to.
-     * @parameter default-value=true
-     */
-    private boolean createPackageDirectories;
-
-    /**
      * <p>Whether to delete any <code>R.java</code> file, and <code>.java</code> files with the same name as
      * <code>.aidl</code> files, found in the source directory.</p>
      *
@@ -134,9 +128,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
         List<String> commands = new ArrayList<String>();
         commands.add("package");
-        if (createPackageDirectories) {
-            commands.add("-m");
-        }
+        commands.add("-m");
         commands.add("-J"                                 );
         commands.add(generatedSourcesRDirectoryName       );
         commands.add("-M"                                 );
