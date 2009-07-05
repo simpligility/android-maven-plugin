@@ -23,7 +23,7 @@ import org.apache.maven.plugin.MojoFailureException;
 /**
  * Internal. Do not use.<br/>
  * Called automatically when the lifecycle reaches phase <code>integration-test</code>. Figures out whether to
- * call goals in this phase, and calls them.
+ * call goals in this phase; and if so, calls <code>android:instrument</code>.
  *
  * @goal internal-integration-test
  * @phase integration-test
