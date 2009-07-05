@@ -21,7 +21,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 /**
- * Deploys the apk file to a connected device.<br/>
+ * Deploys the built apk file to a connected device.<br/>
  * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on a project
  * with instrumentation tests.
  * @goal deploy
