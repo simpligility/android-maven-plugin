@@ -33,13 +33,13 @@ import java.util.List;
 public class PullMojo extends AbstractMojo {
 
     /**
-     * @parameter expression="${source}"
+     * @parameter expression="${android.source}"
      * @required
      */
     private File source;
 
     /**
-     * @parameter expression="${destination}"
+     * @parameter expression="${android.destination}"
      * @required
      */
     private File destination;
