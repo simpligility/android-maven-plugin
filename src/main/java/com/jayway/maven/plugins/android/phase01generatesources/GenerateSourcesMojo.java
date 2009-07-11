@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Generates java files based on aidl files.<br/>
  * Generates <code>R.java</code> based on resources specified by the <code>resources</code> configuration parameter.<br/>
+ * Generates java files based on aidl files.<br/>
  * <br/>
  * If the configuration parameter <code>deleteConflictingFiles</code> is <code>true</code> (which it is by default), this
  * goal has the following side-effects:
