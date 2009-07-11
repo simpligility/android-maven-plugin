@@ -124,7 +124,25 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected MavenProjectHelper projectHelper;
 
     /**
-     * The Android SDK to use.
+     * <p>The Android SDK to use.</p>
+     * <p>Looks like this:</p>
+     * <pre>
+     * &lt;sdk&gt;
+     *     &lt;path&gt;/opt/android-sdk-linux_x86-1.5_r2&lt;/path&gt;
+     *     &lt;platform&gt;1.1&lt;/platform&gt;
+     * &lt;/sdk&gt;
+     * </pre>
+     * <p>The <code>&lt;platform&gt;</code> parameter is optional, and corresponds to the
+     * <code>platforms/android-*</code> directories in the Android SDK directory. Default is the latest available
+     * version, so you only need to set it if you for example want to use platform 1.1 from an 1.5 SDK. Has no effect
+     * when used on an Android SDK 1.1.</p>
+     * <p>If you want to use an environment variable for SDK path, do for example like this:</p>
+     * <pre>
+     * &lt;sdk&gt;
+     *     &lt;path&gt;${env.ANDROID_SDK}&lt;/path&gt;
+     * &lt;/sdk&gt;
+     * </pre>
+     * <p>Can also be configured from command-line with parameters <code>-Dandroid.sdk.path</code> and <code>-Dandroid.sdk.platform</code>.</p>
      * @parameter
      */
     private Sdk sdk;
