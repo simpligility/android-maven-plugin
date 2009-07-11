@@ -33,9 +33,13 @@ public class UndeployMojo extends AbstractAndroidMojo {
     /**
      * Optionally used to specify a different apk package to undeploy from a connected emulator or usb device, instead
      * of the built apk from this project.
-     * @parameter property="package" expression="${android.package}"
+     * @parameter property="package" expression="${android.package}" default-value="null"
      */
-    private String packageName;
+    private String _package;
+
+    public void setPackage(String packageName) {
+        this._package = packageName;
+    }
 
     /**
      * Optionally used to specify a different apk file to undeploy from a connected emulator or usb device, instead of
@@ -45,8 +49,8 @@ public class UndeployMojo extends AbstractAndroidMojo {
     private File file;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        String packageToUndeploy = packageName;
-        if (packageToUndeploy != null) {
+        String packageToUndeploy = _package;
+        if (packageToUndeploy != null && !"".equals(packageToUndeploy) && !"null".equals(packageToUndeploy)) {
             undeployApk(packageToUndeploy);
         } else {
             if (file != null) {
@@ -58,5 +62,4 @@ public class UndeployMojo extends AbstractAndroidMojo {
         }
 
     }
-
 }
