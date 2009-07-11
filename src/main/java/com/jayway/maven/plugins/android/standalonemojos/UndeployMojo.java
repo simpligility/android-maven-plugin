@@ -20,26 +20,43 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
+import java.io.File;
+
 /**
- * Undeploys an application from a connected device, based on <code>package</code>.<br/>
- * @goal undeploy-package
+ * Undeploys the built apk file, or another specified apk, from a connected device.<br/>
+ * @goal undeploy
  * @requiresProject false
  * @author hugo.josefson@jayway.com
  */
-public class UndeployPackageMojo extends AbstractAndroidMojo {
+public class UndeployMojo extends AbstractAndroidMojo {
 
     /**
-     * The package to undeploy from a connected emulator or usb device. If not defined, will use package from
-     * <code>AndroidManifest.xml</code>.
+     * Optionally used to specify a different apk package to undeploy from a connected emulator or usb device, instead
+     * of the built apk from this project.
      * @parameter property="package" expression="${android.package}"
      */
     private String packageName;
 
+    /**
+     * Optionally used to specify a different apk file to undeploy from a connected emulator or usb device, instead of
+     * the built apk from this project.
+     * @parameter expression="${file}"
+     */
+    private File file;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if (packageName == null){
-            extractPackageNameFromAndroidManifest(androidManifestFile);
+        String packageToUndeploy = packageName;
+        if (packageToUndeploy != null) {
+            undeployApk(packageToUndeploy);
+        } else {
+            if (file != null) {
+                undeployApk(file);
+            } else {
+                packageToUndeploy = extractPackageNameFromAndroidManifest(androidManifestFile);
+                undeployApk(packageToUndeploy);
+            }
         }
-        undeployApk(packageName);
+
     }
 
 }
