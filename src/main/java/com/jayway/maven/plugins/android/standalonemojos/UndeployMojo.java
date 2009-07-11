@@ -44,7 +44,7 @@ public class UndeployMojo extends AbstractAndroidMojo {
     /**
      * Optionally used to specify a different apk file to undeploy from a connected emulator or usb device, instead of
      * the built apk from this project.
-     * @parameter expression="${file}"
+     * @parameter expression="${android.file}"
      */
     private File file;
 
