@@ -90,12 +90,16 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
         }
     }
 
-    protected void deploy() throws MojoExecutionException {
-        File inputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apk");
+    protected void deployBuiltApk() throws MojoExecutionException {
+        File apkFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apk");
+        deployApk(apkFile);
+    }
+
+    protected void deployFile(File apkFile) throws MojoExecutionException {
         if (undeployBeforeDeploy){
-            undeployApk(inputFile);
+            undeployApk(apkFile);
         }
-        deployApk(inputFile);
+        deployApk(apkFile);
     }
 
 

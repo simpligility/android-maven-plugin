@@ -20,19 +20,33 @@ import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
+import java.io.File;
+
 /**
- * Deploys the built apk file to a connected device.<br/>
+ * Deploys the built apk file, or another specified apk, to a connected device.<br/>
  * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on a project
  * with instrumentation tests.
  * @goal deploy
+ * @requiresProject false
  * @phase pre-integration-test
  * @requiresDependencyResolution runtime
  * @author hugo.josefson@jayway.com
  */
 public class DeployMojo extends AbstractIntegrationtestMojo {
 
+    /**
+     * Optionally used to specify a different apk file to deploy to a connected emulator or usb device, instead of the
+     * built apk from this project.
+     * @parameter expression="${file}"
+     */
+    private File file;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
-        deploy();
+        if (file == null) {
+            deployBuiltApk();
+        }else {
+            deployFile(file);
+        }
     }
 
 }
