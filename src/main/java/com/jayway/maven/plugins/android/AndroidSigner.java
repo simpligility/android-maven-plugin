@@ -27,7 +27,14 @@ public class AndroidSigner {
     private final Debug debug;
 
     public AndroidSigner(String debug) {
-        this.debug = Debug.valueOf(debug);
+        if (debug == null) {
+            throw new IllegalArgumentException("android.sign.debug must be 'true', 'false' or 'auto'.");
+        }
+        try {
+            this.debug = Debug.valueOf(debug.toUpperCase());
+        }catch(IllegalArgumentException e) {
+            throw new IllegalArgumentException("android.sign.debug must be 'true', 'false' or 'auto'.", e); 
+        }
     }
 
     public AndroidSigner(Debug debug) {
@@ -35,13 +42,13 @@ public class AndroidSigner {
     }
 
     public boolean isSignWithDebugKeyStore() {
-        if (debug == Debug.TRUE){
+        if (debug == Debug.TRUE) {
             return true;
         }
-        if (debug == Debug.FALSE){
+        if (debug == Debug.FALSE) {
             return false;
         }
-        if (debug == Debug.AUTO){
+        if (debug == Debug.AUTO) {
             //TODO: This is where to add logic for skipping debug sign if there are other keystores configured.
             return true;
         }
