@@ -16,9 +16,7 @@
  */
 package com.jayway.maven.plugins.android.phase08package;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.CommandExecutor;
-import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.*;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -28,18 +26,45 @@ import java.util.List;
 
 /**
  * Creates the apk file. By default signs it with debug keystore.<br/>
- * Change that by setting configuration parameter <code>signWithDebugKeystore</code> to <code>false</code>.
+ * Change that by setting configuration parameter <code>&lt;sign&gt;&lt;debug&gt;false&lt;/debug&gt;&lt;/sign&gt;</code>.
  * @goal apk
  * @phase package
  * @author hugo.josefson@jayway.com
  */
 public class ApkMojo extends AbstractAndroidMojo {
 
+
     /**
-     * <p>Whether to sign with the debug key.</p>
-     * @parameter default-value = "true"
+     * <p>How to sign the apk.</p>
+     * <p>Looks like this:</p>
+     * <pre>
+     * &lt;sign&gt;
+     *     &lt;debug&gt;auto&lt;/debug&gt;
+     * &lt;/sign&gt;
+     * </pre>
+     * <p>Valid values for <code>&lt;debug&gt;</code>are:
+     * <ul>
+     *     <li><code>true</code> = sign with the debug keystore.
+     *     <li><code>false</code> = don't sign with the debug keystore.
+     *     <li><code>auto</code> (default) = sign with debug keystore, unless another keystore is defined. (Signing with
+     * other keystores is not yet implemented. See
+     * <a href="http://code.google.com/p/maven-android-plugin/issues/detail?id=2">Issue 2</a>.)
+     * </ul></p>
+     * <p>Can also be configured from command-line with parameter <code>-Dandroid.sign.debug</code>.</p>
+     * @parameter
      */
-    private boolean signWithDebugKeystore;
+    private Sign sign;
+
+    /**
+     * <p>Parameter designed to pick up <code>-Dandroid.sign.debug</code> in case there is no pom with a
+     * <code>&lt;sign&gt;</code> configuration tag.</p>
+     * <p>Corresponds to {@link Sign#debug}.</p>
+     *
+     * @parameter expression="${android.sign.debug}" default-value="auto"
+     * @readonly
+     */
+    private String signDebug;
+
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -53,7 +78,7 @@ public class ApkMojo extends AbstractAndroidMojo {
         List<String> commands = new ArrayList<String>();
         commands.add(outputFile.getAbsolutePath());
 
-        if(!signWithDebugKeystore) {
+        if(!getAndroidSigner().isSignWithDebugKeyStore()) {
             commands.add("-u");
         }
         
@@ -113,6 +138,15 @@ public class ApkMojo extends AbstractAndroidMojo {
             executor.executeCommand(getAndroidSdk().getPathForTool("aapt"), commands, project.getBasedir(), false);
         } catch (ExecutionException e) {
             throw new MojoExecutionException("", e);
+        }
+    }
+
+
+    protected AndroidSigner getAndroidSigner(){
+        if (sign == null){
+            return new AndroidSigner(signDebug);
+        }else{
+            return new AndroidSigner(sign.getDebug());
         }
     }
 }
