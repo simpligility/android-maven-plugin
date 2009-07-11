@@ -34,7 +34,7 @@ public class InternalPreIntegrationTestMojo extends AbstractIntegrationtestMojo 
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (isEnableIntegrationTest()){
             deployDependencies();
-            deploy();
+            deployBuiltApk();
         }
     }
 
