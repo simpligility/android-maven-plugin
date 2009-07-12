@@ -173,14 +173,14 @@
 
 	<distributionManagement>
         <repository>
-            <id>maven-android-plugin-m2repo.googlecode.com</id>
-            <name>maven-android-plugin-m2repo on Google Code</name>
-            <url>${env.MAVEN_ANDROID_PLUGIN_M2REPO_SVN_WORKINGCOPY}/release</url>
+            <id>oss.sonatype.org-jayway-staging</id>
+            <name>OpenSource Release Staging on Sonatype.org</name>
+            <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
         <snapshotRepository>
-            <id>maven-android-plugin-m2repo.googlecode.com</id>
-            <name>maven-android-plugin-m2repo on Google Code - SNAPSHOT</name>
-            <url>${env.MAVEN_ANDROID_PLUGIN_M2REPO_SVN_WORKINGCOPY}/snapshot</url>
+            <id>oss.sonatype.org-jayway-snapshots</id>
+            <name>Jayway OpenSource SNAPSHOTs on Sonatype.org</name>
+            <url>http://oss.sonatype.org/content/repositories/jayway-snapshots/</url>
         </snapshotRepository>
         <site>
             <id>maven-android-plugin-m2site.googlecode.com</id>
