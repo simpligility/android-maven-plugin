@@ -68,6 +68,12 @@
             </roles>
         </contributor>
         <contributor>
+            <email>mg.mlists@gmail.com</email>
+            <roles>
+                <role>Bug reporter</role>
+            </roles>
+        </contributor>
+        <contributor>
             <name>Mattias Rosberg</name>
             <email>mattias.rosberg@gmail.com</email>
             <roles>
