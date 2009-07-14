@@ -66,6 +66,13 @@
                 <role>Patch contributor</role>
             </roles>
         </contributor>
+        <contributor>
+            <name>Shane Isbell</name>
+            <email>shane.isbell@gmail.com</email>
+            <roles>
+                <role>Original Masa developer</role>
+            </roles>
+        </contributor>
     </contributors>
     <mailingLists>
         <mailingList>
