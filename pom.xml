@@ -59,6 +59,7 @@
         </developer>
     </developers>
     <contributors>
+        <!-- in reverse chronological order from when they started contributing -->
         <contributor>
             <name>Martin Vyšný</name>
             <email>vysny@baka.se</email>
