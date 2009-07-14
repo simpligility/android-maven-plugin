@@ -58,6 +58,15 @@
             </roles>
         </developer>
     </developers>
+    <contributors>
+        <contributor>
+            <name>Martin Vyšný</name>
+            <email>vysny@baka.se</email>
+            <roles>
+                <role>Patch contributor</role>
+            </roles>
+        </contributor>
+    </contributors>
     <mailingLists>
         <mailingList>
             <name>Maven Android Developers</name>
