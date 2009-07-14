@@ -26,6 +26,9 @@ import org.codehaus.plexus.util.IOUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.InputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -106,7 +109,7 @@ public class DexMojo extends AbstractAndroidMojo {
         projectHelper.attachArtifact(project, "jar", project.getArtifact().getClassifier(), inputFile);
     }
 
-    private static void unjar(JarFile jarFile, File outputDirectory) throws IOException {
+    private void unjar(JarFile jarFile, File outputDirectory) throws IOException {
         for (Enumeration en = jarFile.entries(); en.hasMoreElements();) {
             JarEntry entry = (JarEntry) en.nextElement();
             File entryFile = new File(outputDirectory, entry.getName());
@@ -114,8 +117,26 @@ public class DexMojo extends AbstractAndroidMojo {
                 entryFile.getParentFile().mkdirs();
             }
             if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
-                IOUtil.copy(jarFile.getInputStream(entry), new FileOutputStream(entryFile));
+                final InputStream in = jarFile.getInputStream(entry);
+                try {
+                    final OutputStream out = new FileOutputStream(entryFile);
+                    try {
+                    IOUtil.copy(in, out);
+                    } finally {
+                        closeQuietly(out);
+                    }
+                } finally {
+                    closeQuietly(in);
+                }
             }
+        }
+    }
+
+    private void closeQuietly(final Closeable c) {
+        try {
+            c.close();
+        } catch (Exception ex) {
+            getLog().warn("Failed to close closeable " + c, ex);
         }
     }
 }
