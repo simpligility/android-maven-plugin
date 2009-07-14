@@ -21,6 +21,7 @@ import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +58,19 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         executor.setLogger(this.getLog());
 
         List<String> commands = new ArrayList<String>();
+
+        // Check if a specific device should be used
+        if (StringUtils.isNotBlank(device)) {
+            if ("usb".equals(device)) {
+                commands.add("-d");
+            } else if ("emulator".equals(device)) {
+                commands.add("-e");
+            } else {
+                commands.add("-s");
+                commands.add(device);
+            }
+        }
+
         commands.add("shell");
         commands.add("am");
         commands.add("instrument");

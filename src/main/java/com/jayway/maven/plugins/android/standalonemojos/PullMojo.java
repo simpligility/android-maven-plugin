@@ -20,6 +20,7 @@ import com.jayway.maven.plugins.android.ExecutionException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,11 +45,31 @@ public class PullMojo extends AbstractMojo {
      */
     private File destination;
 
+    /**
+     * Specifies which device to connect to, by serial number. Special values "usb" and "emulator" are also valid, for
+     * selecting the only USB connected device or the only running emulator, respectively.
+     * @parameter expression="${android.device}"
+     */
+    protected String device;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
         List<String> commands = new ArrayList<String>();
+
+        // Check if a specific device should be used
+        if (StringUtils.isNotBlank(device)) {
+            if ("usb".equals(device)) {
+                commands.add("-d");
+            } else if ("emulator".equals(device)) {
+                commands.add("-e");
+            } else {
+                commands.add("-s");
+                commands.add(device);
+            }
+        }
+
         commands.add("pull");
         commands.add(source.getAbsolutePath());
         commands.add(destination.getAbsolutePath());

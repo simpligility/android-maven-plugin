@@ -18,6 +18,7 @@ package com.jayway.maven.plugins.android;
 
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.xml.DocumentContainer;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.execution.MavenSession;
@@ -83,6 +84,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @parameter default-value="${project.basedir}/AndroidManifest.xml"
      */
     protected File androidManifestFile;
+
+    /**
+     * Specifies which device to connect to, by serial number. Special values "usb" and "emulator" are also valid, for
+     * selecting the only USB connected device or the only running emulator, respectively.
+     * @parameter expression="${android.device}"
+     */
+    protected String device;
 
     /**
      * Used to look up Artifacts in the remote repository.
@@ -219,6 +227,19 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
         List<String> commands = new ArrayList<String>();
+
+        // Check if a specific device should be used
+        if (StringUtils.isNotBlank(device)) {
+            if ("usb".equals(device)) {
+                commands.add("-d");
+            } else if ("emulator".equals(device)) {
+                commands.add("-e");
+            } else {
+                commands.add("-s");
+                commands.add(device);
+            }
+        }
+
         commands.add("install");
         commands.add("-r");
         commands.add(apkFile.getAbsolutePath());
