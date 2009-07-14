@@ -67,6 +67,13 @@
             </roles>
         </contributor>
         <contributor>
+            <name>Albin Theander</name>
+            <email>albin.theander@gmail.com</email>
+            <roles>
+                <role>Bug reporter</role>
+            </roles>
+        </contributor>
+        <contributor>
             <name>Shane Isbell</name>
             <email>shane.isbell@gmail.com</email>
             <roles>
