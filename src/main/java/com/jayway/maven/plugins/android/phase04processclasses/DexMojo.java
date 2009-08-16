@@ -60,7 +60,7 @@ public class DexMojo extends AbstractAndroidMojo {
         File outputFile = new File(project.getBuild().getDirectory() + File.separator + "classes.dex");
         File inputFile  = new File(project.getBuild().getDirectory() + File.separator + project.getBuild().getFinalName() + ".jar");
 
-        //Unpackage all dependent and main classes
+        // Unpack all dependent and main classes
         File outputDirectory = new File(project.getBuild().getDirectory(), "android-classes");
         for (Artifact artifact : (List<Artifact>) project.getCompileArtifacts()) {
             if (artifact.getGroupId().equals("android")) {
@@ -82,7 +82,7 @@ public class DexMojo extends AbstractAndroidMojo {
         try {
             unjar(new JarFile(inputFile), outputDirectory);
         } catch (IOException e) {
-            throw new MojoExecutionException("", e);
+            throw new MojoExecutionException("IOException while unjarring " + inputFile + " into " + outputDirectory, e);
         }
 
         List<String> commands = new ArrayList<String>();
