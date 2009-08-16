@@ -68,14 +68,13 @@ public class DexMojo extends AbstractAndroidMojo {
             }
             
             if(artifact.getFile().isDirectory())  {
-                throw new MojoExecutionException("Dependent artifact is directory: Directory = "
-                        + artifact.getFile().getAbsolutePath());
+                throw new MojoExecutionException("Dependent artifact is directory: Directory = " + artifact.getFile().getAbsolutePath());
             }
 
             try {
                 unjar(new JarFile(artifact.getFile()), outputDirectory);
             } catch (IOException e) {
-                throw new MojoExecutionException("Unable to jar file: File = " + artifact.getFile().getAbsolutePath(), e);
+                throw new MojoExecutionException("IOException while unjarring " + artifact.getFile().getAbsolutePath() + " into " + outputDirectory, e);
             }
         }
 
