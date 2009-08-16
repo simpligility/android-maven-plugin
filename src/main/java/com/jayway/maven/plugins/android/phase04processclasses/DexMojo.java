@@ -74,14 +74,14 @@ public class DexMojo extends AbstractAndroidMojo {
             try {
                 unjar(new JarFile(artifact.getFile()), outputDirectory);
             } catch (IOException e) {
-                throw new MojoExecutionException("IOException while unjarring " + artifact.getFile().getAbsolutePath() + " into " + outputDirectory, e);
+                throw new MojoExecutionException("IOException while unjarring " + artifact.getFile().getAbsolutePath() + " into " + outputDirectory.getAbsolutePath(), e);
             }
         }
 
         try {
             unjar(new JarFile(inputFile), outputDirectory);
         } catch (IOException e) {
-            throw new MojoExecutionException("IOException while unjarring " + inputFile + " into " + outputDirectory, e);
+            throw new MojoExecutionException("IOException while unjarring " + inputFile.getAbsolutePath() + " into " + outputDirectory.getAbsolutePath(), e);
         }
 
         List<String> commands = new ArrayList<String>();
