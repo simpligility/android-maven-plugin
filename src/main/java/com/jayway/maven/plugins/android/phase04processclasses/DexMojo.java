@@ -24,12 +24,12 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.util.IOUtil;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.InputStream;
-import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -61,12 +61,39 @@ public class DexMojo extends AbstractAndroidMojo {
         File inputFile  = new File(project.getBuild().getDirectory() + File.separator + project.getBuild().getFinalName() + ".jar");
 
         // Unpack all dependent and main classes
+        File classesOutputDirectory = unpackClasses(inputFile);
+
+        List<String> commands = new ArrayList<String>();
+        if (jvmArguments != null){
+            for (String jvmArgument : jvmArguments) {
+                if (jvmArgument != null){
+                    if (jvmArgument.startsWith("-")){
+                        jvmArgument = jvmArgument.substring(1);
+                    }
+                    commands.add("-J" + jvmArgument);
+                }
+            }
+        }
+        commands.add("--dex");
+        commands.add("--output=" + outputFile.getAbsolutePath());
+        commands.add(classesOutputDirectory.getAbsolutePath());
+        getLog().info(getAndroidSdk().getPathForTool("dx") + " " + commands.toString());
+        try {
+            executor.executeCommand(getAndroidSdk().getPathForTool("dx"), commands, project.getBasedir(), false);
+        } catch (ExecutionException e) {
+            throw new MojoExecutionException("", e);
+        }
+
+        projectHelper.attachArtifact(project, "jar", project.getArtifact().getClassifier(), inputFile);
+    }
+
+    private File unpackClasses(File inputFile) throws MojoExecutionException {
         File outputDirectory = new File(project.getBuild().getDirectory(), "android-classes");
         for (Artifact artifact : (List<Artifact>) project.getCompileArtifacts()) {
             if (artifact.getGroupId().equals("android")) {
                 continue;
             }
-            
+
             if(artifact.getFile().isDirectory())  {
                 throw new MojoExecutionException("Dependent artifact is directory: Directory = " + artifact.getFile().getAbsolutePath());
             }
@@ -83,29 +110,7 @@ public class DexMojo extends AbstractAndroidMojo {
         } catch (IOException e) {
             throw new MojoExecutionException("IOException while unjarring " + inputFile.getAbsolutePath() + " into " + outputDirectory.getAbsolutePath(), e);
         }
-
-        List<String> commands = new ArrayList<String>();
-        if (jvmArguments != null){
-            for (String jvmArgument : jvmArguments) {
-                if (jvmArgument != null){
-                    if (jvmArgument.startsWith("-")){
-                        jvmArgument = jvmArgument.substring(1);
-                    }
-                    commands.add("-J" + jvmArgument);
-                }
-            }
-        }
-        commands.add("--dex");
-        commands.add("--output=" + outputFile.getAbsolutePath());
-        commands.add(outputDirectory.getAbsolutePath());
-        getLog().info(getAndroidSdk().getPathForTool("dx") + " " + commands.toString());
-        try {
-            executor.executeCommand(getAndroidSdk().getPathForTool("dx"), commands, project.getBasedir(), false);
-        } catch (ExecutionException e) {
-            throw new MojoExecutionException("", e);
-        }
-
-        projectHelper.attachArtifact(project, "jar", project.getArtifact().getClassifier(), inputFile);
+        return outputDirectory;
     }
 
     private void unjar(JarFile jarFile, File outputDirectory) throws IOException {
