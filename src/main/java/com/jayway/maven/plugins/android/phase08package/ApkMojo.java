@@ -16,7 +16,12 @@
  */
 package com.jayway.maven.plugins.android.phase08package;
 
-import com.jayway.maven.plugins.android.*;
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.AndroidSigner;
+import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.Sign;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -87,9 +92,21 @@ public class ApkMojo extends AbstractAndroidMojo {
         commands.add("-f");
         commands.add( new File(project.getBuild().getDirectory(),  "classes.dex").getAbsolutePath());
         commands.add("-rf");
-        // TODO: This should be src/main/resources instead:
-        commands.add(new File(project.getBuild().getSourceDirectory()).getAbsolutePath());
-        
+        commands.add(new File(project.getBuild().getDirectory(), "classes").getAbsolutePath());
+        for (Artifact artifact : (List<Artifact>) project.getCompileArtifacts()) {
+            if (artifact.getGroupId().equals("android")) {
+                continue;
+            }
+
+            if (artifact.getFile().isDirectory()) {
+                throw new MojoExecutionException("Dependent artifact is directory: Directory = " + artifact.getFile().getAbsolutePath());
+            }
+
+            commands.add("-rj");
+            commands.add(artifact.getFile().getAbsolutePath());
+        }
+
+
         getLog().info(getAndroidSdk().getPathForTool("apkbuilder")+" " + commands.toString());
         try {
             executor.executeCommand(getAndroidSdk().getPathForTool("apkbuilder"), commands, project.getBasedir(), false);
