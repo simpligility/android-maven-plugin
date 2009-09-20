@@ -74,6 +74,7 @@
             <configuration>
                 <extension>apk</extension>
                 <type>apk</type>
+                <language>java</language>
             </configuration>
         </component>
     </components>
