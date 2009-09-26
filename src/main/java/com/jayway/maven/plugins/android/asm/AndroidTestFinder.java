@@ -15,6 +15,7 @@
  */
 package com.jayway.maven.plugins.android.asm;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.util.DirectoryWalkListener;
 import org.codehaus.plexus.util.DirectoryWalker;
@@ -55,7 +56,7 @@ public class AndroidTestFinder {
             } catch (IOException e) {
                 throw new MojoExecutionException("Error reading " + classFile + ".\nCould not determine whether it contains tests. Please specify with plugin config parameter <enableIntegrationTest>true|false</enableIntegrationTest>.", e);
             } finally {
-                org.apache.commons.io.IOUtils.closeQuietly(inputStream);
+                IOUtils.closeQuietly(inputStream);
             }
         }
 
