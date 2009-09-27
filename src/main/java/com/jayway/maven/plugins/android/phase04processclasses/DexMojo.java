@@ -19,6 +19,7 @@ package com.jayway.maven.plugins.android.phase04processclasses;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -125,22 +126,15 @@ public class DexMojo extends AbstractAndroidMojo {
                 try {
                     final OutputStream out = new FileOutputStream(entryFile);
                     try {
-                    IOUtil.copy(in, out);
+                        IOUtil.copy(in, out);
                     } finally {
-                        closeQuietly(out);
+                        IOUtils.closeQuietly(out);
                     }
                 } finally {
-                    closeQuietly(in);
+                    IOUtils.closeQuietly(in);
                 }
             }
         }
     }
 
-    private void closeQuietly(final Closeable c) {
-        try {
-            c.close();
-        } catch (Exception ex) {
-            getLog().warn("Failed to close closeable " + c, ex);
-        }
-    }
 }
