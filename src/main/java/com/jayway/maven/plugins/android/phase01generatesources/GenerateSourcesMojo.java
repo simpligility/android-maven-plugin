@@ -16,17 +16,13 @@
  */
 package com.jayway.maven.plugins.android.phase01generatesources;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -108,54 +104,37 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         for (String relativeAidlFileName : relativeAidlFileNames) {
 
             final String relativeJavaFileName                 = relativeAidlFileName.substring(0, relativeAidlFileName.lastIndexOf(".")) + ".java";
-
-
             final File   conflictingJavaFileInSourceDirectory = new File(sourceDirectory, relativeJavaFileName);
 
             if (conflictingJavaFileInSourceDirectory.exists()) {
-            	
-            	//We should only delete files which define interfaces, not files that specify a parcelable
-            	//Note that this code should probably be expanded if more cases where a java file is generated are added to the AIDL spec.
-                boolean shouldDelete = true;
-            	FileInputStream fis;
-				try {
-					fis = new FileInputStream(relativeAidlFileName);
-				}
-				catch (FileNotFoundException e) {
-					getLog().error("Could not inspect aidl file " + relativeAidlFileName + ".");
-					continue;
-				}
-	           	try {
 
-	                BufferedInputStream bis = new BufferedInputStream(fis);
-	                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(bis));
-	
-					while (bufferedReader.ready()) {
-						//If the file contains "interface" it's an AIDL file which will generate a java file, and we should therefore remove the java file. 
-						if (bufferedReader.readLine().contains("interface")) {
-							shouldDelete = true;
-						}
-					}
-	           	} catch (IOException e) {
-					getLog().error("Could not inspect aidl file " + relativeAidlFileName + ".");
-	            } finally {
-	            	try {
-						fis.close();
-					}
-					catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-	            }
+                //We should only delete files which define interfaces, not files that specify a parcelable
+                //Note that this code should probably be expanded if more cases where a java file is generated are added to the AIDL spec.
+                boolean shouldDelete = false;
+                try {
+                    LineIterator lineIterator = FileUtils.lineIterator(conflictingJavaFileInSourceDirectory);
+                    try {
+                        while (!shouldDelete && lineIterator.hasNext()) {
+                            //If the file contains "interface" it's an AIDL file which will generate a java file, and we should therefore remove the java file.
+                            if (lineIterator.nextLine().contains("interface")) {
+                                shouldDelete = true;
+                            }
+                        }
+                    } finally {
+                        lineIterator.close(); // Closes quietly
+                    }
+                } catch (IOException e) {
+                    throw new MojoExecutionException("Could not inspect aidl file \"" + conflictingJavaFileInSourceDirectory.getAbsolutePath() + "\".");
+                }
 
-				if (shouldDelete) {
-	                final boolean successfullyDeleted = conflictingJavaFileInSourceDirectory.delete();
-	                if (successfullyDeleted) {
-	                    getLog().info("Deleted conflicting file in source directory: \"" + conflictingJavaFileInSourceDirectory + "\". If you use Eclipse, please Refresh (F5) the project to regain them.");
-	                }else {
-	                    throw new MojoExecutionException("Failed to delete conflicting file in source directory: \"" + conflictingJavaFileInSourceDirectory + "\"");
-	                }
-				}
+                if (shouldDelete) {
+                    final boolean successfullyDeleted = conflictingJavaFileInSourceDirectory.delete();
+                    if (successfullyDeleted) {
+                        getLog().info("Deleted conflicting file in source directory: \"" + conflictingJavaFileInSourceDirectory + "\". If you use Eclipse, please Refresh (F5) the project to regain them.");
+                    } else {
+                        throw new MojoExecutionException("Failed to delete conflicting file in source directory: \"" + conflictingJavaFileInSourceDirectory + "\"");
+                    }
+                }
             }
         }
     }
