@@ -207,6 +207,15 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected boolean attachJar;
 
     /**
+     * <p>Whether to attach sources to the build, which can be depended on by other {@code apk} projects.</p>
+     *
+     * @parameter default-value=false
+     *            expression="${android.attachSources}"
+     *
+     */
+    protected boolean attachSources;
+
+    /**
      * Attempts to resolve an {@link Artifact} to a {@link File}.
      * @param artifact to resolve
      * @return a {@link File} to the resolved artifact, never <code>null</code>.
