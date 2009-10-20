@@ -65,6 +65,7 @@
             <configuration>
                 <extension>dex</extension>
                 <type>dex</type>
+                <language>java</language>
             </configuration>
         </component>
         <component>
