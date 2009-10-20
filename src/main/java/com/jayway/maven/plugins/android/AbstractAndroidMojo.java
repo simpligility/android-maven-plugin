@@ -197,6 +197,16 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected boolean undeployBeforeDeploy;
 
     /**
+     * <p>Whether to attach the normal .jar file to the build, so it can be depended on by for example integration-tests
+     * which may then access {@code R.java} from this project.</p>
+     *
+     * @parameter default-value=false
+     *            expression="${android.attachJar}"
+     *
+     */
+    protected boolean attachJar;
+
+    /**
      * Attempts to resolve an {@link Artifact} to a {@link File}.
      * @param artifact to resolve
      * @return a {@link File} to the resolved artifact, never <code>null</code>.
