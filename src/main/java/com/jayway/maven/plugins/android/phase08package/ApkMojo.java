@@ -118,8 +118,10 @@ public class ApkMojo extends AbstractAndroidMojo {
         // Set the generated .apk file as the main artifact (because the pom states <packaging>apk</packaging>)
         project.getArtifact().setFile(outputFile);
 
-        // Also attach the normal .jar, so it can be depended on by for example an instrumentation project if they need access to our R.java and other things.
-        projectHelper.attachArtifact(project, "jar", new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".jar"));
+        if (attachJar){
+            // Also attach the normal .jar, so it can be depended on by for example an instrumentation project if they need access to our R.java and other things.
+            projectHelper.attachArtifact(project, "jar", new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".jar"));
+        }
     }
 
     /**
