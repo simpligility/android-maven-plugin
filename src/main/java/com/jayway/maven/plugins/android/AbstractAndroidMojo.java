@@ -86,6 +86,33 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected File androidManifestFile;
 
     /**
+     * @parameter expression="${project.build.directory}/generated-sources/extracted-dependencies"
+     * @readonly
+     */
+    protected File extractedDependenciesDirectory;
+
+    /**
+     * @parameter expression="${project.build.directory}/generated-sources/extracted-dependencies/res"
+     * @readonly
+     */
+    protected File extractedDependenciesRes;
+    /**
+     * @parameter expression="${project.build.directory}/generated-sources/extracted-dependencies/assets"
+     * @readonly
+     */
+    protected File extractedDependenciesAssets;
+    /**
+     * @parameter expression="${project.build.directory}/generated-sources/extracted-dependencies/src/main/java"
+     * @readonly
+     */
+    protected File extractedDependenciesJavaSources;
+    /**
+     * @parameter expression="${project.build.directory}/generated-sources/extracted-dependencies/src/main/resources"
+     * @readonly
+     */
+    protected File extractedDependenciesJavaResources;
+    
+    /**
      * Specifies which device to connect to, by serial number. Special values "usb" and "emulator" are also valid, for
      * selecting the only USB connected device or the only running emulator, respectively.
      * @parameter expression="${android.device}"

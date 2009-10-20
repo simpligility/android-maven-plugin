@@ -234,9 +234,17 @@ public class ApkMojo extends AbstractAndroidMojo {
             commands.add("-S");
             commands.add(resourceDirectory.getAbsolutePath());
         }
+        if (extractedDependenciesRes.exists()) {
+            commands.add("-S");
+            commands.add(extractedDependenciesRes.getAbsolutePath());
+        }
         if (assetsDirectory.exists()) {
             commands.add("-A");
             commands.add(assetsDirectory.getAbsolutePath());
+        }
+        if (extractedDependenciesAssets.exists()) {
+            commands.add("-A");
+            commands.add(extractedDependenciesAssets.getAbsolutePath());
         }
         commands.add("-I");
         commands.add(androidJar.getAbsolutePath());
