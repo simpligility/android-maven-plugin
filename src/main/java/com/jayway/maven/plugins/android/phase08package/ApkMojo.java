@@ -125,9 +125,18 @@ public class ApkMojo extends AbstractAndroidMojo {
         // Set the generated .apk file as the main artifact (because the pom states <packaging>apk</packaging>)
         project.getArtifact().setFile(outputFile);
 
-        if (attachJar){
-            // Also attach the normal .jar, so it can be depended on by for example an instrumentation project if they need access to our R.java and other things.
-            projectHelper.attachArtifact(project, "jar", new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".jar"));
+        if (!attachJar){
+            // De-attach the jar artifact(s)
+            final List<Artifact> attachedArtifacts = project.getAttachedArtifacts();
+            final List<Artifact> artifactsToRemove = new ArrayList<Artifact>(1);
+            for (Artifact artifact : attachedArtifacts) {
+                if (artifact.getType().equals("jar")){
+                    artifactsToRemove.add(artifact);
+                }
+            }
+            attachedArtifacts.removeAll(artifactsToRemove);
+            // attachedArtifacts is the actual inner artifact list in the project, so no need to put it back in.
+            // we just modified it!
         }
 
         if (attachSources){

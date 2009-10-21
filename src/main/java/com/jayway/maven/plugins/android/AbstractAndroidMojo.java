@@ -226,15 +226,19 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     /**
      * <p>Whether to attach the normal .jar file to the build, so it can be depended on by for example integration-tests
      * which may then access {@code R.java} from this project.</p>
+     * <p>Only disable it if you know you won't need it for any integration-tests. Otherwise, leave it enabled.</p>
      *
-     * @parameter default-value=false
+     * @parameter default-value=true
      *            expression="${android.attachJar}"
      *
      */
     protected boolean attachJar;
 
     /**
-     * <p>Whether to attach sources to the build, which can be depended on by other {@code apk} projects.</p>
+     * <p>Whether to attach sources to the build, which can be depended on by other {@code apk} projects, for including
+     * them in their builds.</p>
+     * <p>Enabling this setting is only required if this project's source code and/or res(ources) will be included in
+     * other projects, using the Maven &lt;dependency&gt; tag.</p>
      *
      * @parameter default-value=false
      *            expression="${android.attachSources}"
