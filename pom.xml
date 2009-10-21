@@ -182,6 +182,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-release-plugin</artifactId>
+                <version>2.0-beta-9</version>
                 <configuration>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <useReleaseProfile>false</useReleaseProfile>
