@@ -200,6 +200,31 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
         String generatedSourcesRDirectoryName = project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "r";
         new File(generatedSourcesRDirectoryName).mkdirs();
+        
+        if (!combinedRes.exists()) {
+	        if (!combinedRes.mkdirs()) {
+	        	throw new MojoExecutionException("Could not create directory for combined resources at " + combinedRes.getAbsolutePath());
+	        }
+        }
+        if (resourceDirectory.exists()) {
+        	try {
+        	    getLog().info("Copying local resource files to combined resource directory.");
+				org.apache.commons.io.FileUtils.copyDirectory(resourceDirectory, combinedRes);
+			}
+			catch (IOException e) {
+				throw new MojoExecutionException("", e);
+			}	
+        }
+        if (extractedDependenciesRes.exists()) {
+        	try {
+        	    getLog().info("Copying dependency resource files to combined resource directory.");
+				org.apache.commons.io.FileUtils.copyDirectory(extractedDependenciesRes, combinedRes);
+			}
+			catch (IOException e) {
+				throw new MojoExecutionException("", e);
+			}	
+        }
+        
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
@@ -211,13 +236,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         commands.add(generatedSourcesRDirectoryName       );
         commands.add("-M"                                 );
         commands.add(androidManifestFile.getAbsolutePath());
-        if (resourceDirectory.exists()) {
+        if (combinedRes.exists()) {
             commands.add("-S"                               );
-            commands.add(resourceDirectory.getAbsolutePath());
-        }
-        if (extractedDependenciesRes.exists()) {
-            commands.add("-S"                               );
-            commands.add(extractedDependenciesRes.getAbsolutePath());
+            commands.add(combinedRes.getAbsolutePath());
         }
         if (assetsDirectory.exists()) {
             commands.add("-A"                             );
