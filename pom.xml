@@ -108,6 +108,9 @@
             <archive>http://groups.google.com/group/maven-android-developers/topics</archive>
         </mailingList>
     </mailingLists>
+    <prerequisites>
+        <maven>2.2.1</maven>
+    </prerequisites>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
