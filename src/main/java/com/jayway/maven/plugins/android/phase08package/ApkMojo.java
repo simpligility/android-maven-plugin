@@ -157,6 +157,10 @@ public class ApkMojo extends AbstractAndroidMojo {
         commands.add("-f");
         commands.add("-M");
         commands.add(androidManifestFile.getAbsolutePath());
+        if (resourceOverlayDirectory.exists()) {
+            commands.add("-S"                               );
+            commands.add(resourceOverlayDirectory.getAbsolutePath());
+        }        
         if (combinedRes.exists()) {
             commands.add("-S"                               );
             commands.add(combinedRes.getAbsolutePath());
