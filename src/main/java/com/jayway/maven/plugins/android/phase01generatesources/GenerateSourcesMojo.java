@@ -236,6 +236,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         commands.add(generatedSourcesRDirectoryName       );
         commands.add("-M"                                 );
         commands.add(androidManifestFile.getAbsolutePath());
+        if (resourceOverlayDirectory.exists()) {
+            commands.add("-S"                               );
+            commands.add(resourceOverlayDirectory.getAbsolutePath());
+        }
         if (combinedRes.exists()) {
             commands.add("-S"                               );
             commands.add(combinedRes.getAbsolutePath());

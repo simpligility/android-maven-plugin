@@ -74,6 +74,12 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected File resourceDirectory;
 
     /**
+     * The android resources overlay directory.
+     * @parameter default-value="${project.basedir}/res-overlay"
+     */
+    protected File resourceOverlayDirectory;
+
+    /**
      * The android assets directory.
      * @parameter default-value="${project.basedir}/assets"
      */
@@ -113,6 +119,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected File extractedDependenciesJavaResources;
     
     /**
+     * The combined resources directory. This will contain both the resources found in "res" as well as any resources contained in a apksources dependency.
      * @parameter expression="${project.build.directory}/generated-sources/combined-resources/res"
      * @readonly
      */
