@@ -21,6 +21,7 @@ import org.apache.commons.jxpath.xml.DocumentContainer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -259,6 +260,15 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      */
     protected boolean attachSources;
 
+    /**
+     * Accessor for the local repository.
+     * @return The local repository.
+     */
+    protected ArtifactRepository getLocalRepository()
+    {
+    	return localRepository;
+    }
+    
     /**
      * Attempts to resolve an {@link Artifact} to a {@link File}.
      * @param artifact to resolve
