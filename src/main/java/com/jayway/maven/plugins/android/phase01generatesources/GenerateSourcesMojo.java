@@ -77,29 +77,33 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        extractSourceDependencies();
-
-        final String[]    relativeAidlFileNames1   = findRelativeAidlFileNames(sourceDirectory                 );
-        final String[]    relativeAidlFileNames2   = findRelativeAidlFileNames(extractedDependenciesJavaSources);
-        final Set<String> relativeAidlFileNamesSet = new HashSet<String>() {
-            {
-                addAll(Arrays.asList(relativeAidlFileNames1));
-                addAll(Arrays.asList(relativeAidlFileNames2));
-            }
-        };
-
-        if (deleteConflictingFiles) {
-            deleteConflictingRJavaFiles       (sourceDirectory                                           );
-            deleteConflictingManifestJavaFiles(sourceDirectory                                           );
-            deleteConflictingThumbsDb         (resourceDirectory                                         );
-            deleteConflictingAidlJavaFiles    (sourceDirectory, relativeAidlFileNamesSet                 );
-            deleteConflictingAidlJavaFiles    (extractedDependenciesJavaSources, relativeAidlFileNamesSet);
-        }
-
-        generateR        (                                                        );
-        generateAidlFiles(sourceDirectory, relativeAidlFileNames1                 );
-        generateAidlFiles(extractedDependenciesJavaSources, relativeAidlFileNames2);
-
+    	try {
+	        extractSourceDependencies();
+	
+	        final String[]    relativeAidlFileNames1   = findRelativeAidlFileNames(sourceDirectory                 );
+	        final String[]    relativeAidlFileNames2   = findRelativeAidlFileNames(extractedDependenciesJavaSources);
+	        final Set<String> relativeAidlFileNamesSet = new HashSet<String>() {
+	            {
+	                addAll(Arrays.asList(relativeAidlFileNames1));
+	                addAll(Arrays.asList(relativeAidlFileNames2));
+	            }
+	        };
+	
+	        if (deleteConflictingFiles) {
+	            deleteConflictingRJavaFiles       (sourceDirectory                                           );
+	            deleteConflictingManifestJavaFiles(sourceDirectory                                           );
+	            deleteConflictingThumbsDb         (resourceDirectory                                         );
+	            deleteConflictingAidlJavaFiles    (sourceDirectory, relativeAidlFileNamesSet                 );
+	            deleteConflictingAidlJavaFiles    (extractedDependenciesJavaSources, relativeAidlFileNamesSet);
+	        }
+	
+	        generateR        (                                                        );
+	        generateAidlFiles(sourceDirectory, relativeAidlFileNames1                 );
+	        generateAidlFiles(extractedDependenciesJavaSources, relativeAidlFileNames2);
+    	} catch (MojoExecutionException e) {
+    		getLog().error("Error when generating sources.", e);
+    		throw e;
+    	} 
     }
 
     protected void extractSourceDependencies() throws MojoExecutionException {
@@ -108,8 +112,14 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             for (Artifact artifact : directDependentArtifacts) {
                 String type = artifact.getType();
                 if (type.equals("apksources")) {
-                    getLog().debug("Detected apksources dependency " + artifact + ". Will resolve and extract...");
-                    final File apksourcesFile = resolveArtifactToFile(artifact);
+                    getLog().debug("Detected apksources dependency " + artifact + " with file " + artifact.getFile() +". Will resolve and extract...");
+                    
+                    //When using maven under eclipse the artifact will by default point to a directory, which isn't correct.
+                    //To work around this we'll first try to get the archive from the local repo, and only if it isn't found there we'll do a normal resolve. 
+                    File apksourcesFile = new File(getLocalRepository().getBasedir(), getLocalRepository().pathOf(artifact));
+                    if (apksourcesFile == null || apksourcesFile.isDirectory()) {
+                    	apksourcesFile = resolveArtifactToFile(artifact);
+                    }
                     getLog().debug("Extracting " + apksourcesFile + "...");
                     extractApksources(apksourcesFile);
                 }
@@ -120,6 +130,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     }
 
     private void extractApksources(File apksourcesFile) throws MojoExecutionException {
+    	if (apksourcesFile.isDirectory()) {
+    		getLog().warn("The apksources artifact points to '"+apksourcesFile+"' which is a directory; skipping unpacking it.");
+    		return;
+    	}
         final UnArchiver unArchiver = new ZipUnArchiver(apksourcesFile){
             @Override
             protected Logger getLogger() {
@@ -131,7 +145,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         try {
             unArchiver.extract();
         } catch (ArchiverException e) {
-            throw new MojoExecutionException("ArchiverException while extracting " + apksourcesFile.getAbsolutePath(), e);
+            throw new MojoExecutionException("ArchiverException while extracting " + apksourcesFile.getAbsolutePath() + ". Message: " + e.getLocalizedMessage(), e);
         }
     }
 
