@@ -130,15 +130,6 @@ public class ApkMojo extends AbstractAndroidMojo {
 	        	throw new MojoExecutionException("Could not create directory for combined resources at " + combinedRes.getAbsolutePath());
 	        }
         }
-        if (resourceDirectory.exists()) {
-        	try {
-        	    getLog().info("Copying local resource files to combined resource directory.");
-				org.apache.commons.io.FileUtils.copyDirectory(resourceDirectory, combinedRes);
-			}
-			catch (IOException e) {
-				throw new MojoExecutionException("", e);
-			}	
-        }
         if (extractedDependenciesRes.exists()) {
         	try {
         	    getLog().info("Copying dependency resource files to combined resource directory.");
@@ -148,6 +139,15 @@ public class ApkMojo extends AbstractAndroidMojo {
 				throw new MojoExecutionException("", e);
 			}	
         }        
+        if (resourceDirectory.exists()) {
+        	try {
+        	    getLog().info("Copying local resource files to combined resource directory.");
+				org.apache.commons.io.FileUtils.copyDirectory(resourceDirectory, combinedRes);
+			}
+			catch (IOException e) {
+				throw new MojoExecutionException("", e);
+			}	
+        }
         
         File androidJar = getAndroidSdk().getAndroidJar();
         File outputFile = new File(project.getBuild().getDirectory(),  project.getBuild().getFinalName() + ".ap_");
