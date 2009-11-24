@@ -75,10 +75,18 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected File resourceDirectory;
 
     /**
-     * The android resources overlay directory.
+     * The android resources overlay directory. This will be overriden 
+     * by resourceOverlayDirectories if present. 
      * @parameter default-value="${project.basedir}/res-overlay"
      */
     protected File resourceOverlayDirectory;
+
+    /**
+     * The android resources overlay directories. If this is specified,
+     * the {@link #resourceOverlayDirectory} parameter will be ignored.
+     * @parameter 
+     */
+    protected File[] resourceOverlayDirectories;
 
     /**
      * The android assets directory.

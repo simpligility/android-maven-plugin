@@ -124,6 +124,14 @@ public class ApkMojo extends AbstractAndroidMojo {
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
+        File[] overlayDirectories;
+        
+        if (resourceOverlayDirectories == null || resourceOverlayDirectories.length == 0) {
+        	overlayDirectories = new File[] {resourceOverlayDirectory};
+        } else {
+        	overlayDirectories = resourceOverlayDirectories;
+        }
+  
 
         if (!combinedRes.exists()) {
 	        if (!combinedRes.mkdirs()) {
@@ -157,10 +165,12 @@ public class ApkMojo extends AbstractAndroidMojo {
         commands.add("-f");
         commands.add("-M");
         commands.add(androidManifestFile.getAbsolutePath());
-        if (resourceOverlayDirectory.exists()) {
-            commands.add("-S"                               );
-            commands.add(resourceOverlayDirectory.getAbsolutePath());
-        }        
+        for(File resOverlayDir : overlayDirectories) {
+        	if (resOverlayDir != null && resOverlayDir.exists()) {
+        		commands.add("-S");
+        		commands.add(resOverlayDir.getAbsolutePath());
+        	}
+        }     
         if (combinedRes.exists()) {
             commands.add("-S"                               );
             commands.add(combinedRes.getAbsolutePath());
