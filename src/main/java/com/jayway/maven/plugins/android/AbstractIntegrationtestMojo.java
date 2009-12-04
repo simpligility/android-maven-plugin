@@ -64,6 +64,9 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
         }
 
         if ("auto".equalsIgnoreCase(enableIntegrationTest)){
+            if (extractInstrumentationRunnerFromAndroidManifest(androidManifestFile)==null){
+                return false;
+            }
             return AndroidTestFinder.containsAndroidTests(new File(project.getBuild().getDirectory(), "android-classes"));
         }
 
