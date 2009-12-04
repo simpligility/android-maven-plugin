@@ -17,6 +17,7 @@
 package com.jayway.maven.plugins.android;
 
 import org.apache.commons.jxpath.JXPathContext;
+import org.apache.commons.jxpath.JXPathNotFoundException;
 import org.apache.commons.jxpath.xml.DocumentContainer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -456,6 +457,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         return (String) packageName;
     }
 
+    /**
+     * Attempts to find the instrumentation test runner from inside the AndroidManifest.xml file.
+     *
+     * @param androidManifestFile the AndroidManifest.xml file to inspect.
+     * @return the instrumentation test runner declared in AndroidManifest.xml, or {@code null} if it is not declared.
+     * @throws MojoExecutionException
+     */
     protected String extractInstrumentationRunnerFromAndroidManifest(File androidManifestFile) throws MojoExecutionException {
         final URL xmlURL;
         try {
@@ -463,8 +471,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         } catch (MalformedURLException e) {
             throw new MojoExecutionException("Error while trying to figure out instrumentation runner from inside AndroidManifest.xml file " + androidManifestFile, e);
         }
-        final DocumentContainer documentContainer = new DocumentContainer(xmlURL);
-        final Object            instrumentationRunner        = JXPathContext.newContext(documentContainer).getValue("manifest//instrumentation/@android:name", String.class);
+        final DocumentContainer documentContainer     = new DocumentContainer(xmlURL);
+        final Object            instrumentationRunner;
+        try {
+            instrumentationRunner = JXPathContext.newContext(documentContainer).getValue("manifest//instrumentation/@android:name", String.class);
+        } catch (JXPathNotFoundException e) {
+            return null;
+        }
         return (String) instrumentationRunner;
     }
 
