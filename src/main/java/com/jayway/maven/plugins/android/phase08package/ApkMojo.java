@@ -95,11 +95,7 @@ public class ApkMojo extends AbstractAndroidMojo {
         commands.add("-rf");
         commands.add(new File(project.getBuild().getDirectory(), "classes").getAbsolutePath());
 
-        for (Artifact artifact : (List<Artifact>) project.getCompileArtifacts()) {
-            if (artifact.getGroupId().equals("android")) {
-                continue;
-            }
-
+        for (Artifact artifact : getRelevantCompileArtifacts()) {
             commands.add("-rj");
             commands.add(artifact.getFile().getAbsolutePath());
         }
