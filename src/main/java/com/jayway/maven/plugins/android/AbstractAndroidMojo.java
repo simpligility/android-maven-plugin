@@ -298,7 +298,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * EXCLUDED_DEPENDENCY_SCOPES} scopes.
      */
     protected Set<Artifact> getRelevantDependencyArtifacts() {
-        final List<Artifact> allArtifacts = (List<Artifact>) project.getDependencyArtifacts();
+        final Set<Artifact> allArtifacts = (Set<Artifact>) project.getDependencyArtifacts();
         final Set<Artifact> results = filterOutIrrelevantArtifacts(allArtifacts);
         return results;
     }
