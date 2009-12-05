@@ -107,22 +107,19 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     }
 
     protected void extractSourceDependencies() throws MojoExecutionException {
-        Set<Artifact> directDependentArtifacts = project.getDependencyArtifacts();
-        if (directDependentArtifacts != null) {
-            for (Artifact artifact : directDependentArtifacts) {
-                String type = artifact.getType();
-                if (type.equals("apksources")) {
-                    getLog().debug("Detected apksources dependency " + artifact + " with file " + artifact.getFile() +". Will resolve and extract...");
-                    
-                    //When using maven under eclipse the artifact will by default point to a directory, which isn't correct.
-                    //To work around this we'll first try to get the archive from the local repo, and only if it isn't found there we'll do a normal resolve. 
-                    File apksourcesFile = new File(getLocalRepository().getBasedir(), getLocalRepository().pathOf(artifact));
-                    if (apksourcesFile == null || apksourcesFile.isDirectory()) {
-                    	apksourcesFile = resolveArtifactToFile(artifact);
-                    }
-                    getLog().debug("Extracting " + apksourcesFile + "...");
-                    extractApksources(apksourcesFile);
+        for (Artifact artifact : getRelevantDependencyArtifacts()) {
+            String type = artifact.getType();
+            if (type.equals("apksources")) {
+                getLog().debug("Detected apksources dependency " + artifact + " with file " + artifact.getFile() + ". Will resolve and extract...");
+
+                //When using maven under eclipse the artifact will by default point to a directory, which isn't correct.
+                //To work around this we'll first try to get the archive from the local repo, and only if it isn't found there we'll do a normal resolve.
+                File apksourcesFile = new File(getLocalRepository().getBasedir(), getLocalRepository().pathOf(artifact));
+                if (apksourcesFile == null || apksourcesFile.isDirectory()) {
+                    apksourcesFile = resolveArtifactToFile(artifact);
                 }
+                getLog().debug("Extracting " + apksourcesFile + "...");
+                extractApksources(apksourcesFile);
             }
         }
         projectHelper.addResource(project, extractedDependenciesJavaResources.getAbsolutePath(), null, null);

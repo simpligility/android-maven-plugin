@@ -277,7 +277,53 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     {
     	return localRepository;
     }
-    
+
+    /**
+     * Which dependency scopes should not be included when unpacking dependencies into the apk.
+     */
+    protected static final List<String> EXCLUDED_DEPENDENCY_SCOPES = Arrays.asList("provided", "system", "import");
+
+    /**
+     * @return a {@code Set} of dependencies which may be extracted and otherwise included in other artifacts. Never
+     * {@code null}. This excludes artifacts of the {@code EXCLUDED_DEPENDENCY_SCOPES} scopes.
+     */
+    protected Set<Artifact> getRelevantCompileArtifacts() {
+        final List<Artifact> allArtifacts = (List<Artifact>) project.getCompileArtifacts();
+        final Set<Artifact> results = filterOutIrrelevantArtifacts(allArtifacts);
+        return results;
+    }
+
+    /**
+     * @return a {@code Set} of direct project dependencies. Never {@code null}. This excludes artifacts of the {@code
+     * EXCLUDED_DEPENDENCY_SCOPES} scopes.
+     */
+    protected Set<Artifact> getRelevantDependencyArtifacts() {
+        final List<Artifact> allArtifacts = (List<Artifact>) project.getDependencyArtifacts();
+        final Set<Artifact> results = filterOutIrrelevantArtifacts(allArtifacts);
+        return results;
+    }
+
+    private Set<Artifact> filterOutIrrelevantArtifacts(Iterable<Artifact> allArtifacts) {
+        final Set<Artifact> results = new HashSet<Artifact>();
+        for (Artifact artifact : allArtifacts) {
+            if (artifact == null){
+                continue;
+            }
+
+            if (EXCLUDED_DEPENDENCY_SCOPES.contains(artifact.getScope())){
+                continue;
+            }
+
+            // TODO: this statement must be retired in version 3.0, but we can't do that yet because we promised to not break backwards compatibility within the 2.x series.
+            if (artifact.getGroupId().equals("android")) {
+                continue;
+            }
+
+            results.add(artifact);
+        }
+        return results;
+    }
+
     /**
      * Attempts to resolve an {@link Artifact} to a {@link File}.
      * @param artifact to resolve
