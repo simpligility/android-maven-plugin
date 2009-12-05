@@ -316,6 +316,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
 
             // TODO: this statement must be retired in version 3.0, but we can't do that yet because we promised to not break backwards compatibility within the 2.x series.
             if (artifact.getGroupId().equals("android")) {
+                getLog().warn("Excluding the android.jar from being unpacked into your apk file, based on its <groupId>android</groupId>. Please set <scope>provided</scope> in that dependency, because that is the correct way, and the only which will work in the future.");
                 continue;
             }
 
