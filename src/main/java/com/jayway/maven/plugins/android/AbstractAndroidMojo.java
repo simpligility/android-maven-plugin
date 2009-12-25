@@ -198,7 +198,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * <p>If you want to use an environment variable for SDK path, do for example like this:</p>
      * <pre>
      * &lt;sdk&gt;
-     *     &lt;path&gt;${env.ANDROID_SDK}&lt;/path&gt;
+     *     &lt;path&gt;${env.ANDROID_HOME}&lt;/path&gt;
      * &lt;/sdk&gt;
      * </pre>
      * <p>Can also be configured from command-line with parameters <code>-Dandroid.sdk.path</code> and <code>-Dandroid.sdk.platform</code>.</p>
