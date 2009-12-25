@@ -95,7 +95,7 @@ public class AbstractAndroidMojoTest {
 
         @Override
         protected AndroidSdk getAndroidSdk() {
-            return new SdkTestSupport().getSdk_1_5_platform_1_5();
+            return new SdkTestSupport().getSdk_with_platform_1_5();
         }
 
         public void execute() throws MojoExecutionException, MojoFailureException {
