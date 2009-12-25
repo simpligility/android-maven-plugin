@@ -50,59 +50,15 @@
     </licenses>
     <developers>
         <developer>
-            <name>Hugo Josefson</name>
-            <id>hugojosefson</id>
-            <email>hugo@josefson.org</email>
-            <url>http://blog.jayway.com/</url>
+            <name>See homepage and mailinglist for contributors.</name>
+            <id>maven-android-plugin-project</id>
+            <url>http://code.google.com/p/maven-android-plugin</url>
             <roles>
                 <role>Developer</role>
+                <role>Contributor</role>
             </roles>
         </developer>
     </developers>
-    <contributors>
-        <!-- in reverse chronological order from when they started contributing -->
-        <contributor>
-            <name>Martin Vyšný</name>
-            <email>vysny@baka.se</email>
-            <roles>
-                <role>Patch contributor</role>
-            </roles>
-        </contributor>
-        <contributor>
-            <email>mg.mlists@gmail.com</email>
-            <roles>
-                <role>Bug reporter</role>
-            </roles>
-        </contributor>
-        <contributor>
-            <name>Mattias Rosberg</name>
-            <email>mattias.rosberg@gmail.com</email>
-            <roles>
-                <role>Documentation contributor</role>
-            </roles>
-        </contributor>
-        <contributor>
-            <name>Albin Theander</name>
-            <email>albin.theander@gmail.com</email>
-            <roles>
-                <role>Bug reporter</role>
-            </roles>
-        </contributor>
-        <contributor>
-            <name>Andreas Ronge</name>
-            <email>andreas.ronge@gmail.com</email>
-            <roles>
-                <role>Patch contributor</role>
-            </roles>
-        </contributor>
-        <contributor>
-            <name>Shane Isbell</name>
-            <email>shane.isbell@gmail.com</email>
-            <roles>
-                <role>Original Masa developer</role>
-            </roles>
-        </contributor>
-    </contributors>
     <mailingLists>
         <mailingList>
             <name>Maven Android Developers</name>
