@@ -30,12 +30,23 @@ import java.util.Set;
  * @author hugo.josefson@jayway.com
  */
 public class AndroidSdk {
-    private final File   path;
+    private final File   path ;
     private final String platform;
     private static final String PARAMETER_MESSAGE = "Please provide a proper Android SDK directory path as configuration parameter <sdk><path>...</path></sdk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.sdk.path=...";
 
+    public static final String ENV_ANDROID_HOME = "ANDROID_HOME";
     public AndroidSdk(File path, String platform) {
-        this.path = path;
+
+        // defaulting to ANDROID_HOME so that setting is not necessary in pom.xml
+        if (path == null || path.toString() =="")
+        {
+            this.path = new File(System.getenv(ENV_ANDROID_HOME));
+        }
+        else
+        {
+            this.path = path;
+        }
+
         this.platform = platform;
     }
 
@@ -160,5 +171,14 @@ public class AndroidSdk {
             assertPathIsDirectory(platformDirectory);
             return platformDirectory;
         }
+    }
+
+    /**
+     * Get the path to the sdk.
+     * @return File object with path
+     */
+    File getPath()
+    {
+        return this.path;
     }
 }
