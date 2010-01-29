@@ -77,42 +77,49 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        extractSourceDependencies();
-
-        final String[]    relativeAidlFileNames1   = findRelativeAidlFileNames(sourceDirectory                 );
-        final String[]    relativeAidlFileNames2   = findRelativeAidlFileNames(extractedDependenciesJavaSources);
-        final Set<String> relativeAidlFileNamesSet = new HashSet<String>() {
-            {
-                addAll(Arrays.asList(relativeAidlFileNames1));
-                addAll(Arrays.asList(relativeAidlFileNames2));
-            }
-        };
-
-        if (deleteConflictingFiles) {
-            deleteConflictingRJavaFiles       (sourceDirectory                                           );
-            deleteConflictingManifestJavaFiles(sourceDirectory                                           );
-            deleteConflictingThumbsDb         (resourceDirectory                                         );
-            deleteConflictingAidlJavaFiles    (sourceDirectory, relativeAidlFileNamesSet                 );
-            deleteConflictingAidlJavaFiles    (extractedDependenciesJavaSources, relativeAidlFileNamesSet);
-        }
-
-        generateR        (                                                        );
-        generateAidlFiles(sourceDirectory, relativeAidlFileNames1                 );
-        generateAidlFiles(extractedDependenciesJavaSources, relativeAidlFileNames2);
-
+    	try {
+	        extractSourceDependencies();
+	
+	        final String[]    relativeAidlFileNames1   = findRelativeAidlFileNames(sourceDirectory                 );
+	        final String[]    relativeAidlFileNames2   = findRelativeAidlFileNames(extractedDependenciesJavaSources);
+	        final Set<String> relativeAidlFileNamesSet = new HashSet<String>() {
+	            {
+	                addAll(Arrays.asList(relativeAidlFileNames1));
+	                addAll(Arrays.asList(relativeAidlFileNames2));
+	            }
+	        };
+	
+	        if (deleteConflictingFiles) {
+	            deleteConflictingRJavaFiles       (sourceDirectory                                           );
+	            deleteConflictingManifestJavaFiles(sourceDirectory                                           );
+	            deleteConflictingThumbsDb         (resourceDirectory                                         );
+	            deleteConflictingAidlJavaFiles    (sourceDirectory, relativeAidlFileNamesSet                 );
+	            deleteConflictingAidlJavaFiles    (extractedDependenciesJavaSources, relativeAidlFileNamesSet);
+	        }
+	
+	        generateR        (                                                        );
+	        generateAidlFiles(sourceDirectory, relativeAidlFileNames1                 );
+	        generateAidlFiles(extractedDependenciesJavaSources, relativeAidlFileNames2);
+    	} catch (MojoExecutionException e) {
+    		getLog().error("Error when generating sources.", e);
+    		throw e;
+    	} 
     }
 
     protected void extractSourceDependencies() throws MojoExecutionException {
-        Set<Artifact> directDependentArtifacts = project.getDependencyArtifacts();
-        if (directDependentArtifacts != null) {
-            for (Artifact artifact : directDependentArtifacts) {
-                String type = artifact.getType();
-                if (type.equals("apksources")) {
-                    getLog().debug("Detected apksources dependency " + artifact + ". Will resolve and extract...");
-                    final File apksourcesFile = resolveArtifactToFile(artifact);
-                    getLog().debug("Extracting " + apksourcesFile + "...");
-                    extractApksources(apksourcesFile);
+        for (Artifact artifact : getRelevantDependencyArtifacts()) {
+            String type = artifact.getType();
+            if (type.equals("apksources")) {
+                getLog().debug("Detected apksources dependency " + artifact + " with file " + artifact.getFile() + ". Will resolve and extract...");
+
+                //When using maven under eclipse the artifact will by default point to a directory, which isn't correct.
+                //To work around this we'll first try to get the archive from the local repo, and only if it isn't found there we'll do a normal resolve.
+                File apksourcesFile = new File(getLocalRepository().getBasedir(), getLocalRepository().pathOf(artifact));
+                if (apksourcesFile == null || apksourcesFile.isDirectory()) {
+                    apksourcesFile = resolveArtifactToFile(artifact);
                 }
+                getLog().debug("Extracting " + apksourcesFile + "...");
+                extractApksources(apksourcesFile);
             }
         }
         projectHelper.addResource(project, extractedDependenciesJavaResources.getAbsolutePath(), null, null);
@@ -120,6 +127,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     }
 
     private void extractApksources(File apksourcesFile) throws MojoExecutionException {
+    	if (apksourcesFile.isDirectory()) {
+    		getLog().warn("The apksources artifact points to '"+apksourcesFile+"' which is a directory; skipping unpacking it.");
+    		return;
+    	}
         final UnArchiver unArchiver = new ZipUnArchiver(apksourcesFile){
             @Override
             protected Logger getLogger() {
@@ -131,7 +142,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         try {
             unArchiver.extract();
         } catch (ArchiverException e) {
-            throw new MojoExecutionException("ArchiverException while extracting " + apksourcesFile.getAbsolutePath(), e);
+            throw new MojoExecutionException("ArchiverException while extracting " + apksourcesFile.getAbsolutePath() + ". Message: " + e.getLocalizedMessage(), e);
         }
     }
 
@@ -200,6 +211,40 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
         String generatedSourcesRDirectoryName = project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "r";
         new File(generatedSourcesRDirectoryName).mkdirs();
+        File[] overlayDirectories;
+        
+        if (resourceOverlayDirectories == null || resourceOverlayDirectories.length == 0) {
+        	overlayDirectories = new File[] {resourceOverlayDirectory};
+        } else {
+        	overlayDirectories = resourceOverlayDirectories;
+        }
+        
+        if (!combinedRes.exists()) {
+	        if (!combinedRes.mkdirs()) {
+	        	throw new MojoExecutionException("Could not create directory for combined resources at " + combinedRes.getAbsolutePath());
+	        }
+        }
+        if (extractedDependenciesRes.exists()) {
+        	try {
+        	    getLog().info("Copying dependency resource files to combined resource directory.");
+				org.apache.commons.io.FileUtils.copyDirectory(extractedDependenciesRes, combinedRes);
+			}
+			catch (IOException e) {
+				throw new MojoExecutionException("", e);
+			}	
+        }
+        if (resourceDirectory.exists()) {
+        	try {
+        	    getLog().info("Copying local resource files to combined resource directory.");
+				org.apache.commons.io.FileUtils.copyDirectory(resourceDirectory, combinedRes);
+			}
+			catch (IOException e) {
+				throw new MojoExecutionException("", e);
+			}	
+        }
+        
+        
+        
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
@@ -211,13 +256,15 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         commands.add(generatedSourcesRDirectoryName       );
         commands.add("-M"                                 );
         commands.add(androidManifestFile.getAbsolutePath());
-        if (resourceDirectory.exists()) {
-            commands.add("-S"                               );
-            commands.add(resourceDirectory.getAbsolutePath());
+        for(File resOverlayDir : overlayDirectories) {
+        	if (resOverlayDir != null && resOverlayDir.exists()) {
+        		commands.add("-S");
+        		commands.add(resOverlayDir.getAbsolutePath());
+        	}
         }
-        if (extractedDependenciesRes.exists()) {
+        if (combinedRes.exists()) {
             commands.add("-S"                               );
-            commands.add(extractedDependenciesRes.getAbsolutePath());
+            commands.add(combinedRes.getAbsolutePath());
         }
         if (assetsDirectory.exists()) {
             commands.add("-A"                             );

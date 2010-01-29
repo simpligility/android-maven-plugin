@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jayway.maven.plugins.android.generation2</groupId>
     <artifactId>maven-android-plugin</artifactId>
-    <version>2.2.1-SNAPSHOT</version>
+    <version>2.2.3-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
     <name>Maven Android Plugin - maven-android-plugin</name>
     <description>Maven Plugin for Android</description>
@@ -27,6 +27,7 @@
     <inceptionYear>2008</inceptionYear>
     <properties>
         <scm.branch>master</scm.branch>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <scm>
         <url>http://github.com/jayway/maven-android-plugin/tree/${scm.branch}</url>
@@ -49,65 +50,24 @@
     </licenses>
     <developers>
         <developer>
-            <name>Hugo Josefson</name>
-            <id>hugojosefson</id>
-            <email>hugo@josefson.org</email>
-            <url>http://blog.jayway.com/</url>
+            <name>See homepage and mailinglist for contributors.</name>
+            <id>maven-android-plugin-project</id>
+            <url>http://code.google.com/p/maven-android-plugin</url>
             <roles>
                 <role>Developer</role>
+                <role>Contributor</role>
             </roles>
         </developer>
     </developers>
-    <contributors>
-        <!-- in reverse chronological order from when they started contributing -->
-        <contributor>
-            <name>Martin Vyšný</name>
-            <email>vysny@baka.se</email>
-            <roles>
-                <role>Patch contributor</role>
-            </roles>
-        </contributor>
-        <contributor>
-            <email>mg.mlists@gmail.com</email>
-            <roles>
-                <role>Bug reporter</role>
-            </roles>
-        </contributor>
-        <contributor>
-            <name>Mattias Rosberg</name>
-            <email>mattias.rosberg@gmail.com</email>
-            <roles>
-                <role>Documentation contributor</role>
-            </roles>
-        </contributor>
-        <contributor>
-            <name>Albin Theander</name>
-            <email>albin.theander@gmail.com</email>
-            <roles>
-                <role>Bug reporter</role>
-            </roles>
-        </contributor>
-        <contributor>
-            <name>Andreas Ronge</name>
-            <email>andreas.ronge@gmail.com</email>
-            <roles>
-                <role>Patch contributor</role>
-            </roles>
-        </contributor>
-        <contributor>
-            <name>Shane Isbell</name>
-            <email>shane.isbell@gmail.com</email>
-            <roles>
-                <role>Original Masa developer</role>
-            </roles>
-        </contributor>
-    </contributors>
     <mailingLists>
         <mailingList>
             <name>Maven Android Developers</name>
             <archive>http://groups.google.com/group/maven-android-developers/topics</archive>
         </mailingList>
     </mailingLists>
+    <prerequisites>
+        <maven>2.2.1</maven>
+    </prerequisites>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -154,6 +114,11 @@
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-archiver</artifactId>
             <version>1.0-alpha-9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-io</artifactId>
+            <version>1.0-alpha-5</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
