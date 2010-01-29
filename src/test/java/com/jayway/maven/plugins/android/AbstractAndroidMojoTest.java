@@ -60,6 +60,15 @@ public class AbstractAndroidMojoTest {
     }
 
     @Test
+    public void givenAndroidManifestWithoutInstrumentationThenInstrumentationRunnerIsNotFound() throws MalformedURLException, URISyntaxException, MojoExecutionException {
+        final URL    url             = this.getClass().getResource("AndroidManifestWithoutInstrumentation.xml");
+        final URI    uri             = url.toURI();
+        final File   file            = new File(uri);
+        final String foundInstrumentationRunner = androidMojo.extractInstrumentationRunnerFromAndroidManifest(file);
+        Assert.assertNull(foundInstrumentationRunner);
+    }
+
+    @Test
     public void givenValidAndroidManifestXmlTreeThenPackageIsFound() throws IOException {
         final URL         resource               = this.getClass().getResource("AndroidManifestXmlTree.txt");
         final InputStream inputStream            = resource.openStream();
@@ -86,7 +95,7 @@ public class AbstractAndroidMojoTest {
 
         @Override
         protected AndroidSdk getAndroidSdk() {
-            return new SdkTestSupport().getSdk_1_5_platform_1_5();
+            return new SdkTestSupport().getSdk_with_platform_1_5();
         }
 
         public void execute() throws MojoExecutionException, MojoFailureException {

@@ -17,10 +17,12 @@
 package com.jayway.maven.plugins.android;
 
 import org.apache.commons.jxpath.JXPathContext;
+import org.apache.commons.jxpath.JXPathNotFoundException;
 import org.apache.commons.jxpath.xml.DocumentContainer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -74,6 +76,20 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected File resourceDirectory;
 
     /**
+     * The android resources overlay directory. This will be overriden 
+     * by resourceOverlayDirectories if present. 
+     * @parameter default-value="${project.basedir}/res-overlay"
+     */
+    protected File resourceOverlayDirectory;
+
+    /**
+     * The android resources overlay directories. If this is specified,
+     * the {@link #resourceOverlayDirectory} parameter will be ignored.
+     * @parameter 
+     */
+    protected File[] resourceOverlayDirectories;
+
+    /**
      * The android assets directory.
      * @parameter default-value="${project.basedir}/assets"
      */
@@ -111,6 +127,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @readonly
      */
     protected File extractedDependenciesJavaResources;
+    
+    /**
+     * The combined resources directory. This will contain both the resources found in "res" as well as any resources contained in a apksources dependency.
+     * @parameter expression="${project.build.directory}/generated-sources/combined-resources/res"
+     * @readonly
+     */
+    protected File combinedRes;
     
     /**
      * Specifies which device to connect to, by serial number. Special values "usb" and "emulator" are also valid, for
@@ -175,7 +198,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * <p>If you want to use an environment variable for SDK path, do for example like this:</p>
      * <pre>
      * &lt;sdk&gt;
-     *     &lt;path&gt;${env.ANDROID_SDK}&lt;/path&gt;
+     *     &lt;path&gt;${env.ANDROID_HOME}&lt;/path&gt;
      * &lt;/sdk&gt;
      * </pre>
      * <p>Can also be configured from command-line with parameters <code>-Dandroid.sdk.path</code> and <code>-Dandroid.sdk.platform</code>.</p>
@@ -245,6 +268,62 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      *
      */
     protected boolean attachSources;
+
+    /**
+     * Accessor for the local repository.
+     * @return The local repository.
+     */
+    protected ArtifactRepository getLocalRepository()
+    {
+    	return localRepository;
+    }
+
+    /**
+     * Which dependency scopes should not be included when unpacking dependencies into the apk.
+     */
+    protected static final List<String> EXCLUDED_DEPENDENCY_SCOPES = Arrays.asList("provided", "system", "import");
+
+    /**
+     * @return a {@code Set} of dependencies which may be extracted and otherwise included in other artifacts. Never
+     * {@code null}. This excludes artifacts of the {@code EXCLUDED_DEPENDENCY_SCOPES} scopes.
+     */
+    protected Set<Artifact> getRelevantCompileArtifacts() {
+        final List<Artifact> allArtifacts = (List<Artifact>) project.getCompileArtifacts();
+        final Set<Artifact> results = filterOutIrrelevantArtifacts(allArtifacts);
+        return results;
+    }
+
+    /**
+     * @return a {@code Set} of direct project dependencies. Never {@code null}. This excludes artifacts of the {@code
+     * EXCLUDED_DEPENDENCY_SCOPES} scopes.
+     */
+    protected Set<Artifact> getRelevantDependencyArtifacts() {
+        final Set<Artifact> allArtifacts = (Set<Artifact>) project.getDependencyArtifacts();
+        final Set<Artifact> results = filterOutIrrelevantArtifacts(allArtifacts);
+        return results;
+    }
+
+    private Set<Artifact> filterOutIrrelevantArtifacts(Iterable<Artifact> allArtifacts) {
+        final Set<Artifact> results = new HashSet<Artifact>();
+        for (Artifact artifact : allArtifacts) {
+            if (artifact == null){
+                continue;
+            }
+
+            if (EXCLUDED_DEPENDENCY_SCOPES.contains(artifact.getScope())){
+                continue;
+            }
+
+            // TODO: this statement must be retired in version 3.0, but we can't do that yet because we promised to not break backwards compatibility within the 2.x series.
+            if (artifact.getGroupId().equals("android")) {
+                getLog().warn("Excluding the android.jar from being unpacked into your apk file, based on its <groupId>android</groupId>. Please set <scope>provided</scope> in that dependency, because that is the correct way, and the only which will work in the future.");
+                continue;
+            }
+
+            results.add(artifact);
+        }
+        return results;
+    }
 
     /**
      * Attempts to resolve an {@link Artifact} to a {@link File}.
@@ -425,6 +504,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         return (String) packageName;
     }
 
+    /**
+     * Attempts to find the instrumentation test runner from inside the AndroidManifest.xml file.
+     *
+     * @param androidManifestFile the AndroidManifest.xml file to inspect.
+     * @return the instrumentation test runner declared in AndroidManifest.xml, or {@code null} if it is not declared.
+     * @throws MojoExecutionException
+     */
     protected String extractInstrumentationRunnerFromAndroidManifest(File androidManifestFile) throws MojoExecutionException {
         final URL xmlURL;
         try {
@@ -432,8 +518,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         } catch (MalformedURLException e) {
             throw new MojoExecutionException("Error while trying to figure out instrumentation runner from inside AndroidManifest.xml file " + androidManifestFile, e);
         }
-        final DocumentContainer documentContainer = new DocumentContainer(xmlURL);
-        final Object            instrumentationRunner        = JXPathContext.newContext(documentContainer).getValue("manifest//instrumentation/@android:name", String.class);
+        final DocumentContainer documentContainer     = new DocumentContainer(xmlURL);
+        final Object            instrumentationRunner;
+        try {
+            instrumentationRunner = JXPathContext.newContext(documentContainer).getValue("manifest//instrumentation/@android:name", String.class);
+        } catch (JXPathNotFoundException e) {
+            return null;
+        }
         return (String) instrumentationRunner;
     }
 

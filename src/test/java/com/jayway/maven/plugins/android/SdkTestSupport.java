@@ -23,41 +23,27 @@ import java.io.File;
  * @author hugo.josefson@jayway.com
  */
 public class SdkTestSupport {
-    private final String env_ANDROID_SDK_11 = System.getenv("ANDROID_SDK_11");
-    private final String env_ANDROID_SDK_15 = System.getenv("ANDROID_SDK_15");
+    private final String env_ANDROID_HOME = System.getenv("ANDROID_HOME");
 
-    private final AndroidSdk sdk_1_1;
-    private final AndroidSdk sdk_1_5_platform_1_5;
-    private final AndroidSdk sdk_1_5_platform_default;
+    private final AndroidSdk sdk_with_platform_1_5;
+    private final AndroidSdk sdk_with_platform_default;
 
     public SdkTestSupport() {
-        Assert.assertNotNull("For running the tests, you must have environment variable ANDROID_SDK_11 set to a valid Android SDK 1.1 directory.", env_ANDROID_SDK_11);
-        sdk_1_1 = new AndroidSdk(new File(env_ANDROID_SDK_11), "1.1");
+        Assert.assertNotNull("For running the tests, you must have environment variable ANDROID_HOME set to a valid Android SDK 1.5+ directory.", env_ANDROID_HOME);
 
-        Assert.assertNotNull("For running the tests, you must have environment variable ANDROID_SDK_15 set to a valid Android SDK 1.5 directory.", env_ANDROID_SDK_15);
-        sdk_1_5_platform_1_5 = new AndroidSdk(new File(env_ANDROID_SDK_15), "1.5");
-
-        Assert.assertNotNull("For running the tests, you must have environment variable ANDROID_SDK_15 set to a valid Android SDK 1.5 directory.", env_ANDROID_SDK_15);
-        sdk_1_5_platform_default = new AndroidSdk(new File(env_ANDROID_SDK_15), null);
+        sdk_with_platform_1_5     = new AndroidSdk(new File(env_ANDROID_HOME), "1.5");
+        sdk_with_platform_default = new AndroidSdk(new File(env_ANDROID_HOME), null);
     }
 
-    public String getEnv_ANDROID_SDK_11() {
-        return env_ANDROID_SDK_11;
+    public String getEnv_ANDROID_HOME() {
+        return env_ANDROID_HOME;
     }
 
-    public String getEnv_ANDROID_SDK_15() {
-        return env_ANDROID_SDK_15;
+    public AndroidSdk getSdk_with_platform_1_5() {
+        return sdk_with_platform_1_5;
     }
 
-    public AndroidSdk getSdk_1_1() {
-        return sdk_1_1;
-    }
-
-    public AndroidSdk getSdk_1_5_platform_1_5() {
-        return sdk_1_5_platform_1_5;
-    }
-
-    public AndroidSdk getSdk_1_5_platform_default() {
-        return sdk_1_5_platform_default;
+    public AndroidSdk getSdk_with_platform_default() {
+        return sdk_with_platform_default;
     }
 }
