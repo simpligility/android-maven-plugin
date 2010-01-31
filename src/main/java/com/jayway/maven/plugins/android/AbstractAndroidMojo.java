@@ -218,7 +218,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      */
     private File sdkPath;
 
-
+    /**
+     * <p>Parameter designed to pick up environment variable <code>ANDROID_HOME</code> in case
+     * <code>android.sdk.path</code> is not configured.</p>
+     *
+     * @parameter expression="${env.ANDROID_HOME}"
+     * @readonly
+     */
+    private String envANDROID_HOME;
 
     /**
      * <p>Parameter designed to pick up <code>-Dandroid.sdk.platform</code> in case there is no pom with an
@@ -569,7 +576,12 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     }
 
     /**
-     * Returns the Android SDK to use.
+     * <p>Returns the Android SDK to use.</p>
+     *
+     * <p>This is where we collect all logic for how to lookup where it is, and which one to choose. The lookup is
+     * based on available parameters. This method should be the only one you should need to look at to understand how
+     * the Android SDK is chosen, and from where on disk.</p>
+     * 
      * @return the Android SDK to use.
      */
     protected AndroidSdk getAndroidSdk(){
