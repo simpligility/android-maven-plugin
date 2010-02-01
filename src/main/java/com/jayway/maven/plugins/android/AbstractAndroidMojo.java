@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Jayway AB
+ * Copyright (C) 2009, 2010 Jayway AB
  * Copyright (C) 2007-2008 JVending Masa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,6 +36,8 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * Contains common fields and methods for android mojos.
@@ -226,6 +228,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @readonly
      */
     private String envANDROID_HOME;
+
+    /**
+     * The <code>ANDROID_HOME</code> environment variable name.
+     */
+    public static final String ENV_ANDROID_HOME = "ANDROID_HOME";
 
     /**
      * <p>Parameter designed to pick up <code>-Dandroid.sdk.platform</code> in case there is no pom with an
@@ -578,18 +585,60 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     /**
      * <p>Returns the Android SDK to use.</p>
      *
+     * <p>Current implementation looks for <code>&lt;sdk&gt;&lt;path&gt;</code> configuration in pom, then System
+     * property <code>android.sdk.path</code>, then environment variable <code>ANDROID_HOME</code>.
+     *
      * <p>This is where we collect all logic for how to lookup where it is, and which one to choose. The lookup is
      * based on available parameters. This method should be the only one you should need to look at to understand how
      * the Android SDK is chosen, and from where on disk.</p>
-     * 
+     *
      * @return the Android SDK to use.
      */
     protected AndroidSdk getAndroidSdk(){
-        if (sdk==null){
-            return new AndroidSdk(sdkPath, sdkPlatform);
-        }else{
-            return new AndroidSdk(sdk.getPath(), sdk.getPlatform());
+        File   chosenSdkPath;
+        String chosenSdkPlatform;
+        
+        if (sdk != null) {
+            // An <sdk> tag exists in the pom.
+
+            if (sdk.getPath() != null){
+                // An <sdk><path> tag is set in the pom.
+
+                chosenSdkPath = sdk.getPath();
+            }else{
+                // There is no <sdk><path> tag in the pom.
+
+                if (sdkPath != null){
+                    // -Dandroid.sdk.path is set on command line, or via <properties><sdk.path>...
+                    chosenSdkPath = sdkPath;
+                }else{
+                    // No -Dandroid.sdk.path is set on command line, or via <properties><sdk.path>...
+                    chosenSdkPath = new File(System.getenv(ENV_ANDROID_HOME));
+                }
+            }
+
+            // Use <sdk><platform> from pom if it's there, otherwise try -Dandroid.sdk.platform from command line or <properties><sdk.platform>...
+            if (!isBlank(sdk.getPlatform())){
+                chosenSdkPlatform = sdk.getPlatform();
+            }else{
+                chosenSdkPlatform = sdkPlatform;
+            }
+        } else {
+            // There is no <sdk> tag in the pom.
+
+            if (sdkPath != null){
+                // -Dandroid.sdk.path is set on command line, or via <properties><sdk.path>...
+                chosenSdkPath = sdkPath;
+            }else{
+                // No -Dandroid.sdk.path is set on command line, or via <properties><sdk.path>...
+                chosenSdkPath = new File(System.getenv(ENV_ANDROID_HOME));
+            }
+
+            // Use any -Dandroid.sdk.platform from command line or <properties><sdk.platform>...
+            chosenSdkPlatform = sdkPlatform;
         }
+        
+        return new AndroidSdk(chosenSdkPath, chosenSdkPlatform);
     }
 
 }

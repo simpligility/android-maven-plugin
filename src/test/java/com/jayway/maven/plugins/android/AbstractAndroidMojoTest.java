@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Jayway AB
+ * Copyright (C) 2009, 2010 Jayway AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.jayway.maven.plugins.android;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.fest.reflect.core.Reflection;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,11 +35,20 @@ import java.net.URL;
  * @author hugo.josefson@jayway.com
  */
 public class AbstractAndroidMojoTest {
-    protected MyAbstractAndroidMojo androidMojo;
+    protected AbstractAndroidMojo androidMojo;
 
     @Before
     public void setUp() throws Exception {
         androidMojo = new MyAbstractAndroidMojo();
+    }
+
+    @Test
+    public void givenNoPathUseAndroidHomePath()
+    {
+        SdkTestSupport testSupport = new SdkTestSupport();
+        AndroidSdk sdk = androidMojo.getAndroidSdk();
+        File path = Reflection.field("path").ofType(File.class).in(sdk).get();
+        Assert.assertEquals(testSupport.getEnv_ANDROID_HOME(), path.getAbsolutePath());
     }
 
     @Test

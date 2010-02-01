@@ -38,13 +38,6 @@ public class AndroidSdkTest {
     }
 
     @Test
-    public void givenNoPathUseAndroidHomePath()
-    {
-        AndroidSdk sdk = new AndroidSdk(new File(""), "1.5");
-        Assert.assertEquals(System.getenv("ANDROID_HOME"), sdk.getPath().getAbsolutePath());
-    }
-    
-    @Test
     public void givenToolAdbThenPathIsCommon() {
         final String pathForTool =sdkTestSupport.getSdk_with_platform_1_5().getPathForTool("adb");
         Assert.assertEquals(sdkTestSupport.getEnv_ANDROID_HOME() + "/tools/adb", pathForTool);
