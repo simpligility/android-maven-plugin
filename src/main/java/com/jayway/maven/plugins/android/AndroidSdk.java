@@ -86,6 +86,7 @@ public class AndroidSdk {
 
     /**
      * Returns the complete path for a tool, based on this SDK.
+     * TODO: Implementation should try to find the tool in the different directories, instead of relying on a manually maintained list of where they are. (i.e. remove commonToolsIn11And15, and make lookup automatic based on which tools can actually be found where.)
      * @param tool which tool, for example <code>adb</code>.
      * @return the complete path as a <code>String</code>, including the tool's filename.
      */
