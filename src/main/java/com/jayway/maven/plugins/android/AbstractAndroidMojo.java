@@ -593,6 +593,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * the Android SDK is chosen, and from where on disk.</p>
      *
      * @return the Android SDK to use.
+     * @throws org.apache.maven.plugin.MojoExecutionException if no Android SDK path configuration is available at all.
      */
     protected AndroidSdk getAndroidSdk() throws MojoExecutionException {
         File   chosenSdkPath;
