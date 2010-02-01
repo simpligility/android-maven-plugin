@@ -594,10 +594,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      *
      * @return the Android SDK to use.
      */
-    protected AndroidSdk getAndroidSdk(){
+    protected AndroidSdk getAndroidSdk() throws MojoExecutionException {
         File   chosenSdkPath;
         String chosenSdkPlatform;
-        
+
         if (sdk != null) {
             // An <sdk> tag exists in the pom.
 
@@ -613,7 +613,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
                     chosenSdkPath = sdkPath;
                 }else{
                     // No -Dandroid.sdk.path is set on command line, or via <properties><sdk.path>...
-                    chosenSdkPath = new File(System.getenv(ENV_ANDROID_HOME));
+                    chosenSdkPath = new File(getAndroidHomeOrThrow());
                 }
             }
 
@@ -631,7 +631,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
                 chosenSdkPath = sdkPath;
             }else{
                 // No -Dandroid.sdk.path is set on command line, or via <properties><sdk.path>...
-                chosenSdkPath = new File(System.getenv(ENV_ANDROID_HOME));
+                chosenSdkPath = new File(getAndroidHomeOrThrow());
             }
 
             // Use any -Dandroid.sdk.platform from command line or <properties><sdk.platform>...
@@ -639,6 +639,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         }
         
         return new AndroidSdk(chosenSdkPath, chosenSdkPlatform);
+    }
+
+    private String getAndroidHomeOrThrow() throws MojoExecutionException {
+        final String androidHome = System.getenv(ENV_ANDROID_HOME);
+        if (isBlank(androidHome)){
+            throw new MojoExecutionException("No Android SDK path could be found. You may configure it in the pom using <sdk><path>...</path></sdk> or <properties><sdk.path>...</sdk.path></properties> or on command-line using -Dandroid.sdk.path=... or by setting environment variable " + ENV_ANDROID_HOME);
+        }
+        return androidHome;
     }
 
 }

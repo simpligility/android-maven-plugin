@@ -39,13 +39,16 @@ public class AbstractAndroidMojoTest {
 
     @Before
     public void setUp() throws Exception {
-        androidMojo = new MyAbstractAndroidMojo();
+        androidMojo = new DefaultTestAndroidMojo();
     }
 
     @Test
-    public void givenNoPathUseAndroidHomePath()
+    public void givenNoPathThenUseAndroidHomePath() throws MojoExecutionException
     {
         SdkTestSupport testSupport = new SdkTestSupport();
+        androidMojo = new EmptyAndroidMojo();
+        Reflection.field("sdkPath").ofType(File.class).in(androidMojo).set(null);
+        Reflection.field("sdkPlatform").ofType(String.class).in(androidMojo).set("1.6");
         AndroidSdk sdk = androidMojo.getAndroidSdk();
         File path = Reflection.field("path").ofType(File.class).in(sdk).get();
         Assert.assertEquals(testSupport.getEnv_ANDROID_HOME(), path.getAbsolutePath());
@@ -101,7 +104,7 @@ public class AbstractAndroidMojoTest {
         Assert.assertEquals("com.example.android.apis.tests", foundPackage);
     }
 
-    private class MyAbstractAndroidMojo extends AbstractAndroidMojo {
+    private class DefaultTestAndroidMojo extends AbstractAndroidMojo {
 
         @Override
         protected AndroidSdk getAndroidSdk() {
@@ -110,6 +113,11 @@ public class AbstractAndroidMojoTest {
 
         public void execute() throws MojoExecutionException, MojoFailureException {
 
+        }
+    }
+
+    private class EmptyAndroidMojo extends AbstractAndroidMojo {
+        public void execute() throws MojoExecutionException, MojoFailureException {
         }
     }
 }
