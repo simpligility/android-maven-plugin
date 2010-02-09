@@ -142,6 +142,15 @@ public interface CommandExecutor
                     this.logger = logger;
                 }
 
+                private Commandline commandline;
+
+                /**
+                 * kill the command line call.
+                 */
+                public void kill()
+                {
+                    CommandLineUtils.killProcess(commandline.getPid());
+                }
 
                 public void executeCommand( String executable, List<String> commands )
                     throws ExecutionException
@@ -166,7 +175,7 @@ public interface CommandExecutor
                     stdOut = new StreamConsumerImpl();
                     stdErr = new ErrorStreamConsumer();
 
-                    Commandline commandline = new Commandline();
+                    commandline = new Commandline();
                     commandline.setExecutable( executable );
                     commandline.addArguments( commands.toArray( new String[commands.size()]));
                     if ( workingDirectory != null && workingDirectory.exists() )
