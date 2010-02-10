@@ -285,6 +285,46 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      */
     protected boolean attachSources;
 
+
+    /**
+     * The Android emulator configuration to use. All values are optional.
+     * &lt;emulator&gt;
+     *     &lt;avd&gt;Default&lt;/avd&gt;
+     *     &lt;wait&gt;20000&lt;/wait&gt;
+     *     &lt;options&gt;-no-skin&lt;/options&gt;
+     * &lt;/emulator&gt;
+     * </pre>
+     * @parameter
+     */
+    private Emulator emulator;
+
+    /**
+     * Name of the Android Virtual Device (emulatorAvd) that will be started by the emulator. Default value is "Default"
+     * @see com.jayway.maven.plugins.android.Emulator#avd
+     * @parameter expression="${android.emulator.avd}"
+     * @readonly
+     */
+    private String emulatorAvd;
+
+
+    /**
+     * Wait time for the emulator start up.
+     * @see com.jayway.maven.plugins.android.Emulator#wait
+     * @parameter expression="${android.emulator.wait}"
+     * @readonly
+     */
+    private String emulatorWait;
+
+    /**
+     * Additional command line options for the emulator start up. This option can be used to pass any additional
+     * options desired to the invocation of the emulator. Use emulator -help for more details. An example would be
+     * "-no-skin".
+     * @see com.jayway.maven.plugins.android.Emulator#options
+     * @parameter expression="${android.emulator.options}"
+     * @readonly
+     */
+    private String emulatorOptions;
+
     /**
      * Accessor for the local repository.
      * @return The local repository.
@@ -649,5 +689,152 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         }
         return androidHome;
     }
+
+    /**
+     * Start the Android Emulator with the specified options.
+     * @see #emulatorAvd
+     * @see #emulatorWait
+     * @see #emulatorOptions
+     * @throws MojoExecutionException
+     */
+    protected void startAndroidEmulator() throws MojoExecutionException
+    {
+        String avd;
+        String wait;
+        String options;
+        // <emulator> exist in pom file
+        if (emulator != null)
+        {
+            // <emulator><avd> exists in pom file
+            if (emulator.getAvd() != null)
+            {
+                avd = emulator.getAvd();
+            }
+            else
+            {
+                avd = determineAvd();
+            }
+            // <emulator><options> exists in pom file
+            if (emulator.getOptions() != null)
+            {
+                options = emulator.getOptions();
+            }
+            else
+            {
+                options = determineOptions();
+            }
+            // <emulator><wait> exists in pom file
+            if (emulator.getWait() != null)
+            {
+                wait = emulator.getWait();
+            }
+            else
+            {
+                wait = determineWait();
+            }
+        }
+        // commandline options
+        else
+        {
+            avd = determineAvd();
+            options = determineOptions();
+            wait = determineWait();
+        }
+
+        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        executor.setLogger(this.getLog());
+
+        List<String> commands = new ArrayList<String>();
+        commands.add("-avd");
+        commands.add(avd);
+        if (!StringUtils.isEmpty(options))
+        {
+            commands.add(options);
+        }
+
+        getLog().info(getAndroidSdk().getPathForTool("emulator")+" " + commands.toString());
+
+        try {
+            executor.executeCommand(getAndroidSdk().getPathForTool("emulator"), commands);
+        } catch (ExecutionException e) {
+            throw new MojoExecutionException("", e);
+        }
+
+
+        // wait for the emulator to start up
+        try {
+            getLog().info("Waiting for emulator start:" + wait);
+            Thread.sleep(new Long(wait));
+        } catch (InterruptedException e) {
+             //swallow
+        }
+
+    }
+
+    /**
+     * Get wait value for emulator from command line option.
+     * @return if available return command line value otherwise return default value (5000).
+     */
+    private String determineWait() {
+        String wait;
+        if (emulatorWait != null)
+        {
+            wait = emulatorWait;
+        }
+        else
+        {
+            wait = "5000";
+        }
+
+        return wait;
+    }
+
+    /**
+     * Get options value for emulator from command line option.
+     * @return if available return command line value otherwise return default value ("").
+     */
+    private String determineOptions() {
+        String options;
+        if (emulatorOptions != null)
+        {
+            options = emulatorOptions;
+        }
+        else
+        {
+            options = "";
+        }
+        return options;
+    }
+
+    /**
+     * Get avd value for emulator from command line option.
+     * @return if available return command line value otherwise return default value ("Default").
+     */
+    private String determineAvd() {
+        String avd;
+        if (emulatorAvd != null)
+        {
+            avd = emulatorAvd;
+        }
+        else
+        {
+            avd = "Default";
+        }
+        return avd;
+    }
+
+    /**
+     * Stop the running Android Emulator.
+     * @throws MojoExecutionException
+     * @todo not yet implemented, either we find the process id and use PlexusUtils or whatever to kill the emulator
+     * or we find you about the tcp ip connection to the emulator that lets us send a command and then send a shutdown
+     * command or something like that
+     */
+    protected void stopAndroidEmulator() throws MojoExecutionException {
+
+
+        throw new MojoExecutionException("Not yet implemented..");
+    }
+
 
 }
