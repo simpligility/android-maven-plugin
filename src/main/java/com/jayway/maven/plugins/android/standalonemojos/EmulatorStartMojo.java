@@ -1,6 +1,7 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.AbstractEmulatorMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import org.apache.commons.lang.StringUtils;
@@ -17,7 +18,7 @@ import java.util.List;
  * @goal emulator-start
  * @requiresProject false
  */
-public class EmulatorStartMojo extends AbstractAndroidMojo {
+public class EmulatorStartMojo extends AbstractEmulatorMojo {
 
     /**
      * Start the Android Emulator.
