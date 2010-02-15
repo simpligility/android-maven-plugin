@@ -32,7 +32,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.DirectoryScanner;
 
-import java.io.File;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -40,11 +40,18 @@ import java.util.*;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
- * Contains common fields and methods for android mojos.
+ * AbstractEmulatorMojo contains all code related to the interaction with the Android emulator. At this stage that is
+ * starting and stopping the emulator.
  *
- * @author hugo.josefson@jayway.com
+ * @author Manfred Moser <manfred@simplgility.com>
+ * @see com.jayway.maven.plugins.android.Emulator
+ * @see com.jayway.maven.plugins.android.standalonemojos.EmulatorStartMojo
+ * @see com.jayway.maven.plugins.android.standalonemojos.EmulatorStopMojo
  */
 public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
+
+    /** operating system name. */
+    public static final String OS_NAME = System.getProperty("os.name").toLowerCase(Locale.US);
 
     /**
      * The Android emulator configuration to use. All values are optional.
@@ -85,6 +92,39 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      */
     private String emulatorOptions;
 
+    /** parsed value for avd that will be used for the invocation. */
+    private String parsedAvd;
+    /** parsed value for options that will be used for the invocation. */
+    private String parsedOptions;
+    /** parsed value for wait that will be used for the invocation. */
+    private String parsedWait;
+
+    private static final String STOP_EMULATOR_MSG = "Stopping android emulator with pid: ";
+    private static final String START_EMULATOR_MSG = "Starting android emulator with script: ";
+    private static final String START_EMULATOR_WAIT_MSG = "Waiting for emulator start:";
+
+    /** Folder that contains the startup script and the pid file. */
+    private static final String scriptFolder = System.getProperty("java.io.tmpdir");
+    /** file name for the pid file. */
+    private static final String pidFileName = scriptFolder + "/maven-android-plugin-emulator.pid";
+
+    /**
+     * Are we running on a flavour of Windows.
+     * @return
+     */
+    private boolean isWindows() {
+        boolean result;
+        if (OS_NAME.toLowerCase().contains("windows")) {
+            result =  true;
+        }
+        else
+        {
+            result = false;
+        }
+        getLog().debug("isWindows: " + result);
+        return result;
+    }
+
     /**
      * Start the Android Emulator with the specified options.
      * @see #emulatorAvd
@@ -94,74 +134,221 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      */
     protected void startAndroidEmulator() throws MojoExecutionException
     {
-        String avd;
-        String wait;
-        String options;
+        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        executor.setLogger(this.getLog());
+
+        try {
+            String filename;
+            if (isWindows())
+            {
+               filename = writeEmulatorStartScriptWindows();
+            }
+            else
+            {
+                filename = writeEmulatorStartScriptUnix();
+            }
+
+            getLog().info(START_EMULATOR_MSG + filename);
+            executor.executeCommand(filename, null);
+
+        } catch (Exception e) {
+            throw new MojoExecutionException("", e);
+        }
+
+        // wait for the emulator to start up
+        try {
+            getLog().info(START_EMULATOR_WAIT_MSG + parsedWait);
+            Thread.sleep(new Long(parsedWait));
+        } catch (InterruptedException e) {
+             //swallow
+        }
+    }
+
+    /**
+     * Writes the script to start the emulator in the background for windows based environments. This is not fully
+     * operational. Need to implement pid file write and check for running emulator.
+     * @return
+     * @throws IOException
+     * @throws MojoExecutionException
+     */
+    private String writeEmulatorStartScriptWindows() throws IOException, MojoExecutionException {
+
+        String filename = scriptFolder + "\\maven-android-plugin-emulator-start.bat";
+
+        File file = new File(filename);
+        PrintWriter writer = new PrintWriter(new FileWriter(file));
+        getLog().info("Checking for running emulator on Windows not yet implemented. ");
+        // TODO check for running process and such like in unix script
+        writer.print("start    " + assembleStartCommandLine());
+
+        getLog().info("Running pid file on Windows not yet implemented. ");
+        // TODO write pid into pid file
+        // writer.println("    echo $! > " + pidFileName);
+        writer.flush();
+        writer.close();
+        file.setExecutable(true);
+        return filename;
+
+    }
+
+    /**
+     * Writes the script to start the emulator in the background for unix based environments. Also checks with adb if
+     * an emulator is already running and if so does not start a new one.
+     * @return
+     * @throws IOException
+     * @throws MojoExecutionException
+     */
+    private String writeEmulatorStartScriptUnix() throws IOException, MojoExecutionException {
+        String filename = scriptFolder + "/maven-android-plugin-emulator-start.sh";
+
+        File sh;
+        sh = new File("/bin/bash");
+        if (!sh.exists()) {
+            sh = new File("/usr/bin/bash");
+        }
+        if (!sh.exists()) {
+            sh = new File("/bin/sh");
+        }
+
+        File file = new File(filename);
+        PrintWriter writer = new PrintWriter(new FileWriter(file));
+        writer.println("#!" + sh.getAbsolutePath());
+
+        writer.println("result=`" + getAndroidSdk().getAdbPath() + " get-serialno`");
+        writer.println("if [[ $result != \"unknown\" ]]");
+        writer.println("  then");
+        writer.println("    echo \"emulator already running - using existing instance (first ID)\"");
+        writer.println("else");
+        writer.print("    " + assembleStartCommandLine());
+        writer.print(" 1>/dev/null 2>&1 &"); // redirect outputs and run as background task
+        writer.println();
+        writer.println("    echo $! > " + pidFileName);
+        writer.println("fi");
+        writer.flush();
+        writer.close();
+        file.setExecutable(true);
+        return filename;
+    }
+
+    /**
+     * Stop the running Android Emulator.
+     * @throws org.apache.maven.plugin.MojoExecutionException
+     */
+    protected void stopAndroidEmulator() throws MojoExecutionException {
+        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        executor.setLogger(this.getLog());
+
+        try {
+            FileReader fileReader = new FileReader(pidFileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String pid;
+            pid = bufferedReader.readLine(); // just read the first line, don't worry about anything else
+            bufferedReader.close();
+
+            if (isWindows())
+            {
+                stopEmulatorWindows(executor, pid);
+            }
+            else
+            {
+                stopEmulatorUnix(executor, pid);
+            }
+        } catch (Exception e) {
+            throw new MojoExecutionException("", e);
+        }
+    }
+
+    /**
+     * Stop the emulator by using the taskkill command.
+     * @param executor
+     * @param pid
+     * @throws ExecutionException
+     */
+    private void stopEmulatorWindows(CommandExecutor executor, String pid) throws ExecutionException {
+// TODO comment below out when pid file is implemented
+//        String stopCommand = "taskkill"; // there is also tskill, this assumes that the command is on the path
+//        List<String> commands = new ArrayList<String>();
+//        commands.add("/PID");
+//        commands.add(pid);
+//        getLog().info(STOP_EMULATOR_MSG + pid);
+//        executor.executeCommand(stopCommand, commands);
+
+        getLog().info("Stopping emulator on windows not yet implemented. No pid file!"); 
+    }
+
+    /**
+     * Stop the emulator under Unix by using the kill command.
+     * @param executor
+     * @param pid
+     * @throws ExecutionException
+     */
+    private void stopEmulatorUnix(CommandExecutor executor, String pid) throws ExecutionException {
+        String stopCommand = "kill";
+        List<String> commands = new ArrayList<String>();
+        commands.add(pid);
+        getLog().info(STOP_EMULATOR_MSG + pid);
+        executor.executeCommand(stopCommand, commands);
+    }
+
+    /**
+     * Assemble the command line for starting the emulator based on the parameters supplied in the pom file and on the
+     * command line. It should not be that painful to do work with command line and pom supplied values but evidently
+     * it is.
+     * @return
+     * @throws MojoExecutionException
+     * @see com.jayway.maven.plugins.android.Emulator
+     */
+    private String assembleStartCommandLine() throws MojoExecutionException {
         // <emulator> exist in pom file
         if (emulator != null)
         {
             // <emulator><avd> exists in pom file
             if (emulator.getAvd() != null)
             {
-                avd = emulator.getAvd();
+                parsedAvd = emulator.getAvd();
             }
             else
             {
-                avd = determineAvd();
+                parsedAvd = determineAvd();
             }
             // <emulator><options> exists in pom file
             if (emulator.getOptions() != null)
             {
-                options = emulator.getOptions();
+                parsedOptions = emulator.getOptions();
             }
             else
             {
-                options = determineOptions();
+                parsedOptions = determineOptions();
             }
             // <emulator><wait> exists in pom file
             if (emulator.getWait() != null)
             {
-                wait = emulator.getWait();
+                parsedWait = emulator.getWait();
             }
             else
             {
-                wait = determineWait();
+                parsedWait = determineWait();
             }
         }
         // commandline options
         else
         {
-            avd = determineAvd();
-            options = determineOptions();
-            wait = determineWait();
+            parsedAvd = determineAvd();
+            parsedOptions = determineOptions();
+            parsedWait = determineWait();
         }
 
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
-
-        List<String> commands = new ArrayList<String>();
-        commands.add("-avd");
-        commands.add(avd);
-        if (!StringUtils.isEmpty(options))
+        StringBuilder startCommandline = new StringBuilder()
+                .append(getAndroidSdk().getEmulatorPath())
+                .append(" -avd ")
+                .append(parsedAvd)
+                .append(" ");
+        if (!StringUtils.isEmpty(parsedOptions))
         {
-            commands.add(options);
+            startCommandline.append(parsedOptions);
         }
-
-        getLog().info(getAndroidSdk().getPathForTool("emulator")+" " + commands.toString());
-
-        try {
-            executor.executeCommand(getAndroidSdk().getPathForTool("emulator"), commands);
-        } catch (ExecutionException e) {
-            throw new MojoExecutionException("", e);
-        }
-
-        // wait for the emulator to start up
-        try {
-            getLog().info("Waiting for emulator start:" + wait);
-            Thread.sleep(new Long(wait));
-        } catch (InterruptedException e) {
-             //swallow
-        }
+        getLog().info("Android emulator command: " + startCommandline);
+        return startCommandline.toString();
     }
 
     /**
@@ -215,19 +402,4 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
         }
         return avd;
     }
-
-    /**
-     * Stop the running Android Emulator.
-     * @throws org.apache.maven.plugin.MojoExecutionException
-     * @todo not yet implemented, either we find the process id and use PlexusUtils or whatever to kill the emulator
-     * or we find you about the tcp ip connection to the emulator that lets us send a command and then send a shutdown
-     * command or something like that
-     */
-    protected void stopAndroidEmulator() throws MojoExecutionException {
-
-
-        throw new MojoExecutionException("Not yet implemented..");
-    }
-
-
 }
