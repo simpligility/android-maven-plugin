@@ -82,6 +82,13 @@ public interface CommandExecutor
     int getResult();
 
     /**
+     * Get the process id for the executed command.
+     * @return
+     */
+    long getPid();
+
+
+    /**
      * Returns the standard output from executing the command.
      *
      * @return the standard output from executing the command
@@ -142,6 +149,9 @@ public interface CommandExecutor
                     this.logger = logger;
                 }
 
+                long pid;
+
+                private Commandline commandline;
 
                 public void executeCommand( String executable, List<String> commands )
                     throws ExecutionException
@@ -166,7 +176,7 @@ public interface CommandExecutor
                     stdOut = new StreamConsumerImpl();
                     stdErr = new ErrorStreamConsumer();
 
-                    Commandline commandline = new Commandline();
+                    commandline = new Commandline();
                     commandline.setExecutable( executable );
                     commandline.addArguments( commands.toArray( new String[commands.size()]));
                     if ( workingDirectory != null && workingDirectory.exists() )
@@ -197,6 +207,7 @@ public interface CommandExecutor
                         throw new ExecutionException(
                             "ANDROID-040-002: Could not execute: Command = " + commandline.toString() + ", Error message = " + e.getMessage());
                     }
+                    setPid(commandline.getPid());
                 }
 
                 public int getResult()
@@ -212,6 +223,17 @@ public interface CommandExecutor
                 public String getStandardError()
                 {
                     return stdErr.toString();
+                }
+
+
+                public void setPid(long pid)
+                {
+                    this.pid = pid;
+                }
+
+                public long getPid()
+                {
+                    return pid;
                 }
 
                 /**

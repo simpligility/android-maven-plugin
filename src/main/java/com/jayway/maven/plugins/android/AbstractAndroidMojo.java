@@ -649,5 +649,4 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         }
         return androidHome;
     }
-
 }
