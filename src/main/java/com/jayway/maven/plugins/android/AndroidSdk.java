@@ -107,6 +107,23 @@ public class AndroidSdk {
         throw new InvalidSdkException("Unsupported layout \"" + getLayout() + "\"! " + PARAMETER_MESSAGE);
     }
 
+    /**
+     * Get the emulator path.
+     * @return
+     */
+    public String getEmulatorPath()
+    {
+        return getPathForTool("emulator");
+    }
+
+    /**
+     * Get the android debug tool path (adb).
+     * @return
+     */
+    public String getAdbPath()
+    {
+        return getPathForTool("adb");
+    }
 
     /**
      * Returns the complete path for <code>framework.aidl</code>, based on this SDK.
