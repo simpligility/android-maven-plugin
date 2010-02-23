@@ -102,6 +102,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
     private static final String STOP_EMULATOR_MSG = "Stopping android emulator with pid: ";
     private static final String START_EMULATOR_MSG = "Starting android emulator with script: ";
     private static final String START_EMULATOR_WAIT_MSG = "Waiting for emulator start:";
+    private static final String NO_EMULATOR_RUNNING = "unknown";
 
     /** Folder that contains the startup script and the pid file. */
     private static final String scriptFolder = System.getProperty("java.io.tmpdir");
@@ -148,26 +149,46 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
                 filename = writeEmulatorStartScriptUnix();
             }
 
-            getLog().info(START_EMULATOR_MSG + filename);
-            executor.executeCommand(filename, null);
+            String emulatorName = getRunningEmulatorName();
+            if (emulatorName.equals(NO_EMULATOR_RUNNING))
+            {
+                getLog().info(START_EMULATOR_MSG + filename);
+                executor.executeCommand(filename, null);
+
+                getLog().info(START_EMULATOR_WAIT_MSG + parsedWait);
+                // wait for the emulator to start up
+                Thread.sleep(new Long(parsedWait));
+            }
+            else
+            {
+                getLog().info("Emulator " + emulatorName + " already running. Skipping start and wait.");
+            }
 
         } catch (Exception e) {
             throw new MojoExecutionException("", e);
         }
+    }
 
-        // wait for the emulator to start up
-        try {
-            getLog().info(START_EMULATOR_WAIT_MSG + parsedWait);
-            Thread.sleep(new Long(parsedWait));
-        } catch (InterruptedException e) {
-             //swallow
-        }
+    /**
+     * Get the name of the running emulator.
+     * @return emulator name or "unknown" if none found running with adb tool.
+     * @throws MojoExecutionException
+     * @throws ExecutionException
+     * @see #NO_EMULATOR_RUNNING
+     */
+    private String getRunningEmulatorName() throws MojoExecutionException, ExecutionException {
+        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        executor.setLogger(this.getLog());
+        List<String> commands = new ArrayList<String>();
+        commands.add("get-serialno");
+        executor.executeCommand(getAndroidSdk().getAdbPath(), commands);
+        return executor.getStandardOut();  
     }
 
     /**
      * Writes the script to start the emulator in the background for windows based environments. This is not fully
-     * operational. Need to implement pid file write and check for running emulator.
-     * @return
+     * operational. Need to implement pid file write.
+     * @return absolute path name of start script
      * @throws IOException
      * @throws MojoExecutionException
      */
@@ -177,11 +198,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
 
         File file = new File(filename);
         PrintWriter writer = new PrintWriter(new FileWriter(file));
-        getLog().info("Checking for running emulator on Windows not yet implemented. ");
-        // TODO check for running process and such like in unix script
         writer.print("start    " + assembleStartCommandLine());
-
-        getLog().info("Running pid file on Windows not yet implemented. ");
+        getLog().info("Creating pid file on Windows not yet implemented. ");
         // TODO write pid into pid file
         // writer.println("    echo $! > " + pidFileName);
         writer.flush();
@@ -192,9 +210,9 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
     }
 
     /**
-     * Writes the script to start the emulator in the background for unix based environments. Also checks with adb if
-     * an emulator is already running and if so does not start a new one.
-     * @return
+     * Writes the script to start the emulator in the background for unix based environments and write process id into
+     * pidfile.
+     * @return absolute path name of start script
      * @throws IOException
      * @throws MojoExecutionException
      */
@@ -213,17 +231,10 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
         File file = new File(filename);
         PrintWriter writer = new PrintWriter(new FileWriter(file));
         writer.println("#!" + sh.getAbsolutePath());
-
-        writer.println("result=`" + getAndroidSdk().getAdbPath() + " get-serialno`");
-        writer.println("if [[ $result != \"unknown\" ]]");
-        writer.println("  then");
-        writer.println("    echo \"emulator already running - using existing instance (first ID)\"");
-        writer.println("else");
-        writer.print("    " + assembleStartCommandLine());
+        writer.print(assembleStartCommandLine());
         writer.print(" 1>/dev/null 2>&1 &"); // redirect outputs and run as background task
         writer.println();
-        writer.println("    echo $! > " + pidFileName);
-        writer.println("fi");
+        writer.println("echo $! > " + pidFileName); // process id from stdout into pid file
         writer.flush();
         writer.close();
         file.setExecutable(true);
