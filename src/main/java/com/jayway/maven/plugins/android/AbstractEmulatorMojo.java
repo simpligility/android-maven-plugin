@@ -135,6 +135,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      */
     protected void startAndroidEmulator() throws MojoExecutionException
     {
+        parseParameters();
+
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
@@ -191,6 +193,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      * @return absolute path name of start script
      * @throws IOException
      * @throws MojoExecutionException
+     * @see "http://stackoverflow.com/questions/2328776/how-do-i-write-a-pidfile-in-a-windows-batch-file"
      */
     private String writeEmulatorStartScriptWindows() throws IOException, MojoExecutionException {
 
@@ -198,15 +201,18 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
 
         File file = new File(filename);
         PrintWriter writer = new PrintWriter(new FileWriter(file));
-        writer.print("start    " + assembleStartCommandLine());
-        getLog().info("Creating pid file on Windows not yet implemented. ");
-        // TODO write pid into pid file
-        // writer.println("    echo $! > " + pidFileName);
+        // command needs to be assembled before unique window title since it parses settings and sets up parsedAvd
+        // and others.
+        String command = assembleStartCommandLine();
+        String uniqueWindowTitle = "MavenAndroidPlugin-AVD" + parsedAvd;
+        writer.print("START " + uniqueWindowTitle + " " + command);
+        writer.println();
+        writer.println("FOR /F \"tokens=2\" %%I in ('TASKLIST /NH /FI \"WINDOWTITLE eq " + uniqueWindowTitle + "\"' ) DO SET PID=%%I");
+        writer.println("ECHO %PID% > " + pidFileName);
         writer.flush();
         writer.close();
         file.setExecutable(true);
         return filename;
-
     }
 
     /**
@@ -246,6 +252,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      * @throws org.apache.maven.plugin.MojoExecutionException
      */
     protected void stopAndroidEmulator() throws MojoExecutionException {
+        parseParameters();
+
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
@@ -276,15 +284,12 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      * @throws ExecutionException
      */
     private void stopEmulatorWindows(CommandExecutor executor, String pid) throws ExecutionException {
-// TODO comment below out when pid file is implemented
-//        String stopCommand = "taskkill"; // there is also tskill, this assumes that the command is on the path
-//        List<String> commands = new ArrayList<String>();
-//        commands.add("/PID");
-//        commands.add(pid);
-//        getLog().info(STOP_EMULATOR_MSG + pid);
-//        executor.executeCommand(stopCommand, commands);
-
-        getLog().info("Stopping emulator on windows not yet implemented. No pid file!"); 
+        String stopCommand = "TASKKILL"; // this assumes that the command is on the path
+        List<String> commands = new ArrayList<String>();
+        commands.add("/PID");
+        commands.add(pid);
+        getLog().info(STOP_EMULATOR_MSG + pid);
+        executor.executeCommand(stopCommand, commands);
     }
 
     /**
@@ -310,6 +315,20 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      * @see com.jayway.maven.plugins.android.Emulator
      */
     private String assembleStartCommandLine() throws MojoExecutionException {
+        StringBuilder startCommandline = new StringBuilder()
+                .append(getAndroidSdk().getEmulatorPath())
+                .append(" -avd ")
+                .append(parsedAvd)
+                .append(" ");
+        if (!StringUtils.isEmpty(parsedOptions))
+        {
+            startCommandline.append(parsedOptions);
+        }
+        getLog().info("Android emulator command: " + startCommandline);
+        return startCommandline.toString();
+    }
+
+    private void parseParameters() {
         // <emulator> exist in pom file
         if (emulator != null)
         {
@@ -348,18 +367,6 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
             parsedOptions = determineOptions();
             parsedWait = determineWait();
         }
-
-        StringBuilder startCommandline = new StringBuilder()
-                .append(getAndroidSdk().getEmulatorPath())
-                .append(" -avd ")
-                .append(parsedAvd)
-                .append(" ");
-        if (!StringUtils.isEmpty(parsedOptions))
-        {
-            startCommandline.append(parsedOptions);
-        }
-        getLog().info("Android emulator command: " + startCommandline);
-        return startCommandline.toString();
     }
 
     /**
