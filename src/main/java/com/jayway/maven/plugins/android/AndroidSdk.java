@@ -81,6 +81,7 @@ public class AndroidSdk {
             add("mksdcard"       );
             add("sqlite3"        );
             add("traceview"      );
+            add("zipalign"      );
         }
     };
 
@@ -123,6 +124,15 @@ public class AndroidSdk {
     public String getAdbPath()
     {
         return getPathForTool("adb");
+    }
+
+    /**
+     * Get the android debug tool path (adb).
+     * @return
+     */
+    public String getZipalignPath()
+    {
+        return getPathForTool("zipalign");
     }
 
     /**

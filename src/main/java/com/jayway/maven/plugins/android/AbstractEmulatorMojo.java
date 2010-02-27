@@ -16,28 +16,19 @@
  */
 package com.jayway.maven.plugins.android;
 
-import org.apache.commons.jxpath.JXPathContext;
-import org.apache.commons.jxpath.JXPathNotFoundException;
-import org.apache.commons.jxpath.xml.DocumentContainer;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.dependency.utils.resolvers.ArtifactsResolver;
-import org.apache.maven.plugin.dependency.utils.resolvers.DefaultArtifactsResolver;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectHelper;
-import org.codehaus.plexus.util.DirectoryScanner;
 
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * AbstractEmulatorMojo contains all code related to the interaction with the Android emulator. At this stage that is
@@ -162,6 +153,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
                 Thread.sleep(new Long(parsedWait));
             }
             else
+
             {
                 getLog().info("Emulator " + emulatorName + " already running. Skipping start and wait.");
             }
