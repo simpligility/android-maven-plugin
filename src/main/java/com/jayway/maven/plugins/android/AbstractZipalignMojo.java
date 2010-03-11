@@ -6,11 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: manfred
- * Date: 26-Feb-2010
- * Time: 1:44:56 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * @author Manfred Moser
  */
 public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
 
