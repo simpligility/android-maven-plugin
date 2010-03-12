@@ -88,6 +88,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
     private static final String START_EMULATOR_MSG = "Starting android emulator with script: ";
     private static final String START_EMULATOR_WAIT_MSG = "Waiting for emulator start:";
     private static final String NO_EMULATOR_RUNNING = "unknown";
+    private static final String NO_DEMON_RUNNING_MACOSX = "* daemon not running";
 
     /** Folder that contains the startup script and the pid file. */
     private static final String scriptFolder = System.getProperty("java.io.tmpdir");
@@ -137,7 +138,10 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
             }
 
             String emulatorName = getRunningEmulatorName();
-            if (emulatorName.equals(NO_EMULATOR_RUNNING))
+            // normally only #NO_EMULATOR_RUNNING  is returned
+            // however when starting emulator within intellij on macosx with launchd configuration the first time
+            // #NO_DEMON_RUNNING_MACOSX is the start of the first line but needs to be treated the same
+            if (emulatorName.equals(NO_EMULATOR_RUNNING) || emulatorName.startsWith(NO_DEMON_RUNNING_MACOSX))
             {
                 getLog().info(START_EMULATOR_MSG + filename);
                 executor.executeCommand(filename, null);
