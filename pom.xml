@@ -233,6 +233,7 @@
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <useReleaseProfile>false</useReleaseProfile>
                     <arguments>-Pofficial-release</arguments>
+                    <goals>plugin:report deploy site-deploy</goals>
                 </configuration>
             </plugin>
             <plugin>
