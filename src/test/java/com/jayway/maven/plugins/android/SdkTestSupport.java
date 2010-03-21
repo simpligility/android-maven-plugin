@@ -31,7 +31,7 @@ public class SdkTestSupport {
     public SdkTestSupport() {
         Assert.assertNotNull("For running the tests, you must have environment variable ANDROID_HOME set to a valid Android SDK 1.5+ directory.", env_ANDROID_HOME);
 
-        sdk_with_platform_1_5     = new AndroidSdk(new File(env_ANDROID_HOME), "1.5");
+        sdk_with_platform_1_5     = new AndroidSdk(new File(env_ANDROID_HOME), "3");
         sdk_with_platform_default = new AndroidSdk(new File(env_ANDROID_HOME), null);
     }
 
