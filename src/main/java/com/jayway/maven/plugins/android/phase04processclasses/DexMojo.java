@@ -46,6 +46,7 @@ import java.util.jar.JarFile;
  * Converts compiled Java classes to the Android dex format.
  * @goal dex
  * @phase process-classes
+ * @requiresDependencyResolution compile
  * @author hugo.josefson@jayway.com
  */
 public class DexMojo extends AbstractAndroidMojo {
