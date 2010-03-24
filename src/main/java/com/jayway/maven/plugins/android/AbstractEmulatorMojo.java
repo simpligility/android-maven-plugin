@@ -157,7 +157,6 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
                 Thread.sleep(new Long(parsedWait));
             }
             else
-
             {
                 getLog().info("Emulator " + emulatorName + " already running. Skipping start and wait.");
             }

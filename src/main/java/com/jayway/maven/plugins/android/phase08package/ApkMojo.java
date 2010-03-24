@@ -35,6 +35,7 @@ import java.util.List;
  * Change that by setting configuration parameter <code>&lt;sign&gt;&lt;debug&gt;false&lt;/debug&gt;&lt;/sign&gt;</code>.
  * @goal apk
  * @phase package
+ * @requiresDependencyResolution compile
  * @author hugo.josefson@jayway.com
  */
 public class ApkMojo extends AbstractAndroidMojo {
