@@ -51,21 +51,21 @@ public class AndroidSdkTest {
 
     @Test
     public void givenToolAaptAndPlatform1dot1ThenPathIsPlatform1dot1() {
-        final AndroidSdk sdk = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "1.1");
+        final AndroidSdk sdk = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "2");
         final String pathForTool = sdk.getPathForTool("aapt");
-        Assert.assertEquals(sdkTestSupport.getEnv_ANDROID_HOME() + "/platforms/android-1.1/tools/aapt", pathForTool);
+        Assert.assertEquals(sdkTestSupport.getEnv_ANDROID_HOME() + "/platforms/android-2/tools/aapt", pathForTool);
     }
 
     @Test
     public void givenToolAaptAndPlatform1dot5ThenPathIsPlatform1dot5() {
-        final AndroidSdk sdk = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "1.5");
+        final AndroidSdk sdk = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "3");
         final String pathForTool = sdk.getPathForTool("aapt");
-        Assert.assertEquals(sdkTestSupport.getEnv_ANDROID_HOME() + "/platforms/android-1.5/tools/aapt", pathForTool);
+        Assert.assertEquals(sdkTestSupport.getEnv_ANDROID_HOME() + "/platforms/android-3/tools/aapt", pathForTool);
     }
 
     @Test(expected = InvalidSdkException.class)
     public void givenToolAaptAndPlatform1dot4ThenException() {
-        new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "1.4").getPathForTool("aapt");
+        new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "1.5").getPathForTool("aapt");
     }
 
     @Test(expected = InvalidSdkException.class)
@@ -81,7 +81,7 @@ public class AndroidSdkTest {
     @Test
     public void givenPlatform1dot5ThenPlatformis1dot5() throws IllegalAccessException {
         final File path = (File) ReflectionUtils.getValueIncludingSuperclasses("path",sdkTestSupport.getSdk_with_platform_1_5());
-        Assert.assertEquals(new File(path, "/platforms/android-1.5"),sdkTestSupport.getSdk_with_platform_1_5().getPlatform());
+        Assert.assertEquals(new File(path, "/platforms/android-3"),sdkTestSupport.getSdk_with_platform_1_5().getPlatform());
     }
 
     @Test
