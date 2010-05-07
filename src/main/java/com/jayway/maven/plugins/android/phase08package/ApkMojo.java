@@ -76,7 +76,7 @@ public class ApkMojo extends AbstractAndroidMojo {
      * <p>Root folder containing native libraries to include in the application package.</p>
      * @parameter default-value="${project.basedir}/libs"
      */
-    private String nativeLibrariesDirectory;
+    private File nativeLibrariesDirectory;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -100,8 +100,10 @@ public class ApkMojo extends AbstractAndroidMojo {
         commands.add( new File(project.getBuild().getDirectory(),  "classes.dex").getAbsolutePath());
         commands.add("-rf");
         commands.add(new File(project.getBuild().getDirectory(), "classes").getAbsolutePath());
-        commands.add("-nf");
-        commands.add(new File(nativeLibrariesDirectory).getAbsolutePath());
+        if (nativeLibrariesDirectory != null && nativeLibrariesDirectory.exists()){
+            commands.add("-nf");
+            commands.add(nativeLibrariesDirectory.getAbsolutePath());
+        }
 
         for (Artifact artifact : getRelevantCompileArtifacts()) {
             commands.add("-rj");
