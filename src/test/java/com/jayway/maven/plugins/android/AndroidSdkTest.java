@@ -64,13 +64,13 @@ public class AndroidSdkTest {
     }
 
     @Test(expected = InvalidSdkException.class)
-    public void givenToolAaptAndPlatform1dot4ThenException() {
-        new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "1.5").getPathForTool("aapt");
+    public void givenInvalidSdkPathThenException() throws IOException {
+        new AndroidSdk(File.createTempFile("maven-android-plugin", "test"), null).getLayout();
     }
 
     @Test(expected = InvalidSdkException.class)
-    public void givenInvalidSdkPathThenException() throws IOException {
-        new AndroidSdk(File.createTempFile("maven-android-plugin", "test"), null).getLayout();
+    public void givenInvalidPlatformStringThenException() throws IOException {
+        final AndroidSdk sdk = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "invalidplatform");
     }
 
     @Test

@@ -34,9 +34,18 @@ public class AndroidSdk {
     private final String platform;
     private static final String PARAMETER_MESSAGE = "Please provide a proper Android SDK directory path as configuration parameter <sdk><path>...</path></sdk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.sdk.path=... or set environment variable " + AbstractAndroidMojo.ENV_ANDROID_HOME + ".";
 
-    public AndroidSdk(File path, String platform) {
+    public AndroidSdk(File path, String platformOrApiLevel) {
         this.path = path;
-        this.platform = platform;
+        if (platformOrApiLevel == null) {
+            this.platform = platformOrApiLevel;
+            // letting this through to preserve compatibility for now
+        } else if (PlatformApiLevel.isValidApiLevel(platformOrApiLevel)) {
+            this.platform = platformOrApiLevel;
+        } else if (PlatformApiLevel.isValidPlatform(platformOrApiLevel)) {
+            this.platform = PlatformApiLevel.findApiLevel(platformOrApiLevel);
+        } else {
+            throw new InvalidSdkException("Invalid platform: " + platformOrApiLevel);
+        }
     }
 
     public enum Layout{LAYOUT_1_1, LAYOUT_1_5};
