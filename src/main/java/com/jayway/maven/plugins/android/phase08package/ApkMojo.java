@@ -81,6 +81,10 @@ public class ApkMojo extends AbstractAndroidMojo {
     private File nativeLibrariesDirectory;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+    	// Make an early exit if we're not supposed to generate the APK
+    	if (!generateApk) {
+    		return;
+    	}
 
         generateIntermediateAp_();
 
