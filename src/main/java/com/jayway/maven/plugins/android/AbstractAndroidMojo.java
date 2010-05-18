@@ -145,13 +145,22 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected String device;
     
     /**
-     * A selection of configurations to be included in the APK. This will limit the configurations for a certain type. 
+     * A selection of configurations to be included in the APK as a comma separated list. This will limit the configurations for a certain type. 
      * For example, specifying <code>hdpi</code> will exclude all resource folders with the <code>mdpi</code> or <code>ldpi</code>
-     * modifiers. For more information about this option, look in the aapt command line help.
+     * modifiers, but won't affect language or orientation modifiers. For more information about this option, look in the aapt command line help.
      * 
      * @parameter expression="${android.configurations}"
      */
     protected String configurations;
+    
+    
+    /**
+     * Decides whether the Apk should be generated or not. If set to false, dx and apkBuilder will not run. This is probably most
+     * useful for a project used to generate apk sources to be inherited into another application project.
+     * 
+     * @parameter expression="${android.generateApk}" default-value="true"
+     */
+    protected boolean generateApk;
 
     /**
      * Used to look up Artifacts in the remote repository.
