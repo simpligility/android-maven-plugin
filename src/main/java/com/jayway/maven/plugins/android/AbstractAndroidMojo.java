@@ -143,6 +143,15 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @parameter expression="${android.device}"
      */
     protected String device;
+    
+    /**
+     * A selection of configurations to be included in the APK. This will limit the configurations for a certain type. 
+     * For example, specifying <code>hdpi</code> will exclude all resource folders with the <code>mdpi</code> or <code>ldpi</code>
+     * modifiers. For more information about this option, look in the aapt command line help.
+     * 
+     * @parameter expression="${android.configurations}"
+     */
+    protected String configurations;
 
     /**
      * Used to look up Artifacts in the remote repository.
