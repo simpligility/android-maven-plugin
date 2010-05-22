@@ -21,6 +21,8 @@ import com.jayway.maven.plugins.android.AndroidSigner;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.Sign;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -79,6 +81,10 @@ public class ApkMojo extends AbstractAndroidMojo {
     private File nativeLibrariesDirectory;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+    	// Make an early exit if we're not supposed to generate the APK
+    	if (!generateApk) {
+    		return;
+    	}
 
         generateIntermediateAp_();
 
@@ -193,6 +199,10 @@ public class ApkMojo extends AbstractAndroidMojo {
         commands.add(androidJar.getAbsolutePath());
         commands.add("-F");
         commands.add(outputFile.getAbsolutePath());
+        if (StringUtils.isNotBlank(configurations)) {
+        	commands.add("-c"          );
+        	commands.add(configurations);
+        }
         getLog().info(getAndroidSdk().getPathForTool("aapt")+" " + commands.toString());
         try {
             executor.executeCommand(getAndroidSdk().getPathForTool("aapt"), commands, project.getBasedir(), false);
