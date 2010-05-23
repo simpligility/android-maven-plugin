@@ -66,29 +66,9 @@ public class DexMojo extends AbstractAndroidMojo {
 
         File outputFile = new File(project.getBuild().getDirectory() + File.separator + "classes.dex");
         File inputFile  = new File(project.getBuild().getDirectory() + File.separator + project.getBuild().getFinalName() + ".jar");
-
-        // Unpack all dependent and main classes
-        File classesOutputDirectory = unpackClasses(inputFile);
-
-        List<String> commands = new ArrayList<String>();
-        if (jvmArguments != null){
-            for (String jvmArgument : jvmArguments) {
-                if (jvmArgument != null){
-                    if (jvmArgument.startsWith("-")){
-                        jvmArgument = jvmArgument.substring(1);
-                    }
-                    commands.add("-J" + jvmArgument);
-                }
-            }
-        }
-        commands.add("--dex");
-        commands.add("--output=" + outputFile.getAbsolutePath());
-        commands.add(classesOutputDirectory.getAbsolutePath());
-        getLog().info(getAndroidSdk().getPathForTool("dx") + " " + commands.toString());
-        try {
-            executor.executeCommand(getAndroidSdk().getPathForTool("dx"), commands, project.getBasedir(), false);
-        } catch (ExecutionException e) {
-            throw new MojoExecutionException("", e);
+        
+        if (generateApk) {
+	        runDex(executor, outputFile, inputFile);        
         }
 
         if (attachJar){
@@ -101,6 +81,33 @@ public class DexMojo extends AbstractAndroidMojo {
             projectHelper.attachArtifact(project, "apksources", apksources);
         }
     }
+
+	private void runDex(CommandExecutor executor, File outputFile,
+			File inputFile) throws MojoExecutionException {
+		// Unpack all dependent and main classes
+		File classesOutputDirectory = unpackClasses(inputFile);
+
+		List<String> commands = new ArrayList<String>();
+		if (jvmArguments != null){
+		    for (String jvmArgument : jvmArguments) {
+		        if (jvmArgument != null){
+		            if (jvmArgument.startsWith("-")){
+		                jvmArgument = jvmArgument.substring(1);
+		            }
+		            commands.add("-J" + jvmArgument);
+		        }
+		    }
+		}
+		commands.add("--dex"                                   );
+		commands.add("--output=" + outputFile.getAbsolutePath());
+		commands.add(classesOutputDirectory.getAbsolutePath()  );
+		getLog().info(getAndroidSdk().getPathForTool("dx") + " " + commands.toString());
+		try {
+		    executor.executeCommand(getAndroidSdk().getPathForTool("dx"), commands, project.getBasedir(), false);
+		} catch (ExecutionException e) {
+		    throw new MojoExecutionException("", e);
+		}
+	}
 
     protected File createApkSourcesFile() throws MojoExecutionException {
         final File apksources = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apksources");

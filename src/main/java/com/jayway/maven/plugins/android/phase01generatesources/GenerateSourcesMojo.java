@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -271,11 +272,15 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             commands.add(assetsDirectory.getAbsolutePath());
         }
         if (extractedDependenciesAssets.exists()) {
-            commands.add("-A"                             );
+            commands.add("-A"                                         );
             commands.add(extractedDependenciesAssets.getAbsolutePath());
         }
-        commands.add("-I"                                 );
+        commands.add("-I"                                             );
         commands.add(getAndroidSdk().getAndroidJar().getAbsolutePath());
+        if (StringUtils.isNotBlank(configurations)) {
+        	commands.add("-c"          );
+        	commands.add(configurations);
+        }
         getLog().info(getAndroidSdk().getPathForTool("aapt") + " " + commands.toString());
         try {
             executor.executeCommand(getAndroidSdk().getPathForTool("aapt"), commands, project.getBasedir(), false);
