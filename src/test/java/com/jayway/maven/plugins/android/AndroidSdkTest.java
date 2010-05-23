@@ -27,6 +27,7 @@ import java.io.IOException;
  * Excercises the {@link AndroidSdk} class.
  *
  * @author hugo.josefson@jayway.com
+ * @author Manfred Moser <manfred@simpligility.com>
  */
 public class AndroidSdkTest {
     
@@ -96,4 +97,35 @@ public class AndroidSdkTest {
 //        System.out.println("regex = " + regex);
         Assert.assertTrue(platformPath.matches(regex));
     }
+
+    /**
+     * Test all available platforms and api level versions. All have to be installed locally
+     * for this test to pass including the obsolete ones.
+     */
+    @Test
+    public void validPlatformsAndApiLevels() {
+        final AndroidSdk sdk2 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "2");
+        final AndroidSdk sdk3 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "3");
+        final AndroidSdk sdk4 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "4");
+        final AndroidSdk sdk5 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "5");
+        final AndroidSdk sdk6 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "6");
+        final AndroidSdk sdk7 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "7");
+        final AndroidSdk sdk8 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "8");
+
+        final AndroidSdk sdk1_1 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "1.1");
+        final AndroidSdk sdk1_5 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "1.5");
+        final AndroidSdk sdk1_6 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "1.6");
+        final AndroidSdk sdk2_0 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "2.0");
+        final AndroidSdk sdk2_0_1 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "2.0.1");
+        final AndroidSdk sdk2_1 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "2.1");
+        final AndroidSdk sdk2_2 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "2.2");
+    }
+
+    @Test(expected = InvalidSdkException.class)
+    public void invalidPlatformAndApiLevels() {
+        final AndroidSdk invalid = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "invalid");
+
+    }
+
+
 }
