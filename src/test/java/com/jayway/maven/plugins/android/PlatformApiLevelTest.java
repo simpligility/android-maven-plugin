@@ -12,7 +12,7 @@ public class PlatformApiLevelTest {
 
     @Test
     public void checkTotalNumber() {
-        Assert.assertEquals(6, PlatformApiLevel.values().length);
+        Assert.assertEquals(7, PlatformApiLevel.values().length);
     }
 
     @Test
@@ -23,6 +23,7 @@ public class PlatformApiLevelTest {
         Assert.assertEquals("2.0", PlatformApiLevel.findPlatform("5"));
         Assert.assertEquals("2.01", PlatformApiLevel.findPlatform("6"));
         Assert.assertEquals("2.1", PlatformApiLevel.findPlatform("7"));
+        Assert.assertEquals("2.2", PlatformApiLevel.findPlatform("8"));
     }
 
     @Test
@@ -33,6 +34,7 @@ public class PlatformApiLevelTest {
         Assert.assertEquals("5", PlatformApiLevel.findApiLevel("2.0"));
         Assert.assertEquals("6", PlatformApiLevel.findApiLevel("2.01"));
         Assert.assertEquals("7", PlatformApiLevel.findApiLevel("2.1"));
+        Assert.assertEquals("8", PlatformApiLevel.findApiLevel("2.2"));
     }
 
     @Test
@@ -43,6 +45,7 @@ public class PlatformApiLevelTest {
         Assert.assertTrue(PlatformApiLevel.isValidApiLevel("5"));
         Assert.assertTrue(PlatformApiLevel.isValidApiLevel("6"));
         Assert.assertTrue(PlatformApiLevel.isValidApiLevel("7"));
+        Assert.assertTrue(PlatformApiLevel.isValidApiLevel("8"));
 
         Assert.assertFalse(PlatformApiLevel.isValidApiLevel("something"));
         Assert.assertFalse(PlatformApiLevel.isValidApiLevel("1.0"));
@@ -57,6 +60,7 @@ public class PlatformApiLevelTest {
         Assert.assertTrue(PlatformApiLevel.isValidPlatform("2.0"));
         Assert.assertTrue(PlatformApiLevel.isValidPlatform("2.01"));
         Assert.assertTrue(PlatformApiLevel.isValidPlatform("2.1"));
+        Assert.assertTrue(PlatformApiLevel.isValidPlatform("2.2"));
 
         Assert.assertFalse(PlatformApiLevel.isValidPlatform("something"));
         Assert.assertFalse(PlatformApiLevel.isValidPlatform("1.0"));
