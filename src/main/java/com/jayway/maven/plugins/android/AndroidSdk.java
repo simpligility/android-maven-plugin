@@ -18,31 +18,45 @@ package com.jayway.maven.plugins.android;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Represents an Android SDK.
  *
- * TODO: do more thorough parameter checking
- *
  * @author hugo.josefson@jayway.com
+ * @author Manfred Moser <manfred@simpligility.com>
  */
 public class AndroidSdk {
     private final File   path;
     private final String platform;
     private static final String PARAMETER_MESSAGE = "Please provide a proper Android SDK directory path as configuration parameter <sdk><path>...</path></sdk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.sdk.path=... or set environment variable " + AbstractAndroidMojo.ENV_ANDROID_HOME + ".";
 
+    private static final String SOURCE_PROPERTIES_FILENAME = "source.properties";
+
+    /** should really use multimap from google collections but for this one use case not worth including.. */
+    public static HashMap<String, String> installedPlatforms2ApiLevels;
+    public static HashMap<String, String> installedApiLevels2Platforms;
+
+    private static final String PLATFORM_VERSION_PROPERTY = "Platform.Version";
+    private static final String API_LEVEL_PROPERTY = "AndroidVersion.ApiLevel";
+    private static final String PLATFORMS_FOLDER_NAME = "platforms";
+
     public AndroidSdk(File path, String platformOrApiLevel) {
         this.path = path;
+        initPlatformAndApiLevels();
+
         if (platformOrApiLevel == null) {
             this.platform = platformOrApiLevel;
             // letting this through to preserve compatibility for now
-        } else if (PlatformApiLevel.isValidApiLevel(platformOrApiLevel)) {
+        } else if (!(installedApiLevels2Platforms.containsKey(platformOrApiLevel)
+                || installedPlatforms2ApiLevels.containsKey(platformOrApiLevel))) {
+            throw new InvalidSdkException("Platform/API level " + platformOrApiLevel + " not available") ;
+        } else if (installedApiLevels2Platforms.containsKey(platformOrApiLevel)) {
             this.platform = platformOrApiLevel;
-        } else if (PlatformApiLevel.isValidPlatform(platformOrApiLevel)) {
-            this.platform = PlatformApiLevel.findApiLevel(platformOrApiLevel);
+        } else if (installedPlatforms2ApiLevels.containsKey(platformOrApiLevel)) {
+            this.platform = installedPlatforms2ApiLevels.get(platformOrApiLevel);
         } else {
             throw new InvalidSdkException("Invalid platform: " + platformOrApiLevel);
         }
@@ -54,7 +68,7 @@ public class AndroidSdk {
 
         assertPathIsDirectory(path);
 
-        final File platforms = new File(path, "platforms");
+        final File platforms = new File(path, PLATFORMS_FOLDER_NAME);
         if (platforms.exists() && platforms.isDirectory()){
             return Layout.LAYOUT_1_5;
         }
@@ -185,7 +199,7 @@ public class AndroidSdk {
             return path;
         }
 
-        final File platformsDirectory = new File(path, "platforms");
+        final File platformsDirectory = new File(path, PLATFORMS_FOLDER_NAME);
         assertPathIsDirectory(platformsDirectory);
 
         if (platform == null){
@@ -197,6 +211,48 @@ public class AndroidSdk {
             assertPathIsDirectory(platformDirectory);
             return platformDirectory;
         }
+    }
+
+    /**
+     * Initialize the maps matching platform and api levels form the source properties files.
+     * @throws InvalidSdkException
+     */
+    private void initPlatformAndApiLevels() throws InvalidSdkException{
+        installedApiLevels2Platforms = new HashMap<String, String>();
+        installedPlatforms2ApiLevels = new HashMap<String, String>();
+        
+        ArrayList<File> sourcePropertyFiles = getSourcePropertyFiles();
+        for (File file : sourcePropertyFiles) {
+            Properties properties = new Properties();
+            try {
+                properties.load(new FileInputStream(file));
+            } catch (IOException e) {
+                throw new InvalidSdkException("Error reading " + file.getAbsoluteFile());
+            }
+            if (properties.containsKey(PLATFORM_VERSION_PROPERTY) && properties.containsKey(API_LEVEL_PROPERTY)) {
+                String platform = properties.getProperty(PLATFORM_VERSION_PROPERTY);
+                String apiLevel = properties.getProperty(API_LEVEL_PROPERTY);
+                installedApiLevels2Platforms.put(apiLevel, platform);
+                installedPlatforms2ApiLevels.put(platform, apiLevel);
+            }
+        }
+    }
+
+    /**
+     * Gets the source properties files from all locally installed platforms.
+     * @return
+     */
+    private ArrayList<File> getSourcePropertyFiles() {
+        ArrayList<File> sourcePropertyFiles = new ArrayList<File>();
+        final File platformsDirectory = new File(path, PLATFORMS_FOLDER_NAME);
+        assertPathIsDirectory(platformsDirectory);
+        final File[] platformDirectories = platformsDirectory.listFiles();
+        for (File file: platformDirectories)
+        {
+            // only looking in android- folder so only works on reasonably new sdk revisions..
+            if (file.isDirectory() && file.getName().startsWith("android-")) sourcePropertyFiles.add(new File(file, SOURCE_PROPERTIES_FILENAME));
+        }
+        return sourcePropertyFiles;
     }
 
 }
