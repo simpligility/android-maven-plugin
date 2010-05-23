@@ -11,7 +11,8 @@ public enum PlatformApiLevel {
     ONE_SIX("1.6", "4"),
     TWO_ZERO("2.0", "5"),
     TWO_ZERO_ONE("2.01", "6"),
-    TWO_ONE("2.1", "7");
+    TWO_ONE("2.1", "7"),
+    TWO_TWO("2.2", "8");
 
     private String platform;
     private String apilevel;
