@@ -200,7 +200,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
         // and others.
         String command = assembleStartCommandLine();
         String uniqueWindowTitle = "MavenAndroidPlugin-AVD" + parsedAvd;
-        writer.print("START " + uniqueWindowTitle + " " + command);
+        writer.print("START \"" + uniqueWindowTitle + "\"  " + command);
         writer.println();
         writer.println("FOR /F \"tokens=2\" %%I in ('TASKLIST /NH /FI \"WINDOWTITLE eq " + uniqueWindowTitle + "\"' ) DO SET PID=%%I");
         writer.println("ECHO %PID% > " + pidFileName);
