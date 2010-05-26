@@ -281,8 +281,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
     private void stopEmulatorWindows(CommandExecutor executor, String pid) throws ExecutionException {
         String stopCommand = "TASKKILL"; // this assumes that the command is on the path
         List<String> commands = new ArrayList<String>();
-        commands.add("/PID");
-        commands.add(pid);
+        commands.add("/PID " + pid); // combined together into on so that apostrophes do not get mixed up
         getLog().info(STOP_EMULATOR_MSG + pid);
         executor.executeCommand(stopCommand, commands);
     }
