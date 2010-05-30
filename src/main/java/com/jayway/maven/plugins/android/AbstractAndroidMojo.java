@@ -47,6 +47,11 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 public abstract class AbstractAndroidMojo extends AbstractMojo {
 
     /**
+     * The file extension used for the android package file.
+     */
+    protected static final String ANDROID_PACKAGE_EXTENSTION = ".apk";
+    
+    /**
      * The maven project.
      *
      * @parameter expression="${project}"
@@ -304,6 +309,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      *
      */
     protected boolean attachSources;
+
 
     /**
      * Accessor for the local repository.

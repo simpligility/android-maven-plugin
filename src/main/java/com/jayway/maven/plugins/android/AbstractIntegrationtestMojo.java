@@ -94,7 +94,8 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
     }
 
     protected void deployBuiltApk() throws MojoExecutionException {
-        File apkFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apk");
+        File apkFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName()
+                + ANDROID_PACKAGE_EXTENSTION);
         deployApk(apkFile);
     }
 

@@ -12,7 +12,7 @@ public class Zipalign {
      * @parameter
      * @default=false
      */
-    private Boolean enabled;
+    private Boolean skip;
 
     /**
      * @parameter
@@ -32,8 +32,8 @@ public class Zipalign {
     private String outputApk;
 
 
-    public Boolean isEnabled() {
-        return enabled;
+    public Boolean isSkip() {
+        return skip;
     }
 
     public Boolean isVerbose() {
