@@ -8,6 +8,7 @@ import org.apache.maven.plugin.MojoFailureException;
  * ZipalignMojo can run the zipalign command against the apk.
  *
  * @author Manfred Moser <manfred@simpligility.com>
+ *
  * @goal zipalign
  * @requiresProject false
  */
