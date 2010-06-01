@@ -2,26 +2,37 @@ package com.jayway.maven.plugins.android;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Implementation for the zipaplign goal. Implements parsing parameters from pom or command line arguments and sets
+ * useful defaults as well.
  *
- * @author Manfred Moser
+ * @author Manfred Moser <manfred@simnpligility.com>
  */
 public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
 
     /**
+     * The zipalign command configuration to use. As soon as a zipalign goal is invoked the command will be executed
+     * unless the skip parameter is set. By default the input file is the apk produced by the build in target. The
+     * outputApk will use the postfix -aligned.apk.
+     * &lt;zipalign&gt;
+     *     &lt;skip&gt;false&lt;/skip&gt;
+     *     &lt;verbose&gt;true&lt;/verbose&gt;
+     * &lt;/emulator&gt;
+     * </pre>
      * @parameter
      */
     private Zipalign zipalign;
 
     /**
-     * @see Zipalign#enabled
-     * @parameter expression="${android.zipalign.enabled}"
+     * @see Zipalign#skip
+     * @parameter expression="${android.zipalign.skip}"
      * @readonly
      */
-    private Boolean zipalignEnabled;
+    private Boolean zipalignSkip;
 
     /**
      * @see Zipalign#verbose
@@ -44,16 +55,25 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
      */
     private String zipalignOutputApk;
 
-    private Boolean parsedEnabled;
+    private Boolean parsedSkip;
     private Boolean parsedVerbose;
     private String parsedInputApk;
-    private String parsedOutputApk;    
+    private String parsedOutputApk;
 
-        
+    /** the apk file to be zipaligned. */
+    private File apkFile;
+    /** the output apk file for the zipalign process. */
+    private File alignedApkFile;
+
+    /**
+     * actually do the zipalign
+     * @throws MojoExecutionException
+     */
     protected void zipalign() throws MojoExecutionException {
         parseParameters();
-        if (parsedEnabled)
-        {
+        if (parsedSkip) {
+            getLog().info("Skipping zipalign");
+        } else {
             CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
             executor.setLogger(this.getLog());
 
@@ -70,6 +90,8 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
             parameters.add(parsedOutputApk);
 
             try {
+                getLog().info("Running command: " + command);
+                getLog().info("with parameters: " + parameters);
                 executor.executeCommand(command, parameters);
             } catch (ExecutionException e) {
                 throw new MojoExecutionException("", e);
@@ -78,19 +100,21 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
     }
     
     private void parseParameters() {
+        getLog().debug("Parsing parameters");
         // <zipalign> exist in pom file
         if (zipalign != null)
         {
-            // <zipalign><enabled> exists in pom file
-            if (zipalign.isEnabled() != null)
+            // <zipalign><skip> exists in pom file
+            if (zipalign.isSkip() != null)
             {
-                parsedEnabled= zipalign.isEnabled();
+                parsedSkip = zipalign.isSkip();
             }
             else
             {
-                parsedEnabled = determineEnabled();
+                parsedSkip = determineSkip();
             }
-            // <zipalign><options> exists in pom file
+
+            // <zipalign><verbose> exists in pom file
             if (zipalign.isVerbose() != null)
             {
                 parsedVerbose = zipalign.isVerbose();
@@ -99,6 +123,7 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
             {
                 parsedVerbose = determineVerbose();
             }
+
             // <zipalign><inputApk> exists in pom file
             if (zipalign.getInputApk() != null)
             {
@@ -108,6 +133,8 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
             {
                 parsedInputApk = determineInputApk();
             }
+
+
             // <zipalign><outputApk> exists in pom file
             if (zipalign.getOutputApk() != null)
             {
@@ -117,47 +144,84 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
             {
                 parsedOutputApk = determineOutputApk();
             }
+
         }
-        // commandline options
+        // command line options
         else
         {
-            parsedEnabled = determineEnabled();
+            parsedSkip = determineSkip();
             parsedVerbose = determineVerbose();
             parsedInputApk = determineInputApk();
             parsedOutputApk = determineOutputApk();
         }
+
+        getLog().debug("skip:" + parsedSkip);
+        getLog().debug("verbose:" + parsedVerbose);
+        getLog().debug("inputApk:" + parsedInputApk);
+        getLog().debug("outputApk:" + parsedOutputApk);
     }
 
     /**
-     * Get wait value for zipalign from command line option.
-     * @return if available return command line value otherwise return default value (5000).
+     * Get skip value for zipalign from command line option.
+     * @return if available return command line value otherwise return default false.
      */
-    private Boolean determineEnabled() {
+    private Boolean determineSkip() {
         Boolean enabled;
-        if (zipalignEnabled != null)
+        if (zipalignSkip != null)
         {
-            enabled = zipalignEnabled;
+            enabled = zipalignSkip;
         }
         else
         {
+            getLog().debug("Using default for zipalign.skip=false");
             enabled = Boolean.FALSE;
         }
         return enabled;
     }
 
+    /**
+     * Get verbose value for zipalign from command line option.
+     * @return if available return command line value otherwise return default false.
+     */
     private Boolean determineVerbose() {
         Boolean enabled;
-        if (zipalignEnabled != null)
+        if (zipalignVerbose != null)
         {
-            enabled = zipalignEnabled;
+            enabled = zipalignVerbose;
         }
         else
         {
+            getLog().debug("Using default for zipalign.verbose=false");
             enabled = Boolean.FALSE;
         }
         return enabled;
     }
 
+    /**
+     * Gets the apk file location from basedir/target/finalname.apk
+     * @return absolute path.
+     */
+    private String getApkLocation() {
+        if (apkFile == null) apkFile = new File(project.getBuild().getDirectory(),
+                project.getBuild().getFinalName() + ANDROID_PACKAGE_EXTENSTION);
+        return apkFile.getAbsolutePath();
+    }
+
+    /**
+     * Gets the apk file location from basedir/target/finalname-aligned.apk. "-aligned" is the inserted string for the
+     * output file.
+     * @return absolute path.
+     */
+    private String getAlignedApkLocation() {
+        if (alignedApkFile == null) alignedApkFile = new File(project.getBuild().getDirectory(),
+                project.getBuild().getFinalName() + "-aligned" + ANDROID_PACKAGE_EXTENSTION);
+        return alignedApkFile.getAbsolutePath();
+    }
+
+    /**
+     * Get inputApk value for zipalign from command line option.
+     * @return if available return command line value otherwise return default.
+     */
     private String determineInputApk() {
         String inputApk;
         if (zipalignInputApk != null)
@@ -166,11 +230,17 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
         }
         else
         {
-            inputApk = ""; // what should we default to? pom.build.finalname or something?
+            String inputPath = getApkLocation();
+            getLog().debug("Using default for zipalign.inputApk: " + inputPath);
+            inputApk = inputPath;
         }
         return inputApk;
     }
 
+    /**
+     * Get outputApk value for zipalign from command line option.
+     * @return if available return command line value otherwise return default.
+     */
     private String determineOutputApk() {
         String outputApk;
         if (zipalignOutputApk != null)
@@ -179,7 +249,9 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
         }
         else
         {
-            outputApk = ""; // what should we default to? pom.build.finalname or something? or some as input if possible
+            String outputPath = getAlignedApkLocation();
+            getLog().debug("Using default for zipalign.outputApk: " + outputPath);
+            outputApk = outputPath;
         }
         return outputApk;
     }
