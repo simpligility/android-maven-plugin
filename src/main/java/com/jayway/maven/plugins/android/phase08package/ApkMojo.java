@@ -91,7 +91,8 @@ public class ApkMojo extends AbstractAndroidMojo {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
-        File outputFile = new File(project.getBuild().getDirectory(),  project.getBuild().getFinalName() + ".apk");
+        File outputFile = new File(project.getBuild().getDirectory(),  project.getBuild().getFinalName() +
+            ANDROID_PACKAGE_EXTENSTION);
 
         List<String> commands = new ArrayList<String>();
         commands.add(outputFile.getAbsolutePath());
