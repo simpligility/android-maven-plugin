@@ -4,7 +4,7 @@ package com.jayway.maven.plugins.android;
  * Configuration for the Android Emulator. This class is only the definition of the parameters that are shadowed in
  * {@link com.jayway.maven.plugins.android.AbstractAndroidMojo} and used there.
  *
- * @author Manfred Moser <manfred@simnpligility.com>
+ * @author Manfred Moser <manfred@simpligility.com>
  */
 public class Emulator {
 

@@ -10,7 +10,7 @@ import java.util.List;
  * Implementation for the zipaplign goal. Implements parsing parameters from pom or command line arguments and sets
  * useful defaults as well.
  *
- * @author Manfred Moser <manfred@simnpligility.com>
+ * @author Manfred Moser <manfred@simpligility.com>
  */
 public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
 
