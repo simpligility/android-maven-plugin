@@ -33,14 +33,21 @@ public class AndroidSdk {
     private final String platform;
     private static final String PARAMETER_MESSAGE = "Please provide a proper Android SDK directory path as configuration parameter <sdk><path>...</path></sdk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.sdk.path=... or set environment variable " + AbstractAndroidMojo.ENV_ANDROID_HOME + ".";
 
-    private static final String SOURCE_PROPERTIES_FILENAME = "source.properties";
 
-    /** should really use multimap from google collections but for this one use case not worth including.. */
+    /**
+     * Maps from Platform to API Level and reverse. E.g. 2.2. to 8 and 8 to 2.2.
+     * should really use multimap from google collections but for this one use case not worth including..
+     */
     public static HashMap<String, String> installedPlatforms2ApiLevels;
     public static HashMap<String, String> installedApiLevels2Platforms;
-
+    /** property file in each platform folder with details about platform. */
+    private static final String SOURCE_PROPERTIES_FILENAME = "source.properties";
+    /** property name for platform version in sdk source.properties file. */
     private static final String PLATFORM_VERSION_PROPERTY = "Platform.Version";
+    /** property name for api level version in sdk source.properties file. */
     private static final String API_LEVEL_PROPERTY = "AndroidVersion.ApiLevel";
+
+    /** folder name for the sdk sub folder that contains the different platform versions. */
     private static final String PLATFORMS_FOLDER_NAME = "platforms";
 
     public AndroidSdk(File path, String platformOrApiLevel) {
@@ -52,13 +59,13 @@ public class AndroidSdk {
             // letting this through to preserve compatibility for now
         } else if (!(installedApiLevels2Platforms.containsKey(platformOrApiLevel)
                 || installedPlatforms2ApiLevels.containsKey(platformOrApiLevel))) {
-            throw new InvalidSdkException("Platform/API level " + platformOrApiLevel + " not available") ;
+            throw new InvalidSdkException("Invalid SDK: Platform/API level " + platformOrApiLevel + " not available.") ;
         } else if (installedApiLevels2Platforms.containsKey(platformOrApiLevel)) {
             this.platform = platformOrApiLevel;
         } else if (installedPlatforms2ApiLevels.containsKey(platformOrApiLevel)) {
             this.platform = installedPlatforms2ApiLevels.get(platformOrApiLevel);
         } else {
-            throw new InvalidSdkException("Invalid platform: " + platformOrApiLevel);
+            throw new InvalidSdkException("Invalid SDK: Platform/API level " + platformOrApiLevel + " not available.");
         }
     }
 
