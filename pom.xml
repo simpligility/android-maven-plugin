@@ -260,7 +260,7 @@
         </plugins>
     </build>
 
-	<distributionManagement>
+    <distributionManagement>
         <repository>
             <id>oss.sonatype.org-jayway-staging</id>
             <name>OpenSource Release Staging on Sonatype.org</name>
