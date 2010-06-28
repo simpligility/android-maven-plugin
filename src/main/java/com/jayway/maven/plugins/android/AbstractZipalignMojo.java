@@ -43,7 +43,7 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
 
     /**
      * @see Zipalign#inputApk
-     * @parameter expression="${android.zipalign.inputapk}"
+     * @parameter expression="${android.zipalign.inputApk}"
      * @readonly
      */
     private String zipalignInputApk;
