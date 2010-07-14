@@ -17,11 +17,15 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
     /**
      * The zipalign command configuration to use. As soon as a zipalign goal is invoked the command will be executed
      * unless the skip parameter is set. By default the input file is the apk produced by the build in target. The
-     * outputApk will use the postfix -aligned.apk.
+     * outputApk will use the postfix -aligned.apk. The following shows a default full configuration of the zipalign
+     * goal as an example for changes.
+     * <pre>
      * &lt;zipalign&gt;
      *     &lt;skip&gt;false&lt;/skip&gt;
      *     &lt;verbose&gt;true&lt;/verbose&gt;
-     * &lt;/emulator&gt;
+     *     &lt;inputApk&gt;${project.build.directory}/${project.artifactId}.apk&lt;/inputApk&gt;
+     *     &lt;outputApk&gt;${project.build.directory}/${project.artifactId}-aligned.apk&lt;/outputApk&gt;
+     * &lt;/zipalign&gt;
      * </pre>
      * @parameter
      */
@@ -43,7 +47,7 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
 
     /**
      * @see Zipalign#inputApk
-     * @parameter expression="${android.zipalign.inputapk}"
+     * @parameter expression="${android.zipalign.inputApk}"
      * @readonly
      */
     private String zipalignInputApk;
