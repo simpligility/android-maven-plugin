@@ -346,7 +346,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     }
 
     private Set<Artifact> filterOutIrrelevantArtifacts(Iterable<Artifact> allArtifacts) {
-        final Set<Artifact> results = new HashSet<Artifact>();
+        final Set<Artifact> results = new LinkedHashSet<Artifact>();
         for (Artifact artifact : allArtifacts) {
             if (artifact == null){
                 continue;
