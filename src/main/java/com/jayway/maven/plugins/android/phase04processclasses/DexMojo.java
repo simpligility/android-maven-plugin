@@ -59,6 +59,13 @@ public class DexMojo extends AbstractAndroidMojo {
      */
     private String[] jvmArguments;
 
+    /**
+     * Decides whether to pass the --core-library flag to dx.
+     *
+     * @parameter default-value="false"
+     */
+    private boolean coreLibrary;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
@@ -100,6 +107,9 @@ public class DexMojo extends AbstractAndroidMojo {
 		}
 		commands.add("--dex"                                   );
 		commands.add("--output=" + outputFile.getAbsolutePath());
+        if (coreLibrary) {
+            commands.add("--core-library");
+        }
 		commands.add(classesOutputDirectory.getAbsolutePath()  );
 		getLog().info(getAndroidSdk().getPathForTool("dx") + " " + commands.toString());
 		try {
