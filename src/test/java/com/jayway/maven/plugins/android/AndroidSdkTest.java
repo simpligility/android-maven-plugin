@@ -81,20 +81,17 @@ public class AndroidSdkTest {
 
     @Test
     public void givenPlatform1dot5ThenPlatformis1dot5() throws IllegalAccessException {
-        final File path = (File) ReflectionUtils.getValueIncludingSuperclasses("path",sdkTestSupport.getSdk_with_platform_1_5());
+        final File path = (File) ReflectionUtils.getValueIncludingSuperclasses("sdkPath",sdkTestSupport.getSdk_with_platform_1_5());
         Assert.assertEquals(new File(path, "/platforms/android-3"),sdkTestSupport.getSdk_with_platform_1_5().getPlatform());
     }
 
     @Test
     public void givenPlatformNullThenPlatformisSomethingValidLooking() throws IllegalAccessException {
-        final File path = (File) ReflectionUtils.getValueIncludingSuperclasses("path",sdkTestSupport.getSdk_with_platform_default());
+        final File path = (File) ReflectionUtils.getValueIncludingSuperclasses("sdkPath",sdkTestSupport.getSdk_with_platform_default());
         final File platform = sdkTestSupport.getSdk_with_platform_default().getPlatform();
         final String platformPath = platform.getAbsolutePath();
         final String pathPath = path.getAbsolutePath();
         final String regex = pathPath + "/platforms/android-.*";
-//        System.out.println("platformPath = " + platformPath);
-//        System.out.println("pathPath = " + pathPath);
-//        System.out.println("regex = " + regex);
         Assert.assertTrue(platformPath.matches(regex));
     }
 
