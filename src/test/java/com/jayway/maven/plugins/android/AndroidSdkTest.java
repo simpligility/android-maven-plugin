@@ -91,7 +91,7 @@ public class AndroidSdkTest {
         final File platform = sdkTestSupport.getSdk_with_platform_default().getPlatform();
         final String platformPath = platform.getAbsolutePath();
         final String pathPath = path.getAbsolutePath();
-        final String regex = pathPath + "/platforms/android-[0-9]+.*";
+        final String regex = pathPath + "/platforms/android-.*";
 //        System.out.println("platformPath = " + platformPath);
 //        System.out.println("pathPath = " + pathPath);
 //        System.out.println("regex = " + regex);
