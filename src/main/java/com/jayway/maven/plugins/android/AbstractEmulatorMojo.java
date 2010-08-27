@@ -177,6 +177,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
         List<String> commands = new ArrayList<String>();
+        commands.add("-e");
         commands.add("get-serialno");
         executor.executeCommand(getAndroidSdk().getAdbPath(), commands);
         return executor.getStandardOut();  
@@ -281,7 +282,9 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
     private void stopEmulatorWindows(CommandExecutor executor, String pid) throws ExecutionException {
         String stopCommand = "TASKKILL"; // this assumes that the command is on the path
         List<String> commands = new ArrayList<String>();
-        commands.add("/PID " + pid); // combined together into on so that apostrophes do not get mixed up
+        // separate the commands as per the command line interface
+        commands.add("/PID");
+        commands.add(pid);
         getLog().info(STOP_EMULATOR_MSG + pid);
         executor.executeCommand(stopCommand, commands);
     }
