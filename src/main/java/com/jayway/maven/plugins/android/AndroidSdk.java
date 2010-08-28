@@ -30,32 +30,40 @@ import java.util.*;
  */
 public class AndroidSdk {
 
-	/** property file in each platform folder with details about platform. */
-	private static final String SOURCE_PROPERTIES_FILENAME = "source.properties";
-	/** property name for platform version in sdk source.properties file. */
-	private static final String PLATFORM_VERSION_PROPERTY = "Platform.Version";
-	/** property name for api level version in sdk source.properties file. */
-	private static final String API_LEVEL_PROPERTY = "AndroidVersion.ApiLevel";
-	
-	/** folder name for the sdk sub folder that contains the different platform versions. */
-	private static final String PLATFORMS_FOLDER_NAME = "platforms";
-	
-	private static final String PARAMETER_MESSAGE = "Please provide a proper Android SDK directory path as configuration parameter <sdk><path>...</path></sdk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.sdk.path=... or set environment variable " + AbstractAndroidMojo.ENV_ANDROID_HOME + ".";
+    /**
+     * property file in each platform folder with details about platform.
+     */
+    private static final String SOURCE_PROPERTIES_FILENAME = "source.properties";
+    /**
+     * property name for platform version in sdk source.properties file.
+     */
+    private static final String PLATFORM_VERSION_PROPERTY = "Platform.Version";
+    /**
+     * property name for api level version in sdk source.properties file.
+     */
+    private static final String API_LEVEL_PROPERTY = "AndroidVersion.ApiLevel";
 
-	private static final class Platform {
-		final String name;
-		final String apiLevel;
-		final String path;
-		
-		public Platform(String name, String apiLevel, String path) {
-			super();
-			this.name = name;
-			this.apiLevel = apiLevel;
-			this.path = path;
-		}
-	}
+    /**
+     * folder name for the sdk sub folder that contains the different platform versions.
+     */
+    private static final String PLATFORMS_FOLDER_NAME = "platforms";
 
-	private final File     sdkPath;
+    private static final String PARAMETER_MESSAGE = "Please provide a proper Android SDK directory path as configuration parameter <sdk><path>...</path></sdk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.sdk.path=... or set environment variable " + AbstractAndroidMojo.ENV_ANDROID_HOME + ".";
+
+    private static final class Platform {
+        final String name;
+        final String apiLevel;
+        final String path;
+
+        public Platform(String name, String apiLevel, String path) {
+            super();
+            this.name = name;
+            this.apiLevel = apiLevel;
+            this.path = path;
+        }
+    }
+
+    private final File sdkPath;
     private final Platform platform;
 
 
@@ -69,30 +77,32 @@ public class AndroidSdk {
         if (platformOrApiLevel == null) {
             platform = null;
             // letting this through to preserve compatibility for now
-        } else  {
-        	platform = findPlatformByNameOrApiLevel(platformOrApiLevel);
-        	if (platform == null)
-            	throw new InvalidSdkException("Invalid SDK: Platform/API level " + platformOrApiLevel + " not available.") ;
+        } else {
+            platform = findPlatformByNameOrApiLevel(platformOrApiLevel);
+            if (platform == null)
+                throw new InvalidSdkException("Invalid SDK: Platform/API level " + platformOrApiLevel + " not available.");
         }
     }
 
     private Platform findPlatformByNameOrApiLevel(String platformOrApiLevel) {
-    	for(Platform p : availablePlatforms) {
-    		if (p.name.equals(platformOrApiLevel) || p.apiLevel.equals(platformOrApiLevel)) {
-    			return p;
-    		}
-    	}
-		return null;
-	}
+        for (Platform p : availablePlatforms) {
+            if (p.name.equals(platformOrApiLevel) || p.apiLevel.equals(platformOrApiLevel)) {
+                return p;
+            }
+        }
+        return null;
+    }
 
-	public enum Layout{LAYOUT_1_1, LAYOUT_1_5};
+    public enum Layout {LAYOUT_1_1, LAYOUT_1_5}
+
+    ;
 
     public Layout getLayout() {
 
         assertPathIsDirectory(sdkPath);
 
         final File platforms = new File(sdkPath, PLATFORMS_FOLDER_NAME);
-        if (platforms.exists() && platforms.isDirectory()){
+        if (platforms.exists() && platforms.isDirectory()) {
             return Layout.LAYOUT_1_5;
         }
 
@@ -101,7 +111,7 @@ public class AndroidSdk {
             return Layout.LAYOUT_1_1;
         }
 
-        throw new InvalidSdkException("Android SDK could not be identified from path \"" + sdkPath +"\". " + PARAMETER_MESSAGE);
+        throw new InvalidSdkException("Android SDK could not be identified from path \"" + sdkPath + "\". " + PARAMETER_MESSAGE);
     }
 
     private void assertPathIsDirectory(final File path) {
@@ -115,25 +125,26 @@ public class AndroidSdk {
 
     private static final Set<String> commonToolsIn11And15 = new HashSet<String>() {
         {
-            add("adb"            );
-            add("android"        );
-            add("apkbuilder"     );
-            add("ddms"           );
-            add("dmtracedump"    );
-            add("draw9patch"     );
-            add("emulator"       );
+            add("adb");
+            add("android");
+            add("apkbuilder");
+            add("ddms");
+            add("dmtracedump");
+            add("draw9patch");
+            add("emulator");
             add("hierarchyviewer");
-            add("hprof-conv"     );
-            add("mksdcard"       );
-            add("sqlite3"        );
-            add("traceview"      );
-            add("zipalign"      );
+            add("hprof-conv");
+            add("mksdcard");
+            add("sqlite3");
+            add("traceview");
+            add("zipalign");
         }
     };
 
     /**
      * Returns the complete path for a tool, based on this SDK.
      * TODO: Implementation should try to find the tool in the different directories, instead of relying on a manually maintained list of where they are. (i.e. remove commonToolsIn11And15, and make lookup automatic based on which tools can actually be found where.)
+     *
      * @param tool which tool, for example <code>adb</code>.
      * @return the complete path as a <code>String</code>, including the tool's filename.
      */
@@ -145,7 +156,7 @@ public class AndroidSdk {
         if (getLayout() == Layout.LAYOUT_1_5) {
             if (commonToolsIn11And15.contains(tool)) {
                 return sdkPath + "/tools/" + tool;
-            }else {
+            } else {
 
                 return getPlatform() + "/tools/" + tool;
             }
@@ -156,33 +167,34 @@ public class AndroidSdk {
 
     /**
      * Get the emulator path.
+     *
      * @return
      */
-    public String getEmulatorPath()
-    {
+    public String getEmulatorPath() {
         return getPathForTool("emulator");
     }
 
     /**
      * Get the android debug tool path (adb).
+     *
      * @return
      */
-    public String getAdbPath()
-    {
+    public String getAdbPath() {
         return getPathForTool("adb");
     }
 
     /**
      * Get the android debug tool path (adb).
+     *
      * @return
      */
-    public String getZipalignPath()
-    {
+    public String getZipalignPath() {
         return getPathForTool("zipalign");
     }
 
     /**
      * Returns the complete path for <code>framework.aidl</code>, based on this SDK.
+     *
      * @return the complete path as a <code>String</code>, including the filename.
      */
     public String getPathForFrameworkAidl() {
@@ -201,7 +213,8 @@ public class AndroidSdk {
      * Resolves the android.jar from this SDK.
      *
      * @return a <code>File</code> pointing to the android.jar file.
-     * @throws org.apache.maven.plugin.MojoExecutionException if the file can not be resolved.
+     * @throws org.apache.maven.plugin.MojoExecutionException
+     *          if the file can not be resolved.
      */
     public File getAndroidJar() throws MojoExecutionException {
         if (getLayout() == Layout.LAYOUT_1_1) {
@@ -218,18 +231,18 @@ public class AndroidSdk {
     public File getPlatform() {
         assertPathIsDirectory(sdkPath);
 
-        if (getLayout() == Layout.LAYOUT_1_1){
+        if (getLayout() == Layout.LAYOUT_1_1) {
             return sdkPath;
         }
 
         final File platformsDirectory = new File(sdkPath, PLATFORMS_FOLDER_NAME);
         assertPathIsDirectory(platformsDirectory);
 
-        if (platform == null){
+        if (platform == null) {
             final File[] platformDirectories = platformsDirectory.listFiles();
             Arrays.sort(platformDirectories);
-            return platformDirectories[platformDirectories.length-1];
-        }else{
+            return platformDirectories[platformDirectories.length - 1];
+        } else {
             final File platformDirectory = new File(platform.path);
             assertPathIsDirectory(platformDirectory);
             return platformDirectory;
@@ -238,14 +251,15 @@ public class AndroidSdk {
 
     /**
      * Initialize the maps matching platform and api levels form the source properties files.
+     *
      * @throws InvalidSdkException
      */
-    private void findAvailablePlatforms() throws InvalidSdkException{
+    private void findAvailablePlatforms() throws InvalidSdkException {
         availablePlatforms = new HashSet<Platform>();
-    	
+
         ArrayList<File> platformDirectories = getPlatformDirectories();
         for (File pDir : platformDirectories) {
-        	File propFile = new File(pDir, SOURCE_PROPERTIES_FILENAME);
+            File propFile = new File(pDir, SOURCE_PROPERTIES_FILENAME);
             Properties properties = new Properties();
             try {
                 properties.load(new FileInputStream(propFile));
@@ -262,6 +276,7 @@ public class AndroidSdk {
 
     /**
      * Gets the source properties files from all locally installed platforms.
+     *
      * @return
      */
     private ArrayList<File> getPlatformDirectories() {
@@ -269,11 +284,10 @@ public class AndroidSdk {
         final File platformsDirectory = new File(sdkPath, PLATFORMS_FOLDER_NAME);
         assertPathIsDirectory(platformsDirectory);
         final File[] platformDirectories = platformsDirectory.listFiles();
-        for (File file: platformDirectories)
-        {
+        for (File file : platformDirectories) {
             // only looking in android- folder so only works on reasonably new sdk revisions..
-            if (file.isDirectory() && file.getName().startsWith("android-")) 
-            	sourcePropertyFiles.add(file);
+            if (file.isDirectory() && file.getName().startsWith("android-"))
+                sourcePropertyFiles.add(file);
         }
         return sourcePropertyFiles;
     }

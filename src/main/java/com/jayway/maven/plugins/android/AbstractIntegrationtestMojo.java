@@ -25,7 +25,7 @@ import java.util.Set;
 
 /**
  * For integrationtest related Mojos.
- * 
+ *
  * @author hugo.josefson@jayway.com
  */
 public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
@@ -41,6 +41,7 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
      * Enables or disables integration test related goals. If <code>true</code> they will be run; if <code>false</code>,
      * they will be skipped. If <code>auto</code>, they will run if any of the classes inherit from any class in
      * <code>junit.framework.**</code> or <code>android.test.**</code>.
+     *
      * @parameter expression="${android.enableIntegrationTest}" default-value="auto"
      */
     private String enableIntegrationTest;
@@ -48,23 +49,24 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
     /**
      * Whether or not to execute integration test related goals. Reads from configuration parameter
      * <code>enableIntegrationTest</code>, but can be overridden with <code>-Dmaven.test.skip</code>.
+     *
      * @return <code>true</code> if integration test goals should be executed, <code>false</code> otherwise.
      */
     protected boolean isEnableIntegrationTest() throws MojoFailureException, MojoExecutionException {
-        if (mavenTestSkip){
+        if (mavenTestSkip) {
             return false;
         }
 
-        if ("false".equalsIgnoreCase(enableIntegrationTest)){
+        if ("false".equalsIgnoreCase(enableIntegrationTest)) {
             return false;
         }
 
-        if ("true".equalsIgnoreCase(enableIntegrationTest)){
+        if ("true".equalsIgnoreCase(enableIntegrationTest)) {
             return true;
         }
 
-        if ("auto".equalsIgnoreCase(enableIntegrationTest)){
-            if (extractInstrumentationRunnerFromAndroidManifest(androidManifestFile)==null){
+        if ("auto".equalsIgnoreCase(enableIntegrationTest)) {
+            if (extractInstrumentationRunnerFromAndroidManifest(androidManifestFile) == null) {
                 return false;
             }
             return AndroidTestFinder.containsAndroidTests(new File(project.getBuild().getDirectory(), "android-classes"));
@@ -82,7 +84,7 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
                 if (type.equals("apk")) {
                     getLog().debug("Detected apk dependency " + artifact + ". Will resolve and deploy to device...");
                     final File targetApkFile = resolveArtifactToFile(artifact);
-                    if (undeployBeforeDeploy){
+                    if (undeployBeforeDeploy) {
                         getLog().debug("Attempting undeploy of " + targetApkFile + " from device...");
                         undeployApk(targetApkFile);
                     }
@@ -100,7 +102,7 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
     }
 
     protected void deployFile(File apkFile) throws MojoExecutionException {
-        if (undeployBeforeDeploy){
+        if (undeployBeforeDeploy) {
             undeployApk(apkFile);
         }
         deployApk(apkFile);

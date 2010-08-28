@@ -24,15 +24,17 @@ import java.io.File;
 
 /**
  * Undeploys the built apk file, or another specified apk, from a connected device.<br/>
+ *
+ * @author hugo.josefson@jayway.com
  * @goal undeploy
  * @requiresProject false
- * @author hugo.josefson@jayway.com
  */
 public class UndeployMojo extends AbstractAndroidMojo {
 
     /**
      * Optionally used to specify a different apk package to undeploy from a connected emulator or usb device, instead
      * of the built apk from this project.
+     *
      * @parameter property="package" expression="${android.package}" default-value="null"
      */
     private String _package;
@@ -44,6 +46,7 @@ public class UndeployMojo extends AbstractAndroidMojo {
     /**
      * Optionally used to specify a different apk file to undeploy from a connected emulator or usb device, instead of
      * the built apk from this project.
+     *
      * @parameter expression="${android.file}"
      */
     private File file;

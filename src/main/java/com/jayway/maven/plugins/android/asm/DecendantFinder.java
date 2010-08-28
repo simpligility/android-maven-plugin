@@ -30,14 +30,15 @@ class DecendantFinder implements ClassVisitor {
 
     /**
      * Constructs this finder.
+     *
      * @param parentPackages Packages to find decendants of. Must be formatted with <code>/</code> (slash) instead of
-     * <code>.</code> (dot). For example: <code>junit/framework/</code>
+     *                       <code>.</code> (dot). For example: <code>junit/framework/</code>
      */
     public DecendantFinder(String... parentPackages) {
         this.parentPackages = parentPackages;
     }
 
-    private final String[]      parentPackages;
+    private final String[] parentPackages;
     private final AtomicBoolean isDecendantFound = new AtomicBoolean(false);
 
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
@@ -55,6 +56,7 @@ class DecendantFinder implements ClassVisitor {
 
     /**
      * Returns whether a match was found.
+     *
      * @return <code>true</code> is a match was found, <code>false</code> otherwise.
      */
     public boolean isDecendantFound() {

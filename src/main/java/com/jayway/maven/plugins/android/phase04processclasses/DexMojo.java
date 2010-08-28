@@ -44,10 +44,11 @@ import java.util.jar.JarFile;
 
 /**
  * Converts compiled Java classes to the Android dex format.
+ *
+ * @author hugo.josefson@jayway.com
  * @goal dex
  * @phase process-classes
  * @requiresDependencyResolution compile
- * @author hugo.josefson@jayway.com
  */
 public class DexMojo extends AbstractAndroidMojo {
 
@@ -65,49 +66,49 @@ public class DexMojo extends AbstractAndroidMojo {
         executor.setLogger(this.getLog());
 
         File outputFile = new File(project.getBuild().getDirectory() + File.separator + "classes.dex");
-        File inputFile  = new File(project.getBuild().getDirectory() + File.separator + project.getBuild().getFinalName() + ".jar");
-        
+        File inputFile = new File(project.getBuild().getDirectory() + File.separator + project.getBuild().getFinalName() + ".jar");
+
         if (generateApk) {
-	        runDex(executor, outputFile, inputFile);        
+            runDex(executor, outputFile, inputFile);
         }
 
-        if (attachJar){
+        if (attachJar) {
             projectHelper.attachArtifact(project, "jar", project.getArtifact().getClassifier(), inputFile);
         }
 
-        if (attachSources){
+        if (attachSources) {
             // Also attach an .apksources, containing sources from this project.
             final File apksources = createApkSourcesFile();
             projectHelper.attachArtifact(project, "apksources", apksources);
         }
     }
 
-	private void runDex(CommandExecutor executor, File outputFile,
-			File inputFile) throws MojoExecutionException {
-		// Unpack all dependent and main classes
-		File classesOutputDirectory = unpackClasses(inputFile);
+    private void runDex(CommandExecutor executor, File outputFile,
+                        File inputFile) throws MojoExecutionException {
+        // Unpack all dependent and main classes
+        File classesOutputDirectory = unpackClasses(inputFile);
 
-		List<String> commands = new ArrayList<String>();
-		if (jvmArguments != null){
-		    for (String jvmArgument : jvmArguments) {
-		        if (jvmArgument != null){
-		            if (jvmArgument.startsWith("-")){
-		                jvmArgument = jvmArgument.substring(1);
-		            }
-		            commands.add("-J" + jvmArgument);
-		        }
-		    }
-		}
-		commands.add("--dex"                                   );
-		commands.add("--output=" + outputFile.getAbsolutePath());
-		commands.add(classesOutputDirectory.getAbsolutePath()  );
-		getLog().info(getAndroidSdk().getPathForTool("dx") + " " + commands.toString());
-		try {
-		    executor.executeCommand(getAndroidSdk().getPathForTool("dx"), commands, project.getBasedir(), false);
-		} catch (ExecutionException e) {
-		    throw new MojoExecutionException("", e);
-		}
-	}
+        List<String> commands = new ArrayList<String>();
+        if (jvmArguments != null) {
+            for (String jvmArgument : jvmArguments) {
+                if (jvmArgument != null) {
+                    if (jvmArgument.startsWith("-")) {
+                        jvmArgument = jvmArgument.substring(1);
+                    }
+                    commands.add("-J" + jvmArgument);
+                }
+            }
+        }
+        commands.add("--dex");
+        commands.add("--output=" + outputFile.getAbsolutePath());
+        commands.add(classesOutputDirectory.getAbsolutePath());
+        getLog().info(getAndroidSdk().getPathForTool("dx") + " " + commands.toString());
+        try {
+            executor.executeCommand(getAndroidSdk().getPathForTool("dx"), commands, project.getBasedir(), false);
+        } catch (ExecutionException e) {
+            throw new MojoExecutionException("", e);
+        }
+    }
 
     protected File createApkSourcesFile() throws MojoExecutionException {
         final File apksources = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apksources");
@@ -117,8 +118,8 @@ public class DexMojo extends AbstractAndroidMojo {
             JarArchiver jarArchiver = new JarArchiver();
             jarArchiver.setDestFile(apksources);
 
-            addDirectory(jarArchiver, assetsDirectory, "assets"       );
-            addDirectory(jarArchiver, resourceDirectory, "res"        );
+            addDirectory(jarArchiver, assetsDirectory, "assets");
+            addDirectory(jarArchiver, resourceDirectory, "res");
             addDirectory(jarArchiver, sourceDirectory, "src/main/java");
             addJavaResources(jarArchiver, project.getBuild().getResources());
 
@@ -134,6 +135,7 @@ public class DexMojo extends AbstractAndroidMojo {
 
     /**
      * Makes sure the string ends with "/"
+     *
      * @param prefix any string, or null.
      * @return the prefix with a "/" at the end, never null.
      */
@@ -147,9 +149,10 @@ public class DexMojo extends AbstractAndroidMojo {
 
     /**
      * Adds a directory to a {@link JarArchiver} with a directory prefix.
+     *
      * @param jarArchiver
-     * @param directory The directory to add.
-     * @param prefix An optional prefix for where in the Jar file the directory's contents should go.
+     * @param directory   The directory to add.
+     * @param prefix      An optional prefix for where in the Jar file the directory's contents should go.
      * @throws ArchiverException
      */
     protected void addDirectory(JarArchiver jarArchiver, File directory, String prefix) throws ArchiverException {
@@ -169,6 +172,7 @@ public class DexMojo extends AbstractAndroidMojo {
 
     /**
      * Adds a Java Resources directory (typically "src/main/resources") to a {@link JarArchiver}.
+     *
      * @param jarArchiver
      * @param javaResource The Java resource to add.
      * @throws ArchiverException
@@ -189,13 +193,13 @@ public class DexMojo extends AbstractAndroidMojo {
         File outputDirectory = new File(project.getBuild().getDirectory(), "android-classes");
         for (Artifact artifact : getRelevantCompileArtifacts()) {
 
-            if(artifact.getFile().isDirectory())  {
+            if (artifact.getFile().isDirectory()) {
                 try {
                     FileUtils.copyDirectory(artifact.getFile(), outputDirectory);
                 } catch (IOException e) {
                     throw new MojoExecutionException("IOException while copying " + artifact.getFile().getAbsolutePath() + " into " + outputDirectory.getAbsolutePath(), e);
                 }
-            }else{
+            } else {
                 try {
                     unjar(new JarFile(artifact.getFile()), outputDirectory);
                 } catch (IOException e) {
