@@ -478,9 +478,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
             commands.add("-k");  // ('-k' means keep the data and cache directories)
         }
         commands.add(packageName);
-        getLog().info(getAndroidSdk().getPathForTool("adb")+" " + commands.toString());
+        getLog().info(getAndroidSdk().getAdbPath()+" " + commands.toString());
         try {
-            executor.executeCommand(getAndroidSdk().getPathForTool("adb"), commands, false);
+            executor.executeCommand(getAndroidSdk().getAdbPath(), commands, false);
             getLog().debug(executor.getStandardOut());
             getLog().debug(executor.getStandardError());
             return true;
