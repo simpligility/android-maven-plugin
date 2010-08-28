@@ -116,7 +116,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
                 //When using maven under eclipse the artifact will by default point to a directory, which isn't correct.
                 //To work around this we'll first try to get the archive from the local repo, and only if it isn't found there we'll do a normal resolve.
                 File apksourcesFile = new File(getLocalRepository().getBasedir(), getLocalRepository().pathOf(artifact));
-                if (apksourcesFile == null || apksourcesFile.isDirectory()) {
+                if (apksourcesFile.isDirectory()) {
                     apksourcesFile = resolveArtifactToFile(artifact);
                 }
                 getLog().debug("Extracting " + apksourcesFile + "...");

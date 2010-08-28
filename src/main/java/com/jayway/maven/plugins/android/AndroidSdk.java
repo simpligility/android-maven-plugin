@@ -43,9 +43,9 @@ public class AndroidSdk {
 	private static final String PARAMETER_MESSAGE = "Please provide a proper Android SDK directory path as configuration parameter <sdk><path>...</path></sdk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.sdk.path=... or set environment variable " + AbstractAndroidMojo.ENV_ANDROID_HOME + ".";
 
 	private static final class Platform {
-		String name;
-		String apiLevel;
-		String path;
+		final String name;
+		final String apiLevel;
+		final String path;
 		
 		public Platform(String name, String apiLevel, String path) {
 			super();
