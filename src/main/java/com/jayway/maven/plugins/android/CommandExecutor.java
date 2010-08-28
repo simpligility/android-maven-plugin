@@ -269,7 +269,7 @@ public interface CommandExecutor
                         sbe.append( line );
                         if ( logger != null )
                         {
-                            logger.error( line );
+                            logger.info( line );
                         }
                         error = true;
                     }
