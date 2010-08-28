@@ -28,6 +28,7 @@ import java.util.List;
 
 /**
  * Copy file/dir from device.
+ *
  * @goal pull
  * @requiresProject false
  */
@@ -48,6 +49,7 @@ public class PullMojo extends AbstractMojo {
     /**
      * Specifies which device to connect to, by serial number. Special values "usb" and "emulator" are also valid, for
      * selecting the only USB connected device or the only running emulator, respectively.
+     *
      * @parameter expression="${android.device}"
      */
     protected String device;

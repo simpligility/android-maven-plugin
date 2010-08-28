@@ -53,58 +53,58 @@ import org.codehaus.plexus.logging.console.ConsoleLogger;
  * directory.</li>
  * <li>deletes any <code>Thumbs.db</code> files found in the resource directory.</li>
  * </ul>
+ *
+ * @author hugo.josefson@jayway.com
  * @goal generate-sources
  * @phase generate-sources
  * @requiresProject true
  * @requiresDependencyResolution compile
- * @author hugo.josefson@jayway.com
  */
 public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
     /**
      * <p>Whether to delete any <code>R.java</code> file, and <code>.java</code> files with the same name as
      * <code>.aidl</code> files, found in the source directory.</p>
-     *
+     * <p/>
      * <p>Enable when using Eclipse and the standard Eclipse Android plugin, to work around the fact that it creates
      * <code>R.java</code>, and <code>.java</code> files from your <code>.aidl</code> files, in the wrong place
      * (from a Maven perspective.) Don't worry, Eclipse automatically recreates them when you refresh the Eclipse
      * project.</p>
      *
      * @parameter default-value=true
-     *            expression="${android.deleteConflictingFiles}"
-     *
+     * expression="${android.deleteConflictingFiles}"
      */
     protected boolean deleteConflictingFiles;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-    	try {
-	        extractSourceDependencies();
-	
-	        final String[]    relativeAidlFileNames1   = findRelativeAidlFileNames(sourceDirectory                 );
-	        final String[]    relativeAidlFileNames2   = findRelativeAidlFileNames(extractedDependenciesJavaSources);
-	        final Set<String> relativeAidlFileNamesSet = new HashSet<String>() {
-	            {
-	                addAll(Arrays.asList(relativeAidlFileNames1));
-	                addAll(Arrays.asList(relativeAidlFileNames2));
-	            }
-	        };
-	
-	        if (deleteConflictingFiles) {
-	            deleteConflictingRJavaFiles       (sourceDirectory                                           );
-	            deleteConflictingManifestJavaFiles(sourceDirectory                                           );
-	            deleteConflictingThumbsDb         (resourceDirectory                                         );
-	            deleteConflictingAidlJavaFiles    (sourceDirectory, relativeAidlFileNamesSet                 );
-	            deleteConflictingAidlJavaFiles    (extractedDependenciesJavaSources, relativeAidlFileNamesSet);
-	        }
-	
-	        generateR        (                                                        );
-	        generateAidlFiles(sourceDirectory, relativeAidlFileNames1                 );
-	        generateAidlFiles(extractedDependenciesJavaSources, relativeAidlFileNames2);
-    	} catch (MojoExecutionException e) {
-    		getLog().error("Error when generating sources.", e);
-    		throw e;
-    	} 
+        try {
+            extractSourceDependencies();
+
+            final String[] relativeAidlFileNames1 = findRelativeAidlFileNames(sourceDirectory);
+            final String[] relativeAidlFileNames2 = findRelativeAidlFileNames(extractedDependenciesJavaSources);
+            final Set<String> relativeAidlFileNamesSet = new HashSet<String>() {
+                {
+                    addAll(Arrays.asList(relativeAidlFileNames1));
+                    addAll(Arrays.asList(relativeAidlFileNames2));
+                }
+            };
+
+            if (deleteConflictingFiles) {
+                deleteConflictingRJavaFiles(sourceDirectory);
+                deleteConflictingManifestJavaFiles(sourceDirectory);
+                deleteConflictingThumbsDb(resourceDirectory);
+                deleteConflictingAidlJavaFiles(sourceDirectory, relativeAidlFileNamesSet);
+                deleteConflictingAidlJavaFiles(extractedDependenciesJavaSources, relativeAidlFileNamesSet);
+            }
+
+            generateR();
+            generateAidlFiles(sourceDirectory, relativeAidlFileNames1);
+            generateAidlFiles(extractedDependenciesJavaSources, relativeAidlFileNames2);
+        } catch (MojoExecutionException e) {
+            getLog().error("Error when generating sources.", e);
+            throw e;
+        }
     }
 
     protected void extractSourceDependencies() throws MojoExecutionException {
@@ -128,11 +128,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     }
 
     private void extractApksources(File apksourcesFile) throws MojoExecutionException {
-    	if (apksourcesFile.isDirectory()) {
-    		getLog().warn("The apksources artifact points to '"+apksourcesFile+"' which is a directory; skipping unpacking it.");
-    		return;
-    	}
-        final UnArchiver unArchiver = new ZipUnArchiver(apksourcesFile){
+        if (apksourcesFile.isDirectory()) {
+            getLog().warn("The apksources artifact points to '" + apksourcesFile + "' which is a directory; skipping unpacking it.");
+            return;
+        }
+        final UnArchiver unArchiver = new ZipUnArchiver(apksourcesFile) {
             @Override
             protected Logger getLogger() {
                 return new ConsoleLogger(Logger.LEVEL_DEBUG, "dependencies-unarchiver");
@@ -154,6 +154,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             getLog().info("Deleted " + numberOfFilesDeleted + " conflicting Manifest.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain it.");
         }
     }
+
     private void deleteConflictingRJavaFiles(File sourceDirectory) throws MojoExecutionException {
         final int numberOfFilesDeleted = deleteFilesFromDirectory(sourceDirectory, "**/R.java");
         if (numberOfFilesDeleted > 0) {
@@ -172,8 +173,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     private void deleteConflictingAidlJavaFiles(File sourceDirectory, Collection<String> relativeAidlFileNames) throws MojoExecutionException {
         for (String relativeAidlFileName : relativeAidlFileNames) {
 
-            final String relativeJavaFileName                 = relativeAidlFileName.substring(0, relativeAidlFileName.lastIndexOf(".")) + ".java";
-            final File   conflictingJavaFileInSourceDirectory = new File(sourceDirectory, relativeJavaFileName);
+            final String relativeJavaFileName = relativeAidlFileName.substring(0, relativeAidlFileName.lastIndexOf(".")) + ".java";
+            final File conflictingJavaFileInSourceDirectory = new File(sourceDirectory, relativeJavaFileName);
 
             if (conflictingJavaFileInSourceDirectory.exists()) {
 
@@ -213,39 +214,35 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         String generatedSourcesRDirectoryName = project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "r";
         new File(generatedSourcesRDirectoryName).mkdirs();
         File[] overlayDirectories;
-        
+
         if (resourceOverlayDirectories == null || resourceOverlayDirectories.length == 0) {
-        	overlayDirectories = new File[] {resourceOverlayDirectory};
+            overlayDirectories = new File[]{resourceOverlayDirectory};
         } else {
-        	overlayDirectories = resourceOverlayDirectories;
+            overlayDirectories = resourceOverlayDirectories;
         }
-        
+
         if (!combinedRes.exists()) {
-	        if (!combinedRes.mkdirs()) {
-	        	throw new MojoExecutionException("Could not create directory for combined resources at " + combinedRes.getAbsolutePath());
-	        }
+            if (!combinedRes.mkdirs()) {
+                throw new MojoExecutionException("Could not create directory for combined resources at " + combinedRes.getAbsolutePath());
+            }
         }
         if (extractedDependenciesRes.exists()) {
-        	try {
-        	    getLog().info("Copying dependency resource files to combined resource directory.");
-				org.apache.commons.io.FileUtils.copyDirectory(extractedDependenciesRes, combinedRes);
-			}
-			catch (IOException e) {
-				throw new MojoExecutionException("", e);
-			}	
+            try {
+                getLog().info("Copying dependency resource files to combined resource directory.");
+                org.apache.commons.io.FileUtils.copyDirectory(extractedDependenciesRes, combinedRes);
+            } catch (IOException e) {
+                throw new MojoExecutionException("", e);
+            }
         }
         if (resourceDirectory.exists()) {
-        	try {
-        	    getLog().info("Copying local resource files to combined resource directory.");
-				org.apache.commons.io.FileUtils.copyDirectory(resourceDirectory, combinedRes);
-			}
-			catch (IOException e) {
-				throw new MojoExecutionException("", e);
-			}	
+            try {
+                getLog().info("Copying local resource files to combined resource directory.");
+                org.apache.commons.io.FileUtils.copyDirectory(resourceDirectory, combinedRes);
+            } catch (IOException e) {
+                throw new MojoExecutionException("", e);
+            }
         }
-        
-        
-        
+
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
@@ -253,33 +250,33 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         List<String> commands = new ArrayList<String>();
         commands.add("package");
         commands.add("-m");
-        commands.add("-J"                                 );
-        commands.add(generatedSourcesRDirectoryName       );
-        commands.add("-M"                                 );
+        commands.add("-J");
+        commands.add(generatedSourcesRDirectoryName);
+        commands.add("-M");
         commands.add(androidManifestFile.getAbsolutePath());
-        for(File resOverlayDir : overlayDirectories) {
-        	if (resOverlayDir != null && resOverlayDir.exists()) {
-        		commands.add("-S");
-        		commands.add(resOverlayDir.getAbsolutePath());
-        	}
+        for (File resOverlayDir : overlayDirectories) {
+            if (resOverlayDir != null && resOverlayDir.exists()) {
+                commands.add("-S");
+                commands.add(resOverlayDir.getAbsolutePath());
+            }
         }
         if (combinedRes.exists()) {
-            commands.add("-S"                               );
+            commands.add("-S");
             commands.add(combinedRes.getAbsolutePath());
         }
         if (assetsDirectory.exists()) {
-            commands.add("-A"                             );
+            commands.add("-A");
             commands.add(assetsDirectory.getAbsolutePath());
         }
         if (extractedDependenciesAssets.exists()) {
-            commands.add("-A"                                         );
+            commands.add("-A");
             commands.add(extractedDependenciesAssets.getAbsolutePath());
         }
-        commands.add("-I"                                             );
+        commands.add("-I");
         commands.add(getAndroidSdk().getAndroidJar().getAbsolutePath());
         if (StringUtils.isNotBlank(configurations)) {
-        	commands.add("-c"          );
-        	commands.add(configurations);
+            commands.add("-c");
+            commands.add(configurations);
         }
         getLog().info(getAndroidSdk().getPathForTool("aapt") + " " + commands.toString());
         try {
@@ -293,7 +290,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
     private void generateAidlFiles(File sourceDirectory, String[] relativeAidlFileNames) throws MojoExecutionException {
         for (String relativeAidlFileName : relativeAidlFileNames) {
-            List<String> commands       = new ArrayList<String>();
+            List<String> commands = new ArrayList<String>();
             commands.add("-p" + getAndroidSdk().getPathForFrameworkAidl());
 
             File generatedSourcesAidlDirectory = new File(project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "aidl");
@@ -302,13 +299,13 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             File targetDirectory = new File(generatedSourcesAidlDirectory, new File(relativeAidlFileName).getParent());
             targetDirectory.mkdirs();
 
-            final String shortAidlFileName         = new File(relativeAidlFileName).getName();
-            final String shortJavaFileName         = shortAidlFileName.substring(0, shortAidlFileName.lastIndexOf(".")) + ".java";
-            final File   aidlFileInSourceDirectory = new File(sourceDirectory, relativeAidlFileName);
+            final String shortAidlFileName = new File(relativeAidlFileName).getName();
+            final String shortJavaFileName = shortAidlFileName.substring(0, shortAidlFileName.lastIndexOf(".")) + ".java";
+            final File aidlFileInSourceDirectory = new File(sourceDirectory, relativeAidlFileName);
 
             commands.add("-I" + sourceDirectory);
-            commands.add(aidlFileInSourceDirectory.getAbsolutePath()                    );
-            commands.add(new File(targetDirectory , shortJavaFileName).getAbsolutePath());
+            commands.add(aidlFileInSourceDirectory.getAbsolutePath());
+            commands.add(new File(targetDirectory, shortJavaFileName).getAbsolutePath());
             try {
                 CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
                 executor.setLogger(this.getLog());

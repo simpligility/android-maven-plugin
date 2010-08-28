@@ -22,8 +22,8 @@ import org.apache.maven.plugin.MojoFailureException;
 /**
  * Runs the instrumentation apk on device.
  *
- * @goal instrument
  * @author hugo.josefson@jayway.com
+ * @goal instrument
  */
 public class InstrumentMojo extends AbstractInstrumentationMojo {
 

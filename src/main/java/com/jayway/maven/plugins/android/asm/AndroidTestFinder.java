@@ -42,7 +42,7 @@ public class AndroidTestFinder {
             throw new IllegalArgumentException("classesBaseDirectory must be a valid directory!");
         }
 
-        final List<File>      classFiles      = findEligebleClassFiles(classesBaseDirectory);
+        final List<File> classFiles = findEligebleClassFiles(classesBaseDirectory);
         final DecendantFinder decendantFinder = new DecendantFinder(TEST_PACKAGES);
 
         for (File classFile : classFiles) {
@@ -64,8 +64,8 @@ public class AndroidTestFinder {
     }
 
     private static List<File> findEligebleClassFiles(File classesBaseDirectory) {
-        final List<File>      classFiles = new LinkedList<File>();
-        final DirectoryWalker walker     = new DirectoryWalker();
+        final List<File> classFiles = new LinkedList<File>();
+        final DirectoryWalker walker = new DirectoryWalker();
         walker.setBaseDir(classesBaseDirectory);
         walker.addSCMExcludes();
         walker.addInclude("**/*.class");

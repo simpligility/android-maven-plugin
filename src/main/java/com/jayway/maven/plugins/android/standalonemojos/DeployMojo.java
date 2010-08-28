@@ -26,17 +26,19 @@ import java.io.File;
  * Deploys the built apk file, or another specified apk, to a connected device.<br/>
  * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on a project
  * with instrumentation tests.
+ *
+ * @author hugo.josefson@jayway.com
  * @goal deploy
  * @requiresProject false
  * @phase pre-integration-test
  * @requiresDependencyResolution runtime
- * @author hugo.josefson@jayway.com
  */
 public class DeployMojo extends AbstractIntegrationtestMojo {
 
     /**
      * Optionally used to specify a different apk file to deploy to a connected emulator or usb device, instead of the
      * built apk from this project.
+     *
      * @parameter expression="${android.file}"
      */
     private File file;
@@ -44,7 +46,7 @@ public class DeployMojo extends AbstractIntegrationtestMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (file == null) {
             deployBuiltApk();
-        }else {
+        } else {
             deployFile(file);
         }
     }

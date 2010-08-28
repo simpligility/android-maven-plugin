@@ -19,7 +19,7 @@ import java.io.File;
 
 /**
  * Configuration for an Android SDK. Only receives config parameter values, and there is no logic in here. Logic is in
- * {@link AndroidSdk}. 
+ * {@link AndroidSdk}.
  *
  * @author hugo.josefson@jayway.com
  */

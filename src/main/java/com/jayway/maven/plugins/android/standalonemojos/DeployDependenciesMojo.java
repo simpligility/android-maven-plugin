@@ -23,12 +23,13 @@ import org.apache.maven.plugin.MojoFailureException;
 /**
  * Deploys all directly declared dependencies of <code>&lt;type&gt;apk&lt;/type&gt;</code> in this project's pom.<br/>
  * Usually used in a project with instrumentation tests, to deploy the apk to test onto the device before running the
- * deploying and running the instrumentation tests apk.<br/> 
+ * deploying and running the instrumentation tests apk.<br/>
  * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on a project
  * with instrumentation tests.
+ *
+ * @author hugo.josefson@jayway.com
  * @goal deploy-dependencies
  * @requiresDependencyResolution runtime
- * @author hugo.josefson@jayway.com
  */
 public class DeployDependenciesMojo extends AbstractIntegrationtestMojo {
 

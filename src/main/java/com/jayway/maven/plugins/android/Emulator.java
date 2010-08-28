@@ -10,14 +10,15 @@ public class Emulator {
 
     /**
      * Name of the Android Virtual Device (avd) that will be started by the emulator. Default value is "Default"
+     *
      * @parameter expression="${android.emulator.avd}"
      */
     private String avd;
 
     /**
      * Wait time for the emulator start up.
-     * @parameter expression="${android.emulator.wait}"
      *
+     * @parameter expression="${android.emulator.wait}"
      */
     private String wait;
 
@@ -25,6 +26,7 @@ public class Emulator {
      * Additional command line options for the emulator start up. This option can be used to pass any additional
      * options desired to the invocation of the emulator. Use emulator -help for more details. An example would be
      * "-no-skin".
+     *
      * @parameter expression="${android.emulator.options}"
      */
     private String options;

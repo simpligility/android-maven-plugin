@@ -25,14 +25,14 @@ import org.apache.maven.plugin.MojoFailureException;
  * Called automatically when the lifecycle reaches phase <code>pre-integration-test</code>. Figures out whether to
  * call goals in this phase; and if so, calls <code>android:deploy-dependencies</code> and <code>android:deploy</code>.
  *
+ * @author hugo.josefson@jayway.com
  * @goal internal-pre-integration-test
  * @phase pre-integration-test
- * @author hugo.josefson@jayway.com
  */
 public class InternalPreIntegrationTestMojo extends AbstractIntegrationtestMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if (isEnableIntegrationTest()){
+        if (isEnableIntegrationTest()) {
             deployDependencies();
             deployBuiltApk();
         }

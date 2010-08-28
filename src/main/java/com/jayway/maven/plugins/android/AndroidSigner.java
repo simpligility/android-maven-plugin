@@ -22,7 +22,9 @@ package com.jayway.maven.plugins.android;
  */
 public class AndroidSigner {
 
-    public enum Debug {TRUE,FALSE,AUTO};
+    public enum Debug {TRUE, FALSE, AUTO}
+
+    ;
 
     private final Debug debug;
 
@@ -32,8 +34,8 @@ public class AndroidSigner {
         }
         try {
             this.debug = Debug.valueOf(debug.toUpperCase());
-        }catch(IllegalArgumentException e) {
-            throw new IllegalArgumentException("android.sign.debug must be 'true', 'false' or 'auto'.", e); 
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("android.sign.debug must be 'true', 'false' or 'auto'.", e);
         }
     }
 

@@ -17,7 +17,7 @@ package com.jayway.maven.plugins.android;
 
 /**
  * Configuration for signing. Only receives config parameter values, and there is no logic in here. Logic is in
- * {@link AndroidSigner}. 
+ * {@link AndroidSigner}.
  *
  * @author hugo.josefson@jayway.com
  */
@@ -26,9 +26,9 @@ public class Sign {
     /**
      * Whether to sign with the debug keystore. Valid values are:
      * <ul>
-     *     <li><code>true</code> = sign with the debug keystore.
-     *     <li><code>false</code> = don't sign with the debug keystore.
-     *     <li><code>auto</code> (default) = sign with debug keystore, unless another keystore is defined. (Signing with
+     * <li><code>true</code> = sign with the debug keystore.
+     * <li><code>false</code> = don't sign with the debug keystore.
+     * <li><code>auto</code> (default) = sign with debug keystore, unless another keystore is defined. (Signing with
      * other keystores is not yet implemented. See
      * <a href="http://code.google.com/p/maven-android-plugin/issues/detail?id=2">Issue 2</a>.)
      * </ul>
