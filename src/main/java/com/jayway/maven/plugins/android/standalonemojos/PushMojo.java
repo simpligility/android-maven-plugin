@@ -78,7 +78,7 @@ public class PushMojo extends AbstractMojo {
 
         getLog().info("adb " + commands.toString());
         try {
-            executor.executeCommand("adb", commands);
+            executor.executeCommand("adb", commands, null, false);
         } catch (ExecutionException e) {
             throw new MojoExecutionException("Push failed.", e);
         }
