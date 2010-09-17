@@ -22,6 +22,8 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Excercises the {@link AndroidSdk} class.
@@ -54,14 +56,14 @@ public class AndroidSdkTest {
     public void givenToolAaptAndPlatform1dot1ThenPathIsPlatform1dot1() {
         final AndroidSdk sdk = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "2");
         final String pathForTool = sdk.getPathForTool("aapt");
-        Assert.assertEquals(sdkTestSupport.getEnv_ANDROID_HOME() + "/platforms/android-2/tools/aapt", pathForTool);
+        Assert.assertEquals(new File(sdkTestSupport.getEnv_ANDROID_HOME() + "/platforms/android-2/tools/aapt"), new File(pathForTool));
     }
 
     @Test
     public void givenToolAaptAndPlatform1dot5ThenPathIsPlatform1dot5() {
         final AndroidSdk sdk = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "3");
         final String pathForTool = sdk.getPathForTool("aapt");
-        Assert.assertEquals(sdkTestSupport.getEnv_ANDROID_HOME() + "/platforms/android-3/tools/aapt", pathForTool);
+        Assert.assertEquals(new File(sdkTestSupport.getEnv_ANDROID_HOME() + "/platforms/android-3/tools/aapt"), new File(pathForTool));
     }
 
     @Test(expected = InvalidSdkException.class)
@@ -86,13 +88,13 @@ public class AndroidSdkTest {
     }
 
     @Test
-    public void givenPlatformNullThenPlatformisSomethingValidLooking() throws IllegalAccessException {
+    public void givenPlatformNullThenPlatformisSomethingValidLooking() throws IllegalAccessException, URISyntaxException {
         final File path = (File) ReflectionUtils.getValueIncludingSuperclasses("sdkPath",sdkTestSupport.getSdk_with_platform_default());
         final File platform = sdkTestSupport.getSdk_with_platform_default().getPlatform();
         final String platformPath = platform.getAbsolutePath();
         final String pathPath = path.getAbsolutePath();
-        final String regex = pathPath + "/platforms/android-.*";
-        Assert.assertTrue(platformPath.matches(regex));
+        final String regex = new File(pathPath + "/platforms/android-.*").toURI().toString();
+        Assert.assertTrue(new File(platformPath).toURI().toString().matches(regex));
     }
 
     /**
