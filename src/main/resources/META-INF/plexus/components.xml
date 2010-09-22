@@ -34,13 +34,16 @@
                     </compile>
                     <process-classes>
                         org.apache.maven.plugins:maven-jar-plugin:jar,
-                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:dex
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:unpack
                     </process-classes>
                     <process-test-resources>
                         org.apache.maven.plugins:maven-resources-plugin:testResources
                     </process-test-resources>
                     <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
                     <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
+                    <prepare-package>
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:dex
+                    </prepare-package>
                     <package>
                         com.jayway.maven.plugins.android.generation2:maven-android-plugin:apk
                     </package>
