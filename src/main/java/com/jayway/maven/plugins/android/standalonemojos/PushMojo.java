@@ -45,7 +45,7 @@ public class PushMojo extends AbstractAndroidMojo {
      * @parameter expression="${android.destination}"
      * @required
      */
-    private File destination;
+    private String destination;
 
     /**
      * Specifies which device to connect to, by serial number. Special values "usb" and "emulator" are also valid, for
@@ -75,7 +75,7 @@ public class PushMojo extends AbstractAndroidMojo {
 
         commands.add("push");
         commands.add(source.getAbsolutePath());
-        commands.add(destination.getAbsolutePath());
+        commands.add(destination);
 
         final String pathForAdb = getAndroidSdk().getPathForTool("adb");
         getLog().info(pathForAdb + " " + commands.toString());
