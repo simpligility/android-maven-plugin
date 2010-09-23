@@ -39,7 +39,7 @@ public class PullMojo extends AbstractAndroidMojo {
      * @parameter expression="${android.source}"
      * @required
      */
-    private File source;
+    private String source;
 
     /**
      * @parameter expression="${android.destination}"
@@ -74,7 +74,7 @@ public class PullMojo extends AbstractAndroidMojo {
         }
 
         commands.add("pull");
-        commands.add(source.getAbsolutePath());
+        commands.add(source);
         commands.add(destination.getAbsolutePath());
 
         final String pathForAdb = getAndroidSdk().getPathForTool("adb");
