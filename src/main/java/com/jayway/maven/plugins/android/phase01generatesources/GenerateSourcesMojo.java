@@ -79,7 +79,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     /**
      * Override default generated folder
      *
-     * @parameter expression="${android.genDirectory}" default="${project.build.directory}/generated-sources/r"
+     * @parameter expression="${android.genDirectory}" default-value="${project.build.directory}/generated-sources/r"
      *
      */
     protected File genDirectory;
