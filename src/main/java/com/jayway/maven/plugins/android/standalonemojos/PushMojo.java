@@ -15,16 +15,17 @@
  */
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import com.jayway.maven.plugins.android.CommandExecutor;
-import com.jayway.maven.plugins.android.ExecutionException;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.commons.lang.StringUtils;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.ExecutionException;
 
 /**
  * Copy file/dir to device.
@@ -32,7 +33,7 @@ import java.util.List;
  * @goal push
  * @requiresProject false
  */
-public class PushMojo extends AbstractMojo {
+public class PushMojo extends AbstractAndroidMojo {
 
     /**
      * @parameter expression="${android.source}"
@@ -44,7 +45,7 @@ public class PushMojo extends AbstractMojo {
      * @parameter expression="${android.destination}"
      * @required
      */
-    private File destination;
+    private String destination;
 
     /**
      * Specifies which device to connect to, by serial number. Special values "usb" and "emulator" are also valid, for
@@ -74,11 +75,12 @@ public class PushMojo extends AbstractMojo {
 
         commands.add("push");
         commands.add(source.getAbsolutePath());
-        commands.add(destination.getAbsolutePath());
+        commands.add(destination);
 
-        getLog().info("adb " + commands.toString());
+        final String pathForAdb = getAndroidSdk().getPathForTool("adb");
+        getLog().info(pathForAdb + " " + commands.toString());
         try {
-            executor.executeCommand("adb", commands);
+            executor.executeCommand(pathForAdb, commands);
         } catch (ExecutionException e) {
             throw new MojoExecutionException("Push failed.", e);
         }
