@@ -82,7 +82,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
      * @parameter expression="${android.genDirectory}" default="${project.build.directory}/generated-sources/r"
      *
      */
-    protected String genDirectory;
+    protected File genDirectory;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -219,8 +219,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
     private void generateR() throws MojoExecutionException {
 
-        File gendir = new File(genDirectory == null ? project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "r" : genDirectory);
-        gendir.mkdirs();
+        genDirectory.mkdirs();
 
         File[] overlayDirectories;
 
@@ -260,7 +259,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         commands.add("package");
         commands.add("-m");
         commands.add("-J");
-        commands.add(gendir.getAbsolutePath());
+        commands.add(genDirectory.getAbsolutePath());
         commands.add("-M");
         commands.add(androidManifestFile.getAbsolutePath());
         for (File resOverlayDir : overlayDirectories) {
@@ -294,7 +293,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             throw new MojoExecutionException("", e);
         }
 
-        project.addCompileSourceRoot(gendir.getAbsolutePath());
+        project.addCompileSourceRoot(genDirectory.getAbsolutePath());
     }
 
     private void generateAidlFiles(File sourceDirectory, String[] relativeAidlFileNames) throws MojoExecutionException {
