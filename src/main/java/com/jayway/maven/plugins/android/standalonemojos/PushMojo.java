@@ -69,7 +69,7 @@ public class PushMojo extends AbstractAndroidMojo {
         final String pathForAdb = getAndroidSdk().getPathForTool("adb");
         getLog().info(pathForAdb + " " + commands.toString());
         try {
-            executor.executeCommand(pathForAdb, commands);
+            executor.executeCommand(pathForAdb, commands, null, false);
         } catch (ExecutionException e) {
             throw new MojoExecutionException("Push failed.", e);
         }
