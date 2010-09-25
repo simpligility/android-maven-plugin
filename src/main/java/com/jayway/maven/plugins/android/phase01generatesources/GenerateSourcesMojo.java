@@ -76,6 +76,14 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
      */
     protected boolean deleteConflictingFiles;
 
+    /**
+     * Override default generated folder
+     *
+     * @parameter expression="${android.genDirectory}" default="${project.build.directory}/generated-sources/r"
+     *
+     */
+    protected String genDirectory;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
 
     	try {
@@ -210,8 +218,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
     private void generateR() throws MojoExecutionException {
 
-        String generatedSourcesRDirectoryName = project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "r";
-        new File(generatedSourcesRDirectoryName).mkdirs();
+        File gendir = new File(genDirectory == null ? project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "r" : genDirectory);
+        gendir.mkdirs();
+
         File[] overlayDirectories;
         
         if (resourceOverlayDirectories == null || resourceOverlayDirectories.length == 0) {
@@ -254,7 +263,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         commands.add("package");
         commands.add("-m");
         commands.add("-J"                                 );
-        commands.add(generatedSourcesRDirectoryName       );
+        commands.add(gendir.getAbsolutePath()       );
         commands.add("-M"                                 );
         commands.add(androidManifestFile.getAbsolutePath());
         for(File resOverlayDir : overlayDirectories) {
@@ -288,7 +297,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             throw new MojoExecutionException("", e);
         }
 
-        project.addCompileSourceRoot(generatedSourcesRDirectoryName);
+        project.addCompileSourceRoot(gendir.getAbsolutePath());
     }
 
     private void generateAidlFiles(File sourceDirectory, String[] relativeAidlFileNames) throws MojoExecutionException {
