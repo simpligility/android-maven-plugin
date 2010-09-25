@@ -15,16 +15,17 @@
  */
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import com.jayway.maven.plugins.android.CommandExecutor;
-import com.jayway.maven.plugins.android.ExecutionException;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.commons.lang.StringUtils;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.ExecutionException;
 
 /**
  * Copy file/dir from device.
@@ -32,13 +33,13 @@ import java.util.List;
  * @goal pull
  * @requiresProject false
  */
-public class PullMojo extends AbstractMojo {
+public class PullMojo extends AbstractAndroidMojo {
 
     /**
      * @parameter expression="${android.source}"
      * @required
      */
-    private File source;
+    private String source;
 
     /**
      * @parameter expression="${android.destination}"
@@ -73,12 +74,13 @@ public class PullMojo extends AbstractMojo {
         }
 
         commands.add("pull");
-        commands.add(source.getAbsolutePath());
+        commands.add(source);
         commands.add(destination.getAbsolutePath());
 
-        getLog().info("adb " + commands.toString());
+        final String pathForAdb = getAndroidSdk().getPathForTool("adb");
+        getLog().info(pathForAdb + " " + commands.toString());
         try {
-            executor.executeCommand("adb", commands);
+            executor.executeCommand(pathForAdb, commands);
         } catch (ExecutionException e) {
             throw new MojoExecutionException("Pull failed.", e);
         }
