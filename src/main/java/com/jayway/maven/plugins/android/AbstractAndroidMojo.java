@@ -407,17 +407,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         executor.setLogger(this.getLog());
         List<String> commands = new ArrayList<String>();
 
-        // Check if a specific device should be used
-        if (StringUtils.isNotBlank(device)) {
-            if ("usb".equals(device)) {
-                commands.add("-d");
-            } else if ("emulator".equals(device)) {
-                commands.add("-e");
-            } else {
-                commands.add("-s");
-                commands.add(device);
-            }
-        }
+        addDeviceParameter(commands);
 
         commands.add("install");
         commands.add("-r");
@@ -433,6 +423,24 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
             getLog().error(executor.getStandardOut());
             getLog().error(executor.getStandardError());
             throw new MojoExecutionException("Error deploying " + apkFile + " to device.", e);
+        }
+    }
+
+    /**
+     * Checks if a specific device should be used, and adds any relevant parameter(s) to the parameters list.
+     *
+     * @param commands the parameters to be used with the {@code adb} command
+     */
+    protected void addDeviceParameter(List<String> commands) {
+        if (StringUtils.isNotBlank(device)) {
+            if ("usb".equals(device)) {
+                commands.add("-d");
+            } else if ("emulator".equals(device)) {
+                commands.add("-e");
+            } else {
+                commands.add("-s");
+                commands.add(device);
+            }
         }
     }
 
@@ -487,6 +495,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
         List<String> commands = new ArrayList<String>();
+        addDeviceParameter(commands);
         commands.add("uninstall");
         if (!deleteDataAndCacheDirectoriesOnDevice) {
             commands.add("-k");  // ('-k' means keep the data and cache directories)

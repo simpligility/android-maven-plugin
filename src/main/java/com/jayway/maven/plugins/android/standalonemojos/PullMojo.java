@@ -19,7 +19,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -61,17 +60,7 @@ public class PullMojo extends AbstractAndroidMojo {
 
         List<String> commands = new ArrayList<String>();
 
-        // Check if a specific device should be used
-        if (StringUtils.isNotBlank(device)) {
-            if ("usb".equals(device)) {
-                commands.add("-d");
-            } else if ("emulator".equals(device)) {
-                commands.add("-e");
-            } else {
-                commands.add("-s");
-                commands.add(device);
-            }
-        }
+        addDeviceParameter(commands);
 
         commands.add("pull");
         commands.add(source);
