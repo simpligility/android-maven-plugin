@@ -20,34 +20,25 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
-import org.codehaus.plexus.util.IOUtil;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 /**
  * Converts compiled Java classes to the Android dex format.
  *
  * @author hugo.josefson@jayway.com
  * @goal dex
- * @phase process-classes
+ * @phase prepare-package
  * @requiresDependencyResolution compile
  */
 public class DexMojo extends AbstractAndroidMojo {
@@ -92,9 +83,7 @@ public class DexMojo extends AbstractAndroidMojo {
 
     private void runDex(CommandExecutor executor, File outputFile,
                         File inputFile) throws MojoExecutionException {
-        // Unpack all dependent and main classes
-        File classesOutputDirectory = unpackClasses(inputFile);
-
+        File classesOutputDirectory = new File(project.getBuild().getDirectory(), "android-classes");
         List<String> commands = new ArrayList<String>();
         if (jvmArguments != null) {
             for (String jvmArgument : jvmArguments) {
@@ -198,56 +187,4 @@ public class DexMojo extends AbstractAndroidMojo {
             }
         }
     }
-
-    private File unpackClasses(File inputFile) throws MojoExecutionException {
-        File outputDirectory = new File(project.getBuild().getDirectory(), "android-classes");
-        for (Artifact artifact : getRelevantCompileArtifacts()) {
-
-            if (artifact.getFile().isDirectory()) {
-                try {
-                    FileUtils.copyDirectory(artifact.getFile(), outputDirectory);
-                } catch (IOException e) {
-                    throw new MojoExecutionException("IOException while copying " + artifact.getFile().getAbsolutePath() + " into " + outputDirectory.getAbsolutePath(), e);
-                }
-            } else {
-                try {
-                    unjar(new JarFile(artifact.getFile()), outputDirectory);
-                } catch (IOException e) {
-                    throw new MojoExecutionException("IOException while unjarring " + artifact.getFile().getAbsolutePath() + " into " + outputDirectory.getAbsolutePath(), e);
-                }
-            }
-
-        }
-
-        try {
-            unjar(new JarFile(inputFile), outputDirectory);
-        } catch (IOException e) {
-            throw new MojoExecutionException("IOException while unjarring " + inputFile.getAbsolutePath() + " into " + outputDirectory.getAbsolutePath(), e);
-        }
-        return outputDirectory;
-    }
-
-    private void unjar(JarFile jarFile, File outputDirectory) throws IOException {
-        for (Enumeration en = jarFile.entries(); en.hasMoreElements();) {
-            JarEntry entry = (JarEntry) en.nextElement();
-            File entryFile = new File(outputDirectory, entry.getName());
-            if (!entryFile.getParentFile().exists() && !entry.getName().startsWith("META-INF")) {
-                entryFile.getParentFile().mkdirs();
-            }
-            if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
-                final InputStream in = jarFile.getInputStream(entry);
-                try {
-                    final OutputStream out = new FileOutputStream(entryFile);
-                    try {
-                        IOUtil.copy(in, out);
-                    } finally {
-                        IOUtils.closeQuietly(out);
-                    }
-                } finally {
-                    IOUtils.closeQuietly(in);
-                }
-            }
-        }
-    }
-
 }
