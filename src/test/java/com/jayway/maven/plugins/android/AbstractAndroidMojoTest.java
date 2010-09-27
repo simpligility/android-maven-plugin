@@ -51,7 +51,7 @@ public class AbstractAndroidMojoTest {
         Reflection.field("sdkPlatform").ofType(String.class).in(androidMojo).set("1.6");
         AndroidSdk sdk = androidMojo.getAndroidSdk();
         File path = Reflection.field("sdkPath").ofType(File.class).in(sdk).get();
-        Assert.assertEquals(testSupport.getEnv_ANDROID_HOME(), path.getAbsolutePath());
+        Assert.assertEquals(new File(testSupport.getEnv_ANDROID_HOME()).getAbsolutePath(), path.getAbsolutePath());
     }
 
     @Test
