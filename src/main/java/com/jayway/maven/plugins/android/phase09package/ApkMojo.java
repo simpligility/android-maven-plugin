@@ -26,11 +26,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.dependency.utils.resolvers.DefaultArtifactsResolver;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 /**
  * Creates the apk file. By default signs it with debug keystore.<br/>
@@ -83,6 +82,13 @@ public class ApkMojo extends AbstractAndroidMojo {
      */
     private File nativeLibrariesDirectory;
 
+     /**
+     * <p>Root folder containing native libraries to include in the application package.</p>
+     *
+     * @parameter default-value="${project.build.directory}/libs"
+     */
+    private File outputDirectory;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         // Make an early exit if we're not supposed to generate the APK
         if (!generateApk) {
@@ -110,10 +116,10 @@ public class ApkMojo extends AbstractAndroidMojo {
         commands.add(new File(project.getBuild().getDirectory(), "classes.dex").getAbsolutePath());
         commands.add("-rf");
         commands.add(new File(project.getBuild().getDirectory(), "classes").getAbsolutePath());
-        if (nativeLibrariesDirectory != null && nativeLibrariesDirectory.exists()) {
-            commands.add("-nf");
-            commands.add(nativeLibrariesDirectory.getAbsolutePath());
-        }
+
+        // Process the native libraries, looking both in the current build directory as well as
+        // at the dependencies declared in the pom.  Currently, all .so files are automatically included
+        processNativeLibraries(commands);
 
         for (Artifact artifact : getRelevantCompileArtifacts()) {
             commands.add("-rj");
@@ -131,6 +137,121 @@ public class ApkMojo extends AbstractAndroidMojo {
         // Set the generated .apk file as the main artifact (because the pom states <packaging>apk</packaging>)
         project.getArtifact().setFile(outputFile);
     }
+
+    private void processNativeLibraries(final List<String> commands) throws MojoExecutionException
+    {
+        final Set<Artifact> artifacts = getNativeDependenciesArtifacts();
+
+        final boolean hasValidNativeLibrariesDirectory = nativeLibrariesDirectory != null && nativeLibrariesDirectory.exists();
+
+        if (artifacts.isEmpty() && hasValidNativeLibrariesDirectory)
+        {
+            getLog().debug("No native library dependencies detected, will point directly to " + nativeLibrariesDirectory);
+
+            // Point directly to the directory in this case - no need to copy files around
+            commands.add("-nf");
+            commands.add(nativeLibrariesDirectory.getAbsolutePath());
+        }
+        else if (!artifacts.isEmpty() || hasValidNativeLibrariesDirectory)
+        {
+            // In this case, we may have both .so files in it's normal location
+            // as well as .so dependencies
+
+            // Create the ${project.build.outputDirectory}/libs
+            File destinationDirectory = new File(outputDirectory.getAbsolutePath());
+            if (destinationDirectory.exists())
+            {
+                // TODO: Clean it out?
+            }
+            else
+            {
+                if (!destinationDirectory.mkdir());
+                {
+                    getLog().debug("Could not create output directory " + outputDirectory);
+                }
+            }
+
+             // Point directly to the directory
+            commands.add("-nf");
+            commands.add(destinationDirectory.getAbsolutePath());
+
+
+            // If we have a valid native libs, copy those files - these already come in the structure required
+            if (hasValidNativeLibrariesDirectory)
+            {
+                getLog().debug("Copying existing native libraries from " + nativeLibrariesDirectory);
+                try
+                {
+                    org.apache.commons.io.FileUtils.copyDirectory(nativeLibrariesDirectory,destinationDirectory, new FileFilter()
+                    {
+                        public boolean accept(final File pathname)
+                        {
+                            return pathname.getName().endsWith(".so");
+                        }
+                    });
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+
+            if (!artifacts.isEmpty())
+            {
+                File finalDestinationDirectory = new File(destinationDirectory,"armeabi/");
+
+                getLog().debug("Copying native library dependencies to " + finalDestinationDirectory);
+
+                if (finalDestinationDirectory.exists())
+                {
+                }
+                else
+                {
+                    if (!finalDestinationDirectory.mkdir())
+                    {
+                        getLog().debug("Could not create output directory " + outputDirectory);
+                    }
+                }
+
+                final DefaultArtifactsResolver artifactsResolver = new DefaultArtifactsResolver(this.artifactResolver, this.localRepository, this.remoteRepositories, true);
+
+                final Set<Artifact> resolvedArtifacts = artifactsResolver.resolve(artifacts, getLog());
+
+                for (Artifact resolvedArtifact : resolvedArtifacts)
+                {
+                    final File artifactFile = resolvedArtifact.getFile();
+                    try
+                    {
+                        final File file = new File(finalDestinationDirectory, "lib" + resolvedArtifact.getArtifactId() + ".so");
+                        getLog().debug("Copying native dependency " + resolvedArtifact.getArtifactId() + " (" + resolvedArtifact.getGroupId() + ") to " + file );
+                        org.apache.commons.io.FileUtils.copyFile(artifactFile, file);
+                    }
+                    catch (Exception e)
+                    {
+                        getLog().error("Could not copy native dependency: " + e.getMessage(), e);
+                    }
+                }
+            }
+        }
+    }
+
+    private Set<Artifact> getNativeDependenciesArtifacts()
+    {
+        Set<Artifact> filteredArtifacts = new HashSet<Artifact>();
+        final Set<Artifact> allArtifacts = project.getDependencyArtifacts();
+
+        for (Artifact artifact : allArtifacts)
+        {
+            if ("so".equals(artifact.getType()) && (Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) || Artifact.SCOPE_RUNTIME.equals( artifact.getScope() )))
+            {
+                filteredArtifacts.add(artifact);
+            }
+        }
+
+        return filteredArtifacts;
+    }
+
+
 
     /**
      * Generates an intermediate apk file (actually .ap_) containing the resources and assets.
