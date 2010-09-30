@@ -74,12 +74,25 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
      */
     private File alignedApkFile;
 
+    private static final List<String> SUPPORTED_PACKAGING_TYPES = new ArrayList<String>();
+
+    static {
+        SUPPORTED_PACKAGING_TYPES.add("apk");
+    }
+
     /**
      * actually do the zipalign
      *
      * @throws MojoExecutionException
      */
     protected void zipalign() throws MojoExecutionException {
+
+        // If we're not on a supported packaging with just skip
+        if (! SUPPORTED_PACKAGING_TYPES.contains(project.getPackaging())) {
+            getLog().info("Skipping zipalign on " + project.getPackaging());
+            return;
+        }
+
         parseParameters();
         if (parsedSkip) {
             getLog().info("Skipping zipalign");
