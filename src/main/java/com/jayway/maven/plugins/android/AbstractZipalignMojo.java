@@ -87,7 +87,8 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
      */
     protected void zipalign() throws MojoExecutionException {
 
-        // If we're not on a supported packaging with just skip
+        // If we're not on a supported packaging with just skip (Issue 87)
+        // http://code.google.com/p/maven-android-plugin/issues/detail?id=87
         if (! SUPPORTED_PACKAGING_TYPES.contains(project.getPackaging())) {
             getLog().info("Skipping zipalign on " + project.getPackaging());
             return;
@@ -116,7 +117,8 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
                 getLog().info("with parameters: " + parameters);
                 executor.executeCommand(command, parameters);
 
-                // Attach the resulting artifact
+                // Attach the resulting artifact (Issue 88)
+                // http://code.google.com/p/maven-android-plugin/issues/detail?id=88
                 File aligned = new File(parsedOutputApk);
                 if (aligned.exists()) {
                     projectHelper.attachArtifact(project, "apk", "aligned", aligned);
