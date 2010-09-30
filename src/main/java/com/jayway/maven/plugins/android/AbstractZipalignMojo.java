@@ -115,6 +115,17 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
                 getLog().info("Running command: " + command);
                 getLog().info("with parameters: " + parameters);
                 executor.executeCommand(command, parameters);
+
+                // Attach the resulting artifact
+                File target = new File(project.getBasedir(), project.getBuild().getDirectory());
+                File aligned = new File(target, parsedOutputApk);
+                if (aligned.exists()) {
+                    projectHelper.attachArtifact(project, "apk", "aligned", aligned);
+                    getLog().info("Attach " + aligned.getAbsolutePath() + " to the project");
+                } else {
+                    getLog().error("Cannot attach " + aligned.getAbsolutePath() + " to the project" +
+                            " - The file does not exist");
+                }
             } catch (ExecutionException e) {
                 throw new MojoExecutionException("", e);
             }
