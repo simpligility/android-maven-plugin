@@ -74,12 +74,26 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
      */
     private File alignedApkFile;
 
+    private static final List<String> SUPPORTED_PACKAGING_TYPES = new ArrayList<String>();
+
+    static {
+        SUPPORTED_PACKAGING_TYPES.add("apk");
+    }
+
     /**
      * actually do the zipalign
      *
      * @throws MojoExecutionException
      */
     protected void zipalign() throws MojoExecutionException {
+
+        // If we're not on a supported packaging with just skip (Issue 87)
+        // http://code.google.com/p/maven-android-plugin/issues/detail?id=87
+        if (! SUPPORTED_PACKAGING_TYPES.contains(project.getPackaging())) {
+            getLog().info("Skipping zipalign on " + project.getPackaging());
+            return;
+        }
+
         parseParameters();
         if (parsedSkip) {
             getLog().info("Skipping zipalign");
@@ -102,6 +116,17 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
                 getLog().info("Running command: " + command);
                 getLog().info("with parameters: " + parameters);
                 executor.executeCommand(command, parameters);
+
+                // Attach the resulting artifact (Issue 88)
+                // http://code.google.com/p/maven-android-plugin/issues/detail?id=88
+                File aligned = new File(parsedOutputApk);
+                if (aligned.exists()) {
+                    projectHelper.attachArtifact(project, "apk", "aligned", aligned);
+                    getLog().info("Attach " + aligned.getAbsolutePath() + " to the project");
+                } else {
+                    getLog().error("Cannot attach " + aligned.getAbsolutePath() + " to the project" +
+                            " - The file does not exist");
+                }
             } catch (ExecutionException e) {
                 throw new MojoExecutionException("", e);
             }
