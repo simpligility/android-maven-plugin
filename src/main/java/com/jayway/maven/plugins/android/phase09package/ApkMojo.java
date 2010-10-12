@@ -78,7 +78,7 @@ public class ApkMojo extends AbstractAndroidMojo {
     /**
      * <p>Root folder containing native libraries to include in the application package.</p>
      *
-     * @parameter default-value="${project.basedir}/libs"
+     * @parameter expression="${android.nativeLibrariesDirectory}" default-value="${project.basedir}/libs"
      */
     private File nativeLibrariesDirectory;
 
