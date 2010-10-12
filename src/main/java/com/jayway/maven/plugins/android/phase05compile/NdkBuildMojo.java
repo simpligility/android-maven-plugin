@@ -1,6 +1,6 @@
 package com.jayway.maven.plugins.android.phase05compile;
 
-import java.io.*;
+import java.io.*;   
 import java.util.*;
 
 import com.jayway.maven.plugins.android.*;
