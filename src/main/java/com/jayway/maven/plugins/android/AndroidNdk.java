@@ -18,6 +18,7 @@ package com.jayway.maven.plugins.android;
 import java.io.*;
 import java.util.*;
 
+import com.jayway.maven.plugins.android.phase05compile.NdkBuildMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 
 /**
@@ -27,7 +28,7 @@ import org.apache.maven.plugin.MojoExecutionException;
  */
 public class AndroidNdk
 {
-    private static final String PARAMETER_MESSAGE = "Please provide a proper Android NDK directory path as configuration parameter <ndk><path>...</path></ndk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.ndk.path=... or set environment variable " + AbstractAndroidMojo.ENV_ANDROID_NDK_HOME + ".";
+    private static final String PARAMETER_MESSAGE = "Please provide a proper Android NDK directory path as configuration parameter <ndk><path>...</path></ndk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.ndk.path=... or set environment variable " + NdkBuildMojo.ENV_ANDROID_NDK_HOME + ".";
 
     private final File ndkPath;
 

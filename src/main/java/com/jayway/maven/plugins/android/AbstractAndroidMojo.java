@@ -254,38 +254,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      */
     private File sdkPath;
 
-     /**
-     * <p>The Android NDK to use.</p>
-     * <p>Looks like this:</p>
-     * <pre>
-     * &lt;ndk&gt;
-     *     &lt;path&gt;/opt/android-ndk-r4&lt;/path&gt;
-     * &lt;/sdk&gt;
-     * </pre>
-     * <p>The <code>&lt;path&gt;</code> parameter is optional. The default is the setting of the ANDROID_HOME environment
-     * variable. The parameter can be used to override this setting with a different environment variable like this:</p>
-     * <pre>
-     * &lt;sdk&gt;
-     *     &lt;path&gt;${env.ANDROID_NDK}&lt;/path&gt;
-     * &lt;/sdk&gt;
-     * </pre>
-     * <p>or just with a hardcoded absolute path. The parameters can also be configured from command-line with parameters
-     * <code>-Dandroid.sdk.path</code> and <code>-Dandroid.sdk.platform</code>.</p>
-     *
-     * @parameter
-     */
-    private Ndk ndk;
-
-    /**
-     * <p>Parameter designed to pick up <code>-Dandroid.ndk.path</code> in case there is no pom with an
-     * <code>&lt;ndk&gt;</code> configuration tag.</p>
-     * <p>Corresponds to {@link Ndk#path}.</p>
-     *
-     * @parameter expression="${android.ndk.path}"
-     * @readonly
-     */
-    private File ndkPath;
-
     /**
      * <p>Parameter designed to pick up environment variable <code>ANDROID_HOME</code> in case
      * <code>android.sdk.path</code> is not configured.</p>
@@ -296,24 +264,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     private String envANDROID_HOME;
 
     /**
-     * <p>Parameter designed to pick up environment variable <code>ANDROID_NDK_HOME</code> in case
-     * <code>android.ndk.path</code> is not configured.</p>
-     *
-     * @parameter expression="${env.ANDROID_NDK_HOME}"
-     * @readonly
-     */
-    private String envANDROID_NDK_HOME;
-
-    /**
      * The <code>ANDROID_HOME</code> environment variable name.
      */
     public static final String ENV_ANDROID_HOME = "ANDROID_HOME";
-
-
-    /**
-     * The <code>ANDROID_HOME</code> environment variable name.
-     */
-    public static final String ENV_ANDROID_NDK_HOME = "ANDROID_NDK_HOME";
 
     /**
      * <p>Parameter designed to pick up <code>-Dandroid.sdk.platform</code> in case there is no pom with an
@@ -362,20 +315,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * expression="${android.attachSources}"
      */
     protected boolean attachSources;
-
-    /**
-     * Build folder to place built native libraries into
-     *
-     * @parameter expression="${android.ndk.build.ndk-output-directory}" default-value="${project.build.directory}/ndk-libs"
-     */
-    protected File ndkOutputDirectory;
-
-   /**
-    * Defines the architecture for the NDK build
-    *
-     * @parameter expression="${android.ndk.build.architecture}" default="armeabi"
-    */
-    protected String ndkArchitecture = "armeabi";
 
     /**
      * Accessor for the local repository.
@@ -708,57 +647,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @throws org.apache.maven.plugin.MojoExecutionException
      *          if no Android SDK path configuration is available at all.
      */
-    protected AndroidNdk getAndroidNdk() throws MojoExecutionException {
-        File chosenNdkPath;
-
-        if (ndk != null) {
-            // An <sdk> tag exists in the pom.
-
-            if (ndk.getPath() != null) {
-                // An <sdk><path> tag is set in the pom.
-
-                chosenNdkPath = ndk.getPath();
-            } else {
-                // There is no <sdk><path> tag in the pom.
-
-                if (ndkPath != null) {
-                    // -Dandroid.sdk.path is set on command line, or via <properties><sdk.path>...
-                    chosenNdkPath = ndkPath;
-                } else {
-                    // No -Dandroid.sdk.path is set on command line, or via <properties><sdk.path>...
-                    chosenNdkPath = new File(getAndroidNdkHomeOrThrow());
-                }
-            }
-        } else {
-            // There is no <sdk> tag in the pom.
-            if (ndkPath != null) {
-                // -Dandroid.sdk.path is set on command line, or via <properties><sdk.path>...
-                chosenNdkPath = ndkPath;
-            } else {
-                // No -Dandroid.sdk.path is set on command line, or via <properties><sdk.path>...
-                chosenNdkPath = new File(getAndroidNdkHomeOrThrow());
-            }
-
-        }
-
-        return new AndroidNdk(chosenNdkPath);
-    }
-
-
-    /**
-     * <p>Returns the Android SDK to use.</p>
-     * <p/>
-     * <p>Current implementation looks for <code>&lt;sdk&gt;&lt;path&gt;</code> configuration in pom, then System
-     * property <code>android.sdk.path</code>, then environment variable <code>ANDROID_HOME</code>.
-     * <p/>
-     * <p>This is where we collect all logic for how to lookup where it is, and which one to choose. The lookup is
-     * based on available parameters. This method should be the only one you should need to look at to understand how
-     * the Android SDK is chosen, and from where on disk.</p>
-     *
-     * @return the Android SDK to use.
-     * @throws org.apache.maven.plugin.MojoExecutionException
-     *          if no Android SDK path configuration is available at all.
-     */
     protected AndroidSdk getAndroidSdk() throws MojoExecutionException {
         File chosenSdkPath;
         String chosenSdkPlatform;
@@ -814,11 +702,4 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         return androidHome;
     }
 
-    private String getAndroidNdkHomeOrThrow() throws MojoExecutionException {
-        final String androidHome = System.getenv(ENV_ANDROID_NDK_HOME);
-        if (isBlank(androidHome)) {
-            throw new MojoExecutionException("No Android NDK path could be found. You may configure it in the pom using <ndk><path>...</path></ndk> or <properties><ndk.path>...</ndk.path></properties> or on command-line using -Dandroid.ndk.path=... or by setting environment variable " + ENV_ANDROID_NDK_HOME);
-        }
-        return androidHome;
-    }
 }
