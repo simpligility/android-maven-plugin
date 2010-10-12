@@ -83,11 +83,12 @@ public class ApkMojo extends AbstractAndroidMojo {
     private File nativeLibrariesDirectory;
 
      /**
-     * <p>Root folder containing native libraries to include in the application package.</p>
+     * <p>Temporary folder for collecting native libraries.</p>
      *
      * @parameter default-value="${project.build.directory}/libs"
+     * @readonly
      */
-    private File outputDirectory;
+    private File nativeLibrariesOutputDirectory;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         // Make an early exit if we're not supposed to generate the APK
@@ -158,7 +159,7 @@ public class ApkMojo extends AbstractAndroidMojo {
             // as well as .so dependencies
 
             // Create the ${project.build.outputDirectory}/libs
-            File destinationDirectory = new File(outputDirectory.getAbsolutePath());
+            File destinationDirectory = new File(nativeLibrariesOutputDirectory.getAbsolutePath());
             destinationDirectory.mkdirs();
 
              // Point directly to the directory
