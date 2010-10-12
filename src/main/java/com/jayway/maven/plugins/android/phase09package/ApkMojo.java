@@ -203,8 +203,10 @@ public class ApkMojo extends AbstractAndroidMojo {
                     final File artifactFile = resolvedArtifact.getFile();
                     try
                     {
-                        final File file = new File(finalDestinationDirectory, "lib" + resolvedArtifact.getArtifactId() + ".so");
-                        getLog().debug("Copying native dependency " + resolvedArtifact.getArtifactId() + " (" + resolvedArtifact.getGroupId() + ") to " + file );
+                        final String artifactId = resolvedArtifact.getArtifactId();
+                        final String filename = artifactId.startsWith("lib") ? artifactId + ".so" : "lib" + artifactId + ".so";
+                        final File file = new File(finalDestinationDirectory, filename);
+                        getLog().debug("Copying native dependency " + artifactId + " (" + resolvedArtifact.getGroupId() + ") to " + file );
                         org.apache.commons.io.FileUtils.copyFile(artifactFile, file);
                     }
                     catch (Exception e)
