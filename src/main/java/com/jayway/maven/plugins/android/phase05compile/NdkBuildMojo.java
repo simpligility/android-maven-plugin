@@ -45,7 +45,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      * &lt;/sdk&gt;
      * </pre>
      * <p>or just with a hardcoded absolute path. The parameters can also be configured from command-line with parameters
-     * <code>-Dandroid.sdk.path</code> and <code>-Dandroid.sdk.platform</code>.</p>
+     * <code>-Dandroid.sdk.path</code> and <code>-Dandroid.ndk.platform</code>.</p>
      *
      * @parameter
      */
@@ -76,9 +76,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
     protected String ndkBuildAdditionalCommandline;
 
     /**
-     * Flag indicating whether the output directory (libs/armeabi) should be cleared after build.  This will essentially
-     * 'move' all the native artifacts (.so) to the ${protect.build.directory}/ndk-libs/armeabi.  When the APK is built,
-     * the libraries will be included from here.
+     * Flag indicating whether the NDK output directory (libs/&lt;architecture&gt;) should be cleared after build.  This
+     * will essentially 'move' all the native artifacts (.so) to the ${protect.build.directory}/libs/&lt;architecture&gt;.
+     * If an APK is built as part of the invocation, the libraries will be included from here.
      *
      * @parameter expression="${android.ndk.build.clear-native-artifacts}" default="false"
      */
@@ -104,6 +104,12 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      */
     protected File ndkOutputDirectory;
 
+    /** <p>Folder containing native libraries compiled and linked by the NDK.</p>
+     *
+     * @parameter expression="${android.nativeLibrariesDirectory}" default-value="${project.basedir}/libs"
+     */
+    private File nativeLibrariesDirectory;
+
     /**
      * Defines the architecture for the NDK build
      *
@@ -115,7 +121,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         // This points 
-        File nativeLibDirectory = new File( project.getBasedir(), "libs/" + ndkArchitecture );
+        File nativeLibDirectory = new File( nativeLibrariesDirectory , ndkArchitecture );
 
         final boolean libsDirectoryExists = nativeLibDirectory.exists();
 
