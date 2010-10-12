@@ -159,17 +159,7 @@ public class ApkMojo extends AbstractAndroidMojo {
 
             // Create the ${project.build.outputDirectory}/libs
             File destinationDirectory = new File(outputDirectory.getAbsolutePath());
-            if (destinationDirectory.exists())
-            {
-                // TODO: Clean it out?
-            }
-            else
-            {
-                if (!destinationDirectory.mkdir());
-                {
-                    getLog().debug("Could not create output directory " + outputDirectory);
-                }
-            }
+            destinationDirectory.mkdirs();
 
              // Point directly to the directory
             commands.add("-nf");
