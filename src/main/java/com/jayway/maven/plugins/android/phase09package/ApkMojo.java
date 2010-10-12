@@ -90,6 +90,24 @@ public class ApkMojo extends AbstractAndroidMojo {
      */
     private File nativeLibrariesOutputDirectory;
 
+    /**
+     * <p>Default hardware architecture for native library dependencies (with {@code &lt;type>so&lt;/type>}).</p>
+     * <p>This value is used for dependencies without classifier, if {@code nativeLibrariesDependenciesHardwareArchitectureOverride} is not set.</p>
+     * <p>Valid values currently include {@code armeabi} and {@code armeabi-v7a}.</p>
+     *
+     * @parameter expression="${android.nativeLibrariesDependenciesHardwareArchitectureDefault}" default-value="armeabi"
+     */
+    private String nativeLibrariesDependenciesHardwareArchitectureDefault;
+
+    /**
+     * <p>Override hardware architecture for native library dependencies (with {@code &lt;type>so&lt;/type>}).</p>
+     * <p>This overrides any classifier on native library dependencies, and any {@code nativeLibrariesDependenciesHardwareArchitectureDefault}.</p>
+     * <p>Valid values currently include {@code armeabi} and {@code armeabi-v7a}.</p>
+     *
+     * @parameter expression="${android.nativeLibrariesDependenciesHardwareArchitectureOverride}"
+     */
+    private String nativeLibrariesDependenciesHardwareArchitectureOverride;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         // Make an early exit if we're not supposed to generate the APK
         if (!generateApk) {
@@ -189,11 +207,6 @@ public class ApkMojo extends AbstractAndroidMojo {
 
             if (!artifacts.isEmpty())
             {
-                File finalDestinationDirectory = new File(destinationDirectory,"armeabi/");
-
-                getLog().debug("Copying native library dependencies to " + finalDestinationDirectory);
-
-                finalDestinationDirectory.mkdirs();
 
                 final DefaultArtifactsResolver artifactsResolver = new DefaultArtifactsResolver(this.artifactResolver, this.localRepository, this.remoteRepositories, true);
 
@@ -206,6 +219,8 @@ public class ApkMojo extends AbstractAndroidMojo {
                     {
                         final String artifactId = resolvedArtifact.getArtifactId();
                         final String filename = artifactId.startsWith("lib") ? artifactId + ".so" : "lib" + artifactId + ".so";
+
+                        final File finalDestinationDirectory = getFinalDestinationDirectoryFor(resolvedArtifact, destinationDirectory);
                         final File file = new File(finalDestinationDirectory, filename);
                         getLog().debug("Copying native dependency " + artifactId + " (" + resolvedArtifact.getGroupId() + ") to " + file );
                         org.apache.commons.io.FileUtils.copyFile(artifactFile, file);
@@ -217,6 +232,28 @@ public class ApkMojo extends AbstractAndroidMojo {
                 }
             }
         }
+    }
+
+    private File getFinalDestinationDirectoryFor(Artifact resolvedArtifact, File destinationDirectory) {
+        final String hardwareArchitecture = getHardwareArchitectureFor(resolvedArtifact);
+
+        File finalDestinationDirectory = new File(destinationDirectory, hardwareArchitecture + "/");
+
+        finalDestinationDirectory.mkdirs();
+        return finalDestinationDirectory;
+    }
+
+    private String getHardwareArchitectureFor(Artifact resolvedArtifact) {
+        if (StringUtils.isNotBlank(nativeLibrariesDependenciesHardwareArchitectureOverride)){
+            return nativeLibrariesDependenciesHardwareArchitectureOverride;
+        }
+
+        final String classifier = resolvedArtifact.getClassifier();
+        if (StringUtils.isNotBlank(classifier)) {
+            return classifier;
+        }
+
+        return nativeLibrariesDependenciesHardwareArchitectureDefault;
     }
 
     private Set<Artifact> getNativeDependenciesArtifacts()
