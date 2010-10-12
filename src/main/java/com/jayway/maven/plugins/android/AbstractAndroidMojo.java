@@ -189,7 +189,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @readonly
      * @required
      */
-    private org.apache.maven.artifact.repository.ArtifactRepository localRepository;
+    protected org.apache.maven.artifact.repository.ArtifactRepository localRepository;
 
     /**
      * List of Remote Repositories used by the resolver
@@ -198,14 +198,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @readonly
      * @required
      */
-    private java.util.List remoteRepositories;
+    protected java.util.List remoteRepositories;
 
     /**
      * @component
      * @readonly
      * @required
      */
-    private ArtifactFactory artifactFactory;
+    protected ArtifactFactory artifactFactory;
 
     /**
      * Maven ProjectHelper.
