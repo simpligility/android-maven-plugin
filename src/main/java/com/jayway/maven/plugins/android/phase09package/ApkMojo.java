@@ -202,16 +202,7 @@ public class ApkMojo extends AbstractAndroidMojo {
 
                 getLog().debug("Copying native library dependencies to " + finalDestinationDirectory);
 
-                if (finalDestinationDirectory.exists())
-                {
-                }
-                else
-                {
-                    if (!finalDestinationDirectory.mkdir())
-                    {
-                        getLog().debug("Could not create output directory " + outputDirectory);
-                    }
-                }
+                finalDestinationDirectory.mkdirs();
 
                 final DefaultArtifactsResolver artifactsResolver = new DefaultArtifactsResolver(this.artifactResolver, this.localRepository, this.remoteRepositories, true);
 
