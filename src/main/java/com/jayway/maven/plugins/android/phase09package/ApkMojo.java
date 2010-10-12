@@ -109,6 +109,7 @@ public class ApkMojo extends AbstractAndroidMojo {
     private String nativeLibrariesDependenciesHardwareArchitectureOverride;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+
         // Make an early exit if we're not supposed to generate the APK
         if (!generateApk) {
             return;
@@ -159,12 +160,18 @@ public class ApkMojo extends AbstractAndroidMojo {
 
     private void processNativeLibraries(final List<String> commands) throws MojoExecutionException
     {
+        // Examine the native libraries directory for content. This will only be true if:
+        // a) the directory exists
+        // b) it contains at least 1 file
+        final boolean hasValidNativeLibrariesDirectory = nativeLibrariesDirectory != null && nativeLibrariesDirectory.exists() && ( nativeLibrariesDirectory.listFiles() != null && nativeLibrariesDirectory.listFiles().length > 0 );
+
+        // Retrieve any native dependencies or attached artifacts.  This may include artifacts from the ndk-build MOJO
         final Set<Artifact> artifacts = getNativeDependenciesArtifacts();
 
-        final boolean hasValidNativeLibrariesDirectory = nativeLibrariesDirectory != null && nativeLibrariesDirectory.exists();
+        final boolean hasValidBuildNativeLibrariesDirectory = nativeLibrariesOutputDirectory.exists() && ( nativeLibrariesOutputDirectory.listFiles() != null && nativeLibrariesOutputDirectory.listFiles().length > 0 );
 
-        if (artifacts.isEmpty() && hasValidNativeLibrariesDirectory)
-        {
+        if ( artifacts.isEmpty() && hasValidNativeLibrariesDirectory && !hasValidBuildNativeLibrariesDirectory ) {
+            
             getLog().debug("No native library dependencies detected, will point directly to " + nativeLibrariesDirectory);
 
             // Point directly to the directory in this case - no need to copy files around
@@ -177,32 +184,20 @@ public class ApkMojo extends AbstractAndroidMojo {
             // as well as .so dependencies
 
             // Create the ${project.build.outputDirectory}/libs
-            File destinationDirectory = new File(nativeLibrariesOutputDirectory.getAbsolutePath());
+            final File destinationDirectory = new File(nativeLibrariesOutputDirectory.getAbsolutePath());
             destinationDirectory.mkdirs();
 
              // Point directly to the directory
             commands.add("-nf");
             commands.add(destinationDirectory.getAbsolutePath());
 
-
             // If we have a valid native libs, copy those files - these already come in the structure required
-            if (hasValidNativeLibrariesDirectory)
-            {
-                getLog().debug("Copying existing native libraries from " + nativeLibrariesDirectory);
-                try
-                {
-                    org.apache.commons.io.FileUtils.copyDirectory(nativeLibrariesDirectory,destinationDirectory, new FileFilter()
-                    {
-                        public boolean accept(final File pathname)
-                        {
-                            return pathname.getName().endsWith(".so");
-                        }
-                    });
-                }
-                catch (IOException e)
-                {
-                    throw new MojoExecutionException(e.getMessage(), e);
-                }
+            if ( hasValidNativeLibrariesDirectory ) {
+                copyLocalNativeLibraries( nativeLibrariesDirectory, destinationDirectory );
+            }
+
+            if ( hasValidBuildNativeLibrariesDirectory ) {
+                copyLocalNativeLibraries( nativeLibrariesOutputDirectory, destinationDirectory );
             }
 
             if (!artifacts.isEmpty())
@@ -258,11 +253,17 @@ public class ApkMojo extends AbstractAndroidMojo {
 
     private Set<Artifact> getNativeDependenciesArtifacts()
     {
-        Set<Artifact> filteredArtifacts = new HashSet<Artifact>();
+        final Set<Artifact> filteredArtifacts = new HashSet<Artifact>();
         final Set<Artifact> allArtifacts = project.getDependencyArtifacts();
 
         for (Artifact artifact : allArtifacts)
         {
+            // NUll in the scope means attached.
+            if ( "so".equals( artifact.getType() ) && artifact.getScope() == null ) {
+                // Including attached artifact
+                getLog().debug( "Including attached artifact: " + artifact.getArtifactId() + "(" + artifact.getGroupId() + ")" );
+                filteredArtifacts.add( artifact );
+            }
             if ("so".equals(artifact.getType()) && (Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) || Artifact.SCOPE_RUNTIME.equals( artifact.getScope() )))
             {
                 filteredArtifacts.add(artifact);
@@ -272,6 +273,20 @@ public class ApkMojo extends AbstractAndroidMojo {
         return filteredArtifacts;
     }
 
+    private void copyLocalNativeLibraries( final File localNativeLibrariesDirectory, final File destinationDirectory ) throws MojoExecutionException {
+        getLog().debug( "Copying existing native libraries from " + localNativeLibrariesDirectory );
+        try {
+            org.apache.commons.io.FileUtils.copyDirectory( localNativeLibrariesDirectory, destinationDirectory, new FileFilter() {
+                public boolean accept( final File pathname ) {
+                    return pathname.getName().endsWith( ".so" );
+                }
+            } );
+        }
+        catch ( IOException e ) {
+            getLog().error( "Could not copy native libraries: " + e.getMessage(), e );
+            throw new MojoExecutionException( "Could not copy native dependency.", e );
+        }
+    }
 
 
     /**
