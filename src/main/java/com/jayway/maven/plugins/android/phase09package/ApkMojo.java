@@ -219,7 +219,7 @@ public class ApkMojo extends AbstractAndroidMojo {
                     }
                     catch (Exception e)
                     {
-                        getLog().error("Could not copy native dependency: " + e.getMessage(), e);
+                        throw new MojoExecutionException("Could not copy native dependency.", e);
                     }
                 }
             }
