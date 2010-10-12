@@ -192,7 +192,7 @@ public class ApkMojo extends AbstractAndroidMojo {
                 }
                 catch (IOException e)
                 {
-                    e.printStackTrace();
+                    throw new MojoExecutionException(e.getMessage(), e);
                 }
             }
 
