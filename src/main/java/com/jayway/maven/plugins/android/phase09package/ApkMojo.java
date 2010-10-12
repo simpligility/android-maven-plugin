@@ -40,7 +40,8 @@ import java.util.*;
  * @phase package
  * @requiresDependencyResolution compile
  */
-public class ApkMojo extends AbstractAndroidMojo {
+public class ApkMojo extends AbstractAndroidMojo
+{
 
 
     /**
@@ -82,16 +83,18 @@ public class ApkMojo extends AbstractAndroidMojo {
      */
     private File nativeLibrariesDirectory;
 
-     /**
+    /**
      * <p>Root folder containing native libraries to include in the application package.</p>
      *
      * @parameter default-value="${project.build.directory}/libs"
      */
     private File outputDirectory;
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() throws MojoExecutionException, MojoFailureException
+    {
         // Make an early exit if we're not supposed to generate the APK
-        if (!generateApk) {
+        if (!generateApk)
+        {
             return;
         }
 
@@ -106,7 +109,8 @@ public class ApkMojo extends AbstractAndroidMojo {
         List<String> commands = new ArrayList<String>();
         commands.add(outputFile.getAbsolutePath());
 
-        if (!getAndroidSigner().isSignWithDebugKeyStore()) {
+        if (!getAndroidSigner().isSignWithDebugKeyStore())
+        {
             commands.add("-u");
         }
 
@@ -121,16 +125,20 @@ public class ApkMojo extends AbstractAndroidMojo {
         // at the dependencies declared in the pom.  Currently, all .so files are automatically included
         processNativeLibraries(commands);
 
-        for (Artifact artifact : getRelevantCompileArtifacts()) {
+        for (Artifact artifact : getRelevantCompileArtifacts())
+        {
             commands.add("-rj");
             commands.add(artifact.getFile().getAbsolutePath());
         }
 
 
         getLog().info(getAndroidSdk().getPathForTool("apkbuilder") + " " + commands.toString());
-        try {
+        try
+        {
             executor.executeCommand(getAndroidSdk().getPathForTool("apkbuilder"), commands, project.getBasedir(), false);
-        } catch (ExecutionException e) {
+        }
+        catch (ExecutionException e)
+        {
             throw new MojoExecutionException("", e);
         }
 
@@ -140,11 +148,17 @@ public class ApkMojo extends AbstractAndroidMojo {
 
     private void processNativeLibraries(final List<String> commands) throws MojoExecutionException
     {
+        // Examine the native libraries directory for content. This will only be true if:
+        // a) the directory exists
+        // b) it contains at least 1 file
+        final boolean hasValidNativeLibrariesDirectory = nativeLibrariesDirectory != null && nativeLibrariesDirectory.exists() && (nativeLibrariesDirectory.listFiles() != null && nativeLibrariesDirectory.listFiles().length > 0);
+
+        // Retrieve any native dependencies or attached artifacts.  This may include artifacts from the ndk-build MOJO
         final Set<Artifact> artifacts = getNativeDependenciesArtifacts();
 
-        final boolean hasValidNativeLibrariesDirectory = nativeLibrariesDirectory != null && nativeLibrariesDirectory.exists();
+        final boolean hasValidBuildNativeLibrariesDirectory = ndkOutputDirectory.exists() && (ndkOutputDirectory.listFiles() != null && ndkOutputDirectory.listFiles().length > 0);
 
-        if (artifacts.isEmpty() && hasValidNativeLibrariesDirectory)
+        if (artifacts.isEmpty() && hasValidNativeLibrariesDirectory && !hasValidBuildNativeLibrariesDirectory)
         {
             getLog().debug("No native library dependencies detected, will point directly to " + nativeLibrariesDirectory);
 
@@ -152,26 +166,26 @@ public class ApkMojo extends AbstractAndroidMojo {
             commands.add("-nf");
             commands.add(nativeLibrariesDirectory.getAbsolutePath());
         }
-        else if (!artifacts.isEmpty() || hasValidNativeLibrariesDirectory)
+        else if (!artifacts.isEmpty() || hasValidNativeLibrariesDirectory || hasValidBuildNativeLibrariesDirectory)
         {
             // In this case, we may have both .so files in it's normal location
             // as well as .so dependencies
-
             // Create the ${project.build.outputDirectory}/libs
-            File destinationDirectory = new File(outputDirectory.getAbsolutePath());
+            final File destinationDirectory = new File(outputDirectory.getAbsolutePath());
+
             if (destinationDirectory.exists())
             {
                 // TODO: Clean it out?
             }
             else
             {
-                if (!destinationDirectory.mkdir());
+                if (!destinationDirectory.mkdir())
                 {
                     getLog().debug("Could not create output directory " + outputDirectory);
                 }
             }
 
-             // Point directly to the directory
+            // Point directly to the newly created directory
             commands.add("-nf");
             commands.add(destinationDirectory.getAbsolutePath());
 
@@ -179,27 +193,18 @@ public class ApkMojo extends AbstractAndroidMojo {
             // If we have a valid native libs, copy those files - these already come in the structure required
             if (hasValidNativeLibrariesDirectory)
             {
-                getLog().debug("Copying existing native libraries from " + nativeLibrariesDirectory);
-                try
-                {
-                    org.apache.commons.io.FileUtils.copyDirectory(nativeLibrariesDirectory,destinationDirectory, new FileFilter()
-                    {
-                        public boolean accept(final File pathname)
-                        {
-                            return pathname.getName().endsWith(".so");
-                        }
-                    });
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
+                copyLocalNativeLibraries(nativeLibrariesDirectory,destinationDirectory);
             }
 
+            if (hasValidBuildNativeLibrariesDirectory)
+            {
+                copyLocalNativeLibraries(ndkOutputDirectory,destinationDirectory);
+            }
+
+
+            final File finalDestinationDirectory = new File(destinationDirectory, ndkArchitecture);
             if (!artifacts.isEmpty())
             {
-                File finalDestinationDirectory = new File(destinationDirectory,"armeabi/");
-
                 getLog().debug("Copying native library dependencies to " + finalDestinationDirectory);
 
                 if (finalDestinationDirectory.exists())
@@ -222,8 +227,9 @@ public class ApkMojo extends AbstractAndroidMojo {
                     final File artifactFile = resolvedArtifact.getFile();
                     try
                     {
+                        // FIXME: Should this also include the classifier?
                         final File file = new File(finalDestinationDirectory, "lib" + resolvedArtifact.getArtifactId() + ".so");
-                        getLog().debug("Copying native dependency " + resolvedArtifact.getArtifactId() + " (" + resolvedArtifact.getGroupId() + ") to " + file );
+                        getLog().debug("Copying native dependency " + resolvedArtifact.getArtifactId() + " (" + resolvedArtifact.getGroupId() + ") to " + file);
                         org.apache.commons.io.FileUtils.copyFile(artifactFile, file);
                     }
                     catch (Exception e)
@@ -235,22 +241,52 @@ public class ApkMojo extends AbstractAndroidMojo {
         }
     }
 
+    private void copyLocalNativeLibraries(final File localNativeLibrariesDirectory, final File destinationDirectory)
+    {
+        getLog().debug("Copying existing native libraries from " + localNativeLibrariesDirectory);
+        try
+        {
+            org.apache.commons.io.FileUtils.copyDirectory(localNativeLibrariesDirectory, destinationDirectory, new FileFilter()
+            {
+                public boolean accept(final File pathname)
+                {
+                    return pathname.getName().endsWith(".so");
+                }
+            });
+        }
+        catch (IOException e)
+        {
+            getLog().error("Could not copy native libraries: " + e.getMessage(), e);
+        }
+    }
+
     private Set<Artifact> getNativeDependenciesArtifacts()
     {
         Set<Artifact> filteredArtifacts = new HashSet<Artifact>();
         final Set<Artifact> allArtifacts = project.getDependencyArtifacts();
 
+        final List<Artifact> attachedArtifacts = project.getAttachedArtifacts();
+        allArtifacts.addAll(attachedArtifacts);
+
         for (Artifact artifact : allArtifacts)
         {
-            if ("so".equals(artifact.getType()) && (Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) || Artifact.SCOPE_RUNTIME.equals( artifact.getScope() )))
+            // NUll in the scope means attached.
+            if ("so".equals(artifact.getType()) && artifact.getScope() == null)
             {
+                // Including attached artifact
+                getLog().debug("Including attached artifact: " + artifact.getArtifactId() + "(" + artifact.getGroupId() +")");
+                filteredArtifacts.add(artifact);
+            }
+            else if ("so".equals(artifact.getType()) && (Artifact.SCOPE_COMPILE.equals(artifact.getScope()) || Artifact.SCOPE_RUNTIME.equals(artifact.getScope())))
+            {
+                getLog().debug("Including dependent artifact: " + artifact.getArtifactId() + "(" + artifact.getGroupId() +")");
                 filteredArtifacts.add(artifact);
             }
         }
 
+
         return filteredArtifacts;
     }
-
 
 
     /**
@@ -258,37 +294,51 @@ public class ApkMojo extends AbstractAndroidMojo {
      *
      * @throws MojoExecutionException
      */
-    private void generateIntermediateAp_() throws MojoExecutionException {
+    private void generateIntermediateAp_() throws MojoExecutionException
+    {
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
         File[] overlayDirectories;
 
-        if (resourceOverlayDirectories == null || resourceOverlayDirectories.length == 0) {
+        if (resourceOverlayDirectories == null || resourceOverlayDirectories.length == 0)
+        {
             overlayDirectories = new File[]{resourceOverlayDirectory};
-        } else {
+        }
+        else
+        {
             overlayDirectories = resourceOverlayDirectories;
         }
 
 
-        if (!combinedRes.exists()) {
-            if (!combinedRes.mkdirs()) {
+        if (!combinedRes.exists())
+        {
+            if (!combinedRes.mkdirs())
+            {
                 throw new MojoExecutionException("Could not create directory for combined resources at " + combinedRes.getAbsolutePath());
             }
         }
-        if (extractedDependenciesRes.exists()) {
-            try {
+        if (extractedDependenciesRes.exists())
+        {
+            try
+            {
                 getLog().info("Copying dependency resource files to combined resource directory.");
                 org.apache.commons.io.FileUtils.copyDirectory(extractedDependenciesRes, combinedRes);
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
                 throw new MojoExecutionException("", e);
             }
         }
-        if (resourceDirectory.exists()) {
-            try {
+        if (resourceDirectory.exists())
+        {
+            try
+            {
                 getLog().info("Copying local resource files to combined resource directory.");
                 org.apache.commons.io.FileUtils.copyDirectory(resourceDirectory, combinedRes);
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
                 throw new MojoExecutionException("", e);
             }
         }
@@ -301,21 +351,26 @@ public class ApkMojo extends AbstractAndroidMojo {
         commands.add("-f");
         commands.add("-M");
         commands.add(androidManifestFile.getAbsolutePath());
-        for (File resOverlayDir : overlayDirectories) {
-            if (resOverlayDir != null && resOverlayDir.exists()) {
+        for (File resOverlayDir : overlayDirectories)
+        {
+            if (resOverlayDir != null && resOverlayDir.exists())
+            {
                 commands.add("-S");
                 commands.add(resOverlayDir.getAbsolutePath());
             }
         }
-        if (combinedRes.exists()) {
+        if (combinedRes.exists())
+        {
             commands.add("-S");
             commands.add(combinedRes.getAbsolutePath());
         }
-        if (assetsDirectory.exists()) {
+        if (assetsDirectory.exists())
+        {
             commands.add("-A");
             commands.add(assetsDirectory.getAbsolutePath());
         }
-        if (extractedDependenciesAssets.exists()) {
+        if (extractedDependenciesAssets.exists())
+        {
             commands.add("-A");
             commands.add(extractedDependenciesAssets.getAbsolutePath());
         }
@@ -323,23 +378,31 @@ public class ApkMojo extends AbstractAndroidMojo {
         commands.add(androidJar.getAbsolutePath());
         commands.add("-F");
         commands.add(outputFile.getAbsolutePath());
-        if (StringUtils.isNotBlank(configurations)) {
+        if (StringUtils.isNotBlank(configurations))
+        {
             commands.add("-c");
             commands.add(configurations);
         }
         getLog().info(getAndroidSdk().getPathForTool("aapt") + " " + commands.toString());
-        try {
+        try
+        {
             executor.executeCommand(getAndroidSdk().getPathForTool("aapt"), commands, project.getBasedir(), false);
-        } catch (ExecutionException e) {
+        }
+        catch (ExecutionException e)
+        {
             throw new MojoExecutionException("", e);
         }
     }
 
 
-    protected AndroidSigner getAndroidSigner() {
-        if (sign == null) {
+    protected AndroidSigner getAndroidSigner()
+    {
+        if (sign == null)
+        {
             return new AndroidSigner(signDebug);
-        } else {
+        }
+        else
+        {
             return new AndroidSigner(sign.getDebug());
         }
     }
