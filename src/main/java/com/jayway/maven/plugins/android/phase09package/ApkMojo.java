@@ -20,12 +20,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -121,9 +115,6 @@ public class ApkMojo extends AbstractAndroidMojo {
      */
     private String nativeLibrariesDependenciesHardwareArchitectureOverride;
 
-
-    private Class apkBuilderClass;
-
     private static final Pattern PATTERN_JAR_EXT = Pattern.compile("^.+\\.jar$", 2);
 
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -132,12 +123,7 @@ public class ApkMojo extends AbstractAndroidMojo {
             return;
         }
 
-        initializeAPKBuilder();
-
         generateIntermediateAp_();
-
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
 
         // Initialize apk build configuration
         File outputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() +
@@ -156,6 +142,45 @@ public class ApkMojo extends AbstractAndroidMojo {
             signed = false;
         }
 
+        boolean useInternalAPKBuilder = true;
+        try {
+            initializeAPKBuilder();
+            // Ok...
+            // So we can try to use the internal ApkBuilder
+        } catch (MojoExecutionException e) {
+            // Not supported platform try to old way.
+            useInternalAPKBuilder = false;
+        }
+
+        if (useInternalAPKBuilder) {
+            doAPKWithAPKBuilder(outputFile, dexFile, zipArchive, sourceFolders, jarFiles,
+                nativeFolders, verbose, signed, debug);
+        } else {
+            doAPKWithCommand(outputFile, dexFile, zipArchive, sourceFolders, jarFiles,
+                nativeFolders, signed);
+        }
+
+        // Set the generated .apk file as the main artifact (because the pom states <packaging>apk</packaging>)
+        project.getArtifact().setFile(outputFile);
+    }
+
+    /**
+     * Creates the APK file using the internal APKBuilder.
+     * @param outputFile the output file
+     * @param dexFile the dex file
+     * @param zipArchive the classes folder
+     * @param sourceFolders the resources
+     * @param jarFiles the embedded java files
+     * @param nativeFolders the native folders
+     * @param verbose enables the verbose mode
+     * @param signed enables the signature of the APK using the debug key
+     * @param debug enables the debug mode
+     * @throws MojoExecutionException if the APK cannot be created.
+     */
+    private void doAPKWithAPKBuilder(File outputFile, File dexFile, File zipArchive,
+            ArrayList<File> sourceFolders, ArrayList<File> jarFiles,
+            ArrayList<File> nativeFolders, boolean verbose, boolean signed,
+            boolean debug) throws MojoExecutionException {
         sourceFolders.add(new File(project.getBuild().getDirectory(), "classes"));
 
         // Process the native libraries, looking both in the current build directory as well as
@@ -197,10 +222,60 @@ public class ApkMojo extends AbstractAndroidMojo {
         }
 
         builder.sealApk();
-
-        // Set the generated .apk file as the main artifact (because the pom states <packaging>apk</packaging>)
-        project.getArtifact().setFile(outputFile);
     }
+
+    /**
+     * Creates the APK file using the command line.
+     * @param outputFile the output file
+     * @param dexFile the dex file
+     * @param zipArchive the classes folder
+     * @param sourceFolders the resources
+     * @param jarFiles the embedded java files
+     * @param nativeFolders the native folders
+     * @param signed enables the signature of the APK using the debug key
+     * @throws MojoExecutionException if the APK cannot be created.
+     */
+    private void doAPKWithCommand(File outputFile, File dexFile, File zipArchive,
+            ArrayList<File> sourceFolders, ArrayList<File> jarFiles,
+            ArrayList<File> nativeFolders, boolean signed) throws MojoExecutionException {
+        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        executor.setLogger(this.getLog());
+
+        List<String> commands = new ArrayList<String>();
+        commands.add(outputFile.getAbsolutePath());
+
+        if (!getAndroidSigner().isSignWithDebugKeyStore()) {
+            commands.add("-u");
+        }
+
+        commands.add("-z");
+        commands.add(new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_").getAbsolutePath());
+        commands.add("-f");
+        commands.add(new File(project.getBuild().getDirectory(), "classes.dex").getAbsolutePath());
+        commands.add("-rf");
+        commands.add(new File(project.getBuild().getDirectory(), "classes").getAbsolutePath());
+
+        if (nativeFolders != null  && ! nativeFolders.isEmpty()) {
+            for (File lib : nativeFolders) {
+                commands.add("-nf");
+                commands.add(lib.getAbsolutePath());
+            }
+        }
+
+        for (Artifact artifact : getRelevantCompileArtifacts()) {
+            commands.add("-rj");
+            commands.add(artifact.getFile().getAbsolutePath());
+        }
+
+
+        getLog().info(getAndroidSdk().getPathForTool("apkbuilder") + " " + commands.toString());
+        try {
+            executor.executeCommand(getAndroidSdk().getPathForTool("apkbuilder"), commands, project.getBasedir(), false);
+        } catch (ExecutionException e) {
+            throw new MojoExecutionException("", e);
+        }
+    }
+
 
     private void initializeAPKBuilder() throws MojoExecutionException {
         File file = getAndroidSdk().getSDKLibJar();
