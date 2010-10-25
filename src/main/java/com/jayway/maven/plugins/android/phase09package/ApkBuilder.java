@@ -75,6 +75,8 @@ public class ApkBuilder {
                     .loadClass("com.android.sdklib.build.ApkBuilder");
         } catch (MalformedURLException e) {
             // This one cannot happen.
+            throw new RuntimeException("Cannot create a correct URL from file "
+                    + sdkLibs.getAbsolutePath());
         } catch (ClassNotFoundException e) {
             log.error(e);
             throw new MojoExecutionException(
