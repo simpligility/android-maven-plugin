@@ -55,6 +55,7 @@ public class ApkMojo extends AbstractAndroidMojo {
      * <ul>
      * <li><code>true</code> = sign with the debug keystore.
      * <li><code>false</code> = don't sign with the debug keystore.
+     * <li><code>both</code> = create a signed as well as an unsigned apk.
      * <li><code>auto</code> (default) = sign with debug keystore, unless another keystore is defined. (Signing with
      * other keystores is not yet implemented. See
      * <a href="http://code.google.com/p/maven-android-plugin/issues/detail?id=2">Issue 2</a>.)
@@ -116,16 +117,39 @@ public class ApkMojo extends AbstractAndroidMojo {
 
         generateIntermediateAp_();
 
+        final File outputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() +
+                ANDROID_PACKAGE_EXTENSTION);
+        final boolean signWithDebugKeyStore = getAndroidSigner().isSignWithDebugKeyStore();
+        createApkFile(outputFile, signWithDebugKeyStore);
+
+        if (getAndroidSigner().shouldCreateBothSignedAndUnsignedApk()) {
+            final File unsignedOutputFile = new File(project.getBuild().getDirectory(), project.getBuild()
+                    .getFinalName() + "-unsigned" + ANDROID_PACKAGE_EXTENSTION);
+            getLog().info("Creating unsigned apk file.");
+            createApkFile(unsignedOutputFile, false);
+        }
+
+        // Set the generated .apk file as the main artifact (because the pom states <packaging>apk</packaging>)
+        project.getArtifact().setFile(outputFile);
+    }
+
+    /**
+     * Creates a signed or unsigned apk.
+     * 
+     * @param outputFile
+     *            the apk file
+     * @param signWithDebugKeyStore
+     *            should the apk be signed?
+     * @throws MojoExecutionException
+     */
+    void createApkFile(File outputFile, boolean signWithDebugKeyStore) throws MojoExecutionException {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
-
-        File outputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() +
-                ANDROID_PACKAGE_EXTENSTION);
 
         List<String> commands = new ArrayList<String>();
         commands.add(outputFile.getAbsolutePath());
 
-        if (!getAndroidSigner().isSignWithDebugKeyStore()) {
+        if (!signWithDebugKeyStore) {
             commands.add("-u");
         }
 
@@ -152,9 +176,6 @@ public class ApkMojo extends AbstractAndroidMojo {
         } catch (ExecutionException e) {
             throw new MojoExecutionException("", e);
         }
-
-        // Set the generated .apk file as the main artifact (because the pom states <packaging>apk</packaging>)
-        project.getArtifact().setFile(outputFile);
     }
 
     private void processNativeLibraries(final List<String> commands) throws MojoExecutionException
