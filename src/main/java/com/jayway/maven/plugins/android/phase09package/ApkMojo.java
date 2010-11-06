@@ -59,7 +59,7 @@ public class ApkMojo extends AbstractAndroidMojo {
      *     &lt;debug&gt;auto&lt;/debug&gt;
      * &lt;/sign&gt;
      * </pre>
-     * <p>Valid values for <code>&lt;debug&gt;</code>are:
+     * <p>Valid values for <code>&lt;debug&gt;</code> are:
      * <ul>
      * <li><code>true</code> = sign with the debug keystore.
      * <li><code>false</code> = don't sign with the debug keystore.
