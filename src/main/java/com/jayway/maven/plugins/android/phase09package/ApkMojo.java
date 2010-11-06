@@ -16,11 +16,21 @@
  */
 package com.jayway.maven.plugins.android.phase09package;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.AndroidSigner;
-import com.jayway.maven.plugins.android.CommandExecutor;
-import com.jayway.maven.plugins.android.ExecutionException;
-import com.jayway.maven.plugins.android.Sign;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -28,8 +38,11 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.dependency.utils.resolvers.DefaultArtifactsResolver;
 
-import java.io.*;
-import java.util.*;
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.AndroidSigner;
+import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.Sign;
 
 /**
  * Creates the apk file. By default signs it with debug keystore.<br/>
@@ -108,56 +121,92 @@ public class ApkMojo extends AbstractAndroidMojo {
      */
     private String nativeLibrariesDependenciesHardwareArchitectureOverride;
 
+    private Class apkBuilderClass;
+
+    private static final Pattern PATTERN_JAR_EXT = Pattern.compile("^.+\\.jar$", 2);
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         // Make an early exit if we're not supposed to generate the APK
         if (!generateApk) {
             return;
         }
 
+        initializeAPKBuilder();
+
         generateIntermediateAp_();
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
+        // Initialize apk build configuration
         File outputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() +
                 ANDROID_PACKAGE_EXTENSTION);
+        File dexFile = new File(project.getBuild().getDirectory(), "classes.dex");
+        File zipArchive = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_");
+        ArrayList<File> sourceFolders = new ArrayList<File>();
+        ArrayList<File> jarFiles = new ArrayList<File>();
+        ArrayList<File> nativeFolders = new ArrayList<File>();
 
-        List<String> commands = new ArrayList<String>();
-        commands.add(outputFile.getAbsolutePath());
+        boolean verbose = false;
+        boolean signed = true;
+        boolean debug = false;
 
         if (!getAndroidSigner().isSignWithDebugKeyStore()) {
-            commands.add("-u");
+            signed = false;
         }
 
-        commands.add("-z");
-        commands.add(new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_").getAbsolutePath());
-        commands.add("-f");
-        commands.add(new File(project.getBuild().getDirectory(), "classes.dex").getAbsolutePath());
-        commands.add("-rf");
-        commands.add(new File(project.getBuild().getDirectory(), "classes").getAbsolutePath());
+        sourceFolders.add(new File(project.getBuild().getDirectory(), "classes"));
 
         // Process the native libraries, looking both in the current build directory as well as
         // at the dependencies declared in the pom.  Currently, all .so files are automatically included
-        processNativeLibraries(commands);
+        processNativeLibraries(nativeFolders);
 
         for (Artifact artifact : getRelevantCompileArtifacts()) {
-            commands.add("-rj");
-            commands.add(artifact.getFile().getAbsolutePath());
+            jarFiles.add(artifact.getFile());
         }
 
+        ApkBuilder builder = new ApkBuilder(outputFile, zipArchive, dexFile, signed,  (verbose) ? System.out : null);
 
-        getLog().info(getAndroidSdk().getPathForTool("apkbuilder") + " " + commands.toString());
-        try {
-            executor.executeCommand(getAndroidSdk().getPathForTool("apkbuilder"), commands, project.getBasedir(), false);
-        } catch (ExecutionException e) {
-            throw new MojoExecutionException("", e);
+        if (debug) {
+            builder.setDebugMode(debug);
         }
+
+        for (File sourceFolder : sourceFolders) {
+            builder.addSourceFolder(sourceFolder);
+        }
+
+        for (File jarFile : jarFiles) {
+            if (jarFile.isDirectory()) {
+                String[] filenames = jarFile.list(new FilenameFilter() {
+                    public boolean accept(File dir, String name) {
+                        return PATTERN_JAR_EXT.matcher(name).matches();
+                    }
+                });
+
+                for (String filename : filenames) {
+                    builder.addResourcesFromJar(new File(jarFile, filename));
+                }
+            } else {
+                builder.addResourcesFromJar(jarFile);
+            }
+        }
+
+        for (File nativeFolder : nativeFolders) {
+            builder.addNativeLibraries(nativeFolder, null);
+        }
+
+        builder.sealApk();
 
         // Set the generated .apk file as the main artifact (because the pom states <packaging>apk</packaging>)
         project.getArtifact().setFile(outputFile);
     }
 
-    private void processNativeLibraries(final List<String> commands) throws MojoExecutionException
+    private void initializeAPKBuilder() throws MojoExecutionException {
+        File file = getAndroidSdk().getSDKLibJar();
+        ApkBuilder.initialize(getLog(), file);
+    }
+
+    private void processNativeLibraries(final List<File> natives) throws MojoExecutionException
     {
         final Set<Artifact> artifacts = getNativeDependenciesArtifacts();
 
@@ -168,8 +217,7 @@ public class ApkMojo extends AbstractAndroidMojo {
             getLog().debug("No native library dependencies detected, will point directly to " + nativeLibrariesDirectory);
 
             // Point directly to the directory in this case - no need to copy files around
-            commands.add("-nf");
-            commands.add(nativeLibrariesDirectory.getAbsolutePath());
+            natives.add(nativeLibrariesDirectory);
         }
         else if (!artifacts.isEmpty() || hasValidNativeLibrariesDirectory)
         {
@@ -181,9 +229,7 @@ public class ApkMojo extends AbstractAndroidMojo {
             destinationDirectory.mkdirs();
 
              // Point directly to the directory
-            commands.add("-nf");
-            commands.add(destinationDirectory.getAbsolutePath());
-
+            natives.add(destinationDirectory);
 
             // If we have a valid native libs, copy those files - these already come in the structure required
             if (hasValidNativeLibrariesDirectory)
