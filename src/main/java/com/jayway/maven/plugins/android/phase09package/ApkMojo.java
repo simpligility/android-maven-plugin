@@ -132,14 +132,16 @@ public class ApkMojo extends AbstractAndroidMojo {
                 ANDROID_PACKAGE_EXTENSTION);
         final boolean signWithDebugKeyStore = getAndroidSigner().isSignWithDebugKeyStore();
 
-        createApkFile(outputFile, signWithDebugKeyStore);
-
         if (getAndroidSigner().shouldCreateBothSignedAndUnsignedApk()) {
+            getLog().info("Creating debug key signed apk file " + outputFile);
+            createApkFile(outputFile, true);
             final File unsignedOutputFile = new File(project.getBuild().getDirectory(), project.getBuild()
                     .getFinalName() + "-unsigned" + ANDROID_PACKAGE_EXTENSTION);
-            getLog().info("Creating unsigned apk file.");
+            getLog().info("Creating additional unsigned apk file " + unsignedOutputFile);
             createApkFile(unsignedOutputFile, false);
             projectHelper.attachArtifact(project, unsignedOutputFile, "unsigned");
+        } else {
+            createApkFile(outputFile, signWithDebugKeyStore);
         }
 
 
@@ -183,13 +185,13 @@ public class ApkMojo extends AbstractAndroidMojo {
      * @param jarFiles the embedded java files
      * @param nativeFolders the native folders
      * @param verbose enables the verbose mode
-     * @param signed enables the signature of the APK using the debug key
+     * @param signWithDebugKeyStore enables the signature of the APK using the debug key
      * @param debug enables the debug mode
      * @throws MojoExecutionException if the APK cannot be created.
      */
     private void doAPKWithAPKBuilder(File outputFile, File dexFile, File zipArchive,
             ArrayList<File> sourceFolders, ArrayList<File> jarFiles,
-            ArrayList<File> nativeFolders, boolean verbose, boolean signed,
+            ArrayList<File> nativeFolders, boolean verbose, boolean signWithDebugKeyStore,
             boolean debug) throws MojoExecutionException {
         sourceFolders.add(new File(project.getBuild().getDirectory(), "classes"));
 
@@ -201,7 +203,7 @@ public class ApkMojo extends AbstractAndroidMojo {
             jarFiles.add(artifact.getFile());
         }
 
-        ApkBuilder builder = new ApkBuilder(outputFile, zipArchive, dexFile, signed,  (verbose) ? System.out : null);
+        ApkBuilder builder = new ApkBuilder(outputFile, zipArchive, dexFile, signWithDebugKeyStore,  (verbose) ? System.out : null);
 
         if (debug) {
             builder.setDebugMode(debug);
@@ -242,19 +244,19 @@ public class ApkMojo extends AbstractAndroidMojo {
      * @param sourceFolders the resources
      * @param jarFiles the embedded java files
      * @param nativeFolders the native folders
-     * @param signed enables the signature of the APK using the debug key
+     * @param signWithDebugKeyStore enables the signature of the APK using the debug key
      * @throws MojoExecutionException if the APK cannot be created.
      */
     private void doAPKWithCommand(File outputFile, File dexFile, File zipArchive,
             ArrayList<File> sourceFolders, ArrayList<File> jarFiles,
-            ArrayList<File> nativeFolders, boolean signed) throws MojoExecutionException {
+            ArrayList<File> nativeFolders, boolean signWithDebugKeyStore) throws MojoExecutionException {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
         List<String> commands = new ArrayList<String>();
         commands.add(outputFile.getAbsolutePath());
 
-        if (! signed) {
+        if (! signWithDebugKeyStore) {
             commands.add("-u");
         }
 
@@ -343,6 +345,7 @@ public class ApkMojo extends AbstractAndroidMojo {
 
                 final DefaultArtifactsResolver artifactsResolver = new DefaultArtifactsResolver(this.artifactResolver, this.localRepository, this.remoteRepositories, true);
 
+                @SuppressWarnings("unchecked")
                 final Set<Artifact> resolvedArtifacts = artifactsResolver.resolve(artifacts, getLog());
 
                 for (Artifact resolvedArtifact : resolvedArtifacts)
@@ -392,6 +395,7 @@ public class ApkMojo extends AbstractAndroidMojo {
     private Set<Artifact> getNativeDependenciesArtifacts()
     {
         Set<Artifact> filteredArtifacts = new HashSet<Artifact>();
+        @SuppressWarnings("unchecked")
         final Set<Artifact> allArtifacts = project.getDependencyArtifacts();
 
         for (Artifact artifact : allArtifacts)
