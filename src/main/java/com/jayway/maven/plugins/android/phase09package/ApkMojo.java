@@ -20,12 +20,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -122,8 +116,6 @@ public class ApkMojo extends AbstractAndroidMojo {
      */
     private String nativeLibrariesDependenciesHardwareArchitectureOverride;
 
-    private Class apkBuilderClass;
-
     private static final Pattern PATTERN_JAR_EXT = Pattern.compile("^.+\\.jar$", 2);
 
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -139,13 +131,16 @@ public class ApkMojo extends AbstractAndroidMojo {
         final File outputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() +
                 ANDROID_PACKAGE_EXTENSTION);
         final boolean signWithDebugKeyStore = getAndroidSigner().isSignWithDebugKeyStore();
-        createApkFile(outputFile, signWithDebugKeyStore);
 
         if (getAndroidSigner().shouldCreateBothSignedAndUnsignedApk()) {
+            getLog().info("Creating debug key signed apk file " + outputFile);
+            createApkFile(outputFile, true);
             final File unsignedOutputFile = new File(project.getBuild().getDirectory(), project.getBuild()
                     .getFinalName() + "-unsigned" + ANDROID_PACKAGE_EXTENSTION);
-            getLog().info("Creating unsigned apk file.");
+            getLog().info("Creating additional unsigned apk file " + unsignedOutputFile);
             createApkFile(unsignedOutputFile, false);
+        } else {
+            createApkFile(outputFile, signWithDebugKeyStore);
         }
 
         // Set the generated .apk file as the main artifact (because the pom states <packaging>apk</packaging>)
@@ -172,7 +167,6 @@ public class ApkMojo extends AbstractAndroidMojo {
         ArrayList<File> nativeFolders = new ArrayList<File>();
 
         boolean verbose = false;
-        boolean signed = signWithDebugKeyStore;
         boolean debug = false;
 
         List<String> commands = new ArrayList<String>();
@@ -188,7 +182,7 @@ public class ApkMojo extends AbstractAndroidMojo {
             jarFiles.add(artifact.getFile());
         }
 
-        ApkBuilder builder = new ApkBuilder(outputFile, zipArchive, dexFile, signed,  (verbose) ? System.out : null);
+        ApkBuilder builder = new ApkBuilder(outputFile, zipArchive, dexFile, signWithDebugKeyStore,  (verbose) ? System.out : null);
 
         if (debug) {
             builder.setDebugMode(debug);
@@ -276,6 +270,7 @@ public class ApkMojo extends AbstractAndroidMojo {
 
                 final DefaultArtifactsResolver artifactsResolver = new DefaultArtifactsResolver(this.artifactResolver, this.localRepository, this.remoteRepositories, true);
 
+                @SuppressWarnings("unchecked")
                 final Set<Artifact> resolvedArtifacts = artifactsResolver.resolve(artifacts, getLog());
 
                 for (Artifact resolvedArtifact : resolvedArtifacts)
@@ -325,6 +320,7 @@ public class ApkMojo extends AbstractAndroidMojo {
     private Set<Artifact> getNativeDependenciesArtifacts()
     {
         Set<Artifact> filteredArtifacts = new HashSet<Artifact>();
+        @SuppressWarnings("unchecked")
         final Set<Artifact> allArtifacts = project.getDependencyArtifacts();
 
         for (Artifact artifact : allArtifacts)
