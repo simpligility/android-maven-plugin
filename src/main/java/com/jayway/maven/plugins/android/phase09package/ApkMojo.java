@@ -139,6 +139,7 @@ public class ApkMojo extends AbstractAndroidMojo {
                     .getFinalName() + "-unsigned" + ANDROID_PACKAGE_EXTENSTION);
             getLog().info("Creating additional unsigned apk file " + unsignedOutputFile);
             createApkFile(unsignedOutputFile, false);
+            projectHelper.attachArtifact(project, unsignedOutputFile, "unsigned");
         } else {
             createApkFile(outputFile, signWithDebugKeyStore);
         }
