@@ -16,20 +16,26 @@
  */
 package com.jayway.maven.plugins.android.phase09package;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.AndroidSigner;
-import com.jayway.maven.plugins.android.CommandExecutor;
-import com.jayway.maven.plugins.android.ExecutionException;
-import com.jayway.maven.plugins.android.Sign;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.dependency.utils.resolvers.DefaultArtifactsResolver;
+import org.codehaus.plexus.util.AbstractScanner;
 
-import java.io.*;
-import java.util.*;
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.AndroidSigner;
+import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.Sign;
 
 /**
  * Creates the apk file. By default signs it with debug keystore.<br/>
@@ -314,6 +320,65 @@ public class ApkMojo extends AbstractAndroidMojo {
             }
         }
 
+        // Must combine assets.
+        // The aapt tools does not support several -A arguments.
+        // We copy the assets from extracted dependencies first, and then the local assets.
+        // This allows redefining the assets in the current project
+        if (extractedDependenciesAssets.exists()) {
+            try {
+                getLog().info("Copying dependency assets files to combined assets directory.");
+                org.apache.commons.io.FileUtils.copyDirectory(extractedDependenciesAssets, combinedAssets, new FileFilter() {
+                    /**
+                     * Excludes files matching one of the common file to exclude.
+                     * The default excludes pattern are the ones from
+                     * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
+                     * @see java.io.FileFilter#accept(java.io.File)
+                     */
+                    public boolean accept(File file) {
+                        for (String pattern : AbstractScanner.DEFAULTEXCLUDES) {
+                            if (AbstractScanner.match(pattern, file.getAbsolutePath())) {
+                                getLog().debug("Excluding " + file.getName() + " from resource copy : matching " + pattern);
+                                return false;
+                            }
+                        }
+
+                        return true;
+
+                    }
+                });
+            } catch (IOException e) {
+                throw new MojoExecutionException("", e);
+            }
+        }
+
+        if (assetsDirectory.exists()) {
+            try {
+                getLog().info("Copying local assets files to combined assets directory.");
+                org.apache.commons.io.FileUtils.copyDirectory(assetsDirectory, combinedAssets, new FileFilter() {
+                    /**
+                     * Excludes files matching one of the common file to exclude.
+                     * The default excludes pattern are the ones from
+                     * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
+                     * @see java.io.FileFilter#accept(java.io.File)
+                     */
+                    public boolean accept(File file) {
+                        for (String pattern : AbstractScanner.DEFAULTEXCLUDES) {
+                            if (AbstractScanner.match(pattern, file.getAbsolutePath())) {
+                                getLog().debug("Excluding " + file.getName() + " from resource copy : matching " + pattern);
+                                return false;
+                            }
+                        }
+
+                        return true;
+
+                    }
+                });
+            } catch (IOException e) {
+                throw new MojoExecutionException("", e);
+            }
+        }
+
+
         File androidJar = getAndroidSdk().getAndroidJar();
         File outputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_");
 
@@ -332,14 +397,14 @@ public class ApkMojo extends AbstractAndroidMojo {
             commands.add("-S");
             commands.add(combinedRes.getAbsolutePath());
         }
-        if (assetsDirectory.exists()) {
+
+        // Use the combined assets.
+        // Indeed, aapt does not support several -A arguments.
+        if (combinedAssets.exists()) {
             commands.add("-A");
-            commands.add(assetsDirectory.getAbsolutePath());
+            commands.add(combinedAssets.getAbsolutePath());
         }
-        if (extractedDependenciesAssets.exists()) {
-            commands.add("-A");
-            commands.add(extractedDependenciesAssets.getAbsolutePath());
-        }
+
         commands.add("-I");
         commands.add(androidJar.getAbsolutePath());
         commands.add("-F");
