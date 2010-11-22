@@ -57,7 +57,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected static final String ANDROID_LIBRARY_PACKAGE_EXTENSTION = ".apklib";
     
     /**
-     * The different artifact types
+     * The different artifact types 
      */
 	protected static final String APKLIBRARY = "apklib";
 
