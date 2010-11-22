@@ -33,8 +33,9 @@ import java.util.*;
 
 /**
  * Creates the apk file. By default signs it with debug keystore.<br/>
- * Change that by setting configuration parameter <code>&lt;sign&gt;&lt;debug&gt;false&lt;/debug&gt;&lt;/sign&gt;</code>.
- *
+ * Change that by setting configuration parameter
+ * <code>&lt;sign&gt;&lt;debug&gt;false&lt;/debug&gt;&lt;/sign&gt;</code>.
+ * 
  * @author hugo.josefson@jayway.com
  * @goal apk
  * @phase package
@@ -42,244 +43,283 @@ import java.util.*;
  */
 public class ApkMojo extends AbstractAndroidMojo {
 
+	/**
+	 * <p>
+	 * How to sign the apk.
+	 * </p>
+	 * <p>
+	 * Looks like this:
+	 * </p>
+	 * 
+	 * <pre>
+	 * &lt;sign&gt;
+	 *     &lt;debug&gt;auto&lt;/debug&gt;
+	 * &lt;/sign&gt;
+	 * </pre>
+	 * <p>
+	 * Valid values for <code>&lt;debug&gt;</code>are:
+	 * <ul>
+	 * <li><code>true</code> = sign with the debug keystore.
+	 * <li><code>false</code> = don't sign with the debug keystore.
+	 * <li><code>auto</code> (default) = sign with debug keystore, unless
+	 * another keystore is defined. (Signing with other keystores is not yet
+	 * implemented. See <a
+	 * href="http://code.google.com/p/maven-android-plugin/issues/detail?id=2"
+	 * >Issue 2</a>.)
+	 * </ul>
+	 * </p>
+	 * <p>
+	 * Can also be configured from command-line with parameter
+	 * <code>-Dandroid.sign.debug</code>.
+	 * </p>
+	 * 
+	 * @parameter
+	 */
+	private Sign sign;
 
-    /**
-     * <p>How to sign the apk.</p>
-     * <p>Looks like this:</p>
-     * <pre>
-     * &lt;sign&gt;
-     *     &lt;debug&gt;auto&lt;/debug&gt;
-     * &lt;/sign&gt;
-     * </pre>
-     * <p>Valid values for <code>&lt;debug&gt;</code>are:
-     * <ul>
-     * <li><code>true</code> = sign with the debug keystore.
-     * <li><code>false</code> = don't sign with the debug keystore.
-     * <li><code>auto</code> (default) = sign with debug keystore, unless another keystore is defined. (Signing with
-     * other keystores is not yet implemented. See
-     * <a href="http://code.google.com/p/maven-android-plugin/issues/detail?id=2">Issue 2</a>.)
-     * </ul></p>
-     * <p>Can also be configured from command-line with parameter <code>-Dandroid.sign.debug</code>.</p>
-     *
-     * @parameter
-     */
-    private Sign sign;
+	/**
+	 * <p>
+	 * Parameter designed to pick up <code>-Dandroid.sign.debug</code> in case
+	 * there is no pom with a <code>&lt;sign&gt;</code> configuration tag.
+	 * </p>
+	 * <p>
+	 * Corresponds to {@link Sign#debug}.
+	 * </p>
+	 * 
+	 * @parameter expression="${android.sign.debug}" default-value="auto"
+	 * @readonly
+	 */
+	private String signDebug;
 
-    /**
-     * <p>Parameter designed to pick up <code>-Dandroid.sign.debug</code> in case there is no pom with a
-     * <code>&lt;sign&gt;</code> configuration tag.</p>
-     * <p>Corresponds to {@link Sign#debug}.</p>
-     *
-     * @parameter expression="${android.sign.debug}" default-value="auto"
-     * @readonly
-     */
-    private String signDebug;
+	/**
+	 * <p>
+	 * Root folder containing native libraries to include in the application
+	 * package.
+	 * </p>
+	 * 
+	 * @parameter expression="${android.nativeLibrariesDirectory}"
+	 *            default-value="${project.basedir}/libs"
+	 */
+	private File nativeLibrariesDirectory;
 
-    /**
-     * <p>Root folder containing native libraries to include in the application package.</p>
-     *
-     * @parameter expression="${android.nativeLibrariesDirectory}" default-value="${project.basedir}/libs"
-     */
-    private File nativeLibrariesDirectory;
+	/**
+	 * <p>
+	 * Temporary folder for collecting native libraries.
+	 * </p>
+	 * 
+	 * @parameter default-value="${project.build.directory}/libs"
+	 * @readonly
+	 */
+	private File nativeLibrariesOutputDirectory;
 
-     /**
-     * <p>Temporary folder for collecting native libraries.</p>
-     *
-     * @parameter default-value="${project.build.directory}/libs"
-     * @readonly
-     */
-    private File nativeLibrariesOutputDirectory;
+	/**
+	 * <p>
+	 * Default hardware architecture for native library dependencies (with
+	 * {@code &lt;type>so&lt;/type>}).
+	 * </p>
+	 * <p>
+	 * This value is used for dependencies without classifier, if
+	 * {@code nativeLibrariesDependenciesHardwareArchitectureOverride} is not
+	 * set.
+	 * </p>
+	 * <p>
+	 * Valid values currently include {@code armeabi} and {@code armeabi-v7a}.
+	 * </p>
+	 * 
+	 * @parameter expression=
+	 *            "${android.nativeLibrariesDependenciesHardwareArchitectureDefault}"
+	 *            default-value="armeabi"
+	 */
+	private String nativeLibrariesDependenciesHardwareArchitectureDefault;
 
-    /**
-     * <p>Default hardware architecture for native library dependencies (with {@code &lt;type>so&lt;/type>}).</p>
-     * <p>This value is used for dependencies without classifier, if {@code nativeLibrariesDependenciesHardwareArchitectureOverride} is not set.</p>
-     * <p>Valid values currently include {@code armeabi} and {@code armeabi-v7a}.</p>
-     *
-     * @parameter expression="${android.nativeLibrariesDependenciesHardwareArchitectureDefault}" default-value="armeabi"
-     */
-    private String nativeLibrariesDependenciesHardwareArchitectureDefault;
+	/**
+	 * <p>
+	 * Override hardware architecture for native library dependencies (with
+	 * {@code &lt;type>so&lt;/type>}).
+	 * </p>
+	 * <p>
+	 * This overrides any classifier on native library dependencies, and any
+	 * {@code nativeLibrariesDependenciesHardwareArchitectureDefault}.
+	 * </p>
+	 * <p>
+	 * Valid values currently include {@code armeabi} and {@code armeabi-v7a}.
+	 * </p>
+	 * 
+	 * @parameter expression=
+	 *            "${android.nativeLibrariesDependenciesHardwareArchitectureOverride}"
+	 */
+	private String nativeLibrariesDependenciesHardwareArchitectureOverride;
 
-    /**
-     * <p>Override hardware architecture for native library dependencies (with {@code &lt;type>so&lt;/type>}).</p>
-     * <p>This overrides any classifier on native library dependencies, and any {@code nativeLibrariesDependenciesHardwareArchitectureDefault}.</p>
-     * <p>Valid values currently include {@code armeabi} and {@code armeabi-v7a}.</p>
-     *
-     * @parameter expression="${android.nativeLibrariesDependenciesHardwareArchitectureOverride}"
-     */
-    private String nativeLibrariesDependenciesHardwareArchitectureOverride;
+	public void execute() throws MojoExecutionException, MojoFailureException {
+		// Make an early exit if we're not supposed to generate the APK
+		if (!generateApk) {
+			return;
+		}
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        // Make an early exit if we're not supposed to generate the APK
-        if (!generateApk) {
-            return;
-        }
+		generateIntermediateAp_();
 
-        generateIntermediateAp_();
+		CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+		executor.setLogger(this.getLog());
 
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
+		File outputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName()
+				+ ANDROID_PACKAGE_EXTENSTION);
 
-        File outputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() +
-                ANDROID_PACKAGE_EXTENSTION);
+		List<String> commands = new ArrayList<String>();
+		commands.add(outputFile.getAbsolutePath());
 
-        List<String> commands = new ArrayList<String>();
-        commands.add(outputFile.getAbsolutePath());
+		if (!getAndroidSigner().isSignWithDebugKeyStore()) {
+			commands.add("-u");
+		}
 
-        if (!getAndroidSigner().isSignWithDebugKeyStore()) {
-            commands.add("-u");
-        }
+		commands.add("-z");
+		commands.add(new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_").getAbsolutePath());
+		commands.add("-f");
+		commands.add(new File(project.getBuild().getDirectory(), "classes.dex").getAbsolutePath());
+		commands.add("-rf");
+		commands.add(new File(project.getBuild().getDirectory(), "classes").getAbsolutePath());
 
-        commands.add("-z");
-        commands.add(new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_").getAbsolutePath());
-        commands.add("-f");
-        commands.add(new File(project.getBuild().getDirectory(), "classes.dex").getAbsolutePath());
-        commands.add("-rf");
-        commands.add(new File(project.getBuild().getDirectory(), "classes").getAbsolutePath());
+		// Process the native libraries, looking both in the current build
+		// directory as well as
+		// at the dependencies declared in the pom. Currently, all .so files are
+		// automatically included
+		processNativeLibraries(commands);
 
-        // Process the native libraries, looking both in the current build directory as well as
-        // at the dependencies declared in the pom.  Currently, all .so files are automatically included
-        processNativeLibraries(commands);
+		for (Artifact artifact : getRelevantCompileArtifacts()) {
+			commands.add("-rj");
+			commands.add(artifact.getFile().getAbsolutePath());
+		}
 
-        for (Artifact artifact : getRelevantCompileArtifacts()) {
-            commands.add("-rj");
-            commands.add(artifact.getFile().getAbsolutePath());
-        }
+		getLog().info(getAndroidSdk().getPathForTool("apkbuilder") + " " + commands.toString());
+		try {
+			executor.executeCommand(getAndroidSdk().getPathForTool("apkbuilder"), commands, project.getBasedir(), false);
+		} catch (ExecutionException e) {
+			throw new MojoExecutionException("", e);
+		}
 
+		// Set the generated .apk file as the main artifact (because the pom
+		// states <packaging>apk</packaging>)
+		project.getArtifact().setFile(outputFile);
+	}
 
-        getLog().info(getAndroidSdk().getPathForTool("apkbuilder") + " " + commands.toString());
-        try {
-            executor.executeCommand(getAndroidSdk().getPathForTool("apkbuilder"), commands, project.getBasedir(), false);
-        } catch (ExecutionException e) {
-            throw new MojoExecutionException("", e);
-        }
+	private void processNativeLibraries(final List<String> commands) throws MojoExecutionException {
+		final Set<Artifact> artifacts = getNativeDependenciesArtifacts();
 
-        // Set the generated .apk file as the main artifact (because the pom states <packaging>apk</packaging>)
-        project.getArtifact().setFile(outputFile);
-    }
+		final boolean hasValidNativeLibrariesDirectory = nativeLibrariesDirectory != null && nativeLibrariesDirectory.exists();
 
-    private void processNativeLibraries(final List<String> commands) throws MojoExecutionException
-    {
-        final Set<Artifact> artifacts = getNativeDependenciesArtifacts();
+		if (artifacts.isEmpty() && hasValidNativeLibrariesDirectory) {
+			getLog().debug("No native library dependencies detected, will point directly to " + nativeLibrariesDirectory);
 
-        final boolean hasValidNativeLibrariesDirectory = nativeLibrariesDirectory != null && nativeLibrariesDirectory.exists();
+			// Point directly to the directory in this case - no need to copy
+			// files around
+			commands.add("-nf");
+			commands.add(nativeLibrariesDirectory.getAbsolutePath());
+		} else if (!artifacts.isEmpty() || hasValidNativeLibrariesDirectory) {
+			// In this case, we may have both .so files in it's normal location
+			// as well as .so dependencies
 
-        if (artifacts.isEmpty() && hasValidNativeLibrariesDirectory)
-        {
-            getLog().debug("No native library dependencies detected, will point directly to " + nativeLibrariesDirectory);
+			// Create the ${project.build.outputDirectory}/libs
+			File destinationDirectory = new File(nativeLibrariesOutputDirectory.getAbsolutePath());
+			destinationDirectory.mkdirs();
 
-            // Point directly to the directory in this case - no need to copy files around
-            commands.add("-nf");
-            commands.add(nativeLibrariesDirectory.getAbsolutePath());
-        }
-        else if (!artifacts.isEmpty() || hasValidNativeLibrariesDirectory)
-        {
-            // In this case, we may have both .so files in it's normal location
-            // as well as .so dependencies
+			// Point directly to the directory
+			commands.add("-nf");
+			commands.add(destinationDirectory.getAbsolutePath());
 
-            // Create the ${project.build.outputDirectory}/libs
-            File destinationDirectory = new File(nativeLibrariesOutputDirectory.getAbsolutePath());
-            destinationDirectory.mkdirs();
+			// If we have a valid native libs, copy those files - these already
+			// come in the structure required
+			if (hasValidNativeLibrariesDirectory) {
+				getLog().debug("Copying existing native libraries from " + nativeLibrariesDirectory);
+				try {
+					org.apache.commons.io.FileUtils.copyDirectory(nativeLibrariesDirectory, destinationDirectory, new FileFilter() {
+						public boolean accept(final File pathname) {
+							return pathname.getName().endsWith(".so");
+						}
+					});
+				} catch (IOException e) {
+					throw new MojoExecutionException(e.getMessage(), e);
+				}
+			}
 
-             // Point directly to the directory
-            commands.add("-nf");
-            commands.add(destinationDirectory.getAbsolutePath());
+			if (!artifacts.isEmpty()) {
 
+				final DefaultArtifactsResolver artifactsResolver = new DefaultArtifactsResolver(this.artifactResolver,
+						this.localRepository, this.remoteRepositories, true);
 
-            // If we have a valid native libs, copy those files - these already come in the structure required
-            if (hasValidNativeLibrariesDirectory)
-            {
-                getLog().debug("Copying existing native libraries from " + nativeLibrariesDirectory);
-                try
-                {
-                    org.apache.commons.io.FileUtils.copyDirectory(nativeLibrariesDirectory,destinationDirectory, new FileFilter()
-                    {
-                        public boolean accept(final File pathname)
-                        {
-                            return pathname.getName().endsWith(".so");
-                        }
-                    });
-                }
-                catch (IOException e)
-                {
-                    throw new MojoExecutionException(e.getMessage(), e);
-                }
-            }
+				final Set<Artifact> resolvedArtifacts = artifactsResolver.resolve(artifacts, getLog());
 
-            if (!artifacts.isEmpty())
-            {
+				for (Artifact resolvedArtifact : resolvedArtifacts) {
+					final File artifactFile = resolvedArtifact.getFile();
+					try {
+						final String artifactId = resolvedArtifact.getArtifactId();
+						final String filename = artifactId.startsWith("lib") ? artifactId + ".so" : "lib" + artifactId + ".so";
 
-                final DefaultArtifactsResolver artifactsResolver = new DefaultArtifactsResolver(this.artifactResolver, this.localRepository, this.remoteRepositories, true);
+						final File finalDestinationDirectory = getFinalDestinationDirectoryFor(resolvedArtifact,
+								destinationDirectory);
+						final File file = new File(finalDestinationDirectory, filename);
+						getLog().debug(
+								"Copying native dependency " + artifactId + " (" + resolvedArtifact.getGroupId() + ") to " + file);
+						org.apache.commons.io.FileUtils.copyFile(artifactFile, file);
+					} catch (Exception e) {
+						throw new MojoExecutionException("Could not copy native dependency.", e);
+					}
+				}
+			}
+		}
+	}
 
-                final Set<Artifact> resolvedArtifacts = artifactsResolver.resolve(artifacts, getLog());
+	private File getFinalDestinationDirectoryFor(Artifact resolvedArtifact, File destinationDirectory) {
+		final String hardwareArchitecture = getHardwareArchitectureFor(resolvedArtifact);
 
-                for (Artifact resolvedArtifact : resolvedArtifacts)
-                {
-                    final File artifactFile = resolvedArtifact.getFile();
-                    try
-                    {
-                        final String artifactId = resolvedArtifact.getArtifactId();
-                        final String filename = artifactId.startsWith("lib") ? artifactId + ".so" : "lib" + artifactId + ".so";
+		File finalDestinationDirectory = new File(destinationDirectory, hardwareArchitecture + "/");
 
-                        final File finalDestinationDirectory = getFinalDestinationDirectoryFor(resolvedArtifact, destinationDirectory);
-                        final File file = new File(finalDestinationDirectory, filename);
-                        getLog().debug("Copying native dependency " + artifactId + " (" + resolvedArtifact.getGroupId() + ") to " + file );
-                        org.apache.commons.io.FileUtils.copyFile(artifactFile, file);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new MojoExecutionException("Could not copy native dependency.", e);
-                    }
-                }
-            }
-        }
-    }
+		finalDestinationDirectory.mkdirs();
+		return finalDestinationDirectory;
+	}
 
-    private File getFinalDestinationDirectoryFor(Artifact resolvedArtifact, File destinationDirectory) {
-        final String hardwareArchitecture = getHardwareArchitectureFor(resolvedArtifact);
+	private String getHardwareArchitectureFor(Artifact resolvedArtifact) {
+		if (StringUtils.isNotBlank(nativeLibrariesDependenciesHardwareArchitectureOverride)) {
+			return nativeLibrariesDependenciesHardwareArchitectureOverride;
+		}
 
-        File finalDestinationDirectory = new File(destinationDirectory, hardwareArchitecture + "/");
+		final String classifier = resolvedArtifact.getClassifier();
+		if (StringUtils.isNotBlank(classifier)) {
+			return classifier;
+		}
 
-        finalDestinationDirectory.mkdirs();
-        return finalDestinationDirectory;
-    }
+		return nativeLibrariesDependenciesHardwareArchitectureDefault;
+	}
 
-    private String getHardwareArchitectureFor(Artifact resolvedArtifact) {
-        if (StringUtils.isNotBlank(nativeLibrariesDependenciesHardwareArchitectureOverride)){
-            return nativeLibrariesDependenciesHardwareArchitectureOverride;
-        }
+	private Set<Artifact> getNativeDependenciesArtifacts() {
+		Set<Artifact> filteredArtifacts = new HashSet<Artifact>();
+		final Set<Artifact> allArtifacts = project.getDependencyArtifacts();
 
-        final String classifier = resolvedArtifact.getClassifier();
-        if (StringUtils.isNotBlank(classifier)) {
-            return classifier;
-        }
+		for (Artifact artifact : allArtifacts) {
+			if ("so".equals(artifact.getType())
+					&& (Artifact.SCOPE_COMPILE.equals(artifact.getScope()) || Artifact.SCOPE_RUNTIME.equals(artifact.getScope()))) {
+				filteredArtifacts.add(artifact);
+			}
+		}
 
-        return nativeLibrariesDependenciesHardwareArchitectureDefault;
-    }
+		return filteredArtifacts;
+	}
 
-    private Set<Artifact> getNativeDependenciesArtifacts()
-    {
-        Set<Artifact> filteredArtifacts = new HashSet<Artifact>();
-        final Set<Artifact> allArtifacts = project.getDependencyArtifacts();
-
-        for (Artifact artifact : allArtifacts)
-        {
-            if ("so".equals(artifact.getType()) && (Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) || Artifact.SCOPE_RUNTIME.equals( artifact.getScope() )))
-            {
-                filteredArtifacts.add(artifact);
-            }
-        }
-
-        return filteredArtifacts;
-    }
-
-
-
-    /**
-     * Generates an intermediate apk file (actually .ap_) containing the resources and assets.
-     *
-     * @throws MojoExecutionException
-     */
-    private void generateIntermediateAp_() throws MojoExecutionException {
+	/**
+	 * Generates an intermediate apk file (actually .ap_) containing the
+	 * resources and assets.
+	 * 
+	 * @throws MojoExecutionException
+	 */
+	private void generateIntermediateAp_() throws MojoExecutionException {
+		// 11-21-2010 (Nick Maiorana) To preserve the execution for the original
+		// mojo
+		// I will check to see if there are apklib dependencies. If there are
+		// we will make a call to a generateRForProjectWithApklibDependencies()
+		for (Artifact artifact : getRelevantDependencyArtifacts()) {
+			if (artifact.getType().equals(APKLIBRARY)) {
+				generateIntermediateAp_ForProjectWithApklibDependencies();
+				return;
+			}
+		}
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
@@ -354,14 +394,76 @@ public class ApkMojo extends AbstractAndroidMojo {
         } catch (ExecutionException e) {
             throw new MojoExecutionException("", e);
         }
-    }
+	}
 
+	private void generateIntermediateAp_ForProjectWithApklibDependencies() throws MojoExecutionException {
+		CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+		executor.setLogger(this.getLog());
+		File[] overlayDirectories;
 
-    protected AndroidSigner getAndroidSigner() {
-        if (sign == null) {
-            return new AndroidSigner(signDebug);
-        } else {
-            return new AndroidSigner(sign.getDebug());
-        }
-    }
+		if (resourceOverlayDirectories == null || resourceOverlayDirectories.length == 0) {
+			overlayDirectories = new File[] { resourceOverlayDirectory };
+		} else {
+			overlayDirectories = resourceOverlayDirectories;
+		}
+
+		File androidJar = getAndroidSdk().getAndroidJar();
+		File outputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_");
+
+		List<String> commands = new ArrayList<String>();
+		commands.add("package");
+		commands.add("-f");
+		commands.add("-M");
+		commands.add(androidManifestFile.getAbsolutePath());
+		for (File resOverlayDir : overlayDirectories) {
+			if (resOverlayDir != null && resOverlayDir.exists()) {
+				commands.add("-S");
+				commands.add(resOverlayDir.getAbsolutePath());
+			}
+		}
+		commands.add("-S");
+		commands.add(resourceDirectory.getAbsolutePath());
+		for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
+			if (artifact.getType().equals(APKLIBRARY)) {
+				commands.add("-S");
+				commands.add(getLibrarySourceDirectory(artifact) + "/res");
+			}
+		}
+		commands.add("--auto-add-overlay");
+		if (assetsDirectory.exists()) {
+			commands.add("-A");
+			commands.add(assetsDirectory.getAbsolutePath());
+		}
+		for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
+			if (artifact.getType().equals(APKLIBRARY)) {
+				File apklibAsssetsDirectory = new File(getLibrarySourceDirectory(artifact) + "/assets");
+				if (apklibAsssetsDirectory.exists()) {
+					commands.add("-A");
+					commands.add(apklibAsssetsDirectory.getAbsolutePath());
+				}
+			}
+		}
+		commands.add("-I");
+		commands.add(androidJar.getAbsolutePath());
+		commands.add("-F");
+		commands.add(outputFile.getAbsolutePath());
+		if (StringUtils.isNotBlank(configurations)) {
+			commands.add("-c");
+			commands.add(configurations);
+		}
+		getLog().info(getAndroidSdk().getPathForTool("aapt") + " " + commands.toString());
+		try {
+			executor.executeCommand(getAndroidSdk().getPathForTool("aapt"), commands, project.getBasedir(), false);
+		} catch (ExecutionException e) {
+			throw new MojoExecutionException("", e);
+		}
+	}
+
+	protected AndroidSigner getAndroidSigner() {
+		if (sign == null) {
+			return new AndroidSigner(signDebug);
+		} else {
+			return new AndroidSigner(sign.getDebug());
+		}
+	}
 }

@@ -50,6 +50,18 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * The file extension used for the android package file.
      */
     protected static final String ANDROID_PACKAGE_EXTENSTION = ".apk";
+    
+    /**
+     * The file extension used for android library artifacts.
+     */
+    protected static final String ANDROID_LIBRARY_PACKAGE_EXTENSTION = ".apklib";
+    
+    /**
+     * The different artifact types
+     */
+	protected static final String APKLIBRARY = "apklib";
+
+	protected static final String APKSOURCES = "apksources";
 
     /**
      * The maven project.
@@ -316,7 +328,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      */
     protected boolean attachSources;
 
-
     /**
      * Accessor for the local repository.
      *
@@ -347,6 +358,17 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      */
     protected Set<Artifact> getRelevantDependencyArtifacts() {
         final Set<Artifact> allArtifacts = (Set<Artifact>) project.getDependencyArtifacts();
+        final Set<Artifact> results = filterOutIrrelevantArtifacts(allArtifacts);
+        return results;
+    }
+
+    /**
+     * @return a {@code List} of all project dependencies. Never {@code null}. This excludes artifacts of the {@code
+     *         EXCLUDED_DEPENDENCY_SCOPES} scopes. And
+     *         This should maintain dependency order to comply with library project resource precedence.
+     */
+    protected Set<Artifact> getAllRelevantDependencyArtifacts() {
+        final Set<Artifact> allArtifacts = (Set<Artifact>) project.getArtifacts();
         final Set<Artifact> results = filterOutIrrelevantArtifacts(allArtifacts);
         return results;
     }
@@ -702,5 +724,12 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
             throw new MojoExecutionException("No Android SDK path could be found. You may configure it in the pom using <sdk><path>...</path></sdk> or <properties><sdk.path>...</sdk.path></properties> or on command-line using -Dandroid.sdk.path=... or by setting environment variable " + ENV_ANDROID_HOME);
         }
         return androidHome;
+    }
+    
+    /**
+     * 11-2--2010 (Nick Maiorana): Added method to get library directory
+     **/ 
+    protected String getLibrarySourceDirectory(Artifact apkLibraryArtifact) {
+    	return extractedDependenciesDirectory.getAbsolutePath() + "/" + apkLibraryArtifact.getArtifactId();
     }
 }
