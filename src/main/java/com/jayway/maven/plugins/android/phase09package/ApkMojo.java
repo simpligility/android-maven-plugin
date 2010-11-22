@@ -337,7 +337,7 @@ public class ApkMojo extends AbstractAndroidMojo {
                     public boolean accept(File file) {
                         for (String pattern : AbstractScanner.DEFAULTEXCLUDES) {
                             if (AbstractScanner.match(pattern, file.getAbsolutePath())) {
-                                getLog().debug("Excluding " + file.getName() + " from resource copy : matching " + pattern);
+                                getLog().debug("Excluding " + file.getName() + " from asset copy : matching " + pattern);
                                 return false;
                             }
                         }
@@ -364,7 +364,7 @@ public class ApkMojo extends AbstractAndroidMojo {
                     public boolean accept(File file) {
                         for (String pattern : AbstractScanner.DEFAULTEXCLUDES) {
                             if (AbstractScanner.match(pattern, file.getAbsolutePath())) {
-                                getLog().debug("Excluding " + file.getName() + " from resource copy : matching " + pattern);
+                                getLog().debug("Excluding " + file.getName() + " from asset copy : matching " + pattern);
                                 return false;
                             }
                         }
