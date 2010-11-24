@@ -45,14 +45,6 @@ import com.jayway.maven.plugins.android.ExecutionException;
  * @requiresDependencyResolution compile
  */
 public class ApklibMojo extends AbstractAndroidMojo {
-	
-    /**
-     * Decides whether the Apk should be generated or not. If set to false, dx and apkBuilder will not run. This is probably most
-     * useful for a project used to generate apk sources to be inherited into another application project.
-     *
-     * @parameter expression="${android.generateApk}" default-value="false"
-     */
-    protected boolean generateApk;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         generateIntermediateAp_();
