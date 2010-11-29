@@ -471,6 +471,65 @@ public class ApkMojo extends AbstractAndroidMojo {
             }
         }
 
+        // Must combine assets.
+        // The aapt tools does not support several -A arguments.
+        // We copy the assets from extracted dependencies first, and then the local assets.
+        // This allows redefining the assets in the current project
+        if (extractedDependenciesAssets.exists()) {
+            try {
+                getLog().info("Copying dependency assets files to combined assets directory.");
+                org.apache.commons.io.FileUtils.copyDirectory(extractedDependenciesAssets, combinedAssets, new FileFilter() {
+                    /**
+                     * Excludes files matching one of the common file to exclude.
+                     * The default excludes pattern are the ones from
+                     * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
+                     * @see java.io.FileFilter#accept(java.io.File)
+                     */
+                    public boolean accept(File file) {
+                        for (String pattern : AbstractScanner.DEFAULTEXCLUDES) {
+                            if (AbstractScanner.match(pattern, file.getAbsolutePath())) {
+                                getLog().debug("Excluding " + file.getName() + " from asset copy : matching " + pattern);
+                                return false;
+                            }
+                        }
+
+                        return true;
+
+                    }
+                });
+            } catch (IOException e) {
+                throw new MojoExecutionException("", e);
+            }
+        }
+
+        if (assetsDirectory.exists()) {
+            try {
+                getLog().info("Copying local assets files to combined assets directory.");
+                org.apache.commons.io.FileUtils.copyDirectory(assetsDirectory, combinedAssets, new FileFilter() {
+                    /**
+                     * Excludes files matching one of the common file to exclude.
+                     * The default excludes pattern are the ones from
+                     * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
+                     * @see java.io.FileFilter#accept(java.io.File)
+                     */
+                    public boolean accept(File file) {
+                        for (String pattern : AbstractScanner.DEFAULTEXCLUDES) {
+                            if (AbstractScanner.match(pattern, file.getAbsolutePath())) {
+                                getLog().debug("Excluding " + file.getName() + " from asset copy : matching " + pattern);
+                                return false;
+                            }
+                        }
+
+                        return true;
+
+                    }
+                });
+            } catch (IOException e) {
+                throw new MojoExecutionException("", e);
+            }
+        }
+
+
         File androidJar = getAndroidSdk().getAndroidJar();
         File outputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_");
 
@@ -489,14 +548,14 @@ public class ApkMojo extends AbstractAndroidMojo {
             commands.add("-S");
             commands.add(combinedRes.getAbsolutePath());
         }
-        if (assetsDirectory.exists()) {
+
+        // Use the combined assets.
+        // Indeed, aapt does not support several -A arguments.
+        if (combinedAssets.exists()) {
             commands.add("-A");
-            commands.add(assetsDirectory.getAbsolutePath());
+            commands.add(combinedAssets.getAbsolutePath());
         }
-        if (extractedDependenciesAssets.exists()) {
-            commands.add("-A");
-            commands.add(extractedDependenciesAssets.getAbsolutePath());
-        }
+
         commands.add("-I");
         commands.add(androidJar.getAbsolutePath());
         commands.add("-F");
