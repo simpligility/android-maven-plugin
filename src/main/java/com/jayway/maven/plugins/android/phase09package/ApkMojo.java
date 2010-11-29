@@ -31,6 +31,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.dependency.utils.resolvers.DefaultArtifactsResolver;
+import org.codehaus.plexus.util.AbstractScanner;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.AndroidSigner;
@@ -447,7 +448,24 @@ public class ApkMojo extends AbstractAndroidMojo {
         if (resourceDirectory.exists()) {
             try {
                 getLog().info("Copying local resource files to combined resource directory.");
-                org.apache.commons.io.FileUtils.copyDirectory(resourceDirectory, combinedRes);
+                org.apache.commons.io.FileUtils.copyDirectory(resourceDirectory, combinedRes, new FileFilter() {
+
+                    /**
+                     * Excludes files matching one of the common file to exclude.
+                     * The default excludes pattern are the ones from
+                     * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
+                     * @see java.io.FileFilter#accept(java.io.File)
+                     */
+                    public boolean accept(File file) {
+                        for (String pattern : AbstractScanner.DEFAULTEXCLUDES) {
+                            if (AbstractScanner.match(pattern, file.getAbsolutePath())) {
+                                getLog().debug("Excluding " + file.getName() + " from resource copy : matching " + pattern);
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                });
             } catch (IOException e) {
                 throw new MojoExecutionException("", e);
             }
