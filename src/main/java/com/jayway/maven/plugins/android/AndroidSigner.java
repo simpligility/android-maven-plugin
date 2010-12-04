@@ -22,7 +22,7 @@ package com.jayway.maven.plugins.android;
  */
 public class AndroidSigner {
 
-    public enum Debug {TRUE, FALSE, AUTO}
+    public enum Debug {TRUE, FALSE, BOTH, AUTO}
 
     ;
 
@@ -30,12 +30,12 @@ public class AndroidSigner {
 
     public AndroidSigner(String debug) {
         if (debug == null) {
-            throw new IllegalArgumentException("android.sign.debug must be 'true', 'false' or 'auto'.");
+            throw new IllegalArgumentException("android.sign.debug must be 'true', 'false', 'both' or 'auto'.");
         }
         try {
             this.debug = Debug.valueOf(debug.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("android.sign.debug must be 'true', 'false' or 'auto'.", e);
+            throw new IllegalArgumentException("android.sign.debug must be 'true', 'false', 'both' or 'auto'.", e);
         }
     }
 
@@ -47,6 +47,9 @@ public class AndroidSigner {
         if (debug == Debug.TRUE) {
             return true;
         }
+        if (debug == Debug.BOTH) {
+            return true;
+        }
         if (debug == Debug.FALSE) {
             return false;
         }
@@ -55,6 +58,10 @@ public class AndroidSigner {
             return true;
         }
         throw new IllegalStateException("Could not determine whether to sign with debug keystore.");
+    }
+
+    public boolean shouldCreateBothSignedAndUnsignedApk() {
+        return debug == Debug.BOTH;
     }
 
 }
