@@ -30,17 +30,17 @@ public class AndroidNdk {
 
     private final File ndkPath;
 
-    public AndroidNdk( File sdkPath ) {
-        assertPathIsDirectory( sdkPath );
-        this.ndkPath = sdkPath;
+    public AndroidNdk( File ndkPath ) {
+        assertPathIsDirectory( ndkPath );
+        this.ndkPath = ndkPath;
     }
 
     private void assertPathIsDirectory( final File path ) {
         if ( path == null ) {
-            throw new InvalidSdkException( PARAMETER_MESSAGE );
+            throw new InvalidNdkException( PARAMETER_MESSAGE );
         }
         if ( !path.isDirectory() ) {
-            throw new InvalidSdkException( "Path \"" + path + "\" is not a directory. " + PARAMETER_MESSAGE );
+            throw new InvalidNdkException( "Path \"" + path + "\" is not a directory. " + PARAMETER_MESSAGE );
         }
     }
 
