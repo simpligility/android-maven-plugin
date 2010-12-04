@@ -48,7 +48,7 @@ public class RedeployMojo extends AbstractIntegrationtestMojo {
             deployBuiltApk();
         } else {
             undeployApk(file);
-            deployFile(file);
+            deployApk(file);
         }
     }
 
