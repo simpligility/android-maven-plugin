@@ -17,6 +17,7 @@
 package com.jayway.maven.plugins.android.phase01generatesources;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +41,7 @@ import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
+import org.codehaus.plexus.util.AbstractScanner;
 
 /**
  * Generates <code>R.java</code> based on resources specified by the <code>resources</code> configuration parameter.<br/>
@@ -245,7 +247,25 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         if (resourceDirectory.exists()) {
             try {
                 getLog().info("Copying local resource files to combined resource directory.");
-                org.apache.commons.io.FileUtils.copyDirectory(resourceDirectory, combinedRes);
+
+                org.apache.commons.io.FileUtils.copyDirectory(resourceDirectory, combinedRes, new FileFilter() {
+
+                    /**
+                     * Excludes files matching one of the common file to exclude.
+                     * The default excludes pattern are the ones from
+                     * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
+                     * @see java.io.FileFilter#accept(java.io.File)
+                     */
+                    public boolean accept(File file) {
+                        for (String pattern : AbstractScanner.DEFAULTEXCLUDES) {
+                            if (AbstractScanner.match(pattern, file.getAbsolutePath())) {
+                                getLog().debug("Excluding " + file.getName() + " from resource copy : matching " + pattern);
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                });
             } catch (IOException e) {
                 throw new MojoExecutionException("", e);
             }
