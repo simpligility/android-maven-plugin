@@ -155,14 +155,6 @@ public class ApkMojo extends AbstractAndroidMojo {
         ArrayList<File> jarFiles = new ArrayList<File>();
         ArrayList<File> nativeFolders = new ArrayList<File>();
 
-        boolean verbose = false;
-        boolean signed = true;
-        boolean debug = false;
-
-        if (! signWithDebugKeyStore) {
-            signed = false;
-        }
-
         boolean useInternalAPKBuilder = true;
         try {
             initializeAPKBuilder();
@@ -175,10 +167,10 @@ public class ApkMojo extends AbstractAndroidMojo {
 
         if (useInternalAPKBuilder) {
             doAPKWithAPKBuilder(outputFile, dexFile, zipArchive, sourceFolders, jarFiles,
-                nativeFolders, verbose, signed, debug);
+                nativeFolders, false, signWithDebugKeyStore, false);
         } else {
             doAPKWithCommand(outputFile, dexFile, zipArchive, sourceFolders, jarFiles,
-                nativeFolders, signed);
+                nativeFolders, signWithDebugKeyStore);
         }
     }
 
