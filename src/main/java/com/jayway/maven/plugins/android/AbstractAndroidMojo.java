@@ -150,6 +150,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected File combinedRes;
 
     /**
+     * The combined assets directory. This will contain both the assets found in "assets" as well as any assets contained in a apksources dependency.
+     *
+     * @parameter expression="${project.build.directory}/generated-sources/combined-assets/assets"
+     * @readonly
+     */
+    protected File combinedAssets;
+
+    /**
      * Specifies which device to connect to, by serial number. Special values "usb" and "emulator" are also valid, for
      * selecting the only USB connected device or the only running emulator, respectively.
      *
