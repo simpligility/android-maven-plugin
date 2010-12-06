@@ -66,7 +66,7 @@ public class PushMojo extends AbstractAndroidMojo {
         commands.add(source.getAbsolutePath());
         commands.add(destination);
 
-        final String pathForAdb = getAndroidSdk().getPathForTool("adb");
+        final String pathForAdb = getAndroidSdk().getAdbPath();
         getLog().info(pathForAdb + " " + commands.toString());
         try {
             executor.executeCommand(pathForAdb, commands, null, false);
