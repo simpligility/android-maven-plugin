@@ -68,9 +68,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         commands.add("-w");
         commands.add(instrumentationPackage + "/" + instrumentationRunner);
 
-        getLog().info(getAndroidSdk().getPathForTool("adb") + " " + commands.toString());
+        getLog().info(getAndroidSdk().getAdbPath() + " " + commands.toString());
         try {
-            executor.executeCommand(getAndroidSdk().getPathForTool("adb"), commands, project.getBasedir(), true);
+            executor.executeCommand(getAndroidSdk().getAdbPath(), commands, project.getBasedir(), true);
             final String standardOut = executor.getStandardOut();
             final String standardError = executor.getStandardError();
             getLog().debug(standardOut);

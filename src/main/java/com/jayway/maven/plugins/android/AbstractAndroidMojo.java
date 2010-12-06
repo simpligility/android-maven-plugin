@@ -420,9 +420,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         commands.add("install");
         commands.add("-r");
         commands.add(apkFile.getAbsolutePath());
-        getLog().info(getAndroidSdk().getPathForTool("adb") + " " + commands.toString());
+        getLog().info(getAndroidSdk().getAdbPath() + " " + commands.toString());
         try {
-            executor.executeCommand(getAndroidSdk().getPathForTool("adb"), commands, false);
+            executor.executeCommand(getAndroidSdk().getAdbPath(), commands, false);
             final String standardOut = executor.getStandardOut();
             if (standardOut != null && standardOut.contains("Failure")) {
                 throw new MojoExecutionException("Error deploying " + apkFile + " to device. You might want to add command line parameter -Dandroid.undeployBeforeDeploy=true or add plugin configuration tag <undeployBeforeDeploy>true</undeployBeforeDeploy>\n" + standardOut);

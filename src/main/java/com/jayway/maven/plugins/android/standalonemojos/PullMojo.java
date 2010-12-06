@@ -66,7 +66,7 @@ public class PullMojo extends AbstractAndroidMojo {
         commands.add(source);
         commands.add(destination.getAbsolutePath());
 
-        final String pathForAdb = getAndroidSdk().getPathForTool("adb");
+        final String pathForAdb = getAndroidSdk().getAdbPath();
         getLog().info(pathForAdb + " " + commands.toString());
         try {
             executor.executeCommand(pathForAdb, commands, null, false);
