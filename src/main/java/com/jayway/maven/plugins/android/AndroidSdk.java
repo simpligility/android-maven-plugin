@@ -142,10 +142,13 @@ public class AndroidSdk {
         String[] possiblePaths = {
                 sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool,
                 sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool + ".exe",
+                sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool + ".bat",
                 getPlatform() + "/tools/" + tool,
                 getPlatform() + "/tools/" + tool + ".exe",
+                getPlatform() + "/tools/" + tool + ".bat",
                 sdkPath + "/tools/" + tool,
-                sdkPath + "/tools/" + tool + ".exe"
+                sdkPath + "/tools/" + tool + ".exe",
+                sdkPath + "/tools/" + tool + ".bat"
         };
 
         for (String possiblePath : possiblePaths) {
