@@ -46,12 +46,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  */
 public abstract class AbstractAndroidMojo extends AbstractMojo {
 
-    /**
-     * The file extension used for the android package file.
-     */
-    protected static final String ANDROID_PACKAGE_EXTENSTION = ".apk";
-
-    /**
+	/**
      * The maven project.
      *
      * @parameter expression="${project}"
@@ -349,12 +344,23 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         return results;
     }
 
-    /**
+   /**
      * @return a {@code Set} of direct project dependencies. Never {@code null}. This excludes artifacts of the {@code
      *         EXCLUDED_DEPENDENCY_SCOPES} scopes.
      */
     protected Set<Artifact> getRelevantDependencyArtifacts() {
         final Set<Artifact> allArtifacts = (Set<Artifact>) project.getDependencyArtifacts();
+        final Set<Artifact> results = filterOutIrrelevantArtifacts(allArtifacts);
+        return results;
+    }
+
+    /**
+     * @return a {@code List} of all project dependencies. Never {@code null}. This excludes artifacts of the {@code
+     *         EXCLUDED_DEPENDENCY_SCOPES} scopes. And
+     *         This should maintain dependency order to comply with library project resource precedence.
+     */
+    protected Set<Artifact> getAllRelevantDependencyArtifacts() {
+        final Set<Artifact> allArtifacts = (Set<Artifact>) project.getArtifacts();
         final Set<Artifact> results = filterOutIrrelevantArtifacts(allArtifacts);
         return results;
     }
@@ -420,9 +426,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         commands.add("install");
         commands.add("-r");
         commands.add(apkFile.getAbsolutePath());
-        getLog().info(getAndroidSdk().getAdbPath() + " " + commands.toString());
+        getLog().info(getAndroidSdk().getPathForTool("adb") + " " + commands.toString());
         try {
-            executor.executeCommand(getAndroidSdk().getAdbPath(), commands, false);
+            executor.executeCommand(getAndroidSdk().getPathForTool("adb"), commands, false);
             final String standardOut = executor.getStandardOut();
             if (standardOut != null && standardOut.contains("Failure")) {
                 throw new MojoExecutionException("Error deploying " + apkFile + " to device. You might want to add command line parameter -Dandroid.undeployBeforeDeploy=true or add plugin configuration tag <undeployBeforeDeploy>true</undeployBeforeDeploy>\n" + standardOut);
@@ -710,5 +716,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
             throw new MojoExecutionException("No Android SDK path could be found. You may configure it in the pom using <sdk><path>...</path></sdk> or <properties><sdk.path>...</sdk.path></properties> or on command-line using -Dandroid.sdk.path=... or by setting environment variable " + ENV_ANDROID_HOME);
         }
         return androidHome;
+    }
+    
+    protected String getLibrarySourceDirectory(Artifact apkLibraryArtifact) {
+    	return extractedDependenciesDirectory.getAbsolutePath() + "/" + apkLibraryArtifact.getArtifactId();
     }
 }

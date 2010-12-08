@@ -16,6 +16,7 @@
 package com.jayway.maven.plugins.android;
 
 import com.jayway.maven.plugins.android.asm.AndroidTestFinder;
+import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APK;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -81,7 +82,7 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
         if (directDependentArtifacts != null) {
             for (Artifact artifact : directDependentArtifacts) {
                 String type = artifact.getType();
-                if (type.equals("apk")) {
+                if (type.equals(APK)) {
                     getLog().debug("Detected apk dependency " + artifact + ". Will resolve and deploy to device...");
                     final File targetApkFile = resolveArtifactToFile(artifact);
                     if (undeployBeforeDeploy) {
@@ -97,7 +98,7 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
 
     protected void deployBuiltApk() throws MojoExecutionException {
         File apkFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName()
-                + ANDROID_PACKAGE_EXTENSTION);
+                + "." + APK);
         deployApk(apkFile);
     }
 

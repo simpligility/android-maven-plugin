@@ -80,5 +80,58 @@
                 <language>java</language>
             </configuration>
         </component>
+        <component>
+            <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+            <role-hint>apklib</role-hint>
+            <implementation>
+                org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping
+            </implementation>
+            <configuration>
+                <phases>
+                    <generate-sources>
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:generate-sources
+                    </generate-sources>
+                    <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
+                    <compile>
+                        org.apache.maven.plugins:maven-compiler-plugin:compile
+                    </compile>
+                    <process-classes>
+                        org.apache.maven.plugins:maven-jar-plugin:jar,
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:unpack
+                    </process-classes>
+                    <process-test-resources>
+                        org.apache.maven.plugins:maven-resources-plugin:testResources
+                    </process-test-resources>
+                    <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
+                    <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
+                    <prepare-package>
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:dex
+                    </prepare-package>
+                    <package>
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:apklib
+                    </package>
+                    <install>
+                        org.apache.maven.plugins:maven-install-plugin:install
+                    </install>
+                    <pre-integration-test>
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:internal-pre-integration-test
+                    </pre-integration-test>
+                    <integration-test>
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:internal-integration-test
+                    </integration-test>
+                    <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
+                </phases>
+            </configuration>
+        </component>
+        <component>
+            <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+            <role-hint>apklib</role-hint>
+            <implementation>org.apache.maven.artifact.handler.DefaultArtifactHandler</implementation>
+            <configuration>
+                <extension>apklib</extension>
+                <type>apklib</type>
+                <language>java</language>
+            </configuration>
+        </component>
     </components>
 </component-set>

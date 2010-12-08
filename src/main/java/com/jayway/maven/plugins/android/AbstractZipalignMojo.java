@@ -2,6 +2,8 @@ package com.jayway.maven.plugins.android;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
+import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APK;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +79,7 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
     private static final List<String> SUPPORTED_PACKAGING_TYPES = new ArrayList<String>();
 
     static {
-        SUPPORTED_PACKAGING_TYPES.add("apk");
+        SUPPORTED_PACKAGING_TYPES.add(APK);
     }
 
     /**
@@ -121,7 +123,7 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
                 // http://code.google.com/p/maven-android-plugin/issues/detail?id=88
                 File aligned = new File(parsedOutputApk);
                 if (aligned.exists()) {
-                    projectHelper.attachArtifact(project, "apk", "aligned", aligned);
+                    projectHelper.attachArtifact(project, APK, "aligned", aligned);
                     getLog().info("Attach " + aligned.getAbsolutePath() + " to the project");
                 } else {
                     getLog().error("Cannot attach " + aligned.getAbsolutePath() + " to the project" +
@@ -220,7 +222,7 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
      */
     private String getApkLocation() {
         if (apkFile == null) apkFile = new File(project.getBuild().getDirectory(),
-                project.getBuild().getFinalName() + ANDROID_PACKAGE_EXTENSTION);
+                project.getBuild().getFinalName() + "." + APK);
         return apkFile.getAbsolutePath();
     }
 
@@ -232,7 +234,7 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
      */
     private String getAlignedApkLocation() {
         if (alignedApkFile == null) alignedApkFile = new File(project.getBuild().getDirectory(),
-                project.getBuild().getFinalName() + "-aligned" + ANDROID_PACKAGE_EXTENSTION);
+                project.getBuild().getFinalName() + "-aligned." + APK);
         return alignedApkFile.getAbsolutePath();
     }
 
