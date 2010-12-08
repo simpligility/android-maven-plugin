@@ -38,6 +38,8 @@ import com.jayway.maven.plugins.android.AndroidSigner;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.Sign;
+import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APK;
+import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APKLIB;
 
 /**
  * Creates the apk file. By default signs it with debug keystore.<br/>
@@ -129,14 +131,14 @@ public class ApkMojo extends AbstractAndroidMojo {
 
         // Initialize apk build configuration
         File outputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() +
-                ANDROID_PACKAGE_EXTENSTION);
+                "." + APK);
         final boolean signWithDebugKeyStore = getAndroidSigner().isSignWithDebugKeyStore();
 
         if (getAndroidSigner().shouldCreateBothSignedAndUnsignedApk()) {
             getLog().info("Creating debug key signed apk file " + outputFile);
             createApkFile(outputFile, true);
             final File unsignedOutputFile = new File(project.getBuild().getDirectory(), project.getBuild()
-                    .getFinalName() + "-unsigned" + ANDROID_PACKAGE_EXTENSTION);
+                    .getFinalName() + "-unsigned." + APK);
             getLog().info("Creating additional unsigned apk file " + unsignedOutputFile);
             createApkFile(unsignedOutputFile, false);
             projectHelper.attachArtifact(project, unsignedOutputFile, "unsigned");
@@ -417,6 +419,15 @@ public class ApkMojo extends AbstractAndroidMojo {
      * @throws MojoExecutionException
      */
     private void generateIntermediateAp_() throws MojoExecutionException {
+		// 11-21-2010 (Nick Maiorana) To preserve the execution for the original
+		// mojo I will check to see if there are apklib dependencies. If there are
+		// we will make a call to a generateRForProjectWithApklibDependencies()
+		for (Artifact artifact : getRelevantDependencyArtifacts()) {
+			if (artifact.getType().equals(APKLIB)) {
+				generateIntermediateAp_ForProjectWithApklibDependencies();
+				return;
+			}
+		}
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
@@ -569,6 +580,68 @@ public class ApkMojo extends AbstractAndroidMojo {
         }
     }
 
+	private void generateIntermediateAp_ForProjectWithApklibDependencies() throws MojoExecutionException {
+		CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+		executor.setLogger(this.getLog());
+		File[] overlayDirectories;
+
+		if (resourceOverlayDirectories == null || resourceOverlayDirectories.length == 0) {
+			overlayDirectories = new File[] { resourceOverlayDirectory };
+		} else {
+			overlayDirectories = resourceOverlayDirectories;
+		}
+
+		File androidJar = getAndroidSdk().getAndroidJar();
+		File outputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_");
+
+		List<String> commands = new ArrayList<String>();
+		commands.add("package");
+		commands.add("-f");
+		commands.add("-M");
+		commands.add(androidManifestFile.getAbsolutePath());
+		for (File resOverlayDir : overlayDirectories) {
+			if (resOverlayDir != null && resOverlayDir.exists()) {
+				commands.add("-S");
+				commands.add(resOverlayDir.getAbsolutePath());
+			}
+		}
+		commands.add("-S");
+		commands.add(resourceDirectory.getAbsolutePath());
+		for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
+			if (artifact.getType().equals(APKLIB)) {
+				commands.add("-S");
+				commands.add(getLibrarySourceDirectory(artifact) + "/res");
+			}
+		}
+		commands.add("--auto-add-overlay");
+		if (assetsDirectory.exists()) {
+			commands.add("-A");
+			commands.add(assetsDirectory.getAbsolutePath());
+		}
+		for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
+			if (artifact.getType().equals(APKLIB)) {
+				File apklibAsssetsDirectory = new File(getLibrarySourceDirectory(artifact) + "/assets");
+				if (apklibAsssetsDirectory.exists()) {
+					commands.add("-A");
+					commands.add(apklibAsssetsDirectory.getAbsolutePath());
+				}
+			}
+		}
+		commands.add("-I");
+		commands.add(androidJar.getAbsolutePath());
+		commands.add("-F");
+		commands.add(outputFile.getAbsolutePath());
+		if (StringUtils.isNotBlank(configurations)) {
+			commands.add("-c");
+			commands.add(configurations);
+		}
+		getLog().info(getAndroidSdk().getPathForTool("aapt") + " " + commands.toString());
+		try {
+			executor.executeCommand(getAndroidSdk().getPathForTool("aapt"), commands, project.getBasedir(), false);
+		} catch (ExecutionException e) {
+			throw new MojoExecutionException("", e);
+		}
+	}
 
     protected AndroidSigner getAndroidSigner() {
         if (sign == null) {
