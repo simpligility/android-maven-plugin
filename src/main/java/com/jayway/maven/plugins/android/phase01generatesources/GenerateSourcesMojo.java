@@ -16,14 +16,19 @@
  */
 package com.jayway.maven.plugins.android.phase01generatesources;
 
+import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APKLIB;
+import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APKSOURCES;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -32,18 +37,16 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.CommandExecutor;
-import com.jayway.maven.plugins.android.ExecutionException;
-import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APKLIB;
-import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APKSOURCES;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.codehaus.plexus.util.AbstractScanner;
+
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.ExecutionException;
 
 /**
  * Generates <code>R.java</code> based on resources specified by the <code>resources</code> configuration parameter.<br/>
@@ -95,10 +98,22 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
             final String[] relativeAidlFileNames1 = findRelativeAidlFileNames(sourceDirectory);
             final String[] relativeAidlFileNames2 = findRelativeAidlFileNames(extractedDependenciesJavaSources);
+            final Map <String, String[]> relativeApklibAidlFileNames = new HashMap<String, String[]>();
+            String[] apklibAidlFiles;
+            for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
+            	if (artifact.getType().equals(APKLIB)) {
+            		apklibAidlFiles = findRelativeAidlFileNames(new File(getLibrarySourceDirectory(artifact)+"/src/main/java"));
+            		relativeApklibAidlFileNames.put(artifact.getArtifactId(), apklibAidlFiles);
+            	}
+            }
+            
             final Set<String> relativeAidlFileNamesSet = new HashSet<String>() {
                 {
                     addAll(Arrays.asList(relativeAidlFileNames1));
                     addAll(Arrays.asList(relativeAidlFileNames2));
+                    for (String[] apklibAidlFiles: relativeApklibAidlFileNames.values()) {
+                    	addAll(Arrays.asList(apklibAidlFiles));
+                    }
                 }
             };
 
@@ -108,11 +123,21 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
                 deleteConflictingThumbsDb(resourceDirectory);
                 deleteConflictingAidlJavaFiles(sourceDirectory, relativeAidlFileNamesSet);
                 deleteConflictingAidlJavaFiles(extractedDependenciesJavaSources, relativeAidlFileNamesSet);
+                for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
+                	if (artifact.getType().equals(APKLIB)) {
+                		deleteConflictingAidlJavaFiles(new File(getLibrarySourceDirectory(artifact)+"/src/main/java"), relativeAidlFileNamesSet);
+                	}
+                }
             }
 
             generateR();
             generateAidlFiles(sourceDirectory, relativeAidlFileNames1);
             generateAidlFiles(extractedDependenciesJavaSources, relativeAidlFileNames2);
+            for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
+            	if (artifact.getType().equals(APKLIB)) {
+            		generateAidlFiles(new File(getLibrarySourceDirectory(artifact)+"/src/main/java"), relativeApklibAidlFileNames.get(artifact.getArtifactId()));
+            	}
+            }
         } catch (MojoExecutionException e) {
             getLog().error("Error when generating sources.", e);
             throw e;
