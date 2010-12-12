@@ -16,12 +16,17 @@
  */
 package com.jayway.maven.plugins.android.phase09package;
 
+import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APK;
+import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APKLIB;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -38,8 +43,6 @@ import com.jayway.maven.plugins.android.AndroidSigner;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.Sign;
-import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APK;
-import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APKLIB;
 
 /**
  * Creates the apk file. By default signs it with debug keystore.<br/>
@@ -419,16 +422,6 @@ public class ApkMojo extends AbstractAndroidMojo {
      * @throws MojoExecutionException
      */
     private void generateIntermediateAp_() throws MojoExecutionException {
-		// 11-21-2010 (Nick Maiorana) To preserve the execution for the original
-		// mojo I will check to see if there are apklib dependencies. If there are
-		// we will make a call to a generateRForProjectWithApklibDependencies()
-		for (Artifact artifact : getRelevantDependencyArtifacts()) {
-			if (artifact.getType().equals(APKLIB)) {
-				generateIntermediateAp_ForProjectWithApklibDependencies();
-				return;
-			}
-		}
-
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
         File[] overlayDirectories;
@@ -439,21 +432,20 @@ public class ApkMojo extends AbstractAndroidMojo {
             overlayDirectories = resourceOverlayDirectories;
         }
 
-
-        if (!combinedRes.exists()) {
-            if (!combinedRes.mkdirs()) {
-                throw new MojoExecutionException("Could not create directory for combined resources at " + combinedRes.getAbsolutePath());
-            }
-        }
         if (extractedDependenciesRes.exists()) {
             try {
                 getLog().info("Copying dependency resource files to combined resource directory.");
-                org.apache.commons.io.FileUtils.copyDirectory(extractedDependenciesRes, combinedRes);
+                if (!combinedRes.exists()) {
+                    if (!combinedRes.mkdirs()) {
+                        throw new MojoExecutionException("Could not create directory for combined resources at " + combinedRes.getAbsolutePath());
+                    }
+                }
+               org.apache.commons.io.FileUtils.copyDirectory(extractedDependenciesRes, combinedRes);
             } catch (IOException e) {
                 throw new MojoExecutionException("", e);
             }
         }
-        if (resourceDirectory.exists()) {
+        if (resourceDirectory.exists() && combinedRes.exists()) {
             try {
                 getLog().info("Copying local resource files to combined resource directory.");
                 org.apache.commons.io.FileUtils.copyDirectory(resourceDirectory, combinedRes, new FileFilter() {
@@ -509,6 +501,41 @@ public class ApkMojo extends AbstractAndroidMojo {
                 throw new MojoExecutionException("", e);
             }
         }
+        
+        // Next pull APK Lib assets, reverse the order to give precedence to libs higher up the chain
+        List<Artifact> artifactList = new ArrayList<Artifact>(getAllRelevantDependencyArtifacts());
+		for (Artifact artifact: artifactList) {
+			if (artifact.getType().equals(APKLIB)) {
+				File apklibAsssetsDirectory = new File(getLibrarySourceDirectory(artifact) + "/assets");
+				if (apklibAsssetsDirectory.exists()) {
+		            try {
+		                getLog().info("Copying dependency assets files to combined assets directory.");
+		                org.apache.commons.io.FileUtils.copyDirectory(apklibAsssetsDirectory, combinedAssets, new FileFilter() {
+		                    /**
+		                     * Excludes files matching one of the common file to exclude.
+		                     * The default excludes pattern are the ones from
+		                     * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
+		                     * @see java.io.FileFilter#accept(java.io.File)
+		                     */
+		                    public boolean accept(File file) {
+		                        for (String pattern : AbstractScanner.DEFAULTEXCLUDES) {
+		                            if (AbstractScanner.match(pattern, file.getAbsolutePath())) {
+		                                getLog().debug("Excluding " + file.getName() + " from asset copy : matching " + pattern);
+		                                return false;
+		                            }
+		                        }
+
+		                        return true;
+
+		                    }
+		                });
+		            } catch (IOException e) {
+		                throw new MojoExecutionException("", e);
+		            }
+
+				}
+			}
+		}
 
         if (assetsDirectory.exists()) {
             try {
@@ -555,7 +582,18 @@ public class ApkMojo extends AbstractAndroidMojo {
         if (combinedRes.exists()) {
             commands.add("-S");
             commands.add(combinedRes.getAbsolutePath());
+        } else {
+    		commands.add("-S");
+    		commands.add(resourceDirectory.getAbsolutePath());
         }
+		for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
+			if (artifact.getType().equals(APKLIB)) {
+				File libResourceDirectory = new File(getLibrarySourceDirectory(artifact) + "/res");
+				commands.add("-S");
+				commands.add(libResourceDirectory.getAbsolutePath());
+			}
+		}
+		commands.add("--auto-add-overlay");
 
         // Use the combined assets.
         // Indeed, aapt does not support several -A arguments.
@@ -579,69 +617,6 @@ public class ApkMojo extends AbstractAndroidMojo {
             throw new MojoExecutionException("", e);
         }
     }
-
-	private void generateIntermediateAp_ForProjectWithApklibDependencies() throws MojoExecutionException {
-		CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-		executor.setLogger(this.getLog());
-		File[] overlayDirectories;
-
-		if (resourceOverlayDirectories == null || resourceOverlayDirectories.length == 0) {
-			overlayDirectories = new File[] { resourceOverlayDirectory };
-		} else {
-			overlayDirectories = resourceOverlayDirectories;
-		}
-
-		File androidJar = getAndroidSdk().getAndroidJar();
-		File outputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_");
-
-		List<String> commands = new ArrayList<String>();
-		commands.add("package");
-		commands.add("-f");
-		commands.add("-M");
-		commands.add(androidManifestFile.getAbsolutePath());
-		for (File resOverlayDir : overlayDirectories) {
-			if (resOverlayDir != null && resOverlayDir.exists()) {
-				commands.add("-S");
-				commands.add(resOverlayDir.getAbsolutePath());
-			}
-		}
-		commands.add("-S");
-		commands.add(resourceDirectory.getAbsolutePath());
-		for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
-			if (artifact.getType().equals(APKLIB)) {
-				commands.add("-S");
-				commands.add(getLibrarySourceDirectory(artifact) + "/res");
-			}
-		}
-		commands.add("--auto-add-overlay");
-		if (assetsDirectory.exists()) {
-			commands.add("-A");
-			commands.add(assetsDirectory.getAbsolutePath());
-		}
-		for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
-			if (artifact.getType().equals(APKLIB)) {
-				File apklibAsssetsDirectory = new File(getLibrarySourceDirectory(artifact) + "/assets");
-				if (apklibAsssetsDirectory.exists()) {
-					commands.add("-A");
-					commands.add(apklibAsssetsDirectory.getAbsolutePath());
-				}
-			}
-		}
-		commands.add("-I");
-		commands.add(androidJar.getAbsolutePath());
-		commands.add("-F");
-		commands.add(outputFile.getAbsolutePath());
-		if (StringUtils.isNotBlank(configurations)) {
-			commands.add("-c");
-			commands.add(configurations);
-		}
-		getLog().info(getAndroidSdk().getPathForTool("aapt") + " " + commands.toString());
-		try {
-			executor.executeCommand(getAndroidSdk().getPathForTool("aapt"), commands, project.getBasedir(), false);
-		} catch (ExecutionException e) {
-			throw new MojoExecutionException("", e);
-		}
-	}
 
     protected AndroidSigner getAndroidSigner() {
         if (sign == null) {

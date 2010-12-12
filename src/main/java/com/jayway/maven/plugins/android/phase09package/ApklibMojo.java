@@ -76,9 +76,9 @@ public class ApklibMojo extends AbstractAndroidMojo {
 
             jarArchiver.createArchive();
         } catch (ArchiverException e) {
-            throw new MojoExecutionException("ArchiverException while creating .apksource file.", e);
+            throw new MojoExecutionException("ArchiverException while creating ."+APKLIB+" file.", e);
         } catch (IOException e) {
-            throw new MojoExecutionException("IOException while creating .apksource file.", e);
+            throw new MojoExecutionException("IOException while creating ."+APKLIB+" file.", e);
         }
 
         return apklibrary;
@@ -169,11 +169,12 @@ public class ApklibMojo extends AbstractAndroidMojo {
                 commands.add(resOverlayDir.getAbsolutePath());
             }
         }
-		commands.add("-S");
-		commands.add(resourceDirectory.getAbsolutePath());
         if (combinedRes.exists()) {
             commands.add("-S");
             commands.add(combinedRes.getAbsolutePath());
+        } else {
+    		commands.add("-S");
+    		commands.add(resourceDirectory.getAbsolutePath());
         }
         for (Artifact apkLibraryArtifact: getRelevantDependencyArtifacts()) {
         	if (apkLibraryArtifact.getType().equals(APKLIB)) {
