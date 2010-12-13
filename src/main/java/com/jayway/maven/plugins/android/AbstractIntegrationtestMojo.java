@@ -15,13 +15,14 @@
  */
 package com.jayway.maven.plugins.android;
 
-import com.jayway.maven.plugins.android.asm.AndroidTestFinder;
+import java.io.File;
+import java.util.Set;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import java.io.File;
-import java.util.Set;
+import com.jayway.maven.plugins.android.asm.AndroidTestFinder;
 
 /**
  * For integrationtest related Mojos.
@@ -96,6 +97,12 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
     }
 
     protected void deployBuiltApk() throws MojoExecutionException {
+        // If we're not on a supported packaging with just skip (Issue 112)
+        // http://code.google.com/p/maven-android-plugin/issues/detail?id=112
+        if (! SUPPORTED_PACKAGING_TYPES.contains(project.getPackaging())) {
+            getLog().info("Skipping deployment on " + project.getPackaging());
+            return;
+        }
         File apkFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName()
                 + ANDROID_PACKAGE_EXTENSTION);
         deployApk(apkFile);
