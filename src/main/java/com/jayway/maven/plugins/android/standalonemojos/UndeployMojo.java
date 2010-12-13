@@ -59,6 +59,10 @@ public class UndeployMojo extends AbstractAndroidMojo {
             if (file != null) {
                 undeployApk(file);
             } else {
+                if (! SUPPORTED_PACKAGING_TYPES.contains(project.getPackaging())) {
+                    getLog().info("Skipping undeploy on " + project.getPackaging());
+                    return;
+                }
                 packageToUndeploy = extractPackageNameFromAndroidManifest(androidManifestFile);
                 undeployApk(packageToUndeploy);
             }
