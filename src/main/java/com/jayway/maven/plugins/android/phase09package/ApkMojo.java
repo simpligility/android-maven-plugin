@@ -16,10 +16,16 @@
  */
 package com.jayway.maven.plugins.android.phase09package;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -31,6 +37,7 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -272,6 +279,83 @@ public class ApkMojo extends AbstractAndroidMojo {
 
         builder.sealApk();
     }
+
+    private File removeDuplicatesFromJar(File in, List<String> duplicates) {
+        File target = new File(project.getBasedir(), "target");
+        File tmp = new File(target, "unpacked-embedded-jars");
+        tmp.mkdirs();
+        File out = new File(tmp, in.getName());
+
+        if (out.exists()) {
+            return out;
+        } else {
+            try {
+                out.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Create a new Jar file
+        FileOutputStream fos = null;
+        ZipOutputStream jos = null;
+        try {
+            fos = new FileOutputStream(out);
+            jos = new ZipOutputStream(fos);
+        } catch (FileNotFoundException e1) {
+            getLog().error("Cannot remove duplicates : the output file " + out.getAbsolutePath() + " does not found");
+            return null;
+        }
+
+        ZipFile inZip = null;
+        try {
+            inZip = new ZipFile(in);
+            Enumeration< ? extends ZipEntry> entries = inZip.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                // If the entry is not a duplicate, copy.
+                if (! duplicates.contains(entry.getName())) {
+                    // copy the entry header to jos
+                    jos.putNextEntry(entry);
+                    InputStream currIn = inZip.getInputStream(entry);
+                    copyStreamWithoutClosing(currIn, jos);
+                    currIn.close();
+                    jos.closeEntry();
+                }
+            }
+        } catch (IOException e) {
+            getLog().error("Cannot removing duplicates : " + e.getMessage());
+            return null;
+        }
+
+        try {
+            if (inZip != null) {
+                inZip.close();
+            }
+            jos.close();
+            fos.close();
+            jos = null;
+            fos = null;
+        } catch (IOException e) {
+            // ignore it.
+        }
+        getLog().info(in.getName() + " rewrote without duplicates : " + out.getAbsolutePath());
+        return out;
+    }
+
+    /**
+     * Copies an input stream into an output stream but does not close the streams.
+     * @param in the input stream
+     * @param out the output stream
+     * @throws IOException if the stream cannot be copied
+     */
+    private static void copyStreamWithoutClosing(InputStream in, OutputStream out) throws IOException {
+        byte[] b = new byte[4096];
+        for (int n; (n = in.read(b)) != -1;) {
+            out.write(b, 0, n);
+        }
+    }
+
 
     /**
      * Creates the APK file using the command line.
