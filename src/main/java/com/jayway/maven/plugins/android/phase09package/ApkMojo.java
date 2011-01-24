@@ -162,7 +162,7 @@ public class ApkMojo extends AbstractAndroidMojo {
             initializeAPKBuilder();
             // Ok...
             // So we can try to use the internal ApkBuilder
-        } catch (MojoExecutionException e) {
+        } catch (Throwable e) {
             // Not supported platform try to old way.
             useInternalAPKBuilder = false;
         }
