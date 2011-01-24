@@ -240,11 +240,32 @@ public class ApkMojo extends AbstractAndroidMojo {
         }
 
         // Check duplicates.
+
+        List<String> duplicates = new ArrayList<String>();
+        List<File> jarToModify = new ArrayList<File>();
         for (String s : m_jars.keySet()) {
             List<File> l = m_jars.get(s);
             if (l.size() > 1) {
                 getLog().warn("Duplicate found for " + s + " : " + l);
+                duplicates.add(s);
+                for (int i = 1; i < l.size(); i++) {
+                    if (! jarToModify.contains(l.get(i))) {
+                        jarToModify.add(l.get(i));
+                    }
+                }
             }
+        }
+
+        // Rebuild jars.
+        for (File file : jarToModify) {
+            File newJar;
+                newJar = removeDuplicatesFromJar(file, duplicates);
+                int index = jarFiles.indexOf(file);
+                System.out.println("Replacing index " + index + " by " + newJar);
+                if (newJar != null) {
+                    jarFiles.set(index, newJar);
+                }
+
         }
 
         ApkBuilder builder = new ApkBuilder(outputFile, zipArchive, dexFile, signWithDebugKeyStore,  (verbose) ? System.out : null);
