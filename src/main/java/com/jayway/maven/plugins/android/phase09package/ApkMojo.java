@@ -360,7 +360,7 @@ public class ApkMojo extends AbstractAndroidMojo {
         } catch (IOException e) {
             // ignore it.
         }
-        getLog().info(in.getName() + " rewrote without duplicates : " + out.getAbsolutePath());
+        getLog().info(in.getName() + " rewritten without duplicates : " + out.getAbsolutePath());
         return out;
     }
 
