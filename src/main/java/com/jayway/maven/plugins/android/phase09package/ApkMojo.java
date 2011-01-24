@@ -224,7 +224,20 @@ public class ApkMojo extends AbstractAndroidMojo {
         processNativeLibraries(nativeFolders);
 
         for (Artifact artifact : getRelevantCompileArtifacts()) {
+            try {
+                computeDuplicateFiles(artifact.getFile());
+            } catch (Exception e) {
+                getLog().warn("Cannot compute duplicates files from " + artifact.getFile().getAbsolutePath(), e);
+            }
             jarFiles.add(artifact.getFile());
+        }
+
+        // Check duplicates.
+        for (String s : m_jars.keySet()) {
+            List<File> l = m_jars.get(s);
+            if (l.size() > 1) {
+                getLog().warn("Duplicate found for " + s + " : " + l);
+            }
         }
 
         ApkBuilder builder = new ApkBuilder(outputFile, zipArchive, dexFile, signWithDebugKeyStore,  (verbose) ? System.out : null);
