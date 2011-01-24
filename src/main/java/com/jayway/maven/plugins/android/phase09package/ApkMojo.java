@@ -21,10 +21,16 @@ import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -173,6 +179,24 @@ public class ApkMojo extends AbstractAndroidMojo {
         } else {
             doAPKWithCommand(outputFile, dexFile, zipArchive, sourceFolders, jarFiles,
                 nativeFolders, signWithDebugKeyStore);
+        }
+    }
+
+    private Map<String, List<File>> m_jars = new HashMap<String, List<File>>();
+
+    private void computeDuplicateFiles(File jar) throws ZipException, IOException {
+        ZipFile file = new ZipFile(jar);
+        Enumeration<? extends ZipEntry> list = file.entries();
+        while(list.hasMoreElements()) {
+            ZipEntry ze = list.nextElement();
+            if (! (ze.getName().contains("META-INF/")  || ze.isDirectory())) { // Exclude META-INF and Directories
+                List<File> l = m_jars.get(ze.getName());
+                if (l == null) {
+                    l = new ArrayList<File>();
+                    m_jars.put(ze.getName(), l);
+                }
+                l.add(jar);
+            }
         }
     }
 
