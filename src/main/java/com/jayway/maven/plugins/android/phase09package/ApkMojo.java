@@ -16,8 +16,6 @@
  */
 package com.jayway.maven.plugins.android.phase09package;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
