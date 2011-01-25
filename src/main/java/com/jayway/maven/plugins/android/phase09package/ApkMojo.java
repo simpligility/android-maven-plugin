@@ -102,6 +102,17 @@ public class ApkMojo extends AbstractAndroidMojo {
      */
     private File nativeLibrariesDirectory;
 
+
+    /**
+     * <p>Allows to detect and extract the duplicate files from embedded jars. In that case, the plugin analyzes
+     * the content of all embedded dependencies and checks they are no duplicates inside those dependencies. Indeed,
+     * Android does not support duplicates, and all dependencies are inlined in the APK. If duplicates files are found,
+     * the resource is kept in the first dependency and removes from others.
+     *
+     * @parameter expression="${android.extractDuplicates}" default-value="false"
+     */
+    private boolean extractDuplicates;
+
      /**
      * <p>Temporary folder for collecting native libraries.</p>
      *
