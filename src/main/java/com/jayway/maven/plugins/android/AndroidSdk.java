@@ -85,7 +85,7 @@ public class AndroidSdk {
         } else {
             platform = findPlatformByNameOrApiLevel(platformOrApiLevel);
             if (platform == null)
-                throw new InvalidSdkException("Invalid SDK: Platform/API level " + platformOrApiLevel + " not available.");
+                throw new InvalidSdkException("Invalid SDK: Platform/API level " + platformOrApiLevel + " not available. This command should give you all you need:\n" + sdkPath.getAbsolutePath() + File.separator + "tools" + File.separator + "android update sdk --no-ui --obsolete --force");
         }
     }
 
