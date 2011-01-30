@@ -119,7 +119,7 @@ public class AndroidSdkTest {
         final AndroidSdk sdk2_0_1 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "2.0.1");
         final AndroidSdk sdk2_1 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "2.1");
         final AndroidSdk sdk2_2 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "2.2");
-        final AndroidSdk sdk2_3 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "2.3");
+        final AndroidSdk sdk2_3_1 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "2.3.1");
     }
 
     @Test(expected = InvalidSdkException.class)
