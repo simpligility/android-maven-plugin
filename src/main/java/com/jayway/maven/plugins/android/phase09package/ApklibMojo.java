@@ -34,7 +34,7 @@ import org.codehaus.plexus.archiver.util.DefaultFileSet;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
-import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APKLIB;;
+import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APKLIB;
 
 
 /**
