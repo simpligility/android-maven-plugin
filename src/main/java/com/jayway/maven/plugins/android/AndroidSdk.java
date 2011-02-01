@@ -134,22 +134,24 @@ public class AndroidSdk {
     /**
      * Returns the complete path for a tool, based on this SDK.
      *
-     * @param tool which tool, for example <code>adb</code>.
+     * @param tool which tool, for example <code>adb</code> or <code>dx.jar</code>.
      * @return the complete path as a <code>String</code>, including the tool's filename.
      */
     public String getPathForTool(String tool) {
 
         String[] possiblePaths = {
-        		sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/lib/" + tool,
                 sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool,
                 sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool + ".exe",
                 sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool + ".bat",
+                sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/lib/" + tool,
                 getPlatform() + "/tools/" + tool,
                 getPlatform() + "/tools/" + tool + ".exe",
                 getPlatform() + "/tools/" + tool + ".bat",
+                getPlatform() + "/tools/lib/" + tool,
                 sdkPath + "/tools/" + tool,
                 sdkPath + "/tools/" + tool + ".exe",
-                sdkPath + "/tools/" + tool + ".bat"
+                sdkPath + "/tools/" + tool + ".bat",
+                sdkPath + "/tools/lib/" + tool
         };
 
         for (String possiblePath : possiblePaths) {
