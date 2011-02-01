@@ -140,6 +140,7 @@ public class AndroidSdk {
     public String getPathForTool(String tool) {
 
         String[] possiblePaths = {
+        		sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/lib/" + tool,
                 sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool,
                 sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool + ".exe",
                 sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool + ".bat",
