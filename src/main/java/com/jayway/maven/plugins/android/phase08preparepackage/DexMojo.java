@@ -103,9 +103,10 @@ public class DexMojo extends AbstractAndroidMojo {
         if (coreLibrary) {
             commands.add("--core-library");
         }
-        getLog().info(getAndroidSdk().getPathForTool("dx") + " " + commands.toString());
+        final String javaExecutable = getJavaExecutable().getAbsolutePath();
+        getLog().info(javaExecutable + " " + commands.toString());
         try {
-            executor.executeCommand(getJavaExecutable().getAbsolutePath(), commands, project.getBasedir(), false);
+            executor.executeCommand(javaExecutable, commands, project.getBasedir(), false);
         } catch (ExecutionException e) {
             throw new MojoExecutionException("", e);
         }
