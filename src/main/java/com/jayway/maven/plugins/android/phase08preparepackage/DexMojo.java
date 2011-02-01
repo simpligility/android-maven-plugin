@@ -105,10 +105,21 @@ public class DexMojo extends AbstractAndroidMojo {
         }
         getLog().info(getAndroidSdk().getPathForTool("dx") + " " + commands.toString());
         try {
-            executor.executeCommand("java", commands, project.getBasedir(), false);
+            executor.executeCommand(getJavaExecutable().getAbsolutePath(), commands, project.getBasedir(), false);
         } catch (ExecutionException e) {
             throw new MojoExecutionException("", e);
         }
+    }
+
+    /**
+     * Figure out the full path to the current java executable.
+     *
+     * @return the full path to the current java executable.
+     */
+    private static File getJavaExecutable() {
+        final String javaHome = System.getProperty("java.home");
+        final String slash = File.separator;
+        return new File(javaHome + slash + "bin" + slash + "java");
     }
 
     protected File createApkSourcesFile() throws MojoExecutionException {
