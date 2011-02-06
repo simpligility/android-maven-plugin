@@ -25,7 +25,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 
 /**
  * Writes the project version into the <code>AndroidManifest.xml</code> on projects that have
@@ -38,7 +38,7 @@ import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
  * @requiresProject true
  * @phase prepare-resources
  */
-public class VersionUpdateMojo extends AbstractIntegrationtestMojo {
+public class VersionUpdateMojo extends AbstractAndroidMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (!"apk".equals(project.getPackaging())) {
