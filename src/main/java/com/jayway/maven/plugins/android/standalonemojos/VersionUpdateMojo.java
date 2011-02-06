@@ -28,8 +28,8 @@ import org.xml.sax.SAXException;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 
 /**
- * Writes the project version into the <code>AndroidManifest.xml</code> on projects that have
- * <code>&lt;packaging&gt;apk&lt;/packaging&gt;</code>
+ * Writes the project version into <code>android:versionName</code> in the <code>AndroidManifest.xml</code> on
+ * projects that have <code>&lt;packaging&gt;apk&lt;/packaging&gt;</code>
  * <p>
  * Note: This process might reformat the <code>AndroidManifest.xml</code> per JAXP {@link Transformer} defaults.
  * 
