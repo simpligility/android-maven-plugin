@@ -45,22 +45,21 @@ public class VersionUpdateMojo extends AbstractAndroidMojo {
             return; // skip, not an android project.
         }
 
-        File manifestFile = new File(project.getBasedir(), "AndroidManifest.xml");
-        if (!manifestFile.exists()) {
+        if (!androidManifestFile.exists()) {
             return; // skip, no AndroidManifest.xml file found.
         }
 
         String version = project.getVersion();
         try {
-            updateManifest(manifestFile, version);
+            updateManifest(androidManifestFile, version);
         } catch (IOException e) {
-            throw new MojoFailureException("XML I/O error: " + manifestFile, e);
+            throw new MojoFailureException("XML I/O error: " + androidManifestFile, e);
         } catch (ParserConfigurationException e) {
             throw new MojoFailureException("Unable to prepare XML parser", e);
         } catch (SAXException e) {
-            throw new MojoFailureException("Unable to parse XML: " + manifestFile, e);
+            throw new MojoFailureException("Unable to parse XML: " + androidManifestFile, e);
         } catch (TransformerException e) {
-            throw new MojoFailureException("Unable write XML: " + manifestFile, e);
+            throw new MojoFailureException("Unable write XML: " + androidManifestFile, e);
         }
     }
 
