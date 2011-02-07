@@ -30,6 +30,7 @@
           </execution>
         </executions>
         <configuration>
+          <androidManifestFile>${basedir}/AndroidManifest.xml</androidManifestFile>
         </configuration>
       </plugin>
     </plugins>

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -21,9 +22,11 @@ import org.junit.Assert;
 public class MojoProjectStub extends MavenProjectStub {
     private File basedir;
     private Build build;
+    private Properties props = new Properties();
 
     public MojoProjectStub(File projectDir) {
         this.basedir = projectDir;
+        props.setProperty("basedir", this.basedir.getAbsolutePath());
 
         File pom = new File(getBasedir(), "plugin-config.xml");
         MavenXpp3Reader pomReader = new MavenXpp3Reader();
@@ -81,6 +84,11 @@ public class MojoProjectStub extends MavenProjectStub {
         }
 
         getBuild().setResources(resources);
+    }
+    
+    @Override
+    public Properties getProperties() {
+        return props;
     }
     
     @Override

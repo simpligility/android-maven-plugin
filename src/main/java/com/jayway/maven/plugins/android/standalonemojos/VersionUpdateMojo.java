@@ -44,7 +44,11 @@ public class VersionUpdateMojo extends AbstractAndroidMojo {
         if (!"apk".equals(project.getPackaging())) {
             return; // skip, not an android project.
         }
-
+        
+        if( androidManifestFile == null ) {
+            return; // skip, no androidmanifest.xml defined (rare case)
+        }
+        
         if (!androidManifestFile.exists()) {
             return; // skip, no AndroidManifest.xml file found.
         }
