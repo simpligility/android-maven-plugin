@@ -42,6 +42,17 @@ public class VersionUpdateMojoTest extends AbstractAndroidMojoTestCase<VersionUp
         assertExpectedAndroidManifest(manifestFile, dir);
     }
 
+    @Test
+    public void testManyVersionsAndroidProject() throws Exception {
+        VersionUpdateMojo mojo = createMojo("version-tests/manyversions-android-project");
+        for (int i = 0; i < 50; i++) { // Simulate 50 runs of the mojo
+            mojo.execute();
+        }
+        File dir = getProjectDir(mojo);
+        File manifestFile = new File(dir, "AndroidManifest.xml");
+        assertExpectedAndroidManifest(manifestFile, dir);
+    }
+
     private void assertExpectedAndroidManifest(File manifestFile, File testdir) throws IOException {
         File expectFile = new File(testdir, "AndroidManifest-expected.xml");
         String actual = FileUtils.readFileToString(manifestFile);
