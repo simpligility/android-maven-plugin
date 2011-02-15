@@ -543,18 +543,25 @@ public class ApkMojo extends AbstractAndroidMojo {
     private Set<Artifact> getNativeDependenciesArtifacts()
     {
         final Set<Artifact> filteredArtifacts = new HashSet<Artifact>();
+
+        // Add all dependent artifacts declared in the pom file
         @SuppressWarnings("unchecked")
         final Set<Artifact> allArtifacts = project.getDependencyArtifacts();
 
+        // Add all attached artifacts as well - this could come from the NDK mojo for example
+        @SuppressWarnings("unchecked")
+        allArtifacts.addAll( project.getAttachedArtifacts() );
+
         for (Artifact artifact : allArtifacts)
         {
-            // NUll in the scope means attached.
+            // A null value in the scope indicates that the artifact has been attached
+            // as part of a previous build step (NDK mojo)
             if ( "so".equals( artifact.getType() ) && artifact.getScope() == null ) {
                 // Including attached artifact
                 getLog().debug( "Including attached artifact: " + artifact.getArtifactId() + "(" + artifact.getGroupId() + ")" );
                 filteredArtifacts.add( artifact );
             }
-            if ("so".equals(artifact.getType()) && (Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) || Artifact.SCOPE_RUNTIME.equals( artifact.getScope() )))
+            else if ("so".equals(artifact.getType()) && (Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) || Artifact.SCOPE_RUNTIME.equals( artifact.getScope() )))
             {
                 filteredArtifacts.add(artifact);
             }
