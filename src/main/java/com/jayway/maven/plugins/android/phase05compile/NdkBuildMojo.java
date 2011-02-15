@@ -194,8 +194,10 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             }
         }
 
+        // Attempt to attach the native library if the project is defined as a "pure" native Android library
+        // (packaging is 'so') or if the plugin has been configured to attach the native library to the build
+        if ( "so".equals(project.getPackaging()) || attachNativeArtifacts ) {
 
-        if ( attachNativeArtifacts ) {
             File[] files = nativeLibDirectory.listFiles( new FilenameFilter() {
                 public boolean accept( final File dir, final String name ) {
                     return name.endsWith( ".so" );
@@ -209,10 +211,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
                     getLog().warn( "Currently, only a single, final native library is supported by the build" );
                 }
             } else {
-                if ( attachNativeArtifacts ) {
-                    getLog().debug( "Adding native compile artifact: " + files[ 0 ] );
-                    projectHelper.attachArtifact( this.project, "so", ( ndkClassifier != null ? ndkClassifier : ndkArchitecture ), files[ 0 ] );
-                }
+                getLog().debug( "Adding native compile artifact: " + files[ 0 ] );
+                projectHelper.attachArtifact( this.project, "so", ( ndkClassifier != null ? ndkClassifier : ndkArchitecture ), files[ 0 ] );
             }
 
         }
