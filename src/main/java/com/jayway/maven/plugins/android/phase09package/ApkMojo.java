@@ -18,13 +18,24 @@ package com.jayway.maven.plugins.android.phase09package;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -90,6 +101,17 @@ public class ApkMojo extends AbstractAndroidMojo {
      * @parameter expression="${android.nativeLibrariesDirectory}" default-value="${project.basedir}/libs"
      */
     private File nativeLibrariesDirectory;
+
+
+    /**
+     * <p>Allows to detect and extract the duplicate files from embedded jars. In that case, the plugin analyzes
+     * the content of all embedded dependencies and checks they are no duplicates inside those dependencies. Indeed,
+     * Android does not support duplicates, and all dependencies are inlined in the APK. If duplicates files are found,
+     * the resource is kept in the first dependency and removes from others.
+     *
+     * @parameter expression="${android.extractDuplicates}" default-value="false"
+     */
+    private boolean extractDuplicates;
 
      /**
      * <p>Temporary folder for collecting native libraries.</p>
@@ -163,7 +185,7 @@ public class ApkMojo extends AbstractAndroidMojo {
             initializeAPKBuilder();
             // Ok...
             // So we can try to use the internal ApkBuilder
-        } catch (MojoExecutionException e) {
+        } catch (Throwable e) {
             // Not supported platform try to old way.
             useInternalAPKBuilder = false;
         }
@@ -174,6 +196,24 @@ public class ApkMojo extends AbstractAndroidMojo {
         } else {
             doAPKWithCommand(outputFile, dexFile, zipArchive, sourceFolders, jarFiles,
                 nativeFolders, signWithDebugKeyStore);
+        }
+    }
+
+    private Map<String, List<File>> m_jars = new HashMap<String, List<File>>();
+
+    private void computeDuplicateFiles(File jar) throws ZipException, IOException {
+        ZipFile file = new ZipFile(jar);
+        Enumeration<? extends ZipEntry> list = file.entries();
+        while(list.hasMoreElements()) {
+            ZipEntry ze = list.nextElement();
+            if (! (ze.getName().contains("META-INF/")  || ze.isDirectory())) { // Exclude META-INF and Directories
+                List<File> l = m_jars.get(ze.getName());
+                if (l == null) {
+                    l = new ArrayList<File>();
+                    m_jars.put(ze.getName(), l);
+                }
+                l.add(jar);
+            }
         }
     }
 
@@ -201,7 +241,43 @@ public class ApkMojo extends AbstractAndroidMojo {
         processNativeLibraries(nativeFolders);
 
         for (Artifact artifact : getRelevantCompileArtifacts()) {
+            if (extractDuplicates) {
+                try {
+                    computeDuplicateFiles(artifact.getFile());
+                } catch (Exception e) {
+                    getLog().warn("Cannot compute duplicates files from " + artifact.getFile().getAbsolutePath(), e);
+                }
+            }
             jarFiles.add(artifact.getFile());
+        }
+
+        // Check duplicates.
+        if (extractDuplicates) {
+            List<String> duplicates = new ArrayList<String>();
+            List<File> jarToModify = new ArrayList<File>();
+            for (String s : m_jars.keySet()) {
+                List<File> l = m_jars.get(s);
+                if (l.size() > 1) {
+                    getLog().warn("Duplicate file " + s + " : " + l);
+                    duplicates.add(s);
+                    for (int i = 1; i < l.size(); i++) {
+                        if (! jarToModify.contains(l.get(i))) {
+                            jarToModify.add(l.get(i));
+                        }
+                    }
+                }
+            }
+
+            // Rebuild jars.
+            for (File file : jarToModify) {
+                File newJar;
+                    newJar = removeDuplicatesFromJar(file, duplicates);
+                    int index = jarFiles.indexOf(file);
+                    if (newJar != null) {
+                        jarFiles.set(index, newJar);
+                    }
+
+            }
         }
 
         ApkBuilder builder = new ApkBuilder(outputFile, zipArchive, dexFile, signWithDebugKeyStore,  (verbose) ? System.out : null);
@@ -236,6 +312,83 @@ public class ApkMojo extends AbstractAndroidMojo {
 
         builder.sealApk();
     }
+
+    private File removeDuplicatesFromJar(File in, List<String> duplicates) {
+        File target = new File(project.getBasedir(), "target");
+        File tmp = new File(target, "unpacked-embedded-jars");
+        tmp.mkdirs();
+        File out = new File(tmp, in.getName());
+
+        if (out.exists()) {
+            return out;
+        } else {
+            try {
+                out.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Create a new Jar file
+        FileOutputStream fos = null;
+        ZipOutputStream jos = null;
+        try {
+            fos = new FileOutputStream(out);
+            jos = new ZipOutputStream(fos);
+        } catch (FileNotFoundException e1) {
+            getLog().error("Cannot remove duplicates : the output file " + out.getAbsolutePath() + " does not found");
+            return null;
+        }
+
+        ZipFile inZip = null;
+        try {
+            inZip = new ZipFile(in);
+            Enumeration< ? extends ZipEntry> entries = inZip.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                // If the entry is not a duplicate, copy.
+                if (! duplicates.contains(entry.getName())) {
+                    // copy the entry header to jos
+                    jos.putNextEntry(entry);
+                    InputStream currIn = inZip.getInputStream(entry);
+                    copyStreamWithoutClosing(currIn, jos);
+                    currIn.close();
+                    jos.closeEntry();
+                }
+            }
+        } catch (IOException e) {
+            getLog().error("Cannot removing duplicates : " + e.getMessage());
+            return null;
+        }
+
+        try {
+            if (inZip != null) {
+                inZip.close();
+            }
+            jos.close();
+            fos.close();
+            jos = null;
+            fos = null;
+        } catch (IOException e) {
+            // ignore it.
+        }
+        getLog().info(in.getName() + " rewritten without duplicates : " + out.getAbsolutePath());
+        return out;
+    }
+
+    /**
+     * Copies an input stream into an output stream but does not close the streams.
+     * @param in the input stream
+     * @param out the output stream
+     * @throws IOException if the stream cannot be copied
+     */
+    private static void copyStreamWithoutClosing(InputStream in, OutputStream out) throws IOException {
+        byte[] b = new byte[4096];
+        for (int n; (n = in.read(b)) != -1;) {
+            out.write(b, 0, n);
+        }
+    }
+
 
     /**
      * Creates the APK file using the command line.
