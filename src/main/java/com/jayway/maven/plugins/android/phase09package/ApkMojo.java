@@ -131,6 +131,13 @@ public class ApkMojo extends AbstractAndroidMojo {
     private String nativeLibrariesDependenciesHardwareArchitectureDefault;
 
     /**
+    * <p>Classifier to add to the artifact generated. If given, the artifact will be an attachment instead.</p>
+    *
+    * @parameter
+    */
+    private String classifier;
+
+    /**
      * <p>Override hardware architecture for native library dependencies (with {@code &lt;type>so&lt;/type>}).</p>
      * <p>This overrides any classifier on native library dependencies, and any {@code nativeLibrariesDependenciesHardwareArchitectureDefault}.</p>
      * <p>Valid values currently include {@code armeabi} and {@code armeabi-v7a}.</p>
@@ -162,15 +169,21 @@ public class ApkMojo extends AbstractAndroidMojo {
                     .getFinalName() + "-unsigned" + ANDROID_PACKAGE_EXTENSTION);
             getLog().info("Creating additional unsigned apk file " + unsignedOutputFile);
             createApkFile(unsignedOutputFile, false);
-            projectHelper.attachArtifact(project, unsignedOutputFile, "unsigned");
+            projectHelper.attachArtifact(project, unsignedOutputFile, classifier == null ? "unsigned" : classifier + "_unsigned");
         } else {
             createApkFile(outputFile, signWithDebugKeyStore);
         }
 
-
-
-        // Set the generated .apk file as the main artifact (because the pom states <packaging>apk</packaging>)
-        project.getArtifact().setFile(outputFile);
+        if (classifier == null)
+        {
+            // Set the generated .apk file as the main artifact (because the pom states <packaging>apk</packaging>)
+            project.getArtifact().setFile(outputFile);
+        }
+        else
+        {
+            // If there is a classifier specified, attach the artifact using that
+            projectHelper.attachArtifact(project,outputFile,classifier);
+        }
     }
 
     void createApkFile(File outputFile, boolean signWithDebugKeyStore) throws MojoExecutionException {
@@ -549,7 +562,7 @@ public class ApkMojo extends AbstractAndroidMojo {
         final Set<Artifact> allArtifacts = project.getDependencyArtifacts();
 
         // Add all attached artifacts as well - this could come from the NDK mojo for example
-        @SuppressWarnings("unchecked")
+        // @SuppressWarnings("unchecked")
         allArtifacts.addAll( project.getAttachedArtifacts() );
 
         for (Artifact artifact : allArtifacts)
