@@ -340,6 +340,68 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * expression="${android.attachSources}"
      */
     protected boolean attachSources;
+    
+    /**
+     * <p>Whether to execute tests only in given packages</p>
+     * <pre>
+     * &lt;testPackages&gt;
+     *     &lt;testPackage&gt;your.package.name&lt;/testPackage&gt;
+     * &lt;/testPackages&gt;
+     * </pre>
+     * 
+     * @parameter
+     */
+    protected List testPackages;
+    
+    /**
+     * <p>Whether to execute test classes which are specified.</p>
+     * <pre>
+     * &lt;testClasses&gt;
+     *     &lt;testClass&gt;your.package.name.YourTestClass&lt;/testClass&gt;
+     * &lt;/testClasses&gt;
+     * </pre>
+     * 
+     * @parameter
+     */
+    protected List testClasses;
+    
+    /**
+     * @return Given test classes as a comma separated string
+     */
+    @SuppressWarnings("unchecked")
+	protected String buildTestClassesString() {
+    	return buildCommaSeperatedString(testClasses);
+    }
+    
+    /**
+     * @return Given test packages as a comma separated string
+     */
+    @SuppressWarnings("unchecked")
+    protected String buildTestPackagesString() {
+    	return buildCommaSeperatedString(testPackages);
+    }
+    
+    /**
+     * Helper method to build a comma separated string from a list.
+     * Blank strings are filtered out
+     * 
+     * @param lines A list of strings
+     * @return Comma separated String from given list
+     */
+    protected static String buildCommaSeperatedString(List<String> lines) {
+    	if(lines == null || lines.size() == 0) {
+    		return null;
+    	}
+    	
+    	List<String> strings = new ArrayList<String>(lines.size());
+    	for(String str : lines) { // filter out blank strings
+    		if(StringUtils.isNotBlank(str)) {
+    			strings.add(StringUtils.trimToEmpty(str));
+    		}	
+    	}
+    	
+    	return StringUtils.join(strings, ",");
+    }
 
 
     /**
