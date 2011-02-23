@@ -16,6 +16,7 @@
  */
 package com.jayway.maven.plugins.android.phase01generatesources;
 
+import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APK;
 import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APKLIB;
 import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APKSOURCES;
 
@@ -92,6 +93,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     protected File genDirectory;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+
+        // If the current POM isn't an Android-related POM, then don't do
+        // anything.  This helps work with multi-module projects.
+        if (!isCurrentProjectAndroid()) {
+            return;
+        }
 
         try {
             extractSourceDependencies();
@@ -521,4 +528,15 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         getLog().info("ANDROID-904-002: Found aidl files: Count = " + relativeAidlFileNames.length);
         return relativeAidlFileNames;
     }
+
+    /**
+     * @return true if the pom type is APK, APKLIB, or APKSOURCES
+     */
+    private boolean isCurrentProjectAndroid() {
+        Set<String> androidArtifacts = new HashSet<String>() {{
+            addAll(Arrays.asList(APK, APKLIB, APKSOURCES));
+        }};
+        return androidArtifacts.contains(project.getArtifact().getType());
+    }
+
 }
