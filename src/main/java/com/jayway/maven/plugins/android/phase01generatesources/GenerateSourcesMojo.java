@@ -140,13 +140,21 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
             generateR();
             generateApklibR();
-            generateAidlFiles(sourceDirectory, relativeAidlFileNames1);
-            generateAidlFiles(extractedDependenciesJavaSources, relativeAidlFileNames2);
+
+            // When compiling AIDL for this project,
+            // make sure we compile AIDL for dependencies as well.
+            // This is so project A, which depends on project B, can
+            // use AIDL info from project B in its own AIDL
+            Map<File, String[]> files = new HashMap<File, String[]>();
+            files.put(sourceDirectory, relativeAidlFileNames1);
+            files.put(extractedDependenciesJavaSources, relativeAidlFileNames2);
             for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
             	if (artifact.getType().equals(APKLIB)) {
-            		generateApklibAidlFiles(new File(getLibrarySourceDirectory(artifact)+"/src/main/java"), relativeApklibAidlFileNames.get(artifact.getArtifactId()));
+                    files.put(new File(getLibrarySourceDirectory(artifact)+"/src/main/java"),
+                            relativeApklibAidlFileNames.get(artifact.getArtifactId()));
             	}
             }
+            generateAidlFiles(files);
         } catch (MojoExecutionException e) {
             getLog().error("Error when generating sources.", e);
             throw e;
@@ -463,34 +471,47 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 		}
 	}
 
-	private void generateAidlFiles(File sourceDirectory, String[] relativeAidlFileNames) throws MojoExecutionException {
-        for (String relativeAidlFileName : relativeAidlFileNames) {
-            List<String> commands = new ArrayList<String>();
-            commands.add("-p" + getAndroidSdk().getPathForFrameworkAidl());
+    /**
+     * Given a map of source directories to list of AIDL (relative) filenames within each,
+     * runs the AIDL compiler for each, such that all source directories are available to
+     * the AIDL compiler.
+     *
+     * @param files Map of source directory File instances to the relative paths to all AIDL files within
+     * @throws MojoExecutionException If the AIDL compiler fails
+     */
+    private void generateAidlFiles(Map<File /*sourceDirectory*/, String[] /*relativeAidlFileNames*/> files) throws MojoExecutionException {
+        List<String> protoCommands = new ArrayList<String>();
+        protoCommands.add("-p" + getAndroidSdk().getPathForFrameworkAidl());
 
-            File generatedSourcesAidlDirectory = new File(project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "aidl");
-            generatedSourcesAidlDirectory.mkdirs();
-            project.addCompileSourceRoot(generatedSourcesAidlDirectory.getPath());
-            File targetDirectory = new File(generatedSourcesAidlDirectory, new File(relativeAidlFileName).getParent());
-            targetDirectory.mkdirs();
+        File generatedSourcesAidlDirectory = new File(project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "aidl");
+        generatedSourcesAidlDirectory.mkdirs();
+        project.addCompileSourceRoot(generatedSourcesAidlDirectory.getPath());
+        Set<File> sourceDirs = files.keySet();
+        for (File sourceDir : sourceDirs) {
+            protoCommands.add("-I" + sourceDir);
+        }
+        for (File sourceDir : sourceDirs) {
+            for (String relativeAidlFileName : files.get(sourceDir)) {
+                File targetDirectory = new File(generatedSourcesAidlDirectory, new File(relativeAidlFileName).getParent());
+                targetDirectory.mkdirs();
 
-            final String shortAidlFileName = new File(relativeAidlFileName).getName();
-            final String shortJavaFileName = shortAidlFileName.substring(0, shortAidlFileName.lastIndexOf(".")) + ".java";
-            final File aidlFileInSourceDirectory = new File(sourceDirectory, relativeAidlFileName);
+                final String shortAidlFileName = new File(relativeAidlFileName).getName();
+                final String shortJavaFileName = shortAidlFileName.substring(0, shortAidlFileName.lastIndexOf(".")) + ".java";
+                final File aidlFileInSourceDirectory = new File(sourceDir, relativeAidlFileName);
 
-            commands.add("-I" + sourceDirectory);
-            commands.add(aidlFileInSourceDirectory.getAbsolutePath());
-            commands.add(new File(targetDirectory, shortJavaFileName).getAbsolutePath());
-            try {
-                CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-                executor.setLogger(this.getLog());
+                List<String> commands = new ArrayList<String>(protoCommands);
+                commands.add(aidlFileInSourceDirectory.getAbsolutePath());
+                commands.add(new File(targetDirectory, shortJavaFileName).getAbsolutePath());
+                try {
+                    CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+                    executor.setLogger(this.getLog());
 
-                executor.executeCommand(getAndroidSdk().getPathForTool("aidl"), commands, project.getBasedir(), false);
-            } catch (ExecutionException e) {
-                throw new MojoExecutionException("", e);
+                    executor.executeCommand(getAndroidSdk().getPathForTool("aidl"), commands, project.getBasedir(), false);
+                } catch (ExecutionException e) {
+                    throw new MojoExecutionException("", e);
+                }
             }
         }
-
     }
 
 	private void generateApklibAidlFiles(File sourceDirectory, String[] relativeAidlFileNames) throws MojoExecutionException {
