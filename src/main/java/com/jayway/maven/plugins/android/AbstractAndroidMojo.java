@@ -560,7 +560,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         commands.add("AndroidManifest.xml");
         getLog().info(getAndroidSdk().getPathForTool("aapt") + " " + commands.toString());
         try {
-            executor.executeCommand(getAndroidSdk().getPathForTool("aapt"), commands, true);
+            executor.executeCommand(getAndroidSdk().getPathForTool("aapt"), commands, false);
             final String xmlTree = executor.getStandardOut();
             return extractPackageNameFromAndroidManifestXmlTree(xmlTree);
         } catch (ExecutionException e) {
