@@ -110,7 +110,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             String[] apklibAidlFiles;
             for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
             	if (artifact.getType().equals(APKLIB)) {
-            		apklibAidlFiles = findRelativeAidlFileNames(new File(getLibraryUnpackDirectory(artifact)+"/src/main/java"));
+            		apklibAidlFiles = findRelativeAidlFileNames(new File(getLibraryUnpackDirectory(artifact)+"/src"));
             		relativeApklibAidlFileNames.put(artifact.getArtifactId(), apklibAidlFiles);
             	}
             }
@@ -150,7 +150,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             files.put(extractedDependenciesJavaSources, relativeAidlFileNames2);
             for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
             	if (artifact.getType().equals(APKLIB)) {
-                    files.put(new File(getLibraryUnpackDirectory(artifact)+"/src/main/java"),
+                    files.put(new File(getLibraryUnpackDirectory(artifact)+"/src"),
                             relativeApklibAidlFileNames.get(artifact.getArtifactId()));
             	}
             }
@@ -238,8 +238,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 					+ ". Message: " + e.getLocalizedMessage(), e);
 		}
 
-		projectHelper.addResource(project, apklibDirectory.getAbsolutePath() + "/src/main/resources", null, null);
-		project.addCompileSourceRoot(apklibDirectory.getAbsolutePath() + "/src/main/java");
+		projectHelper.addResource(project, apklibDirectory.getAbsolutePath() + "/src", null, null);
+		project.addCompileSourceRoot(apklibDirectory.getAbsolutePath() + "/src");
 
 	}
 

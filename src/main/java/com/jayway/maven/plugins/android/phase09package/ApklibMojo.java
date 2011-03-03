@@ -71,8 +71,8 @@ public class ApklibMojo extends AbstractAndroidMojo {
             jarArchiver.addFile(androidManifestFile, "AndroidManifest.xml");
             addDirectory(jarArchiver, assetsDirectory, "assets");
             addDirectory(jarArchiver, resourceDirectory, "res");
-            addDirectory(jarArchiver, sourceDirectory, "src/main/java");
-            addJavaResources(jarArchiver, project.getBuild().getResources());
+            addDirectory(jarArchiver, sourceDirectory, "src");
+            addJavaResources(jarArchiver, project.getBuild().getResources(), "src");
 
             jarArchiver.createArchive();
         } catch (ArchiverException e) {
@@ -83,9 +83,9 @@ public class ApklibMojo extends AbstractAndroidMojo {
 
         return apklibrary;
     }
-    protected void addJavaResources(JarArchiver jarArchiver, List<Resource> javaResources) throws ArchiverException {
+    protected void addJavaResources(JarArchiver jarArchiver, List<Resource> javaResources, String prefix) throws ArchiverException {
         for (Resource javaResource : javaResources) {
-            addJavaResource(jarArchiver, javaResource);
+            addJavaResource(jarArchiver, javaResource, prefix);
         }
     }
 
@@ -94,20 +94,21 @@ public class ApklibMojo extends AbstractAndroidMojo {
      *
      * @param jarArchiver
      * @param javaResource The Java resource to add.
+     * @param prefix An optional prefix for where in the Jar file the directory's contents should go.
      * @throws ArchiverException
      */
-    protected void addJavaResource(JarArchiver jarArchiver, Resource javaResource) throws ArchiverException {
+    protected void addJavaResource(JarArchiver jarArchiver, Resource javaResource, String prefix) throws ArchiverException {
         if (javaResource != null) {
             final File javaResourceDirectory = new File(javaResource.getDirectory());
             if (javaResourceDirectory.exists()) {
                 final DefaultFileSet javaResourceFileSet = new DefaultFileSet();
                 javaResourceFileSet.setDirectory(javaResourceDirectory);
-                javaResourceFileSet.setPrefix(endWithSlash("src/main/resources"));
+                javaResourceFileSet.setPrefix(endWithSlash(prefix));
                 jarArchiver.addFileSet(javaResourceFileSet);
             }
         }
     }
-    
+
     /**
      * Makes sure the string ends with "/"
      *
