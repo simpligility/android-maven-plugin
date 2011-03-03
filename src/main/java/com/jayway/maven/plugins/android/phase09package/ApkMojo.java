@@ -657,7 +657,7 @@ public class ApkMojo extends AbstractAndroidMojo {
         List<Artifact> artifactList = new ArrayList<Artifact>(getAllRelevantDependencyArtifacts());
 		for (Artifact artifact: artifactList) {
 			if (artifact.getType().equals(APKLIB)) {
-				File apklibAsssetsDirectory = new File(getLibrarySourceDirectory(artifact) + "/assets");
+				File apklibAsssetsDirectory = new File(getLibraryUnpackDirectory(artifact) + "/assets");
 				if (apklibAsssetsDirectory.exists()) {
 		            try {
 		                getLog().info("Copying dependency assets files to combined assets directory.");
@@ -739,7 +739,7 @@ public class ApkMojo extends AbstractAndroidMojo {
         }
 		for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
 			if (artifact.getType().equals(APKLIB)) {
-				File libResourceDirectory = new File(getLibrarySourceDirectory(artifact) + "/res");
+				File libResourceDirectory = new File(getLibraryUnpackDirectory(artifact) + "/res");
 				commands.add("-S");
 				commands.add(libResourceDirectory.getAbsolutePath());
 			}

@@ -179,7 +179,7 @@ public class ApklibMojo extends AbstractAndroidMojo {
         for (Artifact apkLibraryArtifact: getRelevantDependencyArtifacts()) {
         	if (apkLibraryArtifact.getType().equals(APKLIB)) {
         		commands.add("-S");
-        		commands.add(getLibrarySourceDirectory(apkLibraryArtifact)+"/res");
+        		commands.add(getLibraryUnpackDirectory(apkLibraryArtifact)+"/res");
         	}
         }
 		commands.add("--auto-add-overlay");

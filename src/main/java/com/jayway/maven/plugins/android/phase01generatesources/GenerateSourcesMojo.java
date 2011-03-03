@@ -110,7 +110,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             String[] apklibAidlFiles;
             for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
             	if (artifact.getType().equals(APKLIB)) {
-            		apklibAidlFiles = findRelativeAidlFileNames(new File(getLibrarySourceDirectory(artifact)+"/src/main/java"));
+            		apklibAidlFiles = findRelativeAidlFileNames(new File(getLibraryUnpackDirectory(artifact)+"/src/main/java"));
             		relativeApklibAidlFileNames.put(artifact.getArtifactId(), apklibAidlFiles);
             	}
             }
@@ -133,7 +133,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
                 deleteConflictingAidlJavaFiles(extractedDependenciesJavaSources, relativeAidlFileNamesSet);
                 for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
                 	if (artifact.getType().equals(APKLIB)) {
-                		deleteConflictingAidlJavaFiles(new File(getLibrarySourceDirectory(artifact)+"/src/main/java"), relativeAidlFileNamesSet);
+                		deleteConflictingAidlJavaFiles(new File(getLibraryUnpackDirectory(artifact)+"/src/main/java"), relativeAidlFileNamesSet);
                 	}
                 }
             }
@@ -150,7 +150,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             files.put(extractedDependenciesJavaSources, relativeAidlFileNames2);
             for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
             	if (artifact.getType().equals(APKLIB)) {
-                    files.put(new File(getLibrarySourceDirectory(artifact)+"/src/main/java"),
+                    files.put(new File(getLibraryUnpackDirectory(artifact)+"/src/main/java"),
                             relativeApklibAidlFileNames.get(artifact.getArtifactId()));
             	}
             }
@@ -228,7 +228,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 				return new ConsoleLogger(Logger.LEVEL_DEBUG, "dependencies-unarchiver");
 			}
 		};
-		File apklibDirectory = new File(getLibrarySourceDirectory(apklibArtifact));
+		File apklibDirectory = new File(getLibraryUnpackDirectory(apklibArtifact));
 		apklibDirectory.mkdirs();
 		unArchiver.setDestDirectory(apklibDirectory);
 		try {
@@ -385,7 +385,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 		for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
 			if (artifact.getType().equals(APKLIB)) {
 		   		commands.add("-S");
-				commands.add(getLibrarySourceDirectory(artifact)+"/res");
+				commands.add(getLibraryUnpackDirectory(artifact)+"/res");
 			}
 		}
 		commands.add("--auto-add-overlay");
@@ -422,7 +422,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 		
 		for (Artifact artifact : getAllRelevantDependencyArtifacts()) {
 			if (artifact.getType().equals(APKLIB)) {
-				generateRForManifest(getLibrarySourceDirectory(artifact) + "/" + "AndroidManifest.xml");
+				generateRForManifest(getLibraryUnpackDirectory(artifact) + "/" + "AndroidManifest.xml");
 			}
 		}
 
@@ -449,7 +449,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 		for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
 			if (artifact.getType().equals(APKLIB)) {
 		   		commands.add("-S");
-				commands.add(getLibrarySourceDirectory(artifact)+"/res");
+				commands.add(getLibraryUnpackDirectory(artifact)+"/res");
 			}
 		}
 		commands.add("--auto-add-overlay");
