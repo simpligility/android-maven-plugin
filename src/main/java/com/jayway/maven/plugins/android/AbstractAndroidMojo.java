@@ -155,10 +155,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     /**
      * Extract the apklib dependencies here
      *
-     * @parameter expression="${project.build.directory}/generated-sources/apklibs"
+     * @parameter expression="${project.build.directory}/unpack/apklibs"
      * @readonly
      */
-    protected File extractedApkLibsDirectory;
+    protected File unpackedApkLibsDirectory;
 
     /**
      * Specifies which device to connect to, by serial number. Special values "usb" and "emulator" are also valid, for
@@ -727,6 +727,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     }
     
     protected String getLibraryUnpackDirectory(Artifact apkLibraryArtifact) {
-    	return extractedApkLibsDirectory.getAbsolutePath() + "/" + apkLibraryArtifact.getId().replace(":", "_");
+    	return unpackedApkLibsDirectory.getAbsolutePath() + "/" + apkLibraryArtifact.getId().replace(":", "_");
     }
 }
