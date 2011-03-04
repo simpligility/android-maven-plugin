@@ -522,36 +522,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         }
     }
 
-	private void generateApklibAidlFiles(File sourceDirectory, String[] relativeAidlFileNames) throws MojoExecutionException {
-      genDirectory.mkdirs();
-      project.addCompileSourceRoot(genDirectory.getPath());
-      for (String relativeAidlFileName : relativeAidlFileNames) {
-            List<String> commands = new ArrayList<String>();
-            commands.add("-p" + getAndroidSdk().getPathForFrameworkAidl());
-
-//            File generatedSourcesAidlDirectory = new File(project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "aidl");
-            File targetDirectory = new File(genDirectory, new File(relativeAidlFileName).getParent());
-            targetDirectory.mkdirs();
-
-            final String shortAidlFileName = new File(relativeAidlFileName).getName();
-            final String shortJavaFileName = shortAidlFileName.substring(0, shortAidlFileName.lastIndexOf(".")) + ".java";
-            final File aidlFileInSourceDirectory = new File(sourceDirectory, relativeAidlFileName);
-
-            commands.add("-I" + sourceDirectory);
-            commands.add(aidlFileInSourceDirectory.getAbsolutePath());
-            commands.add(new File(targetDirectory, shortJavaFileName).getAbsolutePath());
-            try {
-                CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-                executor.setLogger(this.getLog());
-
-                executor.executeCommand(getAndroidSdk().getPathForTool("aidl"), commands, project.getBasedir(), false);
-            } catch (ExecutionException e) {
-                throw new MojoExecutionException("", e);
-            }
-        }
-
-    }
-
     private String[] findRelativeAidlFileNames(File sourceDirectory) {
         String[] relativeAidlFileNames = findFilesInDirectory(sourceDirectory, "**/*.aidl");
         getLog().info("ANDROID-904-002: Found aidl files: Count = " + relativeAidlFileNames.length);
