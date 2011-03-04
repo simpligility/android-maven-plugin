@@ -448,8 +448,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 		commands.add(resourceDirectory.getAbsolutePath());
 		for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
 			if (artifact.getType().equals(APKLIB)) {
-		   		commands.add("-S");
-				commands.add(getLibraryUnpackDirectory(artifact)+"/res");
+                final String apkLibResDir = getLibraryUnpackDirectory(artifact) + "/res";
+                if (new File(apkLibResDir).exists()){
+                    commands.add("-S");
+                    commands.add(apkLibResDir);
+                }
 			}
 		}
 		commands.add("--auto-add-overlay");
