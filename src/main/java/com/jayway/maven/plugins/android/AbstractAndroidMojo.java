@@ -153,7 +153,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected File combinedAssets;
 
     /**
-     * Extract the apklib projects here
+     * Extract the apklib dependencies here
      *
      * @parameter expression="${project.build.directory}/generated-sources/apklibs"
      * @readonly
