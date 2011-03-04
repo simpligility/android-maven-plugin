@@ -416,23 +416,19 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 	private void generateApklibR() throws MojoExecutionException {
 		getLog().debug("Generating R file for projects dependent on apklibs");
 
-        apkLibGen.mkdirs();
+        genDirectory.mkdirs();
 
-//		generateRForApkLibDependency(androidManifestFile.getAbsolutePath());
-		
 		for (Artifact artifact : getAllRelevantDependencyArtifacts()) {
 			if (artifact.getType().equals(APKLIB)) {
 				generateRForApkLibDependency(getLibraryUnpackDirectory(artifact) + "/" + "AndroidManifest.xml");
 			}
 		}
 
-		project.addCompileSourceRoot(genDirectory.getAbsolutePath());
-
+        project.addCompileSourceRoot(genDirectory.getAbsolutePath());
 	}
 
 	private void generateRForApkLibDependency(String pathToApkLibAndroidManifest) throws MojoExecutionException {
 		getLog().debug("Generating R file for apklibrary: " + pathToApkLibAndroidManifest);
-
 
 		CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
 		executor.setLogger(this.getLog());
@@ -441,7 +437,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 		commands.add("package");
 		commands.add("-m");
 		commands.add("-J");
-		commands.add(apkLibGen.getAbsolutePath());
+		commands.add(genDirectory.getAbsolutePath());
 		commands.add("-M");
 		commands.add(pathToApkLibAndroidManifest);
 		commands.add("-S");
@@ -527,14 +523,14 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     }
 
 	private void generateApklibAidlFiles(File sourceDirectory, String[] relativeAidlFileNames) throws MojoExecutionException {
-      apkLibGen.mkdirs();
-      project.addCompileSourceRoot(apkLibGen.getPath());
+      genDirectory.mkdirs();
+      project.addCompileSourceRoot(genDirectory.getPath());
       for (String relativeAidlFileName : relativeAidlFileNames) {
             List<String> commands = new ArrayList<String>();
             commands.add("-p" + getAndroidSdk().getPathForFrameworkAidl());
 
 //            File generatedSourcesAidlDirectory = new File(project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "aidl");
-            File targetDirectory = new File(apkLibGen, new File(relativeAidlFileName).getParent());
+            File targetDirectory = new File(genDirectory, new File(relativeAidlFileName).getParent());
             targetDirectory.mkdirs();
 
             final String shortAidlFileName = new File(relativeAidlFileName).getName();
