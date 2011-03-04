@@ -159,14 +159,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @readonly
      */
     protected File extractedApkLibsDirectory;
-    
-    /**
-     * Generated the apklib sources here
-     *
-     * @parameter expression="${project.build.directory}/generated-sources/gen"
-     * @readonly
-     */
-    protected File apkLibGen;
 
     /**
      * Specifies which device to connect to, by serial number. Special values "usb" and "emulator" are also valid, for
