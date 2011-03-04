@@ -457,7 +457,16 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 			commands.add("-A");
 			commands.add(assetsDirectory.getAbsolutePath());
 		}
-		commands.add("-I");
+        for (Artifact artifact : getAllRelevantDependencyArtifacts()) {
+            if (artifact.getType().equals(APKLIB)) {
+                final String apkLibAssetsDir = getLibraryUnpackDirectory(artifact) + "/assets";
+                if (new File(apkLibAssetsDir).exists()){
+                    commands.add("-A");
+                    commands.add(apkLibAssetsDir);
+                }
+            }
+        }
+        commands.add("-I");
 		commands.add(getAndroidSdk().getAndroidJar().getAbsolutePath());
 		if (StringUtils.isNotBlank(configurations)) {
 			commands.add("-c");
