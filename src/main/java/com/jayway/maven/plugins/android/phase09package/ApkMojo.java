@@ -734,14 +734,18 @@ public class ApkMojo extends AbstractAndroidMojo {
             commands.add("-S");
             commands.add(combinedRes.getAbsolutePath());
         } else {
-    		commands.add("-S");
-    		commands.add(resourceDirectory.getAbsolutePath());
+            if (resourceDirectory.exists()) {
+                commands.add("-S");
+                commands.add(resourceDirectory.getAbsolutePath());
+            }
         }
 		for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
 			if (artifact.getType().equals(APKLIB)) {
-				File libResourceDirectory = new File(getLibraryUnpackDirectory(artifact) + "/res");
-				commands.add("-S");
-				commands.add(libResourceDirectory.getAbsolutePath());
+                final String apkLibResDir = getLibraryUnpackDirectory(artifact) + "/res";
+                if (new File(apkLibResDir).exists()){
+                    commands.add("-S");
+                    commands.add(apkLibResDir);
+                }
 			}
 		}
 		commands.add("--auto-add-overlay");
