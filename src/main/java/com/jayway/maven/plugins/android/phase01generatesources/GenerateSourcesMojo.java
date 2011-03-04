@@ -378,8 +378,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             commands.add("-S");
             commands.add(combinedRes.getAbsolutePath());
         } else {
-    		commands.add("-S");
-    		commands.add(resourceDirectory.getAbsolutePath());
+            if (resourceDirectory.exists()) {
+                commands.add("-S");
+                commands.add(resourceDirectory.getAbsolutePath());
+            }
         }
         
 		for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
@@ -440,8 +442,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 		commands.add(genDirectory.getAbsolutePath());
 		commands.add("-M");
 		commands.add(pathToApkLibAndroidManifest);
-		commands.add("-S");
-		commands.add(resourceDirectory.getAbsolutePath());
+		if (resourceDirectory.exists()){
+            commands.add("-S");
+            commands.add(resourceDirectory.getAbsolutePath());
+        }
 		for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
 			if (artifact.getType().equals(APKLIB)) {
                 final String apkLibResDir = getLibraryUnpackDirectory(artifact) + "/res";
