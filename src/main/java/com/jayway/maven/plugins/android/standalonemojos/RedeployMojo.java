@@ -43,6 +43,10 @@ public class RedeployMojo extends AbstractIntegrationtestMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (file == null) {
+            if (! SUPPORTED_PACKAGING_TYPES.contains(project.getPackaging())) {
+                getLog().info("Skipping redeploy on " + project.getPackaging());
+                return;
+            }
             String packageToUndeploy = extractPackageNameFromAndroidManifest(androidManifestFile);
             undeployApk(packageToUndeploy);
             deployBuiltApk();

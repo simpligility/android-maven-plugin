@@ -76,12 +76,6 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
      */
     private File alignedApkFile;
 
-    private static final List<String> SUPPORTED_PACKAGING_TYPES = new ArrayList<String>();
-
-    static {
-        SUPPORTED_PACKAGING_TYPES.add(APK);
-    }
-
     /**
      * actually do the zipalign
      *
