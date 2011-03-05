@@ -16,9 +16,9 @@
  */
 package com.jayway.maven.plugins.android.phase01generatesources;
 
-import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APK;
-import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APKLIB;
-import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APKSOURCES;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APKSOURCES;
 
 import java.io.File;
 import java.io.FileFilter;

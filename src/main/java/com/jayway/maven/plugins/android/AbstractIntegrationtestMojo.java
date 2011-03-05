@@ -19,12 +19,10 @@ import java.io.File;
 import java.util.Set;
 
 import com.jayway.maven.plugins.android.asm.AndroidTestFinder;
-import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APK;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-
-import com.jayway.maven.plugins.android.asm.AndroidTestFinder;
 
 /**
  * For integrationtest related Mojos.
