@@ -23,11 +23,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.dependency.utils.resolvers.ArtifactsResolver;
-import org.apache.maven.plugin.dependency.utils.resolvers.DefaultArtifactsResolver;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.DirectoryScanner;
@@ -403,14 +403,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @throws MojoExecutionException if the artifact could not be resolved.
      */
     protected File resolveArtifactToFile(Artifact artifact) throws MojoExecutionException {
-        final ArtifactsResolver artifactsResolver = new DefaultArtifactsResolver(this.artifactResolver, this.localRepository, this.remoteRepositories, true);
-        final HashSet<Artifact> artifacts = new HashSet<Artifact>();
-        artifacts.add(artifact);
-        File jar = null;
-        final Set<Artifact> resolvedArtifacts = artifactsResolver.resolve(artifacts, getLog());
-        for (Artifact resolvedArtifact : resolvedArtifacts) {
-            jar = resolvedArtifact.getFile();
+        try {
+            this.artifactResolver.resolve(artifact, remoteRepositories, localRepository);
+        } catch (ArtifactResolutionException e) {
+            throw new MojoExecutionException("Error resolving artifact.", e);
+        } catch (ArtifactNotFoundException e) {
+            throw new MojoExecutionException("Could not find artifact.", e);
         }
+        final File jar = artifact.getFile();
         if (jar == null) {
             throw new MojoExecutionException("Could not resolve artifact " + artifact.getId() + ". Please install it with \"mvn install:install-file ...\" or deploy it to a repository with \"mvn deploy:deploy-file ...\"");
         }
