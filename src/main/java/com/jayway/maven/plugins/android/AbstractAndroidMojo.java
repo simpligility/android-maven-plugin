@@ -46,7 +46,18 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  */
 public abstract class AbstractAndroidMojo extends AbstractMojo {
 
-	/**
+    public static final List<String> SUPPORTED_PACKAGING_TYPES = new ArrayList<String>();
+
+    static {
+        SUPPORTED_PACKAGING_TYPES.add("apk");
+    }
+
+    /**
+     * The file extension used for the android package file.
+     */
+    protected static final String ANDROID_PACKAGE_EXTENSTION = ".apk";
+
+    /**
      * The maven project.
      *
      * @parameter expression="${project}"
