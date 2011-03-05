@@ -219,6 +219,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected java.util.List remoteRepositories;
 
     /**
+     * Generates R.java into a different package.
+     *
+     * @parameter expression="${android.customPackage}"
+     */
+    protected String customPackage;
+
+    /**
      * @component
      * @readonly
      * @required
