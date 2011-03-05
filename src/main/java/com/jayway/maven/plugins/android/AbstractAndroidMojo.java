@@ -16,6 +16,7 @@
  */
 package com.jayway.maven.plugins.android;
 
+import com.jayway.maven.plugins.android.common.AndroidExtension;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.JXPathNotFoundException;
 import org.apache.commons.jxpath.xml.DocumentContainer;
@@ -49,7 +50,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     public static final List<String> SUPPORTED_PACKAGING_TYPES = new ArrayList<String>();
 
     static {
-        SUPPORTED_PACKAGING_TYPES.add("apk");
+        SUPPORTED_PACKAGING_TYPES.add(AndroidExtension.APK);
     }
 
     /**
