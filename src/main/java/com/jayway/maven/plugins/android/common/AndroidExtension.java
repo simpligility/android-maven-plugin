@@ -1,6 +1,6 @@
 package com.jayway.maven.plugins.android.common;
 
-public interface AndroidExtenstion {
+public interface AndroidExtension {
 
 	String APK = "apk";
 	

@@ -2,7 +2,7 @@ package com.jayway.maven.plugins.android;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import static com.jayway.maven.plugins.android.common.AndroidExtenstion.APK;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
 
 import java.io.File;
 import java.util.ArrayList;
