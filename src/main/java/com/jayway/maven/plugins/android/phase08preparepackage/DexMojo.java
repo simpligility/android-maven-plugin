@@ -85,6 +85,8 @@ public class DexMojo extends AbstractAndroidMojo {
                         File inputFile) throws MojoExecutionException {
         File classesOutputDirectory = new File(project.getBuild().getDirectory(), "android-classes");
         List<String> commands = new ArrayList<String>();
+        commands.add("-jar");
+        commands.add(getAndroidSdk().getPathForTool("dx.jar"));
         if (jvmArguments != null) {
             for (String jvmArgument : jvmArguments) {
                 if (jvmArgument != null) {
@@ -101,12 +103,24 @@ public class DexMojo extends AbstractAndroidMojo {
         if (coreLibrary) {
             commands.add("--core-library");
         }
-        getLog().info(getAndroidSdk().getPathForTool("dx") + " " + commands.toString());
+        final String javaExecutable = getJavaExecutable().getAbsolutePath();
+        getLog().info(javaExecutable + " " + commands.toString());
         try {
-            executor.executeCommand(getAndroidSdk().getPathForTool("dx"), commands, project.getBasedir(), false);
+            executor.executeCommand(javaExecutable, commands, project.getBasedir(), false);
         } catch (ExecutionException e) {
             throw new MojoExecutionException("", e);
         }
+    }
+
+    /**
+     * Figure out the full path to the current java executable.
+     *
+     * @return the full path to the current java executable.
+     */
+    private static File getJavaExecutable() {
+        final String javaHome = System.getProperty("java.home");
+        final String slash = File.separator;
+        return new File(javaHome + slash + "bin" + slash + "java");
     }
 
     protected File createApkSourcesFile() throws MojoExecutionException {
