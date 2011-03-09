@@ -238,7 +238,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 					+ ". Message: " + e.getLocalizedMessage(), e);
 		}
 
-		projectHelper.addResource(project, apklibDirectory.getAbsolutePath() + "/src", null, null);
+		projectHelper.addResource(project, apklibDirectory.getAbsolutePath() + "/src", null, Arrays.asList("**/*.java", "**/*.aidl"));
 		project.addCompileSourceRoot(apklibDirectory.getAbsolutePath() + "/src");
 
 	}
