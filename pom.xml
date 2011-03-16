@@ -26,7 +26,7 @@
     <url>http://code.google.com/p/maven-android-plugin</url>
     <inceptionYear>2008</inceptionYear>
     <properties>
-        <scm.branch>master</scm.branch>
+        <scm.branch>maven-android-plugin-2.x</scm.branch>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-plugin-plugin.version>2.7</maven-plugin-plugin.version>
     </properties>
