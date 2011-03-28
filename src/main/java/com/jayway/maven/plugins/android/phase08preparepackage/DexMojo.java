@@ -85,18 +85,13 @@ public class DexMojo extends AbstractAndroidMojo {
                         File inputFile) throws MojoExecutionException {
         File classesOutputDirectory = new File(project.getBuild().getDirectory(), "android-classes");
         List<String> commands = new ArrayList<String>();
-        commands.add("-jar");
-        commands.add(getAndroidSdk().getPathForTool("dx.jar"));
         if (jvmArguments != null) {
             for (String jvmArgument : jvmArguments) {
-                if (jvmArgument != null) {
-                    if (jvmArgument.startsWith("-")) {
-                        jvmArgument = jvmArgument.substring(1);
-                    }
-                    commands.add("-J" + jvmArgument);
-                }
+                commands.add(jvmArgument);
             }
         }
+        commands.add("-jar");
+        commands.add(getAndroidSdk().getPathForTool("dx.jar"));
         commands.add("--dex");
         commands.add("--output=" + outputFile.getAbsolutePath());
         commands.add(classesOutputDirectory.getAbsolutePath());
