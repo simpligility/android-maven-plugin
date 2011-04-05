@@ -271,6 +271,11 @@
                 <artifactId>maven-plugin-plugin</artifactId>
                 <version>${maven-plugin-plugin.version}</version>
             </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-jxr-plugin</artifactId>
+              <version>2.2</version>
+            </plugin>
         </plugins>
     </reporting>
 
@@ -427,7 +432,6 @@
                                 <effort>Max</effort>
                                 <debug>false</debug>
                                 <relaxed>false</relaxed>
-                                <xrefLocation>${project.reporting.outputDirectory}/xref</xrefLocation>
                             </configuration>
                         </plugin>
                       </reportPlugins>
