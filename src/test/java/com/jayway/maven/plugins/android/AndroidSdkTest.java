@@ -42,20 +42,20 @@ public class AndroidSdkTest {
 
     @Test
     public void givenToolAdbThenPathIsPlatformTools() {
-        final String pathForTool =sdkTestSupport.getSdk_with_platform_1_5().getPathForTool("adb");
+        final String pathForTool =sdkTestSupport.getSdk_with_platform_1_5().getPathForTool("adb").replaceAll(".exe$", "");
         Assert.assertEquals(new File(sdkTestSupport.getEnv_ANDROID_HOME() + "/platform-tools/adb").getAbsolutePath(), pathForTool);
     }
 
     @Test
     public void givenToolAndroidThenPathIsCommon() {
-        final String pathForTool =sdkTestSupport.getSdk_with_platform_1_5().getPathForTool("android");
+        final String pathForTool =sdkTestSupport.getSdk_with_platform_1_5().getPathForTool("android").replaceAll(".bat$", "");;
         Assert.assertEquals(new File(sdkTestSupport.getEnv_ANDROID_HOME() + "/tools/android").getAbsolutePath(), pathForTool);
     }
 
     @Test
     public void givenToolAaptAndPlatform1dot5ThenPathIsPlatformTools() {
         final AndroidSdk sdk = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "3");
-        final String pathForTool = sdk.getPathForTool("aapt");
+        final String pathForTool = sdk.getPathForTool("aapt").replaceAll(".exe$", "");;
         Assert.assertEquals(new File(sdkTestSupport.getEnv_ANDROID_HOME() + "/platform-tools/aapt"), new File(pathForTool));
     }
 
