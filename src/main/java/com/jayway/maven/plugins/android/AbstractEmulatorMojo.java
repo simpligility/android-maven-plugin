@@ -115,7 +115,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
     /**
      * file name for the pid file.
      */
-    private static final String pidFileName = scriptFolder + "/maven-android-plugin-emulator.pid";
+    private static final String pidFileName = scriptFolder + System.getProperty("file.separator") + "maven-android-plugin-emulator.pid";
 
     /**
      * Are we running on a flavour of Windows.
@@ -205,7 +205,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      */
     private String writeEmulatorStartScriptWindows() throws MojoExecutionException {
 
-        String filename = scriptFolder + "\\maven-android-plugin-emulator-start.bat";
+        String filename = scriptFolder + "\\maven-android-plugin-emulator-start.vbs";
 
         File file = new File(filename);
         PrintWriter writer = null;
@@ -217,10 +217,15 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
             // and others.
             String command = assembleStartCommandLine();
             String uniqueWindowTitle = "MavenAndroidPlugin-AVD" + parsedAvd;
-            writer.print("START /separate \"" + uniqueWindowTitle + "\"  " + command);
-            writer.println();
-            writer.println("FOR /F \"tokens=2\" %%I in ('TASKLIST /NH /FI \"WINDOWTITLE eq " + uniqueWindowTitle + "\"' ) DO SET PID=%%I");
-            writer.println("ECHO %PID% > " + pidFileName);
+			writer.println("Dim oShell");
+			writer.println("Set oShell = WScript.CreateObject(\"WScript.shell\")");
+			String cmd = "cmd.exe /X /C START /SEPARATE \"\""
+				+ uniqueWindowTitle + "\"\"  " + command.trim();
+			writer.println("oShell.run \"" + cmd + "\"");
+			writer.println("wscript.sleep 1000");
+			String cmd1 = "cmd.exe /X /C @ECHO OFF & FOR /F \"\"tokens=2\"\" %I in ('TASKLIST /NH /FI \"\"WINDOWTITLE eq "
+				+ uniqueWindowTitle + "\"\"') DO ECHO %I> " + pidFileName;
+			writer.println("oShell.run \"" + cmd1 + "\"");
         } catch (IOException e) {
             getLog().error("Failure writing file " + filename);
         } finally {
