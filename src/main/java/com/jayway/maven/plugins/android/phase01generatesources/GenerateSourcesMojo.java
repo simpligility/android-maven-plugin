@@ -167,9 +167,16 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             if (type.equals(APKSOURCES)) {
                 getLog().debug("Detected apksources dependency " + artifact + " with file " + artifact.getFile() + ". Will resolve and extract...");
 
+                File apksourcesFile = new File(getLocalRepository().getBasedir(), getLocalRepository().pathOf(artifact));
+
+                // When the artifact is not installed in local repository, but rather part of the current reactor,
+                // resolve from within the reactor. (i.e. ../someothermodule/target/*)
+                if (!apksourcesFile.exists()) {
+                    apksourcesFile = resolveArtifactToFile(artifact);
+                }
+
                 //When using maven under eclipse the artifact will by default point to a directory, which isn't correct.
                 //To work around this we'll first try to get the archive from the local repo, and only if it isn't found there we'll do a normal resolve.
-                File apksourcesFile = new File(getLocalRepository().getBasedir(), getLocalRepository().pathOf(artifact));
                 if (apksourcesFile.isDirectory()) {
                     apksourcesFile = resolveArtifactToFile(artifact);
                 }
@@ -213,6 +220,15 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
     private void extractApklib(Artifact apklibArtifact) throws MojoExecutionException {
 		File apkLibFile = new File(getLocalRepository().getBasedir(), getLocalRepository().pathOf(apklibArtifact));
+
+        // When the artifact is not installed in local repository, but rather part of the current reactor,
+        // resolve from within the reactor. (i.e. ../someothermodule/target/*)
+        if (!apkLibFile.exists()) {
+            apkLibFile = resolveArtifactToFile(apklibArtifact);
+        }
+
+        //When using maven under eclipse the artifact will by default point to a directory, which isn't correct.
+        //To work around this we'll first try to get the archive from the local repo, and only if it isn't found there we'll do a normal resolve.
 		if (apkLibFile.isDirectory()) {
 			apkLibFile = resolveArtifactToFile(apklibArtifact);
 		}
