@@ -1,7 +1,5 @@
 package com.jayway.maven.plugins.android.common;
 
-import org.apache.maven.project.MavenProject;
-
 public final class AndroidExtension {
 	/** Android application. */
 	public static final String APK = "apk";
@@ -18,14 +16,15 @@ public final class AndroidExtension {
 	
 	
 	/**
-	 * Determine whether or not a {@link MavenProject} is an Android project.
+	 * Determine whether or not a {@link MavenProject}'s packaging is an
+	 * Android project.
 	 * 
-	 * @param project Project instance.
+	 * @param packaging Project packaging.
 	 * @return True if an Android project.
 	 */
-	public static boolean isAndroidProject(MavenProject project) {
-		return APK.equals(project.getPackaging())
-			|| APKLIB.equals(project.getPackaging())
-			|| APKSOURCES.equals(project.getPackaging());
+	public static boolean isAndroidPackaging(String packaging) {
+		return APK.equals(packaging)
+			|| APKLIB.equals(packaging)
+			|| APKSOURCES.equals(packaging);
 	}
 }

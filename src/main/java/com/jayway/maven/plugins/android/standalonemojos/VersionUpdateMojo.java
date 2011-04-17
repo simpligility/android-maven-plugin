@@ -104,7 +104,7 @@ public class VersionUpdateMojo extends AbstractAndroidMojo {
     private boolean             versionCodeAutoIncrement = false;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if (!AndroidExtension.isAndroidProject(project)) {
+        if (!AndroidExtension.isAndroidPackaging(project.getPackaging())) {
             return; // skip, not an android project.
         }
 
