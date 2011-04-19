@@ -219,11 +219,15 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
             String uniqueWindowTitle = "MavenAndroidPlugin-AVD" + parsedAvd;
 			writer.println("Dim oShell");
 			writer.println("Set oShell = WScript.CreateObject(\"WScript.shell\")");
-			String cmd = "cmd.exe /X /C START /SEPARATE \"\""
+			String cmdPath = System.getenv("COMSPEC");
+			if (cmdPath == null){
+				cmdPath = "cmd.exe";
+			}
+			String cmd = cmdPath + " /X /C START /SEPARATE \"\""
 				+ uniqueWindowTitle + "\"\"  " + command.trim();
 			writer.println("oShell.run \"" + cmd + "\"");
 			writer.println("wscript.sleep 1000");
-			String cmd1 = "cmd.exe /X /C @ECHO OFF & FOR /F \"\"tokens=2\"\" %I in ('TASKLIST /NH /FI \"\"WINDOWTITLE eq "
+			String cmd1 = cmdPath + " /X /C @ECHO OFF & FOR /F \"\"tokens=2\"\" %I in ('%WINDIR%\\SYSTEM32\\TASKLIST.EXE /NH /FI \"\"WINDOWTITLE eq "
 				+ uniqueWindowTitle + "\"\"') DO ECHO %I> " + pidFileName;
 			writer.println("oShell.run \"" + cmd1 + "\"");
         } catch (IOException e) {
@@ -333,7 +337,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      * @throws ExecutionException
      */
     private void stopEmulatorWindows(CommandExecutor executor, String pid) throws ExecutionException {
-        String stopCommand = "TASKKILL"; // this assumes that the command is on the path
+        String stopCommand = "%WINDIR%\\SYSTEM32\\TASKKILL"; // this assumes that the command is on the path
         List<String> commands = new ArrayList<String>();
         // separate the commands as per the command line interface
         commands.add("/PID");
