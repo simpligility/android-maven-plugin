@@ -187,9 +187,11 @@ public class ApkMojo extends AbstractAndroidMojo {
         File dexFile = new File(project.getBuild().getDirectory(), "classes.dex");
         File zipArchive = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_");
         ArrayList<File> sourceFolders = new ArrayList<File>();
+	if (sourceDirectories != null) {
 		for(File f:sourceDirectories) {
 			sourceFolders.add(f);
 		}
+	}
         ArrayList<File> jarFiles = new ArrayList<File>();
         ArrayList<File> nativeFolders = new ArrayList<File>();
 
