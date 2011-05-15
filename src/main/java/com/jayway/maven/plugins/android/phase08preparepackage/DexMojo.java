@@ -57,6 +57,13 @@ public class DexMojo extends AbstractAndroidMojo {
      * @parameter default-value="false"
      */
     private boolean coreLibrary;
+    
+    /**
+     * Decides whether to pass the --no-locals flag to dx.
+     *
+     * @parameter default-value="false"
+     */
+    private boolean noLocals;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -94,6 +101,9 @@ public class DexMojo extends AbstractAndroidMojo {
         commands.add(getAndroidSdk().getPathForTool("dx.jar"));
         commands.add("--dex");
         commands.add("--output=" + outputFile.getAbsolutePath());
+        if (noLocals) {
+        	commands.add("--no-locals");
+        }
         commands.add(classesOutputDirectory.getAbsolutePath());
         if (coreLibrary) {
             commands.add("--core-library");
