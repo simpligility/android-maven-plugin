@@ -157,7 +157,7 @@ public class AndroidSdk {
         for (String possiblePath : possiblePaths) {
             File file = new File(possiblePath);
             if (file.exists() && !file.isDirectory()){
-                return possiblePath;
+                return file.getAbsolutePath();
             }
         }
 

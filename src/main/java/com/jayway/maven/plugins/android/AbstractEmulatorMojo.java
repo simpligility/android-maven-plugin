@@ -115,7 +115,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
     /**
      * file name for the pid file.
      */
-    private static final String pidFileName = scriptFolder + "/maven-android-plugin-emulator.pid";
+    private static final String pidFileName = scriptFolder + System.getProperty("file.separator") + "maven-android-plugin-emulator.pid";
 
     /**
      * Are we running on a flavour of Windows.
@@ -205,7 +205,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      */
     private String writeEmulatorStartScriptWindows() throws MojoExecutionException {
 
-        String filename = scriptFolder + "\\maven-android-plugin-emulator-start.bat";
+        String filename = scriptFolder + "\\maven-android-plugin-emulator-start.vbs";
 
         File file = new File(filename);
         PrintWriter writer = null;
@@ -217,10 +217,19 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
             // and others.
             String command = assembleStartCommandLine();
             String uniqueWindowTitle = "MavenAndroidPlugin-AVD" + parsedAvd;
-            writer.print("START /separate \"" + uniqueWindowTitle + "\"  " + command);
-            writer.println();
-            writer.println("FOR /F \"tokens=2\" %%I in ('TASKLIST /NH /FI \"WINDOWTITLE eq " + uniqueWindowTitle + "\"' ) DO SET PID=%%I");
-            writer.println("ECHO %PID% > " + pidFileName);
+			writer.println("Dim oShell");
+			writer.println("Set oShell = WScript.CreateObject(\"WScript.shell\")");
+			String cmdPath = System.getenv("COMSPEC");
+			if (cmdPath == null){
+				cmdPath = "cmd.exe";
+			}
+			String cmd = cmdPath + " /X /C START /SEPARATE \"\""
+				+ uniqueWindowTitle + "\"\"  " + command.trim();
+			writer.println("oShell.run \"" + cmd + "\"");
+			writer.println("wscript.sleep 1000");
+			String cmd1 = cmdPath + " /X /C @ECHO OFF & FOR /F \"\"tokens=2\"\" %I in ('%WINDIR%\\SYSTEM32\\TASKLIST.EXE /NH /FI \"\"WINDOWTITLE eq "
+				+ uniqueWindowTitle + "\"\"') DO ECHO %I> " + pidFileName;
+			writer.println("oShell.run \"" + cmd1 + "\"");
         } catch (IOException e) {
             getLog().error("Failure writing file " + filename);
         } finally {
@@ -328,7 +337,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      * @throws ExecutionException
      */
     private void stopEmulatorWindows(CommandExecutor executor, String pid) throws ExecutionException {
-        String stopCommand = "TASKKILL"; // this assumes that the command is on the path
+        String stopCommand = "%WINDIR%\\SYSTEM32\\TASKKILL"; // this assumes that the command is on the path
         List<String> commands = new ArrayList<String>();
         // separate the commands as per the command line interface
         commands.add("/PID");
