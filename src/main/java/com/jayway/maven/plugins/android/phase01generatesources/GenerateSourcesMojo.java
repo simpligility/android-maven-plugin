@@ -462,7 +462,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 		commands.add("-J");
 		commands.add(genDirectory.getAbsolutePath());
 		commands.add("--custom-package");
-		commands.add(apklibArtifact.getGroupId());
+		commands.add(extractPackageNameFromAndroidManifest(new File(unpackDir + "/" + "AndroidManifest.xml")));
 		commands.add("-M");
 		commands.add(androidManifestFile.getAbsolutePath());
 		if (resourceDirectory.exists()){
