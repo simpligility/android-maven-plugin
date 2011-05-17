@@ -39,6 +39,14 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
     private boolean mavenTestSkip;
 
     /**
+     * -DskipTests is commonly used with Maven to skip tests. We honor it too.
+     *
+     * @parameter expression="${skipTests}" default-value=false
+     * @readonly
+     */
+    private boolean mavenSkipTests;
+
+    /**
      * Enables or disables integration test related goals. If <code>true</code> they will be run; if <code>false</code>,
      * they will be skipped. If <code>auto</code>, they will run if any of the classes inherit from any class in
      * <code>junit.framework.**</code> or <code>android.test.**</code>.
@@ -55,6 +63,10 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
      */
     protected boolean isEnableIntegrationTest() throws MojoFailureException, MojoExecutionException {
         if (mavenTestSkip) {
+            return false;
+        }
+
+        if (mavenSkipTests) {
             return false;
         }
 
