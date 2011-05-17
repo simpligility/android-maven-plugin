@@ -94,6 +94,11 @@ public class DexMojo extends AbstractAndroidMojo {
         List<String> commands = new ArrayList<String>();
         if (jvmArguments != null) {
             for (String jvmArgument : jvmArguments) {
+                 // preserve backward compatibility allowing argument with or without dash (e.g. Xmx512m as well as
+                 // -Xmx512m should work) (see http://code.google.com/p/maven-android-plugin/issues/detail?id=153)
+                 if (!jvmArgument.startsWith("-")) {
+                        jvmArgument = "-" + jvmArgument;
+                 }
                 commands.add(jvmArgument);
             }
         }
