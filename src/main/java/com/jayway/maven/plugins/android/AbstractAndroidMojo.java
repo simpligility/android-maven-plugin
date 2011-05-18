@@ -367,7 +367,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @parameter
      */
     protected List testClasses;
-    
+
+    private static boolean adbInitialized = false;
+
     /**
      * @return Given test classes as a comma separated string
      */
@@ -498,15 +500,49 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     }
 
     /**
+     * Initialize the Android Debug Bridge and wait for it to start. Does not reinitialize it if it has
+     * already been initialized (that would through and IllegalStateException...). Synchronized sine
+     * the init call in the library is also synchronized .. just in case.
+     * @return
+     */
+    private synchronized AndroidDebugBridge initAndroidDebugBridge() {
+        if (!adbInitialized) {
+            AndroidDebugBridge.init(false);
+            adbInitialized = true;
+        }
+        AndroidDebugBridge androidDebugBridge = AndroidDebugBridge.createBridge();
+        waitUntilConnected(androidDebugBridge);
+        return androidDebugBridge;
+    }
+
+    /**
+     * Run a wait loop until adb is connected or trials run out. This method seems to work more reliably then using a
+     * listener.
+     * @param adb
+     */
+    private void waitUntilConnected(AndroidDebugBridge adb) {
+        int trials = 10;
+        while (trials > 0) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (adb.isConnected()) {
+                break;
+            }
+            trials--;
+        }
+    }
+
+    /**
      * Deploys an apk file to a connected emulator or usb device.
      *
      * @param apkFile the file to deploy
      * @throws MojoExecutionException If there is a problem deploying the apk file.
      */
     protected void deployApk(File apkFile) throws MojoExecutionException {
-        AndroidDebugBridge.init(false);
-        AndroidDebugBridge androidDebugBridge = AndroidDebugBridge.createBridge();
-        waitLoop(androidDebugBridge);
+        AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
 
         if (androidDebugBridge.isConnected()) {
             List<IDevice> devices = Arrays.asList(androidDebugBridge.getDevices());
@@ -548,21 +584,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         } else {
             throw new MojoExecutionException("Android Debug Bridge is not connected.");
         }
-    }
-
-    private void waitLoop(AndroidDebugBridge adb) {
-        int trials = 10;
-        while (trials > 0) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            if (adb.isConnected()) {
-                break;
-            }
-            trials--;
-        }
+//        AndroidDebugBridge.terminate();
     }
 
     /**
@@ -632,9 +654,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      */
     protected boolean undeployApk(String packageName, boolean deleteDataAndCacheDirectoriesOnDevice)
             throws MojoExecutionException {
-        AndroidDebugBridge.init(false);
-        AndroidDebugBridge androidDebugBridge = AndroidDebugBridge.createBridge();
-        waitLoop(androidDebugBridge);
+        AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
 
         if (androidDebugBridge.isConnected()) {
             List<IDevice> devices = Arrays.asList(androidDebugBridge.getDevices());
@@ -673,15 +693,19 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
                         }
                     }
                 }
+//                AndroidDebugBridge.terminate();
                 return true;
             } else {
                 getLog().error("No online devices attached.");
+//                AndroidDebugBridge.terminate();
                 return false;
             }
         } else {
             getLog().error("Android Debug Bridge is not connected.");
+//            AndroidDebugBridge.terminate();
             return false;
         }
+
     }
 
     /**
