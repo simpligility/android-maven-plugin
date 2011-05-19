@@ -61,6 +61,7 @@ public class UndeployMojo extends AbstractAndroidMojo {
             } else {
                 if (! SUPPORTED_PACKAGING_TYPES.contains(project.getPackaging())) {
                     getLog().info("Skipping undeploy on " + project.getPackaging());
+                    getLog().info("Execute undeploy within an Maven Android project or specify package with e.g. -Dandroid.package=com.simpligility.android.helloflashlight");
                     return;
                 }
                 packageToUndeploy = extractPackageNameFromAndroidManifest(androidManifestFile);
