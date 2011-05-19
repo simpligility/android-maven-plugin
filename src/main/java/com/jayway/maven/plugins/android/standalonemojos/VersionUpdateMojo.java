@@ -27,6 +27,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.common.AndroidExtension;
 
 /**
  * Updates various version attributes present in the <code>AndroidManifest.xml</code> file.
@@ -103,7 +104,7 @@ public class VersionUpdateMojo extends AbstractAndroidMojo {
     private boolean             versionCodeAutoIncrement = false;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if (!"apk".equals(project.getPackaging())) {
+        if (!AndroidExtension.isAndroidPackaging(project.getPackaging())) {
             return; // skip, not an android project.
         }
 
