@@ -57,6 +57,13 @@ public class DexMojo extends AbstractAndroidMojo {
      * @parameter default-value="false"
      */
     private boolean coreLibrary;
+    
+    /**
+     * Decides whether to pass the --no-locals flag to dx.
+     *
+     * @parameter default-value="false"
+     */
+    private boolean noLocals;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -87,26 +94,43 @@ public class DexMojo extends AbstractAndroidMojo {
         List<String> commands = new ArrayList<String>();
         if (jvmArguments != null) {
             for (String jvmArgument : jvmArguments) {
-                if (jvmArgument != null) {
-                    if (jvmArgument.startsWith("-")) {
-                        jvmArgument = jvmArgument.substring(1);
-                    }
-                    commands.add("-J" + jvmArgument);
-                }
+                 // preserve backward compatibility allowing argument with or without dash (e.g. Xmx512m as well as
+                 // -Xmx512m should work) (see http://code.google.com/p/maven-android-plugin/issues/detail?id=153)
+                 if (!jvmArgument.startsWith("-")) {
+                        jvmArgument = "-" + jvmArgument;
+                 }
+                commands.add(jvmArgument);
             }
         }
+        commands.add("-jar");
+        commands.add(getAndroidSdk().getPathForTool("dx.jar"));
         commands.add("--dex");
         commands.add("--output=" + outputFile.getAbsolutePath());
+        if (noLocals) {
+        	commands.add("--no-locals");
+        }
         commands.add(classesOutputDirectory.getAbsolutePath());
         if (coreLibrary) {
             commands.add("--core-library");
         }
-        getLog().info(getAndroidSdk().getPathForTool("dx") + " " + commands.toString());
+        final String javaExecutable = getJavaExecutable().getAbsolutePath();
+        getLog().info(javaExecutable + " " + commands.toString());
         try {
-            executor.executeCommand(getAndroidSdk().getPathForTool("dx"), commands, project.getBasedir(), false);
+            executor.executeCommand(javaExecutable, commands, project.getBasedir(), false);
         } catch (ExecutionException e) {
             throw new MojoExecutionException("", e);
         }
+    }
+
+    /**
+     * Figure out the full path to the current java executable.
+     *
+     * @return the full path to the current java executable.
+     */
+    private static File getJavaExecutable() {
+        final String javaHome = System.getProperty("java.home");
+        final String slash = File.separator;
+        return new File(javaHome + slash + "bin" + slash + "java");
     }
 
     protected File createApkSourcesFile() throws MojoExecutionException {

@@ -1,6 +1,4 @@
 /*
- * Copyright (C) 2009 Jayway AB
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,34 +24,33 @@ import org.apache.maven.plugin.MojoExecutionException;
  *
  * @author Johan Lindquist <johanlindquist@gmail.com>
  */
-public class AndroidNdk
-{
+public class AndroidNdk {
+    
     private static final String PARAMETER_MESSAGE = "Please provide a proper Android NDK directory path as configuration parameter <ndk><path>...</path></ndk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.ndk.path=... or set environment variable " + NdkBuildMojo.ENV_ANDROID_NDK_HOME + ".";
 
     private final File ndkPath;
 
-    public AndroidNdk(File sdkPath)
-    {
-        assertPathIsDirectory(sdkPath);
-        this.ndkPath = sdkPath;
+    public AndroidNdk( File ndkPath ) {
+        assertPathIsDirectory( ndkPath );
+        this.ndkPath = ndkPath;
     }
 
-    private void assertPathIsDirectory(final File path) {
-        if (path == null) {
-            throw new InvalidSdkException(PARAMETER_MESSAGE);
+    private void assertPathIsDirectory( final File path ) {
+        if ( path == null ) {
+            throw new InvalidNdkException( PARAMETER_MESSAGE );
         }
-        if (!path.isDirectory()) {
-            throw new InvalidSdkException("Path \"" + path + "\" is not a directory. " + PARAMETER_MESSAGE);
+        if ( !path.isDirectory() ) {
+            throw new InvalidNdkException( "Path \"" + path + "\" is not a directory. " + PARAMETER_MESSAGE );
         }
     }
+
     /**
      * Returns the complete path for the ndk-build tool, based on this NDK.
      *
      * @return the complete path as a <code>String</code>, including the tool's filename.
      */
-    public String getNdkBuildPath()
-    {
-        return new File(ndkPath,"/ndk-build").getAbsolutePath();
+    public String getNdkBuildPath() {
+        return new File( ndkPath, "/ndk-build" ).getAbsolutePath();
     }
 
 

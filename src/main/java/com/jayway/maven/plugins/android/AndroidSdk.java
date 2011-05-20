@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Jayway AB
+ * Copyright (C) 2009, 2010 Jayway AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,11 @@ public class AndroidSdk {
      */
     private static final String PLATFORMS_FOLDER_NAME = "platforms";
 
+    /**
+     * folder name for the sdk sub folder that contains the platform tools.
+     */
+    private static final String PLATFORM_TOOLS_FOLDER_NAME = "platform-tools";
+
     private static final String PARAMETER_MESSAGE = "Please provide a proper Android SDK directory path as configuration parameter <sdk><path>...</path></sdk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.sdk.path=... or set environment variable " + AbstractAndroidMojo.ENV_ANDROID_HOME + ".";
 
     private static final class Platform {
@@ -80,7 +85,7 @@ public class AndroidSdk {
         } else {
             platform = findPlatformByNameOrApiLevel(platformOrApiLevel);
             if (platform == null)
-                throw new InvalidSdkException("Invalid SDK: Platform/API level " + platformOrApiLevel + " not available.");
+                throw new InvalidSdkException("Invalid SDK: Platform/API level " + platformOrApiLevel + " not available. This command should give you all you need:\n" + sdkPath.getAbsolutePath() + File.separator + "tools" + File.separator + "android update sdk --no-ui --obsolete --force");
         }
     }
 
@@ -93,13 +98,16 @@ public class AndroidSdk {
         return null;
     }
 
-    public enum Layout {LAYOUT_1_1, LAYOUT_1_5}
-
-    ;
+    public enum Layout {LAYOUT_1_1, LAYOUT_1_5, LAYOUT_2_3}
 
     public Layout getLayout() {
 
         assertPathIsDirectory(sdkPath);
+
+        final File platformTools = new File(sdkPath, PLATFORM_TOOLS_FOLDER_NAME);
+        if (platformTools.exists() && platformTools.isDirectory()){
+            return Layout.LAYOUT_2_3;
+        }
 
         final File platforms = new File(sdkPath, PLATFORMS_FOLDER_NAME);
         if (platforms.exists() && platforms.isDirectory()) {
@@ -123,46 +131,37 @@ public class AndroidSdk {
         }
     }
 
-    private static final Set<String> commonToolsIn11And15 = new HashSet<String>() {
-        {
-            add("adb");
-            add("android");
-            add("apkbuilder");
-            add("ddms");
-            add("dmtracedump");
-            add("draw9patch");
-            add("emulator");
-            add("hierarchyviewer");
-            add("hprof-conv");
-            add("mksdcard");
-            add("sqlite3");
-            add("traceview");
-            add("zipalign");
-        }
-    };
-
     /**
      * Returns the complete path for a tool, based on this SDK.
-     * TODO: Implementation should try to find the tool in the different directories, instead of relying on a manually maintained list of where they are. (i.e. remove commonToolsIn11And15, and make lookup automatic based on which tools can actually be found where.)
      *
-     * @param tool which tool, for example <code>adb</code>.
+     * @param tool which tool, for example <code>adb</code> or <code>dx.jar</code>.
      * @return the complete path as a <code>String</code>, including the tool's filename.
      */
     public String getPathForTool(String tool) {
-        if (getLayout() == Layout.LAYOUT_1_1) {
-            return sdkPath + "/tools/" + tool;
-        }
 
-        if (getLayout() == Layout.LAYOUT_1_5) {
-            if (commonToolsIn11And15.contains(tool)) {
-                return sdkPath + "/tools/" + tool;
-            } else {
+        String[] possiblePaths = {
+                sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool,
+                sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool + ".exe",
+                sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool + ".bat",
+                sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/lib/" + tool,
+                getPlatform() + "/tools/" + tool,
+                getPlatform() + "/tools/" + tool + ".exe",
+                getPlatform() + "/tools/" + tool + ".bat",
+                getPlatform() + "/tools/lib/" + tool,
+                sdkPath + "/tools/" + tool,
+                sdkPath + "/tools/" + tool + ".exe",
+                sdkPath + "/tools/" + tool + ".bat",
+                sdkPath + "/tools/lib/" + tool
+        };
 
-                return getPlatform() + "/tools/" + tool;
+        for (String possiblePath : possiblePaths) {
+            File file = new File(possiblePath);
+            if (file.exists() && !file.isDirectory()){
+                return file.getAbsolutePath();
             }
         }
 
-        throw new InvalidSdkException("Unsupported layout \"" + getLayout() + "\"! " + PARAMETER_MESSAGE);
+        throw new InvalidSdkException("Could not find tool '" + tool + "'. " + PARAMETER_MESSAGE);
     }
 
     /**
@@ -198,15 +197,13 @@ public class AndroidSdk {
      * @return the complete path as a <code>String</code>, including the filename.
      */
     public String getPathForFrameworkAidl() {
-        if (getLayout() == Layout.LAYOUT_1_1) {
-            return sdkPath + "/tools/lib/framework.aidl";
+        final Layout layout = getLayout();
+        switch (layout){
+            case LAYOUT_1_1: return sdkPath + "/tools/lib/framework.aidl";
+            case LAYOUT_1_5: //intentional fall-through
+            case LAYOUT_2_3: return getPlatform() + "/framework.aidl";
+            default: throw new InvalidSdkException("Unsupported layout \"" + layout + "\"! " + PARAMETER_MESSAGE);
         }
-
-        if (getLayout() == Layout.LAYOUT_1_5) {
-            return getPlatform() + "/framework.aidl";
-        }
-
-        throw new InvalidSdkException("Unsupported layout \"" + getLayout() + "\"! " + PARAMETER_MESSAGE);
     }
 
     /**
@@ -217,15 +214,29 @@ public class AndroidSdk {
      *          if the file can not be resolved.
      */
     public File getAndroidJar() throws MojoExecutionException {
-        if (getLayout() == Layout.LAYOUT_1_1) {
-            return new File(sdkPath + "/android.jar");
+        final Layout layout = getLayout();
+        switch (layout){
+            case LAYOUT_1_1: return new File(sdkPath + "/android.jar");
+            case LAYOUT_1_5: //intentional fall-through
+            case LAYOUT_2_3: return new File(getPlatform() + "/android.jar");
+            default: throw new MojoExecutionException("Invalid Layout \"" + getLayout() + "\"! " + PARAMETER_MESSAGE);
         }
+    }
 
-        if (getLayout() == Layout.LAYOUT_1_5) {
-            return new File(getPlatform() + "/android.jar");
+    /**
+     * Resolves the sdklib.jar from this SDK.
+     *
+     * @return a <code>File</code> pointing to the sdklib.jar file.
+     * @throws org.apache.maven.plugin.MojoExecutionException
+     *          if the file can not be resolved.
+     */
+    public File getSDKLibJar() throws MojoExecutionException {
+        // The file is sdkPath/tools/lib/sdklib.jar
+        File sdklib = new File(sdkPath + "/tools/lib/sdklib.jar");
+        if (sdklib.exists()) {
+            return sdklib;
         }
-
-        throw new MojoExecutionException("Invalid Layout \"" + getLayout() + "\"! " + PARAMETER_MESSAGE);
+        throw new MojoExecutionException("Can't find the 'sdklib.jar' : " + sdklib.getAbsolutePath());
     }
 
     public File getPlatform() {

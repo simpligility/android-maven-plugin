@@ -2,6 +2,8 @@ package com.jayway.maven.plugins.android;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +82,14 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
      * @throws MojoExecutionException
      */
     protected void zipalign() throws MojoExecutionException {
+
+        // If we're not on a supported packaging with just skip (Issue 87)
+        // http://code.google.com/p/maven-android-plugin/issues/detail?id=87
+        if (! SUPPORTED_PACKAGING_TYPES.contains(project.getPackaging())) {
+            getLog().info("Skipping zipalign on " + project.getPackaging());
+            return;
+        }
+
         parseParameters();
         if (parsedSkip) {
             getLog().info("Skipping zipalign");
@@ -102,6 +112,17 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
                 getLog().info("Running command: " + command);
                 getLog().info("with parameters: " + parameters);
                 executor.executeCommand(command, parameters);
+
+                // Attach the resulting artifact (Issue 88)
+                // http://code.google.com/p/maven-android-plugin/issues/detail?id=88
+                File aligned = new File(parsedOutputApk);
+                if (aligned.exists()) {
+                    projectHelper.attachArtifact(project, APK, "aligned", aligned);
+                    getLog().info("Attach " + aligned.getAbsolutePath() + " to the project");
+                } else {
+                    getLog().error("Cannot attach " + aligned.getAbsolutePath() + " to the project" +
+                            " - The file does not exist");
+                }
             } catch (ExecutionException e) {
                 throw new MojoExecutionException("", e);
             }
@@ -195,7 +216,7 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
      */
     private String getApkLocation() {
         if (apkFile == null) apkFile = new File(project.getBuild().getDirectory(),
-                project.getBuild().getFinalName() + ANDROID_PACKAGE_EXTENSTION);
+                project.getBuild().getFinalName() + "." + APK);
         return apkFile.getAbsolutePath();
     }
 
@@ -207,7 +228,7 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
      */
     private String getAlignedApkLocation() {
         if (alignedApkFile == null) alignedApkFile = new File(project.getBuild().getDirectory(),
-                project.getBuild().getFinalName() + "-aligned" + ANDROID_PACKAGE_EXTENSTION);
+                project.getBuild().getFinalName() + "-aligned." + APK);
         return alignedApkFile.getAbsolutePath();
     }
 

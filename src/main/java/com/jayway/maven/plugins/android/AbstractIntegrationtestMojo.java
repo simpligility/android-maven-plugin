@@ -15,13 +15,14 @@
  */
 package com.jayway.maven.plugins.android;
 
+import java.io.File;
+import java.util.Set;
+
 import com.jayway.maven.plugins.android.asm.AndroidTestFinder;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-
-import java.io.File;
-import java.util.Set;
 
 /**
  * For integrationtest related Mojos.
@@ -36,6 +37,14 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
      * @readonly
      */
     private boolean mavenTestSkip;
+
+    /**
+     * -DskipTests is commonly used with Maven to skip tests. We honor it too.
+     *
+     * @parameter expression="${skipTests}" default-value=false
+     * @readonly
+     */
+    private boolean mavenSkipTests;
 
     /**
      * Enables or disables integration test related goals. If <code>true</code> they will be run; if <code>false</code>,
@@ -54,6 +63,10 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
      */
     protected boolean isEnableIntegrationTest() throws MojoFailureException, MojoExecutionException {
         if (mavenTestSkip) {
+            return false;
+        }
+
+        if (mavenSkipTests) {
             return false;
         }
 
@@ -81,7 +94,7 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
         if (directDependentArtifacts != null) {
             for (Artifact artifact : directDependentArtifacts) {
                 String type = artifact.getType();
-                if (type.equals("apk")) {
+                if (type.equals(APK)) {
                     getLog().debug("Detected apk dependency " + artifact + ". Will resolve and deploy to device...");
                     final File targetApkFile = resolveArtifactToFile(artifact);
                     if (undeployBeforeDeploy) {
@@ -96,11 +109,22 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
     }
 
     protected void deployBuiltApk() throws MojoExecutionException {
+        // If we're not on a supported packaging with just skip (Issue 112)
+        // http://code.google.com/p/maven-android-plugin/issues/detail?id=112
+        if (! SUPPORTED_PACKAGING_TYPES.contains(project.getPackaging())) {
+            getLog().info("Skipping deployment on " + project.getPackaging());
+            return;
+        }
         File apkFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName()
-                + ANDROID_PACKAGE_EXTENSTION);
+                + "." + APK);
         deployApk(apkFile);
     }
 
+    /**
+     * Deploy an apk file, but undeploy first if {@link #undeployBeforeDeploy}{@code == true}.
+     * @param apkFile the apk file to deploy
+     * @throws MojoExecutionException
+     */
     protected void deployFile(File apkFile) throws MojoExecutionException {
         if (undeployBeforeDeploy) {
             undeployApk(apkFile);
