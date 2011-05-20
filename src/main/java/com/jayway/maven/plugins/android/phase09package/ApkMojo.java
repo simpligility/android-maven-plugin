@@ -553,7 +553,7 @@ public class ApkMojo extends AbstractAndroidMojo {
 
         // Add all attached artifacts as well - this could come from the NDK mojo for example
         @SuppressWarnings("unchecked")
-        allArtifacts.addAll( project.getAttachedArtifacts() );
+        boolean result = allArtifacts.addAll( project.getAttachedArtifacts() );
 
         for (Artifact artifact : allArtifacts)
         {
