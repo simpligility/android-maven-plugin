@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.jayway.maven.plugins.android.phase05compile;
 
 import java.io.*;
@@ -22,17 +35,17 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      * <pre>
      * &lt;ndk&gt;
      *     &lt;path&gt;/opt/android-ndk-r4&lt;/path&gt;
-     * &lt;/sdk&gt;
+     * &lt;/ndk&gt;
      * </pre>
-     * <p>The <code>&lt;path&gt;</code> parameter is optional. The default is the setting of the ANDROID_HOME environment
+     * <p>The <code>&lt;path&gt;</code> parameter is optional. The default is the setting of the ANDROID_NDK_HOME environment
      * variable. The parameter can be used to override this setting with a different environment variable like this:</p>
      * <pre>
-     * &lt;sdk&gt;
-     *     &lt;path&gt;${env.ANDROID_NDK}&lt;/path&gt;
-     * &lt;/sdk&gt;
+     * &lt;ndk&gt;
+     *     &lt;path&gt;${env.ANDROID_NDK_HOME}&lt;/path&gt;
+     * &lt;/ndk&gt;
      * </pre>
-     * <p>or just with a hardcoded absolute path. The parameters can also be configured from command-line with parameters
-     * <code>-Dandroid.sdk.path</code> and <code>-Dandroid.sdk.platform</code>.</p>
+     * <p>or just with a hardcoded absolute path. The parameters can also be configured from command-line with parameter
+     * <code>-Dandroid.ndk.path</code>.</p>
      *
      * @parameter
      */
@@ -49,7 +62,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
     private File ndkPath;
 
     /**
-     * Specifies the classifer with which the artifact should be stored in the repository
+     * Specifies the classifier with which the artifact should be stored in the repository
      *
      * @parameter expression="${android.ndk.build.native-classifier}"
      */
@@ -63,9 +76,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
     protected String ndkBuildAdditionalCommandline;
 
     /**
-     * Flag indicating whether the output directory (libs/armeabi) should be cleared after build.  This will essentially
-     * 'move' all the native artifacts (.so) to the ${protect.build.directory}/ndk-libs/armeabi.  When the APK is built,
-     * the libraries will be included from here.
+     * Flag indicating whether the NDK output directory (libs/&lt;architecture&gt;) should be cleared after build.  This
+     * will essentially 'move' all the native artifacts (.so) to the ${project.build.directory}/libs/&lt;architecture&gt;.
+     * If an APK is built as part of the invocation, the libraries will be included from here.
      *
      * @parameter expression="${android.ndk.build.clear-native-artifacts}" default="false"
      */
@@ -80,7 +93,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
     protected boolean attachNativeArtifacts;
 
     /**
-     * The <code>ANDROID_HOME</code> environment variable name.
+     * The <code>ANDROID_NDK_HOME</code> environment variable name.
      */
     public static final String ENV_ANDROID_NDK_HOME = "ANDROID_NDK_HOME";
 
@@ -91,20 +104,26 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      */
     protected File ndkOutputDirectory;
 
-   /**
-    * Defines the architecture for the NDK build
-    *
+    /** <p>Folder containing native libraries compiled and linked by the NDK.</p>
+     *
+     * @parameter expression="${android.nativeLibrariesDirectory}" default-value="${project.basedir}/libs"
+     */
+    private File nativeLibrariesDirectory;
+
+    /**
+     * Defines the architecture for the NDK build
+     *
      * @parameter expression="${android.ndk.build.architecture}" default="armeabi"
-    */
+     */
     protected String ndkArchitecture = "armeabi";
 
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         // This points 
-        File nativeLibDirectory = new File( project.getBasedir(), "libs/" + ndkArchitecture );
+        File nativeLibDirectory = new File( nativeLibrariesDirectory , ndkArchitecture );
 
-        boolean libsDirectoryExists = nativeLibDirectory.exists();
+        final boolean libsDirectoryExists = nativeLibDirectory.exists();
 
         File directoryToRemove = nativeLibDirectory;
 
@@ -113,8 +132,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
 
             if ( nativeLibDirectory.getParentFile().exists() ) {
                 nativeLibDirectory.mkdir();
-            }
-            else {
+            } else {
                 nativeLibDirectory.mkdirs();
                 directoryToRemove = nativeLibDirectory.getParentFile();
             }
@@ -155,8 +173,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             try {
                 if ( !libsDirectoryExists ) {
                     FileUtils.moveDirectory( nativeLibDirectory, destinationDirectory );
-                }
-                else {
+                } else {
                     FileUtils.copyDirectory( nativeLibDirectory, destinationDirectory );
                     FileUtils.cleanDirectory( nativeLibDirectory );
                 }
@@ -177,8 +194,10 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             }
         }
 
+        // Attempt to attach the native library if the project is defined as a "pure" native Android library
+        // (packaging is 'so') or if the plugin has been configured to attach the native library to the build
+        if ( "so".equals(project.getPackaging()) || attachNativeArtifacts ) {
 
-        if ( attachNativeArtifacts ) {
             File[] files = nativeLibDirectory.listFiles( new FilenameFilter() {
                 public boolean accept( final File dir, final String name ) {
                     return name.endsWith( ".so" );
@@ -191,12 +210,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
                 if ( files != null ) {
                     getLog().warn( "Currently, only a single, final native library is supported by the build" );
                 }
-            }
-            else {
-                if ( attachNativeArtifacts ) {
-                    getLog().debug( "Adding native compile artifact: " + files[ 0 ] );
-                    projectHelper.attachArtifact( this.project, "so", (ndkClassifier != null ? ndkClassifier : ndkArchitecture), files[ 0 ] );
-                }
+            } else {
+                getLog().debug( "Adding native compile artifact: " + files[ 0 ] );
+                projectHelper.attachArtifact( this.project, "so", ( ndkClassifier != null ? ndkClassifier : ndkArchitecture ), files[ 0 ] );
             }
 
         }
@@ -204,51 +220,47 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
     }
 
     /**
-     * <p>Returns the Android SDK to use.</p>
+     * <p>Returns the Android NDK to use.</p>
      * <p/>
-     * <p>Current implementation looks for <code>&lt;sdk&gt;&lt;path&gt;</code> configuration in pom, then System
-     * property <code>android.sdk.path</code>, then environment variable <code>ANDROID_HOME</code>.
+     * <p>Current implementation looks for <code>&lt;ndk&gt;&lt;path&gt;</code> configuration in pom, then System
+     * property <code>android.ndk.path</code>, then environment variable <code>ANDROID_NDK_HOME</code>.
      * <p/>
      * <p>This is where we collect all logic for how to lookup where it is, and which one to choose. The lookup is
      * based on available parameters. This method should be the only one you should need to look at to understand how
-     * the Android SDK is chosen, and from where on disk.</p>
+     * the Android NDK is chosen, and from where on disk.</p>
      *
-     * @return the Android SDK to use.
+     * @return the Android NDK to use.
      * @throws org.apache.maven.plugin.MojoExecutionException
-     *          if no Android SDK path configuration is available at all.
+     *          if no Android NDK path configuration is available at all.
      */
     protected AndroidNdk getAndroidNdk() throws MojoExecutionException {
         File chosenNdkPath;
 
         if ( ndk != null ) {
-            // An <sdk> tag exists in the pom.
+            // An <ndk> tag exists in the pom.
 
             if ( ndk.getPath() != null ) {
-                // An <sdk><path> tag is set in the pom.
+                // An <ndk><path> tag is set in the pom.
 
                 chosenNdkPath = ndk.getPath();
-            }
-            else {
-                // There is no <sdk><path> tag in the pom.
+            } else {
+                // There is no <ndk><path> tag in the pom.
 
                 if ( ndkPath != null ) {
-                    // -Dandroid.sdk.path is set on command line, or via <properties><sdk.path>...
+                    // -Dandroid.ndk.path is set on command line, or via <properties><ndk.path>...
                     chosenNdkPath = ndkPath;
-                }
-                else {
-                    // No -Dandroid.sdk.path is set on command line, or via <properties><sdk.path>...
+                } else {
+                    // No -Dandroid.ndk.path is set on command line, or via <properties><ndk.path>...
                     chosenNdkPath = new File( getAndroidNdkHomeOrThrow() );
                 }
             }
-        }
-        else {
-            // There is no <sdk> tag in the pom.
+        } else {
+            // There is no <ndk> tag in the pom.
             if ( ndkPath != null ) {
-                // -Dandroid.sdk.path is set on command line, or via <properties><sdk.path>...
+                // -Dandroid.ndk.path is set on command line, or via <properties><ndk.path>...
                 chosenNdkPath = ndkPath;
-            }
-            else {
-                // No -Dandroid.sdk.path is set on command line, or via <properties><sdk.path>...
+            } else {
+                // No -Dandroid.ndk.path is set on command line, or via <properties><ndk.path>...
                 chosenNdkPath = new File( getAndroidNdkHomeOrThrow() );
             }
 

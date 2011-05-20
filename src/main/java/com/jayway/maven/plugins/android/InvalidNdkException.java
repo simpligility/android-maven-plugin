@@ -1,4 +1,6 @@
 /*
+ * Copyright (C) 2010 Jayway AB
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,25 +15,13 @@
  */
 package com.jayway.maven.plugins.android;
 
-import java.io.File;
-
 /**
- * Configuration for an Android NDK. Only receives config parameter values, and there is no logic in here. Logic is in
- * {@link com.jayway.maven.plugins.android.AndroidNdk}.
+ * Exception for notifying about an invalidly configured Android NDK.
  *
- * @author Johan Lindquist <johanlindquist@gmail.com>
+ * @author hugo.josefson@jayway.com
  */
-public class Ndk {
-    /**
-     * Directory of the installed Android NDK, for example <code>/usr/local/android-ndk-r4</code>
-     *
-     * @parameter expression="${android.ndk.path}"
-     * @required
-     */
-    private File path;
-
-    public File getPath() {
-        return path;
+public class InvalidNdkException extends RuntimeException {
+    public InvalidNdkException(String message) {
+        super(message);
     }
-
 }
