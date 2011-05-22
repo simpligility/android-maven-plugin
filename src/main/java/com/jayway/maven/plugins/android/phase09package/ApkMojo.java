@@ -799,6 +799,11 @@ public class ApkMojo extends AbstractAndroidMojo {
             commands.add("-c");
             commands.add(configurations);
         }
+
+        for (String aaptExtraArg : aaptExtraArgs) {
+            commands.add(aaptExtraArg);
+        }
+
         getLog().info(getAndroidSdk().getPathForTool("aapt") + " " + commands.toString());
         try {
             executor.executeCommand(getAndroidSdk().getPathForTool("aapt"), commands, project.getBasedir(), false);
