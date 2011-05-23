@@ -184,6 +184,12 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      */
     protected String configurations;
 
+    /**
+     * A list of extra arguments that must be passed to aapt.
+     *
+     * @parameter expression="${android.aaptExtraArgs}"
+     */
+    protected String[] aaptExtraArgs;
 
     /**
      * Decides whether the Apk should be generated or not. If set to false, dx and apkBuilder will not run. This is probably most
