@@ -150,6 +150,26 @@ public class ApkMojo extends AbstractAndroidMojo {
      */
     private String nativeLibrariesDependenciesHardwareArchitectureOverride;
 
+	/**
+	 * <p>Additional source directories that contain resources to be packaged into the apk.</p>
+	 * <p>These are not source directories, that contain java classes to be compiled. It corresponds to the -df option of the apkbuilder program. It allows you to specify directories, that contain additional resources to be packaged into the apk. </p>
+	 * So an example inside the plugin \<configuration\> could be:
+	 * <pre>
+	 * <configuration>
+	 * 	<androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
+         * 	<assetsDirectory>${project.basedir}/assets</assetsDirectory>
+         * 	<resourceDirectory>${project.basedir}/res</resourceDirectory>
+         * 	<nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
+	 *	<sourceDirectories>
+         *   		<sourceDirectory>${project.basedir}/additionals</sourceDirectory>
+	 *	</sourceDirectories>		  
+         * </configuration>
+	 * </pre>
+	 *
+     	 * @parameter expression="${android.sourcDirectories}" default-value="null"
+	 */
+	private File[] sourceDirectories;
+
     private static final Pattern PATTERN_JAR_EXT = Pattern.compile("^.+\\.jar$", 2);
 
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -187,6 +207,11 @@ public class ApkMojo extends AbstractAndroidMojo {
         File dexFile = new File(project.getBuild().getDirectory(), "classes.dex");
         File zipArchive = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_");
         ArrayList<File> sourceFolders = new ArrayList<File>();
+	if (sourceDirectories != null) {
+		for(File f:sourceDirectories) {
+			sourceFolders.add(f);
+		}
+	}
         ArrayList<File> jarFiles = new ArrayList<File>();
         ArrayList<File> nativeFolders = new ArrayList<File>();
 
