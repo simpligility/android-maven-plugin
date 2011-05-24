@@ -33,7 +33,6 @@
                         org.apache.maven.plugins:maven-compiler-plugin:compile
                     </compile>
                     <process-classes>
-                        org.apache.maven.plugins:maven-jar-plugin:jar,
                         com.jayway.maven.plugins.android.generation2:maven-android-plugin:unpack
                     </process-classes>
                     <process-test-resources>
@@ -131,7 +130,6 @@
                         org.apache.maven.plugins:maven-compiler-plugin:compile
                     </compile>
                     <process-classes>
-                        org.apache.maven.plugins:maven-jar-plugin:jar,
                         com.jayway.maven.plugins.android.generation2:maven-android-plugin:unpack
                     </process-classes>
                     <process-test-resources>
