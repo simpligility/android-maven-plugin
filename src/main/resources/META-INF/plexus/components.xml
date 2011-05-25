@@ -44,6 +44,7 @@
                         com.jayway.maven.plugins.android.generation2:maven-android-plugin:dex
                     </prepare-package>
                     <package>
+                    	org.apache.maven.plugins:maven-jar-plugin:jar,
                         com.jayway.maven.plugins.android.generation2:maven-android-plugin:apk
                     </package>
                     <install>
@@ -138,6 +139,7 @@
                     <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
                     <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
                     <package>
+                    	org.apache.maven.plugins:maven-jar-plugin:jar,
                         com.jayway.maven.plugins.android.generation2:maven-android-plugin:apklib
                     </package>
                     <install>
