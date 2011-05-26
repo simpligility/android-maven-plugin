@@ -443,15 +443,16 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
 		for (Artifact artifact : getAllRelevantDependencyArtifacts()) {
 			if (artifact.getType().equals(APKLIB)) {
-				generateRForApkLibDependency(getLibraryUnpackDirectory(artifact) + "/" + "AndroidManifest.xml");
+				generateRForApkLibDependency(artifact);
 			}
 		}
 
         project.addCompileSourceRoot(genDirectory.getAbsolutePath());
 	}
 
-	private void generateRForApkLibDependency(String pathToApkLibAndroidManifest) throws MojoExecutionException {
-		getLog().debug("Generating R file for apklibrary: " + pathToApkLibAndroidManifest);
+	private void generateRForApkLibDependency(Artifact apklibArtifact) throws MojoExecutionException {
+		final String unpackDir = getLibraryUnpackDirectory(apklibArtifact);
+		getLog().debug("Generating R file for apklibrary: " + apklibArtifact.getGroupId());
 
 		CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
 		executor.setLogger(this.getLog());
@@ -461,8 +462,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 		commands.add("-m");
 		commands.add("-J");
 		commands.add(genDirectory.getAbsolutePath());
+		commands.add("--custom-package");
+		commands.add(extractPackageNameFromAndroidManifest(new File(unpackDir + "/" + "AndroidManifest.xml")));
 		commands.add("-M");
-		commands.add(pathToApkLibAndroidManifest);
+		commands.add(androidManifestFile.getAbsolutePath());
 		if (resourceDirectory.exists()){
             commands.add("-S");
             commands.add(resourceDirectory.getAbsolutePath());
