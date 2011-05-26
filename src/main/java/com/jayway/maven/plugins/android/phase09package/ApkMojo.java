@@ -151,23 +151,23 @@ public class ApkMojo extends AbstractAndroidMojo {
 
 	/**
 	 * <p>Additional source directories that contain resources to be packaged into the apk.</p>
-	 * <p>These are not source directories, that contain java classes to be compiled. It corresponds to the -df option of the apkbuilder program. It allows you to specify directories, that contain additional resources to be packaged into the apk. </p>
-	 * So an example inside the plugin \<configuration\> could be:
-	 * <pre>
-	 * <configuration>
-	 * 	<androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
-         * 	<assetsDirectory>${project.basedir}/assets</assetsDirectory>
-         * 	<resourceDirectory>${project.basedir}/res</resourceDirectory>
-         * 	<nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
-	 *	<sourceDirectories>
-         *   		<sourceDirectory>${project.basedir}/additionals</sourceDirectory>
-	 *	</sourceDirectories>		  
-         * </configuration>
-	 * </pre>
-	 *
-     	 * @parameter expression="${android.sourcDirectories}" default-value="null"
-	 */
-	private File[] sourceDirectories;
+	 * <p>These are not source directories, that contain java classes to be compiled.
+     * It corresponds to the -df option of the apkbuilder program. It allows you to specify directories,
+     * that contain additional resources to be packaged into the apk. </p>
+	 * So an example inside the plugin configuration could be:
+     * <pre>
+     * &lt;configuration&gt;
+     * 	  ...
+     *    &lt;sourceDirectories&gt;
+     *      &lt;sourceDirectory&gt;${project.basedir}/additionals&lt;/sourceDirectory&gt;
+     *	  &lt;/sourceDirectories&gt;
+     *	  ...
+     * &lt;/configuration&gt;
+     * </pre>
+     *
+     * @parameter expression="${android.sourcDirectories}" default-value="null"
+     */
+    private File[] sourceDirectories;
 
     private static final Pattern PATTERN_JAR_EXT = Pattern.compile("^.+\\.jar$", 2);
 
