@@ -66,6 +66,7 @@ import com.jayway.maven.plugins.android.ExecutionException;
  * @goal generate-sources
  * @phase generate-sources
  * @requiresProject true
+ * @execute phase="process-resources"
  * @requiresDependencyResolution compile
  */
 public class GenerateSourcesMojo extends AbstractAndroidMojo {

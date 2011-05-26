@@ -97,6 +97,14 @@ public class ApkMojo extends AbstractAndroidMojo {
      * @readonly
      */
     private String signDebug;
+    
+    /**
+     * <p>A possibly new package name for the application. This value will be passed on to the aapt
+     * parameter --rename-manifest-package. Look to aapt for more help on this. </p>
+     *
+     * @parameter expression="${android.renameManifestPackage}"
+     */
+    private String renameManifestPackage;
 
     /**
      * <p>Root folder containing native libraries to include in the application package.</p>
@@ -815,6 +823,11 @@ public class ApkMojo extends AbstractAndroidMojo {
             commands.add("-A");
             commands.add(combinedAssets.getAbsolutePath());
         }
+        
+        if (StringUtils.isNotBlank(renameManifestPackage)) {
+        	commands.add("--rename-manifest-package");
+        	commands.add(renameManifestPackage);
+        }
 
         commands.add("-I");
         commands.add(androidJar.getAbsolutePath());
@@ -824,6 +837,11 @@ public class ApkMojo extends AbstractAndroidMojo {
             commands.add("-c");
             commands.add(configurations);
         }
+
+        for (String aaptExtraArg : aaptExtraArgs) {
+            commands.add(aaptExtraArg);
+        }
+
         getLog().info(getAndroidSdk().getPathForTool("aapt") + " " + commands.toString());
         try {
             executor.executeCommand(getAndroidSdk().getPathForTool("aapt"), commands, project.getBasedir(), false);
