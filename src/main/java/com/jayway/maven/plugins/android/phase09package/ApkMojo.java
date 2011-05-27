@@ -173,7 +173,7 @@ public class ApkMojo extends AbstractAndroidMojo {
      * &lt;/configuration&gt;
      * </pre>
      *
-     * @parameter expression="${android.sourcDirectories}" default-value="null"
+     * @parameter expression="${android.sourceDirectories}" default-value=""
      */
     private File[] sourceDirectories;
 
