@@ -15,15 +15,14 @@
  */
 package com.jayway.maven.plugins.android;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 import org.codehaus.plexus.util.ReflectionUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Excercises the {@link AndroidSdk} class.
@@ -42,21 +41,21 @@ public class AndroidSdkTest {
 
     @Test
     public void givenToolAdbThenPathIsPlatformTools() {
-        final String pathForTool =sdkTestSupport.getSdk_with_platform_1_5().getPathForTool("adb").replaceAll(".exe$", "");
-        Assert.assertEquals(new File(sdkTestSupport.getEnv_ANDROID_HOME() + "/platform-tools/adb").getAbsolutePath(), pathForTool);
+        final String pathForTool =sdkTestSupport.getSdk_with_platform_1_5().getPathForTool("adb");
+        Assert.assertEquals(new File(sdkTestSupport.getEnv_ANDROID_HOME() + "/platform-tools").getAbsolutePath(), new File(pathForTool).getParentFile().getAbsolutePath());
     }
 
     @Test
     public void givenToolAndroidThenPathIsCommon() {
-        final String pathForTool =sdkTestSupport.getSdk_with_platform_1_5().getPathForTool("android").replaceAll(".bat$", "");;
-        Assert.assertEquals(new File(sdkTestSupport.getEnv_ANDROID_HOME() + "/tools/android").getAbsolutePath(), pathForTool);
+        final String pathForTool =sdkTestSupport.getSdk_with_platform_1_5().getPathForTool("android");
+        Assert.assertEquals(new File(sdkTestSupport.getEnv_ANDROID_HOME() + "/tools").getAbsolutePath(), new File(pathForTool).getParentFile().getAbsolutePath());
     }
 
     @Test
     public void givenToolAaptAndPlatform1dot5ThenPathIsPlatformTools() {
         final AndroidSdk sdk = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "3");
-        final String pathForTool = sdk.getPathForTool("aapt").replaceAll(".exe$", "");;
-        Assert.assertEquals(new File(sdkTestSupport.getEnv_ANDROID_HOME() + "/platform-tools/aapt"), new File(pathForTool));
+        final String pathForTool = sdk.getPathForTool("aapt");
+        Assert.assertEquals(new File(sdkTestSupport.getEnv_ANDROID_HOME() + "/platform-tools"), new File(pathForTool).getParentFile());
     }
 
     @Test(expected = InvalidSdkException.class)
