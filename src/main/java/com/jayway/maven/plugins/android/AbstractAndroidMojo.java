@@ -612,49 +612,23 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * directories on the device.
      *
      * @param apkFile the file to undeploy
-     * @return <code>true</code> if successfully uninstalled, <code>false</code> otherwise.
+     * @return <code>true</code> if successfully undeployed, <code>false</code> otherwise.
      */
     protected boolean undeployApk(File apkFile) throws MojoExecutionException {
-        return undeployApk(apkFile, true);
-    }
-
-    /**
-     * Undeploys an apk from a connected emulator or usb device. Also deletes the application's data and cache
-     * directories on the device.
-     *
-     * @param apkFile the file to undeploy
-     * @param deleteDataAndCacheDirectoriesOnDevice
-     *                <code>true</code> to delete the application's data and cache
-     *                directories on the device, <code>false</code> to keep them.
-     * @return <code>true</code> if successfully undeployed, <code>false</code> otherwise.
-     */
-    protected boolean undeployApk(File apkFile, boolean deleteDataAndCacheDirectoriesOnDevice) throws MojoExecutionException {
         final String packageName;
         packageName = extractPackageNameFromApk(apkFile);
-        return undeployApk(packageName, deleteDataAndCacheDirectoriesOnDevice);
+        return undeployApk(packageName);
     }
 
-    /**
-     * Undeploys an apk, specified by package name, from a connected emulator or usb device. Also deletes the
-     * application's data and cache directories on the device.
+   /**
+     * Undeploys an apk, specified by package name, from a connected emulator
+     * or usb device. Also deletes the application's data and cache
+     * directories on the device.
      *
      * @param packageName the package name to undeploy.
      * @return <code>true</code> if successfully undeployed, <code>false</code> otherwise.
      */
-    protected boolean undeployApk(String packageName) throws MojoExecutionException {
-        return undeployApk(packageName, true);
-    }
-
- /**
-     * Undeploys an apk, specified by package name, from a connected emulator or usb device.
-     *
-     * @param packageName the package name to undeploy.
-     * @param deleteDataAndCacheDirectoriesOnDevice
-     *                    <code>true</code> to delete the application's data and cache
-     *                    directories on the device, <code>false</code> to keep them.
-     * @return <code>true</code> if successfully undeployed, <code>false</code> otherwise.
-     */
-    protected boolean undeployApk(String packageName, boolean deleteDataAndCacheDirectoriesOnDevice)
+    protected boolean undeployApk(String packageName)
             throws MojoExecutionException {
         AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
 
@@ -672,7 +646,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
                                 || (idevice.getAvdName() != null && idevice.getAvdName().equals(device))) {
 
                             try {
-                                // TODO ... take deleDataAndCacheDirectoriesOnDevice into account somehow
                                 // (not sure though) might be implied
                                 idevice.uninstallPackage(packageName);
                                 getLog().info("Successfully uninstalled from " + idevice.getSerialNumber() + " (avdName="
@@ -686,7 +659,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
                     getLog().info("android.device parameter not set, removing on all attached devices");
                     for (IDevice idevice : devices) {
                         try {
-                            // TODO ... take deleteDataAndCacheDirectoriesOnDevice into account somehow
                             idevice.uninstallPackage(packageName);
                             getLog().info("Successfully uninstalled from " + idevice.getSerialNumber() + " (avdName="
                                         + idevice.getAvdName() + ")");
