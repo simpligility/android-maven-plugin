@@ -59,16 +59,13 @@ public class UnpackMojo extends AbstractAndroidMojo {
 				.createDefaultCommmandExecutor();
 		executor.setLogger(this.getLog());
 
-		File inputFile = new File(project.getBuild().getDirectory()
-				+ File.separator + project.getBuild().getFinalName() + ".jar");
-
 		if (generateApk) {
 			// Unpack all dependent and main classes
-			unpackClasses(inputFile);
+			unpackClasses();
 		}
 	}
 
-	private File unpackClasses(File inputFile) throws MojoExecutionException {
+	private File unpackClasses() throws MojoExecutionException {
 		File outputDirectory = new File(project.getBuild().getDirectory(),
 				"android-classes");
 		if (lazyLibraryUnpack && outputDirectory.exists())
@@ -103,10 +100,11 @@ public class UnpackMojo extends AbstractAndroidMojo {
 		}
 		
 		try {
-			unjar(new JarFile(inputFile), outputDirectory);
+			File sourceDirectory = new File(project.getBuild().getDirectory(), "classes");
+			FileUtils.copyDirectory(sourceDirectory, outputDirectory);
 		} catch (IOException e) {
-			throw new MojoExecutionException("IOException while unjarring "
-					+ inputFile.getAbsolutePath() + " into "
+			throw new MojoExecutionException("IOException while copying "
+					+ sourceDirectory.getAbsolutePath() + " into "
 					+ outputDirectory.getAbsolutePath(), e);
 		}
 		return outputDirectory;
