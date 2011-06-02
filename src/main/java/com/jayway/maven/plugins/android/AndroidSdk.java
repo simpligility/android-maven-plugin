@@ -98,7 +98,7 @@ public class AndroidSdk {
         return null;
     }
 
-    public enum Layout {LAYOUT_1_1, LAYOUT_1_5, LAYOUT_2_3}
+    public enum Layout {LAYOUT_1_5, LAYOUT_2_3}
 
     public Layout getLayout() {
 
@@ -112,11 +112,6 @@ public class AndroidSdk {
         final File platforms = new File(sdkPath, PLATFORMS_FOLDER_NAME);
         if (platforms.exists() && platforms.isDirectory()) {
             return Layout.LAYOUT_1_5;
-        }
-
-        final File androidJar = new File(sdkPath, "android.jar");
-        if (androidJar.exists() && androidJar.isFile()) {
-            return Layout.LAYOUT_1_1;
         }
 
         throw new InvalidSdkException("Android SDK could not be identified from path \"" + sdkPath + "\". " + PARAMETER_MESSAGE);
@@ -199,7 +194,6 @@ public class AndroidSdk {
     public String getPathForFrameworkAidl() {
         final Layout layout = getLayout();
         switch (layout){
-            case LAYOUT_1_1: return sdkPath + "/tools/lib/framework.aidl";
             case LAYOUT_1_5: //intentional fall-through
             case LAYOUT_2_3: return getPlatform() + "/framework.aidl";
             default: throw new InvalidSdkException("Unsupported layout \"" + layout + "\"! " + PARAMETER_MESSAGE);
@@ -216,7 +210,6 @@ public class AndroidSdk {
     public File getAndroidJar() throws MojoExecutionException {
         final Layout layout = getLayout();
         switch (layout){
-            case LAYOUT_1_1: return new File(sdkPath + "/android.jar");
             case LAYOUT_1_5: //intentional fall-through
             case LAYOUT_2_3: return new File(getPlatform() + "/android.jar");
             default: throw new MojoExecutionException("Invalid Layout \"" + getLayout() + "\"! " + PARAMETER_MESSAGE);
@@ -241,10 +234,6 @@ public class AndroidSdk {
 
     public File getPlatform() {
         assertPathIsDirectory(sdkPath);
-
-        if (getLayout() == Layout.LAYOUT_1_1) {
-            return sdkPath;
-        }
 
         final File platformsDirectory = new File(sdkPath, PLATFORMS_FOLDER_NAME);
         assertPathIsDirectory(platformsDirectory);

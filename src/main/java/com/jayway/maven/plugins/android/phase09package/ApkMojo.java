@@ -98,6 +98,14 @@ public class ApkMojo extends AbstractAndroidMojo {
      * @readonly
      */
     private String signDebug;
+    
+    /**
+     * <p>A possibly new package name for the application. This value will be passed on to the aapt
+     * parameter --rename-manifest-package. Look to aapt for more help on this. </p>
+     *
+     * @parameter expression="${android.renameManifestPackage}"
+     */
+    private String renameManifestPackage;
 
     /**
      * <p>Root folder containing native libraries to include in the application package.</p>
@@ -150,6 +158,26 @@ public class ApkMojo extends AbstractAndroidMojo {
      */
     private String nativeLibrariesDependenciesHardwareArchitectureOverride;
 
+	/**
+	 * <p>Additional source directories that contain resources to be packaged into the apk.</p>
+	 * <p>These are not source directories, that contain java classes to be compiled.
+     * It corresponds to the -df option of the apkbuilder program. It allows you to specify directories,
+     * that contain additional resources to be packaged into the apk. </p>
+	 * So an example inside the plugin configuration could be:
+     * <pre>
+     * &lt;configuration&gt;
+     * 	  ...
+     *    &lt;sourceDirectories&gt;
+     *      &lt;sourceDirectory&gt;${project.basedir}/additionals&lt;/sourceDirectory&gt;
+     *	  &lt;/sourceDirectories&gt;
+     *	  ...
+     * &lt;/configuration&gt;
+     * </pre>
+     *
+     * @parameter expression="${android.sourceDirectories}" default-value=""
+     */
+    private File[] sourceDirectories;
+
     private static final Pattern PATTERN_JAR_EXT = Pattern.compile("^.+\\.jar$", 2);
 
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -194,6 +222,11 @@ public class ApkMojo extends AbstractAndroidMojo {
         File dexFile = new File(project.getBuild().getDirectory(), "classes.dex");
         File zipArchive = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_");
         ArrayList<File> sourceFolders = new ArrayList<File>();
+	if (sourceDirectories != null) {
+		for(File f:sourceDirectories) {
+			sourceFolders.add(f);
+		}
+	}
         ArrayList<File> jarFiles = new ArrayList<File>();
         ArrayList<File> nativeFolders = new ArrayList<File>();
 
@@ -791,6 +824,11 @@ public class ApkMojo extends AbstractAndroidMojo {
             commands.add("-A");
             commands.add(combinedAssets.getAbsolutePath());
         }
+        
+        if (StringUtils.isNotBlank(renameManifestPackage)) {
+        	commands.add("--rename-manifest-package");
+        	commands.add(renameManifestPackage);
+        }
 
         commands.add("-I");
         commands.add(androidJar.getAbsolutePath());
@@ -800,6 +838,11 @@ public class ApkMojo extends AbstractAndroidMojo {
             commands.add("-c");
             commands.add(configurations);
         }
+
+        for (String aaptExtraArg : aaptExtraArgs) {
+            commands.add(aaptExtraArg);
+        }
+
         getLog().info(getAndroidSdk().getPathForTool("aapt") + " " + commands.toString());
         try {
             executor.executeCommand(getAndroidSdk().getPathForTool("aapt"), commands, project.getBasedir(), false);
