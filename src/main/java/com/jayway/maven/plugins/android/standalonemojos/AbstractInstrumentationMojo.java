@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Jayway AB
+ * Copyright (C) 2009-2011 Jayway AB
  * Copyright (C) 2007-2008 JVending Masa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,10 @@
  */
 package com.jayway.maven.plugins.android.standalonemojos;
 
+import com.android.ddmlib.IDevice;
 import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.DeviceCallback;
 import com.jayway.maven.plugins.android.ExecutionException;
 
 import org.apache.commons.lang.StringUtils;
@@ -57,65 +59,71 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             instrumentationRunner = extractInstrumentationRunnerFromAndroidManifest(androidManifestFile);
         }
 
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
-        List<String> commands = new ArrayList<String>();
+        doWithDevices(new DeviceCallback() {
+            public void doWithDevice(final IDevice device) throws MojoExecutionException, MojoFailureException {
+                List<String> commands = new ArrayList<String>();
 
-        addDeviceParameter(commands);
+                addDeviceParameter(commands, device);
 
-        commands.add("shell");
-        commands.add("am");
-        commands.add("instrument");
-        commands.add("-w");
-        
-        // only run Tests in specific package
-        String testPackages = buildTestPackagesString();
-        // only run Tests in specific class
-        String testClasses = buildTestClassesString();
-        boolean tcExists = StringUtils.isNotBlank(testClasses);
-        boolean tpExists = StringUtils.isNotBlank(testPackages);
-        
-        if(tcExists && tpExists) {
-            // if both testPackages and testClasses are specified --> ERROR
-        	throw new MojoFailureException("testPackages and testClasses are mutual exclusive. They cannot be specified at the same time. " +
-				"Please specify either testPackages or testClasses! For details, see http://developer.android.com/guide/developing/testing/testing_otheride.html");
-        }
-        
-        if(tpExists) {
-            commands.add("-e");
-            commands.add("package");
-            commands.add(testPackages);
-            
-            getLog().info("Running tests for specified test packages: " + testPackages);
-        }
-        
-        if(tcExists) {
-        	commands.add("-e");
-        	commands.add("class");
-        	commands.add(testClasses);
-        	
-        	getLog().info("Running tests for specified test classes/methods: " + testClasses);
-        }
-        //---- stop mkessel extensions
-        
-        commands.add(instrumentationPackage + "/" + instrumentationRunner);
+                commands.add("shell");
+                commands.add("am");
+                commands.add("instrument");
+                commands.add("-w");
 
-        getLog().info(getAndroidSdk().getAdbPath() + " " + commands.toString());
-        try {
-            executor.executeCommand(getAndroidSdk().getAdbPath(), commands, project.getBasedir(), true);
-            final String standardOut = executor.getStandardOut();
-            final String standardError = executor.getStandardError();
-            getLog().debug(standardOut);
-            getLog().debug(standardError);
-            // Fail when tests on device fail. adb does not exit with errorcode!=0 or even print to stderr, so we have to parse stdout.
-            if (standardOut == null || !standardOut.matches(".*?OK \\([0-9]+ tests?\\)\\s*")) {
-                throw new MojoFailureException("Tests failed on device.");
+                // only run Tests in specific package
+                String testPackages = buildTestPackagesString();
+                // only run Tests in specific class
+                String testClasses = buildTestClassesString();
+                boolean tcExists = StringUtils.isNotBlank(testClasses);
+                boolean tpExists = StringUtils.isNotBlank(testPackages);
+
+                if(tcExists && tpExists) {
+                    // if both testPackages and testClasses are specified --> ERROR
+                    throw new MojoFailureException("testPackages and testClasses are mutual exclusive. They cannot be specified at the same time. " +
+                        "Please specify either testPackages or testClasses! For details, see http://developer.android.com/guide/developing/testing/testing_otheride.html");
+                }
+
+                if(tpExists) {
+                    commands.add("-e");
+                    commands.add("package");
+                    commands.add(testPackages);
+
+                    getLog().info("Running tests for specified test packages: " + testPackages);
+                }
+
+                if(tcExists) {
+                    commands.add("-e");
+                    commands.add("class");
+                    commands.add(testClasses);
+
+                    getLog().info("Running tests for specified test classes/methods: " + testClasses);
+                }
+                //---- stop mkessel extensions
+
+                commands.add(instrumentationPackage + "/" + instrumentationRunner);
+
+                getLog().info(getAndroidSdk().getAdbPath() + " " + commands.toString());
+                try {
+                    executor.executeCommand(getAndroidSdk().getAdbPath(), commands, project.getBasedir(), true);
+                    final String standardOut = executor.getStandardOut();
+                    final String standardError = executor.getStandardError();
+                    getLog().debug(standardOut);
+                    getLog().debug(standardError);
+                    // Fail when tests on device fail. adb does not exit with errorcode!=0 or even print to stderr, so we have to parse stdout.
+                    if (standardOut == null || !standardOut.matches(".*?OK \\([0-9]+ tests?\\)\\s*")) {
+                        throw new MojoFailureException("Tests failed on device.");
+                    }
+                } catch (ExecutionException e) {
+                    getLog().error(executor.getStandardOut());
+                    getLog().error(executor.getStandardError());
+                    throw new MojoFailureException("Tests failed on device.");
+                }
             }
-        } catch (ExecutionException e) {
-            getLog().error(executor.getStandardOut());
-            getLog().error(executor.getStandardError());
-            throw new MojoFailureException("Tests failed on device.");
-        }
+        });
+
+
     }
 }
