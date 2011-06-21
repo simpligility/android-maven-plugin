@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009, 2010 Jayway AB
+ * Copyright (C) 2009-2011 Jayway AB
  * Copyright (C) 2007-2008 JVending Masa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,6 +32,7 @@ import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.DirectoryScanner;
@@ -40,6 +41,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -543,41 +545,51 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @param apkFile the file to deploy
      * @throws MojoExecutionException If there is a problem deploying the apk file.
      */
-    protected void deployApk(File apkFile) throws MojoExecutionException {
-        AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
+    protected void deployApk(final File apkFile) throws MojoExecutionException, MojoFailureException {
+
+        doWithDevices(new DeviceCallback(){
+            public void doWithDevice(final IDevice device) throws MojoExecutionException {
+                try {
+                    device.installPackage(apkFile.getAbsolutePath(), undeployBeforeDeploy);
+                    getLog().info("Successfully installed to " + device.getSerialNumber()  + " (avdName="
+                            + device.getAvdName() + ")");
+                } catch (InstallException e) {
+                    throw new MojoExecutionException("Install failed.", e);
+                }
+            }
+        });
+
+    }
+
+    /**
+     * Determines which {@link IDevice}(s) to use, and performs the callback action on it/them.
+     *
+     * @param deviceCallback the action to perform on each device
+     * @throws org.apache.maven.plugin.MojoExecutionException in case there is a problem
+     * @throws org.apache.maven.plugin.MojoFailureException in case there is a problem
+     */
+    protected void doWithDevices(final DeviceCallback deviceCallback) throws MojoExecutionException, MojoFailureException {
+        final AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
 
         if (androidDebugBridge.isConnected()) {
             List<IDevice> devices = Arrays.asList(androidDebugBridge.getDevices());
             int numberOfDevices = devices.size();
             getLog().info("Found " + numberOfDevices + " devices connected with the Android Debug Bridge");
             if (devices.size() > 0) {
-                getLog().info("Continuing with install of " + apkFile.getAbsolutePath());
                 if (StringUtils.isNotBlank(device)) {
                     getLog().info("android.device parameter set to " + device);
                     for (IDevice idevice : devices) {
-                        // deploy to specified device or all emulators or all devices
+                        // use specified device or all emulators or all devices
                         if (("emulator".equals(device) && idevice.isEmulator())
                                 || ("usb".equals(device) && !idevice.isEmulator())
                                 || (idevice.getAvdName() != null && idevice.getAvdName().equals(device))) {
-                            try {
-                                idevice.installPackage(apkFile.getAbsolutePath(), undeployBeforeDeploy);
-                                getLog().info("Successfully installed to " + idevice.getSerialNumber()  + " (avdName="
-                                        + idevice.getAvdName() + ")");
-                            } catch (InstallException e) {
-                                throw new MojoExecutionException("Install failed.", e);
-                            }
+                            deviceCallback.doWithDevice(idevice);
                         }
                     }
                 } else {
-                    getLog().info("android.device parameter not set, deploying to all attached devices");
+                    getLog().info("android.device parameter not set, using all attached devices");
                     for (IDevice idevice : devices) {
-                        try {
-                            idevice.installPackage(apkFile.getAbsolutePath(), undeployBeforeDeploy);
-                            getLog().info("Successfully installed to " + idevice.getSerialNumber() + " (avdName="
-                                        + idevice.getAvdName() + ")");
-                        } catch (InstallException e) {
-                            throw new MojoExecutionException("Install failed.", e);
-                        }
+                        deviceCallback.doWithDevice(idevice);
                     }
                 }
             } else {
@@ -586,25 +598,17 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         } else {
             throw new MojoExecutionException("Android Debug Bridge is not connected.");
         }
-//        AndroidDebugBridge.terminate();
     }
 
     /**
-     * Checks if a specific device should be used, and adds any relevant parameter(s) to the parameters list.
+     * Adds relevant parameter to the parameters list for chosen device.
      *
      * @param commands the parameters to be used with the {@code adb} command
+     * @param device the device to be used
      */
-    protected void addDeviceParameter(List<String> commands) {
-        if (StringUtils.isNotBlank(device)) {
-            if ("usb".equals(device)) {
-                commands.add("-d");
-            } else if ("emulator".equals(device)) {
-                commands.add("-e");
-            } else {
-                commands.add("-s");
-                commands.add(device);
-            }
-        }
+    protected void addDeviceParameter(List<String> commands, IDevice device) {
+        commands.add("-s");
+        commands.add(device.getSerialNumber());
     }
 
     /**
@@ -614,7 +618,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @param apkFile the file to undeploy
      * @return <code>true</code> if successfully undeployed, <code>false</code> otherwise.
      */
-    protected boolean undeployApk(File apkFile) throws MojoExecutionException {
+    protected boolean undeployApk(File apkFile) throws MojoExecutionException, MojoFailureException {
         final String packageName;
         packageName = extractPackageNameFromApk(apkFile);
         return undeployApk(packageName);
@@ -628,58 +632,26 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @param packageName the package name to undeploy.
      * @return <code>true</code> if successfully undeployed, <code>false</code> otherwise.
      */
-    protected boolean undeployApk(String packageName)
-            throws MojoExecutionException {
-        AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
+    protected boolean undeployApk(final String packageName)
+            throws MojoExecutionException, MojoFailureException {
 
-        if (androidDebugBridge.isConnected()) {
-            List<IDevice> devices = Arrays.asList(androidDebugBridge.getDevices());
-            int numberOfDevices = devices.size();
-            getLog().info("Found " + numberOfDevices + " devices connected with the Android Debug Bridge");
-            if (devices.size() > 0) {
-                getLog().info("Continuing with uninstall of " + packageName);
-                if (StringUtils.isNotBlank(device)) {
-                    getLog().info("android.device parameter set to " + device);
-                    for (IDevice idevice : devices) {
-                        if (("emulator".equals(device) && idevice.isEmulator())
-                                || ("usb".equals(device) && !idevice.isEmulator())
-                                || (idevice.getAvdName() != null && idevice.getAvdName().equals(device))) {
+        final AtomicBoolean result = new AtomicBoolean(true); // if no devices are present, it counts as successful
 
-                            try {
-                                // (not sure though) might be implied
-                                idevice.uninstallPackage(packageName);
-                                getLog().info("Successfully uninstalled from " + idevice.getSerialNumber() + " (avdName="
-                                        + idevice.getAvdName() + ")");
-                            } catch (InstallException e) {
-                                throw new MojoExecutionException("Uninstall failed.", e);
-                            }
-                        }
-                    }
-                } else {
-                    getLog().info("android.device parameter not set, removing on all attached devices");
-                    for (IDevice idevice : devices) {
-                        try {
-                            idevice.uninstallPackage(packageName);
-                            getLog().info("Successfully uninstalled from " + idevice.getSerialNumber() + " (avdName="
-                                        + idevice.getAvdName() + ")");
-                        } catch (InstallException e) {
-                            throw new MojoExecutionException("Uninstall failed.", e);
-                        }
-                    }
+        doWithDevices(new DeviceCallback() {
+            public void doWithDevice(final IDevice device) throws MojoExecutionException {
+                try {
+                    device.uninstallPackage(packageName);
+                    getLog().info("Successfully uninstalled from " + device.getSerialNumber() + " (avdName="
+                            + device.getAvdName() + ")");
+                    result.set(true);
+                } catch (InstallException e) {
+                    result.set(false);
+                    throw new MojoExecutionException("Uninstall failed.", e);
                 }
-//                AndroidDebugBridge.terminate();
-                return true;
-            } else {
-                getLog().error("No online devices attached.");
-//                AndroidDebugBridge.terminate();
-                return false;
             }
-        } else {
-            getLog().error("Android Debug Bridge is not connected.");
-//            AndroidDebugBridge.terminate();
-            return false;
-        }
+        });
 
+        return result.get();
     }
 
     /**
