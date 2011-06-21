@@ -378,6 +378,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      */
     protected List testClasses;
 
+    private static final Object adbLock = new Object();
     private static boolean adbInitialized = false;
 
     /**
@@ -509,14 +510,16 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * the init call in the library is also synchronized .. just in case.
      * @return
      */
-    private synchronized AndroidDebugBridge initAndroidDebugBridge() {
-        if (!adbInitialized) {
-            AndroidDebugBridge.init(false);
-            adbInitialized = true;
+    private AndroidDebugBridge initAndroidDebugBridge() {
+        synchronized (adbLock) {
+            if (!adbInitialized) {
+                AndroidDebugBridge.init(false);
+                adbInitialized = true;
+            }
+            AndroidDebugBridge androidDebugBridge = AndroidDebugBridge.createBridge();
+            waitUntilConnected(androidDebugBridge);
+            return androidDebugBridge;
         }
-        AndroidDebugBridge androidDebugBridge = AndroidDebugBridge.createBridge();
-        waitUntilConnected(androidDebugBridge);
-        return androidDebugBridge;
     }
 
     /**
