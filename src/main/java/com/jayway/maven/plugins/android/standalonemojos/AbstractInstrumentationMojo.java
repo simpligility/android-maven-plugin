@@ -67,6 +67,11 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         commands.add("shell");
         commands.add("am");
         commands.add("instrument");
+
+        for ( Object emulatorCommand : emulatorCommands ) {
+            commands.add("-e "+emulatorCommand);
+        }
+
         commands.add("-w");
         
         // only run Tests in specific package

@@ -232,6 +232,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected String customPackage;
 
     /**
+     * Direct commands to the running Emulator (adb -e "command")
+     *
+     * @parameter
+     */
+    protected List emulatorCommands;
+
+    /**
      * @component
      * @readonly
      * @required
