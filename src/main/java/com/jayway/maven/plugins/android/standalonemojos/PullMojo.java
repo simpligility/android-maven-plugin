@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2007-2008 JVending Masa
+ * Copyright (C) 2011 Jayway AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +23,10 @@ import java.util.List;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
+import com.android.ddmlib.IDevice;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.DeviceCallback;
 import com.jayway.maven.plugins.android.ExecutionException;
 
 /**
@@ -46,32 +49,28 @@ public class PullMojo extends AbstractAndroidMojo {
      */
     private File destination;
 
-    /**
-     * Specifies which device to connect to, by serial number. Special values "usb" and "emulator" are also valid, for
-     * selecting the only USB connected device or the only running emulator, respectively.
-     *
-     * @parameter expression="${android.device}"
-     */
-    protected String device;
-
     public void execute() throws MojoExecutionException, MojoFailureException {
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
-
-        List<String> commands = new ArrayList<String>();
-
-        addDeviceParameter(commands);
-
-        commands.add("pull");
-        commands.add(source);
-        commands.add(destination.getAbsolutePath());
 
         final String pathForAdb = getAndroidSdk().getAdbPath();
-        getLog().info(pathForAdb + " " + commands.toString());
-        try {
-            executor.executeCommand(pathForAdb, commands, null, false);
-        } catch (ExecutionException e) {
-            throw new MojoExecutionException("Pull failed.", e);
-        }
+        final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        executor.setLogger(this.getLog());
+
+        doWithDevices(new DeviceCallback() {
+            public void doWithDevice(final IDevice device) throws MojoExecutionException {
+                final List<String> commands = new ArrayList<String>();
+                addDeviceParameter(commands, device);
+                commands.add("pull");
+                commands.add(source);
+                commands.add(destination.getAbsolutePath());
+
+                getLog().info(pathForAdb + " " + commands.toString());
+                try {
+                    executor.executeCommand(pathForAdb, commands, null, false);
+                } catch (ExecutionException e) {
+                    throw new MojoExecutionException("Pull failed.", e);
+                }
+            }
+        });
+
     }
 }
