@@ -105,6 +105,15 @@ public class ApkMojo extends AbstractAndroidMojo {
      * @parameter expression="${android.renameManifestPackage}"
      */
     private String renameManifestPackage;
+    
+    /**
+     * <p>Rewrite the manifest so that all of its instrumentation components target the given package.
+     * This value will be passed on to the aapt parameter --rename-instrumentation-target-package. 
+     * Look to aapt for more help on this. </p>
+     *
+     * @parameter expression="${android.renameInstrumentationTargetPackage}"
+     */
+    private String renameInstrumentationTargetPackage;
 
     /**
      * <p>Root folder containing native libraries to include in the application package.</p>
@@ -766,8 +775,13 @@ public class ApkMojo extends AbstractAndroidMojo {
         }
         
         if (StringUtils.isNotBlank(renameManifestPackage)) {
-        	commands.add("--rename-manifest-package");
-        	commands.add(renameManifestPackage);
+          commands.add("--rename-manifest-package");
+          commands.add(renameManifestPackage);
+        }
+        
+        if (StringUtils.isNotBlank(renameInstrumentationTargetPackage)) {
+          commands.add("--rename-instrumentation-target-package");
+          commands.add(renameInstrumentationTargetPackage);
         }
 
         commands.add("-I");
