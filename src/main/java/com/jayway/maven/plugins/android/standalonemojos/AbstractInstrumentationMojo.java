@@ -16,18 +16,25 @@
  */
 package com.jayway.maven.plugins.android.standalonemojos;
 
+import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.TimeoutException;
+import com.android.ddmlib.testrunner.ITestRunListener;
+import com.android.ddmlib.testrunner.RemoteAndroidTestRunner;
+import com.android.ddmlib.testrunner.TestIdentifier;
 import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
-import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.DeviceCallback;
-import com.jayway.maven.plugins.android.ExecutionException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author hugo.josefson@jayway.com
@@ -50,6 +57,11 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
      */
     private String instrumentationRunner;
 
+    private boolean testClassesExists;
+    private boolean testPackagesExists;
+    private String testPackages;
+    private String[] testClassesArray;
+
     protected void instrument() throws MojoExecutionException, MojoFailureException {
         if (instrumentationPackage == null) {
             instrumentationPackage = extractPackageNameFromAndroidManifest(androidManifestFile);
@@ -59,71 +71,94 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             instrumentationRunner = extractInstrumentationRunnerFromAndroidManifest(androidManifestFile);
         }
 
-        final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
+        // only run Tests in specific package
+        testPackages = buildTestPackagesString();
+        testPackagesExists = StringUtils.isNotBlank(testPackages);
+
+        if (testClasses != null) {
+            testClassesArray = (String[]) testClasses.toArray();
+            testClassesExists = testClassesArray.length > 0;
+        } else {
+            testClassesExists = false;
+        }
+
+        if(testClassesExists && testPackagesExists) {
+            // if both testPackages and testClasses are specified --> ERROR
+            throw new MojoFailureException("testPackages and testClasses are mutual exclusive. They cannot be specified at the same time. " +
+                "Please specify either testPackages or testClasses! For details, see http://developer.android.com/guide/developing/testing/testing_otheride.html");
+        }
 
         doWithDevices(new DeviceCallback() {
             public void doWithDevice(final IDevice device) throws MojoExecutionException, MojoFailureException {
                 List<String> commands = new ArrayList<String>();
 
-                addDeviceParameter(commands, device);
+                RemoteAndroidTestRunner remoteAndroidTestRunner =
+                    new RemoteAndroidTestRunner(instrumentationPackage, instrumentationRunner, device);
 
-                commands.add("shell");
-                commands.add("am");
-                commands.add("instrument");
-                commands.add("-w");
-
-                // only run Tests in specific package
-                String testPackages = buildTestPackagesString();
-                // only run Tests in specific class
-                String testClasses = buildTestClassesString();
-                boolean tcExists = StringUtils.isNotBlank(testClasses);
-                boolean tpExists = StringUtils.isNotBlank(testPackages);
-
-                if(tcExists && tpExists) {
-                    // if both testPackages and testClasses are specified --> ERROR
-                    throw new MojoFailureException("testPackages and testClasses are mutual exclusive. They cannot be specified at the same time. " +
-                        "Please specify either testPackages or testClasses! For details, see http://developer.android.com/guide/developing/testing/testing_otheride.html");
-                }
-
-                if(tpExists) {
-                    commands.add("-e");
-                    commands.add("package");
-                    commands.add(testPackages);
-
+                if(testPackagesExists) {
+                    remoteAndroidTestRunner.setTestPackageName(testPackages);
                     getLog().info("Running tests for specified test packages: " + testPackages);
                 }
 
-                if(tcExists) {
-                    commands.add("-e");
-                    commands.add("class");
-                    commands.add(testClasses);
-
-                    getLog().info("Running tests for specified test classes/methods: " + testClasses);
+                if(testClassesExists) {
+                    remoteAndroidTestRunner.setClassNames(testClassesArray);
+                    getLog().info("Running tests for specified test " +
+                        "classes/methods: " + Arrays.toString(testClassesArray));
                 }
-                //---- stop mkessel extensions
 
-                commands.add(instrumentationPackage + "/" + instrumentationRunner);
-
-                getLog().info(getAndroidSdk().getAdbPath() + " " + commands.toString());
+                getLog().info("Running instrumentation tests in " + instrumentationPackage + " on " +
+                    device.getSerialNumber() + " (avdName=" + device.getAvdName() + ")");
                 try {
-                    executor.executeCommand(getAndroidSdk().getAdbPath(), commands, project.getBasedir(), true);
-                    final String standardOut = executor.getStandardOut();
-                    final String standardError = executor.getStandardError();
-                    getLog().debug(standardOut);
-                    getLog().debug(standardError);
-                    // Fail when tests on device fail. adb does not exit with errorcode!=0 or even print to stderr, so we have to parse stdout.
-                    if (standardOut == null || !standardOut.matches(".*?OK \\([0-9]+ tests?\\)\\s*")) {
-                        throw new MojoFailureException("Tests failed on device.");
-                    }
-                } catch (ExecutionException e) {
-                    getLog().error(executor.getStandardOut());
-                    getLog().error(executor.getStandardError());
-                    throw new MojoFailureException("Tests failed on device.");
+                    remoteAndroidTestRunner.run(new AndroidTestRunListener());
+                } catch (TimeoutException e) {
+                    e.printStackTrace();
+                } catch (AdbCommandRejectedException e) {
+                    e.printStackTrace();
+                } catch (ShellCommandUnresponsiveException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });
+    }
 
+    private class AndroidTestRunListener implements ITestRunListener {
+        public void testRunStarted(String runName, int testCount) {
+            getLog().info("Run: " + runName + ", " + testCount + " tests:");
+        }
 
+        public void testStarted(TestIdentifier test) {
+            getLog().info("Start: " + test.toString());
+        }
+
+        public void testFailed(TestFailure status, TestIdentifier test, String trace) {
+            getLog().info(status.name() + ":" + test.toString());
+            getLog().info(trace);
+        }
+
+        public void testEnded(TestIdentifier test, Map<String, String> testMetrics) {
+            getLog().info("End:" + test.toString());
+            logMetrics(testMetrics);
+        }
+
+        public void testRunFailed(String errorMessage) {
+            getLog().info("Run failed: " + errorMessage);
+        }
+
+        public void testRunStopped(long elapsedTime) {
+            getLog().info("Run stopped:" + elapsedTime);
+        }
+
+        public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
+            getLog().info("Run ended:" + elapsedTime);
+            logMetrics(runMetrics);
+        }
+
+        private void logMetrics(Map<String, String> metrics) {
+            for (Map.Entry<String, String> entry : metrics.entrySet()) {
+                getLog().info(entry.getKey() + ": " + entry.getValue());
+            }
+        }
     }
 }
