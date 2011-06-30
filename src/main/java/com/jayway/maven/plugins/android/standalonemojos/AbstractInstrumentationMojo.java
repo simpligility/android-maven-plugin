@@ -124,40 +124,44 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
     }
 
     private class AndroidTestRunListener implements ITestRunListener {
+        private static final String INDENT = "  ";
+
         public void testRunStarted(String runName, int testCount) {
-            getLog().info("Run: " + runName + ", " + testCount + " tests:");
+            getLog().info(INDENT + "Run started: " + runName + ", " +
+                "" + testCount + " tests:");
         }
 
         public void testStarted(TestIdentifier test) {
-            getLog().info("Start: " + test.toString());
+            getLog().info(INDENT + INDENT +"Start: " + test.toString());
         }
 
         public void testFailed(TestFailure status, TestIdentifier test, String trace) {
-            getLog().info(status.name() + ":" + test.toString());
-            getLog().info(trace);
+            getLog().info(INDENT + INDENT +status.name() + ":" + test.toString());
+            getLog().info(INDENT + INDENT + trace);
         }
 
         public void testEnded(TestIdentifier test, Map<String, String> testMetrics) {
-            getLog().info("End:" + test.toString());
+            getLog().info( INDENT + INDENT +"End: " + test.toString());
             logMetrics(testMetrics);
         }
 
         public void testRunFailed(String errorMessage) {
-            getLog().info("Run failed: " + errorMessage);
+            getLog().info(INDENT +"Run failed: " + errorMessage);
         }
 
         public void testRunStopped(long elapsedTime) {
-            getLog().info("Run stopped:" + elapsedTime);
+            getLog().info(INDENT +"Run stopped:" + elapsedTime);
         }
 
         public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
-            getLog().info("Run ended:" + elapsedTime);
+            getLog().info(INDENT +"Run ended:" + elapsedTime);
             logMetrics(runMetrics);
         }
 
         private void logMetrics(Map<String, String> metrics) {
             for (Map.Entry<String, String> entry : metrics.entrySet()) {
-                getLog().info(entry.getKey() + ": " + entry.getValue());
+                getLog().info(INDENT + INDENT + entry.getKey() + ": "
+                    + entry.getValue());
             }
         }
     }
