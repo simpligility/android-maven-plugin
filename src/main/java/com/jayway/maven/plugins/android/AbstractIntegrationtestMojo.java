@@ -89,7 +89,7 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
 
     }
 
-    protected void deployDependencies() throws MojoExecutionException {
+    protected void deployDependencies() throws MojoExecutionException, MojoFailureException {
         Set<Artifact> directDependentArtifacts = project.getDependencyArtifacts();
         if (directDependentArtifacts != null) {
             for (Artifact artifact : directDependentArtifacts) {
@@ -108,7 +108,7 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
         }
     }
 
-    protected void deployBuiltApk() throws MojoExecutionException {
+    protected void deployBuiltApk() throws MojoExecutionException, MojoFailureException {
         // If we're not on a supported packaging with just skip (Issue 112)
         // http://code.google.com/p/maven-android-plugin/issues/detail?id=112
         if (! SUPPORTED_PACKAGING_TYPES.contains(project.getPackaging())) {
@@ -125,7 +125,7 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
      * @param apkFile the apk file to deploy
      * @throws MojoExecutionException
      */
-    protected void deployFile(File apkFile) throws MojoExecutionException {
+    protected void deployFile(File apkFile) throws MojoExecutionException, MojoFailureException {
         if (undeployBeforeDeploy) {
             undeployApk(apkFile);
         }
