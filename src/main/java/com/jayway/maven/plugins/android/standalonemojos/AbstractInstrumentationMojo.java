@@ -46,6 +46,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
      *
      * @optional
      * @parameter expression="${android.instrumentationPackage}
+     * TODO: insert .test in parameter
      */
     private String instrumentationPackage;
 
@@ -54,13 +55,37 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
      *
      * @optional
      * @parameter expression="${android.instrumentationRunner}"
+     * TODO: insert .test in parameter
      */
     private String instrumentationRunner;
+
+    /**
+     * TODO: document
+     * @optional
+     * @parameter default-value=false expression="${android.test.debug}
+     */
+    private boolean testDebug;
+
+
+    /**
+     * TODO: document
+     * @optional
+     * @parameter default-value=false expression="${android.test.coverage}
+     */
+    private boolean testCoverage;
+
+    /**
+     * TODO: document
+     * @optional
+     * @parameter default-value=false expression="${android.test.logonly}
+     */
+    private boolean testLogOnly;
 
     private boolean testClassesExists;
     private boolean testPackagesExists;
     private String testPackages;
     private String[] testClassesArray;
+
 
     protected void instrument() throws MojoExecutionException, MojoFailureException {
         if (instrumentationPackage == null) {
@@ -106,23 +131,35 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                         "classes/methods: " + Arrays.toString(testClassesArray));
                 }
 
+                remoteAndroidTestRunner.setDebug(testDebug);
+                remoteAndroidTestRunner.setCoverage(testCoverage);
+                remoteAndroidTestRunner.setLogOnly(testLogOnly);
+
                 getLog().info("Running instrumentation tests in " + instrumentationPackage + " on " +
                     device.getSerialNumber() + " (avdName=" + device.getAvdName() + ")");
                 try {
                     remoteAndroidTestRunner.run(new AndroidTestRunListener());
                 } catch (TimeoutException e) {
+                    // TODO: rethrow as mojo exception or so
                     e.printStackTrace();
                 } catch (AdbCommandRejectedException e) {
-                    e.printStackTrace();
+                    // TODO: rethrow as mojo exception or so
+                     e.printStackTrace();
                 } catch (ShellCommandUnresponsiveException e) {
-                    e.printStackTrace();
+                    // TODO: rethrow as mojo exception or so
+                     e.printStackTrace();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    // TODO: rethrow as mojo exception or so
+                     e.printStackTrace();
                 }
             }
         });
     }
 
+    /**
+     * AndroidTestRunListener produces a nice output for the log for the test
+     * run.
+     */
     private class AndroidTestRunListener implements ITestRunListener {
         private static final String INDENT = "  ";
 
