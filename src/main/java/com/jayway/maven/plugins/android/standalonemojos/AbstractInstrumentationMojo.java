@@ -140,17 +140,14 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                 try {
                     remoteAndroidTestRunner.run(new AndroidTestRunListener());
                 } catch (TimeoutException e) {
-                    // TODO: rethrow as mojo exception or so
-                    e.printStackTrace();
+                    throw new MojoExecutionException("timeout", e);
                 } catch (AdbCommandRejectedException e) {
-                    // TODO: rethrow as mojo exception or so
-                     e.printStackTrace();
+                    throw new MojoExecutionException("adb command rejected", e);
                 } catch (ShellCommandUnresponsiveException e) {
-                    // TODO: rethrow as mojo exception or so
-                     e.printStackTrace();
+                    throw new MojoExecutionException("shell command " +
+                        "unresponsive", e);
                 } catch (IOException e) {
-                    // TODO: rethrow as mojo exception or so
-                     e.printStackTrace();
+                    throw new MojoExecutionException("IO problem", e);
                 }
             }
         });
