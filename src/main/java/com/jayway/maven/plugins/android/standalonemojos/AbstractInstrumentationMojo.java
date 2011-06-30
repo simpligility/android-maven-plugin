@@ -20,6 +20,7 @@ import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
+import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.RemoteAndroidTestRunner;
 import com.android.ddmlib.testrunner.TestIdentifier;
@@ -45,8 +46,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
      * <code>AndroidManifest.xml</code>.
      *
      * @optional
-     * @parameter expression="${android.instrumentationPackage}
-     * TODO: insert .test in parameter
+     * @parameter expression="${android.test.instrumentationPackage}
      */
     private String instrumentationPackage;
 
@@ -54,32 +54,43 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
      * Class name of test runner. If not specified, it is inferred from <code>AndroidManifest.xml</code>.
      *
      * @optional
-     * @parameter expression="${android.instrumentationRunner}"
-     * TODO: insert .test in parameter
+     * @parameter expression="${android.test.instrumentationRunner}"
      */
     private String instrumentationRunner;
 
     /**
-     * TODO: document
+     * Enable debug causing the test runner to wait until debugger is
+     * connected.
      * @optional
-     * @parameter default-value=false expression="${android.test.debug}
+     * @parameter default-value=false expression="${android.test.debug}"
      */
     private boolean testDebug;
 
 
     /**
-     * TODO: document
+     * Enable or disable code coverage for this test run.
      * @optional
-     * @parameter default-value=false expression="${android.test.coverage}
+     * @parameter default-value=false expression="${android.test.coverage}"
      */
     private boolean testCoverage;
 
     /**
-     * TODO: document
+     * Enable this flag to run a log only and not execute the tests
      * @optional
-     * @parameter default-value=false expression="${android.test.logonly}
+     * @parameter default-value=false expression="${android.test.logonly}"
      */
     private boolean testLogOnly;
+
+    /**
+     * If specified only execute tests of certain size as defined by the
+     * SmallTest, MediumTest and LargeTest annotations. Use "small",
+     * "medium" or "large" as values.
+     * @see com.android.ddmlib.testrunner.IRemoteAndroidTestRunner
+     *
+     * @optional
+     * @parameter expression="${android.test.testsize}"
+     */
+    private String testSize;
 
     private boolean testClassesExists;
     private boolean testPackagesExists;
@@ -134,6 +145,12 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                 remoteAndroidTestRunner.setDebug(testDebug);
                 remoteAndroidTestRunner.setCoverage(testCoverage);
                 remoteAndroidTestRunner.setLogOnly(testLogOnly);
+
+                if (StringUtils.isNotBlank(testSize)) {
+                    IRemoteAndroidTestRunner.TestSize validSize =
+                        IRemoteAndroidTestRunner.TestSize.getTestSize(testSize);
+                    remoteAndroidTestRunner.setTestSize(validSize);
+                }
 
                 getLog().info("Running instrumentation tests in " + instrumentationPackage + " on " +
                     device.getSerialNumber() + " (avdName=" + device.getAvdName() + ")");
