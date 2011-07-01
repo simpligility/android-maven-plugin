@@ -108,14 +108,6 @@ public class ApkMojo extends AbstractAndroidMojo {
     private String renameManifestPackage;
 
     /**
-     * <p>Root folder containing native libraries to include in the application package.</p>
-     *
-     * @parameter expression="${android.nativeLibrariesDirectory}" default-value="${project.basedir}/libs"
-     */
-    private File nativeLibrariesDirectory;
-
-
-    /**
      * <p>Allows to detect and extract the duplicate files from embedded jars. In that case, the plugin analyzes
      * the content of all embedded dependencies and checks they are no duplicates inside those dependencies. Indeed,
      * Android does not support duplicates, and all dependencies are inlined in the APK. If duplicates files are found,
