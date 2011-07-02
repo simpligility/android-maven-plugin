@@ -52,6 +52,7 @@ import com.jayway.maven.plugins.android.AndroidSigner;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.Sign;
+import org.codehaus.plexus.util.DirectoryScanner;
 
 /**
  * Creates the apk file. By default signs it with debug keystore.<br/>
@@ -114,14 +115,6 @@ public class ApkMojo extends AbstractAndroidMojo {
      * @parameter expression="${android.renameInstrumentationTargetPackage}"
      */
     private String renameInstrumentationTargetPackage;
-
-    /**
-     * <p>Root folder containing native libraries to include in the application package.</p>
-     *
-     * @parameter expression="${android.nativeLibrariesDirectory}" default-value="${project.basedir}/libs"
-     */
-    private File nativeLibrariesDirectory;
-
 
     /**
      * <p>Allows to detect and extract the duplicate files from embedded jars. In that case, the plugin analyzes
@@ -248,6 +241,10 @@ public class ApkMojo extends AbstractAndroidMojo {
             useInternalAPKBuilder = false;
         }
 
+        // Process the native libraries, looking both in the current build directory as well as
+        // at the dependencies declared in the pom.  Currently, all .so files are automatically included
+        processNativeLibraries(nativeFolders);
+
         if (useInternalAPKBuilder) {
             doAPKWithAPKBuilder(outputFile, dexFile, zipArchive, sourceFolders, jarFiles,
                 nativeFolders, false, signWithDebugKeyStore, false);
@@ -293,10 +290,6 @@ public class ApkMojo extends AbstractAndroidMojo {
             ArrayList<File> nativeFolders, boolean verbose, boolean signWithDebugKeyStore,
             boolean debug) throws MojoExecutionException {
         sourceFolders.add(new File(project.getBuild().getDirectory(), "classes"));
-
-        // Process the native libraries, looking both in the current build directory as well as
-        // at the dependencies declared in the pom.  Currently, all .so files are automatically included
-        processNativeLibraries(nativeFolders);
 
         for (Artifact artifact : getRelevantCompileArtifacts()) {
             if (extractDuplicates) {
@@ -556,20 +549,27 @@ public class ApkMojo extends AbstractAndroidMojo {
 
                 for (Artifact resolvedArtifact : resolvedArtifacts)
                 {
-                    final File artifactFile = resolvedArtifact.getFile();
-                    try
+                    if ("so".equals(resolvedArtifact.getType()))
                     {
-                        final String artifactId = resolvedArtifact.getArtifactId();
-                        final String filename = artifactId.startsWith("lib") ? artifactId + ".so" : "lib" + artifactId + ".so";
+                        final File artifactFile = resolvedArtifact.getFile();
+                        try
+                        {
+                            final String artifactId = resolvedArtifact.getArtifactId();
+                            final String filename = artifactId.startsWith("lib") ? artifactId + ".so" : "lib" + artifactId + ".so";
 
-                        final File finalDestinationDirectory = getFinalDestinationDirectoryFor(resolvedArtifact, destinationDirectory);
-                        final File file = new File(finalDestinationDirectory, filename);
-                        getLog().debug("Copying native dependency " + artifactId + " (" + resolvedArtifact.getGroupId() + ") to " + file );
-                        org.apache.commons.io.FileUtils.copyFile(artifactFile, file);
+                            final File finalDestinationDirectory = getFinalDestinationDirectoryFor(resolvedArtifact, destinationDirectory);
+                            final File file = new File(finalDestinationDirectory, filename);
+                            getLog().debug("Copying native dependency " + artifactId + " (" + resolvedArtifact.getGroupId() + ") to " + file );
+                            org.apache.commons.io.FileUtils.copyFile(artifactFile, file);
+                        }
+                        catch (Exception e)
+                        {
+                            throw new MojoExecutionException("Could not copy native dependency.", e);
+                        }
                     }
-                    catch (Exception e)
+                    else if (APKLIB.equals(resolvedArtifact.getType()))
                     {
-                        throw new MojoExecutionException("Could not copy native dependency.", e);
+                        natives.add(new File(getLibraryUnpackDirectory(resolvedArtifact)+"/libs"));
                     }
                 }
             }
@@ -621,6 +621,15 @@ public class ApkMojo extends AbstractAndroidMojo {
             else if ("so".equals(artifact.getType()) && (Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) || Artifact.SCOPE_RUNTIME.equals( artifact.getScope() )))
             {
                 filteredArtifacts.add(artifact);
+            }
+            else if (APKLIB.equals(artifact.getType()))
+            {
+                // Check if the artifact contains a libs folder - if so, include it in the list
+                File libsFolder = new File(getLibraryUnpackDirectory(artifact) + "/libs");
+                if (libsFolder.exists())
+                {
+                    filteredArtifacts.add(artifact);
+                }
             }
         }
 
@@ -684,8 +693,8 @@ public class ApkMojo extends AbstractAndroidMojo {
                      * @see java.io.FileFilter#accept(java.io.File)
                      */
                     public boolean accept(File file) {
-                        for (String pattern : AbstractScanner.DEFAULTEXCLUDES) {
-                            if (AbstractScanner.match(pattern, file.getAbsolutePath())) {
+                        for (String pattern : DirectoryScanner.DEFAULTEXCLUDES) {
+                            if (DirectoryScanner.match(pattern, file.getAbsolutePath())) {
                                 getLog().debug("Excluding " + file.getName() + " from resource copy : matching " + pattern);
                                 return false;
                             }
