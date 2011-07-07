@@ -37,6 +37,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static com.android.ddmlib.testrunner.ITestRunListener.TestFailure.ERROR;
+
 /**
  * @author hugo.josefson@jayway.com
  */
@@ -155,7 +157,11 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                 getLog().info("Running instrumentation tests in " + instrumentationPackage + " on " +
                     device.getSerialNumber() + " (avdName=" + device.getAvdName() + ")");
                 try {
-                    remoteAndroidTestRunner.run(new AndroidTestRunListener());
+                    AndroidTestRunListener testRunListener = new AndroidTestRunListener();
+                    remoteAndroidTestRunner.run(testRunListener);
+                    if (testRunListener.hasFailuresOrErrors()) {
+                        throw new MojoFailureException("Tests failed on device.");
+                    }
                 } catch (TimeoutException e) {
                     throw new MojoExecutionException("timeout", e);
                 } catch (AdbCommandRejectedException e) {
@@ -176,8 +182,11 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
      */
     private class AndroidTestRunListener implements ITestRunListener {
         private static final String INDENT = "  ";
+        private int testCount = 0;
+        private int testFailureCount = 0, testErrorCount = 0;
 
         public void testRunStarted(String runName, int testCount) {
+            this.testCount = testCount;
             getLog().info(INDENT + "Run started: " + runName + ", " +
                 "" + testCount + " tests:");
         }
@@ -187,6 +196,11 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         }
 
         public void testFailed(TestFailure status, TestIdentifier test, String trace) {
+            if (status==ERROR) {
+                ++testErrorCount;
+            } else {
+                ++testFailureCount;
+            }
             getLog().info(INDENT + INDENT +status.name() + ":" + test.toString());
             getLog().info(INDENT + INDENT + trace);
         }
@@ -205,8 +219,20 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         }
 
         public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
-            getLog().info(INDENT +"Run ended:" + elapsedTime);
+            getLog().info(INDENT +"Run ended:" + elapsedTime + "ms");
+            if (hasFailuresOrErrors()) {
+                getLog().error(INDENT +"FAILURES!!!");
+            }
+            getLog().info(INDENT +"Tests run: "+testCount+",  Failures: "+testFailureCount+",  Errors: "+testErrorCount);
             logMetrics(runMetrics);
+        }
+
+        public int getTestFailureCount() {
+            return testFailureCount;
+        }
+
+        public int getTestCount() {
+            return testCount;
         }
 
         private void logMetrics(Map<String, String> metrics) {
@@ -214,6 +240,10 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                 getLog().info(INDENT + INDENT + entry.getKey() + ": "
                     + entry.getValue());
             }
+        }
+
+        public boolean hasFailuresOrErrors() {
+            return testErrorCount>0 || testFailureCount>0;
         }
     }
 }
