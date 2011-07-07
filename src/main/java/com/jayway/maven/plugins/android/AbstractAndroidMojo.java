@@ -94,6 +94,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected File resourceDirectory;
 
     /**
+     * <p>Root folder containing native libraries to include in the application package.</p>
+     *
+     * @parameter expression="${android.nativeLibrariesDirectory}" default-value="${project.basedir}/libs"
+     */
+    protected File nativeLibrariesDirectory;
+
+
+    /**
      * The android resources overlay directory. This will be overriden
      * by resourceOverlayDirectories if present.
      *
