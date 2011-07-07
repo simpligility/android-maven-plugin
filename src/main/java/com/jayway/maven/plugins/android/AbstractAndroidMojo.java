@@ -554,14 +554,16 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
             public void doWithDevice(final IDevice device) throws MojoExecutionException {
                 try {
                     device.installPackage(apkFile.getAbsolutePath(), undeployBeforeDeploy);
-                    getLog().info("Successfully installed to " + device.getSerialNumber()  + " (avdName="
+                    getLog().info("Successfully installed "
+                        + apkFile.getAbsolutePath() + " to "
+                        + device.getSerialNumber()  + " (avdName="
                             + device.getAvdName() + ")");
                 } catch (InstallException e) {
-                    throw new MojoExecutionException("Install failed.", e);
+                    throw new MojoExecutionException("Install of "
+                        + apkFile.getAbsolutePath() + "failed.", e);
                 }
             }
         });
-
     }
 
     /**
@@ -644,12 +646,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
             public void doWithDevice(final IDevice device) throws MojoExecutionException {
                 try {
                     device.uninstallPackage(packageName);
-                    getLog().info("Successfully uninstalled from " + device.getSerialNumber() + " (avdName="
+                    getLog().info("Successfully uninstalled " + packageName +
+                        " from " + device.getSerialNumber() + " (avdName="
                             + device.getAvdName() + ")");
                     result.set(true);
                 } catch (InstallException e) {
                     result.set(false);
-                    throw new MojoExecutionException("Uninstall failed.", e);
+                    throw new MojoExecutionException("Uninstall of " +
+                        packageName + "failed.", e);
                 }
             }
         });
