@@ -18,19 +18,18 @@ package com.jayway.maven.plugins.android.standalonemojos;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.channels.NonWritableChannelException;
-import java.util.ArrayList;
-import java.util.List;
 
-import com.android.ddmlib.*;
+import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.IDevice;
+import com.android.ddmlib.SyncException;
+import com.android.ddmlib.SyncService;
+import com.android.ddmlib.TimeoutException;
 import com.jayway.maven.plugins.android.common.LogSyncProgressMonitor;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.DeviceCallback;
-import com.jayway.maven.plugins.android.ExecutionException;
 
 /**
  * Copy file to all the attached (or specified) devices/emulators.
