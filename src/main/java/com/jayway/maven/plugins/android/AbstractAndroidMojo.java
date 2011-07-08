@@ -49,7 +49,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  * Contains common fields and methods for android mojos.
  *
  * @author hugo.josefson@jayway.com
- * @author Manfred Moser <manfred@simpligility.com>>
+ * @author Manfred Moser <manfred@simpligility.com>
  */
 public abstract class AbstractAndroidMojo extends AbstractMojo {
 
