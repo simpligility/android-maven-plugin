@@ -305,16 +305,16 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
         File file = new File(filename);
         PrintWriter writer = null;
 
-        long sleepTime = (new Long(waitTime) / 1000) / 5;
+        long sleepTime = (new Long(waitTime) / 1000) / 10;
 
         try {
             writer = new PrintWriter(new FileWriter(file));
             writer.println("#!" + sh.getAbsolutePath());
             writer.println("x=1");
-            writer.println("while [ $x -le 5 ]");
+            writer.println("while [ $x -le 10 ]");
             writer.println("do");
             writer.println("sleep "+sleepTime);
-            writer.println("result=$(adb shell getprop dev.bootcomplete 2>&1)");
+            writer.println("result=$("+getAndroidSdk().getAdbPath()+" shell getprop dev.bootcomplete 2>&1)");
             writer.println("resultNoNewLine=`echo $result | cut -c1`");
             writer.println("if [ \"$resultNoNewLine\" == 1 ];");
             writer.println("then");
