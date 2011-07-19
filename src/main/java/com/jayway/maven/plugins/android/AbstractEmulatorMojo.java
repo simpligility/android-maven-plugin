@@ -166,7 +166,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
 
                 getLog().info(START_EMULATOR_WAIT_MSG + parsedWait);
                 // wait for the emulator to start up
-                Thread.sleep(new Long(parsedWait));
+                executor.executeCommand(writeWaitForEmulatorScriptUnix(parsedWait),null);
             } else {
                 getLog().info("Emulator " + emulatorName + " already running. Skipping start and wait.");
             }
@@ -271,6 +271,59 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
             writer.print(" 1>/dev/null 2>&1 &"); // redirect outputs and run as background task
             writer.println();
             writer.println("echo $! > " + pidFileName); // process id from stdout into pid file
+        } catch (IOException e) {
+            getLog().error("Failure writing file " + filename);
+        } finally {
+            if (writer != null) {
+                writer.flush();
+                writer.close();
+            }
+        }
+    file.setExecutable(true);
+        return filename;
+    }
+
+    /**
+     * Writes the script for waiting until the emulator is loaded (for unix based environments).
+     *
+     * @param waitTime the complete waitingTime
+     * @return absolute path name of start script
+     * @throws IOException
+     * @throws MojoExecutionException
+     */
+    private String writeWaitForEmulatorScriptUnix(String waitTime) throws MojoExecutionException {
+        String filename = scriptFolder + "/maven-android-plugin-emulator-wait.sh";
+
+        File sh;
+        sh = new File("/bin/bash");
+        if (!sh.exists()) {
+            sh = new File("/usr/bin/bash");
+        }
+        if (!sh.exists()) {
+            sh = new File("/bin/sh");
+        }
+        File file = new File(filename);
+        PrintWriter writer = null;
+
+        long sleepTime = (new Long(waitTime) / 1000) / 10;
+
+        try {
+            writer = new PrintWriter(new FileWriter(file));
+            writer.println("#!" + sh.getAbsolutePath());
+            writer.println("x=1");
+            writer.println("while [ $x -le 10 ]");
+            writer.println("do");
+            writer.println("sleep "+sleepTime);
+            writer.println("result=$("+getAndroidSdk().getAdbPath()+" shell getprop dev.bootcomplete 2>&1)");
+            writer.println("resultNoNewLine=`echo $result | cut -c1`");
+            writer.println("if [ \"$resultNoNewLine\" == 1 ];");
+            writer.println("then");
+            writer.println("exit 0"); //Emulator is started
+            writer.println("fi");
+            writer.println("x=$(( $x + 1 ))");
+            writer.println("done");
+            writer.println("exit 1"); //Emulator is not started
+
         } catch (IOException e) {
             getLog().error("Failure writing file " + filename);
         } finally {
