@@ -53,14 +53,6 @@ import com.jayway.maven.plugins.android.ExecutionException;
  * Generates <code>R.java</code> based on resources specified by the <code>resources</code> configuration parameter.<br/>
  * Generates java files based on aidl files.<br/>
  * <br/>
- * If the configuration parameter <code>deleteConflictingFiles</code> is <code>true</code> (which it is by default), this
- * goal has the following side-effects:
- * <ul>
- * <li>deletes any <code>R.java</code> files found in the source directory.</li>
- * <li>deletes any <code>.java</code> files with the same name as an <code>.aidl</code> file found in the source
- * directory.</li>
- * <li>deletes any <code>Thumbs.db</code> files found in the resource directory.</li>
- * </ul>
  *
  * @author hugo.josefson@jayway.com
  * @goal generate-sources
@@ -69,20 +61,6 @@ import com.jayway.maven.plugins.android.ExecutionException;
  * @requiresDependencyResolution compile
  */
 public class GenerateSourcesMojo extends AbstractAndroidMojo {
-
-    /**
-     * <p>Whether to delete any <code>R.java</code> file, and <code>.java</code> files with the same name as
-     * <code>.aidl</code> files, found in the source directory.</p>
-     * <p/>
-     * <p>Enable when using Eclipse and the standard Eclipse Android plugin, to work around the fact that it creates
-     * <code>R.java</code>, and <code>.java</code> files from your <code>.aidl</code> files, in the wrong place
-     * (from a Maven perspective.) Don't worry, Eclipse automatically recreates them when you refresh the Eclipse
-     * project.</p>
-     *
-     * @parameter default-value=true
-     * expression="${android.deleteConflictingFiles}"
-     */
-    protected boolean deleteConflictingFiles;
 
     /**
      * Override default generated folder
@@ -124,19 +102,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
                     }
                 }
             };
-
-            if (deleteConflictingFiles) {
-                deleteConflictingRJavaFiles(sourceDirectory);
-                deleteConflictingManifestJavaFiles(sourceDirectory);
-                deleteConflictingThumbsDb(resourceDirectory);
-                deleteConflictingAidlJavaFiles(sourceDirectory, relativeAidlFileNamesSet);
-                deleteConflictingAidlJavaFiles(extractedDependenciesJavaSources, relativeAidlFileNamesSet);
-                for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
-                	if (artifact.getType().equals(APKLIB)) {
-                		deleteConflictingAidlJavaFiles(new File(getLibraryUnpackDirectory(artifact)+"/src/main/java"), relativeAidlFileNamesSet);
-                	}
-                }
-            }
 
             generateR();
             generateApklibR();
@@ -259,66 +224,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
 	}
 
-    private void deleteConflictingManifestJavaFiles(File sourceDirectory) throws MojoExecutionException {
-        final int numberOfFilesDeleted = deleteFilesFromDirectory(sourceDirectory, "**/Manifest.java");
-        if (numberOfFilesDeleted > 0) {
-            getLog().info("Deleted " + numberOfFilesDeleted + " conflicting Manifest.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain it.");
-        }
-    }
-
-    private void deleteConflictingRJavaFiles(File sourceDirectory) throws MojoExecutionException {
-        final int numberOfFilesDeleted = deleteFilesFromDirectory(sourceDirectory, "**/R.java");
-        if (numberOfFilesDeleted > 0) {
-            getLog().info("Deleted " + numberOfFilesDeleted + " conflicting R.java file(s) in source directory. If you use Eclipse, please Refresh (F5) the project to regain it.");
-        }
-    }
-
-    private void deleteConflictingThumbsDb(File resourceDirectory) throws MojoExecutionException {
-        //Get rid of this annoying Thumbs.db problem on windows
-        final int numberOfFilesDeleted = deleteFilesFromDirectory(resourceDirectory, "**/Thumbs.db");
-        if (numberOfFilesDeleted > 0) {
-            getLog().info("Deleted " + numberOfFilesDeleted + " Thumbs.db file(s) in resource directory.");
-        }
-    }
-
-    private void deleteConflictingAidlJavaFiles(File sourceDirectory, Collection<String> relativeAidlFileNames) throws MojoExecutionException {
-        for (String relativeAidlFileName : relativeAidlFileNames) {
-
-            final String relativeJavaFileName = relativeAidlFileName.substring(0, relativeAidlFileName.lastIndexOf(".")) + ".java";
-            final File conflictingJavaFileInSourceDirectory = new File(sourceDirectory, relativeJavaFileName);
-
-            if (conflictingJavaFileInSourceDirectory.exists()) {
-
-                //We should only delete files which define interfaces, not files that specify a parcelable
-                //Note that this code should probably be expanded if more cases where a java file is generated are added to the AIDL spec.
-                boolean shouldDelete = false;
-                try {
-                    LineIterator lineIterator = FileUtils.lineIterator(conflictingJavaFileInSourceDirectory);
-                    try {
-                        while (!shouldDelete && lineIterator.hasNext()) {
-                            //If the file contains "interface" it's an AIDL file which will generate a java file, and we should therefore remove the java file.
-                            if (lineIterator.nextLine().contains("interface")) {
-                                shouldDelete = true;
-                            }
-                        }
-                    } finally {
-                        lineIterator.close(); // Closes quietly
-                    }
-                } catch (IOException e) {
-                    throw new MojoExecutionException("Could not inspect aidl file \"" + conflictingJavaFileInSourceDirectory.getAbsolutePath() + "\".");
-                }
-
-                if (shouldDelete) {
-                    final boolean successfullyDeleted = conflictingJavaFileInSourceDirectory.delete();
-                    if (successfullyDeleted) {
-                        getLog().info("Deleted conflicting file in source directory: \"" + conflictingJavaFileInSourceDirectory + "\". If you use Eclipse, please Refresh (F5) the project to regain them.");
-                    } else {
-                        throw new MojoExecutionException("Failed to delete conflicting file in source directory: \"" + conflictingJavaFileInSourceDirectory + "\"");
-                    }
-                }
-            }
-        }
-    }
 
     private void generateR() throws MojoExecutionException {
 		getLog().debug("Generating R file for "+project.getPackaging());
