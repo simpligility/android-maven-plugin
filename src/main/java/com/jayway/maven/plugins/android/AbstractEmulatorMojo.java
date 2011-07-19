@@ -305,7 +305,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
         File file = new File(filename);
         PrintWriter writer = null;
 
-        long sleepTime = new Long(waitTime) / 5;
+        long sleepTime = (new Long(waitTime) / 1000) / 5;
 
         try {
             writer = new PrintWriter(new FileWriter(file));
