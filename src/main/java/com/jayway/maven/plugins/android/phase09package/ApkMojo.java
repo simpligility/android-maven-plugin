@@ -106,14 +106,15 @@ public class ApkMojo extends AbstractAndroidMojo {
      * @parameter expression="${android.renameManifestPackage}"
      */
     private String renameManifestPackage;
-
+    
     /**
-     * <p>Root folder containing native libraries to include in the application package.</p>
+     * <p>Rewrite the manifest so that all of its instrumentation components target the given package.
+     * This value will be passed on to the aapt parameter --rename-instrumentation-target-package. 
+     * Look to aapt for more help on this. </p>
      *
-     * @parameter expression="${android.nativeLibrariesDirectory}" default-value="${project.basedir}/libs"
+     * @parameter expression="${android.renameInstrumentationTargetPackage}"
      */
-    private File nativeLibrariesDirectory;
-
+    private String renameInstrumentationTargetPackage;
 
     /**
      * <p>Allows to detect and extract the duplicate files from embedded jars. In that case, the plugin analyzes
@@ -842,8 +843,13 @@ public class ApkMojo extends AbstractAndroidMojo {
         }
         
         if (StringUtils.isNotBlank(renameManifestPackage)) {
-        	commands.add("--rename-manifest-package");
-        	commands.add(renameManifestPackage);
+          commands.add("--rename-manifest-package");
+          commands.add(renameManifestPackage);
+        }
+        
+        if (StringUtils.isNotBlank(renameInstrumentationTargetPackage)) {
+          commands.add("--rename-instrumentation-target-package");
+          commands.add(renameInstrumentationTargetPackage);
         }
 
         commands.add("-I");
