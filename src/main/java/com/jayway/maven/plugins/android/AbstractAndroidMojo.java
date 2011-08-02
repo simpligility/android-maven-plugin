@@ -49,7 +49,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  * Contains common fields and methods for android mojos.
  *
  * @author hugo.josefson@jayway.com
- * @author Manfred Moser <manfred@simpligility.com>>
+ * @author Manfred Moser <manfred@simpligility.com>
  */
 public abstract class AbstractAndroidMojo extends AbstractMojo {
 
@@ -93,12 +93,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      */
     protected File resourceDirectory;
 
-     /**
-     * The android native libs directory.
+    /**
+     * <p>Root folder containing native libraries to include in the application package.</p>
      *
-     * @parameter default-value="${project.basedir}/libs"
+     * @parameter expression="${android.nativeLibrariesDirectory}" default-value="${project.basedir}/libs"
      */
-    protected File libsDirectory;
+    protected File nativeLibrariesDirectory;
+
 
     /**
      * The android resources overlay directory. This will be overriden
@@ -517,13 +518,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * the init call in the library is also synchronized .. just in case.
      * @return
      */
-    private AndroidDebugBridge initAndroidDebugBridge() {
+    private AndroidDebugBridge initAndroidDebugBridge() throws MojoExecutionException {
         synchronized (adbLock) {
             if (!adbInitialized) {
                 AndroidDebugBridge.init(false);
                 adbInitialized = true;
             }
-            AndroidDebugBridge androidDebugBridge = AndroidDebugBridge.createBridge();
+            AndroidDebugBridge androidDebugBridge = AndroidDebugBridge.createBridge(getAndroidSdk().getAdbPath(), false);
             waitUntilConnected(androidDebugBridge);
             return androidDebugBridge;
         }
@@ -561,14 +562,16 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
             public void doWithDevice(final IDevice device) throws MojoExecutionException {
                 try {
                     device.installPackage(apkFile.getAbsolutePath(), undeployBeforeDeploy);
-                    getLog().info("Successfully installed to " + device.getSerialNumber()  + " (avdName="
+                    getLog().info("Successfully installed "
+                        + apkFile.getAbsolutePath() + " to "
+                        + device.getSerialNumber()  + " (avdName="
                             + device.getAvdName() + ")");
                 } catch (InstallException e) {
-                    throw new MojoExecutionException("Install failed.", e);
+                    throw new MojoExecutionException("Install of "
+                        + apkFile.getAbsolutePath() + "failed.", e);
                 }
             }
         });
-
     }
 
     /**
@@ -651,12 +654,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
             public void doWithDevice(final IDevice device) throws MojoExecutionException {
                 try {
                     device.uninstallPackage(packageName);
-                    getLog().info("Successfully uninstalled from " + device.getSerialNumber() + " (avdName="
+                    getLog().info("Successfully uninstalled " + packageName +
+                        " from " + device.getSerialNumber() + " (avdName="
                             + device.getAvdName() + ")");
                     result.set(true);
                 } catch (InstallException e) {
                     result.set(false);
-                    throw new MojoExecutionException("Uninstall failed.", e);
+                    throw new MojoExecutionException("Uninstall of " +
+                        packageName + "failed.", e);
                 }
             }
         });

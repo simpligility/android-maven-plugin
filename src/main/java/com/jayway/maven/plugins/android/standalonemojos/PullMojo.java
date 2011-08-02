@@ -17,20 +17,24 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
+import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.IDevice;
+import com.android.ddmlib.SyncException;
+import com.android.ddmlib.SyncService;
+import com.android.ddmlib.TimeoutException;
+import com.jayway.maven.plugins.android.common.LogSyncProgressMonitor;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import com.android.ddmlib.IDevice;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.DeviceCallback;
-import com.jayway.maven.plugins.android.ExecutionException;
 
 /**
- * Copy file/dir from device.
+ * Copy file from all the attached (or specified) devices/emulators.
+ *
+ * @author Manfred Moser <manfred@simpligility.com>
  *
  * @goal pull
  * @requiresProject false
@@ -38,36 +42,64 @@ import com.jayway.maven.plugins.android.ExecutionException;
 public class PullMojo extends AbstractAndroidMojo {
 
     /**
-     * @parameter expression="${android.source}"
+     * The path of the source file on the emulator/device.
+     * @parameter expression="${android.pull.source}"
      * @required
      */
     private String source;
 
     /**
-     * @parameter expression="${android.destination}"
+     * The path of the destination to copy the file to. If this is a
+     * directory the original file name will be used. Otherwise the new
+     * filename will override the source one.
+     *
+     * @parameter expression="${android.pull.destination}"
      * @required
      */
     private File destination;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+        final String sourcePath = source;
+        final String destinationPath;
+        if(destination.isDirectory()) {
+            String sourceFileName = source.substring(source.lastIndexOf("/"),
+                source.length());
+            destinationPath = destination.getAbsolutePath() + sourceFileName;
+        } else {
+            destinationPath = destination.getAbsolutePath();
+        }
 
-        final String pathForAdb = getAndroidSdk().getAdbPath();
-        final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
+        final String message = "Pull of " + source + " to " + destinationPath +
+            " from ";
 
         doWithDevices(new DeviceCallback() {
             public void doWithDevice(final IDevice device) throws MojoExecutionException {
-                final List<String> commands = new ArrayList<String>();
-                addDeviceParameter(commands, device);
-                commands.add("pull");
-                commands.add(source);
-                commands.add(destination.getAbsolutePath());
+                 try {
+                    SyncService syncService = device.getSyncService();
+                    syncService.pullFile(sourcePath, destinationPath,
+                        new LogSyncProgressMonitor(getLog()));
+                    getLog().info(message + device.getSerialNumber()
+                        + " (avdName=" + device.getAvdName() + ") successful.");
 
-                getLog().info(pathForAdb + " " + commands.toString());
-                try {
-                    executor.executeCommand(pathForAdb, commands, null, false);
-                } catch (ExecutionException e) {
-                    throw new MojoExecutionException("Pull failed.", e);
+                    //TODO this could be enhanced to pull multiple files and
+                    // even directories using the pull method. would need
+                    // different parameters though so maybe later
+                } catch (SyncException e) {
+                    throw new MojoExecutionException(message
+                        + device.getSerialNumber()  + " (avdName="
+                        + device.getAvdName() + ") failed.", e);
+                } catch (IOException e) {
+                    throw new MojoExecutionException(message
+                        + device.getSerialNumber()  + " (avdName="
+                        + device.getAvdName() + ") failed.", e);
+                } catch (TimeoutException e) {
+                    throw new MojoExecutionException(message
+                        + device.getSerialNumber()  + " (avdName="
+                        + device.getAvdName() + ") failed.", e);
+                } catch (AdbCommandRejectedException e) {
+                    throw new MojoExecutionException(message
+                        + device.getSerialNumber()  + " (avdName="
+                        + device.getAvdName() + ") failed.", e);
                 }
             }
         });
