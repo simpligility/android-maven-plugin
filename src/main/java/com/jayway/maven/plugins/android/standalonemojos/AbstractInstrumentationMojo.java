@@ -27,15 +27,41 @@ import com.android.ddmlib.testrunner.TestIdentifier;
 import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
 import com.jayway.maven.plugins.android.DeviceCallback;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+
 
 import static com.android.ddmlib.testrunner.ITestRunListener.TestFailure.ERROR;
 
@@ -93,6 +119,12 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
      * @parameter expression="${android.test.testsize}"
      */
     private String testSize;
+
+    /**
+     * @optional
+     * @parameter default-value=true expression="${android.test.createreport}"
+     */
+    private boolean testCreateReport;
 
     private boolean testClassesExists;
     private boolean testPackagesExists;
@@ -157,7 +189,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                 getLog().info("Running instrumentation tests in " + instrumentationPackage + " on " +
                     device.getSerialNumber() + " (avdName=" + device.getAvdName() + ")");
                 try {
-                    AndroidTestRunListener testRunListener = new AndroidTestRunListener();
+                    AndroidTestRunListener testRunListener = new AndroidTestRunListener(project);
                     remoteAndroidTestRunner.run(testRunListener);
                     if (testRunListener.hasFailuresOrErrors()) {
                         throw new MojoFailureException("Tests failed on device.");
@@ -181,18 +213,86 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
      * run.
      */
     private class AndroidTestRunListener implements ITestRunListener {
+        NumberFormat timeFormatter = new DecimalFormat("#0.0000");
+
         private static final String INDENT = "  ";
         private int testCount = 0;
         private int testFailureCount = 0, testErrorCount = 0;
 
+        private static final String JUNIT_XML_FILE = "TEST-plugin.xml";
+        private MavenProject project;
+        private long mTestStarted;
+        private long mRunStarted;
+
+
+        private static final String NODE_TESTSUITES = "testsuites";
+        private static final String NODE_TESTSUITE = "testsuite";
+        private static final String NODE_ERRORS = "errors";
+        private static final String NODE_FAILURES = "failures";
+        private static final String NODE_ERROR = "error";
+        private static final String NODE_FAILURE = "failure";
+        private static final String NODE_NAME = "name";
+        private static final String NODE_PACKAGE = "package";
+        private static final String NODE_TESTS = "tests";
+        private static final String NODE_TESTCASE = "testcase";
+        private static final String ATTR_CLASSNAME = "classname";
+        private static final String NODE_TIME = "time";
+        private static final String NODE_TIMESTAMP = "timestamp";
+        private static final String NODE_PROPERTIES = "properties";
+        private static final String NODE_SYSTEM_OUT = "system-out";
+        private static final String NODE_SYSTEM_ERR = "system-err";
+
+        Document junitReport;
+        Node testSuites;
+        Node testSuite;
+
+        Node currentTestCase;
+
+        public AndroidTestRunListener(MavenProject project) {
+            this.project = project;
+        }
+
         public void testRunStarted(String runName, int testCount) {
             this.testCount = testCount;
+            mRunStarted = new Date().getTime();
             getLog().info(INDENT + "Run started: " + runName + ", " +
                 "" + testCount + " tests:");
+
+            if (testCreateReport) {
+                try {
+                    DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder parser = null;
+                    parser = fact.newDocumentBuilder();
+                    junitReport = parser.newDocument();
+                    testSuites = junitReport.createElement(NODE_TESTSUITES);
+                    junitReport.appendChild(testSuites);
+
+                    testSuite = junitReport.createElement(NODE_TESTSUITE);
+                    testSuites.appendChild(testSuite);
+
+                } catch (ParserConfigurationException e) {
+//                    throw new MojoExecutionException("Failed to create junit document", e);
+                }
+
+            }
+
         }
 
         public void testStarted(TestIdentifier test) {
-            getLog().info(INDENT + INDENT +"Start: " + test.toString());
+                mTestStarted = new Date().getTime();
+                getLog().info(INDENT + INDENT +"Start: " + test.toString());
+            if (testCreateReport) {
+                currentTestCase = junitReport.createElement(NODE_TESTCASE);
+                NamedNodeMap currentAttributes = currentTestCase.getAttributes();
+
+                Attr classAttr = junitReport.createAttribute(ATTR_CLASSNAME);
+                classAttr.setValue(test.getClassName());
+                currentAttributes.setNamedItem(classAttr);
+
+                Attr methodAttr = junitReport.createAttribute(NODE_NAME);
+                methodAttr.setValue(test.getTestName());
+                currentAttributes.setNamedItem(methodAttr);
+            }
         }
 
         public void testFailed(TestFailure status, TestIdentifier test, String trace) {
@@ -208,6 +308,21 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         public void testEnded(TestIdentifier test, Map<String, String> testMetrics) {
             getLog().info( INDENT + INDENT +"End: " + test.toString());
             logMetrics(testMetrics);
+            if (testCreateReport) {
+                testSuite.appendChild(currentTestCase);
+                NamedNodeMap currentAttributes = currentTestCase.getAttributes();
+
+                Attr timeAttr = junitReport.createAttribute(NODE_TIME);
+                timeAttr.setValue(getTime(testMetrics));
+                currentAttributes.setNamedItem(timeAttr);
+            }
+        }
+
+        private String getTime(Map<String, String> testMetrics) {
+            long now = new Date().getTime();
+            long millis = (now - mTestStarted);
+            double seconds = (now - mTestStarted)/1000.0;
+            return timeFormatter.format(seconds);
         }
 
         public void testRunFailed(String errorMessage) {
@@ -219,12 +334,54 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         }
 
         public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
-            getLog().info(INDENT +"Run ended:" + elapsedTime + "ms");
+            getLog().info(INDENT +"Run ended: " + elapsedTime + " ms");
             if (hasFailuresOrErrors()) {
                 getLog().error(INDENT +"FAILURES!!!");
             }
-            getLog().info(INDENT +"Tests run: "+testCount+",  Failures: "+testFailureCount+",  Errors: "+testErrorCount);
+            getLog().info(INDENT + "Tests run: " +testCount+",  Failures: "
+                    + testFailureCount + ",  Errors: " + testErrorCount);
             logMetrics(runMetrics);
+
+            if (testCreateReport) {
+                writeJunitReportToFile();
+            }
+        }
+
+        private void writeJunitReportToFile() {
+            TransformerFactory xfactory = TransformerFactory.newInstance();
+            Transformer xformer = null;
+            try {
+                xformer = xfactory.newTransformer();
+            } catch (TransformerConfigurationException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            xformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            Source source = new DOMSource(junitReport);
+
+            FileWriter writer = null;
+            try {
+
+                File reportFile = new File(project.getBuild().getDirectory()
+                        + "/surefire/"
+                        + JUNIT_XML_FILE);
+                writer = new FileWriter(reportFile);
+//                String xmldecl = String.format("<?xml version=\"%s\" encoding=\"%s\"?>%n", junitReport.getXmlVersion(),
+//                        junitReport.getXmlEncoding());
+                String xmldecl = String.format("<?xml version=\"1.0\" encoding=\"UTF-8\"?>%n", junitReport.getXmlVersion(),
+                        junitReport.getXmlEncoding());
+
+                writer.write(xmldecl);
+                Result result = new StreamResult(writer);
+
+                xformer.transform(source, result);
+                getLog().info("Report file written to " + reportFile.getAbsolutePath());
+            } catch (IOException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (TransformerException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } finally {
+                IOUtils.closeQuietly(writer);
+            }
         }
 
         public int getTestFailureCount() {
