@@ -224,28 +224,42 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         private long mTestStarted;
         private long mRunStarted;
 
+        /**
+         * Junit report schema documentation is sparse. Here are some hints
+         * @see "http://mail-archives.apache.org/mod_mbox/ant-dev/200902.mbox/%3Cdffc72020902241548l4316d645w2e98caf5f0aac770@mail.gmail.com%3E"
+         * @see "http://junitpdfreport.sourceforge.net/managedcontent/PdfTranslation"
+         */
+        private static final String TAG_TESTSUITES = "testsuites";
+        private static final String TAG_TESTSUITE = "testsuite";
+        private static final String ATTR_TESTCASE_NAME = "name";
+        private static final String ATTR_TESTCASE_CLASSNAME = "classname";
+        private static final String ATTR_TESTCASE_TIME = "time";
+        
+        private static final String TAG_ERROR = "error";
+        private static final String TAG_FAILURE = "failure";
+        private static final String ATTR_MESSAGE = "message";
+        private static final String ATTR_TYPE = "type";
 
-        private static final String NODE_TESTSUITES = "testsuites";
-        private static final String NODE_TESTSUITE = "testsuite";
-        private static final String NODE_ERRORS = "errors";
-        private static final String NODE_FAILURES = "failures";
-        private static final String NODE_ERROR = "error";
-        private static final String NODE_FAILURE = "failure";
-        private static final String NODE_NAME = "name";
-        private static final String NODE_PACKAGE = "package";
-        private static final String NODE_TESTS = "tests";
-        private static final String NODE_TESTCASE = "testcase";
-        private static final String ATTR_CLASSNAME = "classname";
-        private static final String NODE_TIME = "time";
-        private static final String NODE_TIMESTAMP = "timestamp";
-        private static final String NODE_PROPERTIES = "properties";
-        private static final String NODE_SYSTEM_OUT = "system-out";
-        private static final String NODE_SYSTEM_ERR = "system-err";
+        private static final String TAG_PACKAGE = "package";
+        private static final String TAG_TESTS = "tests";
+        private static final String TAG_TESTCASE = "testcase";
+        
+        private static final String TAG_PROPERTIES = "properties";
+        private static final String TAG_SYSTEM_OUT = "system-out";
+        private static final String TAG_SYSTEM_ERR = "system-err";
+
+
+       private static final String ATTR_TESTSUITE_ERRORS = "errors";
+       private static final String ATTR_TESTSUITE_FAILURES = "failures";
+       private static final String ATTR_TESTSUITE_HOSTNAME = "hostname";
+       private static final String ATTR_TESTSUITE_NAME = "name";
+       private static final String ATTR_TESTSUITE_TESTS = "tests";
+       private static final String ATTR_TESTSUITE_TIME = "time";
+       private static final String ATTR_TESTSUITE_TIMESTAMP = "timestamp";
 
         Document junitReport;
         Node testSuites;
         Node testSuite;
-
         Node currentTestCase;
 
         public AndroidTestRunListener(MavenProject project) {
@@ -264,10 +278,10 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                     DocumentBuilder parser = null;
                     parser = fact.newDocumentBuilder();
                     junitReport = parser.newDocument();
-                    testSuites = junitReport.createElement(NODE_TESTSUITES);
+                    testSuites = junitReport.createElement(TAG_TESTSUITES);
                     junitReport.appendChild(testSuites);
 
-                    testSuite = junitReport.createElement(NODE_TESTSUITE);
+                    testSuite = junitReport.createElement(TAG_TESTSUITE);
                     testSuites.appendChild(testSuite);
 
                 } catch (ParserConfigurationException e) {
@@ -282,16 +296,16 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                 mTestStarted = new Date().getTime();
                 getLog().info(INDENT + INDENT +"Start: " + test.toString());
             if (testCreateReport) {
-                currentTestCase = junitReport.createElement(NODE_TESTCASE);
-                NamedNodeMap currentAttributes = currentTestCase.getAttributes();
+                currentTestCase = junitReport.createElement(TAG_TESTCASE);
+                NamedNodeMap testCaseAttributes = currentTestCase.getAttributes();
 
-                Attr classAttr = junitReport.createAttribute(ATTR_CLASSNAME);
+                Attr classAttr = junitReport.createAttribute(ATTR_TESTCASE_CLASSNAME);
                 classAttr.setValue(test.getClassName());
-                currentAttributes.setNamedItem(classAttr);
+                testCaseAttributes.setNamedItem(classAttr);
 
-                Attr methodAttr = junitReport.createAttribute(NODE_NAME);
+                Attr methodAttr = junitReport.createAttribute(ATTR_TESTCASE_NAME);
                 methodAttr.setValue(test.getTestName());
-                currentAttributes.setNamedItem(methodAttr);
+                testCaseAttributes.setNamedItem(methodAttr);
             }
         }
 
@@ -301,8 +315,40 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             } else {
                 ++testFailureCount;
             }
-            getLog().info(INDENT + INDENT +status.name() + ":" + test.toString());
+            getLog().info(INDENT + INDENT + status.name() + ":" + test.toString());
             getLog().info(INDENT + INDENT + trace);
+
+            if (testCreateReport) {
+                Node errorFailureNode;
+                NamedNodeMap errorfailureAttributes;
+                if (status == ERROR) {
+                    errorFailureNode = junitReport.createElement(TAG_ERROR);
+                    errorfailureAttributes = errorFailureNode.getAttributes();
+                } else {
+                    errorFailureNode = junitReport.createElement(TAG_FAILURE);
+                    errorfailureAttributes= errorFailureNode.getAttributes();
+                }
+
+                errorFailureNode.setTextContent(trace);
+
+                Attr msgAttr = junitReport.createAttribute(ATTR_MESSAGE);
+                msgAttr.setValue(parseForMessage(trace));
+                errorfailureAttributes.setNamedItem(msgAttr);
+
+                Attr typeAttr = junitReport.createAttribute(ATTR_TYPE);
+                typeAttr.setValue(parseForException(trace));
+                errorfailureAttributes.setNamedItem(typeAttr);
+
+                currentTestCase.appendChild(errorFailureNode);
+            }
+        }
+
+        private String parseForMessage(String trace) {
+            return trace.substring(trace.indexOf(":") + 2, trace.indexOf("\r\n"));
+        }
+
+        private String parseForException(String trace) {
+            return trace.substring(0, trace.indexOf(":"));
         }
 
         public void testEnded(TestIdentifier test, Map<String, String> testMetrics) {
@@ -310,11 +356,11 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             logMetrics(testMetrics);
             if (testCreateReport) {
                 testSuite.appendChild(currentTestCase);
-                NamedNodeMap currentAttributes = currentTestCase.getAttributes();
+                NamedNodeMap testCaseAttributes = currentTestCase.getAttributes();
 
-                Attr timeAttr = junitReport.createAttribute(NODE_TIME);
+                Attr timeAttr = junitReport.createAttribute(ATTR_TESTCASE_TIME);
                 timeAttr.setValue(getTime(testMetrics));
-                currentAttributes.setNamedItem(timeAttr);
+                testCaseAttributes.setNamedItem(timeAttr);
             }
         }
 
@@ -336,10 +382,26 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         public void testRunEnded(long elapsedTime, Map<String, String> runMetrics) {
             getLog().info(INDENT +"Run ended: " + elapsedTime + " ms");
             if (hasFailuresOrErrors()) {
-                getLog().error(INDENT +"FAILURES!!!");
+                getLog().error(INDENT + "FAILURES!!!");
             }
-            getLog().info(INDENT + "Tests run: " +testCount+",  Failures: "
+            getLog().info(INDENT + "Tests run: " + testCount + ",  Failures: "
                     + testFailureCount + ",  Errors: " + testErrorCount);
+            if (testCreateReport) {
+                NamedNodeMap testSuiteAttributes = testSuite.getAttributes();
+
+                Attr testCountAttr = junitReport.createAttribute(ATTR_TESTSUITE_TESTS);
+                testCountAttr.setValue(Integer.toString(testCount));
+                testSuiteAttributes.setNamedItem(testCountAttr);
+
+                Attr testFailuresAttr = junitReport.createAttribute(ATTR_TESTSUITE_FAILURES);
+                testFailuresAttr.setValue(Integer.toString(testFailureCount));
+                testSuiteAttributes.setNamedItem(testFailuresAttr);
+
+                Attr testErrorsAttr = junitReport.createAttribute(ATTR_TESTSUITE_ERRORS);
+                testErrorsAttr.setValue(Integer.toString(testErrorCount));
+                testSuiteAttributes.setNamedItem(testErrorsAttr);
+            }
+
             logMetrics(runMetrics);
 
             if (testCreateReport) {
