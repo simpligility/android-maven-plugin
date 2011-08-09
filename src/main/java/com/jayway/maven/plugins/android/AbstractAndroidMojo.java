@@ -19,16 +19,13 @@ package com.jayway.maven.plugins.android;
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.InstallException;
+import com.jayway.maven.plugins.android.common.AetherHelper;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.JXPathNotFoundException;
 import org.apache.commons.jxpath.xml.DocumentContainer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -36,6 +33,9 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.DirectoryScanner;
+import org.sonatype.aether.RepositorySystem;
+import org.sonatype.aether.RepositorySystemSession;
+import org.sonatype.aether.repository.RemoteRepository;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -215,29 +215,27 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected boolean generateApk;
 
     /**
-     * Used to look up Artifacts in the remote repository.
+     * The entry point to Aether, i.e. the component doing all the work.
      *
      * @component
      */
-    protected org.apache.maven.artifact.resolver.ArtifactResolver artifactResolver;
+    protected RepositorySystem repoSystem;
 
     /**
-     * Location of the local repository.
+     * The current repository/network configuration of Maven.
      *
-     * @parameter expression="${localRepository}"
+     * @parameter default-value="${repositorySystemSession}"
      * @readonly
-     * @required
      */
-    protected org.apache.maven.artifact.repository.ArtifactRepository localRepository;
+    protected RepositorySystemSession repoSession;
 
     /**
-     * List of Remote Repositories used by the resolver
+     * The project's remote repositories to use for the resolution of project dependencies.
      *
-     * @parameter expression="${project.remoteArtifactRepositories}"
+     * @parameter default-value="${project.remoteProjectRepositories}"
      * @readonly
-     * @required
      */
-    protected java.util.List remoteRepositories;
+    protected List<RemoteRepository> projectRepos;
 
     /**
      * Generates R.java into a different package.
@@ -245,13 +243,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @parameter expression="${android.customPackage}"
      */
     protected String customPackage;
-
-    /**
-     * @component
-     * @readonly
-     * @required
-     */
-    protected ArtifactFactory artifactFactory;
 
     /**
      * Maven ProjectHelper.
@@ -427,16 +418,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     	return StringUtils.join(strings, ",");
     }
 
-
-    /**
-     * Accessor for the local repository.
-     *
-     * @return The local repository.
-     */
-    protected ArtifactRepository getLocalRepository() {
-        return localRepository;
-    }
-
     /**
      * Which dependency scopes should not be included when unpacking dependencies into the apk.
      */
@@ -497,18 +478,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @throws MojoExecutionException if the artifact could not be resolved.
      */
     protected File resolveArtifactToFile(Artifact artifact) throws MojoExecutionException {
-        try {
-            this.artifactResolver.resolve(artifact, remoteRepositories, localRepository);
-        } catch (ArtifactResolutionException e) {
-            throw new MojoExecutionException("Error resolving artifact.", e);
-        } catch (ArtifactNotFoundException e) {
-            throw new MojoExecutionException("Could not find artifact.", e);
-        }
-        final File jar = artifact.getFile();
+        Artifact resolvedArtifact = AetherHelper.resolveArtifact(artifact, repoSystem, repoSession, projectRepos);
+        final File jar = resolvedArtifact.getFile();
         if (jar == null) {
             throw new MojoExecutionException("Could not resolve artifact " + artifact.getId() + ". Please install it with \"mvn install:install-file ...\" or deploy it to a repository with \"mvn deploy:deploy-file ...\"");
         }
-
         return jar;
     }
 
