@@ -282,6 +282,12 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                     junitReport.appendChild(testSuites);
 
                     testSuite = junitReport.createElement(TAG_TESTSUITE);
+                    NamedNodeMap testSuiteAttributes = testSuite.getAttributes();
+
+                    Attr nameAttr = junitReport.createAttribute(ATTR_TESTSUITE_NAME);
+                    nameAttr.setValue(runName);
+                    testSuiteAttributes.setNamedItem(nameAttr);
+
                     testSuites.appendChild(testSuite);
 
                 } catch (ParserConfigurationException e) {
