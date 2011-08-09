@@ -365,14 +365,13 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                 NamedNodeMap testCaseAttributes = currentTestCase.getAttributes();
 
                 Attr timeAttr = junitReport.createAttribute(ATTR_TESTCASE_TIME);
-                timeAttr.setValue(getTime(testMetrics));
+                timeAttr.setValue(getTestDuration());
                 testCaseAttributes.setNamedItem(timeAttr);
             }
         }
 
-        private String getTime(Map<String, String> testMetrics) {
+        private String getTestDuration() {
             long now = new Date().getTime();
-            long millis = (now - mTestStarted);
             double seconds = (now - mTestStarted)/1000.0;
             return timeFormatter.format(seconds);
         }
@@ -406,6 +405,15 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                 Attr testErrorsAttr = junitReport.createAttribute(ATTR_TESTSUITE_ERRORS);
                 testErrorsAttr.setValue(Integer.toString(testErrorCount));
                 testSuiteAttributes.setNamedItem(testErrorsAttr);
+
+                Attr timeAttr = junitReport.createAttribute(ATTR_TESTSUITE_TIME);
+                timeAttr.setValue(timeFormatter.format(elapsedTime/1000.0));
+                testSuiteAttributes.setNamedItem(timeAttr);
+
+                Attr timeStampAttr = junitReport.createAttribute(ATTR_TESTSUITE_TIMESTAMP);
+                timeStampAttr.setValue(
+                        new Date().toString());
+                testSuiteAttributes.setNamedItem(timeStampAttr);
             }
 
             logMetrics(runMetrics);
