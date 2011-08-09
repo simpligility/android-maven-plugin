@@ -189,7 +189,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                 getLog().info("Running instrumentation tests in " + instrumentationPackage + " on " +
                     device.getSerialNumber() + " (avdName=" + device.getAvdName() + ")");
                 try {
-                    AndroidTestRunListener testRunListener = new AndroidTestRunListener(project);
+                    AndroidTestRunListener testRunListener = new AndroidTestRunListener(project, device);
                     remoteAndroidTestRunner.run(testRunListener);
                     if (testRunListener.hasFailuresOrErrors()) {
                         throw new MojoFailureException("Tests failed on device.");
@@ -219,7 +219,6 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         private int testCount = 0;
         private int testFailureCount = 0, testErrorCount = 0;
 
-        private static final String JUNIT_XML_FILE = "TEST-plugin.xml";
         private MavenProject project;
         private long mTestStarted;
         private long mRunStarted;
@@ -261,9 +260,11 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         Node testSuites;
         Node testSuite;
         Node currentTestCase;
+        private IDevice device;
 
-        public AndroidTestRunListener(MavenProject project) {
+        public AndroidTestRunListener(MavenProject project, IDevice device) {
             this.project = project;
+            this.device = device;
         }
 
         public void testRunStarted(String runName, int testCount) {
@@ -287,6 +288,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                     Attr nameAttr = junitReport.createAttribute(ATTR_TESTSUITE_NAME);
                     nameAttr.setValue(runName);
                     testSuiteAttributes.setNamedItem(nameAttr);
+
+                    // TODO use device serial number to set hostname maybe?
 
                     testSuites.appendChild(testSuite);
 
@@ -407,7 +410,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                 testSuiteAttributes.setNamedItem(testErrorsAttr);
 
                 Attr timeAttr = junitReport.createAttribute(ATTR_TESTSUITE_TIME);
-                timeAttr.setValue(timeFormatter.format(elapsedTime/1000.0));
+                timeAttr.setValue(timeFormatter.format(elapsedTime / 1000.0));
                 testSuiteAttributes.setNamedItem(timeAttr);
 
                 Attr timeStampAttr = junitReport.createAttribute(ATTR_TESTSUITE_TIMESTAMP);
@@ -429,22 +432,23 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             try {
                 xformer = xfactory.newTransformer();
             } catch (TransformerConfigurationException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             }
             xformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             Source source = new DOMSource(junitReport);
 
             FileWriter writer = null;
             try {
-
-                File reportFile = new File(project.getBuild().getDirectory()
-                        + "/surefire/"
-                        + JUNIT_XML_FILE);
+                String fileName = new StringBuilder()
+                        .append(project.getBuild().getDirectory())
+                        .append("/surefire/TEST-")
+                        .append(device.getSerialNumber())
+                        .append(".xml")
+                        .toString();
+                File reportFile = new File(fileName);
                 writer = new FileWriter(reportFile);
-//                String xmldecl = String.format("<?xml version=\"%s\" encoding=\"%s\"?>%n", junitReport.getXmlVersion(),
-//                        junitReport.getXmlEncoding());
-                String xmldecl = String.format("<?xml version=\"1.0\" encoding=\"UTF-8\"?>%n", junitReport.getXmlVersion(),
-                        junitReport.getXmlEncoding());
+                // hard coding encoding since junitReport encoding return null
+                String xmldecl = String.format("<?xml version=\"%s\" encoding=\"UTF-8\"?>%n", junitReport.getXmlVersion());
 
                 writer.write(xmldecl);
                 Result result = new StreamResult(writer);
@@ -460,14 +464,6 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             }
         }
 
-        public int getTestFailureCount() {
-            return testFailureCount;
-        }
-
-        public int getTestCount() {
-            return testCount;
-        }
-
         private void logMetrics(Map<String, String> metrics) {
             for (Map.Entry<String, String> entry : metrics.entrySet()) {
                 getLog().info(INDENT + INDENT + entry.getKey() + ": "
@@ -476,7 +472,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         }
 
         public boolean hasFailuresOrErrors() {
-            return testErrorCount>0 || testFailureCount>0;
+            return testErrorCount > 0 || testFailureCount > 0;
         }
     }
 }
