@@ -120,10 +120,17 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
     private String testSize;
 
     /**
+     * Create
      * @optional
      * @parameter default-value=true expression="${android.test.createreport}"
      */
     private boolean testCreateReport;
+
+    /**
+     * @optional
+     * @parameter default-value="surefire-reports" expressions=${android.test.reportdirectory}
+     */
+    private String testReportDirectory;
 
     private boolean testClassesExists;
     private boolean testPackagesExists;
@@ -466,9 +473,18 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
 
             FileWriter writer = null;
             try {
+                String directory =  new StringBuilder()
+                        .append(project.getBuild().getDirectory())
+                        .append("/")
+                        .append(testReportDirectory).toString();
+
+                createDirectoryIfNecessary(directory);
+
                 String fileName = new StringBuilder()
                         .append(project.getBuild().getDirectory())
-                        .append("/surefire/TEST-")
+                        .append("/")
+                        .append(testReportDirectory)
+                        .append("/TEST-")
                         .append(getDeviceIdentifier())
                         .append(".xml")
                         .toString();
@@ -505,6 +521,13 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                 identfier.append("_").append(device.getAvdName());
              }
             return identfier.toString();
+        }
+    }
+
+    private void createDirectoryIfNecessary(String testReportDirectory) {
+        File directory = new File(testReportDirectory);
+        if (!directory.isDirectory()) {
+            directory.mkdir();
         }
     }
 }
