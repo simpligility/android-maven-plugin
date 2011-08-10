@@ -1,7 +1,6 @@
 package com.jayway.maven.plugins.android;
 
 import java.io.File;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -14,12 +13,9 @@ import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.path.DefaultPathTranslator;
 import org.apache.maven.project.path.PathTranslator;
-import org.codehaus.plexus.component.MapOrientedComponent;
-import org.codehaus.plexus.component.configurator.ComponentConfigurationException;
 import org.codehaus.plexus.component.configurator.ComponentConfigurator;
 import org.codehaus.plexus.component.configurator.ConfigurationListener;
 import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluator;
-import org.codehaus.plexus.component.repository.ComponentRequirement;
 import org.codehaus.plexus.configuration.PlexusConfiguration;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
@@ -105,7 +101,9 @@ public abstract class AbstractAndroidMojoTestCase<T extends AbstractAndroidMojo>
         // - Declared to prevent NPE from logging events in maven core
         Logger logger = new ConsoleLogger(Logger.LEVEL_DEBUG, mojo.getClass().getName());
 
-         MavenSession context = createMock(MavenSession.class);
+        // Using mock of the session since it looks like 3.0.3 performs better validation
+        // of NULLs and such
+        MavenSession context = createMock(MavenSession.class);
 
         expect(context.getExecutionProperties()).andReturn(project.getProperties());
         expect(context.getCurrentProject()).andReturn(project);
@@ -115,37 +113,13 @@ public abstract class AbstractAndroidMojoTestCase<T extends AbstractAndroidMojo>
         ExpressionEvaluator evaluator = new PluginParameterExpressionEvaluator(
                 context, mojoExec, pathTranslator, logger, project, project.getProperties());
         // Lookup plexus configuration component
-        ComponentConfigurator configurator = (ComponentConfigurator) lookup(ComponentConfigurator.ROLE);
+        ComponentConfigurator configurator = lookup(ComponentConfigurator.class, "basic");
+
         // Configure mojo using above
         ConfigurationListener listener = new DebugConfigurationListener( logger );
-        configurator.configureComponent( new MapOrientedComponent() {
-            public void addComponentRequirement(ComponentRequirement componentRequirement, Object o) throws ComponentConfigurationException {
-                System.out.println("componentRequirement = " + componentRequirement);
-            }
+        configurator.configureComponent( mojo, config, evaluator, getContainer().getContainerRealm(), listener );
 
-            public void setComponentConfiguration(Map map) throws ComponentConfigurationException {
-                for (Object o : map.keySet()) {
-                    String key = (String) o;
-                    Object value = map.get(o);
-                    try {
-                        // FIXME: This is a terrible hack in order to initialize the VersioMojo
-                        // FIXME: Should really be removed and the proper plexus configurator
-                        // FIXME: should be used instead.  But, for now, since the component
-                        // FIXME: found does not support our MOJO, this will have to do.
-                        if ("androidManifestFile".equals(key))
-                        {
-                            setVariableValueToObject(mojo, key, new File((String)value));
-                        }
-                        else
-                        {
-                            setVariableValueToObject(mojo, key, Boolean.parseBoolean((String) value));
-                        }
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }, config, evaluator, getContainer().getContainerRealm(), listener );
+        verify(context);
 
         return mojo;
     }

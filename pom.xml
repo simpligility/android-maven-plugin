@@ -165,6 +165,20 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <!-- required in all cases -->
+            <groupId>org.sonatype.aether</groupId>
+            <artifactId>aether-api</artifactId>
+            <version>1.11</version>
+        </dependency>
+
+        <dependency>
+            <!-- might be superfluous depending on your use case -->
+            <groupId>org.sonatype.aether</groupId>
+            <artifactId>aether-util</artifactId>
+            <version>1.11</version>
+        </dependency>
+
     </dependencies>
     <build>
         <pluginManagement>
