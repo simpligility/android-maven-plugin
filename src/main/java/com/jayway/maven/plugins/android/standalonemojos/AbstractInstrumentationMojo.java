@@ -289,7 +289,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                     nameAttr.setValue(runName);
                     testSuiteAttributes.setNamedItem(nameAttr);
 
-                    // TODO use device serial number to set hostname maybe?
+                    Attr hostnameAttr = junitReport.createAttribute(ATTR_TESTSUITE_HOSTNAME);
+                    hostnameAttr.setValue(getDeviceIdentifier());
+                    testSuiteAttributes.setNamedItem(hostnameAttr);
 
                     testSuites.appendChild(testSuite);
 
@@ -434,7 +436,6 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             } catch (TransformerConfigurationException e) {
                 e.printStackTrace();
             }
-            xformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             Source source = new DOMSource(junitReport);
 
             FileWriter writer = null;
@@ -442,15 +443,11 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                 String fileName = new StringBuilder()
                         .append(project.getBuild().getDirectory())
                         .append("/surefire/TEST-")
-                        .append(device.getSerialNumber())
+                        .append(getDeviceIdentifier())
                         .append(".xml")
                         .toString();
                 File reportFile = new File(fileName);
                 writer = new FileWriter(reportFile);
-                // hard coding encoding since junitReport encoding return null
-                String xmldecl = String.format("<?xml version=\"%s\" encoding=\"UTF-8\"?>%n", junitReport.getXmlVersion());
-
-                writer.write(xmldecl);
                 Result result = new StreamResult(writer);
 
                 xformer.transform(source, result);
@@ -473,6 +470,15 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
 
         public boolean hasFailuresOrErrors() {
             return testErrorCount > 0 || testFailureCount > 0;
+        }
+
+        private String getDeviceIdentifier() {
+            StringBuilder identfier = new StringBuilder()
+                    .append(device.getSerialNumber());
+             if (device.getAvdName() != null) {
+                identfier.append("_").append(device.getAvdName());
+             }
+            return identfier.toString();
         }
     }
 }
