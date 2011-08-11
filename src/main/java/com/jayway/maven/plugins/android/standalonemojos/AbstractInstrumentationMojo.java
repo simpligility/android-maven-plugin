@@ -200,6 +200,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                     if (testRunListener.hasFailuresOrErrors()) {
                         throw new MojoFailureException("Tests failed on device.");
                     }
+                    if (testRunListener.threwException()) {
+                        throw new MojoFailureException(testRunListener.getExceptionMessages());
+                    }
                 } catch (TimeoutException e) {
                     throw new MojoExecutionException("timeout", e);
                 } catch (AdbCommandRejectedException e) {
@@ -265,14 +268,19 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         private int testErrorCount = 0;
 
         private MavenProject project;
+        /** the emulator or device we are running the tests on **/
         private IDevice device;
 
-        private long mTestStarted;
-        private long mRunStarted;
+        private long testStartTime;
 
+        // junit xml report related fields
         private Document junitReport;
         private Node testSuiteNode;
         private Node currentTestCaseNode;
+
+        // we track if we have problems and then report upstream
+        private boolean threwException = false;
+        private StringBuilder exceptionMessages = new StringBuilder();
 
         public AndroidTestRunListener(MavenProject project, IDevice device) {
             this.project = project;
@@ -281,9 +289,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
 
         public void testRunStarted(String runName, int testCount) {
             this.testCount = testCount;
-            mRunStarted = new Date().getTime();
-            getLog().info(INDENT + "Run started: " + runName + ", " +
-                "" + testCount + " tests:");
+            getLog().info(INDENT + "Run started: " + runName + ", " + testCount + " tests:");
 
             if (testCreateReport) {
                 try {
@@ -291,7 +297,6 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                     DocumentBuilder parser = null;
                     parser = fact.newDocumentBuilder();
                     junitReport = parser.newDocument();
-
 
                     Node testSuitesNode = junitReport.createElement(TAG_TESTSUITES);
                     junitReport.appendChild(testSuitesNode);
@@ -328,14 +333,15 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                     testSuitesNode.appendChild(testSuiteNode);
 
                 } catch (ParserConfigurationException e) {
-//                    throw new MojoExecutionException("Failed to create junit document", e);
+                    threwException = true;
+                    exceptionMessages.append("Failed to create document");
+                    exceptionMessages.append(e.getMessage());
                 }
             }
         }
 
         public void testStarted(TestIdentifier test) {
-            mTestStarted = new Date().getTime();
-            getLog().info(INDENT + INDENT +"Start: " + test.toString());
+           getLog().info(INDENT + INDENT +"Start: " + test.toString());
 
             if (testCreateReport) {
                 currentTestCaseNode = junitReport.createElement(TAG_TESTCASE);
@@ -438,13 +444,6 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             }
         }
 
-
-        private String getTestDuration() {
-            long now = new Date().getTime();
-            double seconds = (now - mTestStarted)/1000.0;
-            return timeFormatter.format(seconds);
-        }
-
         public void testRunFailed(String errorMessage) {
             getLog().info(INDENT +"Run failed: " + errorMessage);
         }
@@ -459,6 +458,12 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
 
         private String parseForException(String trace) {
             return trace.substring(0, trace.indexOf(":"));
+        }
+
+        private String getTestDuration() {
+            long now = new Date().getTime();
+            double seconds = (now - testStartTime)/1000.0;
+            return timeFormatter.format(seconds);
         }
 
         private void writeJunitReportToFile() {
@@ -495,9 +500,13 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                 xformer.transform(source, result);
                 getLog().info("Report file written to " + reportFile.getAbsolutePath());
             } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                threwException = true;
+                exceptionMessages.append("Failed to write test report file");
+                exceptionMessages.append(e.getMessage());
             } catch (TransformerException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                threwException = true;
+                exceptionMessages.append("Failed to transform document to write to test report file");
+                exceptionMessages.append(e.getMessage());
             } finally {
                 IOUtils.closeQuietly(writer);
             }
@@ -514,20 +523,38 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             return testErrorCount > 0 || testFailureCount > 0;
         }
 
+        public boolean threwException() {
+            return threwException;
+        }
+
+        public String getExceptionMessages() {
+            return exceptionMessages.toString();
+        }
+
         private String getDeviceIdentifier() {
+            String SEPARATOR = "_";
             StringBuilder identfier = new StringBuilder()
                     .append(device.getSerialNumber());
-             if (device.getAvdName() != null) {
-                identfier.append("_").append(device.getAvdName());
-             }
+            if (device.getAvdName() != null) {
+                identfier.append(SEPARATOR).append(device.getAvdName());
+            } else {
+                String manufacturer = StringUtils.deleteWhitespace(device.getProperty("ro.product.manufacturer"));
+                if (StringUtils.isNotBlank(manufacturer)) {
+                    identfier.append(SEPARATOR).append(manufacturer);
+                }
+                String model = StringUtils.deleteWhitespace(device.getProperty("ro.product.model"));
+                if (StringUtils.isNotBlank(model)) {
+                    identfier.append(SEPARATOR).append(model);
+                }
+            }
             return identfier.toString();
         }
-    }
 
-    private void createDirectoryIfNecessary(String testReportDirectory) {
-        File directory = new File(testReportDirectory);
-        if (!directory.isDirectory()) {
-            directory.mkdir();
+        private void createDirectoryIfNecessary(String testReportDirectory) {
+            File directory = new File(testReportDirectory);
+            if (!directory.isDirectory()) {
+                directory.mkdir();
+            }
         }
     }
 }
