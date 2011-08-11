@@ -313,21 +313,41 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                     testSuiteAttributes.setNamedItem(hostnameAttr);
 
                     Node propertiesNode = junitReport.createElement(TAG_PROPERTIES);
-                    for (Map.Entry<Object, Object> property : System.getProperties().entrySet()) {
-                        Node propertyNode = junitReport.createElement(TAG_PROPERTY);
-                        NamedNodeMap propertyAttributes = propertyNode.getAttributes();
+                    Node propertyNode;
+                    NamedNodeMap propertyAttributes;
+                    Attr propNameAttr;
+                    Attr propValueAttr;
+                    for (Map.Entry<Object, Object> systemProperty : System.getProperties().entrySet()) {
+                        propertyNode = junitReport.createElement(TAG_PROPERTY);
+                        propertyAttributes = propertyNode.getAttributes();
 
-                        Attr propNameAttr = junitReport.createAttribute(ATTR_PROPERTY_NAME);
-                        propNameAttr.setValue(property.getKey().toString());
+                        propNameAttr = junitReport.createAttribute(ATTR_PROPERTY_NAME);
+                        propNameAttr.setValue(systemProperty.getKey().toString());
                         propertyAttributes.setNamedItem(propNameAttr);
 
-                        Attr propValueAttr = junitReport.createAttribute(ATTR_PROPERTY_VALUE);
-                        propValueAttr.setValue(property.getValue().toString());
+                        propValueAttr = junitReport.createAttribute(ATTR_PROPERTY_VALUE);
+                        propValueAttr.setValue(systemProperty.getValue().toString());
                         propertyAttributes.setNamedItem(propValueAttr);
 
                         propertiesNode.appendChild(propertyNode);
 
                     }
+                    Map<String, String> deviceProperties = device.getProperties();
+                    for (Map.Entry<String, String> deviceProperty : deviceProperties.entrySet()) {
+                        propertyNode = junitReport.createElement(TAG_PROPERTY);
+                        propertyAttributes = propertyNode.getAttributes();
+
+                        propNameAttr = junitReport.createAttribute(ATTR_PROPERTY_NAME);
+                        propNameAttr.setValue(deviceProperty.getKey());
+                        propertyAttributes.setNamedItem(propNameAttr);
+
+                        propValueAttr = junitReport.createAttribute(ATTR_PROPERTY_VALUE);
+                        propValueAttr.setValue(deviceProperty.getValue());
+                        propertyAttributes.setNamedItem(propValueAttr);
+
+                        propertiesNode.appendChild(propertyNode);
+                    }
+
                     testSuiteNode.appendChild(propertiesNode);
 
                     testSuitesNode.appendChild(testSuiteNode);
