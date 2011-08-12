@@ -27,24 +27,21 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import com.jayway.maven.plugins.android.common.AetherHelper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.dependency.utils.resolvers.DefaultArtifactsResolver;
 import org.codehaus.plexus.util.AbstractScanner;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
@@ -53,6 +50,12 @@ import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.Sign;
 import org.codehaus.plexus.util.DirectoryScanner;
+import org.sonatype.aether.collection.CollectRequest;
+import org.sonatype.aether.graph.Dependency;
+import org.sonatype.aether.graph.DependencyNode;
+import org.sonatype.aether.resolution.DependencyRequest;
+import org.sonatype.aether.util.filter.ScopeDependencyFilter;
+import org.sonatype.aether.util.graph.PreorderNodeListGenerator;
 
 /**
  * Creates the apk file. By default signs it with debug keystore.<br/>
@@ -98,7 +101,7 @@ public class ApkMojo extends AbstractAndroidMojo {
      * @readonly
      */
     private String signDebug;
-    
+
     /**
      * <p>A possibly new package name for the application. This value will be passed on to the aapt
      * parameter --rename-manifest-package. Look to aapt for more help on this. </p>
@@ -106,10 +109,10 @@ public class ApkMojo extends AbstractAndroidMojo {
      * @parameter expression="${android.renameManifestPackage}"
      */
     private String renameManifestPackage;
-    
+
     /**
      * <p>Rewrite the manifest so that all of its instrumentation components target the given package.
-     * This value will be passed on to the aapt parameter --rename-instrumentation-target-package. 
+     * This value will be passed on to the aapt parameter --rename-instrumentation-target-package.
      * Look to aapt for more help on this. </p>
      *
      * @parameter expression="${android.renameInstrumentationTargetPackage}"
@@ -178,6 +181,13 @@ public class ApkMojo extends AbstractAndroidMojo {
      * @parameter expression="${android.sourceDirectories}" default-value=""
      */
     private File[] sourceDirectories;
+
+    /**
+      * @component
+      * @readonly
+      * @required
+      */
+     protected ArtifactFactory artifactFactory;
 
     private static final Pattern PATTERN_JAR_EXT = Pattern.compile("^.+\\.jar$", 2);
 
@@ -512,7 +522,7 @@ public class ApkMojo extends AbstractAndroidMojo {
         final boolean hasValidBuildNativeLibrariesDirectory = nativeLibrariesOutputDirectory.exists() && ( nativeLibrariesOutputDirectory.listFiles() != null && nativeLibrariesOutputDirectory.listFiles().length > 0 );
 
         if ( artifacts.isEmpty() && hasValidNativeLibrariesDirectory && !hasValidBuildNativeLibrariesDirectory ) {
-            
+
             getLog().debug("No native library dependencies detected, will point directly to " + nativeLibrariesDirectory);
 
             // Point directly to the directory in this case - no need to copy files around
@@ -541,11 +551,7 @@ public class ApkMojo extends AbstractAndroidMojo {
 
             if (!artifacts.isEmpty())
             {
-
-                final DefaultArtifactsResolver artifactsResolver = new DefaultArtifactsResolver(this.artifactResolver, this.localRepository, this.remoteRepositories, true);
-
-                @SuppressWarnings("unchecked")
-                final Set<Artifact> resolvedArtifacts = artifactsResolver.resolve(artifacts, getLog());
+                final Set<Artifact> resolvedArtifacts = AetherHelper.resolveArtifacts( artifacts, repoSystem, repoSession, projectRepos );
 
                 for (Artifact resolvedArtifact : resolvedArtifacts)
                 {
@@ -586,6 +592,7 @@ public class ApkMojo extends AbstractAndroidMojo {
     }
 
     private String getHardwareArchitectureFor(Artifact resolvedArtifact) {
+
         if (StringUtils.isNotBlank(nativeLibrariesDependenciesHardwareArchitectureOverride)){
             return nativeLibrariesDependenciesHardwareArchitectureOverride;
         }
@@ -598,8 +605,7 @@ public class ApkMojo extends AbstractAndroidMojo {
         return nativeLibrariesDependenciesHardwareArchitectureDefault;
     }
 
-    private Set<Artifact> getNativeDependenciesArtifacts()
-    {
+    private Set<Artifact> getNativeDependenciesArtifacts() throws MojoExecutionException {
         final Set<Artifact> filteredArtifacts = new HashSet<Artifact>();
 
         // Add all dependent artifacts declared in the pom file
@@ -609,8 +615,7 @@ public class ApkMojo extends AbstractAndroidMojo {
         // Add all attached artifacts as well - this could come from the NDK mojo for example
         boolean result = allArtifacts.addAll( project.getAttachedArtifacts() );
 
-        for (Artifact artifact : allArtifacts)
-        {
+        for (Artifact artifact : allArtifacts) {
             // A null value in the scope indicates that the artifact has been attached
             // as part of a previous build step (NDK mojo)
             if ( "so".equals( artifact.getType() ) && artifact.getScope() == null ) {
@@ -618,12 +623,10 @@ public class ApkMojo extends AbstractAndroidMojo {
                 getLog().debug( "Including attached artifact: " + artifact.getArtifactId() + "(" + artifact.getGroupId() + ")" );
                 filteredArtifacts.add( artifact );
             }
-            else if ("so".equals(artifact.getType()) && (Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) || Artifact.SCOPE_RUNTIME.equals( artifact.getScope() )))
-            {
+            else if ("so".equals(artifact.getType()) && (Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) || Artifact.SCOPE_RUNTIME.equals( artifact.getScope() ))) {
                 filteredArtifacts.add(artifact);
             }
-            else if (APKLIB.equals(artifact.getType()))
-            {
+            else if (APKLIB.equals(artifact.getType())) {
                 // Check if the artifact contains a libs folder - if so, include it in the list
                 File libsFolder = new File(getLibraryUnpackDirectory(artifact) + "/libs");
                 if (libsFolder.exists())
@@ -633,7 +636,65 @@ public class ApkMojo extends AbstractAndroidMojo {
             }
         }
 
+        Set<Artifact> transientArtifacts = processTransientDependencies(allArtifacts);
+
+        filteredArtifacts.addAll( transientArtifacts );
+
         return filteredArtifacts;
+    }
+
+    private Set<Artifact> processTransientDependencies( Set<Artifact> artifacts ) throws MojoExecutionException {
+
+        Set<Artifact> transientArtifacts = new TreeSet<Artifact>(  );
+        for ( Artifact artifact : artifacts ) {
+            if (!"provided".equals( artifact.getScope() ))
+            {
+                org.sonatype.aether.artifact.Artifact aetherArtifact = AetherHelper.createAetherArtifact( artifact );
+
+                transientArtifacts.addAll( processTransientDependencies( aetherArtifact, artifact.getArtifactHandler() ) );
+            }
+        }
+
+        return transientArtifacts;
+
+    }
+
+    private Set<Artifact> processTransientDependencies( org.sonatype.aether.artifact.Artifact aetherArtifact, ArtifactHandler artifactHandler) throws MojoExecutionException {
+
+        try {
+            final Set<Artifact> artifacts = new TreeSet<Artifact>(  );
+
+            Dependency dependency = new Dependency( aetherArtifact, "runtime" );
+
+            final CollectRequest collectRequest=new CollectRequest();
+
+            collectRequest.setRoot( dependency );
+            collectRequest.setRepositories( projectRepos );
+            final DependencyNode node = repoSystem.collectDependencies( repoSession, collectRequest ).getRoot();
+
+            final DependencyRequest dependencyRequest = new DependencyRequest( node, new ScopeDependencyFilter( Arrays.asList( "compile", "runtime"), Arrays.asList("test") ) );
+
+
+            repoSystem.resolveDependencies( repoSession, dependencyRequest );
+
+            PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
+            node.accept( nlg );
+
+            final List<Dependency> dependencies = nlg.getDependencies( false );
+
+            for ( Dependency dep : dependencies ) {
+                final org.sonatype.aether.artifact.Artifact artifact = dep.getArtifact();
+                if ("so".equals( artifact.getExtension()))
+                {
+                    final Artifact mavenArtifact = artifactFactory.createDependencyArtifact( artifact.getGroupId(), artifact.getArtifactId(), VersionRange.createFromVersion( artifact.getVersion() ), artifact.getExtension(), artifact.getClassifier(),dep.getScope());
+                    artifacts.add( mavenArtifact );
+                }
+            }
+
+            return artifacts;
+        } catch ( Exception e ) {
+            throw new MojoExecutionException( "Error while processing transient dependencies", e );
+        }
     }
 
     private void copyLocalNativeLibraries( final File localNativeLibrariesDirectory, final File destinationDirectory ) throws MojoExecutionException {
@@ -737,7 +798,7 @@ public class ApkMojo extends AbstractAndroidMojo {
                 throw new MojoExecutionException("", e);
             }
         }
-        
+
         // Next pull APK Lib assets, reverse the order to give precedence to libs higher up the chain
         List<Artifact> artifactList = new ArrayList<Artifact>(getAllRelevantDependencyArtifacts());
 		for (Artifact artifact: artifactList) {
@@ -841,12 +902,12 @@ public class ApkMojo extends AbstractAndroidMojo {
             commands.add("-A");
             commands.add(combinedAssets.getAbsolutePath());
         }
-        
+
         if (StringUtils.isNotBlank(renameManifestPackage)) {
           commands.add("--rename-manifest-package");
           commands.add(renameManifestPackage);
         }
-        
+
         if (StringUtils.isNotBlank(renameInstrumentationTargetPackage)) {
           commands.add("--rename-instrumentation-target-package");
           commands.add(renameInstrumentationTargetPackage);
