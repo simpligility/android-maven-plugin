@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.jayway.maven.plugins.android.common.AetherHelper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang.StringUtils;
@@ -132,7 +133,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
             if (type.equals(APKSOURCES)) {
                 getLog().debug("Detected apksources dependency " + artifact + " with file " + artifact.getFile() + ". Will resolve and extract...");
 
-                File apksourcesFile = new File(getLocalRepository().getBasedir(), getLocalRepository().pathOf(artifact));
+                Artifact resolvedArtifact = AetherHelper.resolveArtifact(artifact,repoSystem,repoSession,projectRepos);
+
+                File apksourcesFile = resolvedArtifact.getFile();
 
                 // When the artifact is not installed in local repository, but rather part of the current reactor,
                 // resolve from within the reactor. (i.e. ../someothermodule/target/*)
@@ -147,7 +150,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
                 }
                 getLog().debug("Extracting " + apksourcesFile + "...");
                 extractApksources(apksourcesFile);
-			}
+            }
         }
         projectHelper.addResource(project, extractedDependenciesJavaResources.getAbsolutePath(), null, null);
         project.addCompileSourceRoot(extractedDependenciesJavaSources.getAbsolutePath());
@@ -184,7 +187,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     }
 
     private void extractApklib(Artifact apklibArtifact) throws MojoExecutionException {
-		File apkLibFile = new File(getLocalRepository().getBasedir(), getLocalRepository().pathOf(apklibArtifact));
+
+        final Artifact resolvedArtifact = AetherHelper.resolveArtifact(apklibArtifact,repoSystem,repoSession,projectRepos);
+
+        File apkLibFile = resolvedArtifact.getFile();
 
         // When the artifact is not installed in local repository, but rather part of the current reactor,
         // resolve from within the reactor. (i.e. ../someothermodule/target/*)
