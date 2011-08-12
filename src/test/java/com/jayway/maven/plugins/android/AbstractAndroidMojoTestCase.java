@@ -1,6 +1,7 @@
 package com.jayway.maven.plugins.android;
 
 import java.io.File;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -13,9 +14,12 @@ import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.path.DefaultPathTranslator;
 import org.apache.maven.project.path.PathTranslator;
+import org.codehaus.plexus.component.MapOrientedComponent;
+import org.codehaus.plexus.component.configurator.ComponentConfigurationException;
 import org.codehaus.plexus.component.configurator.ComponentConfigurator;
 import org.codehaus.plexus.component.configurator.ConfigurationListener;
 import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluator;
+import org.codehaus.plexus.component.repository.ComponentRequirement;
 import org.codehaus.plexus.configuration.PlexusConfiguration;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
@@ -101,9 +105,7 @@ public abstract class AbstractAndroidMojoTestCase<T extends AbstractAndroidMojo>
         // - Declared to prevent NPE from logging events in maven core
         Logger logger = new ConsoleLogger(Logger.LEVEL_DEBUG, mojo.getClass().getName());
 
-        // Using mock of the session since it looks like 3.0.3 performs better validation
-        // of NULLs and such
-        MavenSession context = createMock(MavenSession.class);
+         MavenSession context = createMock(MavenSession.class);
 
         expect(context.getExecutionProperties()).andReturn(project.getProperties());
         expect(context.getCurrentProject()).andReturn(project);
@@ -113,13 +115,10 @@ public abstract class AbstractAndroidMojoTestCase<T extends AbstractAndroidMojo>
         ExpressionEvaluator evaluator = new PluginParameterExpressionEvaluator(
                 context, mojoExec, pathTranslator, logger, project, project.getProperties());
         // Lookup plexus configuration component
-        ComponentConfigurator configurator = lookup(ComponentConfigurator.class, "basic");
-
+        ComponentConfigurator configurator = (ComponentConfigurator) lookup(ComponentConfigurator.ROLE,"basic");
         // Configure mojo using above
         ConfigurationListener listener = new DebugConfigurationListener( logger );
         configurator.configureComponent( mojo, config, evaluator, getContainer().getContainerRealm(), listener );
-
-        verify(context);
 
         return mojo;
     }
