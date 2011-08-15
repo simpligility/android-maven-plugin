@@ -166,8 +166,6 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
 
         doWithDevices(new DeviceCallback() {
             public void doWithDevice(final IDevice device) throws MojoExecutionException, MojoFailureException {
-                List<String> commands = new ArrayList<String>();
-
                 RemoteAndroidTestRunner remoteAndroidTestRunner =
                     new RemoteAndroidTestRunner(instrumentationPackage, instrumentationRunner, device);
 
@@ -473,7 +471,13 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         }
 
         private String parseForMessage(String trace) {
-            return trace.substring(trace.indexOf(":") + 2, trace.indexOf("\r\n"));
+            String newline = "\r\n";
+            boolean hasMessage = trace.indexOf(newline) > 0;
+            if (hasMessage) {
+                return trace.substring(trace.indexOf(":") + 2, trace.indexOf("\r\n"));
+            } else {
+                return "";
+            }
         }
 
         private String parseForException(String trace) {
