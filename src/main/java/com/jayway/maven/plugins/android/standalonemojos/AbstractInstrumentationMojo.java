@@ -471,17 +471,25 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         }
 
         private String parseForMessage(String trace) {
-            String newline = "\r\n";
-            boolean hasMessage = trace.indexOf(newline) > 0;
-            if (hasMessage) {
-                return trace.substring(trace.indexOf(":") + 2, trace.indexOf("\r\n"));
+            if (StringUtils.isNotBlank(trace)) {
+                String newline = "\r\n";
+                boolean hasMessage = trace.indexOf(newline) > 0;
+                if (hasMessage) {
+                    return trace.substring(trace.indexOf(":") + 2, trace.indexOf("\r\n"));
+                } else {
+                    return StringUtils.EMPTY;
+                }
             } else {
-                return "";
+                return StringUtils.EMPTY;
             }
         }
 
         private String parseForException(String trace) {
-            return trace.substring(0, trace.indexOf(":"));
+            if (StringUtils.isNotBlank(trace)) {
+                return trace.substring(0, trace.indexOf(":"));
+            } else {
+                return StringUtils.EMPTY;
+            }
         }
 
         private String getTestDuration() {
