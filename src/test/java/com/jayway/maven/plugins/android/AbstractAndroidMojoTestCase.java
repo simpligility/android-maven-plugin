@@ -1,6 +1,7 @@
 package com.jayway.maven.plugins.android;
 
 import java.io.File;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -13,9 +14,12 @@ import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.path.DefaultPathTranslator;
 import org.apache.maven.project.path.PathTranslator;
+import org.codehaus.plexus.component.MapOrientedComponent;
+import org.codehaus.plexus.component.configurator.ComponentConfigurationException;
 import org.codehaus.plexus.component.configurator.ComponentConfigurator;
 import org.codehaus.plexus.component.configurator.ConfigurationListener;
 import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluator;
+import org.codehaus.plexus.component.repository.ComponentRequirement;
 import org.codehaus.plexus.configuration.PlexusConfiguration;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
@@ -23,6 +27,8 @@ import org.junit.Assert;
 
 import com.jayway.maven.plugins.android.standalonemojos.MojoProjectStub;
 import com.jayway.maven.plugins.android.standalonemojos.VersionUpdateMojo;
+
+import static org.easymock.EasyMock.*;
 
 public abstract class AbstractAndroidMojoTestCase<T extends AbstractAndroidMojo> extends AbstractMojoTestCase {
     /**
@@ -43,7 +49,7 @@ public abstract class AbstractAndroidMojoTestCase<T extends AbstractAndroidMojo>
      * That means and 'default-value' settings are not automatically injected by this testing framework (or plexus
      * underneath that is suppling this functionality)
      * 
-     * @param goal
+     * @param resourceProject
      *            the name of the goal to look for in the <code>plugin-config.xml</code> that the configuration will be
      *            pulled from.
      * @param resourceProject
@@ -76,40 +82,48 @@ public abstract class AbstractAndroidMojoTestCase<T extends AbstractAndroidMojo>
         FileUtils.copyDirectory(exampleDir, testingDir);
 
         // Prepare MavenProject
-        MavenProject project = new MojoProjectStub(testingDir);
+        final MavenProject project = new MojoProjectStub(testingDir);
 
         // Setup Mojo
         PlexusConfiguration config = extractPluginConfiguration("maven-android-plugin", project.getFile());
         @SuppressWarnings("unchecked")
-        T mojo = (T) lookupMojo(getPluginGoalName(), project.getFile());
+        final T mojo = (T) lookupMojo(getPluginGoalName(), project.getFile());
 
         // Inject project itself
         setVariableValueToObject(mojo, "project", project);
-        
+
         // Configure the rest of the pieces via the PluginParameterExpressionEvaluator
         //  - used for ${plugin.*}
         MojoDescriptor mojoDesc = new MojoDescriptor();
         // - used for error messages in PluginParameterExpressionEvaluator
-        mojoDesc.setGoal(getPluginGoalName()); 
-        MojoExecution mojoExec = new MojoExecution(mojoDesc); 
+        mojoDesc.setGoal(getPluginGoalName());
+        MojoExecution mojoExec = new MojoExecution(mojoDesc);
         // - Only needed if we start to use expressions like ${settings.*}, ${localRepository}, ${reactorProjects}
-        MavenSession context = null; // Messy to declare, would rather avoid using it.
+        // MavenSession context = null; // Messy to declare, would rather avoid using it.
         // - Used for ${basedir} relative paths
         PathTranslator pathTranslator = new DefaultPathTranslator();
         // - Declared to prevent NPE from logging events in maven core
         Logger logger = new ConsoleLogger(Logger.LEVEL_DEBUG, mojo.getClass().getName());
-        
+
+         MavenSession context = createMock(MavenSession.class);
+
+        expect(context.getExecutionProperties()).andReturn(project.getProperties());
+        expect(context.getCurrentProject()).andReturn(project);
+        replay(context);
+
         // Declare evalator that maven itself uses.
         ExpressionEvaluator evaluator = new PluginParameterExpressionEvaluator(
                 context, mojoExec, pathTranslator, logger, project, project.getProperties());
         // Lookup plexus configuration component
-        ComponentConfigurator configurator = (ComponentConfigurator) lookup(ComponentConfigurator.ROLE);
+        ComponentConfigurator configurator = (ComponentConfigurator) lookup(ComponentConfigurator.ROLE,"basic");
         // Configure mojo using above
         ConfigurationListener listener = new DebugConfigurationListener( logger );
         configurator.configureComponent( mojo, config, evaluator, getContainer().getContainerRealm(), listener );
 
         return mojo;
     }
+
+
 
     /**
      * Get the project directory used for this mojo.
