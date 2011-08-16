@@ -90,7 +90,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
 
     /**
      * Enable debug causing the test runner to wait until debugger is
-     * connected.
+     * connected with the Android debug bridge (adb).
+     *
      * @optional
      * @parameter default-value=false expression="${android.test.debug}"
      */
@@ -98,23 +99,27 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
 
 
     /**
-     * Enable or disable code coverage for this test run.
+     * Enable or disable code coverage for this instrumentation test
+     * run.
+     *
      * @optional
      * @parameter default-value=false expression="${android.test.coverage}"
      */
     private boolean testCoverage;
 
     /**
-     * Enable this flag to run a log only and not execute the tests
+     * Enable this flag to run a log only and not execute the tests.
+     *
      * @optional
      * @parameter default-value=false expression="${android.test.logonly}"
      */
     private boolean testLogOnly;
 
     /**
-     * If specified only execute tests of certain size as defined by the
-     * SmallTest, MediumTest and LargeTest annotations. Use "small",
-     * "medium" or "large" as values.
+     * If specified only execute tests of certain size as defined by
+     * the Android instrumentation testing SmallTest, MediumTest and
+     * LargeTest annotations. Use "small", "medium" or "large" as values.
+     *
      * @see com.android.ddmlib.testrunner.IRemoteAndroidTestRunner
      *
      * @optional
@@ -126,18 +131,18 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
      * Create a junit xml format compatible output file containing
      * the test results for each device the instrumentation tests run
      * on.
-     *
+     * <br /><br />
      * File name is TEST-deviceid.xml
      * The deviceid for an emulator is deviceSerialNumber_avdName. The
      * serial number is commonly emulator-5554 for the first emulator
      * started with numbers increasing.
      * The deviceid for an actual devices is
      * deviceSerialNumber_manufacturer_model.
-     *
+     * <br /><br />
      * The file contains system properties from the system running
      * the Maven Android Plugin (JVM) and device properties from the
      * device/emulator the test are running on.
-     *
+     * <br /><br />
      * The file contains a single TestSuite for all tests and a
      * TestCase for each test method. Errors and failures are logged
      * in the file with full stack traces and other details available.
@@ -150,6 +155,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
     /**
      * The directory in the build output folder (target by default)
      * in which the test report xml files are created.
+     *
      * @optional
      * @parameter default-value="surefire-reports" expressions=${android.test.reportdirectory}
      */
@@ -567,6 +573,10 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             }
         }
 
+        /**
+         * Log all the metrics out in to key: value lines.
+         * @param metrics
+         */
         private void logMetrics(Map<String, String> metrics) {
             for (Map.Entry<String, String> entry : metrics.entrySet()) {
                 getLog().info(INDENT + INDENT + entry.getKey() + ": "
@@ -574,14 +584,25 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             }
         }
 
+        /**
+         * @return if any failures or errors occurred in the test run.
+         */
         public boolean hasFailuresOrErrors() {
             return testErrorCount > 0 || testFailureCount > 0;
         }
 
+        /**
+         * @return if any exception was thrown during the test run
+         * on the build system (not the Android device or emulator)
+         */
         public boolean threwException() {
             return threwException;
         }
 
+        /**
+         * @return all exception messages thrown during test execution
+         * on the test run time (not the Android device or emulator)
+         */
         public String getExceptionMessages() {
             return exceptionMessages.toString();
         }
