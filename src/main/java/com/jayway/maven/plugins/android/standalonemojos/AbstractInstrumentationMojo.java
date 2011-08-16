@@ -27,6 +27,7 @@ import com.android.ddmlib.testrunner.TestIdentifier;
 import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
 import com.jayway.maven.plugins.android.DeviceCallback;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -50,10 +51,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Attr;
@@ -65,7 +64,11 @@ import org.w3c.dom.Node;
 import static com.android.ddmlib.testrunner.ITestRunListener.TestFailure.ERROR;
 
 /**
+ * AbstractInstrumentationMojo implements running the instrumentation
+ * tests.
+ *
  * @author hugo.josefson@jayway.com
+ * @author Manfred Moser <manfred@simpligility.com>
  */
 public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtestMojo {
     /**
@@ -120,13 +123,33 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
     private String testSize;
 
     /**
-     * Create
+     * Create a junit xml format compatible output file containing
+     * the test results for each device the instrumentation tests run
+     * on.
+     *
+     * File name is TEST-deviceid.xml
+     * The deviceid for an emulator is deviceSerialNumber_avdName. The
+     * serial number is commonly emulator-5554 for the first emulator
+     * started with numbers increasing.
+     * The deviceid for an actual devices is
+     * deviceSerialNumber_manufacturer_model.
+     *
+     * The file contains system properties from the system running
+     * the Maven Android Plugin (JVM) and device properties from the
+     * device/emulator the test are running on.
+     *
+     * The file contains a single TestSuite for all tests and a
+     * TestCase for each test method. Errors and failures are logged
+     * in the file with full stack traces and other details available.
+     *
      * @optional
      * @parameter default-value=true expression="${android.test.createreport}"
      */
     private boolean testCreateReport;
 
     /**
+     * The directory in the build output folder (target by default)
+     * in which the test report xml files are created.
      * @optional
      * @parameter default-value="surefire-reports" expressions=${android.test.reportdirectory}
      */
@@ -265,9 +288,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         private int testFailureCount = 0;
         private int testErrorCount = 0;
 
-        private MavenProject project;
+        private final MavenProject project;
         /** the emulator or device we are running the tests on **/
-        private IDevice device;
+        private final IDevice device;
 
         private long testStartTime;
 
@@ -278,7 +301,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
 
         // we track if we have problems and then report upstream
         private boolean threwException = false;
-        private StringBuilder exceptionMessages = new StringBuilder();
+        private final StringBuilder exceptionMessages = new StringBuilder();
 
         public AndroidTestRunListener(MavenProject project, IDevice device) {
             this.project = project;
@@ -515,7 +538,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                         .append("/")
                         .append(testReportDirectory).toString();
 
-                createDirectoryIfNecessary(directory);
+                FileUtils.forceMkdir(new File(directory));
 
                 String fileName = new StringBuilder()
                         .append(project.getBuild().getDirectory())
@@ -563,7 +586,16 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             return exceptionMessages.toString();
         }
 
+        /**
+         * Get a device identifier string. More documentation at the
+         * AbstractInstrumentationMojo#testCreateReport javadoc since
+         * that is the public documentation.
+         *
+x         * @return
+         */
         private String getDeviceIdentifier() {
+            // if any of this logic changes update javadoc for
+            // AbstractInstrumentationMojo#testCreateReport
             String SEPARATOR = "_";
             StringBuilder identfier = new StringBuilder()
                     .append(device.getSerialNumber());
@@ -580,13 +612,6 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                 }
             }
             return identfier.toString();
-        }
-
-        private void createDirectoryIfNecessary(String testReportDirectory) {
-            File directory = new File(testReportDirectory);
-            if (!directory.isDirectory()) {
-                directory.mkdir();
-            }
         }
     }
 }
