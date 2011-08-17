@@ -152,15 +152,6 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
      */
     private boolean testCreateReport;
 
-    /**
-     * The directory in the build output folder (target by default)
-     * in which the test report xml files are created.
-     *
-     * @optional
-     * @parameter default-value="surefire-reports" expressions=${android.test.reportdirectory}
-     */
-    private String testReportDirectory;
-
     private boolean testClassesExists;
     private boolean testPackagesExists;
     private String testPackages;
@@ -541,15 +532,13 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             try {
                 String directory =  new StringBuilder()
                         .append(project.getBuild().getDirectory())
-                        .append("/")
-                        .append(testReportDirectory).toString();
+                        .append("/surefire-reports")
+                        .toString();
 
                 FileUtils.forceMkdir(new File(directory));
 
                 String fileName = new StringBuilder()
-                        .append(project.getBuild().getDirectory())
-                        .append("/")
-                        .append(testReportDirectory)
+                        .append(directory)
                         .append("/TEST-")
                         .append(getDeviceIdentifier())
                         .append(".xml")
