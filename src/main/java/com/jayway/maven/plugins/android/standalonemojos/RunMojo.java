@@ -94,6 +94,7 @@ public class RunMojo
     /**
      * {@inheritDoc}
      */
+    @Override
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {
@@ -153,7 +154,7 @@ public class RunMojo
 
         xPathExpression =
             xPath.compile( "//manifest/application/activity/intent-filter[action[@name=\"android.intent.action.MAIN\"] "
-                + "and category[@name=\"android.intent.category.LAUNCHER\"]]/.. " );
+                + "and category[@name=\"android.intent.category.LAUNCHER\"]]/.." );
 
         //
         // Run XPath query
@@ -207,6 +208,7 @@ public class RunMojo
 
         doWithDevices( new DeviceCallback()
         {
+            @Override
             public void doWithDevice( IDevice device )
                 throws MojoExecutionException, MojoFailureException
             {
