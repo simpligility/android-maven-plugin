@@ -66,8 +66,6 @@ public class RunMojo
 
         /**
          * Constructor.
-         * 
-         * @param message Error message.
          */
         public ActivityNotFoundException()
         {
