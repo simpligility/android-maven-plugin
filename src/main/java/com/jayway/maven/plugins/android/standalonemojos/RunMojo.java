@@ -34,6 +34,7 @@ import com.android.ddmlib.TimeoutException;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.DeviceCallback;
 
+import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.w3c.dom.Document;
@@ -41,11 +42,48 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * Executes the first activity with the <code>android.intent.action.MAIN</code> Intent Filter on all connected devices.
+ * Runs the first Activity shown in the top-level launcher as determined by its Intent filters.
+ * 
+ * <p>
+ * Android provides a component-based architecture, which means that there is no "main" function which serves as an
+ * entry point to the APK. There's an homogeneous collection of Activity(es), Service(s), Receiver(s), etc.
+ * </p>
+ * 
+ * <p>
+ * The Android top-level launcher (whose purpose is to allow users to launch other applications) uses the Intent
+ * resolution mechanism to determine which Activity(es) to show to the end user. Such activities are identified by at
+ * least:
+ * <ul>
+ * <li>Action type: <code>android.intent.action.MAIN</code></li>
+ * <li>Category: <code>android.intent.category.LAUNCHER</code></li>
+ * </ul>
+ * </p>
+ * 
+ * <p>
+ * And are declared in <code>AndroidManifest.xml</code> as such:
+ * </p>
+ * 
+ * <pre>
+ * &lt;activity android:name=".ExampleActivity"&gt;
+ *     &lt;intent-filter&gt;
+ *         &lt;action android:name="android.intent.action.MAIN" /&gt;
+ *         &lt;category android:name="android.intent.category.LAUNCHER" /&gt;
+ *     &lt;/intent-filter&gt;
+ * &lt;/activity&gt;
+ * </pre>
+ * 
+ * <p>
+ * This {@link Mojo} will try to to launch the first activity of this kind found in <code>AndroidManifest.xml</code>. In
+ * case multiple activities satisfy the requirements listed above only the first declared one is run. In case there are
+ * no "Launcher activities" declared in the manifest or no activities declared at all, this goal aborts throwing an
+ * error.
+ * </p>
  * 
  * @author Lorenzo Villani <lorenzo@villani.me>
+ * @see http://developer.android.com/guide/topics/fundamentals.html
+ * @see http://developer.android.com/guide/topics/intents/intents-filters.html
+ * 
  * @goal run
- * @requiresProject false
  */
 public class RunMojo
     extends AbstractAndroidMojo
@@ -55,7 +93,7 @@ public class RunMojo
     // ----------------------------------------------------------------------
 
     /**
-     * Thrown when no launcher activities could be found inside <code>AndroidManifest.xml</code>
+     * Thrown when no "Launcher activities" could be found inside <code>AndroidManifest.xml</code>
      * 
      * @author Lorenzo Villani
      */
@@ -69,7 +107,7 @@ public class RunMojo
          */
         public ActivityNotFoundException()
         {
-            super( "Unable to determine launcher Activity" );
+            super( "Unable to determine Launcher activity" );
         }
     }
 
@@ -115,7 +153,7 @@ public class RunMojo
     // ----------------------------------------------------------------------
 
     /**
-     * Gets the first "Launcher" Activity.
+     * Gets the first "Launcher" Activity by running an XPath query on <code>AndroidManifest.xml</code>.
      * 
      * @return A {@link LauncherInfo}
      * @throws MojoExecutionException
@@ -191,9 +229,9 @@ public class RunMojo
     }
 
     /**
-     * Executes the "Launcher" activity on configured devices.
+     * Executes the "Launcher activity".
      * 
-     * @param info
+     * @param info A {@link LauncherInfo}.
      * @throws MojoFailureException
      * @throws MojoExecutionException
      */
