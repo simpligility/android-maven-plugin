@@ -666,7 +666,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         } catch (ExecutionException e) {
             throw new MojoExecutionException("Error while trying to figure out package name from inside apk file " + apkFile);
         } finally {
-            getLog().error(executor.getStandardError());
+            String errout = executor.getStandardError();
+            if ((errout != null) && (errout.trim().length() > 0)) {
+                getLog().error(errout);
+            }
         }
     }
 
