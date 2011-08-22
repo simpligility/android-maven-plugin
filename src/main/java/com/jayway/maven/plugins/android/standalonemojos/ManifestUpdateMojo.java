@@ -20,6 +20,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.w3c.dom.*;
@@ -77,33 +79,43 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 	private static final String ATTR_DEBUGGABLE          = "android:debuggable";
 
 	private static final String ELEM_APPLICATION         = "application";
+
 	/**
 	 * Update the <code>android:versionName</code> with the specified parameter.
 	 *
-	 * @parameter expression="${android.manifest.versionName}"
+	 * @parameter expression="${android.versionName}" default-value="${project.version}"
 	 */
-	private String          versionName;
+	protected String          versionName;
 
 	/**
 	 * Update the <code>android:versionCode</code> attribute with the specified parameter.
 	 *
-	 * @parameter expression="${android.manifest.versionCode}"
+	 * @parameter expression="${android.versionCode}"
 	 */
-	private Integer         versionCode;
+	protected Integer         versionCode;
+
+
+	/**
+	 * Update the <code>android:versionCode</code> attribute automatically from the project version
+	 * e.g 3.0.1 will become version code 301
+	 *
+	 * @parameter expression="${android.versionCodeUpdateFromVersion} default-value="false"
+	 */
+	protected Boolean         versionCodeUpdateFromVersion;
 
 	/**
 	 * Update the <code>android:sharedUserId</code> attribute with the specified parameter.
 	 *
-	 * @parameter expression="${android.manifest.sharedUserId}"
+	 * @parameter expression="${android.sharedUserId}"
 	 */
-	private String          sharedUserId;
+	protected String          sharedUserId;
 
 	/**
 	 * Update the <code>android:debuggable</code> attribute with the specified parameter.
 	 *
-	 * @parameter expression="${android.manifest.debuggable}"
+	 * @parameter expression="${android.debuggable}"
 	 */
-	private Boolean         debuggable;
+	protected Boolean         debuggable;
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (!AndroidExtension.isAndroidPackaging(project.getPackaging())) {
@@ -115,6 +127,11 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 		}
 
 		getLog().info("Attempting to update manifest " + androidManifestFile);
+		getLog().debug("    versionName=" + versionName);
+		getLog().debug("    versionCode=" + versionCode);
+		getLog().debug("    versionCodeUpdateFromVersion=" + versionCodeUpdateFromVersion);
+		getLog().debug("    sharedUserId=" + sharedUserId);
+		getLog().debug("    debuggable=" + debuggable);
 
 		if (!androidManifestFile.exists()) {
 			return; // skip, no AndroidManifest.xml file found.
@@ -167,7 +184,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 	}
 
 	public void updateManifest(File manifestFile) throws IOException, ParserConfigurationException, SAXException,
-			TransformerException {
+			TransformerException, MojoFailureException {
 		Document doc = readManifest(manifestFile);
 
 		Element manifestElement = doc.getDocumentElement();
@@ -182,6 +199,23 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 				manifestElement.setAttribute(ATTR_VERSION_NAME, versionName);
 				dirty = true;
 			}
+		}
+
+		if (versionCodeUpdateFromVersion && versionCode != null) {
+			throw new MojoFailureException("versionCodeUpdateFromVersion and versionCode are mutual exclusive. They cannot be specified at the same time. " +
+			      "Please specify either versionCodeUpdateFromVersion or versionCode!");
+		}
+
+		if (versionCodeUpdateFromVersion) {
+			String verString = project.getVersion();
+			getLog().debug("Generating versionCode for " + verString);
+			ArtifactVersion artifactVersion = new DefaultArtifactVersion(verString);
+			String verCode = Integer.toString(artifactVersion.getMajorVersion()) +
+							 Integer.toString(artifactVersion.getMinorVersion()) +
+					         Integer.toString(artifactVersion.getIncrementalVersion());
+			getLog().info("Setting " + ATTR_VERSION_CODE + " to " + verCode);
+			manifestElement.setAttribute(ATTR_VERSION_CODE, verCode);
+			dirty = true;
 		}
 
 		if (versionCode != null) {
@@ -229,7 +263,10 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 			if (!manifestFile.delete()) {
 				getLog().warn("Could not remove old " + manifestFile);
 			}
+			getLog().info("Made changes to manifest file, updating " + manifestFile);
 			writeManifest(manifestFile, doc);
+		} else {
+			getLog().info("No changes found to write to manifest file");
 		}
 	}
 }
