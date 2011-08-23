@@ -47,7 +47,7 @@ public class DeployMojo extends AbstractIntegrationtestMojo {
         if (file == null) {
             deployBuiltApk();
         } else {
-            deployFile(file);
+            deployApk(file);
         }
     }
 

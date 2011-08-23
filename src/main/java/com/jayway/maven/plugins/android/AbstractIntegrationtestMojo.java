@@ -119,18 +119,4 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
                 + "." + APK);
         deployApk(apkFile);
     }
-
-    /**
-     * Deploy an apk file, but undeploy first if {@link #undeployBeforeDeploy}{@code == true}.
-     * @param apkFile the apk file to deploy
-     * @throws MojoExecutionException
-     */
-    protected void deployFile(File apkFile) throws MojoExecutionException, MojoFailureException {
-        if (undeployBeforeDeploy) {
-            undeployApk(apkFile);
-        }
-        deployApk(apkFile);
-    }
-
-
 }
