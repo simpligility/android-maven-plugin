@@ -58,11 +58,9 @@ import org.xml.sax.SAXException;
  * <li>Category: <code>android.intent.category.LAUNCHER</code></li>
  * </ul>
  * </p>
- * 
  * <p>
  * And are declared in <code>AndroidManifest.xml</code> as such:
  * </p>
- * 
  * <pre>
  * &lt;activity android:name=".ExampleActivity"&gt;
  *     &lt;intent-filter&gt;
@@ -71,17 +69,19 @@ import org.xml.sax.SAXException;
  *     &lt;/intent-filter&gt;
  * &lt;/activity&gt;
  * </pre>
- * 
  * <p>
  * This {@link Mojo} will try to to launch the first activity of this kind found in <code>AndroidManifest.xml</code>. In
  * case multiple activities satisfy the requirements listed above only the first declared one is run. In case there are
  * no "Launcher activities" declared in the manifest or no activities declared at all, this goal aborts throwing an
  * error.
  * </p>
- * 
+ * <p>
+ * The device parameter is taken into consideration so potentially the Activity found is started on all attached
+ * devices. The application will NOT be deployed and running will silently fail if the application is not deployed.
+ * </p>
  * @author Lorenzo Villani <lorenzo@villani.me>
- * @see http://developer.android.com/guide/topics/fundamentals.html
- * @see http://developer.android.com/guide/topics/intents/intents-filters.html
+ * @see "http://developer.android.com/guide/topics/fundamentals.html"
+ * @see "http://developer.android.com/guide/topics/intents/intents-filters.html"
  * 
  * @goal run
  */
@@ -235,8 +235,7 @@ public class RunMojo
      * @throws MojoFailureException
      * @throws MojoExecutionException
      */
-    private void launch( LauncherInfo info )
-        throws MojoExecutionException, MojoFailureException
+    private void launch(final LauncherInfo info) throws MojoExecutionException, MojoFailureException
     {
         final String command;
 
@@ -250,6 +249,8 @@ public class RunMojo
             {
                 try
                 {
+                    getLog().info("Attempting to start " + info.packageName + info.activity + " on device "
+                            + device.getSerialNumber() + " (avdName = " + device.getAvdName() + ")");
                     device.executeShellCommand( command, new NullOutputReceiver() );
                 }
                 catch ( IOException ex )
