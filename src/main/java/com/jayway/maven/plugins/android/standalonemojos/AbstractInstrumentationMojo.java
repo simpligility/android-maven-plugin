@@ -132,7 +132,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
      * the test results for each device the instrumentation tests run
      * on.
      * <br /><br />
-     * File name is TEST-deviceid.xml
+     * The files are stored in target/surefire-reports and named TEST-deviceid.xml.
      * The deviceid for an emulator is deviceSerialNumber_avdName. The
      * serial number is commonly emulator-5554 for the first emulator
      * started with numbers increasing.
@@ -141,11 +141,12 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
      * <br /><br />
      * The file contains system properties from the system running
      * the Maven Android Plugin (JVM) and device properties from the
-     * device/emulator the test are running on.
+     * device/emulator the tests are running on.
      * <br /><br />
      * The file contains a single TestSuite for all tests and a
      * TestCase for each test method. Errors and failures are logged
-     * in the file with full stack traces and other details available.
+     * in the file and the system log with full stack traces and other
+     * details available.
      *
      * @optional
      * @parameter default-value=true expression="${android.test.createreport}"
@@ -382,6 +383,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
            getLog().info(INDENT + INDENT +"Start: " + test.toString());
 
             if (testCreateReport) {
+                // reset start time for each test run
+                testStartTime = new Date().getTime();
+
                 currentTestCaseNode = junitReport.createElement(TAG_TESTCASE);
                 NamedNodeMap testCaseAttributes = currentTestCaseNode.getAttributes();
 
@@ -470,8 +474,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                 testSuiteAttributes.setNamedItem(timeAttr);
 
                 Attr timeStampAttr = junitReport.createAttribute(ATTR_TESTSUITE_TIMESTAMP);
-                timeStampAttr.setValue(
-                        new Date().toString());
+                timeStampAttr.setValue(new Date().toString());
                 testSuiteAttributes.setNamedItem(timeStampAttr);
             }
 
@@ -490,6 +493,12 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             getLog().info(INDENT +"Run stopped:" + elapsedTime);
         }
 
+        /**
+         * Parse a trace string for the message in it. Assumes that the message is located after ":" and before
+         * "\r\n".
+         * @param trace
+         * @return message or empty string
+         */
         private String parseForMessage(String trace) {
             if (StringUtils.isNotBlank(trace)) {
                 String newline = "\r\n";
