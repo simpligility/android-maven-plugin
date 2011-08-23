@@ -532,7 +532,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @throws MojoExecutionException If there is a problem deploying the apk file.
      */
     protected void deployApk(final File apkFile) throws MojoExecutionException, MojoFailureException {
-
+        if (undeployBeforeDeploy) {
+            undeployApk(apkFile);
+        }
         doWithDevices(new DeviceCallback(){
             public void doWithDevice(final IDevice device) throws MojoExecutionException {
                 try {
