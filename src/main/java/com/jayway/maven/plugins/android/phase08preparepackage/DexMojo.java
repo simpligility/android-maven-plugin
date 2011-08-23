@@ -44,7 +44,13 @@ import java.util.List;
 public class DexMojo extends AbstractAndroidMojo {
 
     /**
-     * Extra JVM Arguments
+     * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build.
+     * <pre>
+     * &lt;jvmArguments&gt;
+     *   &lt;argument&gt;-Xms256m&lt;/argument&gt;
+     *   &lt;argument&gt;-Xmx512m&lt;/argument&gt;
+     * &lt;/jvmArguments&gt;
+     * </pre>
      *
      * @parameter
      * @optional
@@ -99,6 +105,7 @@ public class DexMojo extends AbstractAndroidMojo {
                  if (!jvmArgument.startsWith("-")) {
                         jvmArgument = "-" + jvmArgument;
                  }
+                getLog().debug("Adding jvm argument " + jvmArgument);
                 commands.add(jvmArgument);
             }
         }
