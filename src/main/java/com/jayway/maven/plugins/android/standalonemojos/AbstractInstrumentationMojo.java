@@ -290,12 +290,15 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         /** the emulator or device we are running the tests on **/
         private final IDevice device;
 
-        private long testStartTime;
 
         // junit xml report related fields
         private Document junitReport;
         private Node testSuiteNode;
+
+        /** node for the current test case for junit report */
         private Node currentTestCaseNode;
+        /** start time of current test case in millis, reset with each test start */
+        private long currentTestCaseStartTime;
 
         // we track if we have problems and then report upstream
         private boolean threwException = false;
@@ -384,7 +387,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
 
             if (testCreateReport) {
                 // reset start time for each test run
-                testStartTime = new Date().getTime();
+                currentTestCaseStartTime = new Date().getTime();
 
                 currentTestCaseNode = junitReport.createElement(TAG_TESTCASE);
                 NamedNodeMap testCaseAttributes = currentTestCaseNode.getAttributes();
@@ -442,7 +445,10 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                 NamedNodeMap testCaseAttributes = currentTestCaseNode.getAttributes();
 
                 Attr timeAttr = junitReport.createAttribute(ATTR_TESTCASE_TIME);
-                timeAttr.setValue(getTestDuration());
+
+                long now = new Date().getTime();
+                double seconds = (now - currentTestCaseStartTime)/1000.0;
+                timeAttr.setValue(timeFormatter.format(seconds));
                 testCaseAttributes.setNamedItem(timeAttr);
             }
         }
@@ -493,6 +499,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             getLog().info(INDENT +"Run stopped:" + elapsedTime);
         }
 
+
         /**
          * Parse a trace string for the message in it. Assumes that the message is located after ":" and before
          * "\r\n".
@@ -513,6 +520,12 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             }
         }
 
+        /**
+         * Parse a trace string for the exception class. Assumes that it is the start of the trace and ends at the first
+         * ":".
+         * @param trace
+         * @return  Exception class as string or empty string
+         */
         private String parseForException(String trace) {
             if (StringUtils.isNotBlank(trace)) {
                 return trace.substring(0, trace.indexOf(":"));
@@ -521,12 +534,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             }
         }
 
-        private String getTestDuration() {
-            long now = new Date().getTime();
-            double seconds = (now - testStartTime)/1000.0;
-            return timeFormatter.format(seconds);
-        }
-
+        /**
+         * Write the junit report xml file.
+         */
         private void writeJunitReportToFile() {
             TransformerFactory xfactory = TransformerFactory.newInstance();
             Transformer xformer = null;
