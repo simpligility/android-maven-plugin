@@ -25,6 +25,7 @@ import com.android.ddmlib.SyncException;
 import com.android.ddmlib.SyncService;
 import com.android.ddmlib.TimeoutException;
 import com.jayway.maven.plugins.android.common.LogSyncProgressMonitor;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -58,6 +59,18 @@ public class PullMojo extends AbstractAndroidMojo {
      */
     private File destination;
 
+	/**
+	 * Create destination directory if it doesn't exist (using
+	 * File.mkdirs()). Because we don't know whether the specified
+	 * destination is a directory or file (unless it exists in
+	 * which case this flag is ignored) we assume that unless
+	 * the destination explicity ends with / it will be treated
+	 * as a file (and removed to get the destination directory)
+	 *
+	 * @parameter default-value=false expression="${android.pull.createDestDir}"
+	 */
+	private Boolean createDestDir;
+	
     public void execute() throws MojoExecutionException, MojoFailureException {
         final String sourcePath = source;
         final String destinationPath;
@@ -67,6 +80,15 @@ public class PullMojo extends AbstractAndroidMojo {
             destinationPath = destination.getAbsolutePath() + sourceFileName;
         } else {
             destinationPath = destination.getAbsolutePath();
+        }
+	    if (createDestDir && !destination.exists()) {
+		    String destPath = destination.getAbsolutePath();
+		    destPath = FilenameUtils.getFullPath(destPath);
+		    File destFile = new File(destPath);
+		    if (!destFile.exists()) {
+				getLog().info("Creating destination directory " + destFile);
+			    destFile.mkdirs();
+		    }
         }
 
         final String message = "Pull of " + source + " to " + destinationPath +
