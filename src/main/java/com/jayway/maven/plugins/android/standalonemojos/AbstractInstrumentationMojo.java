@@ -219,6 +219,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                     if (testRunListener.hasFailuresOrErrors()) {
                         throw new MojoFailureException("Tests failed on device.");
                     }
+                    if (testRunListener.testRunFailed()) {
+                        throw new MojoFailureException("Test run failed to complete: "+testRunListener.getTestRunFailureCause());
+                    }
                     if (testRunListener.threwException()) {
                         throw new MojoFailureException(testRunListener.getExceptionMessages());
                     }
@@ -285,6 +288,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         private int testCount = 0;
         private int testFailureCount = 0;
         private int testErrorCount = 0;
+        private String testRunFailureCause = null;
 
         private final MavenProject project;
         /** the emulator or device we are running the tests on **/
@@ -492,6 +496,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         }
 
         public void testRunFailed(String errorMessage) {
+            testRunFailureCause = errorMessage;
             getLog().info(INDENT +"Run failed: " + errorMessage);
         }
 
@@ -597,6 +602,17 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
          */
         public boolean hasFailuresOrErrors() {
             return testErrorCount > 0 || testFailureCount > 0;
+        }
+
+        /**
+         * @return if the test run itself failed - a failure in the test infrastructure, not a test failure.
+         */
+        public boolean testRunFailed() {
+            return testRunFailureCause != null;
+        }
+
+        public String getTestRunFailureCause() {
+            return testRunFailureCause;
         }
 
         /**
