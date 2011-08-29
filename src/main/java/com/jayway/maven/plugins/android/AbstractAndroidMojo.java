@@ -538,7 +538,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         doWithDevices(new DeviceCallback(){
             public void doWithDevice(final IDevice device) throws MojoExecutionException {
                 try {
-                    device.installPackage(apkFile.getAbsolutePath(), undeployBeforeDeploy);
+                    device.installPackage(apkFile.getAbsolutePath(), true);
                     getLog().info("Successfully installed "
                         + apkFile.getAbsolutePath() + " to "
                         + device.getSerialNumber()  + " (avdName="
