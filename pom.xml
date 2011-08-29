@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jayway.maven.plugins.android.generation2</groupId>
     <artifactId>maven-android-plugin</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0-alpha-4</version>
     <packaging>maven-plugin</packaging>
     <name>Maven Android Plugin - maven-android-plugin</name>
     <description>Maven Plugin for Android</description>
