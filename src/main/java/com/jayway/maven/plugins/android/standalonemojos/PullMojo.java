@@ -25,6 +25,7 @@ import com.android.ddmlib.SyncException;
 import com.android.ddmlib.SyncService;
 import com.android.ddmlib.TimeoutException;
 import com.jayway.maven.plugins.android.common.LogSyncProgressMonitor;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -53,6 +54,18 @@ public class PullMojo extends AbstractAndroidMojo {
      * directory the original file name will be used. Otherwise the new
      * filename will override the source one.
      *
+     * If the destination directory is missing it will be created.
+     * There is some ambiguity if the destination is missing as to
+     * whether it is a file or directory. The directory will be
+     * extracted using FilenameUtils.getFullPath() from the
+     * Commons IO library (see @see "http://commons.apache.org/io/apidocs/
+     * org/apache/commons/io/FilenameUtils.html#getFullPath
+     * (java.lang.String)"
+     * For example:
+     *  <code>/a/b/c</code> will test and create <code>/a/b/</code>
+     *  <code>/a/b/c.txt</code> will test and create <code>/a/b/</code>
+     *  <code>/a/b/c/</code> will test and create <code>/a/b/c/</code>
+     *
      * @parameter expression="${android.pull.destination}"
      * @required
      */
@@ -67,6 +80,15 @@ public class PullMojo extends AbstractAndroidMojo {
             destinationPath = destination.getAbsolutePath() + sourceFileName;
         } else {
             destinationPath = destination.getAbsolutePath();
+        }
+	    if (!destination.exists()) {
+		    String destPath = destination.getAbsolutePath();
+		    destPath = FilenameUtils.getFullPath(destPath);
+		    File destFile = new File(destPath);
+		    if (!destFile.exists()) {
+				getLog().info("Creating destination directory " + destFile);
+			    destFile.mkdirs();
+		    }
         }
 
         final String message = "Pull of " + source + " to " + destinationPath +
