@@ -63,13 +63,20 @@ public class DexMojo extends AbstractAndroidMojo {
      * @parameter default-value="false"
      */
     private boolean coreLibrary;
-    
+
     /**
      * Decides whether to pass the --no-locals flag to dx.
      *
      * @parameter default-value="false"
      */
     private boolean noLocals;
+
+    /**
+     * Decides whether to pass the --no-optimize flag to dx.
+     *
+     * @parameter default-value="true"
+     */
+    private boolean optimize;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -112,6 +119,9 @@ public class DexMojo extends AbstractAndroidMojo {
         commands.add("-jar");
         commands.add(getAndroidSdk().getPathForTool("dx.jar"));
         commands.add("--dex");
+        if (!optimize) {
+            commands.add("--no-optimize");
+        }
         if (coreLibrary) {
             commands.add("--core-library");
         }
