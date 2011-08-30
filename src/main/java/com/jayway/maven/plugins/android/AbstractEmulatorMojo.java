@@ -16,8 +16,16 @@
  */
 package com.jayway.maven.plugins.android;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
+
+import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.AndroidDebugBridge;
+import com.android.ddmlib.IDevice;
+import com.android.ddmlib.IShellOutputReceiver;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.TimeoutException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,6 +34,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -35,6 +44,7 @@ import java.util.Locale;
  * starting and stopping the emulator.
  *
  * @author Manfred Moser <manfred@simplgility.com>
+ * @author Bryan O'Neil
  * @see com.jayway.maven.plugins.android.Emulator
  * @see com.jayway.maven.plugins.android.standalonemojos.EmulatorStartMojo
  * @see com.jayway.maven.plugins.android.standalonemojos.EmulatorStopMojo
@@ -105,8 +115,6 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
     private static final String STOP_EMULATOR_MSG = "Stopping android emulator with pid: ";
     private static final String START_EMULATOR_MSG = "Starting android emulator with script: ";
     private static final String START_EMULATOR_WAIT_MSG = "Waiting for emulator start:";
-    private static final String NO_EMULATOR_RUNNING = "unknown";
-    private static final String NO_DEMON_RUNNING_MACOSX = "* daemon not running";
 
     /**
      * Folder that contains the startup script and the pid file.
@@ -156,42 +164,48 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
                 filename = writeEmulatorStartScriptUnix();
             }
 
-            String emulatorName = getRunningEmulatorName();
-            // normally only #NO_EMULATOR_RUNNING  is returned
-            // however when starting emulator within intellij on macosx with launchd configuration the first time
-            // #NO_DEMON_RUNNING_MACOSX is the start of the first line but needs to be treated the same
-            if (emulatorName.equals(NO_EMULATOR_RUNNING) || emulatorName.startsWith(NO_DEMON_RUNNING_MACOSX)) {
-                getLog().info(START_EMULATOR_MSG + filename);
-                executor.executeCommand(filename, null);
+        	final AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
+            if (androidDebugBridge.isConnected()) {
+                List<IDevice> devices = Arrays.asList(androidDebugBridge.getDevices());
+                int numberOfDevices = devices.size();
+                getLog().info("Found " + numberOfDevices + " devices connected with the Android Debug Bridge");
 
-                getLog().info(START_EMULATOR_WAIT_MSG + parsedWait);
-                // wait for the emulator to start up
-                Thread.sleep(new Long(parsedWait));
-            } else {
-                getLog().info("Emulator " + emulatorName + " already running. Skipping start and wait.");
+                IDevice existingEmulator = null;
+                
+            	for (IDevice device : devices) {
+                    if (isExistingEmulator(device)) {
+                    	existingEmulator = device;
+                    	break;
+                    }
+            	}
+
+                if (existingEmulator == null) {
+                    getLog().info(START_EMULATOR_MSG + filename);
+                    executor.executeCommand(filename, null);
+
+                    getLog().info(START_EMULATOR_WAIT_MSG + parsedWait);
+                    // wait for the emulator to start up
+                    Thread.sleep(new Long(parsedWait));
+                } else {
+                    getLog().info(String.format("Emulator already running [Serial No: '%s', AVD Name '%s']. Skipping start and wait.", 
+                    		existingEmulator.getSerialNumber(), existingEmulator.getAvdName()));
+                }
             }
-
         } catch (Exception e) {
             throw new MojoExecutionException("", e);
         }
     }
 
     /**
-     * Get the name of the running emulator.
+     * Checks whether the given device has the same AVD name as the device which the current command
+     * is related to. <code>true</code> returned if the device AVD names are identical (independent of case)
+     * and <code>false</code> if the device AVD names are different.
      *
-     * @return emulator name or "unknown" if none found running with adb tool.
-     * @throws MojoExecutionException
-     * @throws ExecutionException
-     * @see #NO_EMULATOR_RUNNING
+     * @param device The device to check
+     * @return Boolean results of the check
      */
-    private String getRunningEmulatorName() throws MojoExecutionException, ExecutionException {
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
-        List<String> commands = new ArrayList<String>();
-        commands.add("-e");
-        commands.add("get-serialno");
-        executor.executeCommand(getAndroidSdk().getAdbPath(), commands);
-        return executor.getStandardOut();
+    private boolean isExistingEmulator(IDevice device) {
+        return (device.getAvdName().equalsIgnoreCase(parsedAvd));
     }
 
     /**
@@ -291,7 +305,6 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      */
     protected void stopAndroidEmulator() throws MojoExecutionException {
         parseParameters();
-
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger(this.getLog());
 
@@ -326,7 +339,6 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
                 }
             }
         }
-
     }
 
     /**

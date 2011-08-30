@@ -493,7 +493,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * the init call in the library is also synchronized .. just in case.
      * @return
      */
-    private AndroidDebugBridge initAndroidDebugBridge() throws MojoExecutionException {
+    protected AndroidDebugBridge initAndroidDebugBridge() throws MojoExecutionException {
         synchronized (adbLock) {
             if (!adbInitialized) {
                 AndroidDebugBridge.init(false);
