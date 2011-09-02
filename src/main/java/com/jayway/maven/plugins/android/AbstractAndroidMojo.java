@@ -21,6 +21,7 @@ import com.android.ddmlib.IDevice;
 import com.android.ddmlib.InstallException;
 import com.jayway.maven.plugins.android.common.AetherHelper;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
+import com.jayway.maven.plugins.android.common.DeviceHelper;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.JXPathNotFoundException;
 import org.apache.commons.jxpath.xml.DocumentContainer;
@@ -541,8 +542,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
                     device.installPackage(apkFile.getAbsolutePath(), true);
                     getLog().info("Successfully installed "
                         + apkFile.getAbsolutePath() + " to "
-                        + device.getSerialNumber()  + " (avdName="
-                            + device.getAvdName() + ")");
+                        + DeviceHelper.getDescriptiveName(device));
                 } catch (InstallException e) {
                     throw new MojoExecutionException("Install of "
                         + apkFile.getAbsolutePath() + "failed.", e);
@@ -570,9 +570,19 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
                     getLog().info("android.device parameter set to " + device);
                     for (IDevice idevice : devices) {
                         // use specified device or all emulators or all devices
-                        if (("emulator".equals(device) && idevice.isEmulator())
-                                || ("usb".equals(device) && !idevice.isEmulator())
-                                || (idevice.getAvdName() != null && idevice.getAvdName().equals(device))) {
+                        if ("emulator".equals(device) && idevice.isEmulator()) {
+                            getLog().info("Emulator " + DeviceHelper.getDescriptiveName(idevice) + " found.");
+                            deviceCallback.doWithDevice(idevice);
+                        } else if ("usb".equals(device) && !idevice.isEmulator()) {
+                            getLog().info("Device " + DeviceHelper.getDescriptiveName(idevice) + " found.");
+                            deviceCallback.doWithDevice(idevice);
+                        } else if (idevice.isEmulator()
+                                && (idevice.getAvdName().equalsIgnoreCase(device)
+                                    || idevice.getSerialNumber().equalsIgnoreCase(device))) {
+                            getLog().info("Emulator " + DeviceHelper.getDescriptiveName(idevice) + " found.");
+                            deviceCallback.doWithDevice(idevice);
+                        } else if (!idevice.isEmulator() && idevice.getSerialNumber().equals(device)) {
+                            getLog().info("Device " + DeviceHelper.getDescriptiveName(idevice) + " found.");
                             deviceCallback.doWithDevice(idevice);
                         }
                     }
@@ -588,17 +598,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         } else {
             throw new MojoExecutionException("Android Debug Bridge is not connected.");
         }
-    }
-
-    /**
-     * Adds relevant parameter to the parameters list for chosen device.
-     *
-     * @param commands the parameters to be used with the {@code adb} command
-     * @param device the device to be used
-     */
-    protected void addDeviceParameter(List<String> commands, IDevice device) {
-        commands.add("-s");
-        commands.add(device.getSerialNumber());
     }
 
     /**
@@ -632,8 +631,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
                 try {
                     device.uninstallPackage(packageName);
                     getLog().info("Successfully uninstalled " + packageName +
-                        " from " + device.getSerialNumber() + " (avdName="
-                            + device.getAvdName() + ")");
+                        " from " + DeviceHelper.getDescriptiveName(device));
                     result.set(true);
                 } catch (InstallException e) {
                     result.set(false);
@@ -834,7 +832,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     private String getAndroidHomeOrThrow() throws MojoExecutionException {
         final String androidHome = System.getenv(ENV_ANDROID_HOME);
         if (isBlank(androidHome)) {
-            throw new MojoExecutionException("No Android SDK path could be found. You may configure it in the pom using <sdk><path>...</path></sdk> or <properties><android.sdk.path>...</android.sdk.path></properties> or on command-line using -Dandroid.sdk.path=... or by setting environment variable " + ENV_ANDROID_HOME);
+            throw new MojoExecutionException("No Android SDK path could be found. You may configure it in the " +
+                    "plugin configuration section in the pom file using <sdk><path>...</path></sdk> or " +
+                    "<properties><android.sdk.path>...</android.sdk.path></properties> or on command-line " +
+                    "using -Dandroid.sdk.path=... or by setting environment variable " + ENV_ANDROID_HOME);
         }
         return androidHome;
     }
