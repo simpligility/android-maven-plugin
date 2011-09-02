@@ -27,6 +27,7 @@ import com.android.ddmlib.testrunner.TestIdentifier;
 import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
 import com.jayway.maven.plugins.android.DeviceCallback;
 
+import com.jayway.maven.plugins.android.common.DeviceHelper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -133,9 +134,10 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
      * on.
      * <br /><br />
      * The files are stored in target/surefire-reports and named TEST-deviceid.xml.
-     * The deviceid for an emulator is deviceSerialNumber_avdName. The
-     * serial number is commonly emulator-5554 for the first emulator
-     * started with numbers increasing.
+     * The deviceid for an emulator is deviceSerialNumber_avdName_manufacturer_model.
+     * The serial number is commonly emulator-5554 for the first emulator started
+     * with numbers increasing. avdName is as defined in the SDK tool. The
+     * manufacturer is typically "unknown" and the model is typically "sdk".
      * The deviceid for an actual devices is
      * deviceSerialNumber_manufacturer_model.
      * <br /><br />
@@ -335,7 +337,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                     testSuiteAttributes.setNamedItem(nameAttr);
 
                     Attr hostnameAttr = junitReport.createAttribute(ATTR_TESTSUITE_HOSTNAME);
-                    hostnameAttr.setValue(getDeviceIdentifier());
+                    hostnameAttr.setValue(DeviceHelper.getDescriptiveName(device));
                     testSuiteAttributes.setNamedItem(hostnameAttr);
 
                     Node propertiesNode = junitReport.createElement(TAG_PROPERTIES);
@@ -564,7 +566,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                 String fileName = new StringBuilder()
                         .append(directory)
                         .append("/TEST-")
-                        .append(getDeviceIdentifier())
+                        .append(DeviceHelper.getDescriptiveName(device))
                         .append(".xml")
                         .toString();
                 File reportFile = new File(fileName);
@@ -629,34 +631,6 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
          */
         public String getExceptionMessages() {
             return exceptionMessages.toString();
-        }
-
-        /**
-         * Get a device identifier string. More documentation at the
-         * AbstractInstrumentationMojo#testCreateReport javadoc since
-         * that is the public documentation.
-         *
-x         * @return
-         */
-        private String getDeviceIdentifier() {
-            // if any of this logic changes update javadoc for
-            // AbstractInstrumentationMojo#testCreateReport
-            String SEPARATOR = "_";
-            StringBuilder identfier = new StringBuilder()
-                    .append(device.getSerialNumber());
-            if (device.getAvdName() != null) {
-                identfier.append(SEPARATOR).append(device.getAvdName());
-            } else {
-                String manufacturer = StringUtils.deleteWhitespace(device.getProperty("ro.product.manufacturer"));
-                if (StringUtils.isNotBlank(manufacturer)) {
-                    identfier.append(SEPARATOR).append(manufacturer);
-                }
-                String model = StringUtils.deleteWhitespace(device.getProperty("ro.product.model"));
-                if (StringUtils.isNotBlank(model)) {
-                    identfier.append(SEPARATOR).append(model);
-                }
-            }
-            return identfier.toString();
         }
     }
 }
