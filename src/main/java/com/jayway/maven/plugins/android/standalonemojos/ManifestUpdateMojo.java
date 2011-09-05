@@ -67,6 +67,7 @@ import com.jayway.maven.plugins.android.common.AndroidExtension;
  *
  *
  *
+ * @author joakim@erdfelt.com
  * @author nic.strong@gmail.com
  * @goal manifest-update
  * @requiresProject true
@@ -94,14 +95,22 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 	 */
 	protected Integer         versionCode;
 
+	/**
+	  * Auto increment the <code>android:versionCode</code> attribute with each build.
+	  *
+	  * @parameter expression="${android.versioncode.autoincrement}" default-value="false"
+	  */
+	 private boolean             versionCodeAutoIncrement = false;
 
 	/**
 	 * Update the <code>android:versionCode</code> attribute automatically from the project version
-	 * e.g 3.0.1 will become version code 301
+	 * e.g 3.0.1 will become version code 301. As described in this blog post
+	 * http://www.simpligility.com/2010/11/release-version-management-for-your-android-application/
+	 * but done without using resource filtering.
 	 *
 	 * @parameter expression="${android.versionCodeUpdateFromVersion} default-value="false"
 	 */
-	protected Boolean         versionCodeUpdateFromVersion;
+	protected Boolean         versionCodeUpdateFromVersion = false;
 
 	/**
 	 * Update the <code>android:sharedUserId</code> attribute with the specified parameter.
@@ -129,6 +138,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 		getLog().info("Attempting to update manifest " + androidManifestFile);
 		getLog().debug("    versionName=" + versionName);
 		getLog().debug("    versionCode=" + versionCode);
+		getLog().debug("    versionCodeAutoIncrement=" + versionCodeAutoIncrement);
 		getLog().debug("    versionCodeUpdateFromVersion=" + versionCodeUpdateFromVersion);
 		getLog().debug("    sharedUserId=" + sharedUserId);
 		getLog().debug("    debuggable=" + debuggable);
@@ -191,20 +201,36 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 
 		boolean dirty = false;
 
-		if (!StringUtils.isEmpty(versionName)) {
-			Attr versionNameAttrib = manifestElement.getAttributeNode(ATTR_VERSION_NAME);
-
-			if (versionNameAttrib == null || !StringUtils.equals(versionName, versionNameAttrib.getValue())) {
-				getLog().info("Setting " + ATTR_VERSION_NAME +" to " + versionName);
-				manifestElement.setAttribute(ATTR_VERSION_NAME, versionName);
-				dirty = true;
-			}
+		if (StringUtils.isEmpty(versionName)) {  // default to ${project.version}
+			versionName =  project.getVersion();
 		}
 
-		if (versionCodeUpdateFromVersion && versionCode != null) {
-			throw new MojoFailureException("versionCodeUpdateFromVersion and versionCode are mutual exclusive. They cannot be specified at the same time. " +
-			      "Please specify either versionCodeUpdateFromVersion or versionCode!");
+		Attr versionNameAttrib = manifestElement.getAttributeNode(ATTR_VERSION_NAME);
+
+		if (versionNameAttrib == null || !StringUtils.equals(versionName, versionNameAttrib.getValue())) {
+			getLog().info("Setting " + ATTR_VERSION_NAME +" to " + versionName);
+			manifestElement.setAttribute(ATTR_VERSION_NAME, versionName);
+			dirty = true;
 		}
+
+		if ((versionCodeAutoIncrement && versionCode != null) ||
+			(versionCodeUpdateFromVersion && versionCode != null) ||
+			(versionCodeAutoIncrement && versionCodeUpdateFromVersion)) {
+			throw new MojoFailureException("versionCodeAutoIncrement, versionCodeUpdateFromVersion and versionCode " +
+					"are mutual exclusive. They cannot be specified at the same time. " +
+					"Please specify either versionCodeAutoIncrement, versionCodeUpdateFromVersion or versionCode!");
+		}
+
+		if (versionCodeAutoIncrement) {
+            Attr versionCode = manifestElement.getAttributeNode(ATTR_VERSION_CODE);
+            int currentVersionCode = 0;
+            if (versionCode != null) {
+                currentVersionCode = NumberUtils.toInt(versionCode.getValue(), 0);
+            }
+            currentVersionCode++;
+            manifestElement.setAttribute(ATTR_VERSION_CODE, String.valueOf(currentVersionCode));
+            dirty = true;
+        }
 
 		if (versionCodeUpdateFromVersion) {
 			String verString = project.getVersion();
@@ -247,6 +273,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 			// Update all application nodes. Not sure whether there will ever be more than one.
 			for (int i = 0; i < appElems.getLength(); ++i) {
 				Node node = appElems.item(i);
+				getLog().info("Testing if node " + node.getNodeName() + " is application");
 				if (node.getNodeType() == Node.ELEMENT_NODE) {
 					Element element = (Element)node;
 					Attr debuggableAttrib = element.getAttributeNode(ATTR_DEBUGGABLE);

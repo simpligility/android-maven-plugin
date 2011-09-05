@@ -5,35 +5,26 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.jayway.maven.plugins.android.tests</groupId>
-  <artifactId>manyversions-android-project</artifactId>
-  <version>8.1-SNAPSHOT</version>
+  <artifactId>bad-android-project</artifactId>
+  <version>1.4.3</version>
   <packaging>apk</packaging>
-  <dependencies>
-    <dependency>
-      <groupId>com.google.android</groupId>
-      <artifactId>android</artifactId>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
   <build>
-    <sourceDirectory>src</sourceDirectory>
     <plugins>
       <plugin>
         <artifactId>maven-android-plugin</artifactId>
-        <extensions>true</extensions>
         <executions>
           <execution>
             <goals>
-              <goal>version-update</goal>
+              <goal>manifest-update</goal>
             </goals>
           </execution>
         </executions>
         <configuration>
-          <androidManifestFile>${basedir}/AndroidManifest.xml</androidManifestFile>
-          <versionNameUpdate>true</versionNameUpdate>
-          <versionCodeAutoIncrement>true</versionCodeAutoIncrement>
+            <androidManifestFile>${basedir}/AndroidManifest.xml</androidManifestFile>
+            <versionCode>123</versionCode>
+            <versionCodeAutoIncrement>true</versionCodeAutoIncrement>
         </configuration>
       </plugin>
     </plugins>
-  </build>
+  </build>  
 </project>
