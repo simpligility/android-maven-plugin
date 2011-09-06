@@ -205,8 +205,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             } );
 
             // slight limitation at this stage - we only handle a single .so artifact
-            if ( files == null || files.length > 1 ) {
-                getLog().warn( "Error while detecting native compile artifacts: " + ( files == null ? "None found" : "Found more than 1 artifact" ) );
+            if ( files == null || files.length != 1 ) {
+                getLog().warn( "Error while detecting native compile artifacts: " + ( files == null || files.length == 0 ? "None found" : "Found more than 1 artifact" ) );
                 if ( files != null ) {
                     getLog().warn( "Currently, only a single, final native library is supported by the build" );
                 }
