@@ -6,7 +6,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.jayway.maven.plugins.android.tests</groupId>
   <artifactId>basic-android-project</artifactId>
-  <version>42.1-SNAPSHOT</version>
+  <version>4.1.4-SNAPSHOT</version>
   <packaging>apk</packaging>
   <dependencies>
     <dependency>
@@ -25,12 +25,15 @@
         <executions>
           <execution>
             <goals>
-              <goal>version-update</goal>
+              <goal>manifest-update</goal>
             </goals>
           </execution>
         </executions>
         <configuration>
           <androidManifestFile>${basedir}/AndroidManifest.xml</androidManifestFile>
+            <sharedUserId>android.uid.phone</sharedUserId>
+            <debuggable>true</debuggable>
+            <versionCodeUpdateFromVersion>true</versionCodeUpdateFromVersion>
         </configuration>
       </plugin>
     </plugins>
