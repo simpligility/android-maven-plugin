@@ -2,6 +2,7 @@ package com.jayway.maven.plugins.android.standalonemojos;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojoTestCase;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -98,8 +99,10 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
 
     private void assertExpectedAndroidManifest(File manifestFile, File testdir) throws IOException {
         File expectFile = new File(testdir, "AndroidManifest-expected.xml");
-        String actual = FileUtils.readFileToString(manifestFile);
-        String expected = FileUtils.readFileToString(expectFile);
+        // different white space causes issues when between going Windows and *nix via git and wrongly configured
+        // autocrlf .. since we dont need to worry about whitespace.. we strip it out
+        String actual = StringUtils.deleteWhitespace(FileUtils.readFileToString(manifestFile));
+        String expected = StringUtils.deleteWhitespace(FileUtils.readFileToString(expectFile));
         Assert.assertEquals(expected, actual);
     }
 }
