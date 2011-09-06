@@ -26,7 +26,7 @@ import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.junit.Assert;
 
 import com.jayway.maven.plugins.android.standalonemojos.MojoProjectStub;
-import com.jayway.maven.plugins.android.standalonemojos.VersionUpdateMojo;
+import com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo;
 
 import static org.easymock.EasyMock.*;
 
@@ -43,7 +43,7 @@ public abstract class AbstractAndroidMojoTestCase<T extends AbstractAndroidMojo>
 
     /**
      * Copy the project specified into a temporary testing directory. Create the {@link MavenProject} and
-     * {@link VersionUpdateMojo}, configure it from the <code>plugin-config.xml</code> and return the created Mojo.
+     * {@link ManifestUpdateMojo}, configure it from the <code>plugin-config.xml</code> and return the created Mojo.
      * <p>
      * Note: only configuration entries supplied in the plugin-config.xml are presently configured in the mojo returned.
      * That means and 'default-value' settings are not automatically injected by this testing framework (or plexus
