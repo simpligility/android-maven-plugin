@@ -16,6 +16,7 @@
  */
 package com.jayway.maven.plugins.android;
 
+import com.jayway.maven.plugins.android.common.DeviceHelper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 
@@ -294,7 +295,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
                 writer.close();
             }
         }
-    file.setExecutable(true);
+        file.setExecutable(true);
         return filename;
     }
 
@@ -314,15 +315,19 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
             getLog().info("Found " + numberOfDevices + " devices connected with the Android Debug Bridge");
 
         	for (IDevice device : devices) {
-        		if (isExistingEmulator(device)) {
-        			stopEmulator(device);
-        		}
+        		if (device.isEmulator()) {
+                    if (isExistingEmulator(device)) {
+                        stopEmulator(device);
+                    }
+                } else {
+                    getLog().info("Skipping stop. Not an emulator. " + DeviceHelper.getDescriptiveName(device));
+                }
         	}
         }
     }
     
     /**
-     * Stop the running Android Emulator.
+     * Stop the running Android Emulators.
      *
      * @throws org.apache.maven.plugin.MojoExecutionException
      *
@@ -335,7 +340,11 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
             getLog().info("Found " + numberOfDevices + " devices connected with the Android Debug Bridge");
 
         	for (IDevice device : devices) {
-        		stopEmulator(device);
+        		if (device.isEmulator()) {
+                    stopEmulator(device);
+                } else {
+                    getLog().info("Skipping stop. Not an emulator. " + DeviceHelper.getDescriptiveName(device));
+                }
         	}
         }
     }
@@ -347,16 +356,16 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
     private void stopEmulator(IDevice device) {
         int devicePort = extractPortFromDevice(device);
         if (devicePort == -1) {
-            getLog().info(String.format("Unable to retrieve port to stop emulator [Serial No: '%s', AVD Name '%s']", device.getSerialNumber(), device.getAvdName()));
+            getLog().info("Unable to retrieve port to stop emulator " + DeviceHelper.getDescriptiveName(device));
         } else {
-            getLog().info(String.format("Stopping emulator [Serial No: '%s', AVD Name '%s', Port: '%d']", device.getSerialNumber(), device.getAvdName(), devicePort));
+            getLog().info("Stopping emulator " + DeviceHelper.getDescriptiveName(device));
 
             sendEmulatorCommand(devicePort, "avd stop");
             boolean killed = sendEmulatorCommand(devicePort, "kill");
             if (!killed) {
-                getLog().info(String.format("Emulator [Serial No: '%s', AVD Name '%s', Port: '%d'] failed to stop", device.getSerialNumber(), device.getAvdName(), devicePort));
+                getLog().info("Emulator failed to stop " + DeviceHelper.getDescriptiveName(device));
             } else {
-                getLog().info(String.format("Emulator [Serial No: '%s', AVD Name '%s', Port: '%d'] stopped successfully", device.getSerialNumber(), device.getAvdName(), devicePort));
+                getLog().info("Emulator stopped successfully " + DeviceHelper.getDescriptiveName(device));
             }                	
         }
     }
@@ -382,8 +391,6 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
     /**
      * Sends a user command to the running emulator via its telnet interface.
      *
-     * @param logger The build logger.
-     * @param launcher The launcher for the remote node.
      * @param port The emulator's telnet port.
      * @param command The command to execute on the emulator's telnet interface.
      * @return Whether sending the command succeeded.
