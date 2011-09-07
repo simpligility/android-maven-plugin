@@ -61,6 +61,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         SUPPORTED_PACKAGING_TYPES.add(AndroidExtension.APK);
     }
 
+    /** Android Debug Bridge initialisation timeout in milliseconds. */
+    private static final long ADB_TIMEOUT_MS = 60L * 1000;
+
     /**
      * The maven project.
      *
@@ -527,6 +530,32 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     }
 
     /**
+     * Wait for the Android Debug Bridge to return an initial device list.
+     * @param androidDebugBridge
+     * @throws MojoExecutionException
+     */
+	protected void waitForInitialDeviceList(
+			final AndroidDebugBridge androidDebugBridge)
+			throws MojoExecutionException {
+		if (!androidDebugBridge.hasInitialDeviceList()) {
+		    getLog().info("Waiting for initial device list from the Android Debug Bridge");
+		    long limitTime = System.currentTimeMillis() + ADB_TIMEOUT_MS;
+		    while (!androidDebugBridge.hasInitialDeviceList()
+		           && (System.currentTimeMillis() < limitTime)) {
+		        try {
+		            Thread.sleep(1000);
+		        } catch (InterruptedException e) {
+		            throw new MojoExecutionException(
+		                "Interrupted waiting for initial device list from Android Debug Bridge");
+		        }
+		    }
+		    if (!androidDebugBridge.hasInitialDeviceList()) {
+		        getLog().error("Did not receive initial device list from the Android Debug Bridge.");
+		    }
+		}
+	}
+
+    /**
      * Deploys an apk file to a connected emulator or usb device.
      *
      * @param apkFile the file to deploy
@@ -562,6 +591,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         final AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
 
         if (androidDebugBridge.isConnected()) {
+            waitForInitialDeviceList(androidDebugBridge);
             List<IDevice> devices = Arrays.asList(androidDebugBridge.getDevices());
             int numberOfDevices = devices.size();
             getLog().info("Found " + numberOfDevices + " devices connected with the Android Debug Bridge");
