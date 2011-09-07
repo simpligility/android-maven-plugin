@@ -122,10 +122,6 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      * Folder that contains the startup script and the pid file.
      */
     private static final String scriptFolder = System.getProperty("java.io.tmpdir");
-    /**
-     * file name for the pid file.
-     */
-    private static final String pidFileName = scriptFolder + System.getProperty("file.separator") + "maven-android-plugin-emulator.pid";
 
     /**
      * Are we running on a flavour of Windows.
@@ -213,13 +209,11 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
     }
 
     /**
-     * Writes the script to start the emulator in the background for windows based environments. This is not fully
-     * operational. Need to implement pid file write.
+     * Writes the script to start the emulator in the background for windows based environments.
      *
      * @return absolute path name of start script
      * @throws IOException
      * @throws MojoExecutionException
-     * @see "http://stackoverflow.com/questions/2328776/how-do-i-write-a-pidfile-in-a-windows-batch-file"
      */
     private String writeEmulatorStartScriptWindows() throws MojoExecutionException {
 
@@ -244,10 +238,6 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
 			String cmd = cmdPath + " /X /C START /SEPARATE \"\""
 				+ uniqueWindowTitle + "\"\"  " + command.trim();
 			writer.println("oShell.run \"" + cmd + "\"");
-			writer.println("wscript.sleep 1000");
-			String cmd1 = cmdPath + " /X /C @ECHO OFF & FOR /F \"\"tokens=2\"\" %I in ('%WINDIR%\\SYSTEM32\\TASKLIST.EXE /NH /FI \"\"WINDOWTITLE eq "
-				+ uniqueWindowTitle + "\"\"') DO ECHO %I> " + pidFileName;
-			writer.println("oShell.run \"" + cmd1 + "\"");
         } catch (IOException e) {
             getLog().error("Failure writing file " + filename);
         } finally {
