@@ -261,8 +261,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
     }
 
     /**
-     * Writes the script to start the emulator in the background for unix based environments and write process id into
-     * pidfile.
+     * Writes the script to start the emulator in the background for unix based environments.
      *
      * @return absolute path name of start script
      * @throws IOException
@@ -287,8 +286,6 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
             writer.println("#!" + sh.getAbsolutePath());
             writer.print(assembleStartCommandLine());
             writer.print(" 1>/dev/null 2>&1 &"); // redirect outputs and run as background task
-            writer.println();
-            writer.println("echo $! > " + pidFileName); // process id from stdout into pid file
         } catch (IOException e) {
             getLog().error("Failure writing file " + filename);
         } finally {
