@@ -175,9 +175,11 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
                 IDevice existingEmulator = null;
 
             	for (IDevice device : devices) {
-                    if (isExistingEmulator(device)) {
-                    	existingEmulator = device;
-                    	break;
+                    if (device.isEmulator()) {
+                        if (isExistingEmulator(device)) {
+                            existingEmulator = device;
+                            break;
+                        }
                     }
             	}
 
