@@ -19,15 +19,24 @@ package com.jayway.maven.plugins.android;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import com.android.ddmlib.AndroidDebugBridge;
+import com.android.ddmlib.IDevice;
+
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.net.Socket;
 import java.util.List;
 import java.util.Locale;
+import java.util.Arrays;
 
 
 /**
@@ -35,9 +44,12 @@ import java.util.Locale;
  * starting and stopping the emulator.
  *
  * @author Manfred Moser <manfred@simplgility.com>
+ * @author Bryan O'Neil <bryan.oneil@hotmail.com>
  * @see com.jayway.maven.plugins.android.Emulator
  * @see com.jayway.maven.plugins.android.standalonemojos.EmulatorStartMojo
  * @see com.jayway.maven.plugins.android.standalonemojos.EmulatorStopMojo
+ * @see com.jayway.maven.plugins.android.standalonemojos.EmulatorStopAllMojo
+ * 
  */
 public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
 
@@ -102,11 +114,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      */
     private String parsedWait;
 
-    private static final String STOP_EMULATOR_MSG = "Stopping android emulator with pid: ";
     private static final String START_EMULATOR_MSG = "Starting android emulator with script: ";
     private static final String START_EMULATOR_WAIT_MSG = "Waiting for emulator start:";
-    private static final String NO_EMULATOR_RUNNING = "unknown";
-    private static final String NO_DEMON_RUNNING_MACOSX = "* daemon not running";
 
     /**
      * Folder that contains the startup script and the pid file.
@@ -156,42 +165,48 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
                 filename = writeEmulatorStartScriptUnix();
             }
 
-            String emulatorName = getRunningEmulatorName();
-            // normally only #NO_EMULATOR_RUNNING  is returned
-            // however when starting emulator within intellij on macosx with launchd configuration the first time
-            // #NO_DEMON_RUNNING_MACOSX is the start of the first line but needs to be treated the same
-            if (emulatorName.equals(NO_EMULATOR_RUNNING) || emulatorName.startsWith(NO_DEMON_RUNNING_MACOSX)) {
-                getLog().info(START_EMULATOR_MSG + filename);
-                executor.executeCommand(filename, null);
+        	final AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
+            if (androidDebugBridge.isConnected()) {
+                List<IDevice> devices = Arrays.asList(androidDebugBridge.getDevices());
+                int numberOfDevices = devices.size();
+                getLog().info("Found " + numberOfDevices + " devices connected with the Android Debug Bridge");
 
-                getLog().info(START_EMULATOR_WAIT_MSG + parsedWait);
-                // wait for the emulator to start up
-                Thread.sleep(new Long(parsedWait));
-            } else {
-                getLog().info("Emulator " + emulatorName + " already running. Skipping start and wait.");
+                IDevice existingEmulator = null;
+
+            	for (IDevice device : devices) {
+                    if (isExistingEmulator(device)) {
+                    	existingEmulator = device;
+                    	break;
+                    }
+            	}
+
+                if (existingEmulator == null) {
+                    getLog().info(START_EMULATOR_MSG + filename);
+                    executor.executeCommand(filename, null);
+
+                    getLog().info(START_EMULATOR_WAIT_MSG + parsedWait);
+                    // wait for the emulator to start up
+                    Thread.sleep(new Long(parsedWait));
+                } else {
+                    getLog().info(String.format("Emulator already running [Serial No: '%s', AVD Name '%s']. Skipping start and wait.",
+                    existingEmulator.getSerialNumber(), existingEmulator.getAvdName()));
+                }
             }
-
         } catch (Exception e) {
             throw new MojoExecutionException("", e);
         }
     }
 
     /**
-     * Get the name of the running emulator.
+     * Checks whether the given device has the same AVD name as the device which the current command
+     * is related to. <code>true</code> returned if the device AVD names are identical (independent of case)
+     * and <code>false</code> if the device AVD names are different.
      *
-     * @return emulator name or "unknown" if none found running with adb tool.
-     * @throws MojoExecutionException
-     * @throws ExecutionException
-     * @see #NO_EMULATOR_RUNNING
+     * @param device The device to check
+     * @return Boolean results of the check
      */
-    private String getRunningEmulatorName() throws MojoExecutionException, ExecutionException {
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
-        List<String> commands = new ArrayList<String>();
-        commands.add("-e");
-        commands.add("get-serialno");
-        executor.executeCommand(getAndroidSdk().getAdbPath(), commands);
-        return executor.getStandardOut();
+    private boolean isExistingEmulator(IDevice device) {
+        return (device.getAvdName().equalsIgnoreCase(parsedAvd));
     }
 
     /**
@@ -292,75 +307,134 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
     protected void stopAndroidEmulator() throws MojoExecutionException {
         parseParameters();
 
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
+    	final AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
+        if (androidDebugBridge.isConnected()) {
+            List<IDevice> devices = Arrays.asList(androidDebugBridge.getDevices());
+            int numberOfDevices = devices.size();
+            getLog().info("Found " + numberOfDevices + " devices connected with the Android Debug Bridge");
 
-        FileReader fileReader = null;
-        BufferedReader bufferedReader = null;
-        try {
-            fileReader = new FileReader(pidFileName);
-            bufferedReader = new BufferedReader(fileReader);
-            String pid;
-            pid = bufferedReader.readLine(); // just read the first line, don't worry about anything else
-            if (isWindows()) {
-                stopEmulatorWindows(executor, pid);
+        	for (IDevice device : devices) {
+        		if (isExistingEmulator(device)) {
+        			stopEmulator(device);
+        		}
+        	}
+        }
+    }
+    
+    /**
+     * Stop the running Android Emulator.
+     *
+     * @throws org.apache.maven.plugin.MojoExecutionException
+     *
+     */
+    protected void stopAndroidEmulators() throws MojoExecutionException {
+    	final AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
+        if (androidDebugBridge.isConnected()) {
+            List<IDevice> devices = Arrays.asList(androidDebugBridge.getDevices());
+            int numberOfDevices = devices.size();
+            getLog().info("Found " + numberOfDevices + " devices connected with the Android Debug Bridge");
+
+        	for (IDevice device : devices) {
+        		stopEmulator(device);
+        	}
+        }
+    }
+
+    /**
+     * This method contains the code required to stop an emulator
+     * @param device The device to stop
+     */
+    private void stopEmulator(IDevice device) {
+        int devicePort = extractPortFromDevice(device);
+        if (devicePort == -1) {
+            getLog().info(String.format("Unable to retrieve port to stop emulator [Serial No: '%s', AVD Name '%s']", device.getSerialNumber(), device.getAvdName()));
+        } else {
+            getLog().info(String.format("Stopping emulator [Serial No: '%s', AVD Name '%s', Port: '%d']", device.getSerialNumber(), device.getAvdName(), devicePort));
+
+            sendEmulatorCommand(devicePort, "avd stop");
+            boolean killed = sendEmulatorCommand(devicePort, "kill");
+            if (!killed) {
+                getLog().info(String.format("Emulator [Serial No: '%s', AVD Name '%s', Port: '%d'] failed to stop", device.getSerialNumber(), device.getAvdName(), devicePort));
             } else {
-                stopEmulatorUnix(executor, pid);
-            }
-        } catch (Exception e) {
-            throw new MojoExecutionException("", e);
-        } finally {
-            if (bufferedReader != null) {
+                getLog().info(String.format("Emulator [Serial No: '%s', AVD Name '%s', Port: '%d'] stopped successfully", device.getSerialNumber(), device.getAvdName(), devicePort));
+            }                	
+        }
+    }
+    
+    /**
+     * This method extracts a port number from the serial number of a device.
+     * It assumes that the device name is of format [xxxx-nnnn] where nnnn is the
+     * port number.
+     *
+     * @param device The device to extract the port number from.
+     * @return Returns the port number of the device
+     */
+    private int extractPortFromDevice(IDevice device) {
+    	String portStr = StringUtils.substringAfterLast(device.getSerialNumber(), "-");
+    	if (StringUtils.isNotBlank(portStr) && StringUtils.isNumeric(portStr)) {
+    		return Integer.parseInt(portStr);
+    	}
+    
+    	//If the port is not available then return -1
+    	return -1;
+    }
+    
+    /**
+     * Sends a user command to the running emulator via its telnet interface.
+     *
+     * @param logger The build logger.
+     * @param launcher The launcher for the remote node.
+     * @param port The emulator's telnet port.
+     * @param command The command to execute on the emulator's telnet interface.
+     * @return Whether sending the command succeeded.
+     */
+    private boolean sendEmulatorCommand(
+    		//final Launcher launcher, 
+    		//final PrintStream logger,
+            final int port, final String command) {
+        Callable<Boolean> task = new Callable<Boolean>() {
+            public Boolean call() throws IOException {
+                Socket socket = null;
+                BufferedReader in = null;
+                PrintWriter out = null;
                 try {
-                    bufferedReader.close();
-                } catch (IOException e) {
-                    getLog().error("Failure closing reader");
-                }
-            }
-            if (fileReader != null) {
+                    socket = new Socket("127.0.0.1", port);
+                    out = new PrintWriter(socket.getOutputStream(), true);
+                    in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    if (in.readLine() == null) {
+                        return false;
+                    }
 
-                try {
-                    fileReader.close();
-                } catch (IOException e) {
-                    getLog().error("Failure closing reader");
+                    out.write(command);
+                    out.write("\r\n");
+                } finally {
+                    try {
+                        out.close();
+                        in.close();
+                        socket.close();
+                    } catch (Exception e) {
+                        // Do nothing
+                    }
                 }
+
+                return true;
             }
+
+            private static final long serialVersionUID = 1L;
+        };
+
+        boolean result = false;
+        try {
+        	ExecutorService executor = Executors.newSingleThreadExecutor();
+        	Future<Boolean> future = executor.submit(task);
+        	result = future.get();
+        } catch (Exception e) {
+        	getLog().error(String.format("Failed to execute emulator command '%s': %s", command, e));
         }
 
+        return result;
     }
-
-    /**
-     * Stop the emulator by using the taskkill command.
-     *
-     * @param executor
-     * @param pid
-     * @throws ExecutionException
-     */
-    private void stopEmulatorWindows(CommandExecutor executor, String pid) throws ExecutionException {
-        String stopCommand = "%WINDIR%\\SYSTEM32\\TASKKILL"; // this assumes that the command is on the path
-        List<String> commands = new ArrayList<String>();
-        // separate the commands as per the command line interface
-        commands.add("/PID");
-        commands.add(pid);
-        getLog().info(STOP_EMULATOR_MSG + pid);
-        executor.executeCommand(stopCommand, commands);
-    }
-
-    /**
-     * Stop the emulator under Unix by using the kill command.
-     *
-     * @param executor
-     * @param pid
-     * @throws ExecutionException
-     */
-    private void stopEmulatorUnix(CommandExecutor executor, String pid) throws ExecutionException {
-        String stopCommand = "kill";
-        List<String> commands = new ArrayList<String>();
-        commands.add(pid);
-        getLog().info(STOP_EMULATOR_MSG + pid);
-        executor.executeCommand(stopCommand, commands);
-    }
-
+    
     /**
      * Assemble the command line for starting the emulator based on the parameters supplied in the pom file and on the
      * command line. It should not be that painful to do work with command line and pom supplied values but evidently
