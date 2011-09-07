@@ -354,7 +354,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * expression="${android.attachSources}"
      */
     protected boolean attachSources;
-    
+
     /**
      * <p>Whether to execute tests only in given packages</p>
      * <pre>
@@ -362,11 +362,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      *     &lt;testPackage&gt;your.package.name&lt;/testPackage&gt;
      * &lt;/testPackages&gt;
      * </pre>
-     * 
+     *
      * @parameter
      */
     protected List testPackages;
-    
+
     /**
      * <p>Whether to execute test classes which are specified.</p>
      * <pre>
@@ -374,7 +374,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      *     &lt;testClass&gt;your.package.name.YourTestClass&lt;/testClass&gt;
      * &lt;/testClasses&gt;
      * </pre>
-     * 
+     *
      * @parameter
      */
     protected List testClasses;
@@ -389,7 +389,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
 	protected String buildTestClassesString() {
     	return buildCommaSeperatedString(testClasses);
     }
-    
+
     /**
      * @return Given test packages as a comma separated string
      */
@@ -397,11 +397,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected String buildTestPackagesString() {
     	return buildCommaSeperatedString(testPackages);
     }
-    
+
     /**
      * Helper method to build a comma separated string from a list.
      * Blank strings are filtered out
-     * 
+     *
      * @param lines A list of strings
      * @return Comma separated String from given list
      */
@@ -409,14 +409,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     	if(lines == null || lines.size() == 0) {
     		return null;
     	}
-    	
+
     	List<String> strings = new ArrayList<String>(lines.size());
     	for(String str : lines) { // filter out blank strings
     		if(StringUtils.isNotBlank(str)) {
     			strings.add(StringUtils.trimToEmpty(str));
-    		}	
+    		}
     	}
-    	
+
     	return StringUtils.join(strings, ",");
     }
 
@@ -494,7 +494,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * the init call in the library is also synchronized .. just in case.
      * @return
      */
-    private AndroidDebugBridge initAndroidDebugBridge() throws MojoExecutionException {
+    protected AndroidDebugBridge initAndroidDebugBridge() throws MojoExecutionException {
         synchronized (adbLock) {
             if (!adbInitialized) {
                 AndroidDebugBridge.init(false);
@@ -839,7 +839,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         }
         return androidHome;
     }
-    
+
     protected String getLibraryUnpackDirectory(Artifact apkLibraryArtifact) {
     	return unpackedApkLibsDirectory.getAbsolutePath() + "/" + apkLibraryArtifact.getId().replace(":", "_");
     }
