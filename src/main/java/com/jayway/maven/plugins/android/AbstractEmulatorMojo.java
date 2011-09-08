@@ -164,6 +164,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
 
         	final AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
             if (androidDebugBridge.isConnected()) {
+                waitForInitialDeviceList(androidDebugBridge);
                 List<IDevice> devices = Arrays.asList(androidDebugBridge.getDevices());
                 int numberOfDevices = devices.size();
                 getLog().info("Found " + numberOfDevices + " devices connected with the Android Debug Bridge");
