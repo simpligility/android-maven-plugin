@@ -19,7 +19,7 @@
     <sourceDirectory>src</sourceDirectory>
     <plugins>
       <plugin>
-        <artifactId>maven-android-plugin</artifactId>
+        <artifactId>android-maven-plugin</artifactId>
         <extensions>true</extensions>
         <executions>
           <execution>
