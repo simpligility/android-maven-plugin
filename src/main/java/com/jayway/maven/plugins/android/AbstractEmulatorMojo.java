@@ -218,7 +218,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      */
     private String writeEmulatorStartScriptWindows() throws MojoExecutionException {
 
-        String filename = scriptFolder + "\\maven-android-plugin-emulator-start.vbs";
+        String filename = scriptFolder + "\\android-maven-plugin-emulator-start.vbs";
 
         File file = new File(filename);
         PrintWriter writer = null;
@@ -229,7 +229,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
             // command needs to be assembled before unique window title since it parses settings and sets up parsedAvd
             // and others.
             String command = assembleStartCommandLine();
-            String uniqueWindowTitle = "MavenAndroidPlugin-AVD" + parsedAvd;
+            String uniqueWindowTitle = "AndroidMavenPlugin-AVD" + parsedAvd;
 			writer.println("Dim oShell");
 			writer.println("Set oShell = WScript.CreateObject(\"WScript.shell\")");
 			String cmdPath = System.getenv("COMSPEC");
@@ -259,7 +259,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      * @throws MojoExecutionException
      */
     private String writeEmulatorStartScriptUnix() throws MojoExecutionException {
-        String filename = scriptFolder + "/maven-android-plugin-emulator-start.sh";
+        String filename = scriptFolder + "/android-maven-plugin-emulator-start.sh";
 
         File sh;
         sh = new File("/bin/bash");

@@ -11,7 +11,7 @@
   <build>
     <plugins>
       <plugin>
-        <artifactId>maven-android-plugin</artifactId>
+        <artifactId>android-maven-plugin</artifactId>
         <executions>
           <execution>
             <goals>
