@@ -34,6 +34,7 @@ import com.android.ddmlib.TimeoutException;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.DeviceCallback;
 
+import com.jayway.maven.plugins.android.configuration.Run;
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -43,12 +44,10 @@ import org.xml.sax.SAXException;
 
 /**
  * Runs the first Activity shown in the top-level launcher as determined by its Intent filters.
- * 
  * <p>
  * Android provides a component-based architecture, which means that there is no "main" function which serves as an
  * entry point to the APK. There's an homogeneous collection of Activity(es), Service(s), Receiver(s), etc.
  * </p>
- * 
  * <p>
  * The Android top-level launcher (whose purpose is to allow users to launch other applications) uses the Intent
  * resolution mechanism to determine which Activity(es) to show to the end user. Such activities are identified by at
@@ -58,9 +57,7 @@ import org.xml.sax.SAXException;
  * <li>Category: <code>android.intent.category.LAUNCHER</code></li>
  * </ul>
  * </p>
- * <p>
- * And are declared in <code>AndroidManifest.xml</code> as such:
- * </p>
+ * <p>And are declared in <code>AndroidManifest.xml</code> as such:</p>
  * <pre>
  * &lt;activity android:name=".ExampleActivity"&gt;
  *     &lt;intent-filter&gt;
@@ -85,20 +82,38 @@ import org.xml.sax.SAXException;
  * 
  * @goal run
  */
-public class RunMojo
-    extends AbstractAndroidMojo
-{
-    // ----------------------------------------------------------------------
-    // Mojo types
-    // ----------------------------------------------------------------------
-	
+public class RunMojo extends AbstractAndroidMojo {
+
+    /**
+     * <p>The Run configuration to use can be configured in the plugin configuration in the pom file as:</p>
+     * <pre>
+     * &lt;run&gt;
+     *     &lt;debug&gt;true&lt;/debug&gt;
+     * &lt;/run&gt;
+     * </pre>
+     * <p>The <code>&lt;debug&gt;</code> parameter is optional and defaults to false.
+     * <p>The debug parameter can also be configured as property in the pom or settings file
+     * <pre>
+     * &lt;properties&gt;
+     *     &lt;run.debug&gt;true&lt;/run.debug&gt;
+     * &lt;/properties&gt;
+     * </pre>
+     * or from command-line with parameter <code>-Dandroid.ndk.path</code>.</p>
+     *
+     * @parameter
+     */
+    private Run run;
+
     /**
      * If true, the device or emulator will pause execution of the process at
      * startup to wait for a debugger to connect.
      * 
-     * @parameter expression="${android.debugRun}" default-value="false"
+     * @parameter expression="${android.run.debug}" default-value="false"
      */
-    protected boolean debugRun;
+    protected boolean debug;
+
+    /* the value for the debug flag after parsing pom and parameter */
+    private boolean parsedDebug;
 
     /**
      * Thrown when no "Launcher activities" could be found inside <code>AndroidManifest.xml</code>
@@ -148,12 +163,23 @@ public class RunMojo
 
             launcherInfo = getLauncherActivity();
 
+            parseConfiguration();
+
             launch( launcherInfo );
         }
         catch ( Exception ex )
         {
             throw new MojoFailureException( "Unable to run launcher Activity", ex );
         }
+    }
+
+    private void parseConfiguration() {
+        if (run != null) {
+            parsedDebug = run.isDebug();
+        } else {
+            parsedDebug = debug;
+        }
+
     }
 
     // ----------------------------------------------------------------------
@@ -247,7 +273,7 @@ public class RunMojo
     {
         final String command;
 
-        command = String.format( "am start %s-n %s/%s", debugRun ? "-D " : "", info.packageName, info.activity );
+        command = String.format( "am start %s-n %s/%s", parsedDebug ? "-D " : "", info.packageName, info.activity );
 
         doWithDevices( new DeviceCallback()
         {
