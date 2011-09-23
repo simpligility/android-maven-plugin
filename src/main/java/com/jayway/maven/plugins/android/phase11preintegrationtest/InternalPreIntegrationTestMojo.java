@@ -16,7 +16,7 @@
  */
 package com.jayway.maven.plugins.android.phase11preintegrationtest;
 
-import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
+import com.jayway.maven.plugins.android.AbstractInstrumentationMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -29,7 +29,7 @@ import org.apache.maven.plugin.MojoFailureException;
  * @goal internal-pre-integration-test
  * @phase pre-integration-test
  */
-public class InternalPreIntegrationTestMojo extends AbstractIntegrationtestMojo {
+public class InternalPreIntegrationTestMojo extends AbstractInstrumentationMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (isEnableIntegrationTest()) {

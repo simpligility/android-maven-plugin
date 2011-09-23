@@ -16,7 +16,7 @@
  */
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -31,7 +31,7 @@ import org.apache.maven.plugin.MojoFailureException;
  * @goal deploy-dependencies
  * @requiresDependencyResolution runtime
  */
-public class DeployDependenciesMojo extends AbstractIntegrationtestMojo {
+public class DeployDependenciesMojo extends AbstractAndroidMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         deployDependencies();
