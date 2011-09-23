@@ -45,6 +45,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
@@ -517,6 +518,38 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
             }
         });
     }
+
+    protected void deployDependencies() throws MojoExecutionException, MojoFailureException {
+        Set<Artifact> directDependentArtifacts = project.getDependencyArtifacts();
+        if (directDependentArtifacts != null) {
+            for (Artifact artifact : directDependentArtifacts) {
+                String type = artifact.getType();
+                if (type.equals(APK)) {
+                    getLog().debug("Detected apk dependency " + artifact + ". Will resolve and deploy to device...");
+                    final File targetApkFile = resolveArtifactToFile(artifact);
+                    if (undeployBeforeDeploy) {
+                        getLog().debug("Attempting undeploy of " + targetApkFile + " from device...");
+                        undeployApk(targetApkFile);
+                    }
+                    getLog().debug("Deploying " + targetApkFile + " to device...");
+                    deployApk(targetApkFile);
+                }
+            }
+        }
+    }
+
+    protected void deployBuiltApk() throws MojoExecutionException, MojoFailureException {
+        // If we're not on a supported packaging with just skip (Issue 112)
+        // http://code.google.com/p/maven-android-plugin/issues/detail?id=112
+        if (! SUPPORTED_PACKAGING_TYPES.contains(project.getPackaging())) {
+            getLog().info("Skipping deployment on " + project.getPackaging());
+            return;
+        }
+        File apkFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName()
+                + "." + APK);
+        deployApk(apkFile);
+    }
+
 
     /**
      * Determines which {@link IDevice}(s) to use, and performs the callback action on it/them.

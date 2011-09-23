@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jayway.maven.plugins.android.standalonemojos;
+package com.jayway.maven.plugins.android;
 
 import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.IDevice;
@@ -24,9 +24,8 @@ import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.RemoteAndroidTestRunner;
 import com.android.ddmlib.testrunner.TestIdentifier;
-import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
-import com.jayway.maven.plugins.android.DeviceCallback;
 
+import com.jayway.maven.plugins.android.asm.AndroidTestFinder;
 import com.jayway.maven.plugins.android.common.DeviceHelper;
 import com.jayway.maven.plugins.android.configuration.Test;
 import org.apache.commons.io.FileUtils;
@@ -73,7 +72,32 @@ import static com.android.ddmlib.testrunner.ITestRunListener.TestFailure.ERROR;
  * @author hugo.josefson@jayway.com
  * @author Manfred Moser <manfred@simpligility.com>
  */
-public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtestMojo {
+public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
+
+    /**
+     * -Dmaven.test.skip is commonly used with Maven to skip tests. We honor it too.
+     *
+     * @parameter expression="${maven.test.skip}" default-value=false
+     * @readonly
+     */
+    private boolean mavenTestSkip;
+
+    /**
+     * -DskipTests is commonly used with Maven to skip tests. We honor it too.
+     *
+     * @parameter expression="${skipTests}" default-value=false
+     * @readonly
+     */
+    private boolean mavenSkipTests;
+
+    /**
+     * Enables or disables integration test related goals. If <code>true</code> they will be run; if <code>false</code>,
+     * they will be skipped. If <code>auto</code>, they will run if any of the classes inherit from any class in
+     * <code>junit.framework.**</code> or <code>android.test.**</code>.
+     *
+     * @parameter expression="${android.enableIntegrationTest}" default-value="auto"
+     */
+    private String enableIntegrationTest;
 
     /**
      * @parameter
@@ -309,6 +333,40 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             parsedLogOnly = logOnly;
             parsedCreateReport = createReport;
         }
+    }
+
+    /**
+     * Whether or not to execute integration test related goals. Reads from configuration parameter
+     * <code>enableIntegrationTest</code>, but can be overridden with <code>-Dmaven.test.skip</code>.
+     *
+     * @return <code>true</code> if integration test goals should be executed, <code>false</code> otherwise.
+     */
+    protected boolean isEnableIntegrationTest() throws MojoFailureException, MojoExecutionException {
+        if (mavenTestSkip) {
+            return false;
+        }
+
+        if (mavenSkipTests) {
+            return false;
+        }
+
+        if ("false".equalsIgnoreCase(enableIntegrationTest)) {
+            return false;
+        }
+
+        if ("true".equalsIgnoreCase(enableIntegrationTest)) {
+            return true;
+        }
+
+        if ("auto".equalsIgnoreCase(enableIntegrationTest)) {
+            if (extractInstrumentationRunnerFromAndroidManifest(androidManifestFile) == null) {
+                return false;
+            }
+            return AndroidTestFinder.containsAndroidTests(new File(project.getBuild().getDirectory(), "android-classes"));
+        }
+
+        throw new MojoFailureException("enableIntegrationTest must be configured as 'true', 'false' or 'auto'.");
+
     }
 
     /**

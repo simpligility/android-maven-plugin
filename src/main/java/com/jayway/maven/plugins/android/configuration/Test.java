@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Configuration for the integration test runs. This class is only the definition of the parameters that are
  * shadowed in
- * {@link com.jayway.maven.plugins.android.standalonemojos.AbstractInstrumentationMojo} and used there.
+ * {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo} and used there.
  *
  * @author Manfred Moser <manfred@simpligility.com>
  */

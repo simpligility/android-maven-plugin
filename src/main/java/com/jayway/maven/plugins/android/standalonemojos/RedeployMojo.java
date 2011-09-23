@@ -17,7 +17,7 @@
  */
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -31,7 +31,7 @@ import java.io.File;
  * @requiresProject false
  * @requiresDependencyResolution runtime
  */
-public class RedeployMojo extends AbstractIntegrationtestMojo {
+public class RedeployMojo extends AbstractAndroidMojo {
 
     /**
      * Optionally used to specify a different apk file to deploy to a connected emulator or usb device, instead of the
