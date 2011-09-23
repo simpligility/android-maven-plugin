@@ -28,6 +28,7 @@ import com.jayway.maven.plugins.android.AbstractIntegrationtestMojo;
 import com.jayway.maven.plugins.android.DeviceCallback;
 
 import com.jayway.maven.plugins.android.common.DeviceHelper;
+import com.jayway.maven.plugins.android.configuration.Test;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -52,8 +53,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Attr;
@@ -72,6 +74,11 @@ import static com.android.ddmlib.testrunner.ITestRunListener.TestFailure.ERROR;
  * @author Manfred Moser <manfred@simpligility.com>
  */
 public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtestMojo {
+
+    /**
+     * @parameter
+     */
+    private Test test;
     /**
      * Package name of the apk we wish to instrument. If not specified, it is inferred from
      * <code>AndroidManifest.xml</code>.
@@ -96,7 +103,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
      * @optional
      * @parameter default-value=false expression="${android.test.debug}"
      */
-    private boolean testDebug;
+    private boolean debug;
 
 
     /**
@@ -106,7 +113,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
      * @optional
      * @parameter default-value=false expression="${android.test.coverage}"
      */
-    private boolean testCoverage;
+    private boolean coverage;
 
     /**
      * Enable this flag to run a log only and not execute the tests.
@@ -114,7 +121,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
      * @optional
      * @parameter default-value=false expression="${android.test.logonly}"
      */
-    private boolean testLogOnly;
+    private boolean logOnly;
 
     /**
      * If specified only execute tests of certain size as defined by
@@ -153,67 +160,103 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
      * @optional
      * @parameter default-value=true expression="${android.test.createreport}"
      */
-    private boolean testCreateReport;
+    private boolean createReport;
 
-    private boolean testClassesExists;
-    private boolean testPackagesExists;
-    private String testPackages;
-    private String[] testClassesArray;
+    /**
+     * <p>Whether to execute tests only in given packages</p>
+     * <pre>
+     * &lt;packages&gt;
+     *     &lt;testPackage&gt;your.package.name&lt;/testPackage&gt;
+     * &lt;/packages&gt;
+     * </pre>
+     *
+     * @parameter
+     */
+    protected List packages;
 
+    /**
+     * <p>Whether to execute test classes which are specified.</p>
+     * <pre>
+     * &lt;classes&gt;
+     *     &lt;testClass&gt;your.package.name.YourTestClass&lt;/testClass&gt;
+     * &lt;/classes&gt;
+     * </pre>
+     *
+     * @parameter
+     */
+    protected List classes;
+
+
+    private boolean classesExists;
+    private boolean packagesExists;
+
+
+    // the parsed parameters from the plugin config or properties from command line or pom or settings
+    private String parsedInstrumentationPackage;
+    private String parsedInstrumentationRunner;
+    private List parsedClasses;
+    private List parsedPackages;
+    private String parsedTestSize;
+    private boolean parsedCoverage;
+    private boolean parsedDebug;
+    private boolean parsedLogOnly;
+    private boolean parsedCreateReport;
+
+    private String packagesList;
 
     protected void instrument() throws MojoExecutionException, MojoFailureException {
-        if (instrumentationPackage == null) {
-            instrumentationPackage = extractPackageNameFromAndroidManifest(androidManifestFile);
+        parseConfiguration();
+
+        if (parsedInstrumentationPackage == null) {
+            parsedInstrumentationPackage = extractPackageNameFromAndroidManifest(androidManifestFile);
         }
 
-        if (instrumentationRunner == null) {
-            instrumentationRunner = extractInstrumentationRunnerFromAndroidManifest(androidManifestFile);
+        if (parsedInstrumentationRunner == null) {
+            parsedInstrumentationRunner = extractInstrumentationRunnerFromAndroidManifest(androidManifestFile);
         }
 
         // only run Tests in specific package
-        testPackages = buildTestPackagesString();
-        testPackagesExists = StringUtils.isNotBlank(testPackages);
+        packagesList = buildCommaSeparatedString(parsedPackages);
+        packagesExists = StringUtils.isNotBlank(packagesList);
 
-        if (testClasses != null) {
-            testClassesArray = (String[]) testClasses.toArray();
-            testClassesExists = testClassesArray.length > 0;
+        if (parsedClasses != null) {
+            classesExists = parsedClasses.size() > 0;
         } else {
-            testClassesExists = false;
+            classesExists = false;
         }
 
-        if(testClassesExists && testPackagesExists) {
-            // if both testPackages and testClasses are specified --> ERROR
-            throw new MojoFailureException("testPackages and testClasses are mutual exclusive. They cannot be specified at the same time. " +
-                "Please specify either testPackages or testClasses! For details, see http://developer.android.com/guide/developing/testing/testing_otheride.html");
+        if(classesExists && packagesExists) {
+            // if both packages and classes are specified --> ERROR
+            throw new MojoFailureException("packages and classes are mutual exclusive. They cannot be specified at the same time. " +
+                "Please specify either packages or classes! For details, see http://developer.android.com/guide/developing/testing/testing_otheride.html");
         }
 
         doWithDevices(new DeviceCallback() {
             public void doWithDevice(final IDevice device) throws MojoExecutionException, MojoFailureException {
                 RemoteAndroidTestRunner remoteAndroidTestRunner =
-                    new RemoteAndroidTestRunner(instrumentationPackage, instrumentationRunner, device);
+                    new RemoteAndroidTestRunner(parsedInstrumentationPackage, parsedInstrumentationRunner, device);
 
-                if(testPackagesExists) {
-                    remoteAndroidTestRunner.setTestPackageName(testPackages);
-                    getLog().info("Running tests for specified test packages: " + testPackages);
+                if(packagesExists) {
+                    remoteAndroidTestRunner.setTestPackageName(packagesList);
+                    getLog().info("Running tests for specified test packages: " + packagesList);
                 }
 
-                if(testClassesExists) {
-                    remoteAndroidTestRunner.setClassNames(testClassesArray);
-                    getLog().info("Running tests for specified test " +
-                        "classes/methods: " + Arrays.toString(testClassesArray));
+                if(classesExists) {
+                    remoteAndroidTestRunner.setClassNames((String[]) parsedClasses.toArray());
+                    getLog().info("Running tests for specified test classes/methods: " + parsedClasses);
                 }
 
-                remoteAndroidTestRunner.setDebug(testDebug);
-                remoteAndroidTestRunner.setCoverage(testCoverage);
-                remoteAndroidTestRunner.setLogOnly(testLogOnly);
+                remoteAndroidTestRunner.setDebug(parsedDebug);
+                remoteAndroidTestRunner.setCoverage(parsedCoverage);
+                remoteAndroidTestRunner.setLogOnly(parsedLogOnly);
 
-                if (StringUtils.isNotBlank(testSize)) {
+                if (StringUtils.isNotBlank(parsedTestSize)) {
                     IRemoteAndroidTestRunner.TestSize validSize =
-                        IRemoteAndroidTestRunner.TestSize.getTestSize(testSize);
+                        IRemoteAndroidTestRunner.TestSize.getTestSize(parsedTestSize);
                     remoteAndroidTestRunner.setTestSize(validSize);
                 }
 
-                getLog().info("Running instrumentation tests in " + instrumentationPackage + " on " +
+                getLog().info("Running instrumentation tests in " + parsedInstrumentationPackage + " on " +
                     device.getSerialNumber() + " (avdName=" + device.getAvdName() + ")");
                 try {
                     AndroidTestRunListener testRunListener = new AndroidTestRunListener(project, device);
@@ -239,6 +282,55 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
                 }
             }
         });
+    }
+
+    private void parseConfiguration() {
+        // we got config in pom ... lets use it,
+        if (test != null) {
+            parsedInstrumentationPackage = test.getInstrumentationPackage();
+            parsedInstrumentationRunner = test.getInstrumentationRunner();
+            parsedClasses = test.getClasses();
+            parsedPackages = test.getPackages();
+            parsedTestSize = test.getTestSize();
+            parsedCoverage= test.isCoverage();
+            parsedDebug= test.isDebug();
+            parsedLogOnly = test.isLogOnly();
+            parsedCreateReport = test.isCreateReport();
+        }
+        // no pom, we take properties
+        else {
+            parsedInstrumentationPackage = instrumentationPackage;
+            parsedInstrumentationRunner = instrumentationRunner;
+            parsedClasses = classes;
+            parsedPackages = packages;
+            parsedTestSize = testSize;
+            parsedCoverage= coverage;
+            parsedDebug= debug;
+            parsedLogOnly = logOnly;
+            parsedCreateReport = createReport;
+        }
+    }
+
+    /**
+     * Helper method to build a comma separated string from a list.
+     * Blank strings are filtered out
+     *
+     * @param lines A list of strings
+     * @return Comma separated String from given list
+     */
+    protected static String buildCommaSeparatedString(List<String> lines) {
+    	if(lines == null || lines.size() == 0) {
+    		return null;
+    	}
+
+    	List<String> strings = new ArrayList<String>(lines.size());
+    	for(String str : lines) { // filter out blank strings
+    		if(StringUtils.isNotBlank(str)) {
+    			strings.add(StringUtils.trimToEmpty(str));
+    		}
+    	}
+
+    	return StringUtils.join(strings, ",");
     }
 
     /**
@@ -319,7 +411,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             this.testCount = testCount;
             getLog().info(INDENT + "Run started: " + runName + ", " + testCount + " tests:");
 
-            if (testCreateReport) {
+            if (parsedCreateReport) {
                 try {
                     DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
                     DocumentBuilder parser = null;
@@ -391,7 +483,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         public void testStarted(TestIdentifier test) {
            getLog().info(INDENT + INDENT +"Start: " + test.toString());
 
-            if (testCreateReport) {
+            if (parsedCreateReport) {
                 // reset start time for each test run
                 currentTestCaseStartTime = new Date().getTime();
 
@@ -417,7 +509,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             getLog().info(INDENT + INDENT + status.name() + ":" + test.toString());
             getLog().info(INDENT + INDENT + trace);
 
-            if (testCreateReport) {
+            if (parsedCreateReport) {
                 Node errorFailureNode;
                 NamedNodeMap errorfailureAttributes;
                 if (status == ERROR) {
@@ -446,7 +538,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             getLog().info( INDENT + INDENT +"End: " + test.toString());
             logMetrics(testMetrics);
 
-            if (testCreateReport) {
+            if (parsedCreateReport) {
                 testSuiteNode.appendChild(currentTestCaseNode);
                 NamedNodeMap testCaseAttributes = currentTestCaseNode.getAttributes();
 
@@ -466,7 +558,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
             }
             getLog().info(INDENT + "Tests run: " + testCount + ",  Failures: "
                     + testFailureCount + ",  Errors: " + testErrorCount);
-            if (testCreateReport) {
+            if (parsedCreateReport) {
                 NamedNodeMap testSuiteAttributes = testSuiteNode.getAttributes();
 
                 Attr testCountAttr = junitReport.createAttribute(ATTR_TESTSUITE_TESTS);
@@ -492,7 +584,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
 
             logMetrics(runMetrics);
 
-            if (testCreateReport) {
+            if (parsedCreateReport) {
                 writeJunitReportToFile();
             }
         }
