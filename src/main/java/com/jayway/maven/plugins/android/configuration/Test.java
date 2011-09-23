@@ -11,6 +11,15 @@ import java.util.List;
  */
 public class Test {
     /**
+     * Enables or disables integration test related goals. If <code>true</code> they will be run; if <code>false</code>,
+     * they will be skipped. If <code>auto</code>, they will run if any of the classes inherit from any class in
+     * <code>junit.framework.**</code> or <code>android.test.**</code>.
+     *
+     * @parameter expression="${android.test.skip}" default-value="auto"
+     */
+    private String skip;
+
+    /**
      * Package name of the apk we wish to instrument. If not specified, it is inferred from
      * <code>AndroidManifest.xml</code>.
      *
@@ -120,6 +129,10 @@ public class Test {
      * @parameter
      */
     protected List classes;
+
+    public String getSkip() {
+        return skip;
+    }
 
     public String getInstrumentationPackage() {
         return instrumentationPackage;

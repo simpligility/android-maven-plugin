@@ -91,18 +91,40 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
     private boolean mavenSkipTests;
 
     /**
+     * The configuration to use for running instrumentation tests. Complete configuration
+     * is possible in the plugin configuration:
+     * &lt;test&gt;
+     *   &lt;skip&gt;true|false|auto&lt;/skip&gt;
+     *   &lt;instrumentationPackage&gt;packageName&lt;/instrumentationPackage&gt;
+     *   &lt;instrumentationRunner&gt;className&lt;/instrumentationRunner&gt;
+     *   &lt;debug&gt;true|false&lt;/debug&gt;
+     *   &lt;coverage&gt;true|false&lt;/coverage&gt;
+     *   &lt;logonly&gt;true|false&lt;/logonly&gt;  avd
+     *   &lt;testsize&gt;small|medium|large&lt;/testsize&gt;
+     *   &lt;createreport&gt;true|false&lt;/createreport&gt;
+     *   &lt;classes&gt;
+     *     &lt;class&gt;your.package.name.YourTestClass&lt;/class&gt;
+     *   &lt;/classes&gt;
+     *   &lt;packages&gt;
+     *     &lt;package&gt;your.package.name&lt;/package&gt;
+     *   &lt;/packages&gt;
+     * &lt;/test&gt;
+     * </pre>
+     *
+     * @parameter
+     */
+    private Test test;
+
+
+    /**
      * Enables or disables integration test related goals. If <code>true</code> they will be run; if <code>false</code>,
      * they will be skipped. If <code>auto</code>, they will run if any of the classes inherit from any class in
      * <code>junit.framework.**</code> or <code>android.test.**</code>.
      *
-     * @parameter expression="${android.enableIntegrationTest}" default-value="auto"
+     * @parameter expression="${android.test.skip}" default-value="auto"
      */
-    private String enableIntegrationTest;
+    private String skip;
 
-    /**
-     * @parameter
-     */
-    private Test test;
     /**
      * Package name of the apk we wish to instrument. If not specified, it is inferred from
      * <code>AndroidManifest.xml</code>.
@@ -190,7 +212,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      * <p>Whether to execute tests only in given packages</p>
      * <pre>
      * &lt;packages&gt;
-     *     &lt;testPackage&gt;your.package.name&lt;/testPackage&gt;
+     *     &lt;package&gt;your.package.name&lt;/package&gt;
      * &lt;/packages&gt;
      * </pre>
      *
@@ -202,7 +224,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      * <p>Whether to execute test classes which are specified.</p>
      * <pre>
      * &lt;classes&gt;
-     *     &lt;testClass&gt;your.package.name.YourTestClass&lt;/testClass&gt;
+     *     &lt;class&gt;your.package.name.YourTestClass&lt;/class&gt;
      * &lt;/classes&gt;
      * </pre>
      *
@@ -210,12 +232,11 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      */
     protected List classes;
 
-
     private boolean classesExists;
     private boolean packagesExists;
 
-
     // the parsed parameters from the plugin config or properties from command line or pom or settings
+    private String parsedSkip;
     private String parsedInstrumentationPackage;
     private String parsedInstrumentationRunner;
     private List parsedClasses;
@@ -251,8 +272,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
 
         if(classesExists && packagesExists) {
             // if both packages and classes are specified --> ERROR
-            throw new MojoFailureException("packages and classes are mutual exclusive. They cannot be specified at the same time. " +
-                "Please specify either packages or classes! For details, see http://developer.android.com/guide/developing/testing/testing_otheride.html");
+            throw new MojoFailureException("packages and classes are mutually exclusive. They cannot be specified at " +
+                    "the same time. Please specify either packages or classes. For details, " +
+                    "see http://developer.android.com/guide/developing/testing/testing_otheride.html");
         }
 
         doWithDevices(new DeviceCallback() {
@@ -311,6 +333,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
     private void parseConfiguration() {
         // we got config in pom ... lets use it,
         if (test != null) {
+            parsedSkip = test.getSkip();
             parsedInstrumentationPackage = test.getInstrumentationPackage();
             parsedInstrumentationRunner = test.getInstrumentationRunner();
             parsedClasses = test.getClasses();
@@ -323,6 +346,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
         }
         // no pom, we take properties
         else {
+            parsedSkip = skip;
             parsedInstrumentationPackage = instrumentationPackage;
             parsedInstrumentationRunner = instrumentationRunner;
             parsedClasses = classes;
@@ -342,24 +366,29 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      * @return <code>true</code> if integration test goals should be executed, <code>false</code> otherwise.
      */
     protected boolean isEnableIntegrationTest() throws MojoFailureException, MojoExecutionException {
+        parseConfiguration();
         if (mavenTestSkip) {
+            getLog().info("maven.test.skip set - skipping tests");
             return false;
         }
 
         if (mavenSkipTests) {
+            getLog().info("maven.skip.tests set - skipping tests");
             return false;
         }
 
-        if ("false".equalsIgnoreCase(enableIntegrationTest)) {
+        if ("true".equalsIgnoreCase(parsedSkip)) {
+            getLog().info("android.test.skip set - skipping tests");
             return false;
         }
 
-        if ("true".equalsIgnoreCase(enableIntegrationTest)) {
+        if ("false".equalsIgnoreCase(parsedSkip)) {
             return true;
         }
 
-        if ("auto".equalsIgnoreCase(enableIntegrationTest)) {
+        if ("auto".equalsIgnoreCase(parsedSkip)) {
             if (extractInstrumentationRunnerFromAndroidManifest(androidManifestFile) == null) {
+                getLog().info("No InstrumentetationRunner found - skipping tests");
                 return false;
             }
             return AndroidTestFinder.containsAndroidTests(new File(project.getBuild().getDirectory(), "android-classes"));
