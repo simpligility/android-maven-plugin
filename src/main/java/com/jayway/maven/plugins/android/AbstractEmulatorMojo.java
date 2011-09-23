@@ -61,10 +61,11 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
 
     /**
      * The Android emulator configuration to use. All values are optional.
+     * <pre>
      * &lt;emulator&gt;
-     * &lt;avd&gt;Default&lt;/avd&gt;
-     * &lt;wait&gt;20000&lt;/wait&gt;
-     * &lt;options&gt;-no-skin&lt;/options&gt;
+     *   &lt;avd&gt;Default&lt;/avd&gt;
+     *   &lt;wait&gt;20000&lt;/wait&gt;
+     *   &lt;options&gt;-no-skin&lt;/options&gt;
      * &lt;/emulator&gt;
      * </pre>
      *
