@@ -516,7 +516,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractIntegrationtes
         private String parseForMessage(String trace) {
             if (StringUtils.isNotBlank(trace)) {
                 String newline = "\r\n";
-                boolean hasMessage = trace.indexOf(newline) > 0;
+                // if there is message like
+                // junit.junit.framework.AssertionFailedError ... there is no message
+                boolean hasMessage = !trace.startsWith("junit.") && trace.indexOf(newline) > 0;
                 if (hasMessage) {
                     return trace.substring(trace.indexOf(":") + 2, trace.indexOf("\r\n"));
                 } else {
