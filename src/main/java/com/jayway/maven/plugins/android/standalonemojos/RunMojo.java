@@ -91,6 +91,14 @@ public class RunMojo
     // ----------------------------------------------------------------------
     // Mojo types
     // ----------------------------------------------------------------------
+	
+    /**
+     * If true, the device or emulator will pause execution of the process at
+     * startup to wait for a debugger to connect.
+     * 
+     * @parameter expression="${android.debugRun}" default-value="false"
+     */
+    protected boolean debugRun;
 
     /**
      * Thrown when no "Launcher activities" could be found inside <code>AndroidManifest.xml</code>
@@ -239,7 +247,7 @@ public class RunMojo
     {
         final String command;
 
-        command = String.format( "am start -n %s/%s", info.packageName, info.activity );
+        command = String.format( "am start %s-n %s/%s", debugRun ? "-D " : "", info.packageName, info.activity );
 
         doWithDevices( new DeviceCallback()
         {
