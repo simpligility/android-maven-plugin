@@ -22,6 +22,7 @@ import com.android.ddmlib.InstallException;
 import com.jayway.maven.plugins.android.common.AetherHelper;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.DeviceHelper;
+import com.jayway.maven.plugins.android.configuration.Sdk;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.JXPathNotFoundException;
 import org.apache.commons.jxpath.xml.DocumentContainer;
@@ -36,7 +37,6 @@ import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.repository.LocalRepository;
 import org.sonatype.aether.repository.RemoteRepository;
 
 import java.io.File;
@@ -290,7 +290,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     /**
      * <p>Parameter designed to pick up <code>-Dandroid.sdk.path</code> in case there is no pom with an
      * <code>&lt;sdk&gt;</code> configuration tag.</p>
-     * <p>Corresponds to {@link Sdk#path}.</p>
+     * <p>Corresponds to {@link com.jayway.maven.plugins.android.configuration.Sdk#path}.</p>
      *
      * @parameter expression="${android.sdk.path}"
      * @readonly
@@ -314,7 +314,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     /**
      * <p>Parameter designed to pick up <code>-Dandroid.sdk.platform</code> in case there is no pom with an
      * <code>&lt;sdk&gt;</code> configuration tag.</p>
-     * <p>Corresponds to {@link Sdk#platform}.</p>
+     * <p>Corresponds to {@link com.jayway.maven.plugins.android.configuration.Sdk#platform}.</p>
      *
      * @parameter expression="${android.sdk.platform}"
      * @readonly

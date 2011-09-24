@@ -1,4 +1,4 @@
-package com.jayway.maven.plugins.android;
+package com.jayway.maven.plugins.android.configuration;
 
 /**
  * Configuration for the Android Emulator. This class is only the definition of the parameters that are shadowed in

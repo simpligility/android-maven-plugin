@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jayway.maven.plugins.android;
+package com.jayway.maven.plugins.android.configuration;
 
 import java.io.File;
 
 /**
  * Configuration for an Android SDK. Only receives config parameter values, and there is no logic in here. Logic is in
- * {@link AndroidSdk}.
+ * {@link com.jayway.maven.plugins.android.AndroidSdk}.
  *
  * @author hugo.josefson@jayway.com
  */

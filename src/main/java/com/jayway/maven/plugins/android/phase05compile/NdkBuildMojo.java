@@ -17,6 +17,7 @@ import java.io.*;
 import java.util.*;
 
 import com.jayway.maven.plugins.android.*;
+import com.jayway.maven.plugins.android.configuration.Ndk;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.*;
 
@@ -54,7 +55,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
     /**
      * <p>Parameter designed to pick up <code>-Dandroid.ndk.path</code> in case there is no pom with an
      * <code>&lt;ndk&gt;</code> configuration tag.</p>
-     * <p>Corresponds to {@link Ndk#path}.</p>
+     * <p>Corresponds to {@link com.jayway.maven.plugins.android.configuration.Ndk#path}.</p>
      *
      * @parameter expression="${android.ndk.path}"
      * @readonly
