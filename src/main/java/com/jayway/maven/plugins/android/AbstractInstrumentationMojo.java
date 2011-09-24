@@ -93,6 +93,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
     /**
      * The configuration to use for running instrumentation tests. Complete configuration
      * is possible in the plugin configuration:
+     * <pre>
      * &lt;test&gt;
      *   &lt;skip&gt;true|false|auto&lt;/skip&gt;
      *   &lt;instrumentationPackage&gt;packageName&lt;/instrumentationPackage&gt;
