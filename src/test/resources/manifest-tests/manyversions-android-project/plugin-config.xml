@@ -30,7 +30,9 @@
         </executions>
         <configuration>
           <androidManifestFile>${basedir}/AndroidManifest.xml</androidManifestFile>
-          <versionCodeAutoIncrement>true</versionCodeAutoIncrement>
+          <manifest>
+            <versionCodeAutoIncrement>true</versionCodeAutoIncrement>
+          </manifest>
         </configuration>
       </plugin>
     </plugins>

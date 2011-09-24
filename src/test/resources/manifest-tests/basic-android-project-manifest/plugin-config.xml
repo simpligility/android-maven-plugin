@@ -31,9 +31,11 @@
         </executions>
         <configuration>
           <androidManifestFile>${basedir}/AndroidManifest.xml</androidManifestFile>
-            <sharedUserId>android.uid.phone</sharedUserId>
-            <debuggable>true</debuggable>
-            <versionCodeUpdateFromVersion>true</versionCodeUpdateFromVersion>
+            <manifest>
+                <sharedUserId>android.uid.phone</sharedUserId>
+                <debuggable>true</debuggable>
+                <versionCodeUpdateFromVersion>true</versionCodeUpdateFromVersion>
+            </manifest>
         </configuration>
       </plugin>
     </plugins>
