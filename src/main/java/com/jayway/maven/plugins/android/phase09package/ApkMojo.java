@@ -35,6 +35,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import com.jayway.maven.plugins.android.common.AetherHelper;
+import com.jayway.maven.plugins.android.configuration.Sign;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -48,7 +49,6 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.AndroidSigner;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
-import com.jayway.maven.plugins.android.Sign;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.sonatype.aether.collection.CollectRequest;
 import org.sonatype.aether.graph.Dependency;
@@ -95,7 +95,7 @@ public class ApkMojo extends AbstractAndroidMojo {
     /**
      * <p>Parameter designed to pick up <code>-Dandroid.sign.debug</code> in case there is no pom with a
      * <code>&lt;sign&gt;</code> configuration tag.</p>
-     * <p>Corresponds to {@link Sign#debug}.</p>
+     * <p>Corresponds to {@link com.jayway.maven.plugins.android.configuration.Sign#debug}.</p>
      *
      * @parameter expression="${android.sign.debug}" default-value="auto"
      * @readonly

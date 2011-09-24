@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jayway.maven.plugins.android;
+package com.jayway.maven.plugins.android.configuration;
 
 /**
  * Configuration for signing. Only receives config parameter values, and there is no logic in here. Logic is in
- * {@link AndroidSigner}.
+ * {@link com.jayway.maven.plugins.android.AndroidSigner}.
  *
  * @author hugo.josefson@jayway.com
  */

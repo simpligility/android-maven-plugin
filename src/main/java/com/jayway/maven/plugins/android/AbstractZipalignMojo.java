@@ -1,5 +1,6 @@
 package com.jayway.maven.plugins.android;
 
+import com.jayway.maven.plugins.android.configuration.Zipalign;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
@@ -37,28 +38,28 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
     /**
      * @parameter expression="${android.zipalign.skip}"
      * @readonly
-     * @see Zipalign#skip
+     * @see com.jayway.maven.plugins.android.configuration.Zipalign#skip
      */
     private Boolean zipalignSkip;
 
     /**
      * @parameter expression="${android.zipalign.verbose}"
      * @readonly
-     * @see Zipalign#verbose
+     * @see com.jayway.maven.plugins.android.configuration.Zipalign#verbose
      */
     private Boolean zipalignVerbose;
 
     /**
      * @parameter expression="${android.zipalign.inputApk}"
      * @readonly
-     * @see Zipalign#inputApk
+     * @see com.jayway.maven.plugins.android.configuration.Zipalign#inputApk
      */
     private String zipalignInputApk;
 
     /**
      * @parameter expression="${android.zipalign.outputApk}"
      * @readonly
-     * @see Zipalign#outputApk
+     * @see com.jayway.maven.plugins.android.configuration.Zipalign#outputApk
      */
     private String zipalignOutputApk;
 

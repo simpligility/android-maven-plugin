@@ -17,6 +17,7 @@
 package com.jayway.maven.plugins.android;
 
 import com.jayway.maven.plugins.android.common.DeviceHelper;
+import com.jayway.maven.plugins.android.configuration.Emulator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 
@@ -46,7 +47,7 @@ import java.util.Arrays;
  *
  * @author Manfred Moser <manfred@simplgility.com>
  * @author Bryan O'Neil <bryan.oneil@hotmail.com>
- * @see com.jayway.maven.plugins.android.Emulator
+ * @see com.jayway.maven.plugins.android.configuration.Emulator
  * @see com.jayway.maven.plugins.android.standalonemojos.EmulatorStartMojo
  * @see com.jayway.maven.plugins.android.standalonemojos.EmulatorStopMojo
  * @see com.jayway.maven.plugins.android.standalonemojos.EmulatorStopAllMojo
@@ -78,7 +79,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      *
      * @parameter expression="${android.emulator.avd}"
      * @readonly
-     * @see Emulator#avd
+     * @see com.jayway.maven.plugins.android.configuration.Emulator#avd
      */
     private String emulatorAvd;
 
@@ -88,7 +89,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      *
      * @parameter expression="${android.emulator.wait}"
      * @readonly
-     * @see Emulator#wait
+     * @see com.jayway.maven.plugins.android.configuration.Emulator#wait
      */
     private String emulatorWait;
 
@@ -99,7 +100,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      *
      * @parameter expression="${android.emulator.options}"
      * @readonly
-     * @see Emulator#options
+     * @see com.jayway.maven.plugins.android.configuration.Emulator#options
      */
     private String emulatorOptions;
 
@@ -440,7 +441,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      *
      * @return
      * @throws MojoExecutionException
-     * @see com.jayway.maven.plugins.android.Emulator
+     * @see com.jayway.maven.plugins.android.configuration.Emulator
      */
     private String assembleStartCommandLine() throws MojoExecutionException {
         StringBuilder startCommandline = new StringBuilder()
