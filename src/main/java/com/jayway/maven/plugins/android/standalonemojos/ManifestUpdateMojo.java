@@ -45,7 +45,7 @@ import com.jayway.maven.plugins.android.common.AndroidExtension;
  * <p>
  * Note: This process will reformat the <code>AndroidManifest.xml</code> per JAXP {@link Transformer} defaults if updates are made to the manifest.
  * <p>
- * Updating Your <code>android:debuggable</code> attribute
+ * You can configure attributes in the plugin configuration like so
  * <pre>
  *   &lt;plugin&gt;
  *     &lt;groupId&gt;com.jayway.maven.plugins.android.generation2&lt;/groupId&gt;
@@ -57,12 +57,21 @@ import com.jayway.maven.plugins.android.common.AndroidExtension;
  *           &lt;goal&gt;manifest-update&lt;/goal&gt;
  *         &lt;/goals&gt;
  *         &lt;configuration&gt;
- *           &lt;debuggable&gt;true&lt;/debuggable&gt;
+ *           &lt;manifest&gt;
+ *             &lt;versionName&gt;true&lt;/versionName&gt;
+ *             &lt;versionCode&gt;true&lt;/versionCode&gt;
+ *             &lt;versionCodeAutoIncrement&gt;true&lt;/versionCodeAutoIncrement&gt;
+ *             &lt;versionCodeUpdateFromVersion&gt;true&lt;/versionCodeUpdateFromVersion&gt;
+ *             &lt;sharedUserId&gt;true&lt;/sharedUserId&gt;
+ *             &lt;debuggable&gt;true&lt;/debuggable&gt;
+ *           &lt;manifest&gt;
  *         &lt;/configuration&gt;
  *       &lt;/execution&gt;
  *     &lt;/executions&gt;
  *   &lt;/plugin&gt;
  * </pre>
+ * or use properties set in the pom or settings file or supplied as parameter. All parameters follow a android
+ * .manifest.* naming convention.
  * <p>
  *
  * @author joakim@erdfelt.com
@@ -103,7 +112,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 	/**
 	  * Auto increment the <code>android:versionCode</code> attribute with each build.
 	  *
-	  * @parameter expression="${android.manifest.versionCode.autoincrement}" default-value="false"
+	  * @parameter expression="${android.manifest.versionCodeAutoincrement}" default-value="false"
 	  */
 	 private boolean             versionCodeAutoIncrement = false;
 
@@ -113,7 +122,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 	 * http://www.simpligility.com/2010/11/release-version-management-for-your-android-application/
 	 * but done without using resource filtering.
 	 *
-	 * @parameter expression="${android.manifest.versionCode.UpdateFromVersion} default-value="false"
+	 * @parameter expression="${android.manifest.versionCodeUpdateFromVersion} default-value="false"
 	 */
 	protected Boolean         versionCodeUpdateFromVersion = false;
 
