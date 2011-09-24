@@ -91,6 +91,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 	private static final String ELEM_APPLICATION         = "application";
 
     /**
+     * The container for all the manifest update related configuration.
+     *
      * @parameter
      */
     private Manifest manifest;
