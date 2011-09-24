@@ -58,13 +58,13 @@ import com.jayway.maven.plugins.android.common.AndroidExtension;
  *         &lt;/goals&gt;
  *         &lt;configuration&gt;
  *           &lt;manifest&gt;
- *             &lt;versionName&gt;true&lt;/versionName&gt;
- *             &lt;versionCode&gt;true&lt;/versionCode&gt;
- *             &lt;versionCodeAutoIncrement&gt;true&lt;/versionCodeAutoIncrement&gt;
- *             &lt;versionCodeUpdateFromVersion&gt;true&lt;/versionCodeUpdateFromVersion&gt;
- *             &lt;sharedUserId&gt;true&lt;/sharedUserId&gt;
- *             &lt;debuggable&gt;true&lt;/debuggable&gt;
- *           &lt;manifest&gt;
+ *             &lt;versionName&gt;&lt;/versionName&gt;
+ *             &lt;versionCode&gt;123&lt;/versionCode&gt;
+ *             &lt;versionCodeAutoIncrement&gt;true|false&lt;/versionCodeAutoIncrement&gt;
+ *             &lt;versionCodeUpdateFromVersion&gt;true|false&lt;/versionCodeUpdateFromVersion&gt;
+ *             &lt;sharedUserId&gt;anId&lt;/sharedUserId&gt;
+ *             &lt;debuggable&gt;true|false&lt;/debuggable&gt;
+ *           &lt;/manifest&gt;
  *         &lt;/configuration&gt;
  *       &lt;/execution&gt;
  *     &lt;/executions&gt;
@@ -96,7 +96,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
     private Manifest manifest;
 
 	/**
-	 * Update the <code>android:versionName</code> with the specified parameter.
+	 * Update the <code>android:versionName</code> with the specified parameter. If left empty it
+     * will use the version number of the project.
 	 *
 	 * @parameter expression="${android.manifest.versionName}" default-value="${project.version}"
 	 */
