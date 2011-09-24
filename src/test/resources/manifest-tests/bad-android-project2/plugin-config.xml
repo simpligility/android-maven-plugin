@@ -21,8 +21,10 @@
         </executions>
         <configuration>
             <androidManifestFile>${basedir}/AndroidManifest.xml</androidManifestFile>
-            <versionCodeUpdateFromVersion>true</versionCodeUpdateFromVersion>
-            <versionCode>123</versionCode>
+            <manifest>
+                <versionCodeUpdateFromVersion>true</versionCodeUpdateFromVersion>
+                <versionCode>123</versionCode>
+            </manifest>
         </configuration>
       </plugin>
     </plugins>
