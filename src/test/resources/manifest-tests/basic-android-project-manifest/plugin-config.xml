@@ -20,7 +20,7 @@
     <plugins>
       <plugin>
         <groupId>com.jayway.maven.plugins.android.generation2</groupId>
-        <artifactId>android-maven-plugin</artifactId>
+        <artifactId>maven-android-plugin</artifactId>
         <extensions>true</extensions>
         <executions>
           <execution>
