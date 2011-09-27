@@ -85,7 +85,7 @@ public abstract class AbstractAndroidMojoTestCase<T extends AbstractAndroidMojo>
         final MavenProject project = new MojoProjectStub(testingDir);
 
         // Setup Mojo
-        PlexusConfiguration config = extractPluginConfiguration("android-maven-plugin", project.getFile());
+        PlexusConfiguration config = extractPluginConfiguration("maven-android-plugin", project.getFile());
         @SuppressWarnings("unchecked")
         final T mojo = (T) lookupMojo(getPluginGoalName(), project.getFile());
 

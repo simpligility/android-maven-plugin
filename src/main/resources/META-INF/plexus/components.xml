@@ -26,14 +26,14 @@
             <configuration>
                 <phases>
                     <generate-sources>
-                        com.jayway.maven.plugins.android.generation2:android-maven-plugin:generate-sources
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:generate-sources
                     </generate-sources>
                     <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
                     <compile>
                         org.apache.maven.plugins:maven-compiler-plugin:compile
                     </compile>
                     <process-classes>
-                        com.jayway.maven.plugins.android.generation2:android-maven-plugin:unpack
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:unpack
                     </process-classes>
                     <process-test-resources>
                         org.apache.maven.plugins:maven-resources-plugin:testResources
@@ -41,20 +41,20 @@
                     <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
                     <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
                     <prepare-package>
-                        com.jayway.maven.plugins.android.generation2:android-maven-plugin:dex
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:dex
                     </prepare-package>
                     <package>
                     	org.apache.maven.plugins:maven-jar-plugin:jar,
-                        com.jayway.maven.plugins.android.generation2:android-maven-plugin:apk
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:apk
                     </package>
                     <install>
                         org.apache.maven.plugins:maven-install-plugin:install
                     </install>
                     <pre-integration-test>
-                        com.jayway.maven.plugins.android.generation2:android-maven-plugin:internal-pre-integration-test
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:internal-pre-integration-test
                     </pre-integration-test>
                     <integration-test>
-                        com.jayway.maven.plugins.android.generation2:android-maven-plugin:internal-integration-test
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:internal-integration-test
                     </integration-test>
                     <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
                 </phases>
@@ -71,11 +71,11 @@
             <configuration>
                 <phases>
                     <generate-sources>
-                        com.jayway.maven.plugins.android.generation2:android-maven-plugin:generate-sources
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:generate-sources
                     </generate-sources>
                     <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
                     <compile>
-                        com.jayway.maven.plugins.android.generation2:android-maven-plugin:ndk-build
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:ndk-build
                     </compile>
                     <install>
                         org.apache.maven.plugins:maven-install-plugin:install
@@ -124,14 +124,14 @@
             <configuration>
                 <phases>
                     <generate-sources>
-                        com.jayway.maven.plugins.android.generation2:android-maven-plugin:generate-sources
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:generate-sources
                     </generate-sources>
                     <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
                     <compile>
                         org.apache.maven.plugins:maven-compiler-plugin:compile
                     </compile>
                     <process-classes>
-                        com.jayway.maven.plugins.android.generation2:android-maven-plugin:unpack
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:unpack
                     </process-classes>
                     <process-test-resources>
                         org.apache.maven.plugins:maven-resources-plugin:testResources
@@ -140,7 +140,7 @@
                     <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
                     <package>
                     	org.apache.maven.plugins:maven-jar-plugin:jar,
-                        com.jayway.maven.plugins.android.generation2:android-maven-plugin:apklib
+                        com.jayway.maven.plugins.android.generation2:maven-android-plugin:apklib
                     </package>
                     <install>
                         org.apache.maven.plugins:maven-install-plugin:install

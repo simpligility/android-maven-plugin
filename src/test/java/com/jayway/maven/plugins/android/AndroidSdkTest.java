@@ -60,7 +60,7 @@ public class AndroidSdkTest {
 
     @Test(expected = InvalidSdkException.class)
     public void givenInvalidSdkPathThenException() throws IOException {
-        new AndroidSdk(File.createTempFile("android-maven-plugin", "test"), null).getLayout();
+        new AndroidSdk(File.createTempFile("maven-android-plugin", "test"), null).getLayout();
     }
 
     @Test(expected = InvalidSdkException.class)
