@@ -58,7 +58,7 @@ public class DexMojo extends AbstractAndroidMojo {
      * &lt;/dex&gt;
      * </pre>
      *
-     * or via properties or command line parameters
+     * or via properties dex.* or command line parameters android.dex.*
      *
      * @parameter
      */
