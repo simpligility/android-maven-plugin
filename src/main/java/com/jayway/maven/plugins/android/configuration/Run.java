@@ -9,10 +9,7 @@ package com.jayway.maven.plugins.android.configuration;
 public class Run {
 
     /**
-      * If true, the device or emulator will pause execution of the process at
-      * startup to wait for a debugger to connect.
-      *
-      * @parameter expression="${android.run.debug}" default-value="false"
+      * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.RunMojo#runDebug}
       */
     protected boolean debug;
 
