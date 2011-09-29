@@ -19,6 +19,7 @@ package com.jayway.maven.plugins.android.phase08preparepackage;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.configuration.Dex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.Resource;
@@ -44,39 +45,57 @@ import java.util.List;
 public class DexMojo extends AbstractAndroidMojo {
 
     /**
-     * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build.
+     * Configuration for the dex command execution. It can be configured in the plugin configuration like so
      * <pre>
-     * &lt;jvmArguments&gt;
-     *   &lt;argument&gt;-Xms256m&lt;/argument&gt;
-     *   &lt;argument&gt;-Xmx512m&lt;/argument&gt;
-     * &lt;/jvmArguments&gt;
+     * &lt;dex&gt;
+     *   &lt;jvmArguments&gt;
+     *     &lt;jvmArgument&gt;-Xms256m&lt;/jvmArgument&gt;
+     *     &lt;jvmArgument&gt;-Xmx512m&lt;/jvmArgument&gt;
+     *   &lt;/jvmArguments&gt;
+     *   &lt;coreLibrary&gt;true|false&lt;/coreLibrary&gt;
+     *   &lt;noLocals&gt;true|false&lt;/noLocals&gt;
+     *   &lt;optimize&gt;true|false&lt;/optimize&gt;
+     * &lt;/dex&gt;
      * </pre>
      *
+     * or via properties or command line parameters
+     *
      * @parameter
+     */
+    private Dex dex;
+    /**
+     * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build.
+     *
+     * @parameter expression="${android.dex.jvmArguments}"
      * @optional
      */
-    private String[] jvmArguments;
+    private String[] dexJvmArguments;
 
     /**
      * Decides whether to pass the --core-library flag to dx.
      *
-     * @parameter default-value="false"
+     * @parameter expression="${android.dex.coreLibrary}" default-value="false"
      */
-    private boolean coreLibrary;
+    private boolean dexCoreLibrary;
 
     /**
      * Decides whether to pass the --no-locals flag to dx.
      *
-     * @parameter default-value="false"
+     * @parameter expression="${android.dex.noLocals}" default-value="false"
      */
-    private boolean noLocals;
+    private boolean dexNoLocals;
 
     /**
      * Decides whether to pass the --no-optimize flag to dx.
      *
-     * @parameter default-value="true"
+     * @parameter expression="${android.dex.optimize}" default-value="true"
      */
-    private boolean optimize;
+    private boolean dexOptimize;
+
+    private String[] parsedJvmArguments;
+    private boolean parsedCoreLibrary;
+    private boolean parsedNoLocals;
+    private boolean parsedOptimize;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -86,6 +105,8 @@ public class DexMojo extends AbstractAndroidMojo {
         File outputFile = new File(project.getBuild().getDirectory() + File.separator + "classes.dex");
         File inputFile = new File(project.getBuild().getDirectory() + File.separator + project.getBuild().getFinalName() + ".jar");
 
+        parseConfiguration();
+        
         if (generateApk) {
             runDex(executor, outputFile, inputFile);
         }
@@ -101,12 +122,27 @@ public class DexMojo extends AbstractAndroidMojo {
         }
     }
 
+    private void parseConfiguration() {
+        // config in pom found
+        if (dex != null) {
+            parsedJvmArguments = dex.getJvmArguments();
+            parsedCoreLibrary = dex.isCoreLibrary();
+            parsedNoLocals = dex.isNoLocals();
+            parsedOptimize = dex.isOptimize();
+        } else {
+            parsedJvmArguments = dexJvmArguments;
+            parsedCoreLibrary = dexCoreLibrary;
+            parsedNoLocals = dexNoLocals;
+            parsedOptimize = dexOptimize;
+        }
+    }
+
     private void runDex(CommandExecutor executor, File outputFile,
                         File inputFile) throws MojoExecutionException {
         File classesOutputDirectory = new File(project.getBuild().getDirectory(), "android-classes");
         List<String> commands = new ArrayList<String>();
-        if (jvmArguments != null) {
-            for (String jvmArgument : jvmArguments) {
+        if (parsedJvmArguments != null) {
+            for (String jvmArgument : parsedJvmArguments) {
                  // preserve backward compatibility allowing argument with or without dash (e.g. Xmx512m as well as
                  // -Xmx512m should work) (see http://code.google.com/p/maven-android-plugin/issues/detail?id=153)
                  if (!jvmArgument.startsWith("-")) {
@@ -119,14 +155,14 @@ public class DexMojo extends AbstractAndroidMojo {
         commands.add("-jar");
         commands.add(getAndroidSdk().getPathForTool("dx.jar"));
         commands.add("--dex");
-        if (!optimize) {
+        if (!parsedOptimize) {
             commands.add("--no-optimize");
         }
-        if (coreLibrary) {
+        if (parsedCoreLibrary) {
             commands.add("--core-library");
         }
         commands.add("--output=" + outputFile.getAbsolutePath());
-        if (noLocals) {
+        if (parsedNoLocals) {
         	commands.add("--no-locals");
         }
         commands.add(classesOutputDirectory.getAbsolutePath());
