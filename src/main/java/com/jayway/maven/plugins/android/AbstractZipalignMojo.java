@@ -18,10 +18,10 @@ import java.util.List;
 public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
 
     /**
-     * The zipalign command configuration to use. As soon as a zipalign goal is invoked the command will be executed
+     * The configuration for the zipalign goal. As soon as a zipalign goal is invoked the command will be executed
      * unless the skip parameter is set. By default the input file is the apk produced by the build in target. The
      * outputApk will use the postfix -aligned.apk. The following shows a default full configuration of the zipalign
-     * goal as an example for changes.
+     * goal as an example for changes as plugin configuration.
      * <pre>
      * &lt;zipalign&gt;
      *     &lt;skip&gt;false&lt;/skip&gt;
@@ -31,34 +31,40 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
      * &lt;/zipalign&gt;
      * </pre>
      *
+     * Values can also be configured as properties on the command line as android.zipalign.*
+     * or in pom or settings file as properties like zipaling.*.
      * @parameter
      */
     private Zipalign zipalign;
 
     /**
+     * Skip the zipalign goal execution.
      * @parameter expression="${android.zipalign.skip}"
-     * @readonly
      * @see com.jayway.maven.plugins.android.configuration.Zipalign#skip
      */
     private Boolean zipalignSkip;
 
     /**
+     * Activate verbose output for the zipalign goal execution.
      * @parameter expression="${android.zipalign.verbose}"
-     * @readonly
      * @see com.jayway.maven.plugins.android.configuration.Zipalign#verbose
      */
     private Boolean zipalignVerbose;
 
     /**
+     * The apk file to be zipaligned. Per default the file is taken from build directory (target normally) using the
+     * build final name as file name and apk as extension.
+     *
      * @parameter expression="${android.zipalign.inputApk}"
-     * @readonly
      * @see com.jayway.maven.plugins.android.configuration.Zipalign#inputApk
      */
     private String zipalignInputApk;
 
     /**
+     * The apk file produced by the zipalign goal. Per default the file is placed into the build directory (target
+     * normally) using the build final name appended with "-aligned" as file name and apk as extension.
+     *
      * @parameter expression="${android.zipalign.outputApk}"
-     * @readonly
      * @see com.jayway.maven.plugins.android.configuration.Zipalign#outputApk
      */
     private String zipalignOutputApk;

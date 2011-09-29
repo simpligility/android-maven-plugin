@@ -7,37 +7,20 @@ package com.jayway.maven.plugins.android.configuration;
  * @author Manfred Moser <manfred@simpligility.com>
  */
 public class Zipalign {
-
     /**
-     * Skip the zipalign command if desired. Similar to test.skip for surefire plugin.
-     *
-     * @parameter
-     * @default=false
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractZipalignMojo#zipalignSkip}
      */
     private Boolean skip;
-
     /**
-     * Activate verbose output of the zipalign command.
-     *
-     * @parameter
-     * @default=true
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractZipalignMojo#zipalignVerbose}
      */
     private Boolean verbose;
-
-
     /**
-     * The apk file to be zipaligned. Per default the file is taken from build directory (target normally) using the
-     * build final name as file name and apk as extension.
-     *
-     * @parameter
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractZipalignMojo#zipalignInputApk}
      */
     private String inputApk;
-
     /**
-     * The apk file produced by the zipalign process. Per default the file is placed into the build directory (target
-     * normally) using the build final name appended with "-aligned" as file name and apk as extension.
-     *
-     * @parameter
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractZipalignMojo#zipalignOutputApk}
      */
     private String outputApk;
 
