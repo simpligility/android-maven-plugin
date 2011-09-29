@@ -1,57 +1,41 @@
 package com.jayway.maven.plugins.android.configuration;
 
 /**
- * Created by IntelliJ IDEA.
- * User: manfred
- * Date: 23/09/11
- * Time: 8:46 PM
- * To change this template use File | Settings | File Templates.
+ * Configuration for the manifest update. This class is only the definition of the parameters that are shadowed in
+ * {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo} and used there.
+ *
+ * @author Manfred Moser <manfred@simpligility.com>
  */
 public class Manifest {
     /**
-	 * Update the <code>android:versionName</code> with the specified parameter.
-	 *
-	 * @parameter expression="${android.manifest.versionName}" default-value="${project.version}"
+	 * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestVersionName}.
 	 */
-	protected String          versionName;
+	protected String versionName;
 
-	/**
-	 * Update the <code>android:versionCode</code> attribute with the specified parameter.
-	 *
-	 * @parameter expression="${android.manifest.versionCode}"
+    /**
+	 * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestVersionCode}.
 	 */
-	protected Integer         versionCode;
+	protected Integer versionCode;
 
-	/**
-	  * Auto increment the <code>android:versionCode</code> attribute with each build.
-	  *
-	  * @parameter expression="${android.manifest.versionCodeAutoIncrement}" default-value="false"
-	  */
-	 private boolean             versionCodeAutoIncrement = false;
-
-	/**
-	 * Update the <code>android:versionCode</code> attribute automatically from the project version
-	 * e.g 3.0.1 will become version code 301. As described in this blog post
-	 * http://www.simpligility.com/2010/11/release-version-management-for-your-android-application/
-	 * but done without using resource filtering.
-	 *
-	 * @parameter expression="${android.manifest.versionCodeUpdateFromVersion} default-value="false"
+    /**
+	 * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestVersionCodeAutoIncrement}.
 	 */
-	protected Boolean         versionCodeUpdateFromVersion = false;
+	 private boolean versionCodeAutoIncrement = false;
 
-	/**
-	 * Update the <code>android:sharedUserId</code> attribute with the specified parameter.
-	 *
-	 * @parameter expression="${android.manifest.sharedUserId}"
+    /**
+	 * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestVersionCodeUpdateFromVersion}.
 	 */
-	protected String          sharedUserId;
+	protected Boolean versionCodeUpdateFromVersion = false;
 
-	/**
-	 * Update the <code>android:debuggable</code> attribute with the specified parameter.
-	 *
-	 * @parameter expression="${android.manifest.debuggable}"
+    /**
+	 * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestSharedUserId}.
 	 */
-	protected Boolean         debuggable;
+	protected String sharedUserId;
+
+    /**
+	 * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestDebuggable}.
+	 */
+	protected Boolean debuggable;
 
     public String getVersionName() {
         return versionName;
