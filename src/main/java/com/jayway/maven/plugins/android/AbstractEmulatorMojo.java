@@ -61,7 +61,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
     public static final String OS_NAME = System.getProperty("os.name").toLowerCase(Locale.US);
 
     /**
-     * The Android emulator configuration to use. All values are optional.
+     * Configuration for the emulator goals. Either use the plugin configuration like this
      * <pre>
      * &lt;emulator&gt;
      *   &lt;avd&gt;Default&lt;/avd&gt;
@@ -69,6 +69,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      *   &lt;options&gt;-no-skin&lt;/options&gt;
      * &lt;/emulator&gt;
      * </pre>
+     * or configure as properties  on the command line as android.emulator.avd, android.emulator.wait and
+     * android.emulator.options or in pom or settings file as emulator.avd, emulator.wait and emulator.options.
      *
      * @parameter
      */
@@ -78,7 +80,6 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      * Name of the Android Virtual Device (emulatorAvd) that will be started by the emulator. Default value is "Default"
      *
      * @parameter expression="${android.emulator.avd}"
-     * @readonly
      * @see com.jayway.maven.plugins.android.configuration.Emulator#avd
      */
     private String emulatorAvd;
@@ -88,7 +89,6 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      * Wait time for the emulator start up.
      *
      * @parameter expression="${android.emulator.wait}"
-     * @readonly
      * @see com.jayway.maven.plugins.android.configuration.Emulator#wait
      */
     private String emulatorWait;
@@ -99,7 +99,6 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
      * "-no-skin".
      *
      * @parameter expression="${android.emulator.options}"
-     * @readonly
      * @see com.jayway.maven.plugins.android.configuration.Emulator#options
      */
     private String emulatorOptions;
