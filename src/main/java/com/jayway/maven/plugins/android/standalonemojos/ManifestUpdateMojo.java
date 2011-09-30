@@ -49,7 +49,7 @@ import com.jayway.maven.plugins.android.common.AndroidExtension;
  * <pre>
  *   &lt;plugin&gt;
  *     &lt;groupId&gt;com.jayway.maven.plugins.android.generation2&lt;/groupId&gt;
- *     &lt;artifactId&gt;maven-android-plugin&lt;/artifactId&gt;
+ *     &lt;artifactId&gt;android-maven-plugin&lt;/artifactId&gt;
  *     &lt;executions&gt;
  *       &lt;execution&gt;
  *         &lt;id&gt;update-manifest&lt;/id&gt;
