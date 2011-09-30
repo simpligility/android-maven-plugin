@@ -288,6 +288,9 @@
     </build>
 
     <distributionManagement>
+        <relocation>
+            <artifactId>android-maven-plugin</artifactId>
+        </relocation>
         <repository>
             <id>oss.sonatype.org-jayway-staging</id>
             <name>OpenSource Release Staging on Sonatype.org</name>
