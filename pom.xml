@@ -290,6 +290,7 @@
     <distributionManagement>
         <relocation>
             <artifactId>android-maven-plugin</artifactId>
+            <message>The plugin artifactId has been renamed to android-maven-plugin. See http://code.google.com/p/maven-android-plugin for instructions.</message>
         </relocation>
         <repository>
             <id>oss.sonatype.org-jayway-staging</id>
