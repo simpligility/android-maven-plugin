@@ -89,7 +89,7 @@ public class Test {
      * deviceSerialNumber_manufacturer_model.
      * <br /><br />
      * The file contains system properties from the system running
-     * the Maven Android Plugin (JVM) and device properties from the
+     * the Android Maven Plugin (JVM) and device properties from the
      * device/emulator the tests are running on.
      * <br /><br />
      * The file contains a single TestSuite for all tests and a
