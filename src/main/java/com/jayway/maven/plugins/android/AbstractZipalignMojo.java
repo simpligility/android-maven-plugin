@@ -32,7 +32,7 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo {
      * </pre>
      *
      * Values can also be configured as properties on the command line as android.zipalign.*
-     * or in pom or settings file as properties like zipaling.*.
+     * or in pom or settings file as properties like zipalign.*.
      * @parameter
      */
     private Zipalign zipalign;
