@@ -124,7 +124,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      *
      * @parameter expression="${android.test.skip}" default-value="auto"
      */
-    private String skip;
+    private String testSkip;
 
     /**
      * Package name of the apk we wish to instrument. If not specified, it is inferred from
@@ -133,7 +133,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      * @optional
      * @parameter expression="${android.test.instrumentationPackage}
      */
-    private String instrumentationPackage;
+    private String testInstrumentationPackage;
 
     /**
      * Class name of test runner. If not specified, it is inferred from <code>AndroidManifest.xml</code>.
@@ -141,7 +141,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      * @optional
      * @parameter expression="${android.test.instrumentationRunner}"
      */
-    private String instrumentationRunner;
+    private String testInstrumentationRunner;
 
     /**
      * Enable debug causing the test runner to wait until debugger is
@@ -150,7 +150,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      * @optional
      * @parameter default-value=false expression="${android.test.debug}"
      */
-    private boolean debug;
+    private boolean testDebug;
 
 
     /**
@@ -160,7 +160,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      * @optional
      * @parameter default-value=false expression="${android.test.coverage}"
      */
-    private boolean coverage;
+    private boolean testCoverage;
 
     /**
      * Enable this flag to run a log only and not execute the tests.
@@ -168,7 +168,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      * @optional
      * @parameter default-value=false expression="${android.test.logonly}"
      */
-    private boolean logOnly;
+    private boolean testLogOnly;
 
     /**
      * If specified only execute tests of certain size as defined by
@@ -180,7 +180,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      * @optional
      * @parameter expression="${android.test.testsize}"
      */
-    private String testSize;
+    private String testTestSize;
 
     /**
      * Create a junit xml format compatible output file containing
@@ -207,31 +207,35 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      * @optional
      * @parameter default-value=true expression="${android.test.createreport}"
      */
-    private boolean createReport;
+    private boolean testCreateReport;
 
     /**
-     * <p>Whether to execute tests only in given packages</p>
+     * <p>Whether to execute tests only in given packages as part of the instrumentation tests.</p>
      * <pre>
      * &lt;packages&gt;
      *     &lt;package&gt;your.package.name&lt;/package&gt;
      * &lt;/packages&gt;
      * </pre>
+     * or as e.g. -Dandroid.test.packages=package1,package2
      *
-     * @parameter
+     * @optional
+     * @parameter expression="${android.test.packages}
      */
-    protected List packages;
+    protected List testPackages;
 
     /**
-     * <p>Whether to execute test classes which are specified.</p>
+     * <p>Whether to execute test classes which are specified as part of the instrumentation tests.</p>
      * <pre>
      * &lt;classes&gt;
      *     &lt;class&gt;your.package.name.YourTestClass&lt;/class&gt;
      * &lt;/classes&gt;
      * </pre>
+     * or as e.g. -Dandroid.test.classes=class1,class2
      *
-     * @parameter
+     * @optional
+     * @parameter expression="${android.test.classes}
      */
-    protected List classes;
+    protected List testClasses;
 
     private boolean classesExists;
     private boolean packagesExists;
@@ -347,16 +351,16 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
         }
         // no pom, we take properties
         else {
-            parsedSkip = skip;
-            parsedInstrumentationPackage = instrumentationPackage;
-            parsedInstrumentationRunner = instrumentationRunner;
-            parsedClasses = classes;
-            parsedPackages = packages;
-            parsedTestSize = testSize;
-            parsedCoverage= coverage;
-            parsedDebug= debug;
-            parsedLogOnly = logOnly;
-            parsedCreateReport = createReport;
+            parsedSkip = testSkip;
+            parsedInstrumentationPackage = testInstrumentationPackage;
+            parsedInstrumentationRunner = testInstrumentationRunner;
+            parsedClasses = testClasses;
+            parsedPackages = testPackages;
+            parsedTestSize = testTestSize;
+            parsedCoverage= testCoverage;
+            parsedDebug= testDebug;
+            parsedLogOnly = testLogOnly;
+            parsedCreateReport = testCreateReport;
         }
     }
 
@@ -387,15 +391,15 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
             return true;
         }
 
-        if ("auto".equalsIgnoreCase(parsedSkip)) {
+        if (parsedSkip == null || "auto".equalsIgnoreCase(parsedSkip)) {
             if (extractInstrumentationRunnerFromAndroidManifest(androidManifestFile) == null) {
-                getLog().info("No InstrumentetationRunner found - skipping tests");
+                getLog().info("No InstrumentationRunner found - skipping tests");
                 return false;
             }
             return AndroidTestFinder.containsAndroidTests(new File(project.getBuild().getDirectory(), "android-classes"));
         }
 
-        throw new MojoFailureException("enableIntegrationTest must be configured as 'true', 'false' or 'auto'.");
+        throw new MojoFailureException("android.test.skip must be configured as 'true', 'false' or 'auto'.");
 
     }
 
