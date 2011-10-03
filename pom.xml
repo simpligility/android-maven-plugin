@@ -86,7 +86,7 @@
         <dependency>
             <groupId>com.google.android.tools</groupId>
             <artifactId>ddmlib</artifactId>
-            <version>r10</version>
+            <version>r13</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
