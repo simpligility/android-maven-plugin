@@ -33,46 +33,6 @@ import com.jayway.maven.plugins.android.common.AndroidExtension;
 
 /**
  * Updates various version attributes present in the <code>AndroidManifest.xml</code> file.
- * <p>
- * You can configure this mojo to update the following manifest attributes:
- * </p>
- * <p>
- * <code>android:versionName</code> on the <code>manifest</code> element.
- * <code>android:versionCode</code> on the <code>manifest</code> element.
- * <code>android:sharedUserId</code> on the <code>manifest</code> element.
- * <code>android:debuggable</code> on the <code>application</code> element.
- * </p>
- * <p>
- * Note: This process will reformat the <code>AndroidManifest.xml</code> per JAXP {@link Transformer} defaults if updates are made to the manifest.
- * <p>
- * You can configure attributes in the plugin configuration like so
- * <pre>
- *   &lt;plugin&gt;
- *     &lt;groupId&gt;com.jayway.maven.plugins.android.generation2&lt;/groupId&gt;
- *     &lt;artifactId&gt;android-maven-plugin&lt;/artifactId&gt;
- *     &lt;executions&gt;
- *       &lt;execution&gt;
- *         &lt;id&gt;update-manifest&lt;/id&gt;
- *         &lt;goals&gt;
- *           &lt;goal&gt;manifest-update&lt;/goal&gt;
- *         &lt;/goals&gt;
- *         &lt;configuration&gt;
- *           &lt;manifest&gt;
- *             &lt;versionName&gt;&lt;/versionName&gt;
- *             &lt;versionCode&gt;123&lt;/versionCode&gt;
- *             &lt;versionCodeAutoIncrement&gt;true|false&lt;/versionCodeAutoIncrement&gt;
- *             &lt;versionCodeUpdateFromVersion&gt;true|false&lt;/versionCodeUpdateFromVersion&gt;
- *             &lt;sharedUserId&gt;anId&lt;/sharedUserId&gt;
- *             &lt;debuggable&gt;true|false&lt;/debuggable&gt;
- *           &lt;/manifest&gt;
- *         &lt;/configuration&gt;
- *       &lt;/execution&gt;
- *     &lt;/executions&gt;
- *   &lt;/plugin&gt;
- * </pre>
- * or use properties set in the pom or settings file or supplied as parameter. All parameters follow a android
- * .manifest.* naming convention.
- * <p>
  *
  * @author joakim@erdfelt.com
  * @author nic.strong@gmail.com
@@ -91,7 +51,48 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 	private static final String ELEM_APPLICATION         = "application";
 
     /**
-     * The container for all the manifest update related configuration.
+     * Configuration for the manifest-update goal.
+     * <p>
+     * You can configure this mojo to update the following manifest attributes:
+     * </p>
+     * <p>
+     * <code>android:versionName</code> on the <code>manifest</code> element.
+     * <code>android:versionCode</code> on the <code>manifest</code> element.
+     * <code>android:sharedUserId</code> on the <code>manifest</code> element.
+     * <code>android:debuggable</code> on the <code>application</code> element.
+     * </p>
+     * <p>
+     * Note: This process will reformat the <code>AndroidManifest.xml</code> per JAXP {@link Transformer} defaults if
+     * updates are made to the manifest.
+     * <p>
+     * You can configure attributes in the plugin configuration like so
+     * <pre>
+     *   &lt;plugin&gt;
+     *     &lt;groupId&gt;com.jayway.maven.plugins.android.generation2&lt;/groupId&gt;
+     *     &lt;artifactId&gt;android-maven-plugin&lt;/artifactId&gt;
+     *     &lt;executions&gt;
+     *       &lt;execution&gt;
+     *         &lt;id&gt;update-manifest&lt;/id&gt;
+     *         &lt;goals&gt;
+     *           &lt;goal&gt;manifest-update&lt;/goal&gt;
+     *         &lt;/goals&gt;
+     *         &lt;configuration&gt;
+     *           &lt;manifest&gt;
+     *             &lt;versionName&gt;&lt;/versionName&gt;
+     *             &lt;versionCode&gt;123&lt;/versionCode&gt;
+     *             &lt;versionCodeAutoIncrement&gt;true|false&lt;/versionCodeAutoIncrement&gt;
+     *             &lt;versionCodeUpdateFromVersion&gt;true|false&lt;/versionCodeUpdateFromVersion&gt;
+     *             &lt;sharedUserId&gt;anId&lt;/sharedUserId&gt;
+     *             &lt;debuggable&gt;true|false&lt;/debuggable&gt;
+     *           &lt;/manifest&gt;
+     *         &lt;/configuration&gt;
+     *       &lt;/execution&gt;
+     *     &lt;/executions&gt;
+     *   &lt;/plugin&gt;
+     * </pre>
+     * or use properties set in the pom or settings file or supplied as command line parameter. Add "android." in front
+     * of the property name for command line usage. All parameters follow a manifest.* naming convention.
+     * <p>
      *
      * @parameter
      */
@@ -103,21 +104,21 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 	 *
 	 * @parameter expression="${android.manifest.versionName}" default-value="${project.version}"
 	 */
-	protected String          versionName;
+	protected String manifestVersionName;
 
 	/**
 	 * Update the <code>android:versionCode</code> attribute with the specified parameter.
 	 *
 	 * @parameter expression="${android.manifest.versionCode}"
 	 */
-	protected Integer         versionCode;
+	protected Integer manifestVersionCode;
 
 	/**
 	  * Auto increment the <code>android:versionCode</code> attribute with each build.
 	  *
 	  * @parameter expression="${android.manifest.versionCodeAutoincrement}" default-value="false"
 	  */
-	 private boolean             versionCodeAutoIncrement = false;
+	 private boolean manifestVersionCodeAutoIncrement = false;
 
 	/**
 	 * Update the <code>android:versionCode</code> attribute automatically from the project version
@@ -127,21 +128,21 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 	 *
 	 * @parameter expression="${android.manifest.versionCodeUpdateFromVersion} default-value="false"
 	 */
-	protected Boolean         versionCodeUpdateFromVersion = false;
+	protected Boolean manifestVersionCodeUpdateFromVersion = false;
 
 	/**
 	 * Update the <code>android:sharedUserId</code> attribute with the specified parameter.
 	 *
 	 * @parameter expression="${android.manifest.sharedUserId}"
 	 */
-	protected String          sharedUserId;
+	protected String manifestSharedUserId;
 
 	/**
 	 * Update the <code>android:debuggable</code> attribute with the specified parameter.
 	 *
 	 * @parameter expression="${android.manifest.debuggable}"
 	 */
-	protected Boolean         debuggable;
+	protected Boolean manifestDebuggable;
 
 
     private String parsedVersionName;
@@ -197,12 +198,12 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
             parsedSharedUserId = manifest.getSharedUserId();
             parsedDebuggable = manifest.getDebuggable();
         } else {
-            parsedVersionName = versionName;
-            parsedVersionCode = versionCode;
-            parsedVersionCodeAutoIncrement = versionCodeAutoIncrement;
-            parsedVersionCodeUpdateFromVersion = versionCodeUpdateFromVersion;
-            parsedSharedUserId = sharedUserId;
-            parsedDebuggable = debuggable;
+            parsedVersionName = manifestVersionName;
+            parsedVersionCode = manifestVersionCode;
+            parsedVersionCodeAutoIncrement = manifestVersionCodeAutoIncrement;
+            parsedVersionCodeUpdateFromVersion = manifestVersionCodeUpdateFromVersion;
+            parsedSharedUserId = manifestSharedUserId;
+            parsedDebuggable = manifestDebuggable;
         }
     }
 
@@ -323,7 +324,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 				if (node.getNodeType() == Node.ELEMENT_NODE) {
 					Element element = (Element)node;
 					Attr debuggableAttrib = element.getAttributeNode(ATTR_DEBUGGABLE);
-					if (debuggableAttrib == null || debuggable != BooleanUtils.toBoolean(debuggableAttrib.getValue())) {
+					if (debuggableAttrib == null || manifestDebuggable != BooleanUtils.toBoolean(debuggableAttrib.getValue())) {
 						getLog().info("Setting " + ATTR_DEBUGGABLE + " to " + parsedDebuggable);
 						element.setAttribute(ATTR_DEBUGGABLE, String.valueOf(parsedDebuggable));
 						dirty = true;

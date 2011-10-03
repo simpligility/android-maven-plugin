@@ -85,7 +85,7 @@ import org.xml.sax.SAXException;
 public class RunMojo extends AbstractAndroidMojo {
 
     /**
-     * <p>The Run configuration to use can be configured in the plugin configuration in the pom file as:</p>
+     * <p>The configuration for the run goal can be set up in the plugin configuration in the pom file as:</p>
      * <pre>
      * &lt;run&gt;
      *     &lt;debug&gt;true&lt;/debug&gt;
@@ -98,19 +98,18 @@ public class RunMojo extends AbstractAndroidMojo {
      *     &lt;run.debug&gt;true&lt;/run.debug&gt;
      * &lt;/properties&gt;
      * </pre>
-     * or from command-line with parameter <code>-Dandroid.ndk.path</code>.</p>
+     * or from command-line with parameter <code>-Dandroid.run.debug=true</code>.</p>
      *
      * @parameter
      */
     private Run run;
 
     /**
-     * If true, the device or emulator will pause execution of the process at
-     * startup to wait for a debugger to connect.
-     * 
+     * Debug parameter for the the run goal. If true, the device or emulator will pause execution of the process at
+     * startup to wait for a debugger to connect. Also see the "run" parameter documentation.
      * @parameter expression="${android.run.debug}" default-value="false"
      */
-    protected boolean debug;
+    protected boolean runDebug;
 
     /* the value for the debug flag after parsing pom and parameter */
     private boolean parsedDebug;
@@ -177,7 +176,7 @@ public class RunMojo extends AbstractAndroidMojo {
         if (run != null) {
             parsedDebug = run.isDebug();
         } else {
-            parsedDebug = debug;
+            parsedDebug = runDebug;
         }
 
     }

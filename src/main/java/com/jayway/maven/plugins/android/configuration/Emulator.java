@@ -9,25 +9,17 @@ package com.jayway.maven.plugins.android.configuration;
 public class Emulator {
 
     /**
-     * Name of the Android Virtual Device (avd) that will be started by the emulator. Default value is "Default"
-     *
-     * @parameter expression="${android.emulator.avd}"
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractEmulatorMojo#emulatorAvd}
      */
     private String avd;
 
     /**
-     * Wait time for the emulator start up.
-     *
-     * @parameter expression="${android.emulator.wait}"
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractEmulatorMojo#emulatorWait}
      */
     private String wait;
 
     /**
-     * Additional command line options for the emulator start up. This option can be used to pass any additional
-     * options desired to the invocation of the emulator. Use emulator -help for more details. An example would be
-     * "-no-skin".
-     *
-     * @parameter expression="${android.emulator.options}"
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractEmulatorMojo#emulatorOptions}
      */
     private String options;
 
