@@ -324,7 +324,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 				if (node.getNodeType() == Node.ELEMENT_NODE) {
 					Element element = (Element)node;
 					Attr debuggableAttrib = element.getAttributeNode(ATTR_DEBUGGABLE);
-					if (debuggableAttrib == null || manifestDebuggable != BooleanUtils.toBoolean(debuggableAttrib.getValue())) {
+					if (debuggableAttrib == null || parsedDebuggable != BooleanUtils.toBoolean(debuggableAttrib.getValue())) {
 						getLog().info("Setting " + ATTR_DEBUGGABLE + " to " + parsedDebuggable);
 						element.setAttribute(ATTR_DEBUGGABLE, String.valueOf(parsedDebuggable));
 						dirty = true;
