@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.jayway.maven.plugins.android.configuration.Push;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -46,6 +47,30 @@ import com.jayway.maven.plugins.android.common.LogSyncProgressMonitor;
 public class PushMojo extends AbstractAndroidMojo {
 
     /**
+     * <p>The configuration for the push goal can be set up in the plugin configuration in the pom file as:</p>
+     * <pre>
+     * &lt;push&gt;
+     *     &lt;source&gt;path&lt;/source&gt;
+     *     &lt;destination&gt;path&lt;/destination&gt;
+     * &lt;/push&gt;
+     * </pre>
+     * <p>The parameters can also be configured as property in the pom or settings file
+     * <pre>
+     * &lt;properties&gt;
+     *     &lt;push.source&gt;pathondevice&lt;/push.source&gt;
+     *     &lt;push.destination&gt;path&lt;/push.destination&gt;
+     * &lt;/properties&gt;
+     * </pre>
+     * or from command-line with parameter
+     * <code>-Dandroid.push.source=path</code>
+     * and
+     * <code>-Dandroid.push.destination=path</code>.</p>
+     *
+     * @parameter
+     */
+    private Push push;
+
+    /**
      * The file name of the local filesystem file to push to the emulator or
      * device either as absolute path or relative to the execution folder.
      * 
@@ -54,7 +79,7 @@ public class PushMojo extends AbstractAndroidMojo {
      * @parameter expression="${android.push.source}"
      * @required
      */
-    private File source;
+    private String pushSource;
 
     /**
      * The destination file name as absolute path on the emulator or device.
@@ -65,10 +90,15 @@ public class PushMojo extends AbstractAndroidMojo {
      * @parameter expression="${android.push.destination}"
      * @required
      */
-    private String destination;
+    private String pushDestination;
+    
+    private File parsedSource;
+    private String parsedDestination;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        
+
+        parseConfiguration();
+
         final Map<String, String> sourceDestinationMap = calculateSourceDestinationMapping();
         
         doWithDevices(new DeviceCallback() {
@@ -113,6 +143,19 @@ public class PushMojo extends AbstractAndroidMojo {
         });
     }
 
+    private void parseConfiguration() {
+        if (push != null) {
+            parsedSource = new File(push.getSource());
+            parsedDestination = push.getDestination();
+
+
+        } else {
+            parsedSource = new File(pushSource);
+            parsedDestination = pushDestination;
+        }
+    }
+
+
     /**
      * Calculates a map which contains all files to be pushed to the device or
      * emulator. The source filename works as the key while the value is the
@@ -126,32 +169,32 @@ public class PushMojo extends AbstractAndroidMojo {
         Map<String, String> result = new HashMap<String, String>();
 
         final String destinationPath;
-        if (destination.endsWith("/")) {
-            destinationPath = destination + source.getName();
+        if (parsedDestination.endsWith("/")) {
+            destinationPath = parsedDestination + parsedSource.getName();
         } else {
-            destinationPath = destination;
+            destinationPath = parsedDestination;
         }
 
-        if (source.isFile()) {
+        if (parsedSource.isFile()) {
             // only put the source in
-            final String sourcePath = source.getAbsolutePath();
+            final String sourcePath = parsedSource.getAbsolutePath();
             result.put(sourcePath, destinationPath);
-        } else if (source.isDirectory()) {
+        } else if (parsedSource.isDirectory()) {
             // find recursively all files to be pushed
             @SuppressWarnings("unchecked")
-            Collection<File> filesList = FileUtils.listFiles(source, null, true);
+            Collection<File> filesList = FileUtils.listFiles(parsedSource, null, true);
             for (File file : filesList) {
                 // make the file's path relative - this is kind of a hack but it
                 // works just fine in this controlled environment
                 String filePath = file.getAbsolutePath().substring(
-                        source.getAbsolutePath().length());
+                        parsedSource.getAbsolutePath().length());
 
                 result.put(file.getAbsolutePath(), destinationPath + filePath);
             }
         } else {
             throw new MojoExecutionException(
                     "Cannot execute push goal: File or directory "
-                            + source.getAbsolutePath() + " does not exist.");
+                            + parsedSource.getAbsolutePath() + " does not exist.");
         }
         return result;
     }
