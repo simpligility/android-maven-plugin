@@ -19,6 +19,7 @@ package com.jayway.maven.plugins.android.standalonemojos;
 import java.io.File;
 import java.io.IOException;
 
+import com.jayway.maven.plugins.android.configuration.Pull;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -47,12 +48,34 @@ import com.jayway.maven.plugins.android.common.LogSyncProgressMonitor;
 public class PullMojo extends AbstractAndroidMojo {
 
     /**
+     * <p>The configuration for the pull goal can be set up in the plugin configuration in the pom file as:</p>
+     * <pre>
+     * &lt;pull&gt;
+     *     &lt;source&gt;path&lt;/source&gt;
+     *     &lt;destination&gt;path&lt;/destination&gt;
+     * &lt;/pull&gt;
+     * </pre>
+     * <p>The parameters can also be configured as property in the pom or settings file
+     * <pre>
+     * &lt;properties&gt;
+     *     &lt;pull.source&gt;pathondevice&lt;/pull.source&gt;
+     *     &lt;pull.destination&gt;path&lt;/pull.destination&gt;
+     * &lt;/properties&gt;
+     * </pre>
+     * or from command-line with parameter <code>-Dandroid.pull.source=path</code>
+     * and <code>-Dandroid.pull.destination=path</code>.</p>
+     *
+     * @parameter
+     */
+    private Pull pull;
+
+    /**
      * The path of the source file or directory on the emulator/device.
      * 
      * @parameter expression="${android.pull.source}"
      * @required
      */
-    private String source;
+    private String pullSource;
 
     /**
      * The path of the destination to copy the file to.
@@ -70,9 +93,15 @@ public class PullMojo extends AbstractAndroidMojo {
      * @parameter expression="${android.pull.destination}"
      * @required
      */
-    private String destination;
+    private String pullDestination;
+
+    private String parsedSource;
+    private String parsedDestination;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+
+        parseConfiguration();
+
         doWithDevices(new DeviceCallback() {
             public void doWithDevice(final IDevice device) throws MojoExecutionException {
                 // message will be set later according to the processed files
@@ -82,12 +111,12 @@ public class PullMojo extends AbstractAndroidMojo {
                     FileListingService fileListingService = device
                             .getFileListingService();
 
-                    FileEntry sourceFileEntry = getFileEntry(source,
+                    FileEntry sourceFileEntry = getFileEntry(parsedSource,
                             fileListingService);
 
                     if (sourceFileEntry.isDirectory()) {
                         // pulling directory
-                        File destinationDir = new File(destination);
+                        File destinationDir = new File(parsedDestination);
                         if (!destinationDir.exists()) {
                             getLog().info(
                                     "Creating destination directory "
@@ -99,7 +128,7 @@ public class PullMojo extends AbstractAndroidMojo {
                                 .getAbsolutePath();
 
                         FileEntry[] fileEntries;
-                        if (destination.endsWith(File.separator)) {
+                        if (parsedDestination.endsWith(File.separator)) {
                             // pull source directory directly
                             fileEntries = new FileEntry[] { sourceFileEntry };
                         } else {
@@ -108,7 +137,7 @@ public class PullMojo extends AbstractAndroidMojo {
                                     sourceFileEntry, true, null);
                         }
 
-                        message = "Pull of " + source + " to "
+                        message = "Pull of " + parsedSource+ " to "
                                 + destinationDirPath + " from ";
 
                         syncService.pull(fileEntries, destinationDirPath,
@@ -116,7 +145,7 @@ public class PullMojo extends AbstractAndroidMojo {
                     } else {
                         // pulling file
                         File parentDir = new File(
-                                FilenameUtils.getFullPath(destination));
+                                FilenameUtils.getFullPath(parsedDestination));
                         if (!parentDir.exists()) {
                             getLog().info(
                                     "Creating destination directory "
@@ -125,13 +154,13 @@ public class PullMojo extends AbstractAndroidMojo {
                         }
 
                         String destinationFileName;
-                        if (destination.endsWith(File.separator)) {
+                        if (parsedDestination.endsWith(File.separator)) {
                             // keep original filename
-                            destinationFileName = FilenameUtils.getName(source);
+                            destinationFileName = FilenameUtils.getName(parsedSource);
                         } else {
                             // rename filename
                             destinationFileName = FilenameUtils
-                                    .getName(destination);
+                                    .getName(parsedDestination);
                         }
 
                         File destinationFile = new File(parentDir,
@@ -139,7 +168,7 @@ public class PullMojo extends AbstractAndroidMojo {
                         String destionationFilePath = destinationFile
                                 .getAbsolutePath();
 
-                        message = "Pull of " + source + " to "
+                        message = "Pull of " + parsedSource + " to "
                                 + destionationFilePath + " from ";
 
                         syncService.pullFile(sourceFileEntry,
@@ -170,6 +199,17 @@ public class PullMojo extends AbstractAndroidMojo {
             }
         });
 
+    }
+
+    private void parseConfiguration() {
+        if (pull != null) {
+            parsedSource = pull.getSource();
+            parsedDestination = pull.getDestination();
+
+        } else {
+            parsedSource = pullSource;
+            parsedDestination = pullDestination;
+        }
     }
 
     /**
@@ -209,8 +249,6 @@ public class PullMojo extends AbstractAndroidMojo {
                         + filePath + " does not exist on device.");
             }
         }
-
         return fileEntry;
     }
-
 }
