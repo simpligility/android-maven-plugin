@@ -116,7 +116,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 	/**
 	  * Auto increment the <code>android:versionCode</code> attribute with each build.
 	  *
-	  * @parameter expression="${android.manifest.versionCodeAutoincrement}" default-value="false"
+	  * @parameter expression="${android.manifest.versionCodeAutoIncrement}" default-value="false"
 	  */
 	 private boolean manifestVersionCodeAutoIncrement = false;
 
