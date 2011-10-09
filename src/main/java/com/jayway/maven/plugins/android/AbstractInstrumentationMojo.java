@@ -24,7 +24,6 @@ import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.RemoteAndroidTestRunner;
 import com.android.ddmlib.testrunner.TestIdentifier;
-
 import com.jayway.maven.plugins.android.asm.AndroidTestFinder;
 import com.jayway.maven.plugins.android.common.DeviceHelper;
 import com.jayway.maven.plugins.android.configuration.Test;
@@ -34,17 +33,15 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
@@ -56,12 +53,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-
 
 import static com.android.ddmlib.testrunner.ITestRunListener.TestFailure.ERROR;
 
@@ -702,9 +693,14 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
                 String newline = "\r\n";
                 // if there is message like
                 // junit.junit.framework.AssertionFailedError ... there is no message
-                boolean hasMessage = !trace.startsWith("junit.") && trace.indexOf(newline) > 0;
+                int messageEnd = trace.indexOf(newline);
+                boolean hasMessage = !trace.startsWith("junit.") && messageEnd > 0;
                 if (hasMessage) {
-                    return trace.substring(trace.indexOf(":") + 2, trace.indexOf("\r\n"));
+                    int messageStart = trace.indexOf(":") + 2;
+                    if (messageStart > messageEnd) {
+                        messageEnd = trace.indexOf(newline+"at"); // match start of stack trace "\r\nat org.junit....."
+                    }
+                    return trace.substring(messageStart, messageEnd);
                 } else {
                     return StringUtils.EMPTY;
                 }
