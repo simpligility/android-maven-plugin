@@ -11,8 +11,9 @@ public class DeviceHelper {
 
     private static final String MANUFACTURER_PROPERTY = "ro.product.manufacturer";
     private static final String MODEL_PROPERTY = "ro.product.model";
+    private static final char[] ILLEGAL_CHARACTERS = { '/', '\n', '\r', '\t', '\0', '\f', '`', '?', '*', '\\', '<', '>', '|', '\"', ':' };
 
-    /**
+                                                                                                                                              /**
      * Get a device identifier string that is suitable for filenames as well as log messages.
      * This means it is human readable and contains no spaces.
      * Used for instrumentation test report file names so see more at
@@ -36,7 +37,8 @@ public class DeviceHelper {
         if (StringUtils.isNotBlank(model)) {
             identfier.append(SEPARATOR).append(model);
         }
-        return identfier.toString();
+
+        return FileNameHelper.fixFileName(identfier.toString());
     }
 
     /**
@@ -52,4 +54,5 @@ public class DeviceHelper {
     public static String getModel(IDevice device) {
             return StringUtils.deleteWhitespace(device.getProperty(MODEL_PROPERTY));
     }
+
 }
