@@ -11,7 +11,6 @@ public class DeviceHelper {
 
     private static final String MANUFACTURER_PROPERTY = "ro.product.manufacturer";
     private static final String MODEL_PROPERTY = "ro.product.model";
-    private static final char[] ILLEGAL_CHARACTERS = { '/', '\n', '\r', '\t', '\0', '\f', '`', '?', '*', '\\', '<', '>', '|', '\"', ':' };
 
                                                                                                                                               /**
      * Get a device identifier string that is suitable for filenames as well as log messages.
