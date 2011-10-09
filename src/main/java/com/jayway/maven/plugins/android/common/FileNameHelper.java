@@ -1,9 +1,8 @@
 package com.jayway.maven.plugins.android.common;
 
 /**
- * User: alexv
- * Date: 09/10/11
- * Time: 17:21
+ * FileNameHelper can make a valid filename.
+ * @author alexv
  */
 public class FileNameHelper {
     //    { '/', '\n', '\r', '\t', '\0', '\f', '`', '?', '*', '\\', '<', '>', '|', '\"', ':' };
