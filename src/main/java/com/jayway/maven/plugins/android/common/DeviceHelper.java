@@ -12,7 +12,7 @@ public class DeviceHelper {
     private static final String MANUFACTURER_PROPERTY = "ro.product.manufacturer";
     private static final String MODEL_PROPERTY = "ro.product.model";
 
-                                                                                                                                              /**
+    /**
      * Get a device identifier string that is suitable for filenames as well as log messages.
      * This means it is human readable and contains no spaces.
      * Used for instrumentation test report file names so see more at
