@@ -265,9 +265,9 @@ public class ApkBuilder {
         try {
             addResourcesFromJarMethod.invoke(builder, new Object[] { jarFile });
         } catch (InvocationTargetException e) {
-            log.error("Cannot add resources from jar", e.getCause());
-            throw new MojoExecutionException("Cannot add resources from jar",
-                    e.getCause());
+            final String message = "Cannot add resources from " + jarFile.getAbsolutePath();
+            log.error(message, e.getCause());
+            throw new MojoExecutionException(message, e.getCause());
         } catch (Exception e) {
             log.error("Cannot add source folder", e);
             throw new MojoExecutionException("Cannot add resources from jar", e);
