@@ -683,7 +683,7 @@ public class ApkMojo extends AbstractAndroidMojo {
                 final org.sonatype.aether.artifact.Artifact depAetherArtifact = dep.getArtifact();
                 if ("so".equals( depAetherArtifact.getExtension()))
                 {
-                    final Artifact mavenArtifact = artifactFactory.createDependencyArtifact( artifact.getGroupId(), artifact.getArtifactId(), VersionRange.createFromVersion( artifact.getVersion() ), depAetherArtifact.getExtension(), artifact.getClassifier(),dep.getScope());
+                    final Artifact mavenArtifact = artifactFactory.createDependencyArtifact( depAetherArtifact.getGroupId(), depAetherArtifact.getArtifactId(), VersionRange.createFromVersion( depAetherArtifact.getVersion() ), depAetherArtifact.getExtension(), depAetherArtifact.getClassifier(),dep.getScope());
                     mavenArtifact.setFile(depAetherArtifact.getFile());
                     artifacts.add( mavenArtifact );
                 }
