@@ -105,11 +105,23 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      */
     protected File ndkOutputDirectory;
 
-    /** <p>Folder containing native libraries compiled and linked by the NDK.</p>
+    /** <p>Folder containing native, shared libraries compiled and linked by the NDK.</p>
      *
      * @parameter expression="${android.nativeLibrariesDirectory}" default-value="${project.basedir}/libs"
      */
-    private File nativeLibrariesDirectory;
+    private File nativeSharedLibrariesDirectory;
+
+    /** <p>Folder containing native, static libraries compiled and linked by the NDK.</p>
+     *
+     * @parameter expression="${android.nativeStaticLibrariesDirectory}" default-value="${project.basedir}/obj/local"
+     */
+    private File nativeStaticLibrariesDirectory;
+
+    /** <p>Target to invoke on the native makefile.</p>
+     *
+     * @parameter expression="${android.nativeTarget}"
+     */
+    private String target;
 
     /**
      * Defines the architecture for the NDK build
@@ -122,7 +134,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         // This points 
-        File nativeLibDirectory = new File( nativeLibrariesDirectory , ndkArchitecture );
+        File nativeLibDirectory = new File((project.getPackaging().equals("a") ? nativeStaticLibrariesDirectory : nativeSharedLibrariesDirectory), ndkArchitecture );
 
         final boolean libsDirectoryExists = nativeLibDirectory.exists();
 
@@ -154,6 +166,12 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             for ( final String command : additionalCommands ) {
                 commands.add( command );
             }
+        }
+
+        // If a build target is specified, tag that onto the command line as the
+        // very last of the parameters
+        if (target != null) {
+            commands.add(target);
         }
 
         final String ndkBuildPath = getAndroidNdk().getNdkBuildPath();
@@ -196,12 +214,12 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
         }
 
         // Attempt to attach the native library if the project is defined as a "pure" native Android library
-        // (packaging is 'so') or if the plugin has been configured to attach the native library to the build
-        if ( "so".equals(project.getPackaging()) || attachNativeArtifacts ) {
+        // (packaging is 'so' or 'a') or if the plugin has been configured to attach the native library to the build
+        if ( "so".equals(project.getPackaging()) || "a".equals(project.getPackaging()) || attachNativeArtifacts ) {
 
             File[] files = nativeLibDirectory.listFiles( new FilenameFilter() {
                 public boolean accept( final File dir, final String name ) {
-                    return name.endsWith( ".so" );
+                    return name.endsWith( ".so" ) || name.endsWith( ".a" );
                 }
             } );
 
@@ -213,11 +231,28 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
                 }
             } else {
                 getLog().debug( "Adding native compile artifact: " + files[ 0 ] );
-                projectHelper.attachArtifact( this.project, "so", ( ndkClassifier != null ? ndkClassifier : ndkArchitecture ), files[ 0 ] );
+                final String artifactType = resolveArtifactType(files[0]);
+                projectHelper.attachArtifact( this.project, artifactType, ( ndkClassifier != null ? ndkClassifier : ndkArchitecture ), files[ 0 ] );
             }
 
         }
 
+    }
+
+    /** Resolve the artifact type from the current project and the specified file.  If the project packaging is
+     * either 'a' or 'so' it will use the packaging, otherwise it checks the file for the extension
+     *
+     * @param file The file being added as an artifact
+     * @return The artifact type (so or a)
+     */
+    private String resolveArtifactType(File file) {
+        if ("so".equals(project.getPackaging()) || "a".equals(project.getPackaging())) {
+            return project.getPackaging();
+        }
+        else {
+            // At this point, the file (as found by our filtering previously will end with either 'so' or 'a'
+            return file.getName().endsWith("so") ? "so" : "a";
+        }
     }
 
     /**
