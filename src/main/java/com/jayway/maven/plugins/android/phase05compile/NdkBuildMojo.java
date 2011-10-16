@@ -239,7 +239,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
                 IOUtil.copy( makeFile, new FileOutputStream( f ));
 
                 executor.addEnvironment( "ANDROID_MAVEN_PLUGIN_MAKEFILE", f.getAbsolutePath() );
-                executor.addEnvironment( "ANDROID_MAVEN_PLUGIN_STATIC_LIBRARIES", MakefileHelper.createStaticLibraryList(resolvedstaticLibraryArtifacts) );
+                executor.addEnvironment( "ANDROID_MAVEN_PLUGIN_LOCAL_STATIC_LIBRARIES", MakefileHelper.createStaticLibraryList(resolvedstaticLibraryArtifacts) );
 
             } catch ( IOException e ) {
                 e.printStackTrace();
