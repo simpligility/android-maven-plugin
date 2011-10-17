@@ -842,6 +842,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     }
 
     protected String getLibraryUnpackDirectory(Artifact apkLibraryArtifact) {
-    	return unpackedApkLibsDirectory.getAbsolutePath() + "/" + apkLibraryArtifact.getId().replace(":", "_");
+    	return AbstractAndroidMojo.getLibraryUnpackDirectory( unpackedApkLibsDirectory, apkLibraryArtifact );
+    }
+
+    public static String getLibraryUnpackDirectory( File unpackedApkLibsDirectory, Artifact apkLibraryArtifact ) {
+        return unpackedApkLibsDirectory.getAbsolutePath()+"/"+apkLibraryArtifact.getId().replace( ":", "_" );
     }
 }

@@ -17,9 +17,17 @@ import java.io.*;
 import java.util.*;
 
 import com.jayway.maven.plugins.android.*;
+import com.jayway.maven.plugins.android.common.AetherHelper;
+import com.jayway.maven.plugins.android.common.NativeHelper;
 import com.jayway.maven.plugins.android.configuration.Ndk;
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiver.MavenArchiveConfiguration;
+import org.apache.maven.archiver.MavenArchiver;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.plugin.*;
+import org.codehaus.plexus.archiver.jar.JarArchiver;
+import org.codehaus.plexus.util.IOUtil;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -130,6 +138,61 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      */
     protected String ndkArchitecture = "armeabi";
 
+     /**
+      * @component
+      * @readonly
+      * @required
+      */
+    protected ArtifactFactory artifactFactory;
+
+    /**
+     * Flag indicating whether the header files used in the build should be included and attached to the build as
+     * an additional artifact.
+     *
+     * @parameter expression="${android.ndk.build.attach-header-files}" default="true"
+     */
+    private boolean attachHeaderFiles = true;
+
+    /** A list of &lt;include> elements specifying the files (usually C/C++ header files) that should be included in the
+     * header archive. When not specified, the default includes will be <code><br/>
+     * &lt;includes><br/>
+     * &nbsp;&lt;include>**&#47;*.h&lt;/include><br/>
+     * &lt;/includes><br/>
+     * </code>
+     *
+     * @parameter
+     */
+    private String[] includes;
+
+    /** A list of &lt;include> elements specifying the files (usually C/C++ header files) that should be excluded from
+     * the header archive.
+     *
+     * @parameter
+     */
+    private String[] excludes;
+
+    /** The Jar archiver.
+     *
+     * @component role="org.codehaus.plexus.archiver.Archiver" roleHint="jar"
+     */
+    private JarArchiver jarArchiver;
+
+    /**
+     * The archive configuration to use.
+     * See <a href="http://maven.apache.org/shared/maven-archiver/index.html">Maven Archiver Reference</a>.
+     *
+     * @parameter
+     */
+    private MavenArchiveConfiguration archive = new MavenArchiveConfiguration();
+
+    /**
+     * Flag indicating whether the header files for native, static library dependencies should be used.  If true,
+     * the header archive for each statically linked dependency will be resolved.
+     *
+     * @parameter expression="${android.ndk.build.use-header-archives}" default="true"
+     */
+    private boolean useHeaderArchives = true;
+
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -154,8 +217,28 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
 
         final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
 
-        executor.setLogger( this.getLog() );
+        final Set<Artifact> staticLibraryArtifacts = findStaticLibraryDependencies();
+        // If there are any static libraries the code needs to link to, include those in the make file
+        if (!staticLibraryArtifacts.isEmpty())
+        {
+            try {
+                final Set<Artifact> resolvedstaticLibraryArtifacts = AetherHelper.resolveArtifacts( staticLibraryArtifacts, repoSystem, repoSession, projectRepos );
 
+                File f = File.createTempFile( "android_maven_plugin_makefile", ".mk" );
+                f.deleteOnExit();
+
+                String makeFile = MakefileHelper.createMakefileFromArtifacts( f.getParentFile(), resolvedstaticLibraryArtifacts, useHeaderArchives, repoSession, projectRepos, repoSystem);
+                IOUtil.copy( makeFile, new FileOutputStream( f ));
+
+                executor.addEnvironment( "ANDROID_MAVEN_PLUGIN_MAKEFILE", f.getAbsolutePath() );
+                executor.addEnvironment( "ANDROID_MAVEN_PLUGIN_LOCAL_STATIC_LIBRARIES", MakefileHelper.createStaticLibraryList(resolvedstaticLibraryArtifacts) );
+
+            } catch ( IOException e ) {
+                e.printStackTrace();
+            }
+        }
+
+        executor.setLogger( this.getLog() );
         final List<String> commands = new ArrayList<String>();
 
         commands.add( "-C" );
@@ -170,8 +253,11 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
 
         // If a build target is specified, tag that onto the command line as the
         // very last of the parameters
-        if (target != null) {
+        if ( target != null ) {
             commands.add(target);
+        }
+        else if ( "a".equals( project.getPackaging() ) ) {
+            commands.add( project.getArtifactId() );
         }
 
         final String ndkBuildPath = getAndroidNdk().getNdkBuildPath();
@@ -207,6 +293,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
 
         if ( !libsDirectoryExists ) {
             getLog().info( "Cleaning up native library output directory after build" );
+            getLog().debug( "Removing directory: " + directoryToRemove );
             if ( !directoryToRemove.delete() ) {
                 getLog().warn( "Could not remove directory, marking as delete on exit" );
                 directoryToRemove.deleteOnExit();
@@ -219,7 +306,12 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
 
             File[] files = nativeLibDirectory.listFiles( new FilenameFilter() {
                 public boolean accept( final File dir, final String name ) {
-                    return name.endsWith( ".so" ) || name.endsWith( ".a" );
+                    if ( "a".equals( project.getPackaging() ) ) {
+                        return name.endsWith( ".a" );
+                    }
+                    else {
+                          return name.endsWith( ".so" );
+                    }
                 }
             } );
 
@@ -237,6 +329,34 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
 
         }
 
+        // If building a
+        if ( "a".equals( project.getPackaging() ) && attachHeaderFiles ) {
+
+            MavenArchiver mavenArchiver = new MavenArchiver();
+            mavenArchiver.setArchiver( jarArchiver );
+            final File jarFile = getJarFile( new File( project.getBuild().getDirectory() ) );
+            mavenArchiver.setOutputFile( jarFile );
+            mavenArchiver.getArchiver().addDirectory( new File(project.getBasedir() + "/jni/"), includes, excludes );
+            try {
+                mavenArchiver.createArchive( project, archive );
+
+                projectHelper.attachArtifact( project, "har", jarFile );
+
+            } catch ( Exception e ) {
+                throw new MojoExecutionException( e.getMessage() );
+            }
+        }
+
+    }
+
+    protected File getJarFile( File basedir ) {
+        return new File( basedir, project.getBuild().getFinalName() +".har" );
+    }
+
+    private Set<Artifact> findStaticLibraryDependencies() throws MojoExecutionException {
+
+        NativeHelper nativeHelper = new NativeHelper( project, projectRepos, repoSession, repoSystem, artifactFactory, getLog() );
+        return nativeHelper.getNativeDependenciesArtifacts( unpackedApkLibsDirectory, false);
     }
 
     /** Resolve the artifact type from the current project and the specified file.  If the project packaging is

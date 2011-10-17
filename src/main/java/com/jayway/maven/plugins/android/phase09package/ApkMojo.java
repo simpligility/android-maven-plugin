@@ -35,12 +35,11 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import com.jayway.maven.plugins.android.common.AetherHelper;
+import com.jayway.maven.plugins.android.common.NativeHelper;
 import com.jayway.maven.plugins.android.configuration.Sign;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.util.AbstractScanner;
@@ -50,12 +49,7 @@ import com.jayway.maven.plugins.android.AndroidSigner;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import org.codehaus.plexus.util.DirectoryScanner;
-import org.sonatype.aether.collection.CollectRequest;
-import org.sonatype.aether.graph.Dependency;
-import org.sonatype.aether.graph.DependencyNode;
-import org.sonatype.aether.resolution.DependencyRequest;
-import org.sonatype.aether.util.filter.ScopeDependencyFilter;
-import org.sonatype.aether.util.graph.PreorderNodeListGenerator;
+
 
 /**
  * Creates the apk file. By default signs it with debug keystore.<br/>
@@ -67,7 +61,6 @@ import org.sonatype.aether.util.graph.PreorderNodeListGenerator;
  * @requiresDependencyResolution compile
  */
 public class ApkMojo extends AbstractAndroidMojo {
-
 
     /**
      * <p>How to sign the apk.</p>
@@ -517,7 +510,8 @@ public class ApkMojo extends AbstractAndroidMojo {
         final boolean hasValidNativeLibrariesDirectory = nativeLibrariesDirectory != null && nativeLibrariesDirectory.exists() && ( nativeLibrariesDirectory.listFiles() != null && nativeLibrariesDirectory.listFiles().length > 0 );
 
         // Retrieve any native dependencies or attached artifacts.  This may include artifacts from the ndk-build MOJO
-        final Set<Artifact> artifacts = getNativeDependenciesArtifacts();
+        NativeHelper nativeHelper = new NativeHelper( project, projectRepos, repoSession, repoSystem, artifactFactory, getLog() );
+        final Set<Artifact> artifacts = nativeHelper.getNativeDependenciesArtifacts(unpackedApkLibsDirectory, true);
 
         final boolean hasValidBuildNativeLibrariesDirectory = nativeLibrariesOutputDirectory.exists() && ( nativeLibrariesOutputDirectory.listFiles() != null && nativeLibrariesOutputDirectory.listFiles().length > 0 );
 
@@ -601,98 +595,6 @@ public class ApkMojo extends AbstractAndroidMojo {
         }
 
         return nativeLibrariesDependenciesHardwareArchitectureDefault;
-    }
-
-    private Set<Artifact> getNativeDependenciesArtifacts() throws MojoExecutionException {
-        final Set<Artifact> filteredArtifacts = new HashSet<Artifact>();
-
-        // Add all dependent artifacts declared in the pom file
-        @SuppressWarnings("unchecked")
-        final Set<Artifact> allArtifacts = project.getDependencyArtifacts();
-
-        // Add all attached artifacts as well - this could come from the NDK mojo for example
-        boolean result = allArtifacts.addAll( project.getAttachedArtifacts() );
-
-        for (Artifact artifact : allArtifacts) {
-            // A null value in the scope indicates that the artifact has been attached
-            // as part of a previous build step (NDK mojo)
-            if ( "so".equals( artifact.getType() ) && artifact.getScope() == null ) {
-                // Including attached artifact
-                getLog().debug( "Including attached artifact: " + artifact.getArtifactId() + "(" + artifact.getGroupId() + ")" );
-                filteredArtifacts.add( artifact );
-            }
-            else if ("so".equals(artifact.getType()) && (Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) || Artifact.SCOPE_RUNTIME.equals( artifact.getScope() ))) {
-                filteredArtifacts.add(artifact);
-            }
-            else if (APKLIB.equals(artifact.getType())) {
-                // Check if the artifact contains a libs folder - if so, include it in the list
-                File libsFolder = new File(getLibraryUnpackDirectory(artifact) + "/libs");
-                if (libsFolder.exists())
-                {
-                    filteredArtifacts.add(artifact);
-                }
-            }
-        }
-
-        final Set<Artifact> transientArtifacts = processTransientDependencies(allArtifacts);
-
-        filteredArtifacts.addAll( transientArtifacts );
-
-        return filteredArtifacts;
-    }
-
-    private Set<Artifact> processTransientDependencies( Set<Artifact> artifacts ) throws MojoExecutionException {
-
-        Set<Artifact> transientArtifacts = new TreeSet<Artifact>(  );
-        for ( Artifact artifact : artifacts ) {
-            if ( !"provided".equals( artifact.getScope() ) && !artifact.isOptional() && !project.getAttachedArtifacts().contains(artifact))
-            {
-                org.sonatype.aether.artifact.Artifact aetherArtifact = AetherHelper.createAetherArtifact( artifact );
-                transientArtifacts.addAll( processTransientDependencies( artifact, aetherArtifact, artifact.getArtifactHandler() ) );
-            }
-        }
-
-        return transientArtifacts;
-
-    }
-
-    private Set<Artifact> processTransientDependencies(Artifact artifact, org.sonatype.aether.artifact.Artifact aetherArtifact, ArtifactHandler artifactHandler) throws MojoExecutionException {
-
-        try {
-            final Set<Artifact> artifacts = new TreeSet<Artifact>(  );
-
-            Dependency dependency = new Dependency( aetherArtifact, artifact.getScope() );
-
-            final CollectRequest collectRequest=new CollectRequest();
-
-            collectRequest.setRoot( dependency );
-            collectRequest.setRepositories( projectRepos );
-            final DependencyNode node = repoSystem.collectDependencies( repoSession, collectRequest ).getRoot();
-
-            final DependencyRequest dependencyRequest = new DependencyRequest( node, new ScopeDependencyFilter( Arrays.asList( "compile", "runtime"), Arrays.asList("test") ) );
-
-
-            repoSystem.resolveDependencies( repoSession, dependencyRequest );
-
-            PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
-            node.accept( nlg );
-
-            final List<Dependency> dependencies = nlg.getDependencies( false );
-
-            for ( Dependency dep : dependencies ) {
-                final org.sonatype.aether.artifact.Artifact depAetherArtifact = dep.getArtifact();
-                if ("so".equals( depAetherArtifact.getExtension()))
-                {
-                    final Artifact mavenArtifact = artifactFactory.createDependencyArtifact( depAetherArtifact.getGroupId(), depAetherArtifact.getArtifactId(), VersionRange.createFromVersion( depAetherArtifact.getVersion() ), depAetherArtifact.getExtension(), depAetherArtifact.getClassifier(),dep.getScope());
-                    mavenArtifact.setFile(depAetherArtifact.getFile());
-                    artifacts.add( mavenArtifact );
-                }
-            }
-
-            return artifacts;
-        } catch ( Exception e ) {
-            throw new MojoExecutionException( "Error while processing transient dependencies", e );
-        }
     }
 
     private void copyLocalNativeLibraries( final File localNativeLibrariesDirectory, final File destinationDirectory ) throws MojoExecutionException {
