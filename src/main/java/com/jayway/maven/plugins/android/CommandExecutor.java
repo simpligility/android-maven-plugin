@@ -21,7 +21,9 @@ import org.codehaus.plexus.util.cli.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -102,6 +104,13 @@ public interface CommandExecutor {
      */
     String getStandardError();
 
+    /** Adds an environment variable with the specified name and value to the executor.
+     *
+     * @param name
+     * @param value
+     */
+    void addEnvironment( String name, String value );
+
     /**
      * Provides factory services for creating a default instance of the command executor.
      */
@@ -120,6 +129,8 @@ public interface CommandExecutor {
          */
         public static CommandExecutor createDefaultCommmandExecutor() {
             return new CommandExecutor() {
+
+                private Map<String, String> environment;
                 /**
                  * Instance of a plugin logger.
                  */
@@ -169,6 +180,14 @@ public interface CommandExecutor {
 
                     commandline = new Commandline();
                     commandline.setExecutable(executable);
+
+                    // Add the environment variables as needed
+                    if (environment != null) {
+                        for ( Map.Entry<String, String> entry : environment.entrySet() ) {
+                            commandline.addEnvironment( entry.getKey(), entry.getValue() );
+                        }
+                    }
+
                     commandline.addArguments(commands.toArray(new String[commands.size()]));
                     if (workingDirectory != null && workingDirectory.exists()) {
                         commandline.setWorkingDirectory(workingDirectory.getAbsolutePath());
@@ -203,6 +222,14 @@ public interface CommandExecutor {
 
                 public String getStandardError() {
                     return stdErr.toString();
+                }
+
+                @Override
+                public void addEnvironment( String name, String value ) {
+                    if (environment == null) {
+                        environment = new HashMap<String, String>(  );
+                    }
+                    environment.put( name, value );
                 }
 
 
