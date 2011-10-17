@@ -28,10 +28,12 @@ public class MakefileHelper {
      *
      * @param outputDir Directory to resolve artifact locations relative to.  Makefiles contain relative paths
      * @param artifacts The list of (static library) dependency artifacts to create the Makefile from
-     * @param useHeaderArchives
+     * @param useHeaderArchives If true, the Makefile should include a LOCAL_EXPORT_C_INCLUDES statement, pointing to
+     * the location where the header archive was expanded
      * @param repoSession
-     *@param projectRepos
-     * @param repoSystem @return The created Makefile
+     * @param projectRepos
+     * @param repoSystem
+     * @return The created Makefile
      */
     public static String createMakefileFromArtifacts( File outputDir, Set<Artifact> artifacts, boolean useHeaderArchives, RepositorySystemSession repoSession, List<RemoteRepository> projectRepos, RepositorySystem repoSystem) throws MojoExecutionException {
 
@@ -75,8 +77,7 @@ public class MakefileHelper {
                     makeFile.append( '\n' );
                 }
                 catch ( Exception e ) {
-                    // FIXME: Should the build really fail if the dependency can not be found?
-                    throw new MojoExecutionException( "Error while resolving header archieve file for: " + artifact.getArtifactId(),e );
+                    throw new MojoExecutionException( "Error while resolving header archive file for: " + artifact.getArtifactId(),e );
                 }
             }
 
