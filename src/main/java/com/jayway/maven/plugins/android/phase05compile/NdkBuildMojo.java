@@ -146,41 +146,32 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
     protected ArtifactFactory artifactFactory;
 
     /**
-     * Flag indicating whether the header files used in the build should be included.
+     * Flag indicating whether the header files used in the build should be included and attached to the build as
+     * an additional artifact.
      *
      * @parameter expression="${android.ndk.build.attach-header-files}" default="true"
      */
     private boolean attachHeaderFiles = true;
 
-    /**
-     * A list of &lt;include> elements specifying the tests (by pattern) that should be included in testing. When not
-     * specified and when the <code>test</code> parameter is not specified, the default includes will be <code><br/>
+    /** A list of &lt;include> elements specifying the files (usually C/C++ header files) that should be included in the
+     * header archive. When not specified, the default includes will be <code><br/>
      * &lt;includes><br/>
-     * &nbsp;&lt;include>**&#47;Test*.java&lt;/include><br/>
-     * &nbsp;&lt;include>**&#47;*Test.java&lt;/include><br/>
-     * &nbsp;&lt;include>**&#47;*TestCase.java&lt;/include><br/>
+     * &nbsp;&lt;include>**&#47;*.h&lt;/include><br/>
      * &lt;/includes><br/>
-     * </code> This parameter is ignored if the TestNG <code>suiteXmlFiles</code> parameter is specified.
+     * </code>
      *
      * @parameter
      */
     private String[] includes;
 
-    /**
-     * A list of &lt;exclude> elements specifying the tests (by pattern) that should be excluded in testing. When not
-     * specified and when the <code>test</code> parameter is not specified, the default excludes will be <code><br/>
-     * &lt;excludes><br/>
-     * &nbsp;&lt;exclude>**&#47;*$*&lt;/exclude><br/>
-     * &lt;/excludes><br/>
-     * </code> (which excludes all inner classes).<br>
-     * This parameter is ignored if the TestNG <code>suiteXmlFiles</code> parameter is specified.
+    /** A list of &lt;include> elements specifying the files (usually C/C++ header files) that should be excluded from
+     * the header archive.
      *
      * @parameter
      */
     private String[] excludes;
 
-    /**
-     * The Jar archiver.
+    /** The Jar archiver.
      *
      * @component role="org.codehaus.plexus.archiver.Archiver" roleHint="jar"
      */
@@ -195,7 +186,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
     private MavenArchiveConfiguration archive = new MavenArchiveConfiguration();
 
     /**
-     * Flag indicating whether the header files for native, static library dependencies should be used.
+     * Flag indicating whether the header files for native, static library dependencies should be used.  If true,
+     * the header archive for each statically linked dependency will be resolved.
      *
      * @parameter expression="${android.ndk.build.use-header-archives}" default="true"
      */
