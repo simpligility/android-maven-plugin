@@ -28,14 +28,17 @@ public class AetherHelper {
      */
     public static org.sonatype.aether.artifact.Artifact createAetherArtifact(Artifact artifact)
     {
+        DefaultArtifact defaultArtifact;
         if (artifact.getClassifier() != null)
         {
-            return new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getClassifier(), artifact.getType(), artifact.getVersion());
+            defaultArtifact = new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getClassifier(), artifact.getType(), artifact.getVersion());
         }
         else
         {
-            return new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getType(), artifact.getVersion());
+            defaultArtifact = new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getType(), artifact.getVersion());
         }
+        defaultArtifact.setFile(artifact.getFile());
+        return defaultArtifact;
     }
 
    public static Set<Artifact> resolveArtifacts(Set<Artifact> artifacts,
