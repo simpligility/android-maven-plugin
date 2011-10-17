@@ -19,6 +19,7 @@ import java.util.*;
 import com.jayway.maven.plugins.android.*;
 import com.jayway.maven.plugins.android.common.AetherHelper;
 import com.jayway.maven.plugins.android.common.NativeHelper;
+import com.jayway.maven.plugins.android.configuration.HeaderFilesDirective;
 import com.jayway.maven.plugins.android.configuration.Ndk;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiver.MavenArchiveConfiguration;
@@ -153,23 +154,13 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      */
     private boolean attachHeaderFiles = true;
 
-    /** A list of &lt;include> elements specifying the files (usually C/C++ header files) that should be included in the
-     * header archive. When not specified, the default includes will be <code><br/>
-     * &lt;includes><br/>
-     * &nbsp;&lt;include>**&#47;*.h&lt;/include><br/>
-     * &lt;/includes><br/>
-     * </code>
+    /**  fdsfds
+     *
      *
      * @parameter
      */
-    private String[] includes;
+    private HeaderFilesDirective headerFilesDirectives;
 
-    /** A list of &lt;include> elements specifying the files (usually C/C++ header files) that should be excluded from
-     * the header archive.
-     *
-     * @parameter
-     */
-    private String[] excludes;
 
     /** The Jar archiver.
      *
@@ -336,7 +327,15 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             mavenArchiver.setArchiver( jarArchiver );
             final File jarFile = getJarFile( new File( project.getBuild().getDirectory() ) );
             mavenArchiver.setOutputFile( jarFile );
-            mavenArchiver.getArchiver().addDirectory( new File(project.getBasedir() + "/jni/"), includes, excludes );
+
+/*
+            for (HeaderFilesDirective headerFilesDirective : headerFilesDirectives) {
+*/
+                mavenArchiver.getArchiver().addDirectory( new File(headerFilesDirectives.getDirectory()), headerFilesDirectives.getIncludes(),headerFilesDirectives.getExcludes() );
+/*
+            }
+*/
+
             try {
                 mavenArchiver.createArchive( project, archive );
 
