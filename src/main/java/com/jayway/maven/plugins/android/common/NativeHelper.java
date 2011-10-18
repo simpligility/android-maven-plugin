@@ -83,10 +83,9 @@ public class NativeHelper {
 
         Set<Artifact> transientArtifacts = new TreeSet<Artifact>();
         for ( Artifact artifact : artifacts ) {
-            if ( !"provided".equals( artifact.getScope() ) ) {
+            if ( !"provided".equals( artifact.getScope() ) && !artifact.isOptional() && !project.getAttachedArtifacts().contains(artifact)) {
                 org.sonatype.aether.artifact.Artifact aetherArtifact = AetherHelper.createAetherArtifact( artifact );
-
-                transientArtifacts.addAll( processTransientDependencies( aetherArtifact, artifact.getArtifactHandler(), sharedLibraries ) );
+                transientArtifacts.addAll( processTransientDependencies( artifact, aetherArtifact, artifact.getArtifactHandler(), sharedLibraries) );
             }
         }
 
@@ -94,12 +93,11 @@ public class NativeHelper {
 
     }
 
-    private Set<Artifact> processTransientDependencies( org.sonatype.aether.artifact.Artifact aetherArtifact, ArtifactHandler artifactHandler, boolean sharedLibraries ) throws MojoExecutionException {
-
+    private Set<Artifact> processTransientDependencies( Artifact artifact, org.sonatype.aether.artifact.Artifact aetherArtifact, ArtifactHandler artifactHandler, boolean sharedLibraries ) throws MojoExecutionException {
         try {
             final Set<Artifact> artifacts = new TreeSet<Artifact>();
 
-            Dependency dependency = new Dependency( aetherArtifact, "runtime" );
+            Dependency dependency = new Dependency( aetherArtifact, artifact.getScope() );
 
             final CollectRequest collectRequest = new CollectRequest();
 
@@ -118,9 +116,10 @@ public class NativeHelper {
             final List<Dependency> dependencies = nlg.getDependencies( false );
 
             for ( Dependency dep : dependencies ) {
-                final org.sonatype.aether.artifact.Artifact artifact = dep.getArtifact();
-                if ( (sharedLibraries ? "so".equals( artifact.getExtension() ) : "a".equals( artifact.getExtension() )) ) {
-                    final Artifact mavenArtifact = artifactFactory.createDependencyArtifact( artifact.getGroupId(), artifact.getArtifactId(), VersionRange.createFromVersion( artifact.getVersion() ), artifact.getExtension(), artifact.getClassifier(), dep.getScope() );
+                final org.sonatype.aether.artifact.Artifact depAetherArtifact = dep.getArtifact();
+                if ( (sharedLibraries ? "so".equals( depAetherArtifact.getExtension() ) : "a".equals( depAetherArtifact.getExtension() )) ) {
+                    final Artifact mavenArtifact = artifactFactory.createDependencyArtifact( depAetherArtifact.getGroupId(), depAetherArtifact.getArtifactId(), VersionRange.createFromVersion( depAetherArtifact.getVersion() ), depAetherArtifact.getExtension(), depAetherArtifact.getClassifier(), dep.getScope() );
+                    mavenArtifact.setFile(depAetherArtifact.getFile());
                     artifacts.add( mavenArtifact );
                 }
             }
