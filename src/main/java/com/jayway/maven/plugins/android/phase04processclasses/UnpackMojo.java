@@ -25,6 +25,7 @@ import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import com.jayway.maven.plugins.android.common.JarHelper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
@@ -86,7 +87,12 @@ public class UnpackMojo extends AbstractAndroidMojo {
 					}
 				} else {
 					try {
-						unjar(new JarFile(artifact.getFile()), outputDirectory);
+                        JarHelper.unjar(new JarFile(artifact.getFile()), outputDirectory, new JarHelper.UnjarListener() {
+                            @Override
+                            public boolean include(JarEntry jarEntry) {
+                                return !jarEntry.getName().startsWith("META-INF") && jarEntry.getName().endsWith(".class");
+                            }
+                        });
 					} catch (IOException e) {
 						throw new MojoExecutionException(
 								"IOException while unjarring "
@@ -110,28 +116,4 @@ public class UnpackMojo extends AbstractAndroidMojo {
 		return outputDirectory;
 	}
 
-	private void unjar(JarFile jarFile, File outputDirectory)
-			throws IOException {
-		for (Enumeration en = jarFile.entries(); en.hasMoreElements();) {
-			JarEntry entry = (JarEntry) en.nextElement();
-			File entryFile = new File(outputDirectory, entry.getName());
-			if (!entryFile.getParentFile().exists()
-					&& !entry.getName().startsWith("META-INF")) {
-				entryFile.getParentFile().mkdirs();
-			}
-			if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
-				final InputStream in = jarFile.getInputStream(entry);
-				try {
-					final OutputStream out = new FileOutputStream(entryFile);
-					try {
-						IOUtil.copy(in, out);
-					} finally {
-						IOUtils.closeQuietly(out);
-					}
-				} finally {
-					IOUtils.closeQuietly(in);
-				}
-			}
-		}
-	}
 }
