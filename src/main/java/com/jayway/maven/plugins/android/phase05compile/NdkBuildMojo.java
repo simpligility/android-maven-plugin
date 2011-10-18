@@ -154,12 +154,43 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      */
     private boolean attachHeaderFiles = true;
 
-    /**  fdsfds
+    /**  Specifies the set of header files includes/excludes which should be used for bundling the exported header
+     * files.  The below shows an example of how this can be used.
      *
+     * <pre>
+     * &lt;headerFilesDirectives&gt;
+     *   &lt;headerFilesDirective&gt;
+     *     &lt;directory&gt;${basedir}/jni/include&lt;/directory&gt;
+     *     &lt;includes&gt;
+     *       &lt;includes&gt;**\/*.h&lt;/include&gt;
+     *     &lt;/includes&gt;
+     *     &lt;excludes&gt;
+     *       &lt;exclude&gt;**\/*.c&lt;/exclude&gt;
+     *     &lt;/excludes&gt;
+     *   &lt;headerFilesDirective&gt;
+     * &lt;/headerFilesDirectives&gt;
+     * </pre>
+     * <br/>
+     * If no <code>headerFilesDirectives</code> is specified, the default includes will be defined as shown below:
+     * <br/>
+     * <pre>
+     * &lt;headerFilesDirectives&gt;
+     *   &lt;headerFilesDirective&gt;
+     *     &lt;directory&gt;${basedir}/jni&lt;/directory&gt;
+     *     &lt;includes&gt;
+     *       &lt;includes&gt;**\/*.h&lt;/include&gt;
+     *     &lt;/includes&gt;
+     *     &lt;excludes&gt;
+     *       &lt;exclude&gt;**\/*.c&lt;/exclude&gt;
+     *     &lt;/excludes&gt;
+     *   &lt;headerFilesDirective&gt;
+     *   [..]
+     * &lt;/headerFilesDirectives&gt;
+     * </pre>
      *
      * @parameter
      */
-    private HeaderFilesDirective headerFilesDirectives;
+    private List<HeaderFilesDirective> headerFilesDirectives;
 
 
     /** The Jar archiver.
@@ -184,6 +215,18 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      */
     private boolean useHeaderArchives = true;
 
+    /** Defines additional system properties which should be exported to the ndk-build script.  This
+     * <br/>
+     * <pre>
+     * &lt;systemProperties&gt;
+     *   &lt;propertyName&gt;propertyValue&lt;/propertyName&gt;
+     *   &lt;build-target&gt;android&lt;/build-target&gt;
+     *   [..]
+     * &lt;/systemProperties&gt;
+     * </pre>     *
+     * @parameter
+     */
+    private Map<String, String> systemProperties;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -226,6 +269,13 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
 
             } catch ( IOException e ) {
                 e.printStackTrace();
+            }
+        }
+
+        // Add any defined system properties
+        if (systemProperties != null && !systemProperties.isEmpty()) {
+            for ( Map.Entry<String, String> entry : systemProperties.entrySet() ) {
+                executor.addEnvironment( entry.getKey(), entry.getValue() );
             }
         }
 
@@ -328,17 +378,20 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             final File jarFile = getJarFile( new File( project.getBuild().getDirectory() ) );
             mavenArchiver.setOutputFile( jarFile );
 
-/*
-            for (HeaderFilesDirective headerFilesDirective : headerFilesDirectives) {
-*/
-                mavenArchiver.getArchiver().addDirectory( new File(headerFilesDirectives.getDirectory()), headerFilesDirectives.getIncludes(),headerFilesDirectives.getExcludes() );
-/*
+            // Add the header includes as defined by the header files directives - or if not specified, fall back on
+            // the default
+            if ( headerFilesDirectives != null && headerFilesDirectives.size() > 0) {
+                for ( HeaderFilesDirective headerFilesDirective : headerFilesDirectives ) {
+                    mavenArchiver.getArchiver().addDirectory( new File(headerFilesDirective.getDirectory()), headerFilesDirective.getIncludes(),headerFilesDirective.getExcludes() );
+                }
             }
-*/
+            else
+            {
+                mavenArchiver.getArchiver().addDirectory( new File(project.getBasedir() + "/jni"), new String[] {"**/*.h"},new String[] {"**/*.c"} );
+            }
 
             try {
                 mavenArchiver.createArchive( project, archive );
-
                 projectHelper.attachArtifact( project, "har", jarFile );
 
             } catch ( Exception e ) {
