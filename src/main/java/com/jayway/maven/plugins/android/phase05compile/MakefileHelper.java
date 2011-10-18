@@ -1,6 +1,7 @@
 package com.jayway.maven.plugins.android.phase05compile;
 
 import com.jayway.maven.plugins.android.common.AetherHelper;
+import com.jayway.maven.plugins.android.common.JarHelper;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
@@ -11,7 +12,9 @@ import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.repository.RemoteRepository;
 
 import java.io.*;
+import java.net.URI;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -69,7 +72,12 @@ public class MakefileHelper {
                     File includeDir = new File( System.getProperty( "java.io.tmpdir" ), "android_maven_plugin_native_includes" + System.currentTimeMillis() + "_" + resolvedHarArtifact.getArtifactId());
                     includeDir.deleteOnExit();
 
-                    unjar( new JarFile( resolvedHarArtifact.getFile() ), includeDir );
+                    JarHelper.unjar(new JarFile(resolvedHarArtifact.getFile()), includeDir, new JarHelper.UnjarListener() {
+                        @Override
+                        public boolean include(JarEntry jarEntry) {
+                            return !jarEntry.getName().startsWith( "META-INF" );
+                        }
+                    });
 
                     makeFile.append( "LOCAL_EXPORT_C_INCLUDES := " );
                     final String str = includeDir.getAbsolutePath();
@@ -86,32 +94,6 @@ public class MakefileHelper {
         return makeFile.toString();
     }
 
-    private static void unjar( JarFile jarFile, File outputDirectory )
-            throws IOException {
-        for ( Enumeration en = jarFile.entries(); en.hasMoreElements(); ) {
-            JarEntry entry = ( JarEntry ) en.nextElement();
-            File entryFile = new File( outputDirectory, entry.getName() );
-            if ( !entryFile.getParentFile().exists()
-                    && !entry.getName().startsWith( "META-INF" ) ) {
-                entryFile.getParentFile().mkdirs();
-            }
-            if ( !entry.isDirectory() && !entry.getName().startsWith( "META-INF" )) {
-                final InputStream in = jarFile.getInputStream( entry );
-                try {
-                    final OutputStream out = new FileOutputStream( entryFile );
-                    try {
-                        IOUtil.copy( in, out );
-                    }
-                    finally {
-                        IOUtils.closeQuietly( out );
-                    }
-                }
-                finally {
-                    IOUtils.closeQuietly( in );
-                }
-            }
-        }
-    }
 
     /** Resolves the relative path of the specified artifact
      *
@@ -121,7 +103,22 @@ public class MakefileHelper {
      */
     private static String resolveRelativePath( File outputDirectory, File file ) {
         // FIXME: This should really examine the paths used and correct the directory accordingly
-        return ".." + file.getAbsolutePath();
+
+        StringBuilder stringBuilder = new StringBuilder();
+        final String[] split = outputDirectory.getAbsolutePath().split(File.separator);
+
+        if (split == null || split.length == 0)
+        {
+            return file.getAbsolutePath();
+        }
+
+        //
+        stringBuilder.append("..");
+        for (int i = 0; i < split.length-1; i++) {
+            stringBuilder.append(File.separator);
+            stringBuilder.append("..");
+        }
+        return stringBuilder.toString()+ file.getAbsolutePath();
     }
 
     /** Creates a list of artifacts suitable for use in the LOCAL_STATIC_LIBRARIES variable in an Android makefile
@@ -131,11 +128,15 @@ public class MakefileHelper {
      */
     public static String createStaticLibraryList( Set<Artifact> resolvedstaticLibraryArtifacts ) {
         StringBuilder sb = new StringBuilder();
-        for ( Artifact resolvedstaticLibraryArtifact : resolvedstaticLibraryArtifacts ) {
-            sb.append( resolvedstaticLibraryArtifact.getArtifactId() );
-            sb.append( " " );
 
+        for (Iterator<Artifact> iterator = resolvedstaticLibraryArtifacts.iterator(); iterator.hasNext(); ) {
+            Artifact resolvedstaticLibraryArtifact = iterator.next();
+            sb.append( resolvedstaticLibraryArtifact.getArtifactId() );
+            if ( iterator.hasNext() ) {
+                sb.append( " " );
+            }
         }
+
         return sb.toString();
     }
 }
