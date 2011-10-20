@@ -111,6 +111,12 @@ public interface CommandExecutor {
      */
     void addEnvironment( String name, String value );
 
+    void setErrorListener(ErrorListener errorListener);
+
+    public static interface ErrorListener {
+        boolean isError(String error);
+    }
+
     /**
      * Provides factory services for creating a default instance of the command executor.
      */
@@ -150,6 +156,10 @@ public interface CommandExecutor {
                  * Process result
                  */
                 private int result;
+
+                /*
+                 */
+                public ErrorListener errorListener;
 
                 public void setLogger(Log logger) {
                     this.logger = logger;
@@ -232,6 +242,9 @@ public interface CommandExecutor {
                     environment.put( name, value );
                 }
 
+                public void setErrorListener(ErrorListener errorListener) {
+                    this.errorListener = errorListener;
+                }
 
                 public void setPid(long pid) {
                     this.pid = pid;
@@ -271,7 +284,14 @@ public interface CommandExecutor {
                         if (logger != null) {
                             logger.info(line);
                         }
-                        error = true;
+                        if (errorListener != null)
+                        {
+                            error = errorListener.isError(line);
+                        }
+                        else
+                        {
+                            error = true;
+                        }
                     }
 
                     /**

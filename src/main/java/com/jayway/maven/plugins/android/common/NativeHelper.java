@@ -44,6 +44,24 @@ public class NativeHelper {
         this.log = log;
     }
 
+    public static boolean hasStaticNativeLibraryArtifact(Set<Artifact> resolveNativeLibraryArtifacts) {
+        for (Artifact resolveNativeLibraryArtifact : resolveNativeLibraryArtifacts) {
+            if ( "a".equals(resolveNativeLibraryArtifact.getType()) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasSharedNativeLibraryArtifact(Set<Artifact> resolveNativeLibraryArtifacts) {
+        for (Artifact resolveNativeLibraryArtifact : resolveNativeLibraryArtifacts) {
+            if ( "so".equals(resolveNativeLibraryArtifact.getType()) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Set<Artifact> getNativeDependenciesArtifacts(File unpackDirectory, boolean sharedLibraries) throws MojoExecutionException {
         final Set<Artifact> filteredArtifacts = new HashSet<Artifact>();
 
