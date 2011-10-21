@@ -63,7 +63,7 @@ public class NativeHelper {
     }
 
     public Set<Artifact> getNativeDependenciesArtifacts(File unpackDirectory, boolean sharedLibraries) throws MojoExecutionException {
-        final Set<Artifact> filteredArtifacts = new HashSet<Artifact>();
+        final Set<Artifact> filteredArtifacts = new LinkedHashSet<Artifact>();
 
         // Add all dependent artifacts declared in the pom file
         @SuppressWarnings( "unchecked" )
@@ -75,11 +75,11 @@ public class NativeHelper {
         for ( Artifact artifact : allArtifacts ) {
             // A null value in the scope indicates that the artifact has been attached
             // as part of a previous build step (NDK mojo)
-            if ( (sharedLibraries ? "so".equals( artifact.getType() ) : "a".equals( artifact.getType())) && artifact.getScope() == null ) {
+            if ( isNativeLibrary( sharedLibraries, artifact.getType() ) && artifact.getScope() == null ) {
                 // Including attached artifact
                 log.debug( "Including attached artifact: "+artifact.getArtifactId()+"("+artifact.getGroupId()+")" );
                 filteredArtifacts.add( artifact );
-            } else if ( "so".equals( artifact.getType() ) && ( Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) || Artifact.SCOPE_RUNTIME.equals( artifact.getScope() ) ) ) {
+            } else if ( isNativeLibrary( sharedLibraries, artifact.getType() ) && ( Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) || Artifact.SCOPE_RUNTIME.equals( artifact.getScope() ) ) ) {
                 filteredArtifacts.add( artifact );
             } else if ( APKLIB.equals( artifact.getType() ) ) {
                 // Check if the artifact contains a libs folder - if so, include it in the list
@@ -97,9 +97,13 @@ public class NativeHelper {
         return filteredArtifacts;
     }
 
+    private boolean isNativeLibrary( boolean sharedLibraries, String artifactType ) {
+        return (sharedLibraries ? "so".equals( artifactType ) : "a".equals( artifactType ));
+    }
+
     private Set<Artifact> processTransientDependencies( Set<Artifact> artifacts, boolean sharedLibraries ) throws MojoExecutionException {
 
-        Set<Artifact> transientArtifacts = new TreeSet<Artifact>();
+        Set<Artifact> transientArtifacts = new LinkedHashSet<Artifact>();
         for ( Artifact artifact : artifacts ) {
             if ( !"provided".equals( artifact.getScope() ) && !artifact.isOptional() && !project.getAttachedArtifacts().contains(artifact)) {
                 org.sonatype.aether.artifact.Artifact aetherArtifact = AetherHelper.createAetherArtifact( artifact );
@@ -113,7 +117,7 @@ public class NativeHelper {
 
     private Set<Artifact> processTransientDependencies( Artifact artifact, org.sonatype.aether.artifact.Artifact aetherArtifact, ArtifactHandler artifactHandler, boolean sharedLibraries ) throws MojoExecutionException {
         try {
-            final Set<Artifact> artifacts = new TreeSet<Artifact>();
+            final Set<Artifact> artifacts = new LinkedHashSet<Artifact>();
 
             Dependency dependency = new Dependency( aetherArtifact, artifact.getScope() );
 
@@ -135,7 +139,7 @@ public class NativeHelper {
 
             for ( Dependency dep : dependencies ) {
                 final org.sonatype.aether.artifact.Artifact depAetherArtifact = dep.getArtifact();
-                if ( (sharedLibraries ? "so".equals( depAetherArtifact.getExtension() ) : "a".equals( depAetherArtifact.getExtension() )) ) {
+                if ( isNativeLibrary( sharedLibraries, depAetherArtifact.getExtension() ) ) {
                     final Artifact mavenArtifact = artifactFactory.createDependencyArtifact( depAetherArtifact.getGroupId(), depAetherArtifact.getArtifactId(), VersionRange.createFromVersion( depAetherArtifact.getVersion() ), depAetherArtifact.getExtension(), depAetherArtifact.getClassifier(), dep.getScope() );
                     mavenArtifact.setFile(depAetherArtifact.getFile());
                     artifacts.add( mavenArtifact );
