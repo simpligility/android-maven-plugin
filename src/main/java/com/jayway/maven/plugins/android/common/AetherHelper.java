@@ -10,6 +10,7 @@ import org.sonatype.aether.resolution.ArtifactResolutionException;
 import org.sonatype.aether.resolution.ArtifactResult;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -48,7 +49,7 @@ public class AetherHelper {
    {
         try {
 
-            final TreeSet<Artifact> resolvedArtifacts = new TreeSet<Artifact>();
+            final Set<Artifact> resolvedArtifacts = new LinkedHashSet<Artifact>();
 
             for (Artifact artifact : artifacts) {
                 final Artifact resolvedArtifact = AetherHelper.resolveArtifact(artifact,repositorySystem, repositorySystemSession, repositories);

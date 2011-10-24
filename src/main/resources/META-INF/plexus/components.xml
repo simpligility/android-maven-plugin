@@ -85,6 +85,30 @@
             </configuration>
         </component>
 
+        <!-- Adds handling for 'a' packaging (static library).  This implies the POM has defined 'a' as the packaging -->
+        <component>
+            <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+            <role-hint>a</role-hint>
+            <implementation>
+                org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping
+            </implementation>
+            <configuration>
+                <phases>
+                    <generate-sources>
+                        com.jayway.maven.plugins.android.generation2:android-maven-plugin:generate-sources
+                    </generate-sources>
+                    <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
+                    <compile>
+                        com.jayway.maven.plugins.android.generation2:android-maven-plugin:ndk-build
+                    </compile>
+                    <install>
+                        org.apache.maven.plugins:maven-install-plugin:install
+                    </install>
+                    <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
+                </phases>
+            </configuration>
+        </component>
+
         <component>
             <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
             <role-hint>dex</role-hint>
