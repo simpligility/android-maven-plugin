@@ -98,8 +98,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      *   &lt;debug&gt;true|false&lt;/debug&gt;
      *   &lt;coverage&gt;true|false&lt;/coverage&gt;
      *   &lt;logonly&gt;true|false&lt;/logonly&gt;  avd
-     *   &lt;testsize&gt;small|medium|large&lt;/testsize&gt;
-     *   &lt;createreport&gt;true|false&lt;/createreport&gt;
+     *   &lt;testSize&gt;small|medium|large&lt;/testSize&gt;
+     *   &lt;createReport&gt;true|false&lt;/createReport&gt;
      *   &lt;classes&gt;
      *     &lt;class&gt;your.package.name.YourTestClass&lt;/class&gt;
      *   &lt;/classes&gt;
