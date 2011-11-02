@@ -67,6 +67,14 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
      *
      */
     protected File genDirectory;
+    
+    /**
+     * Override default generated folder
+     *
+     * @parameter expression="${android.genDirectoryAidl}" default-value="${project.build.directory}/generated-sources/aidl"
+     *
+     */
+    protected File genDirectoryAidl;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -416,16 +424,15 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         List<String> protoCommands = new ArrayList<String>();
         protoCommands.add("-p" + getAndroidSdk().getPathForFrameworkAidl());
 
-        File generatedSourcesAidlDirectory = new File(project.getBuild().getDirectory() + File.separator + "generated-sources" + File.separator + "aidl");
-        generatedSourcesAidlDirectory.mkdirs();
-        project.addCompileSourceRoot(generatedSourcesAidlDirectory.getPath());
+        genDirectoryAidl.mkdirs();
+        project.addCompileSourceRoot(genDirectoryAidl.getPath());
         Set<File> sourceDirs = files.keySet();
         for (File sourceDir : sourceDirs) {
             protoCommands.add("-I" + sourceDir);
         }
         for (File sourceDir : sourceDirs) {
             for (String relativeAidlFileName : files.get(sourceDir)) {
-                File targetDirectory = new File(generatedSourcesAidlDirectory, new File(relativeAidlFileName).getParent());
+                File targetDirectory = new File(genDirectoryAidl, new File(relativeAidlFileName).getParent());
                 targetDirectory.mkdirs();
 
                 final String shortAidlFileName = new File(relativeAidlFileName).getName();
