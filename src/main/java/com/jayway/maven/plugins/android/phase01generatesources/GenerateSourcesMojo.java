@@ -61,7 +61,7 @@ import com.jayway.maven.plugins.android.ExecutionException;
 public class GenerateSourcesMojo extends AbstractAndroidMojo {
 
     /**
-     * Override default generated folder
+     * Override default generated folder containing R.java
      *
      * @parameter expression="${android.genDirectory}" default-value="${project.build.directory}/generated-sources/r"
      *
@@ -69,7 +69,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     protected File genDirectory;
     
     /**
-     * Override default generated folder
+     * Override default generated folder containing aidl classes
      *
      * @parameter expression="${android.genDirectoryAidl}" default-value="${project.build.directory}/generated-sources/aidl"
      *
