@@ -37,6 +37,8 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 
 /**
+ * Deprecated, no need to unpack, dex will properly read a list of inputs
+ *
  * unpack library.
  * 
  * @author hugo.josefson@jayway.com

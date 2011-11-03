@@ -33,7 +33,7 @@
                         org.apache.maven.plugins:maven-compiler-plugin:compile
                     </compile>
                     <process-classes>
-                        com.jayway.maven.plugins.android.generation2:android-maven-plugin:unpack
+                        com.jayway.maven.plugins.android.generation2:android-maven-plugin:proguard
                     </process-classes>
                     <process-test-resources>
                         org.apache.maven.plugins:maven-resources-plugin:testResources
@@ -155,7 +155,7 @@
                         org.apache.maven.plugins:maven-compiler-plugin:compile
                     </compile>
                     <process-classes>
-                        com.jayway.maven.plugins.android.generation2:android-maven-plugin:unpack
+                        com.jayway.maven.plugins.android.generation2:android-maven-plugin:proguard
                     </process-classes>
                     <process-test-resources>
                         org.apache.maven.plugins:maven-resources-plugin:testResources
