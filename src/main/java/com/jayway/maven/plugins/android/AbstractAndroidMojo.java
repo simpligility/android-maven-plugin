@@ -578,11 +578,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
                             getLog().info("Device " + DeviceHelper.getDescriptiveName(idevice) + " found.");
                             deviceCallback.doWithDevice(idevice);
                         } else if (idevice.isEmulator()
-                                && (idevice.getAvdName().equalsIgnoreCase(device)
-                                    || idevice.getSerialNumber().equalsIgnoreCase(device))) {
+                                && (device.equalsIgnoreCase(idevice.getAvdName())
+                                    || device.equalsIgnoreCase(idevice.getSerialNumber()))) {
                             getLog().info("Emulator " + DeviceHelper.getDescriptiveName(idevice) + " found.");
                             deviceCallback.doWithDevice(idevice);
-                        } else if (!idevice.isEmulator() && idevice.getSerialNumber().equals(device)) {
+                        } else if (!idevice.isEmulator() && device.equals(idevice.getSerialNumber())) {
                             getLog().info("Device " + DeviceHelper.getDescriptiveName(idevice) + " found.");
                             deviceCallback.doWithDevice(idevice);
                         }
