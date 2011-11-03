@@ -136,9 +136,22 @@ public class DexMojo extends AbstractAndroidMojo {
 
         Set<File> inputs = new HashSet<File>();
 
-        inputs.add(new File(project.getBuild().getOutputDirectory()));
-        for (Artifact artifact : getAllRelevantDependencyArtifacts()) {
-            inputs.add(artifact.getFile().getAbsoluteFile());
+        // ugly, don't know a better way to get this in mvn
+        File obfucatedJar = new File(project.getBasedir() + "/target", "obfuscated.jar");
+
+        getLog().info("Checking for existence of: " + obfucatedJar.toString());
+
+        if (obfucatedJar.exists()) {
+            // progurad has been run, use this jar
+            getLog().info("Obfuscated jar exists, using that as input");
+            inputs.add(obfucatedJar);
+        } else {
+            getLog().info("Using non-obfuscated input");
+            // no proguard, use original config
+            inputs.add(new File(project.getBuild().getOutputDirectory()));
+            for (Artifact artifact : getAllRelevantDependencyArtifacts()) {
+                inputs.add(artifact.getFile().getAbsoluteFile());
+            }
         }
 
         return inputs;
@@ -161,7 +174,6 @@ public class DexMojo extends AbstractAndroidMojo {
 
     private void runDex(CommandExecutor executor, File outputFile,
                         Set<File> inputFiles) throws MojoExecutionException {
-        File classesOutputDirectory = new File(project.getBuild().getDirectory(), "android-classes");
         List<String> commands = new ArrayList<String>();
         if (parsedJvmArguments != null) {
             for (String jvmArgument : parsedJvmArguments) {

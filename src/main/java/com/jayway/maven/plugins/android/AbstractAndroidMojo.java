@@ -22,7 +22,9 @@ import com.android.ddmlib.InstallException;
 import com.jayway.maven.plugins.android.common.AetherHelper;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.DeviceHelper;
+import com.jayway.maven.plugins.android.configuration.Proguard;
 import com.jayway.maven.plugins.android.configuration.Sdk;
+import com.jayway.maven.plugins.android.phase04processclasses.ProguardMojo;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.JXPathNotFoundException;
 import org.apache.commons.jxpath.xml.DocumentContainer;
@@ -358,6 +360,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * expression="${android.attachSources}"
      */
     protected boolean attachSources;
+
+    /**
+     * Proguard
+     *
+     * @parameter
+     */
+    protected Proguard proguard;
 
     private static final Object adbLock = new Object();
     private static boolean adbInitialized = false;
@@ -847,5 +856,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
 
     public static String getLibraryUnpackDirectory( File unpackedApkLibsDirectory, Artifact apkLibraryArtifact ) {
         return unpackedApkLibsDirectory.getAbsolutePath()+"/"+apkLibraryArtifact.getId().replace( ":", "_" );
+    }
+
+    protected boolean isProguardEnabled() {
+        return proguard != null;
+    }
+
+    protected Proguard getProguard() {
+        return proguard;
     }
 }
