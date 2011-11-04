@@ -20,6 +20,7 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.configuration.Dex;
+import com.jayway.maven.plugins.android.phase04processclasses.ProguardMojo;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -137,16 +138,16 @@ public class DexMojo extends AbstractAndroidMojo {
         Set<File> inputs = new HashSet<File>();
 
         // ugly, don't know a better way to get this in mvn
-        File obfucatedJar = new File(project.getBasedir() + "/target", "obfuscated.jar");
+        File proguardJar = new File(project.getBuild().getDirectory(), ProguardMojo.PROGUARD_OBFUSCATED_JAR);
 
-        getLog().info("Checking for existence of: " + obfucatedJar.toString());
+        getLog().debug("Checking for existence of: " + proguardJar.toString());
 
-        if (obfucatedJar.exists()) {
+        if (proguardJar.exists()) {
             // progurad has been run, use this jar
-            getLog().info("Obfuscated jar exists, using that as input");
-            inputs.add(obfucatedJar);
+            getLog().debug("Obfuscated jar exists, using that as input");
+            inputs.add(proguardJar);
         } else {
-            getLog().info("Using non-obfuscated input");
+            getLog().debug("Using non-obfuscated input");
             // no proguard, use original config
             inputs.add(new File(project.getBuild().getOutputDirectory()));
             for (Artifact artifact : getAllRelevantDependencyArtifacts()) {

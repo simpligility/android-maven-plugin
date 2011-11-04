@@ -24,6 +24,8 @@ import java.util.Set;
  */
 public class ProguardMojo extends AbstractAndroidMojo {
 
+    public static final String PROGUARD_OBFUSCATED_JAR = "proguard-obfuscated.jar";
+
     private String[] jvmArguments = new String[] {"Xmx256m"};
 
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -35,6 +37,7 @@ public class ProguardMojo extends AbstractAndroidMojo {
 
     private void executeProguard() throws MojoExecutionException {
 
+        // we should make this configurable, users may want to use a newer (or diff) version of proguard
         String proguardJar = getAndroidSdk().getPathForTool("proguard/lib/proguard.jar");
 
         File proguardDir = new File(project.getBuild().getDirectory(), "proguard");
@@ -72,7 +75,7 @@ public class ProguardMojo extends AbstractAndroidMojo {
         }
 
         commands.add("-outjars");
-        commands.add(project.getBuild().getDirectory() + "/obfuscated.jar");
+        commands.add(project.getBuild().getDirectory() + File.separator + PROGUARD_OBFUSCATED_JAR);
 
         commands.add("-libraryjars");
         commands.add(getAndroidSdk().getAndroidJar().getAbsolutePath());
