@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.*;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
+import static org.apache.maven.RepositoryUtils.toDependency;
 
 /**
  * @author Johan Lindquist
@@ -90,7 +91,7 @@ public class NativeHelper {
             }
         }
 
-        Set<Artifact> transientArtifacts = processTransientDependencies( allArtifacts, sharedLibraries );
+        Set<Artifact> transientArtifacts = processTransientDependencies( project.getDependencies(), sharedLibraries );
 
         filteredArtifacts.addAll( transientArtifacts );
 
@@ -101,13 +102,12 @@ public class NativeHelper {
         return (sharedLibraries ? "so".equals( artifactType ) : "a".equals( artifactType ));
     }
 
-    private Set<Artifact> processTransientDependencies( Set<Artifact> artifacts, boolean sharedLibraries ) throws MojoExecutionException {
+    private Set<Artifact> processTransientDependencies( List<org.apache.maven.model.Dependency> dependencies, boolean sharedLibraries ) throws MojoExecutionException {
 
         Set<Artifact> transientArtifacts = new LinkedHashSet<Artifact>();
-        for ( Artifact artifact : artifacts ) {
-            if ( !"provided".equals( artifact.getScope() ) && !artifact.isOptional() && !project.getAttachedArtifacts().contains(artifact)) {
-                org.sonatype.aether.artifact.Artifact aetherArtifact = AetherHelper.createAetherArtifact( artifact );
-                transientArtifacts.addAll( processTransientDependencies( artifact, aetherArtifact, artifact.getArtifactHandler(), sharedLibraries) );
+        for ( org.apache.maven.model.Dependency dependency : dependencies ) {
+            if ( !"provided".equals( dependency.getScope() ) && !dependency.isOptional()) {
+                transientArtifacts.addAll( processTransientDependencies( toDependency(dependency, repoSession.getArtifactTypeRegistry()), sharedLibraries) );
             }
         }
 
@@ -115,11 +115,9 @@ public class NativeHelper {
 
     }
 
-    private Set<Artifact> processTransientDependencies( Artifact artifact, org.sonatype.aether.artifact.Artifact aetherArtifact, ArtifactHandler artifactHandler, boolean sharedLibraries ) throws MojoExecutionException {
+    private Set<Artifact> processTransientDependencies( Dependency dependency, boolean sharedLibraries ) throws MojoExecutionException {
         try {
             final Set<Artifact> artifacts = new LinkedHashSet<Artifact>();
-
-            Dependency dependency = new Dependency( aetherArtifact, artifact.getScope() );
 
             final CollectRequest collectRequest = new CollectRequest();
 
