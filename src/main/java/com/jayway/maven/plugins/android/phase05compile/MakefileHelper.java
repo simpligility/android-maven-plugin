@@ -47,6 +47,12 @@ public class MakefileHelper {
         makeFile.append( '\n' );
         makeFile.append("$(shell echo \"LOCAL_PATH=$(LOCAL_PATH)\" >> $(ANDROID_MAVEN_PLUGIN_LOCAL_C_INCLUDES_FILE))");
         makeFile.append( '\n' );
+        makeFile.append("$(shell echo \"LOCAL_MODULE_FILENAME=$(LOCAL_MODULE_FILENAME)\" >> $(ANDROID_MAVEN_PLUGIN_LOCAL_C_INCLUDES_FILE))");
+        makeFile.append( '\n' );
+        makeFile.append("$(shell echo \"LOCAL_MODULE=$(LOCAL_MODULE)\" >> $(ANDROID_MAVEN_PLUGIN_LOCAL_C_INCLUDES_FILE))");
+        makeFile.append( '\n' );
+        makeFile.append("$(shell echo \"LOCAL_CFLAGS=$(LOCAL_CFLAGS)\" >> $(ANDROID_MAVEN_PLUGIN_LOCAL_C_INCLUDES_FILE))");
+        makeFile.append( '\n' );
 
         if ( !artifacts.isEmpty() )
         {
