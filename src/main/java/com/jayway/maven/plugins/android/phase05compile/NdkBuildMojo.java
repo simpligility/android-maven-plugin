@@ -73,7 +73,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      *
      * @parameter expression="${android.ndk.ndk-build-directory}" default="${basedir}";
      */
-    private String ndkBuildDirectory = "";
+    private String ndkBuildDirectory;
 
     /**
      * <p>Parameter designed to pick up <code>-Dandroid.ndk.path</code> in case there is no pom with an
