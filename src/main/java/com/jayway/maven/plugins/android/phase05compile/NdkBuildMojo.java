@@ -252,6 +252,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      * Defines the regular expression used to detect whether error/warning output from ndk-build is a minor compile warning
      * or is actually an error which should cause the build to fail.
      *
+     * If the pattern matches, the output from the compiler will <strong>not</strong> be considered an error and compile
+     * will be successful.
+     *
      * @parameter expression="${android.ndk.build.build-warnings-regular-expression}" default=".*[warning|note]: .*"
      */
     private String buildWarningsRegularExpression = ".*[warning|note]: .*";
