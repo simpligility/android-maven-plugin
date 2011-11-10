@@ -216,6 +216,7 @@ public class ProguardMojo extends AbstractAndroidMojo {
     }
 
     private void collectLibraryInputFiles() {
+        final String slash = File.separator;
         // we have to add the Java framework classes to the library JARs, since they are not
         // distributed with the JAR on Central, and since we'll strip them out of the android.jar
         // that is shipped with the SDK (since that is not a complete Java distribution)
@@ -226,13 +227,13 @@ public class ProguardMojo extends AbstractAndroidMojo {
             jdkLibsPath = javaHome + "/../Classes";
             addLibraryJar(jdkLibsPath + "/classes.jar");
         } else {
-            jdkLibsPath = javaHome + "/lib";
-            addLibraryJar(jdkLibsPath + "/rt.jar");
+            jdkLibsPath = javaHome + slash + "lib";
+            addLibraryJar(jdkLibsPath + slash + "rt.jar");
         }
         // we also need to add the JAR containing e.g. javax.servlet
-        addLibraryJar(jdkLibsPath + "/jsse.jar");
+        addLibraryJar(jdkLibsPath + slash + "jsse.jar");
         // and the javax.crypto stuff
-        addLibraryJar(jdkLibsPath + "/jce.jar");
+        addLibraryJar(jdkLibsPath + slash + "jce.jar");
 
         // we treat any dependencies with provided scope as library JARs
         for (Artifact artifact : project.getArtifacts()) {
