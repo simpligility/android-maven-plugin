@@ -19,7 +19,8 @@ import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 
 /**
- * Proguard mojo
+ * Processes both application and dependency classes using the ProGuard byte code obfuscator,
+ * minimzer, and optimizer. For more information, see https://proguard.sourceforge.net.
  * 
  * @goal proguard
  * @phase process-classes
