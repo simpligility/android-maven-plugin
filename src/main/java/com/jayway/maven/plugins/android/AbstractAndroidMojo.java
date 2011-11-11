@@ -362,8 +362,22 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected boolean attachSources;
 
     /**
-     * Proguard
-     *
+     * <p>
+     * Enables ProGuard for this build. ProGuard is disabled by default, so in order for it to run,
+     * enable it like so:
+     * </p>
+     * 
+     * <pre>
+     * &lt;proguard&gt;
+     *    &lt;skip&gt;false&lt;/skip&gt;
+     * &lt;/proguard&gt;
+     * </pre>
+     * <p>
+     * A good practice is to create a release profile in your POM, in which you enable ProGuard.
+     * ProGuard should be disabled for development builds, since it obfuscates class and field
+     * names, and since it may interfere with test projects that rely on your application classes.
+     * </p>
+     * 
      * @parameter
      */
     protected Proguard proguard;
