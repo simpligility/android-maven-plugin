@@ -873,7 +873,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     }
 
     protected boolean isProguardEnabled() {
-        return proguard != null;
+        return proguard != null && !proguard.isSkip();
     }
 
     protected Proguard getProguard() {
