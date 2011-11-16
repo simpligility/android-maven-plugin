@@ -513,7 +513,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
                         + DeviceHelper.getDescriptiveName(device));
                 } catch (InstallException e) {
                     throw new MojoExecutionException("Install of "
-                        + apkFile.getAbsolutePath() + "failed.", e);
+                        + apkFile.getAbsolutePath() + " failed.", e);
                 }
             }
         });
@@ -637,7 +637,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
                 } catch (InstallException e) {
                     result.set(false);
                     throw new MojoExecutionException("Uninstall of " +
-                        packageName + "failed.", e);
+                        packageName + " failed.", e);
                 }
             }
         });
