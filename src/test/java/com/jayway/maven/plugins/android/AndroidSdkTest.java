@@ -103,7 +103,7 @@ public class AndroidSdkTest {
         final AndroidSdk sdk11 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "11");
         final AndroidSdk sdk12 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "12");
         final AndroidSdk sdk13 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "13");
-        final AndroidSdk sdk14 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "13");
+        final AndroidSdk sdk14 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "14");
 
         final AndroidSdk sdk1_5 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "1.5");
         final AndroidSdk sdk1_6 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "1.6");
