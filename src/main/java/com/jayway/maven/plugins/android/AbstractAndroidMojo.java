@@ -432,6 +432,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
                 continue;
             }
 
+            if ("apk".equalsIgnoreCase(artifact.getType())) {
+                continue;
+            }
+
            results.add(artifact);
         }
         return results;
