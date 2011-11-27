@@ -1,5 +1,5 @@
 ===============================================================================
-ANDROID MAVEN PLUGIN VERSION 3
+ANDROID MAVEN PLUGIN
 ===============================================================================
 
 The project home page is at http://code.google.com/p/maven-android-plugin
