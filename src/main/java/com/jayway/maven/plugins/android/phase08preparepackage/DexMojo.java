@@ -89,7 +89,7 @@ public class DexMojo extends AbstractAndroidMojo {
      */
     private boolean dexNoLocals;
 
-    /**
+    /**                                         
      * Decides whether to pass the --no-optimize flag to dx.
      *
      * @parameter expression="${android.dex.optimize}" default-value="true"
@@ -161,10 +161,28 @@ public class DexMojo extends AbstractAndroidMojo {
     private void parseConfiguration() {
         // config in pom found
         if (dex != null) {
-            parsedJvmArguments = dex.getJvmArguments();
-            parsedCoreLibrary = dex.isCoreLibrary();
-            parsedNoLocals = dex.isNoLocals();
-            parsedOptimize = dex.isOptimize();
+            // the if statements make sure that properties/command line parameter overrides configuration
+            // and that the dafaults apply in all cases;
+            if (dex.getJvmArguments() == null) {
+                parsedJvmArguments =  dexJvmArguments;
+            } else {
+                parsedJvmArguments = dex.getJvmArguments();
+            }
+            if (dex.isCoreLibrary() == null) {
+                parsedCoreLibrary = dexCoreLibrary;
+            } else {
+                parsedCoreLibrary = dex.isCoreLibrary();
+            }
+            if (dex.isNoLocals() == null) {
+                parsedNoLocals = dexNoLocals;
+            } else {
+                parsedNoLocals = dex.isNoLocals();
+            }
+            if (dex.isOptimize() == null) {
+                parsedOptimize = dexOptimize;
+            } else {
+                parsedOptimize = dex.isOptimize();
+            }
         } else {
             parsedJvmArguments = dexJvmArguments;
             parsedCoreLibrary = dexCoreLibrary;
