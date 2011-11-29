@@ -10,4 +10,7 @@
             <sideBarEnabled>true</sideBarEnabled>
         </fluidoSkin>
     </custom>
+    <body>
+        <menu ref="reports" />
+    </body>
 </project>
