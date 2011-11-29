@@ -70,7 +70,7 @@ public class DexMojo extends AbstractAndroidMojo {
     /**
      * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build.
      *
-     * @parameter expression="${android.dex.jvmArguments}"
+     * @parameter expression="${android.dex.jvmArguments}" default-value="-Xmx1024M"
      * @optional
      */
     private String[] dexJvmArguments;
