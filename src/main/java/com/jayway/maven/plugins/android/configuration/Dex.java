@@ -15,29 +15,29 @@ public class Dex {
     /**
       * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#dexCoreLibrary}
       */
-    private boolean coreLibrary = false;
+    private Boolean coreLibrary;
     /**
       * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#dexNoLocals}
       */
-    private boolean noLocals = false;
+    private Boolean noLocals;
     /**
       * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#dexOptimize}
       */
-    private boolean optimize = true;
+    private Boolean optimize;
 
     public String[] getJvmArguments() {
         return jvmArguments;
     }
 
-    public boolean isCoreLibrary() {
+    public Boolean isCoreLibrary() {
         return coreLibrary;
     }
 
-    public boolean isNoLocals() {
+    public Boolean isNoLocals() {
         return noLocals;
     }
 
-    public boolean isOptimize() {
+    public Boolean isOptimize() {
         return optimize;
     }
 }
