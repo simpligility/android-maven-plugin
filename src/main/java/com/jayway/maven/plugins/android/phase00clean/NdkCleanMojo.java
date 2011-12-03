@@ -19,11 +19,6 @@ import java.io.IOException;
 public class NdkCleanMojo extends AbstractMojo {
 
     /**
-     * @parameter expression="${android.nativeBuildLibsOutputDirectory}" default-value="${project.basedir}/libs"
-     */
-    File ndkBuildLibsOutputDirectory;
-
-    /**
      * @parameter expression="${android.nativeBuildObjOutputDirectory}" default-value="${project.basedir}/obj"
      */
     File ndkBuildObjOutputDirectory;
@@ -36,16 +31,6 @@ public class NdkCleanMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        getLog().debug("Cleaning out native library code directory : " + ndkBuildLibsOutputDirectory.getAbsolutePath());
-
-        if (ndkBuildLibsOutputDirectory.exists())
-        {
-            try {
-                FileUtils.deleteDirectory( ndkBuildLibsOutputDirectory );
-            } catch ( IOException e ) {
-                getLog().error( "Error deleting directory: " + e.getMessage(), e);
-            }
-        }
 
         getLog().debug("Cleaning out native object code directory: " + ndkBuildObjOutputDirectory.getAbsolutePath());
 
