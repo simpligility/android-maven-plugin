@@ -429,7 +429,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
                     getLog().warn( "Currently, only a single, final native library is supported by the build" );
                 }
             } else {
-                getLog().debug( "Adding native compile artifact: " + files[ 0 ] );
+                getLog().debug( "Adding native compile artifact: "+files[ 0 ] );
                 final String artifactType = resolveArtifactType(files[0]);
                 projectHelper.attachArtifact( this.project, artifactType, ( ndkClassifier != null ? ndkClassifier : ndkArchitecture ), files[ 0 ] );
             }
@@ -468,7 +468,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
                         String[] includes = localCIncludes.split(" ");
                         for (String include : includes) {
                             final HeaderFilesDirective headerFilesDirective = new HeaderFilesDirective();
-                            headerFilesDirective.setDirectory(include);
+                            File includeDir = new File( project.getBasedir(), include );
+                            headerFilesDirective.setDirectory(includeDir.getAbsolutePath());
                             headerFilesDirective.setIncludes(new String[]{"**/*.h"});
                             finalHeaderFilesDirectives.add(headerFilesDirective);
                         }
