@@ -19,6 +19,11 @@ import java.io.IOException;
 public class NdkCleanMojo extends AbstractMojo {
 
     /**
+     * @parameter expression="${android.nativeBuildLibsOutputDirectory}" default-value="${project.basedir}/libs"
+     */
+    File ndkBuildLibsOutputDirectory;
+
+    /**
      * @parameter expression="${android.nativeBuildObjOutputDirectory}" default-value="${project.basedir}/obj"
      */
     File ndkBuildObjOutputDirectory;
@@ -29,17 +34,38 @@ public class NdkCleanMojo extends AbstractMojo {
      */
     boolean skipClean = false;
 
+    /** Specifies whether the deletion of the libs/ folder structure should be skipped.  This is by default set to
+     * skip (true) to avoid unwanted deletions of libraries already present in this structure.
+     * @parameter expression="${android.nativeBuildSkipCleanLibsOutputDirectory}" default-value="true"
+     */
+    boolean skipBuildLibsOutputDirectory = true;
+
+    /** Specifies whether the obj/ build folder structure should be deleted.
+     *
+     * @parameter expression="${android.nativeBuildSkipCleanLibsOutputDirectory}" default-value="false"
+     */
+    boolean skipBuildObjsOutputDirecotry = false;
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (ndkBuildLibsOutputDirectory.exists()) {
+            if (!skipBuildLibsOutputDirectory) {
+                getLog().debug("Cleaning out native library code directory : " + ndkBuildLibsOutputDirectory.getAbsolutePath());
+                try {
+                    FileUtils.deleteDirectory( ndkBuildLibsOutputDirectory );
+                } catch ( IOException e ) {
+                    getLog().error( "Error deleting directory: " + e.getMessage(), e);
+                }
+            }
+        }
 
-        getLog().debug("Cleaning out native object code directory: " + ndkBuildObjOutputDirectory.getAbsolutePath());
-
-        if (ndkBuildObjOutputDirectory.exists())
-        {
-            try {
-                FileUtils.deleteDirectory( ndkBuildObjOutputDirectory );
-            } catch ( IOException e ) {
-                getLog().error( "Error deleting directory: " + e.getMessage(), e);
+        if (ndkBuildObjOutputDirectory.exists()) {
+            if (skipBuildObjsOutputDirecotry) {
+                getLog().debug("Cleaning out native object code directory: " + ndkBuildObjOutputDirectory.getAbsolutePath());
+                try {
+                    FileUtils.deleteDirectory( ndkBuildObjOutputDirectory );
+                } catch ( IOException e ) {
+                    getLog().error( "Error deleting directory: " + e.getMessage(), e);
+                }
             }
         }
 
