@@ -363,7 +363,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
         if ( target != null ) {
             commands.add(target);
         }
-        else if ( "a".equals( project.getPackaging() ) ) {
+        else {
             commands.add( project.getArtifactId() );
         }
 
