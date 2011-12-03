@@ -431,8 +431,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
                 }
                 else
                 {
-                    getLog().error( "No native compiled library found, did the native compile complate successfully?" );
-                    throw new MojoExecutionException( "No native compiled library found, did the native compile complate successfully?" );
+                    getLog().error( "No native compiled library found, did the native compile complete successfully?" );
+                    throw new MojoExecutionException( "No native compiled library found, did the native compile complete successfully?" );
                 }
             } else {
                 getLog().debug( "Adding native compile artifact: " + files[ 0 ] );
