@@ -510,7 +510,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             mavenArchiveConfiguration.setAddMavenDescriptor( false );
 
             mavenArchiver.createArchive( project, mavenArchiveConfiguration );
-            projectHelper.attachArtifact( project, "har", jarFile );
+            projectHelper.attachArtifact( project, "har", ( ndkClassifier != null ? ndkClassifier : ndkArchitecture ),jarFile );
 
         } catch ( Exception e ) {
             throw new MojoExecutionException( e.getMessage() );
