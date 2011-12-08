@@ -1,4 +1,10 @@
-<project name="android-maven-plugin">
+<project name="Android Maven Plugin">
+    <bannerLeft>
+        <name>${project.name}</name>
+    </bannerLeft>
+    <bannerRight>
+        <src></src>
+    </bannerRight>
     <skin>
         <groupId>org.apache.maven.skins</groupId>
         <artifactId>maven-fluido-skin</artifactId>
@@ -10,7 +16,12 @@
             <sideBarEnabled>true</sideBarEnabled>
         </fluidoSkin>
     </custom>
+
     <body>
+        <menu name="Overview">
+            <item name="Introduction" href="index.html"/>
+            <item name="Goals" href="plugin-info.html"/>
+        </menu>
         <menu ref="reports" />
     </body>
 </project>
