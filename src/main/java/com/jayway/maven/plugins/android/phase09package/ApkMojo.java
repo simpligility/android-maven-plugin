@@ -292,7 +292,7 @@ public class ApkMojo extends AbstractAndroidMojo {
             ArrayList<File> sourceFolders, ArrayList<File> jarFiles,
             ArrayList<File> nativeFolders, boolean verbose, boolean signWithDebugKeyStore,
             boolean debug) throws MojoExecutionException {
-        sourceFolders.add(new File(project.getBuild().getDirectory(), "classes"));
+        sourceFolders.add(new File(project.getBuild().getOutputDirectory()));
 
         for (Artifact artifact : getRelevantCompileArtifacts()) {
             if (extractDuplicates) {
@@ -473,7 +473,7 @@ public class ApkMojo extends AbstractAndroidMojo {
         commands.add("-f");
         commands.add(new File(project.getBuild().getDirectory(), "classes.dex").getAbsolutePath());
         commands.add("-rf");
-        commands.add(new File(project.getBuild().getDirectory(), "classes").getAbsolutePath());
+        commands.add(new File(project.getBuild().getOutputDirectory()).getAbsolutePath());
 
         if (nativeFolders != null  && ! nativeFolders.isEmpty()) {
             for (File lib : nativeFolders) {
