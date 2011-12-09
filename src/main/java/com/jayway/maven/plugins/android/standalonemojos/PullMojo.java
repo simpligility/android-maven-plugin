@@ -203,9 +203,16 @@ public class PullMojo extends AbstractAndroidMojo {
 
     private void parseConfiguration() {
         if (pull != null) {
-            parsedSource = pull.getSource();
-            parsedDestination = pull.getDestination();
-
+            if (StringUtils.isNotEmpty(pull.getSource())) {
+                parsedSource = pull.getSource();    
+            } else {
+                parsedSource = pullSource;
+            }
+            if (StringUtils.isNotEmpty(pull.getDestination())) {
+                parsedDestination = pull.getDestination();
+            } else {
+                parsedDestination = pullDestination;
+            }
         } else {
             parsedSource = pullSource;
             parsedDestination = pullDestination;
