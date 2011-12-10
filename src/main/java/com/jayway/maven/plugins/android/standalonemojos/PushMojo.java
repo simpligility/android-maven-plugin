@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.jayway.maven.plugins.android.configuration.Push;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -145,10 +146,16 @@ public class PushMojo extends AbstractAndroidMojo {
 
     private void parseConfiguration() {
         if (push != null) {
-            parsedSource = new File(push.getSource());
-            parsedDestination = push.getDestination();
-
-
+            if (StringUtils.isNotEmpty(push.getSource())) {
+                parsedSource = new File(push.getSource());
+            } else {
+                parsedSource = new File(pushSource);
+            }
+            if (StringUtils.isNotEmpty(push.getDestination())) {
+                parsedDestination = push.getDestination();
+            } else {
+                parsedDestination = pushDestination;
+            }
         } else {
             parsedSource = new File(pushSource);
             parsedDestination = pushDestination;
