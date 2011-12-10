@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jayway.maven.plugins.android.phase04processclasses;
+package com.jayway.maven.plugins.android.standalonemojos;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,16 +37,13 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 
 /**
- * Deprecated, no need to unpack, dex will properly read a list of inputs.
+ * Unpack libraries code and dependencies into target.
  *
- * Unpack library.
- *
- * TODO Manfred Moser - there is no need for this class anymore so it could be removed, currently it should be moved to
- * standalonemojos since it is handy to have around for integration with the external proguard plugin
- *
+ * This can be useful for using the proguard maven plugin to provide the input jars. Although it is encouraged to use
+ * the proguard mojo of the android maven plugin.
  * @author hugo.josefson@jayway.com
+ * @author Manfred Moser
  * @goal unpack
- * @phase process-classes
  * @requiresDependencyResolution compile
  */
 public class UnpackMojo extends AbstractAndroidMojo {
