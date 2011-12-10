@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.jayway.maven.plugins.android.configuration.Proguard;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -21,12 +23,56 @@ import com.jayway.maven.plugins.android.common.AndroidExtension;
 /**
  * Processes both application and dependency classes using the ProGuard byte code obfuscator,
  * minimzer, and optimizer. For more information, see https://proguard.sourceforge.net.
- * 
+ *
+ * @author Jonson
+ * @author Matthias Kaeppler
+ * @author Manfred Moser
+ *
  * @goal proguard
  * @phase process-classes
  * @requiresDependencyResolution compile
  */
 public class ProguardMojo extends AbstractAndroidMojo {
+
+    /**
+     * <p>
+     * Enables ProGuard for this build. ProGuard is disabled by default, so in order for it to run,
+     * enable it like so:
+     * </p>
+     *
+     * <pre>
+     * &lt;proguard&gt;
+     *    &lt;skip&gt;false&lt;/skip&gt;
+     *    &lt;config&gt;proguard.cfg&lt;/config&gt;
+     * &lt;/proguard&gt;
+     * </pre>
+     * <p>
+     * A good practice is to create a release profile in your POM, in which you enable ProGuard.
+     * ProGuard should be disabled for development builds, since it obfuscates class and field
+     * names, and since it may interfere with test projects that rely on your application classes.
+     * </p>
+     *
+     * @parameter
+     */
+    protected Proguard proguard;
+
+    /**
+     * Whether ProGuard is enabled or not.
+     *
+     * @parameter  expression="${android.proguard.skip}" default-value=true
+     */
+    private Boolean proguardSkip;
+
+    /**
+     * Path to the ProGuard configuration file (relative to project root).
+     *
+     * @parameter expression="${android.proguard.config}" default-value="proguard.cfg"
+     *
+     */
+    private String proguardConfig;
+
+    private Boolean parsedSkip;
+    private String parsedConfig;
 
     public static final String PROGUARD_OBFUSCATED_JAR = "proguard-obfuscated.jar";
 
@@ -58,9 +104,28 @@ public class ProguardMojo extends AbstractAndroidMojo {
     }
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-
-        if (isProguardEnabled()) {
+        parseConfiguration();
+        
+        if (!parsedSkip) {
             executeProguard();
+        }
+    }
+
+    private void parseConfiguration() {
+        if (proguard != null) {
+            if (proguard.isSkip() != null) {
+                parsedSkip = proguard.isSkip();
+            } else {
+                parsedSkip = proguardSkip;
+            }
+            if (StringUtils.isNotEmpty(proguard.getConfig())) {
+                parsedConfig = proguard.getConfig();
+            } else {
+                parsedConfig = proguardConfig;
+            }
+        } else {
+            parsedSkip = proguardSkip;
+            parsedConfig = proguardConfig;
         }
     }
 
@@ -87,7 +152,7 @@ public class ProguardMojo extends AbstractAndroidMojo {
         commands.add("-jar");
         commands.add(proguardJar);
 
-        commands.add("@" + proguard.getConfig());
+        commands.add("@" + parsedConfig);
 
         collectInputFiles(commands);
 
