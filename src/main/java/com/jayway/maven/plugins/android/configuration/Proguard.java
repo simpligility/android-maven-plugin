@@ -16,12 +16,24 @@ public class Proguard {
      * Path to the ProGuard configuration file (relative to project root).
      */
     private String config;
+    
+    private String proguardJarPath;
+
+    private String[] jvmArguments;
+
+    public Boolean isSkip() {
+        return skip;
+    }
 
     public String getConfig() {
         return config;
     }
 
-    public Boolean isSkip() {
-        return skip;
+    public String getProguardJarPath() {
+        return proguardJarPath;
+    }
+
+    public String[] getJvmArguments() {
+        return jvmArguments;
     }
 }

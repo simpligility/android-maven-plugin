@@ -60,6 +60,7 @@ public class ProguardMojo extends AbstractAndroidMojo {
      * Whether ProGuard is enabled or not.
      *
      * @parameter  expression="${android.proguard.skip}" default-value=true
+     * @optional
      */
     private Boolean proguardSkip;
 
@@ -67,18 +68,37 @@ public class ProguardMojo extends AbstractAndroidMojo {
      * Path to the ProGuard configuration file (relative to project root).
      *
      * @parameter expression="${android.proguard.config}" default-value="proguard.cfg"
-     *
+     * @optional
      */
     private String proguardConfig;
 
+    /**
+     * Path to the proguard jar to be used. By default this will load the jar from the Android SDK install. Overriding it
+     * with an absolute path allows you to use a newer or custom proguard version e.g. located in your local Maven repo.
+     *
+     * @parameter expression="${android.proguard.proguardJarPath}
+     * @optional
+     */
+    private String proguardProguardJarPath;
+
+    /**
+     * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build.
+     *
+     * @parameter expression="${android.proguard.jvmArguments}" default-value="-Xmx512M"
+     * @optional
+     */
+    private String[] proguardJvmArguments;
+
+
     private Boolean parsedSkip;
     private String parsedConfig;
+    private String parsedProguardJarPath;
+    private String[] parsedJvmArguments;
 
     public static final String PROGUARD_OBFUSCATED_JAR = "proguard-obfuscated.jar";
 
     private static final String ANDROID_LIBRARY_FILTER = "!org/xml/**,!org/w3c/**,!org/apache/http/**,!java/**,!javax/**,!android/net/http/AndroidHttpClient.class";
 
-    private String[] jvmArguments = new String[] { "Xmx256m" };
 
     private List<Artifact> artifactBlacklist = new LinkedList<Artifact>();
     private List<Artifact> artifactsToShift = new LinkedList<Artifact>();
@@ -123,17 +143,25 @@ public class ProguardMojo extends AbstractAndroidMojo {
             } else {
                 parsedConfig = proguardConfig;
             }
+            if (StringUtils.isNotEmpty(proguard.getProguardJarPath())) {
+                parsedProguardJarPath = proguard.getProguardJarPath();
+            } else {
+                parsedProguardJarPath = proguardProguardJarPath;
+            }
+            if (proguard.getJvmArguments() == null) {
+                parsedJvmArguments =  proguardJvmArguments;
+            } else {
+                parsedJvmArguments = proguard.getJvmArguments();
+            }
         } else {
             parsedSkip = proguardSkip;
             parsedConfig = proguardConfig;
+            parsedProguardJarPath = proguardProguardJarPath;
+            parsedJvmArguments = proguardJvmArguments;
         }
     }
 
     private void executeProguard() throws MojoExecutionException {
-
-        // we should make this configurable, users may want to use a newer (or diff) version of
-        // proguard
-        String proguardJar = getAndroidSdk().getPathForTool("proguard/lib/proguard.jar");
 
         File proguardDir = new File(project.getBuild().getDirectory(), "proguard");
         if (!proguardDir.exists() && !proguardDir.mkdir()) {
@@ -149,8 +177,12 @@ public class ProguardMojo extends AbstractAndroidMojo {
 
         collectJvmArguments(commands);
 
+        // nothing was configured - set up default
+        if (StringUtils.isEmpty(parsedProguardJarPath)) {
+            parsedProguardJarPath = getAndroidSdk().getPathForTool("proguard/lib/proguard.jar");
+        }
         commands.add("-jar");
-        commands.add(proguardJar);
+        commands.add(parsedProguardJarPath);
 
         commands.add("@" + parsedConfig);
 
@@ -178,8 +210,8 @@ public class ProguardMojo extends AbstractAndroidMojo {
     }
 
     private void collectJvmArguments(List<String> commands) {
-        if (jvmArguments != null) {
-            for (String jvmArgument : jvmArguments) {
+        if (parsedJvmArguments != null) {
+            for (String jvmArgument : parsedJvmArguments) {
                 // preserve backward compatibility allowing argument with or without dash (e.g.
                 // Xmx512m as well as -Xmx512m should work) (see
                 // http://code.google.com/p/maven-android-plugin/issues/detail?id=153)
