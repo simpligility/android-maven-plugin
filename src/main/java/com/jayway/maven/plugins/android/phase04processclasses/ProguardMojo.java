@@ -44,6 +44,11 @@ public class ProguardMojo extends AbstractAndroidMojo {
      * &lt;proguard&gt;
      *    &lt;skip&gt;false&lt;/skip&gt;
      *    &lt;config&gt;proguard.cfg&lt;/config&gt;
+     *    &lt;proguardJarPath&gt;someAbsolutePathToProguardJar&lt;/proguardJarPath&gt;
+     *    &lt;jvmArguments&gt;
+     *     &lt;jvmArgument&gt;-Xms256m&lt;/jvmArgument&gt;
+     *     &lt;jvmArgument&gt;-Xmx512m&lt;/jvmArgument&gt;
+     *   &lt;/jvmArguments&gt;
      * &lt;/proguard&gt;
      * </pre>
      * <p>
