@@ -37,10 +37,13 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 
 /**
- * Deprecated, no need to unpack, dex will properly read a list of inputs
+ * Deprecated, no need to unpack, dex will properly read a list of inputs.
  *
- * unpack library.
- * 
+ * Unpack library.
+ *
+ * TODO Manfred Moser - there is no need for this class anymore so it could be removed, currently it should be moved to
+ * standalonemojos since it is handy to have around for integration with the external proguard plugin
+ *
  * @author hugo.josefson@jayway.com
  * @goal unpack
  * @phase process-classes
