@@ -25,15 +25,15 @@ public class Test {
     /**
       * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
       */
-    private boolean debug;
+    private Boolean debug;
     /**
       * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
       */
-    private boolean coverage;
+    private Boolean coverage;
     /**
       * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
       */
-    private boolean logOnly;
+    private Boolean logOnly;
     /**
       * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
       */
@@ -41,7 +41,7 @@ public class Test {
     /**
       * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
       */
-    private boolean createReport;
+    private Boolean createReport;
     /**
       * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
       */
@@ -63,15 +63,15 @@ public class Test {
         return instrumentationRunner;
     }
 
-    public boolean isDebug() {
+    public Boolean isDebug() {
         return debug;
     }
 
-    public boolean isCoverage() {
+    public Boolean isCoverage() {
         return coverage;
     }
 
-    public boolean isLogOnly() {
+    public Boolean isLogOnly() {
         return logOnly;
     }
 
@@ -79,7 +79,7 @@ public class Test {
         return testSize;
     }
 
-    public boolean isCreateReport() {
+    public Boolean isCreateReport() {
         return createReport;
     }
 
