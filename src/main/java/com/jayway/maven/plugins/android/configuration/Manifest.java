@@ -20,12 +20,12 @@ public class Manifest {
     /**
 	 * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestVersionCodeAutoIncrement}.
 	 */
-	 private boolean versionCodeAutoIncrement = false;
+	 private Boolean versionCodeAutoIncrement;
 
     /**
 	 * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestVersionCodeUpdateFromVersion}.
 	 */
-	protected Boolean versionCodeUpdateFromVersion = false;
+	protected Boolean versionCodeUpdateFromVersion;
 
     /**
 	 * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestSharedUserId}.
@@ -45,7 +45,7 @@ public class Manifest {
         return versionCode;
     }
 
-    public boolean isVersionCodeAutoIncrement() {
+    public Boolean getVersionCodeAutoIncrement() {
         return versionCodeAutoIncrement;
     }
 

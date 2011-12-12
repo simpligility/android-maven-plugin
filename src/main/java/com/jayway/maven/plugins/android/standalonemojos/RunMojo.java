@@ -109,10 +109,10 @@ public class RunMojo extends AbstractAndroidMojo {
      * startup to wait for a debugger to connect. Also see the "run" parameter documentation.
      * @parameter expression="${android.run.debug}" default-value="false"
      */
-    protected boolean runDebug;
+    protected Boolean runDebug;
 
     /* the value for the debug flag after parsing pom and parameter */
-    private boolean parsedDebug;
+    private Boolean parsedDebug;
 
     /**
      * Thrown when no "Launcher activities" could be found inside <code>AndroidManifest.xml</code>
@@ -174,7 +174,12 @@ public class RunMojo extends AbstractAndroidMojo {
 
     private void parseConfiguration() {
         if (run != null) {
-            parsedDebug = run.isDebug();
+            if (run.isDebug() != null){
+                parsedDebug = run.isDebug();
+            } else {
+                parsedDebug = runDebug;
+            }
+
         } else {
             parsedDebug = runDebug;
         }
