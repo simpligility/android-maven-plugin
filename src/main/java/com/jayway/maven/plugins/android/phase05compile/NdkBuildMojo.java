@@ -262,7 +262,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         // This points 
-        File nativeLibDirectory = new File((project.getPackaging().equals("a") ? nativeStaticLibrariesDirectory : nativeSharedLibrariesDirectory), ndkArchitecture );
+        File nativeLibDirectory = new File(nativeStaticLibrariesDirectory, ndkArchitecture );
 
         final boolean libsDirectoryExists = nativeLibDirectory.exists();
 
@@ -363,7 +363,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
         if ( target != null ) {
             commands.add(target);
         }
-        else if ( "a".equals( project.getPackaging() ) ) {
+        else {
             commands.add( project.getArtifactId() );
         }
 
@@ -474,7 +474,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
                         String[] includes = localCIncludes.split(" ");
                         for (String include : includes) {
                             final HeaderFilesDirective headerFilesDirective = new HeaderFilesDirective();
-                            headerFilesDirective.setDirectory(include);
+                            File includeDir = new File( project.getBasedir(), include );
+                            headerFilesDirective.setDirectory(includeDir.getAbsolutePath());
                             headerFilesDirective.setIncludes(new String[]{"**/*.h"});
                             finalHeaderFilesDirectives.add(headerFilesDirective);
                         }
@@ -516,7 +517,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             mavenArchiveConfiguration.setAddMavenDescriptor( false );
 
             mavenArchiver.createArchive( project, mavenArchiveConfiguration );
-            projectHelper.attachArtifact( project, "har", jarFile );
+            projectHelper.attachArtifact( project, "har", ( ndkClassifier != null ? ndkClassifier : ndkArchitecture ),jarFile );
 
         } catch ( Exception e ) {
             throw new MojoExecutionException( e.getMessage() );
