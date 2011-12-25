@@ -128,17 +128,11 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      */
     protected File ndkOutputDirectory;
 
-    /** <p>Folder containing native, shared libraries compiled and linked by the NDK.</p>
-     *
-     * @parameter expression="${android.nativeLibrariesDirectory}" default-value="${project.basedir}/libs"
-     */
-    private File nativeSharedLibrariesDirectory;
-
     /** <p>Folder containing native, static libraries compiled and linked by the NDK.</p>
      *
-     * @parameter expression="${android.nativeStaticLibrariesDirectory}" default-value="${project.basedir}/obj/local"
+     * @parameter expression="${android.nativeLibrariesOutputDirectory}" default-value="${project.basedir}/obj/local"
      */
-    private File nativeStaticLibrariesDirectory;
+    private File nativeLibrariesOutputDirectory;
 
     /** <p>Target to invoke on the native makefile.</p>
      *
@@ -262,7 +256,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         // This points 
-        File nativeLibDirectory = new File(nativeStaticLibrariesDirectory, ndkArchitecture );
+        File nativeLibDirectory = new File( nativeLibrariesOutputDirectory, ndkArchitecture );
 
         final boolean libsDirectoryExists = nativeLibDirectory.exists();
 
