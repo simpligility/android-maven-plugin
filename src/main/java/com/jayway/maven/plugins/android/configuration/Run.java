@@ -11,9 +11,9 @@ public class Run {
     /**
       * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.RunMojo#runDebug}
       */
-    protected boolean debug;
+    protected Boolean debug;
 
-    public boolean isDebug() {
+    public Boolean isDebug() {
         return debug;
     }
 }
