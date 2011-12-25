@@ -118,7 +118,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 	  *
 	  * @parameter expression="${android.manifest.versionCodeAutoIncrement}" default-value="false"
 	  */
-	 private boolean manifestVersionCodeAutoIncrement = false;
+	 private Boolean manifestVersionCodeAutoIncrement = false;
 
 	/**
 	 * Update the <code>android:versionCode</code> attribute automatically from the project version
@@ -191,12 +191,36 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
     private void parseConfiguration() {
         // manifest element found in plugin config in pom
         if (manifest != null) {
-        	parsedVersionName = manifest.getVersionName();
-            parsedVersionCode = manifest.getVersionCode();
-            parsedVersionCodeAutoIncrement = manifest.isVersionCodeAutoIncrement();
-            parsedVersionCodeUpdateFromVersion = manifest.getVersionCodeUpdateFromVersion();
-            parsedSharedUserId = manifest.getSharedUserId();
-            parsedDebuggable = manifest.getDebuggable();
+        	if (StringUtils.isNotEmpty(manifest.getVersionName())) {
+                parsedVersionName = manifest.getVersionName();
+            } else {
+                parsedVersionName = manifestVersionName;
+            }
+            if (manifest.getVersionCode() != null) {
+                parsedVersionCode = manifest.getVersionCode();
+            } else {
+                parsedVersionCode = manifestVersionCode;
+            }
+            if (manifest.getVersionCodeAutoIncrement() != null) {
+                parsedVersionCodeAutoIncrement = manifest.getVersionCodeAutoIncrement();
+            } else {
+                parsedVersionCodeAutoIncrement = manifestVersionCodeAutoIncrement;
+            }
+            if (manifest.getVersionCodeUpdateFromVersion() != null) {
+                parsedVersionCodeUpdateFromVersion = manifest.getVersionCodeUpdateFromVersion();
+            } else {
+                parsedVersionCodeUpdateFromVersion = manifestVersionCodeUpdateFromVersion;
+            }
+            if (StringUtils.isNotEmpty(manifest.getSharedUserId())) {
+                parsedSharedUserId = manifest.getSharedUserId();
+            } else {
+                parsedSharedUserId = manifestSharedUserId;
+            }
+            if (manifest.getDebuggable() != null) {
+                parsedDebuggable = manifest.getDebuggable();
+            } else {
+                parsedDebuggable = manifestDebuggable;
+            }
         } else {
             parsedVersionName = manifestVersionName;
             parsedVersionCode = manifestVersionCode;
