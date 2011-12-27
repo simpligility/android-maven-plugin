@@ -128,17 +128,11 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      */
     protected File ndkOutputDirectory;
 
-    /** <p>Folder containing native, shared libraries compiled and linked by the NDK.</p>
-     *
-     * @parameter expression="${android.nativeLibrariesDirectory}" default-value="${project.basedir}/libs"
-     */
-    private File nativeSharedLibrariesDirectory;
-
     /** <p>Folder containing native, static libraries compiled and linked by the NDK.</p>
      *
-     * @parameter expression="${android.nativeStaticLibrariesDirectory}" default-value="${project.basedir}/obj/local"
+     * @parameter expression="${android.nativeLibrariesOutputDirectory}" default-value="${project.basedir}/obj/local"
      */
-    private File nativeStaticLibrariesDirectory;
+    private File nativeLibrariesOutputDirectory;
 
     /** <p>Target to invoke on the native makefile.</p>
      *
@@ -262,7 +256,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         // This points 
-        File nativeLibDirectory = new File((project.getPackaging().equals("a") ? nativeStaticLibrariesDirectory : nativeSharedLibrariesDirectory), ndkArchitecture );
+        File nativeLibDirectory = new File( nativeLibrariesOutputDirectory, ndkArchitecture );
 
         final boolean libsDirectoryExists = nativeLibDirectory.exists();
 
@@ -363,7 +357,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
         if ( target != null ) {
             commands.add(target);
         }
-        else if ( "a".equals( project.getPackaging() ) ) {
+        else {
             commands.add( project.getArtifactId() );
         }
 
@@ -425,8 +419,14 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             // slight limitation at this stage - we only handle a single .so artifact
             if ( files == null || files.length != 1 ) {
                 getLog().warn( "Error while detecting native compile artifacts: " + ( files == null || files.length == 0 ? "None found" : "Found more than 1 artifact" ) );
-                if ( files != null ) {
-                    getLog().warn( "Currently, only a single, final native library is supported by the build" );
+                if ( files != null && files.length > 1) {
+                    getLog().error( "Currently, only a single, final native library is supported by the build" );
+                    throw new MojoExecutionException( "Currently, only a single, final native library is supported by the build" );
+                }
+                else
+                {
+                    getLog().error( "No native compiled library found, did the native compile complete successfully?" );
+                    throw new MojoExecutionException( "No native compiled library found, did the native compile complete successfully?" );
                 }
             } else {
                 getLog().debug( "Adding native compile artifact: " + files[ 0 ] );
@@ -468,7 +468,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
                         String[] includes = localCIncludes.split(" ");
                         for (String include : includes) {
                             final HeaderFilesDirective headerFilesDirective = new HeaderFilesDirective();
-                            headerFilesDirective.setDirectory(include);
+                            File includeDir = new File( project.getBasedir(), include );
+                            headerFilesDirective.setDirectory(includeDir.getAbsolutePath());
                             headerFilesDirective.setIncludes(new String[]{"**/*.h"});
                             finalHeaderFilesDirectives.add(headerFilesDirective);
                         }
@@ -510,7 +511,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             mavenArchiveConfiguration.setAddMavenDescriptor( false );
 
             mavenArchiver.createArchive( project, mavenArchiveConfiguration );
-            projectHelper.attachArtifact( project, "har", jarFile );
+            projectHelper.attachArtifact( project, "har", ( ndkClassifier != null ? ndkClassifier : ndkArchitecture ),jarFile );
 
         } catch ( Exception e ) {
             throw new MojoExecutionException( e.getMessage() );
