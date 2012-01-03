@@ -41,7 +41,7 @@
         <url>http://code.google.com/p/maven-android-plugin/issues/list</url>
     </issueManagement>
     <ciManagement>
-        <system>Hudson</system>
+        <system>Jenkins</system>
         <url>http://hudson.josefson.org/job/maven-android-plugin-master/</url>
     </ciManagement>
     <licenses>
