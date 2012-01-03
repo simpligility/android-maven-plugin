@@ -42,7 +42,7 @@
     </issueManagement>
     <ciManagement>
         <system>Jenkins</system>
-        <url>http://hudson.josefson.org/job/maven-android-plugin-master/</url>
+        <url>http://hudson.josefson.org/view/Android%20Maven%20Plugin/</url>
     </ciManagement>
     <licenses>
         <license>
