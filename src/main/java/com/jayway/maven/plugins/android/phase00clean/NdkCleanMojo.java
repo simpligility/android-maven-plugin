@@ -59,7 +59,7 @@ public class NdkCleanMojo extends AbstractMojo {
         }
 
         if (ndkBuildObjOutputDirectory.exists()) {
-            if (skipBuildObjsOutputDirectory) {
+            if (!skipBuildObjsOutputDirectory) {
                 getLog().debug("Cleaning out native object code directory: " + ndkBuildObjOutputDirectory.getAbsolutePath());
                 try {
                     FileUtils.deleteDirectory( ndkBuildObjOutputDirectory );
