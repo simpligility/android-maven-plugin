@@ -44,7 +44,7 @@ public class NdkCleanMojo extends AbstractMojo {
      *
      * @parameter expression="${android.nativeBuildSkipCleanLibsOutputDirectory}" default-value="false"
      */
-    boolean skipBuildObjsOutputDirecotry = false;
+    boolean skipBuildObjsOutputDirectory = false;
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (ndkBuildLibsOutputDirectory.exists()) {
@@ -59,7 +59,7 @@ public class NdkCleanMojo extends AbstractMojo {
         }
 
         if (ndkBuildObjOutputDirectory.exists()) {
-            if (skipBuildObjsOutputDirecotry) {
+            if (skipBuildObjsOutputDirectory) {
                 getLog().debug("Cleaning out native object code directory: " + ndkBuildObjOutputDirectory.getAbsolutePath());
                 try {
                     FileUtils.deleteDirectory( ndkBuildObjOutputDirectory );
