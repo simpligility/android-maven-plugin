@@ -28,7 +28,11 @@
     <properties>
         <scm.branch>master</scm.branch>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven-plugin-plugin.version>2.9</maven-plugin-plugin.version>
+
+        <!-- Don't upgrade maven-plugin-plugin until MPLUGIN-187 is fixed:
+        http://jira.codehaus.org/browse/MPLUGIN-187 -->
+        <maven-plugin-plugin.version>2.8</maven-plugin-plugin.version>
+
         <maven.api.version>3.0.3</maven.api.version>
     </properties>
     <scm>
