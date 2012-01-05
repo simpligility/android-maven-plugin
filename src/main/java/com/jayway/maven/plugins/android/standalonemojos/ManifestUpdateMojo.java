@@ -16,7 +16,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import com.jayway.maven.plugins.android.configuration.Manifest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -25,11 +24,16 @@ import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.w3c.dom.*;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
+import com.jayway.maven.plugins.android.configuration.Manifest;
 
 /**
  * Updates various version attributes present in the <code>AndroidManifest.xml</code> file.
@@ -49,6 +53,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 	private static final String ATTR_DEBUGGABLE          = "android:debuggable";
 
 	private static final String ELEM_APPLICATION         = "application";
+    private static final String ELEM_SUPPORTS_SCREENS    = "supports-screens";
 
     /**
      * Configuration for the manifest-update goal.
@@ -144,6 +149,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 	 */
 	protected Boolean manifestDebuggable;
 
+    protected SupportsScreens manifestSupportsScreens;
 
     private String parsedVersionName;
     private Integer parsedVersionCode;
@@ -151,6 +157,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
     private Boolean parsedVersionCodeUpdateFromVersion;
     private String parsedSharedUserId;
     private Boolean parsedDebuggable;
+    private SupportsScreens parsedSupportsScreens;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 		if (!AndroidExtension.isAndroidPackaging(project.getPackaging())) {
@@ -170,6 +177,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 		getLog().debug("    versionCodeUpdateFromVersion=" + parsedVersionCodeUpdateFromVersion);
 		getLog().debug("    sharedUserId=" + parsedSharedUserId);
 		getLog().debug("    debuggable=" + parsedDebuggable);
+        getLog().debug(
+                "    supports screens: " + (parsedSupportsScreens == null ? "not set" : "set"));
 
 		if (!androidManifestFile.exists()) {
 			return; // skip, no AndroidManifest.xml file found.
@@ -221,6 +230,11 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
             } else {
                 parsedDebuggable = manifestDebuggable;
             }
+            if (manifest.getSupportsScreens() != null) {
+                parsedSupportsScreens = manifest.getSupportsScreens();
+            } else {
+                parsedSupportsScreens = manifestSupportsScreens;
+            }
         } else {
             parsedVersionName = manifestVersionName;
             parsedVersionCode = manifestVersionCode;
@@ -228,6 +242,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
             parsedVersionCodeUpdateFromVersion = manifestVersionCodeUpdateFromVersion;
             parsedSharedUserId = manifestSharedUserId;
             parsedDebuggable = manifestDebuggable;
+            parsedSupportsScreens = manifestSupportsScreens;
         }
     }
 
@@ -355,6 +370,61 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 					}
 				}
 			}
+		}
+
+		if (parsedSupportsScreens != null) {
+            NodeList nodeList = manifestElement.getElementsByTagName(ELEM_SUPPORTS_SCREENS);
+            Element supportsScreensElem = null;
+            if (nodeList.getLength() == 0) {
+                supportsScreensElem = doc.createElement(ELEM_SUPPORTS_SCREENS);
+                manifestElement.appendChild(supportsScreensElem);
+                getLog().debug("supports screens element not found, creating it");
+            } else {
+                supportsScreensElem = (Element) nodeList.item(0);
+                getLog().debug("supports screens element found");
+            }
+
+            if (parsedSupportsScreens.getAnyDensity() != null) {
+                supportsScreensElem.setAttribute("android:anyDensity",
+                        parsedSupportsScreens.getAnyDensity());
+                dirty = true;
+            }
+            if (parsedSupportsScreens.getSmallScreens() != null) {
+                supportsScreensElem.setAttribute("android:smallScreens",
+                        parsedSupportsScreens.getSmallScreens());
+                dirty = true;
+            }
+            if (parsedSupportsScreens.getNormalScreens() != null) {
+                supportsScreensElem.setAttribute("android:normalScreens",
+                        parsedSupportsScreens.getNormalScreens());
+                dirty = true;
+            }
+            if (parsedSupportsScreens.getLargeScreens() != null) {
+                supportsScreensElem.setAttribute("android:largeScreens",
+                        parsedSupportsScreens.getLargeScreens());
+                dirty = true;
+            }
+            if (parsedSupportsScreens.getXlargeScreens() != null) {
+                supportsScreensElem.setAttribute("android:xlargeScreens",
+                        parsedSupportsScreens.getXlargeScreens());
+                dirty = true;
+            }
+            if (parsedSupportsScreens.getCompatibleWidthLimitDp() != null) {
+                supportsScreensElem.setAttribute("android:compatibleWidthLimitDp",
+                        parsedSupportsScreens.getCompatibleWidthLimitDp());
+                dirty = true;
+            }
+            if (parsedSupportsScreens.getLargestWidthLimitDp() != null) {
+                supportsScreensElem.setAttribute("android:largestWidthLimitDp",
+                        parsedSupportsScreens.getLargestWidthLimitDp());
+                dirty = true;
+            }
+            if (parsedSupportsScreens.getRequiresSmallestWidthDp() != null) {
+                supportsScreensElem.setAttribute("android:requiresSmallestWidthDp",
+                        parsedSupportsScreens.getRequiresSmallestWidthDp());
+                dirty = true;
+            }
+
 		}
 
 		if (dirty) {
