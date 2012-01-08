@@ -336,7 +336,7 @@ public class ApkMojo extends AbstractAndroidMojo {
 					continue;
 				}
 
-				if( !entries.add( zn ) ) {
+				if( this.extractDuplicates && !entries.add( zn ) ) {
 					continue;
 				}
 
