@@ -43,6 +43,7 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.util.AbstractScanner;
+import org.codehaus.plexus.util.SelectorUtils;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.AndroidSigner;
@@ -255,7 +256,120 @@ public class ApkMojo extends AbstractAndroidMojo {
             doAPKWithCommand(outputFile, dexFile, zipArchive, sourceFolders, jarFiles,
                 nativeFolders, signWithDebugKeyStore);
         }
+
+// ISSUE-97
+// vvv
+//
+        if( this.metaIncludes != null && this.metaIncludes.length > 0 ) {
+        	try {
+				addMetaInf( outputFile, jarFiles );
+			}
+			catch( IOException e ) {
+				throw new MojoExecutionException("Could not add META-INF resources.", e);
+			}
+        }
+//
+// ^^^
+// ISSUE-97
     }
+
+// ISSUE-97
+// vvv
+//
+	/**
+	 * <p>
+	 * Pattern for additional META-INF resources to be packaged into the apk.
+	 * </p>
+	 * <p>
+	 * The APK builder filters these resources and doesn't include them into the apk.
+	 * </p>
+	 * <p>
+	 * This leads to bad behaviour of dependent libraries relying on these resources, for instance service discovery
+	 * doesn't work.
+	 * </p>
+	 * <p>
+	 * See also <a href="http://code.google.com/p/maven-android-plugin/issues/detail?id=97">Issue 97</a>
+	 * </p>
+	 * 
+	 * @parameter expression="${android.metaIncludes}" default-value=""
+	 */
+	private String[]	metaIncludes;
+
+	private void addMetaInf( File outputFile, ArrayList<File> jarFiles ) throws IOException
+	{
+		File tmp = File.createTempFile( outputFile.getName(), ".add", outputFile.getParentFile() );
+
+		FileOutputStream fos = new FileOutputStream( tmp );
+		ZipOutputStream zos = new ZipOutputStream( fos );
+		Set<String> entries = new HashSet<String>();
+
+		updateWithMetaInf( zos, outputFile, entries, false );
+
+		for( File f : jarFiles ) {
+			updateWithMetaInf( zos, f, entries, true );
+		}
+
+		zos.close();
+
+		outputFile.delete();
+
+		if( !tmp.renameTo( outputFile ) ) {
+			throw new IOException( String.format( "Cannot rename %s to %s", tmp, outputFile.getName() ) );
+		}
+	}
+
+	private void updateWithMetaInf( ZipOutputStream zos, File jarFile, Set<String> entries, boolean metaInfOnly )
+	throws ZipException, IOException
+	{
+		ZipFile zin = new ZipFile( jarFile );
+
+		for( Enumeration<? extends ZipEntry> en = zin.entries(); en.hasMoreElements(); ) {
+			ZipEntry ze = en.nextElement();
+
+			if( ze.isDirectory() )
+				continue;
+
+			String zn = ze.getName();
+
+			if( metaInfOnly ) {
+				if( !zn.startsWith( "META-INF/" ) ) {
+					continue;
+				}
+
+				if( !entries.add( zn ) ) {
+					continue;
+				}
+
+				if( !metaInfMatches( zn ) ) {
+					continue;
+				}
+			}
+
+			zos.putNextEntry( new ZipEntry( zn ) );
+
+			InputStream is = zin.getInputStream( ze );
+
+			copyStreamWithoutClosing( is, zos );
+
+			is.close();
+			zos.closeEntry();
+		}
+
+		zin.close();
+	}
+
+	private boolean metaInfMatches( String path )
+	{
+		for( String inc : this.metaIncludes ) {
+			if( SelectorUtils.matchPath( "META-INF/" + inc, path ) )
+				return true;
+		}
+
+		return false;
+	}
+//
+// ^^^
+// ISSUE-97
 
     private Map<String, List<File>> m_jars = new HashMap<String, List<File>>();
 
@@ -368,8 +482,9 @@ public class ApkMojo extends AbstractAndroidMojo {
     }
 
     private File removeDuplicatesFromJar(File in, List<String> duplicates) {
-        File target = new File(project.getBasedir(), "target");
-        File tmp = new File(target, "unpacked-embedded-jars");
+//        File target = new File(project.getBasedir(), "target");
+        String target = project.getBuild().getOutputDirectory();
+        File tmp = new File(target, "unpacked-wembedded-jars");
         tmp.mkdirs();
         File out = new File(tmp, in.getName());
 
