@@ -184,14 +184,6 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
     private SupportsScreens parsedSupportsScreens;
     private List<CompatibleScreen> parsedCompatibleScreens;
 
-    public void setSupportsScreens(SupportsScreens supportsScreens) {
-        this.manifestSupportsScreens = supportsScreens;
-    }
-
-    public void setCompatibleScreens(List<CompatibleScreen> compatibleScreens) {
-        this.manifestCompatibleScreens = compatibleScreens;
-    }
-
     public void execute() throws MojoExecutionException, MojoFailureException {
 		if (!AndroidExtension.isAndroidPackaging(project.getPackaging())) {
 			return; // skip, not an android project.
