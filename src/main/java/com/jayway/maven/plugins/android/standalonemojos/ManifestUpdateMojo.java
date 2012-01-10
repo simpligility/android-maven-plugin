@@ -400,7 +400,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 		}
 
 		if (parsedSupportsScreens != null) {
-            Element supportsScreensElem = getOrCreateElement(doc, manifestElement,
+            Element supportsScreensElem = XmlHelper.getOrCreateElement(doc, manifestElement,
                     ELEM_SUPPORTS_SCREENS);
 
             if (parsedSupportsScreens.getAnyDensity() != null) {
@@ -467,7 +467,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
     }
 
     private void updateCompatibleScreens(Document doc, Element manifestElement) {
-        Element compatibleScreensElem = getOrCreateElement(doc, manifestElement,
+        Element compatibleScreensElem = XmlHelper.getOrCreateElement(doc, manifestElement,
                 ELEM_COMPATIBLE_SCREENS);
 
         // read those screen elements that were already defined in the Manifest
@@ -507,19 +507,5 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 
             compatibleScreensElem.appendChild(screenElem);
         }
-    }
-
-    private Element getOrCreateElement(Document doc, Element manifestElement, String elementName) {
-        NodeList nodeList = manifestElement.getElementsByTagName(elementName);
-        Element element = null;
-        if (nodeList.getLength() == 0) {
-            element = doc.createElement(elementName);
-            manifestElement.appendChild(element);
-            getLog().debug(elementName + " element not found, creating it");
-        } else {
-            element = (Element) nodeList.item(0);
-            getLog().debug(elementName + " element found");
-        }
-        return element;
     }
 }
