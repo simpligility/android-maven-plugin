@@ -31,12 +31,14 @@
         </executions>
         <configuration>
           <androidManifestFile>${basedir}/AndroidManifest.xml</androidManifestFile>
-          <supports-screens>
-            <anyDensity>false</anyDensity>
-            <normalScreens>true</normalScreens>
-            <largeScreens>true</largeScreens>
-            <xlargeScreens>true</xlargeScreens>
-          </supports-screens>
+          <manifest>
+            <supports-screens>
+              <anyDensity>false</anyDensity>
+              <normalScreens>true</normalScreens>
+              <largeScreens>true</largeScreens>
+              <xlargeScreens>true</xlargeScreens>
+            </supports-screens>
+          </manifest>
         </configuration>
       </plugin>
     </plugins>
