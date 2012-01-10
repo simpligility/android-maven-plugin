@@ -51,12 +51,26 @@ import com.jayway.maven.plugins.android.configuration.Manifest;
  *
  */
 public class ManifestUpdateMojo extends AbstractAndroidMojo {
+    // basic attributes
     private static final String ATTR_VERSION_NAME        = "android:versionName";
 	private static final String ATTR_VERSION_CODE        = "android:versionCode";
 	private static final String ATTR_SHARED_USER_ID      = "android:sharedUserId";
 	private static final String ATTR_DEBUGGABLE          = "android:debuggable";
-    private static final String ATTR_SCREEN_DENSITY      = "android:screenDensity";
+
+    // supports-screens attributes
+	private static final String ATTR_SCREEN_DENSITY      = "android:screenDensity";
     private static final String ATTR_SCREEN_SIZE         = "android:screenSize";
+
+    // compatible-screens attributes
+    private static final String ATTR_ANY_DENSITY         = "android:anyDensity";
+    private static final String ATTR_SMALL_SCREENS       = "android:smallScreens";
+    private static final String ATTR_NORMAL_SCREENS      = "android:normalScreens";
+    private static final String ATTR_LARGE_SCREENS       = "android:largeScreens";
+    private static final String ATTR_XLARGE_SCREENS      = "android:xlargeScreens";
+    private static final String ATTR_RESIZEABLE          = "android:resizeable";
+    private static final String ATTR_REQUIRES_SMALLEST_WIDTH_DP = "android:requiresSmallestWidthDp";
+    private static final String ATTR_LARGEST_WIDTH_LIMIT_DP     = "android:largestWidthLimitDp";
+    private static final String ATTR_COMPATIBLE_WIDTH_LIMIT_DP  = "android:compatibleWidthLimitDp";
 
 	private static final String ELEM_APPLICATION         = "application";
     private static final String ELEM_SUPPORTS_SCREENS    = "supports-screens";
@@ -404,47 +418,47 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
                     ELEM_SUPPORTS_SCREENS);
 
             if (parsedSupportsScreens.getAnyDensity() != null) {
-                supportsScreensElem.setAttribute("android:anyDensity",
+                supportsScreensElem.setAttribute(ATTR_ANY_DENSITY,
                         parsedSupportsScreens.getAnyDensity());
                 dirty = true;
             }
             if (parsedSupportsScreens.getSmallScreens() != null) {
-                supportsScreensElem.setAttribute("android:smallScreens",
+                supportsScreensElem.setAttribute(ATTR_SMALL_SCREENS,
                         parsedSupportsScreens.getSmallScreens());
                 dirty = true;
             }
             if (parsedSupportsScreens.getNormalScreens() != null) {
-                supportsScreensElem.setAttribute("android:normalScreens",
+                supportsScreensElem.setAttribute(ATTR_NORMAL_SCREENS,
                         parsedSupportsScreens.getNormalScreens());
                 dirty = true;
             }
             if (parsedSupportsScreens.getLargeScreens() != null) {
-                supportsScreensElem.setAttribute("android:largeScreens",
+                supportsScreensElem.setAttribute(ATTR_LARGE_SCREENS,
                         parsedSupportsScreens.getLargeScreens());
                 dirty = true;
             }
             if (parsedSupportsScreens.getXlargeScreens() != null) {
-                supportsScreensElem.setAttribute("android:xlargeScreens",
+                supportsScreensElem.setAttribute(ATTR_XLARGE_SCREENS,
                         parsedSupportsScreens.getXlargeScreens());
                 dirty = true;
             }
             if (parsedSupportsScreens.getCompatibleWidthLimitDp() != null) {
-                supportsScreensElem.setAttribute("android:compatibleWidthLimitDp",
+                supportsScreensElem.setAttribute(ATTR_COMPATIBLE_WIDTH_LIMIT_DP,
                         parsedSupportsScreens.getCompatibleWidthLimitDp());
                 dirty = true;
             }
             if (parsedSupportsScreens.getLargestWidthLimitDp() != null) {
-                supportsScreensElem.setAttribute("android:largestWidthLimitDp",
+                supportsScreensElem.setAttribute(ATTR_LARGEST_WIDTH_LIMIT_DP,
                         parsedSupportsScreens.getLargestWidthLimitDp());
                 dirty = true;
             }
             if (parsedSupportsScreens.getRequiresSmallestWidthDp() != null) {
-                supportsScreensElem.setAttribute("android:requiresSmallestWidthDp",
+                supportsScreensElem.setAttribute(ATTR_REQUIRES_SMALLEST_WIDTH_DP,
                         parsedSupportsScreens.getRequiresSmallestWidthDp());
                 dirty = true;
             }
             if (parsedSupportsScreens.getResizeable() != null) {
-                supportsScreensElem.setAttribute("android:resizeable",
+                supportsScreensElem.setAttribute(ATTR_RESIZEABLE,
                         parsedSupportsScreens.getResizeable());
                 dirty = true;
             }
