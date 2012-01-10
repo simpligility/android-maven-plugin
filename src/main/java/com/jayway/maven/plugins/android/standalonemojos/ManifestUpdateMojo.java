@@ -373,16 +373,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 		}
 
 		if (parsedSupportsScreens != null) {
-            NodeList nodeList = manifestElement.getElementsByTagName(ELEM_SUPPORTS_SCREENS);
-            Element supportsScreensElem = null;
-            if (nodeList.getLength() == 0) {
-                supportsScreensElem = doc.createElement(ELEM_SUPPORTS_SCREENS);
-                manifestElement.appendChild(supportsScreensElem);
-                getLog().debug("supports screens element not found, creating it");
-            } else {
-                supportsScreensElem = (Element) nodeList.item(0);
-                getLog().debug("supports screens element found");
-            }
+            Element supportsScreensElem = getOrCreateElement(doc, manifestElement,
+                    ELEM_SUPPORTS_SCREENS);
 
             if (parsedSupportsScreens.getAnyDensity() != null) {
                 supportsScreensElem.setAttribute("android:anyDensity",
@@ -437,4 +429,18 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 			getLog().info("No changes found to write to manifest file");
 		}
 	}
+
+    private Element getOrCreateElement(Document doc, Element manifestElement, String elementName) {
+        NodeList nodeList = manifestElement.getElementsByTagName(elementName);
+        Element element = null;
+        if (nodeList.getLength() == 0) {
+            element = doc.createElement(elementName);
+            manifestElement.appendChild(element);
+            getLog().debug(elementName + " element not found, creating it");
+        } else {
+            element = (Element) nodeList.item(0);
+            getLog().debug(elementName + " element found");
+        }
+        return element;
+    }
 }
