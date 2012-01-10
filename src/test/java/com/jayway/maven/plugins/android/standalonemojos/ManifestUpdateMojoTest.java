@@ -114,6 +114,20 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
         assertExpectedAndroidManifest(manifestFile, dir);
     }
 
+    // @Test
+    public void DISABLED_testCompatibleScreensUpdate() throws Exception {
+        ManifestUpdateMojo mojo = createMojo("manifest-tests/compatible-screens-android-project");
+        mojo.execute();
+        File dir = getProjectDir(mojo);
+        File manifestFile = new File(dir, "AndroidManifest.xml");
+        // this asserts that:
+        // 1) the screen small/ldpi will be changed via the POM
+        // 2) the screen normal/mdpi will remain untouched (overridden in POM but equal)
+        // 3) the screen normal/hdpi will remain untouched (not overridden in POM)
+        // 4) the screen large/xhdpi will be added (defined in POM but not in Manifest)
+        assertExpectedAndroidManifest(manifestFile, dir);
+    }
+
     private void assertExpectedAndroidManifest(File manifestFile, File testdir) throws IOException {
         File expectFile = new File(testdir, "AndroidManifest-expected.xml");
         // different white space causes issues when between going Windows and *nix via git and wrongly configured
