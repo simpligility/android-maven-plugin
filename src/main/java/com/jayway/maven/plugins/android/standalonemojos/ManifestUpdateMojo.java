@@ -159,6 +159,10 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
     private Boolean parsedDebuggable;
     private SupportsScreens parsedSupportsScreens;
 
+    public void setSupportsScreens(SupportsScreens supportsScreens) {
+        this.manifestSupportsScreens = supportsScreens;
+    }
+
     public void execute() throws MojoExecutionException, MojoFailureException {
 		if (!AndroidExtension.isAndroidPackaging(project.getPackaging())) {
 			return; // skip, not an android project.
@@ -414,6 +418,11 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
             if (parsedSupportsScreens.getRequiresSmallestWidthDp() != null) {
                 supportsScreensElem.setAttribute("android:requiresSmallestWidthDp",
                         parsedSupportsScreens.getRequiresSmallestWidthDp());
+                dirty = true;
+            }
+            if (parsedSupportsScreens.getResizeable() != null) {
+                supportsScreensElem.setAttribute("android:resizeable",
+                        parsedSupportsScreens.getResizeable());
                 dirty = true;
             }
 

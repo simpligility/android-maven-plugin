@@ -2,19 +2,19 @@ package com.jayway.maven.plugins.android.standalonemojos;
 
 public class SupportsScreens {
 
-    private String resizable;
+    private String resizeable;
     private String smallScreens, normalScreens, largeScreens, xlargeScreens;
     private String anyDensity;
     private String requiresSmallestWidthDp;
     private String compatibleWidthLimitDp;
     private String largestWidthLimitDp;
 
-    public String getResizable() {
-        return resizable;
+    public String getResizeable() {
+        return resizeable;
     }
 
-    public void setResizable(String resizable) {
-        this.resizable = resizable;
+    public void setResizeable(String resizable) {
+        this.resizeable = resizable;
     }
 
     public String getSmallScreens() {

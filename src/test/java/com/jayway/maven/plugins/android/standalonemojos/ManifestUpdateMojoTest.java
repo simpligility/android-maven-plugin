@@ -1,14 +1,15 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojoTestCase;
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.IOException;
+import com.jayway.maven.plugins.android.AbstractAndroidMojoTestCase;
 
 public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<ManifestUpdateMojo> {
     @Override
@@ -98,6 +99,20 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
 	    }
 		Assert.assertTrue("bad-android-project3 did not throw MojoFailureException", false);
 	}
+
+    @Test
+    public void testSupportsScreensUpdate() throws Exception {
+        ManifestUpdateMojo mojo = createMojo("manifest-tests/supports-screens-android-project");
+        mojo.execute();
+        File dir = getProjectDir(mojo);
+        File manifestFile = new File(dir, "AndroidManifest.xml");
+        // this asserts that:
+        // 1) the values of anyDensity, largeScreens and normalScreens will be changed via the POM
+        // 2) the value of smallScreens will remain untouched (not overridden in POM)
+        // 3) the value of xlargeScreens will be added (defined in POM but not in Manifest)
+        // 4) the value of resizeable will be ignored (undefined in both Manifest and POM)
+        assertExpectedAndroidManifest(manifestFile, dir);
+    }
 
     private void assertExpectedAndroidManifest(File manifestFile, File testdir) throws IOException {
         File expectFile = new File(testdir, "AndroidManifest-expected.xml");
