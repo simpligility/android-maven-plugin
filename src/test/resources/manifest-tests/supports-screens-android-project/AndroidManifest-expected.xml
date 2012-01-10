@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  android:versionName="1.0">
+
+  <supports-screens
+    android:anyDensity="false"
+    android:largeScreens="true"
+    android:normalScreens="true"
+    android:smallScreens="false"
+    android:xlargeScreens="true" />
+  
+  <application android:name="TestApplication"/>
+
+</manifest>
