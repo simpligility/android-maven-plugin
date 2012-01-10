@@ -80,7 +80,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
     /**
      * Configuration for the manifest-update goal.
      * <p>
-     * You can configure this mojo to update the following manifest attributes:
+     * You can configure this mojo to update the following basic manifest attributes:
      * </p>
      * <p>
      * <code>android:versionName</code> on the <code>manifest</code> element.
@@ -89,10 +89,18 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
      * <code>android:debuggable</code> on the <code>application</code> element.
      * </p>
      * <p>
-     * Note: This process will reformat the <code>AndroidManifest.xml</code> per JAXP {@link Transformer} defaults if
-     * updates are made to the manifest.
+     * Moreover, you may specify custom values for the <code>supports-screens</code> and
+     * <code>compatible-screens</code> elements. This is useful if you're using custom build
+     * profiles to build APKs tailored to specific screen configurations. Values passed via POM
+     * configuration for these elements will be merged with whatever is found in the Manifest file.
+     * Values defined in the POM will take precedence.
+     * </p>
+     * <p>
+     * Note: This process will reformat the <code>AndroidManifest.xml</code> per JAXP
+     * {@link Transformer} defaults if updates are made to the manifest.
      * <p>
      * You can configure attributes in the plugin configuration like so
+     * 
      * <pre>
      *   &lt;plugin&gt;
      *     &lt;groupId&gt;com.jayway.maven.plugins.android.generation2&lt;/groupId&gt;
@@ -111,16 +119,30 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
      *             &lt;versionCodeUpdateFromVersion&gt;true|false&lt;/versionCodeUpdateFromVersion&gt;
      *             &lt;sharedUserId&gt;anId&lt;/sharedUserId&gt;
      *             &lt;debuggable&gt;true|false&lt;/debuggable&gt;
+     *             
+     *             &lt;supports-screens&gt;
+     *               &lt;anyDensity&gt;true&lt;/anyDensity&gt;
+     *               &lt;xlargeScreens&gt;false&lt;/xlargeScreens&gt;
+     *             &lt;/supports-screens&gt;
+     *             
+     *             &lt;compatible-screens&gt;
+     *               &lt;compatible-screen&gt;
+     *                 &lt;screenSize&gt;small&lt;/screenSize&gt;
+     *                 &lt;screenDensity&gt;ldpi&lt;/screenDensity&gt;
+     *               &lt;/compatible-screen&gt;
+     *             &lt;/compatible-screens&gt;
      *           &lt;/manifest&gt;
      *         &lt;/configuration&gt;
      *       &lt;/execution&gt;
      *     &lt;/executions&gt;
      *   &lt;/plugin&gt;
      * </pre>
-     * or use properties set in the pom or settings file or supplied as command line parameter. Add "android." in front
-     * of the property name for command line usage. All parameters follow a manifest.* naming convention.
+     * 
+     * or use properties set in the pom or settings file or supplied as command line parameter. Add
+     * "android." in front of the property name for command line usage. All parameters follow a
+     * manifest.* naming convention.
      * <p>
-     *
+     * 
      * @parameter
      */
     private Manifest manifest;

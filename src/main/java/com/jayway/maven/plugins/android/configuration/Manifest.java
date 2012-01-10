@@ -42,8 +42,18 @@ public class Manifest {
 	 */
 	protected Boolean debuggable;
 
+    /**
+     * Mirror of
+     * {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestSupportsScreens}
+     * .
+     */
     protected SupportsScreens supportsScreens;
 
+    /**
+     * Mirror of
+     * {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestCompatibleScreens}
+     * .
+     */
     protected List<CompatibleScreen> compatibleScreens;
 
     public String getVersionName() {
