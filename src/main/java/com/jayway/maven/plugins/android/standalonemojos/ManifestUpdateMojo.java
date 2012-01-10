@@ -3,6 +3,9 @@ package com.jayway.maven.plugins.android.standalonemojos;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,6 +36,7 @@ import org.xml.sax.SAXException;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
+import com.jayway.maven.plugins.android.common.XmlHelper;
 import com.jayway.maven.plugins.android.configuration.Manifest;
 
 /**
@@ -47,13 +51,17 @@ import com.jayway.maven.plugins.android.configuration.Manifest;
  *
  */
 public class ManifestUpdateMojo extends AbstractAndroidMojo {
-	private static final String ATTR_VERSION_NAME        = "android:versionName";
+    private static final String ATTR_VERSION_NAME        = "android:versionName";
 	private static final String ATTR_VERSION_CODE        = "android:versionCode";
 	private static final String ATTR_SHARED_USER_ID      = "android:sharedUserId";
 	private static final String ATTR_DEBUGGABLE          = "android:debuggable";
+    private static final String ATTR_SCREEN_DENSITY      = "android:screenDensity";
+    private static final String ATTR_SCREEN_SIZE         = "android:screenSize";
 
 	private static final String ELEM_APPLICATION         = "application";
     private static final String ELEM_SUPPORTS_SCREENS    = "supports-screens";
+    private static final String ELEM_COMPATIBLE_SCREENS  = "compatible-screens";
+    private static final String ELEM_SCREEN              = "screen";
 
     /**
      * Configuration for the manifest-update goal.
@@ -151,6 +159,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 
     protected SupportsScreens manifestSupportsScreens;
 
+    protected List<CompatibleScreen> manifestCompatibleScreens;
+
     private String parsedVersionName;
     private Integer parsedVersionCode;
     private boolean parsedVersionCodeAutoIncrement;
@@ -158,9 +168,14 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
     private String parsedSharedUserId;
     private Boolean parsedDebuggable;
     private SupportsScreens parsedSupportsScreens;
+    private List<CompatibleScreen> parsedCompatibleScreens;
 
     public void setSupportsScreens(SupportsScreens supportsScreens) {
         this.manifestSupportsScreens = supportsScreens;
+    }
+
+    public void setCompatibleScreens(List<CompatibleScreen> compatibleScreens) {
+        this.manifestCompatibleScreens = compatibleScreens;
     }
 
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -182,7 +197,9 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 		getLog().debug("    sharedUserId=" + parsedSharedUserId);
 		getLog().debug("    debuggable=" + parsedDebuggable);
         getLog().debug(
-                "    supports screens: " + (parsedSupportsScreens == null ? "not set" : "set"));
+                "    supports-screens: " + (parsedSupportsScreens == null ? "not set" : "set"));
+        getLog().debug(
+                "    compatible-screens: " + (parsedCompatibleScreens == null ? "not set" : "set"));
 
 		if (!androidManifestFile.exists()) {
 			return; // skip, no AndroidManifest.xml file found.
@@ -239,6 +256,11 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
             } else {
                 parsedSupportsScreens = manifestSupportsScreens;
             }
+            if (manifest.getCompatibleScreens() != null) {
+                parsedCompatibleScreens = manifest.getCompatibleScreens();
+            } else {
+                parsedCompatibleScreens = manifestCompatibleScreens;
+            }
         } else {
             parsedVersionName = manifestVersionName;
             parsedVersionCode = manifestVersionCode;
@@ -247,6 +269,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
             parsedSharedUserId = manifestSharedUserId;
             parsedDebuggable = manifestDebuggable;
             parsedSupportsScreens = manifestSupportsScreens;
+            parsedCompatibleScreens = manifestCompatibleScreens;
         }
     }
 
@@ -425,19 +448,66 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
                         parsedSupportsScreens.getResizeable());
                 dirty = true;
             }
+        }
 
-		}
+        if (parsedCompatibleScreens != null) {
+            updateCompatibleScreens(doc, manifestElement);
+            dirty = true;
+        }
 
-		if (dirty) {
-			if (!manifestFile.delete()) {
-				getLog().warn("Could not remove old " + manifestFile);
-			}
-			getLog().info("Made changes to manifest file, updating " + manifestFile);
-			writeManifest(manifestFile, doc);
-		} else {
-			getLog().info("No changes found to write to manifest file");
-		}
-	}
+        if (dirty) {
+            if (!manifestFile.delete()) {
+                getLog().warn("Could not remove old " + manifestFile);
+            }
+            getLog().info("Made changes to manifest file, updating " + manifestFile);
+            writeManifest(manifestFile, doc);
+        } else {
+            getLog().info("No changes found to write to manifest file");
+        }
+    }
+
+    private void updateCompatibleScreens(Document doc, Element manifestElement) {
+        Element compatibleScreensElem = getOrCreateElement(doc, manifestElement,
+                ELEM_COMPATIBLE_SCREENS);
+
+        // read those screen elements that were already defined in the Manifest
+        NodeList manifestScreenElems = compatibleScreensElem.getElementsByTagName(ELEM_SCREEN);
+        int numManifestScreens = manifestScreenElems.getLength();
+        ArrayList<CompatibleScreen> manifestScreens = new ArrayList<CompatibleScreen>(
+                numManifestScreens);
+        for (int i = 0; i < numManifestScreens; i++) {
+            Element screenElem = (Element) manifestScreenElems.item(i);
+
+            CompatibleScreen screen = new CompatibleScreen();
+            screen.setScreenDensity(screenElem.getAttribute(ATTR_SCREEN_DENSITY));
+            screen.setScreenSize(screenElem.getAttribute(ATTR_SCREEN_SIZE));
+
+            manifestScreens.add(screen);
+            getLog().debug("Found Manifest compatible-screen: " + screen);
+        }
+
+        // remove all child nodes, since we'll rebuild the element
+        XmlHelper.removeDirectChildren(compatibleScreensElem);
+
+        for (CompatibleScreen screen : parsedCompatibleScreens) {
+            getLog().debug("Found POM compatible-screen: " + screen);
+        }
+
+        // merge those screens defined in the POM, overriding any matching screens
+        // already defined in the Manifest
+        HashSet<CompatibleScreen> mergedScreens = new HashSet<CompatibleScreen>();
+        mergedScreens.addAll(manifestScreens);
+        mergedScreens.addAll(parsedCompatibleScreens);
+
+        for (CompatibleScreen screen : mergedScreens) {
+            getLog().debug("Using compatible-screen: " + screen);
+            Element screenElem = doc.createElement(ELEM_SCREEN);
+            screenElem.setAttribute(ATTR_SCREEN_SIZE, screen.getScreenSize());
+            screenElem.setAttribute(ATTR_SCREEN_DENSITY, screen.getScreenDensity());
+
+            compatibleScreensElem.appendChild(screenElem);
+        }
+    }
 
     private Element getOrCreateElement(Document doc, Element manifestElement, String elementName) {
         NodeList nodeList = manifestElement.getElementsByTagName(elementName);

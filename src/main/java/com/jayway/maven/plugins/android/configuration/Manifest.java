@@ -1,5 +1,8 @@
 package com.jayway.maven.plugins.android.configuration;
 
+import java.util.List;
+
+import com.jayway.maven.plugins.android.standalonemojos.CompatibleScreen;
 import com.jayway.maven.plugins.android.standalonemojos.SupportsScreens;
 
 /**
@@ -41,6 +44,8 @@ public class Manifest {
 
     protected SupportsScreens supportsScreens;
 
+    protected List<CompatibleScreen> compatibleScreens;
+
     public String getVersionName() {
         return versionName;
     }
@@ -67,5 +72,9 @@ public class Manifest {
 
     public SupportsScreens getSupportsScreens() {
         return supportsScreens;
+    }
+
+    public List<CompatibleScreen> getCompatibleScreens() {
+        return compatibleScreens;
     }
 }
