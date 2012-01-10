@@ -431,6 +431,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
             Element supportsScreensElem = XmlHelper.getOrCreateElement(doc, manifestElement,
                     ELEM_SUPPORTS_SCREENS);
 
+            getLog().info("Setting " + ELEM_SUPPORTS_SCREENS);
+
             if (parsedSupportsScreens.getAnyDensity() != null) {
                 supportsScreensElem.setAttribute(ATTR_ANY_DENSITY,
                         parsedSupportsScreens.getAnyDensity());
@@ -479,6 +481,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
         }
 
         if (parsedCompatibleScreens != null) {
+            getLog().info("Setting " + ELEM_COMPATIBLE_SCREENS);
             updateCompatibleScreens(doc, manifestElement);
             dirty = true;
         }
