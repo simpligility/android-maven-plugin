@@ -290,8 +290,12 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
                 }
 
                 if(classesExists) {
-                    remoteAndroidTestRunner.setClassNames((String[]) parsedClasses.toArray());
-                    getLog().info("Running tests for specified test classes/methods: " + parsedClasses);
+                    String[] classNames = new String[parsedClasses.size()];
+                    for (int i = 0; i < classNames.length; ++i) {
+                        classNames[i] = (String)parsedClasses.get(i);
+                    }
+                    remoteAndroidTestRunner.setClassNames(classNames);
+                    getLog().info("Running tests for specified test classes/methods: " + classNames);
                 }
 
                 remoteAndroidTestRunner.setDebug(parsedDebug);
