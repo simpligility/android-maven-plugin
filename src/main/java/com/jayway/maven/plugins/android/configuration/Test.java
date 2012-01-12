@@ -45,11 +45,11 @@ public class Test {
     /**
       * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
       */
-    protected List packages;
+    protected List<String> packages;
     /**
       * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
       */
-    protected List classes;
+    protected List<String> classes;
 
     public String getSkip() {
         return skip;
@@ -83,11 +83,11 @@ public class Test {
         return createReport;
     }
 
-    public List getPackages() {
+    public List<String> getPackages() {
         return packages;
     }
 
-    public List getClasses() {
+    public List<String> getClasses() {
         return classes;
     }
 }
