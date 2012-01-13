@@ -290,8 +290,12 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
                 }
 
                 if(classesExists) {
-                    remoteAndroidTestRunner.setClassNames((String[]) parsedClasses.toArray());
-                    getLog().info("Running tests for specified test classes/methods: " + parsedClasses);
+                    String[] classNames = new String[parsedClasses.size()];
+                    for (int i = 0; i < classNames.length; ++i) {
+                        classNames[i] = (String)parsedClasses.get(i);
+                    }
+                    remoteAndroidTestRunner.setClassNames(classNames);
+                    getLog().info("Running tests for specified test classes/methods: " + classNames);
                 }
 
                 remoteAndroidTestRunner.setDebug(parsedDebug);
@@ -350,12 +354,12 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
             } else {
                 parsedInstrumentationRunner = testInstrumentationRunner;
             }
-            if (test.getClasses() == null || test.getClasses().size() == 0) {
+            if (test.getClasses() != null && !test.getClasses().isEmpty()) {
                 parsedClasses = test.getClasses();
             } else {
                 parsedClasses = testClasses;
             }
-            if (test.getPackages() == null || test.getPackages().size() == 0) {
+            if (test.getPackages() != null && !test.getPackages().isEmpty()) {
                 parsedPackages = test.getPackages();
             } else {
                 parsedPackages = testPackages;
