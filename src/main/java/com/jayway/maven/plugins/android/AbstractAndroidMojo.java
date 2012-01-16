@@ -45,6 +45,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
@@ -556,7 +557,42 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         deployApk(apkFile);
     }
 
+    
+    /**
+     * Helper class to perform doWithDevices() in parallel.
+     * 
+     * Uses CountDownLatch to make it possible to wait for all the
+     * child threads to end before continuing main thread execution.
+     */
+    class Worker implements Runnable {
+        private final CountDownLatch startSignal;
+        private final CountDownLatch doneSignal;
+        private IDevice idevice;
+        private final DeviceCallback deviceCallback;
 
+        Worker(CountDownLatch startSignal, CountDownLatch doneSignal, IDevice idevice, final DeviceCallback deviceCallback) {
+            this.idevice = idevice;
+            this.deviceCallback = deviceCallback;
+            this.startSignal = startSignal;
+            this.doneSignal = doneSignal;
+        }
+
+        public void run() {
+            try {
+                startSignal.await();
+                deviceCallback.doWithDevice(idevice);
+                doneSignal.countDown();
+                
+            } catch (Exception e) {
+                e.printStackTrace();  
+                
+            } finally {
+                doneSignal.countDown();
+            }
+        }
+    }
+    
+    
     /**
      * Determines which {@link IDevice}(s) to use, and performs the callback action on it/them.
      *
@@ -567,6 +603,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected void doWithDevices(final DeviceCallback deviceCallback) throws MojoExecutionException, MojoFailureException {
         final AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
 
+        CountDownLatch startSignal = new CountDownLatch(0);
+        CountDownLatch doneSignal = null;
+        
         if (androidDebugBridge.isConnected()) {
             waitForInitialDeviceList(androidDebugBridge);
             List<IDevice> devices = Arrays.asList(androidDebugBridge.getDevices());
@@ -595,8 +634,19 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
                     }
                 } else {
                     getLog().info("android.device parameter not set, using all attached devices");
+                    
+                    doneSignal = new CountDownLatch(numberOfDevices);
+                    
                     for (IDevice idevice : devices) {
-                        deviceCallback.doWithDevice(idevice);
+                        new Thread(new Worker(startSignal, doneSignal, idevice, deviceCallback))
+                                .start();
+                    }
+                    startSignal.countDown();
+                    
+                    try {
+                        doneSignal.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             } else {
