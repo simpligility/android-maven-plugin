@@ -122,9 +122,9 @@ public class ProguardMojo extends AbstractAndroidMojo {
 
         public String toCommandLine() {
             if (filterExpression != null) {
-                return path + "(" + filterExpression + ")";
+                return "\'" + path + "\'(" + filterExpression + ")";
             }
-            return path;
+            return "\'" + path + "\'";
         }
     }
 
@@ -194,16 +194,16 @@ public class ProguardMojo extends AbstractAndroidMojo {
         collectInputFiles(commands);
 
         commands.add("-outjars");
-        commands.add(project.getBuild().getDirectory() + File.separator + PROGUARD_OBFUSCATED_JAR);
+        commands.add("'" + project.getBuild().getDirectory() + File.separator + PROGUARD_OBFUSCATED_JAR + "'");
 
         commands.add("-dump");
-        commands.add(proguardDir + File.separator + "dump.txt");
+        commands.add("'" + proguardDir + File.separator + "dump.txt'");
         commands.add("-printseeds");
-        commands.add(proguardDir + File.separator + "seeds.txt");
+        commands.add("'" + proguardDir + File.separator + "seeds.txt'");
         commands.add("-printusage");
-        commands.add(proguardDir + File.separator + "usage.txt");
+        commands.add("'" + proguardDir + File.separator + "usage.txt'");
         commands.add("-printmapping");
-        commands.add(proguardDir + File.separator + "mapping.txt");
+        commands.add("'" + proguardDir + File.separator + "mapping.txt'");
 
         final String javaExecutable = getJavaExecutable().getAbsolutePath();
         getLog().info(javaExecutable + " " + commands.toString());
