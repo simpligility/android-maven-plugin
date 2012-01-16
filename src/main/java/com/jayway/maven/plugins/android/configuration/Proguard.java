@@ -21,6 +21,9 @@ public class Proguard {
 
     private String[] jvmArguments;
 
+    private boolean filterMavenDescriptor = false;
+    private boolean filterManifest = false;
+
     public Boolean isSkip() {
         return skip;
     }
@@ -35,5 +38,13 @@ public class Proguard {
 
     public String[] getJvmArguments() {
         return jvmArguments;
+    }
+
+    public boolean isFilterMavenDescriptor() {
+        return filterMavenDescriptor;
+    }
+
+    public boolean isFilterManifest() {
+        return filterManifest;
     }
 }
