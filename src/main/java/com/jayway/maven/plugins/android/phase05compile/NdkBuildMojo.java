@@ -255,6 +255,10 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
+        // Validate the NDK
+        final File ndkBuildFile = new File(getAndroidNdk().getNdkBuildPath());
+        NativeHelper.validateNDKVersion(getLog(), ndkBuildFile.getParentFile());
+
         // This points 
         File nativeLibDirectory = new File( nativeLibrariesOutputDirectory, ndkArchitecture );
 
@@ -438,7 +442,6 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
 
         // Process conditionally any of the headers to include into the header archive file
         processHeaderFileIncludes(localCIncludesFile);
-
 
     }
 
