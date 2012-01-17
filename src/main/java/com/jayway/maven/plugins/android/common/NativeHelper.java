@@ -1,6 +1,7 @@
 package com.jayway.maven.plugins.android.common;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.handler.ArtifactHandler;
@@ -19,7 +20,10 @@ import org.sonatype.aether.util.filter.ScopeDependencyFilter;
 import org.sonatype.aether.util.graph.PreorderNodeListGenerator;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
 import static org.apache.maven.RepositoryUtils.toDependency;
@@ -149,5 +153,43 @@ public class NativeHelper {
             throw new MojoExecutionException( "Error while processing transient dependencies", e );
         }
     }
+
+    public static void validateNDKVersion(Log log, File ndkBuildFile) throws MojoExecutionException {
+        final File ndkVersionFile = new File(ndkBuildFile.getParent(), "RELEASE.TXT");
+
+        if (!ndkVersionFile.exists()) {
+            log.warn("Could not locate RELEASE.TXT in the Android NDK base directory, can not verify version");
+            log.warn("Your build may be unstable!");
+            return;
+        }
+
+        int version = 0;
+        try {
+            String versionStr = FileUtils.readFileToString(ndkVersionFile);
+            validateNDKVersion(version, versionStr);
+        } catch (IOException e) {
+            throw new MojoExecutionException("Error while extracting NDK version from: " + ndkVersionFile);
+        }
+    }
+
+    public static void validateNDKVersion(int desiredVersion, String versionStr) throws MojoExecutionException {
+        int version = 0;
+
+        if (versionStr != null) {
+            versionStr = versionStr.trim();
+            Pattern pattern = Pattern.compile("[r]([0-9]{1,3})([a-z]{0,1}).*");
+            Matcher m = pattern.matcher(versionStr);
+            if (m.matches()) {
+                final String group = m.group(1);
+                version = Integer.parseInt(group);
+            }
+        }
+
+        if (version < desiredVersion) {
+            throw new MojoExecutionException("You are running an old NDK (version " + versionStr + "), please update to at least r7 or later");
+        }
+    }
+
+
 
 }
