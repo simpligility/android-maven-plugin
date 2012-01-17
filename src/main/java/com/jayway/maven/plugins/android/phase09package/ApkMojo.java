@@ -176,6 +176,38 @@ public class ApkMojo extends AbstractAndroidMojo {
      */
     private File[] sourceDirectories;
 
+	/**
+	 * Pattern for additional META-INF resources to be packaged into the apk.
+	 * <p>
+	 * The APK builder filters these resources and doesn't include them into the apk.
+	 * This leads to bad behaviour of dependent libraries relying on these resources,
+	 * for instance service discovery doesn't work.<br/>
+	 * By specifying this pattern, the android plugin adds these resources to the final apk. 
+	 * </p>
+	 * <p>The pattern is relative to META-INF, i.e. one must use
+	 * <pre>
+	 * <code>
+	 * 	&lt;metaIncludes&gt;
+	 * 		&lt;metaInclude>services/**&lt;/metaInclude&gt;
+	 * 	&lt;/metaIncludes&gt;
+	 * </code>
+	 * </pre>
+	 * ... instead of
+	 * <pre>
+	 * <code>
+	 * 	&lt;metaIncludes&gt;
+	 * 		&lt;metaInclude>META-INF/services/**&lt;/metaInclude&gt;
+	 * 	&lt;/metaIncludes&gt;
+	 * </code>
+	 * </pre>
+	 * <p>
+	 * See also <a href="http://code.google.com/p/maven-android-plugin/issues/detail?id=97">Issue 97</a>
+	 * </p>
+	 * 
+	 * @parameter expression="${android.metaIncludes}" default-value=""
+	 */
+	private String[]	metaIncludes;
+
     /**
       * @component
       * @readonly
@@ -257,9 +289,6 @@ public class ApkMojo extends AbstractAndroidMojo {
                 nativeFolders, signWithDebugKeyStore);
         }
 
-// ISSUE-97
-// vvv
-//
         if( this.metaIncludes != null && this.metaIncludes.length > 0 ) {
         	try {
 				addMetaInf( outputFile, jarFiles );
@@ -268,32 +297,7 @@ public class ApkMojo extends AbstractAndroidMojo {
 				throw new MojoExecutionException("Could not add META-INF resources.", e);
 			}
         }
-//
-// ^^^
-// ISSUE-97
     }
-
-// ISSUE-97
-// vvv
-//
-	/**
-	 * <p>
-	 * Pattern for additional META-INF resources to be packaged into the apk.
-	 * </p>
-	 * <p>
-	 * The APK builder filters these resources and doesn't include them into the apk.
-	 * </p>
-	 * <p>
-	 * This leads to bad behaviour of dependent libraries relying on these resources, for instance service discovery
-	 * doesn't work.
-	 * </p>
-	 * <p>
-	 * See also <a href="http://code.google.com/p/maven-android-plugin/issues/detail?id=97">Issue 97</a>
-	 * </p>
-	 * 
-	 * @parameter expression="${android.metaIncludes}" default-value=""
-	 */
-	private String[]	metaIncludes;
 
 	private void addMetaInf( File outputFile, ArrayList<File> jarFiles ) throws IOException
 	{
@@ -367,9 +371,6 @@ public class ApkMojo extends AbstractAndroidMojo {
 
 		return false;
 	}
-//
-// ^^^
-// ISSUE-97
 
     private Map<String, List<File>> m_jars = new HashMap<String, List<File>>();
 
@@ -482,9 +483,8 @@ public class ApkMojo extends AbstractAndroidMojo {
     }
 
     private File removeDuplicatesFromJar(File in, List<String> duplicates) {
-//        File target = new File(project.getBasedir(), "target");
         String target = project.getBuild().getOutputDirectory();
-        File tmp = new File(target, "unpacked-wembedded-jars");
+        File tmp = new File(target, "unpacked-embedded-jars");
         tmp.mkdirs();
         File out = new File(tmp, in.getName());
 
