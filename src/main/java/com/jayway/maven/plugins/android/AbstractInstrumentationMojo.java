@@ -115,8 +115,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
 
 
     /**
-     * Enables or disables integration test related goals. If <code>true</code> they will be run; if <code>false</code>,
-     * they will be skipped. If <code>auto</code>, they will run if any of the classes inherit from any class in
+     * Enables or disables integration test related goals. If <code>true</code> they will be skipped; if <code>false</code>,
+     * they will be run. If <code>auto</code>, they will run if any of the classes inherit from any class in
      * <code>junit.framework.**</code> or <code>android.test.**</code>.
      *
      * @parameter expression="${android.test.skip}" default-value="auto"
