@@ -19,14 +19,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jayway.maven.plugins.android.generation2</groupId>
     <artifactId>android-maven-plugin</artifactId>
-    <version>3.0.3-issue-97-SNAPSHOT</version>
+    <version>3.0.3-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
     <name>Android Maven Plugin - android-maven-plugin</name>
     <description>Maven Plugin for Android Development</description>
     <url>http://code.google.com/p/maven-android-plugin</url>
     <inceptionYear>2008</inceptionYear>
     <properties>
-        <scm.branch>issue-97</scm.branch>
+        <scm.branch>master</scm.branch>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Don't upgrade maven-plugin-plugin until MPLUGIN-187 is fixed:
@@ -297,7 +297,6 @@
     </build>
 
     <distributionManagement>
-<!--
         <repository>
             <id>oss.sonatype.org-jayway-staging</id>
             <name>OpenSource Release Staging on Sonatype.org</name>
@@ -313,12 +312,6 @@
             <name>maven-android-plugin-m2site on Google Code</name>
             <url>${env.MAVEN_ANDROID_PLUGIN_M2SITE_SVN_WORKINGCOPY}</url>
         </site>
--->
-		<snapshotRepository>
-			<id>private-snapshots</id>
-			<url>${private-snapshots-url}</url>
-			<uniqueVersion>false</uniqueVersion>
-		</snapshotRepository>
     </distributionManagement>
 
     <reporting>
