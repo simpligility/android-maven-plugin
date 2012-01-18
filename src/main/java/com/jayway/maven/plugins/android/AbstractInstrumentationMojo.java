@@ -115,8 +115,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
 
 
     /**
-     * Enables or disables integration test related goals. If <code>true</code> they will be run; if <code>false</code>,
-     * they will be skipped. If <code>auto</code>, they will run if any of the classes inherit from any class in
+     * Enables or disables integration test related goals. If <code>true</code> they will be skipped; if <code>false</code>,
+     * they will be run. If <code>auto</code>, they will run if any of the classes inherit from any class in
      * <code>junit.framework.**</code> or <code>android.test.**</code>.
      *
      * @parameter expression="${android.test.skip}" default-value="auto"
@@ -218,7 +218,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      * @optional
      * @parameter expression="${android.test.packages}
      */
-    protected List testPackages;
+    protected List<String> testPackages;
 
     /**
      * <p>Whether to execute test classes which are specified as part of the instrumentation tests.</p>
@@ -232,7 +232,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      * @optional
      * @parameter expression="${android.test.classes}
      */
-    protected List testClasses;
+    protected List<String> testClasses;
 
     private boolean classesExists;
     private boolean packagesExists;
@@ -241,8 +241,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
     private String parsedSkip;
     private String parsedInstrumentationPackage;
     private String parsedInstrumentationRunner;
-    private List parsedClasses;
-    private List parsedPackages;
+    private List<String> parsedClasses;
+    private List<String> parsedPackages;
     private String parsedTestSize;
     private Boolean parsedCoverage;
     private Boolean parsedDebug;
@@ -290,7 +290,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
                 }
 
                 if(classesExists) {
-                    remoteAndroidTestRunner.setClassNames((String[]) parsedClasses.toArray());
+                    remoteAndroidTestRunner.setClassNames(parsedClasses.toArray(new String[parsedClasses.size()]));
                     getLog().info("Running tests for specified test classes/methods: " + parsedClasses);
                 }
 
