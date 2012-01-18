@@ -27,29 +27,36 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import com.jayway.maven.plugins.android.common.AetherHelper;
-import com.jayway.maven.plugins.android.common.NativeHelper;
-import com.jayway.maven.plugins.android.configuration.Sign;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.util.AbstractScanner;
+import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.SelectorUtils;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.AndroidSigner;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
-import org.codehaus.plexus.util.DirectoryScanner;
+import com.jayway.maven.plugins.android.common.NativeHelper;
+import com.jayway.maven.plugins.android.configuration.Apk;
+import com.jayway.maven.plugins.android.configuration.ConfigHelper;
+import com.jayway.maven.plugins.android.configuration.Sign;
 
 
 /**
@@ -119,8 +126,17 @@ public class ApkMojo extends AbstractAndroidMojo {
      * Android does not support duplicates, and all dependencies are inlined in the APK. If duplicates files are found,
      * the resource is kept in the first dependency and removes from others.
      *
+     * @parameter expression="${android.apk.extractDuplicates}" default-value="false"
+     */
+    private boolean apkExtractDuplicates;
+    
+    /**
+     * Deprecated in favour of {@link #apkExtractDuplicates}
+     * 
+     * @deprecated
      * @parameter expression="${android.extractDuplicates}" default-value="false"
      */
+    @Deprecated
     private boolean extractDuplicates;
 
      /**
@@ -165,15 +181,24 @@ public class ApkMojo extends AbstractAndroidMojo {
      * <pre>
      * &lt;configuration&gt;
      * 	  ...
-     *    &lt;sourceDirectories&gt;
+     *    &lt;apkSourceDirectories&gt;
      *      &lt;sourceDirectory&gt;${project.basedir}/additionals&lt;/sourceDirectory&gt;
-     *	  &lt;/sourceDirectories&gt;
+     *    &lt;/apkSourceDirectories&gt;
      *	  ...
      * &lt;/configuration&gt;
      * </pre>
      *
-     * @parameter expression="${android.sourceDirectories}" default-value=""
+     * @parameter expression="${android.sourceDirectories}"
      */
+    private File[] apkSourceDirectories;
+
+    /**
+     * Deprecated in favour of {@link #apkSourceDirectories}.
+     * 
+     * @deprecated
+	 * @parameter expression="${android.sourceDirectories}"
+	 */
+    @Deprecated
     private File[] sourceDirectories;
 
 	/**
@@ -187,28 +212,47 @@ public class ApkMojo extends AbstractAndroidMojo {
 	 * <p>The pattern is relative to META-INF, i.e. one must use
 	 * <pre>
 	 * <code>
-	 * 	&lt;metaIncludes&gt;
+	 * 	&lt;apkMetaIncludes&gt;
 	 * 		&lt;metaInclude>services/**&lt;/metaInclude&gt;
-	 * 	&lt;/metaIncludes&gt;
+	 * 	&lt;/apkMetaIncludes&gt;
 	 * </code>
 	 * </pre>
 	 * ... instead of
 	 * <pre>
 	 * <code>
-	 * 	&lt;metaIncludes&gt;
+	 * 	&lt;apkMetaIncludes&gt;
 	 * 		&lt;metaInclude>META-INF/services/**&lt;/metaInclude&gt;
-	 * 	&lt;/metaIncludes&gt;
+	 * 	&lt;/apkMetaIncludes&gt;
 	 * </code>
 	 * </pre>
 	 * <p>
 	 * See also <a href="http://code.google.com/p/maven-android-plugin/issues/detail?id=97">Issue 97</a>
 	 * </p>
 	 * 
-	 * @parameter expression="${android.metaIncludes}" default-value=""
+	 * @parameter expression="${android.apk.metaIncludes}" default-value=""
 	 */
-	private String[]	metaIncludes;
+	private String[]	apkMetaIncludes;
 
-    /**
+	private Apk apk;
+
+    
+	public Apk getApk()
+	{
+		return apk;
+	}
+
+	
+	/**
+	 * Embedded configuration of this mojo.
+	 * 
+	 * @parameter
+	 */
+	public void setApk( Apk apk )
+	{
+		this.apk = apk;
+	}
+
+	/**
       * @component
       * @readonly
       * @required
@@ -223,6 +267,8 @@ public class ApkMojo extends AbstractAndroidMojo {
         if (!generateApk) {
             return;
         }
+
+        ConfigHelper.copyValues( this, "apk" );
 
         generateIntermediateAp_();
 
@@ -259,8 +305,8 @@ public class ApkMojo extends AbstractAndroidMojo {
         File dexFile = new File(project.getBuild().getDirectory(), "classes.dex");
         File zipArchive = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_");
         ArrayList<File> sourceFolders = new ArrayList<File>();
-	if (sourceDirectories != null) {
-		for(File f:sourceDirectories) {
+	if (apkSourceDirectories != null) {
+		for(File f:apkSourceDirectories) {
 			sourceFolders.add(f);
 		}
 	}
@@ -289,7 +335,7 @@ public class ApkMojo extends AbstractAndroidMojo {
                 nativeFolders, signWithDebugKeyStore);
         }
 
-        if( this.metaIncludes != null && this.metaIncludes.length > 0 ) {
+        if( this.apkMetaIncludes != null && this.apkMetaIncludes.length > 0 ) {
         	try {
 				addMetaInf( outputFile, jarFiles );
 			}
@@ -340,7 +386,7 @@ public class ApkMojo extends AbstractAndroidMojo {
 					continue;
 				}
 
-				if( this.extractDuplicates && !entries.add( zn ) ) {
+				if( this.apkExtractDuplicates && !entries.add( zn ) ) {
 					continue;
 				}
 
@@ -364,7 +410,7 @@ public class ApkMojo extends AbstractAndroidMojo {
 
 	private boolean metaInfMatches( String path )
 	{
-		for( String inc : this.metaIncludes ) {
+		for( String inc : this.apkMetaIncludes ) {
 			if( SelectorUtils.matchPath( "META-INF/" + inc, path ) )
 				return true;
 		}
@@ -410,7 +456,7 @@ public class ApkMojo extends AbstractAndroidMojo {
         sourceFolders.add(new File(project.getBuild().getOutputDirectory()));
 
         for (Artifact artifact : getRelevantCompileArtifacts()) {
-            if (extractDuplicates) {
+            if (apkExtractDuplicates) {
                 try {
                     computeDuplicateFiles(artifact.getFile());
                 } catch (Exception e) {
@@ -421,7 +467,7 @@ public class ApkMojo extends AbstractAndroidMojo {
         }
 
         // Check duplicates.
-        if (extractDuplicates) {
+        if (apkExtractDuplicates) {
             List<String> duplicates = new ArrayList<String>();
             List<File> jarToModify = new ArrayList<File>();
             for (String s : m_jars.keySet()) {
