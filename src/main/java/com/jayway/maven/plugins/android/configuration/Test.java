@@ -15,41 +15,41 @@ public class Test {
       */
     private String skip;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
+      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testInstrumentationPackage}
       */
     private String instrumentationPackage;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
+      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testInstrumentationRunner}
       */
     private String instrumentationRunner;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
+      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testDebug}
       */
     private Boolean debug;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
+      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testCoverage}
       */
     private Boolean coverage;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
+      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testLogOnly}
       */
     private Boolean logOnly;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
+      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSize}
       */
     private String testSize;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
+      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testCreateReport}
       */
     private Boolean createReport;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
+      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testPackages}
       */
-    protected List packages;
+    protected List<String> packages;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
+      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testClasses}
       */
-    protected List classes;
+    protected List<String> classes;
 
     public String getSkip() {
         return skip;
@@ -83,11 +83,11 @@ public class Test {
         return createReport;
     }
 
-    public List getPackages() {
+    public List<String> getPackages() {
         return packages;
     }
 
-    public List getClasses() {
+    public List<String> getClasses() {
         return classes;
     }
 }
