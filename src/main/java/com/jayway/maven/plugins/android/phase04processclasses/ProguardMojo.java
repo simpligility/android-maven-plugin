@@ -2,6 +2,10 @@ package com.jayway.maven.plugins.android.phase04processclasses;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -45,6 +49,8 @@ public class ProguardMojo extends AbstractAndroidMojo {
      *    &lt;skip&gt;false&lt;/skip&gt;
      *    &lt;config&gt;proguard.cfg&lt;/config&gt;
      *    &lt;proguardJarPath&gt;someAbsolutePathToProguardJar&lt;/proguardJarPath&gt;
+     *    &lt;filterMavenDescriptor&gt;true|false&lt;/filterMavenDescriptor&gt;
+     *    &lt;filterManifest&gt;true|false&lt;/filterManifest&gt;
      *    &lt;jvmArguments&gt;
      *     &lt;jvmArgument&gt;-Xms256m&lt;/jvmArgument&gt;
      *     &lt;jvmArgument&gt;-Xmx512m&lt;/jvmArgument&gt;
@@ -94,6 +100,32 @@ public class ProguardMojo extends AbstractAndroidMojo {
      */
     private String[] proguardJvmArguments;
 
+    /**
+     * If set to true will add a filter to remove META-INF/maven/* files.
+     * 
+     * @parameter expression="${android.proguard.filterMavenDescriptor}"
+     *            default-value="false"
+     * @optional
+     */
+    private boolean filterMavenDescriptor = false;
+
+    /**
+     * If set to true will add a filter to remove META-INF/MANIFEST.MF files.
+     * 
+     * @parameter expression="${android.proguard.filterManifest}"
+     *            default-value="false"
+     * @optional
+     */
+    private boolean filterManifest = false;
+
+    /**
+     * The plugin dependencies.
+     * 
+     * @parameter expression="${plugin.artifacts}"
+     * @required
+     * @readonly
+     */
+    protected List<Artifact> pluginDependencies;
 
     private Boolean parsedSkip;
     private String parsedConfig;
@@ -102,8 +134,15 @@ public class ProguardMojo extends AbstractAndroidMojo {
 
     public static final String PROGUARD_OBFUSCATED_JAR = "proguard-obfuscated.jar";
 
-    private static final String ANDROID_LIBRARY_FILTER = "!org/xml/**,!org/w3c/**,!org/apache/http/**,!java/**,!javax/**,!android/net/http/AndroidHttpClient.class";
+    private static final Collection<String> ANDROID_LIBRARY_EXCLUDED_FILTER = Arrays.asList(
+            "org/xml/**", "org/w3c/**", "org/apache/http/**", "java/**", "javax/**",
+            "android/net/http/AndroidHttpClient.class");
 
+    private static final Collection<String> MAVEN_DESCRIPTOR = Arrays.asList("META-INF/maven/**");
+    private static final Collection<String> META_INF_MANIFEST = Arrays
+            .asList("META-INF/MANIFEST.MF");
+
+    private Collection<String> globalInJarExcludes = new HashSet<String>();
 
     private List<Artifact> artifactBlacklist = new LinkedList<Artifact>();
     private List<Artifact> artifactsToShift = new LinkedList<Artifact>();
@@ -112,22 +151,32 @@ public class ProguardMojo extends AbstractAndroidMojo {
     private List<ProGuardInput> libraryJars = new LinkedList<ProguardMojo.ProGuardInput>();
 
     private static class ProGuardInput {
-        private String path;
-        private String filterExpression;
 
-        public ProGuardInput(String path, String filterExpression) {
+        private String path;
+        private Collection<String> excludedFilter;
+
+        public ProGuardInput(String path, Collection<String> excludedFilter) {
             this.path = path;
-            this.filterExpression = filterExpression;
+            this.excludedFilter = excludedFilter;
         }
 
         public String toCommandLine() {
-            if (filterExpression != null) {
-                return "\'" + path + "\'(" + filterExpression + ")";
-            }
-            return "\'" + path + "\'";
+            if (excludedFilter != null && !excludedFilter.isEmpty()) {
+                StringBuilder sb = new StringBuilder(path);
+                sb.append('(');
+                for (Iterator<String> it = excludedFilter.iterator(); it.hasNext();) {
+                    sb.append('!').append(it.next());
+                    if (it.hasNext())
+                        sb.append(',');
+                }
+                sb.append(')');
+                return sb.toString();
+            } else
+                return path;
         }
     }
 
+    @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         parseConfiguration();
         
@@ -136,7 +185,13 @@ public class ProguardMojo extends AbstractAndroidMojo {
         }
     }
 
-    private void parseConfiguration() {
+    private void parseConfiguration() throws MojoExecutionException {
+        proguardProguardJarPath = getProguardJarPathFromDependencies();
+        if (filterManifest)
+            globalInJarExcludes.addAll(META_INF_MANIFEST);
+        if (filterMavenDescriptor)
+            globalInJarExcludes.addAll(MAVEN_DESCRIPTOR);
+
         if (proguard != null) {
             if (proguard.isSkip() != null) {
                 parsedSkip = proguard.isSkip();
@@ -158,12 +213,21 @@ public class ProguardMojo extends AbstractAndroidMojo {
             } else {
                 parsedJvmArguments = proguard.getJvmArguments();
             }
+            if (proguard.isFilterManifest())
+                globalInJarExcludes.addAll(META_INF_MANIFEST);
+            if (proguard.isFilterMavenDescriptor())
+                globalInJarExcludes.addAll(MAVEN_DESCRIPTOR);
         } else {
             parsedSkip = proguardSkip;
             parsedConfig = proguardConfig;
             parsedProguardJarPath = proguardProguardJarPath;
             parsedJvmArguments = proguardJvmArguments;
         }
+        // nothing was configured - set up default
+        if (StringUtils.isEmpty(parsedProguardJarPath)) {
+            parsedProguardJarPath = getAndroidSdk().getPathForTool("proguard/lib/proguard.jar");
+        }
+
     }
 
     private void executeProguard() throws MojoExecutionException {
@@ -182,10 +246,6 @@ public class ProguardMojo extends AbstractAndroidMojo {
 
         collectJvmArguments(commands);
 
-        // nothing was configured - set up default
-        if (StringUtils.isEmpty(parsedProguardJarPath)) {
-            parsedProguardJarPath = getAndroidSdk().getPathForTool("proguard/lib/proguard.jar");
-        }
         commands.add("-jar");
         commands.add(parsedProguardJarPath);
 
@@ -298,11 +358,11 @@ public class ProguardMojo extends AbstractAndroidMojo {
             if (isBlacklistedArtifact(artifact)) {
                 continue;
             }
-            addInJar(artifact.getFile().getAbsolutePath());
+            addInJar(artifact.getFile().getAbsolutePath(), globalInJarExcludes);
         }
     }
 
-    private void addInJar(String path, String filterExpression) {
+    private void addInJar(String path, Collection<String> filterExpression) {
         inJars.add(new ProGuardInput(path, filterExpression));
     }
 
@@ -310,7 +370,7 @@ public class ProguardMojo extends AbstractAndroidMojo {
         addInJar(path, null);
     }
 
-    private void addLibraryJar(String path, String filterExpression) {
+    private void addLibraryJar(String path, Collection<String> filterExpression) {
         libraryJars.add(new ProGuardInput(path, filterExpression));
     }
 
@@ -342,7 +402,8 @@ public class ProguardMojo extends AbstractAndroidMojo {
         for (Artifact artifact : project.getArtifacts()) {
             if (artifact.getScope().equals(JavaScopes.PROVIDED)) {
                 if (artifact.getArtifactId().equals("android")) {
-                    addLibraryJar(artifact.getFile().getAbsolutePath(), ANDROID_LIBRARY_FILTER);
+                    addLibraryJar(artifact.getFile().getAbsolutePath(),
+                            ANDROID_LIBRARY_EXCLUDED_FILTER);
                 } else {
                     addLibraryJar(artifact.getFile().getAbsolutePath());
                 }
@@ -352,4 +413,31 @@ public class ProguardMojo extends AbstractAndroidMojo {
             }
         }
     }
+
+    private String getProguardJarPathFromDependencies() throws MojoExecutionException {
+        Artifact proguardArtifact = null;
+        int proguardArtifactDistance = -1;
+        for (Artifact artifact : pluginDependencies) {
+            getLog().debug("pluginArtifact: " + artifact.getFile());
+            if (("proguard".equals(artifact.getArtifactId()))
+                    || ("proguard-base".equals(artifact.getArtifactId()))) {
+                int distance = artifact.getDependencyTrail().size();
+                getLog().debug("proguard DependencyTrail: " + distance);
+                if (proguardArtifactDistance == -1) {
+                    proguardArtifact = artifact;
+                    proguardArtifactDistance = distance;
+                } else if (distance < proguardArtifactDistance) {
+                    proguardArtifact = artifact;
+                    proguardArtifactDistance = distance;
+                }
+            }
+        }
+        if (proguardArtifact != null) {
+            getLog().debug("proguardArtifact: " + proguardArtifact.getFile());
+            return proguardArtifact.getFile().getAbsoluteFile().toString();
+        } else
+            return null;
+
+    }
+
 }
