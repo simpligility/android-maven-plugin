@@ -106,8 +106,9 @@ public class ProguardMojo extends AbstractAndroidMojo {
      * @parameter expression="${android.proguard.filterMavenDescriptor}"
      *            default-value="false"
      * @optional
+     * TODO remove init?
      */
-    private boolean filterMavenDescriptor = false;
+    private Boolean proguardFilterMavenDescriptor = false;
 
     /**
      * If set to true will add a filter to remove META-INF/MANIFEST.MF files.
@@ -115,8 +116,10 @@ public class ProguardMojo extends AbstractAndroidMojo {
      * @parameter expression="${android.proguard.filterManifest}"
      *            default-value="false"
      * @optional
+     * ODO remove init?
+     * 
      */
-    private boolean filterManifest = false;
+    private Boolean proguardFilterManifest = false;
 
     /**
      * The plugin dependencies.
@@ -131,6 +134,8 @@ public class ProguardMojo extends AbstractAndroidMojo {
     private String parsedConfig;
     private String parsedProguardJarPath;
     private String[] parsedJvmArguments;
+    private Boolean parsedFilterMavenDescriptor;
+    private Boolean parsedFilterManifest;
 
     public static final String PROGUARD_OBFUSCATED_JAR = "proguard-obfuscated.jar";
 
@@ -187,10 +192,6 @@ public class ProguardMojo extends AbstractAndroidMojo {
 
     private void parseConfiguration() throws MojoExecutionException {
         proguardProguardJarPath = getProguardJarPathFromDependencies();
-        if (filterManifest)
-            globalInJarExcludes.addAll(META_INF_MANIFEST);
-        if (filterMavenDescriptor)
-            globalInJarExcludes.addAll(MAVEN_DESCRIPTOR);
 
         if (proguard != null) {
             if (proguard.isSkip() != null) {
@@ -213,15 +214,23 @@ public class ProguardMojo extends AbstractAndroidMojo {
             } else {
                 parsedJvmArguments = proguard.getJvmArguments();
             }
-            if (proguard.isFilterManifest())
-                globalInJarExcludes.addAll(META_INF_MANIFEST);
-            if (proguard.isFilterMavenDescriptor())
-                globalInJarExcludes.addAll(MAVEN_DESCRIPTOR);
+            if (proguard.isFilterManifest() != null) {
+                parsedFilterManifest = proguard.isFilterManifest();
+            } else {
+                parsedFilterManifest = proguardFilterManifest;
+            }
+            if (proguard.isFilterMavenDescriptor() != null) {
+                parsedFilterMavenDescriptor = proguard.isFilterMavenDescriptor();
+            } else {
+                parsedFilterMavenDescriptor = proguardFilterMavenDescriptor;
+            }
         } else {
             parsedSkip = proguardSkip;
             parsedConfig = proguardConfig;
             parsedProguardJarPath = proguardProguardJarPath;
             parsedJvmArguments = proguardJvmArguments;
+            parsedFilterManifest = proguardFilterManifest;
+            parsedFilterMavenDescriptor = proguardFilterMavenDescriptor;
         }
         // nothing was configured - set up default
         if (StringUtils.isEmpty(parsedProguardJarPath)) {
@@ -350,6 +359,13 @@ public class ProguardMojo extends AbstractAndroidMojo {
     }
 
     private void collectProgramInputFiles() {
+        if (parsedFilterManifest) {
+            globalInJarExcludes.addAll(META_INF_MANIFEST);
+        }
+        if (parsedFilterMavenDescriptor) {
+            globalInJarExcludes.addAll(MAVEN_DESCRIPTOR);
+        }
+
         // we first add the application's own class files
         addInJar(project.getBuild().getOutputDirectory());
 
