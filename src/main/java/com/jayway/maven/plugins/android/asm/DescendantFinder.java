@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author hugo.josefson@jayway.com
  */
-class DescendantFinder implements ClassVisitor {
+class DescendantFinder extends ClassVisitor {
 
     /**
      * Constructs this finder.
@@ -35,6 +35,7 @@ class DescendantFinder implements ClassVisitor {
      *                       <code>.</code> (dot). For example: <code>junit/framework/</code>
      */
     public DescendantFinder(String... parentPackages) {
+        super(Opcodes.ASM4);
         this.parentPackages = parentPackages;
     }
 
