@@ -40,11 +40,11 @@ public class Proguard {
         return jvmArguments;
     }
 
-    public boolean isFilterMavenDescriptor() {
+    public Boolean isFilterMavenDescriptor() {
         return filterMavenDescriptor;
     }
 
-    public boolean isFilterManifest() {
+    public Boolean isFilterManifest() {
         return filterManifest;
     }
 }
