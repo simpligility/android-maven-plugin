@@ -181,32 +181,39 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
                     }
 
                     @Override
-                    public void executeShellCommand(String command, IShellOutputReceiver receiver) throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException {
+                    public void executeShellCommand(String command, IShellOutputReceiver receiver) throws
+                            TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException,
+                            IOException {
+                    }
+
+                    @Override
+                    public void executeShellCommand(String command, IShellOutputReceiver receiver,
+                                                    int maxTimeToOutputResponse) throws TimeoutException,
+                            AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException {
 
                     }
 
                     @Override
-                    public void executeShellCommand(String command, IShellOutputReceiver receiver, int maxTimeToOutputResponse) throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException {
+                    public void runEventLogService(LogReceiver receiver) throws TimeoutException,
+                            AdbCommandRejectedException, IOException {
 
                     }
 
                     @Override
-                    public void runEventLogService(LogReceiver receiver) throws TimeoutException, AdbCommandRejectedException, IOException {
+                    public void runLogService(String logname, LogReceiver receiver) throws TimeoutException,
+                            AdbCommandRejectedException, IOException {
 
                     }
 
                     @Override
-                    public void runLogService(String logname, LogReceiver receiver) throws TimeoutException, AdbCommandRejectedException, IOException {
+                    public void createForward(int localPort, int remotePort) throws TimeoutException,
+                            AdbCommandRejectedException, IOException {
 
                     }
 
                     @Override
-                    public void createForward(int localPort, int remotePort) throws TimeoutException, AdbCommandRejectedException, IOException {
-
-                    }
-
-                    @Override
-                    public void removeForward(int localPort, int remotePort) throws TimeoutException, AdbCommandRejectedException, IOException {
+                    public void removeForward(int localPort, int remotePort) throws TimeoutException,
+                            AdbCommandRejectedException, IOException {
 
                     }
 
@@ -217,22 +224,11 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
                     }
 
                     @Override
-                    public String installPackage(String packageFilePath, boolean reinstall) throws InstallException {
-
-                        return null;
-                    }
-
-                    @Override
                     public String syncPackageToDevice(String localFilePath) throws TimeoutException, AdbCommandRejectedException, IOException, SyncException {
 
                         return null;
                     }
 
-                    @Override
-                    public String installRemotePackage(String remoteFilePath, boolean reinstall) throws InstallException {
-
-                        return null;
-                    }
 
                     @Override
                     public void removeRemotePackage(String remoteFilePath) throws InstallException {
@@ -248,6 +244,51 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
                     @Override
                     public void reboot(String into) throws TimeoutException, AdbCommandRejectedException, IOException {
 
+                    }
+
+                    @Override
+                    public boolean arePropertiesSet() {
+                        return false;
+                    }
+
+                    @Override
+                    public String getPropertySync(String s) throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException {
+                        return null;
+                    }
+
+                    @Override
+                    public String getPropertyCacheOrSync(String s) throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException {
+                        return null;
+                    }
+
+                    @Override
+                    public void pushFile(String s, String s1) throws IOException, AdbCommandRejectedException, TimeoutException, SyncException {
+
+                    }
+
+                    @Override
+                    public void pullFile(String s, String s1) throws IOException, AdbCommandRejectedException, TimeoutException, SyncException {
+
+                    }
+
+                    @Override
+                    public String installPackage(String s, boolean b, String... strings) throws InstallException {
+                        return null;
+                    }
+
+                    @Override
+                    public String installRemotePackage(String s, boolean b, String... strings) throws InstallException {
+                        return null;
+                    }
+
+                    @Override
+                    public Integer getBatteryLevel() throws TimeoutException, AdbCommandRejectedException, IOException, ShellCommandUnresponsiveException {
+                        return null;
+                    }
+
+                    @Override
+                    public Integer getBatteryLevel(long l) throws TimeoutException, AdbCommandRejectedException, IOException, ShellCommandUnresponsiveException {
+                        return null;
                     }
                 });
                 return null;
