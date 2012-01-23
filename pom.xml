@@ -88,9 +88,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.android.tools</groupId>
+            <groupId>com.android.ddmlib</groupId>
             <artifactId>ddmlib</artifactId>
-            <version>r13</version>
+            <version>r16</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
