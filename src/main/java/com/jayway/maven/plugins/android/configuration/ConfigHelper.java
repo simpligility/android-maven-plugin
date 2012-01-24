@@ -76,6 +76,9 @@ public final class ConfigHelper
 					catch( final NoSuchFieldException e ) {
 						;
 					}
+					catch( final IllegalArgumentException e ) {
+						// probably not a deprecated parameter, see Proguard configuration;
+					}
 				}
 			}
 		}
