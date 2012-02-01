@@ -350,12 +350,12 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
             } else {
                 parsedInstrumentationRunner = testInstrumentationRunner;
             }
-            if (test.getClasses() == null || test.getClasses().size() == 0) {
+            if (test.getClasses() != null && !test.getClasses().isEmpty()) {
                 parsedClasses = test.getClasses();
             } else {
                 parsedClasses = testClasses;
             }
-            if (test.getPackages() == null || test.getPackages().size() == 0) {
+            if (test.getPackages() != null && !test.getPackages().isEmpty()) {
                 parsedPackages = test.getPackages();
             } else {
                 parsedPackages = testPackages;

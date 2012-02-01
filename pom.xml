@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jayway.maven.plugins.android.generation2</groupId>
     <artifactId>android-maven-plugin</artifactId>
-    <version>3.0.3-SNAPSHOT</version>
+    <version>3.1.1-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
     <name>Android Maven Plugin - android-maven-plugin</name>
     <description>Maven Plugin for Android Development</description>
@@ -88,9 +88,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.android.tools</groupId>
+            <groupId>com.android.ddmlib</groupId>
             <artifactId>ddmlib</artifactId>
-            <version>r13</version>
+            <version>r16</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -147,9 +147,9 @@
             <version>2.0.1</version>
         </dependency>
         <dependency>
-            <groupId>asm</groupId>
+            <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
-            <version>3.3.1</version>
+            <version>4.0</version>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
@@ -171,6 +171,20 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>1.4.10</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-easymock</artifactId>
+            <version>1.4.10</version>
+            <scope>test</scope>
+        </dependency>
+        
         <dependency>
             <!-- required in all cases -->
             <groupId>org.sonatype.aether</groupId>
