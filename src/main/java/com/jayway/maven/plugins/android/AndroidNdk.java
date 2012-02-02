@@ -14,10 +14,8 @@
 package com.jayway.maven.plugins.android;
 
 import java.io.*;
-import java.util.*;
 
 import com.jayway.maven.plugins.android.phase05compile.NdkBuildMojo;
-import org.apache.maven.plugin.MojoExecutionException;
 
 /**
  * Represents an Android NDK.
@@ -26,7 +24,7 @@ import org.apache.maven.plugin.MojoExecutionException;
  */
 public class AndroidNdk {
     
-    private static final String PARAMETER_MESSAGE = "Please provide a proper Android NDK directory path as configuration parameter <ndk><path>...</path></ndk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.ndk.path=... or set environment variable " + NdkBuildMojo.ENV_ANDROID_NDK_HOME + ".";
+    public static final String PROPER_NDK_HOME_DIRECTORY_MESSAGE = "Please provide a proper Android NDK directory path as configuration parameter <ndk><path>...</path></ndk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.ndk.path=... or set environment variable " + NdkBuildMojo.ENV_ANDROID_NDK_HOME + ".";
 
     private final File ndkPath;
 
@@ -37,10 +35,10 @@ public class AndroidNdk {
 
     private void assertPathIsDirectory( final File path ) {
         if ( path == null ) {
-            throw new InvalidNdkException( PARAMETER_MESSAGE );
+            throw new InvalidNdkException(PROPER_NDK_HOME_DIRECTORY_MESSAGE);
         }
         if ( !path.isDirectory() ) {
-            throw new InvalidNdkException( "Path \"" + path + "\" is not a directory. " + PARAMETER_MESSAGE );
+            throw new InvalidNdkException( "Path \"" + path + "\" is not a directory. " + PROPER_NDK_HOME_DIRECTORY_MESSAGE);
         }
     }
 
