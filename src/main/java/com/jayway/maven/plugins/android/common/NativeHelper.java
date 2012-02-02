@@ -166,7 +166,7 @@ public class NativeHelper {
         }
     }
 
-    public static void validateNDKVersion(Log log, File ndkHomeDir) throws MojoExecutionException {
+    public static void validateNDKVersion(File ndkHomeDir) throws MojoExecutionException {
         final File ndkVersionFile = new File(ndkHomeDir, "RELEASE.TXT");
 
         if (!ndkVersionFile.exists()) {
