@@ -1,6 +1,7 @@
 package com.jayway.maven.plugins.android.common;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.AndroidNdk;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -170,14 +171,14 @@ public class NativeHelper {
         final File ndkVersionFile = new File(ndkHomeDir, "RELEASE.TXT");
 
         if (!ndkVersionFile.exists()) {
-            throw new MojoExecutionException("Could not locate RELEASE.TXT in the Android NDK base directory '" + ndkHomeDir.getAbsolutePath() + "'.  Please verify your setup");
+            throw new MojoExecutionException("Could not locate RELEASE.TXT in the Android NDK base directory '" + ndkHomeDir.getAbsolutePath() + "'.  Please verify your setup! " + AndroidNdk.PROPER_NDK_HOME_DIRECTORY_MESSAGE);
         }
 
         try {
             String versionStr = FileUtils.readFileToString(ndkVersionFile);
             validateNDKVersion(NDK_REQUIRED_VERSION, versionStr);
         } catch (Exception e) {
-            throw new MojoExecutionException("Error while extracting NDK version from: " + ndkVersionFile);
+            throw new MojoExecutionException("Error while extracting NDK version from '" + ndkVersionFile.getAbsolutePath() + "'. Please verify your setup! " + AndroidNdk.PROPER_NDK_HOME_DIRECTORY_MESSAGE);
         }
     }
 
