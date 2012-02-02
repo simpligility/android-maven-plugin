@@ -257,7 +257,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
 
         // Validate the NDK
         final File ndkBuildFile = new File(getAndroidNdk().getNdkBuildPath());
-        NativeHelper.validateNDKVersion(getLog(), ndkBuildFile.getParentFile());
+        NativeHelper.validateNDKVersion(ndkBuildFile.getParentFile());
 
         // This points 
         File nativeLibDirectory = new File( nativeLibrariesOutputDirectory, ndkArchitecture );
@@ -400,7 +400,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             getLog().info( "Cleaning up native library output directory after build" );
             getLog().debug( "Removing directory: " + directoryToRemove );
             if ( !directoryToRemove.delete() ) {
-                getLog().warn( "Could not remove directory, marking as delete on exit" );
+                getLog().warn("Could not remove directory, marking as delete on exit");
                 directoryToRemove.deleteOnExit();
             }
         }
