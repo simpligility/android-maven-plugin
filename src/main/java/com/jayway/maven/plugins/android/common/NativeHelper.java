@@ -164,19 +164,23 @@ public class NativeHelper {
         }
     }
 
-    public static void validateNDKVersion(Log log, File ndkBuildFile) throws MojoExecutionException {
-        final File ndkVersionFile = new File(ndkBuildFile.getParent(), "RELEASE.TXT");
+    public static void validateNDKVersion(Log log, File ndkHomeDir) throws MojoExecutionException {
+        final File ndkVersionFile = new File(ndkHomeDir, "RELEASE.TXT");
 
         if (!ndkVersionFile.exists()) {
-            log.warn("Could not locate RELEASE.TXT in the Android NDK base directory, can not verify version");
-            log.warn("Your build may be unstable!");
+            // FIXME: Should this also be a hard fail?
+            log.warn("========================================");
+            log.warn("");
+            log.warn("Could not locate RELEASE.TXT in the Android NDK base directory '" + ndkHomeDir.getAbsolutePath() + "'!");
+            log.warn("Can not verify version, your build may be unstable!!");
+            log.warn("");
+            log.warn("========================================");
             return;
         }
 
-        int version = 0;
         try {
             String versionStr = FileUtils.readFileToString(ndkVersionFile);
-            validateNDKVersion(version, versionStr);
+            validateNDKVersion(7, versionStr);
         } catch (IOException e) {
             throw new MojoExecutionException("Error while extracting NDK version from: " + ndkVersionFile);
         }
