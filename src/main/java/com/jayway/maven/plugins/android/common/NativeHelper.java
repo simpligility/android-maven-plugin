@@ -34,6 +34,8 @@ import static org.apache.maven.RepositoryUtils.toDependency;
  */
 public class NativeHelper {
 
+    public static final int NDK_REQUIRED_VERSION = 7;
+
     private MavenProject project;
     private RepositorySystemSession repoSession;
     private RepositorySystem repoSystem;
@@ -168,25 +170,19 @@ public class NativeHelper {
         final File ndkVersionFile = new File(ndkHomeDir, "RELEASE.TXT");
 
         if (!ndkVersionFile.exists()) {
-            // FIXME: Should this also be a hard fail?
-            log.warn("========================================");
-            log.warn("");
-            log.warn("Could not locate RELEASE.TXT in the Android NDK base directory '" + ndkHomeDir.getAbsolutePath() + "'!");
-            log.warn("Can not verify version, your build may be unstable!!");
-            log.warn("");
-            log.warn("========================================");
-            return;
+            throw new MojoExecutionException("Could not locate RELEASE.TXT in the Android NDK base directory '" + ndkHomeDir.getAbsolutePath() + "'.  Please verify your setup");
         }
 
         try {
             String versionStr = FileUtils.readFileToString(ndkVersionFile);
-            validateNDKVersion(7, versionStr);
-        } catch (IOException e) {
+            validateNDKVersion(NDK_REQUIRED_VERSION, versionStr);
+        } catch (Exception e) {
             throw new MojoExecutionException("Error while extracting NDK version from: " + ndkVersionFile);
         }
     }
 
     public static void validateNDKVersion(int desiredVersion, String versionStr) throws MojoExecutionException {
+
         int version = 0;
 
         if (versionStr != null) {
@@ -200,7 +196,7 @@ public class NativeHelper {
         }
 
         if (version < desiredVersion) {
-            throw new MojoExecutionException("You are running an old NDK (version " + versionStr + "), please update to at least r7 or later");
+            throw new MojoExecutionException("You are running an old NDK (version " + versionStr + "), please update to at least r'" + desiredVersion + "' or later");
         }
     }
 
