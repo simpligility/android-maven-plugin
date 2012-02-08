@@ -25,6 +25,9 @@
             </implementation>
             <configuration>
                 <phases>
+                    <clean>
+                       org.apache.maven.plugins:maven-clean-plugin:clean,com.jayway.maven.plugins.android.generation2:android-maven-plugin:clean
+                    </clean>
                     <generate-sources>
                         com.jayway.maven.plugins.android.generation2:android-maven-plugin:generate-sources
                     </generate-sources>
