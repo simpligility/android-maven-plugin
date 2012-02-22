@@ -199,6 +199,11 @@
             <version>1.12</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.rtyley</groupId>
+            <artifactId>android-screenshot-paparazzo</artifactId>
+            <version>1.6</version>
+        </dependency>
     </dependencies>
     <build>
         <pluginManagement>
