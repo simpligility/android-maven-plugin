@@ -194,24 +194,33 @@ public class ProguardMojo extends AbstractAndroidMojo {
         proguardProguardJarPath = getProguardJarPathFromDependencies();
 
         if (proguard != null) {
+            // take setting from pom configuration
             if (proguard.isSkip() != null) {
                 parsedSkip = proguard.isSkip();
-            } else {
+            }
+            // but allow -D property from command line or settings or profile property or so to override
+            if (proguardSkip != null) {
                 parsedSkip = proguardSkip;
             }
+
             if (StringUtils.isNotEmpty(proguard.getConfig())) {
                 parsedConfig = proguard.getConfig();
-            } else {
+            }
+            if (StringUtils.isNotEmpty(proguardConfig)) {
                 parsedConfig = proguardConfig;
             }
+
             if (StringUtils.isNotEmpty(proguard.getProguardJarPath())) {
                 parsedProguardJarPath = proguard.getProguardJarPath();
-            } else {
+            }
+            if (StringUtils.isNotEmpty(proguardProguardJarPath)) {
                 parsedProguardJarPath = proguardProguardJarPath;
             }
+
             if (proguard.getJvmArguments() == null) {
                 parsedJvmArguments =  proguardJvmArguments;
-            } else {
+            }
+            if (else {
                 parsedJvmArguments = proguard.getJvmArguments();
             }
             if (proguard.isFilterManifest() != null) {
@@ -232,7 +241,11 @@ public class ProguardMojo extends AbstractAndroidMojo {
             parsedFilterManifest = proguardFilterManifest;
             parsedFilterMavenDescriptor = proguardFilterMavenDescriptor;
         }
-        // nothing was configured - set up default
+
+        // nothing was configured - set up defaults
+        if (parsedSkip == null) {
+            parsedSkip = true;
+        }
         if (StringUtils.isEmpty(parsedProguardJarPath)) {
             parsedProguardJarPath = getAndroidSdk().getPathForTool("proguard/lib/proguard.jar");
         }
