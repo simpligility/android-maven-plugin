@@ -117,7 +117,11 @@
             <artifactId>maven-archiver</artifactId>
             <version>2.4.2</version>
         </dependency>
-
+        <dependency>
+            <groupId>emma</groupId>
+            <artifactId>emma</artifactId>
+            <version>2.0.5312</version>
+        </dependency>
         <dependency>
           <groupId>org.codehaus.plexus</groupId>
           <artifactId>plexus-archiver</artifactId>
@@ -145,6 +149,11 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.0.1</version>
+        </dependency>
+        <dependency>
+             <groupId>org.apache.maven.reporting</groupId>
+             <artifactId>maven-reporting-impl</artifactId>
+             <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
