@@ -41,7 +41,8 @@
                     <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
                     <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
                     <prepare-package>
-                        com.jayway.maven.plugins.android.generation2:android-maven-plugin:dex
+                    	com.jayway.maven.plugins.android.generation2:android-maven-plugin:emma,
+                    	com.jayway.maven.plugins.android.generation2:android-maven-plugin:dex
                     </prepare-package>
                     <package>
                     	org.apache.maven.plugins:maven-jar-plugin:jar,
@@ -59,6 +60,7 @@
                     <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
                 </phases>
             </configuration>
+            
         </component>
 
         <!-- Adds handling for 'so' packaging.  This implies the POM has defined 'so' as the packaging -->
