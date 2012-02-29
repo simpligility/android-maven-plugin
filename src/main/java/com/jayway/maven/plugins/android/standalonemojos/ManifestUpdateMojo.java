@@ -126,7 +126,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 	 * http://www.simpligility.com/2010/11/release-version-management-for-your-android-application/
 	 * but done without using resource filtering.
 	 *
-	 * @parameter expression="${android.manifest.versionCodeUpdateFromVersion} default-value="false"
+	 * @parameter expression="${android.manifest.versionCodeUpdateFromVersion}" default-value="false"
 	 */
 	protected Boolean manifestVersionCodeUpdateFromVersion = false;
 
