@@ -40,13 +40,13 @@ public class ProguardMojo extends AbstractAndroidMojo {
 
     /**
      * <p>
-     * Enables ProGuard for this build. ProGuard is disabled by default, so in order for it to run,
-     * enable it like so:
+     * ProGuard configuration. ProGuard is disabled by default. Set the skip parameter to false to activate proguard.
+     * A complete configuartion can include any of the following:
      * </p>
      *
      * <pre>
      * &lt;proguard&gt;
-     *    &lt;skip&gt;false&lt;/skip&gt;
+     *    &lt;skip&gt;true|false&lt;/skip&gt;
      *    &lt;config&gt;proguard.cfg&lt;/config&gt;
      *    &lt;proguardJarPath&gt;someAbsolutePathToProguardJar&lt;/proguardJarPath&gt;
      *    &lt;filterMavenDescriptor&gt;true|false&lt;/filterMavenDescriptor&gt;
@@ -60,7 +60,9 @@ public class ProguardMojo extends AbstractAndroidMojo {
      * <p>
      * A good practice is to create a release profile in your POM, in which you enable ProGuard.
      * ProGuard should be disabled for development builds, since it obfuscates class and field
-     * names, and since it may interfere with test projects that rely on your application classes.
+     * names, and it may interfere with test projects that rely on your application classes.
+     * All parameters can be overridden in profiles or the the proguard* properties. Default values apply and are
+     * documented with these properties.
      * </p>
      *
      * @parameter
@@ -68,58 +70,70 @@ public class ProguardMojo extends AbstractAndroidMojo {
     protected Proguard proguard;
 
     /**
-     * Whether ProGuard is enabled or not.
+     * Whether ProGuard is enabled or not. Defaults to true.
      *
-     * @parameter  expression="${android.proguard.skip}" default-value=true
+     * @parameter  expression="${android.proguard.skip}"
      * @optional
      */
     private Boolean proguardSkip;
 
     /**
-     * Path to the ProGuard configuration file (relative to project root).
+     * Path to the ProGuard configuration file (relative to project root). Defaults to "proguard.cfg"
      *
-     * @parameter expression="${android.proguard.config}" default-value="proguard.cfg"
+     * @parameter expression="${android.proguard.config}"
      * @optional
      */
     private String proguardConfig;
 
     /**
-     * Path to the proguard jar to be used. By default this will load the jar from the Android SDK install. Overriding it
-     * with an absolute path allows you to use a newer or custom proguard version e.g. located in your local Maven repo.
+     * Path to the proguard jar and therefore version of proguard to be used. By default this will load the jar from
+     * the Android SDK install. Overriding it with an absolute path allows you to use a newer or custom proguard
+     * version..
      *
+     * You can also reference an external Proguard version as a plugin dependency like this:
+     * <pre>
+     * &lt;plugin&gt;
+     *   &lt;groupId&gt;com.jayway.maven.plugins.android.generation2&lt;/groupId&gt;
+     *   &lt;artifactId&gt;android-maven-plugin&lt;/artifactId&gt;
+     *     &lt;dependencies&gt;
+     *       &lt;dependency&gt;
+     *         &lt;groupId&gt;net.sf.proguard&lt;/groupId&gt;
+     *         &lt;artifactId&gt;proguard-base&lt;/artifactId&gt;
+     *         &lt;version&gt;4.7&lt;/version&gt;
+     *       &lt;/dependency&gt;
+     *     &lt;/dependencies&gt;
+     * </pre>
+     *
+     * which will download and use Proguard 4.7 as deployed to the Central Repository.
+     * 
      * @parameter expression="${android.proguard.proguardJarPath}
      * @optional
      */
     private String proguardProguardJarPath;
 
     /**
-     * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build.
+     * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build. Defaults to "-Xmx512M".
      *
-     * @parameter expression="${android.proguard.jvmArguments}" default-value="-Xmx512M"
+     * @parameter expression="${android.proguard.jvmArguments}"
      * @optional
      */
     private String[] proguardJvmArguments;
 
     /**
-     * If set to true will add a filter to remove META-INF/maven/* files.
+     * If set to true will add a filter to remove META-INF/maven/* files. Defaults to false.
      * 
      * @parameter expression="${android.proguard.filterMavenDescriptor}"
-     *            default-value="false"
      * @optional
-     * TODO remove init?
      */
-    private Boolean proguardFilterMavenDescriptor = false;
+    private Boolean proguardFilterMavenDescriptor;
 
     /**
-     * If set to true will add a filter to remove META-INF/MANIFEST.MF files.
+     * If set to true will add a filter to remove META-INF/MANIFEST.MF files.  Defaults to false.
      * 
      * @parameter expression="${android.proguard.filterManifest}"
-     *            default-value="false"
      * @optional
-     * ODO remove init?
-     * 
      */
-    private Boolean proguardFilterManifest = false;
+    private Boolean proguardFilterManifest;
 
     /**
      * The plugin dependencies.
@@ -191,54 +205,46 @@ public class ProguardMojo extends AbstractAndroidMojo {
     }
 
     private void parseConfiguration() throws MojoExecutionException {
-        proguardProguardJarPath = getProguardJarPathFromDependencies();
 
+        // take setting from pom configuration
         if (proguard != null) {
-            // take setting from pom configuration
             if (proguard.isSkip() != null) {
                 parsedSkip = proguard.isSkip();
             }
-            // but allow -D property from command line or settings or profile property or so to override
-            if (proguardSkip != null) {
-                parsedSkip = proguardSkip;
-            }
-
             if (StringUtils.isNotEmpty(proguard.getConfig())) {
                 parsedConfig = proguard.getConfig();
             }
-            if (StringUtils.isNotEmpty(proguardConfig)) {
-                parsedConfig = proguardConfig;
-            }
-
             if (StringUtils.isNotEmpty(proguard.getProguardJarPath())) {
                 parsedProguardJarPath = proguard.getProguardJarPath();
             }
-            if (StringUtils.isNotEmpty(proguardProguardJarPath)) {
-                parsedProguardJarPath = proguardProguardJarPath;
-            }
-
-            if (proguard.getJvmArguments() == null) {
+            if (proguard.getJvmArguments() != null && proguard.getJvmArguments().length > 0) {
                 parsedJvmArguments =  proguardJvmArguments;
-            }
-            if (else {
-                parsedJvmArguments = proguard.getJvmArguments();
             }
             if (proguard.isFilterManifest() != null) {
                 parsedFilterManifest = proguard.isFilterManifest();
-            } else {
-                parsedFilterManifest = proguardFilterManifest;
             }
             if (proguard.isFilterMavenDescriptor() != null) {
                 parsedFilterMavenDescriptor = proguard.isFilterMavenDescriptor();
-            } else {
-                parsedFilterMavenDescriptor = proguardFilterMavenDescriptor;
             }
-        } else {
+        }
+
+        // now override with parameters  from properties from pom, settings or command line
+        if (proguardSkip != null) {
             parsedSkip = proguardSkip;
+        }
+        if (proguardConfig != null) {
             parsedConfig = proguardConfig;
+        }
+        if (proguardProguardJarPath != null) {
             parsedProguardJarPath = proguardProguardJarPath;
+        }
+        if (proguardJvmArguments != null && proguardJvmArguments.length > 0) {
             parsedJvmArguments = proguardJvmArguments;
+        }
+        if (proguardFilterManifest != null) {
             parsedFilterManifest = proguardFilterManifest;
+        }
+        if (proguardFilterMavenDescriptor != null) {
             parsedFilterMavenDescriptor = proguardFilterMavenDescriptor;
         }
 
@@ -246,11 +252,27 @@ public class ProguardMojo extends AbstractAndroidMojo {
         if (parsedSkip == null) {
             parsedSkip = true;
         }
-        if (StringUtils.isEmpty(parsedProguardJarPath)) {
-            parsedProguardJarPath = getAndroidSdk().getPathForTool("proguard/lib/proguard.jar");
+        if (parsedConfig == null) {
+            parsedConfig = "proguard.cfg";
         }
-
-    }
+        if (StringUtils.isEmpty(parsedProguardJarPath)) {
+            String proguardJarPathFromDepenencies = getProguardJarPathFromDependencies();
+            if (StringUtils.isEmpty(proguardJarPathFromDepenencies)) {
+                parsedProguardJarPath = getAndroidSdk().getPathForTool("proguard/lib/proguard.jar");
+            } else {
+                parsedProguardJarPath = proguardJarPathFromDepenencies;
+            }
+        }
+        if (parsedJvmArguments == null || parsedJvmArguments.length == 0) {
+            parsedJvmArguments = new String[] {"-Xmx512M"};
+        }
+        if (parsedFilterManifest == null) {
+            parsedFilterManifest = false;
+        }
+        if (parsedFilterMavenDescriptor == null) {
+            parsedFilterMavenDescriptor = false;
+        }
+     }
 
     private void executeProguard() throws MojoExecutionException {
 
