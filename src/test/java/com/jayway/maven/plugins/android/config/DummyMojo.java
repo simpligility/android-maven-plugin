@@ -8,6 +8,7 @@ public class DummyMojo {
 	// Maven injected parameters
 	private String configPojoStringValue;
 	private Boolean configPojoBooleanValue;
+    private String[] configPojoMethodValue;
 
 	@PullParameter(defaultValue = "hello")
 	private String parsedStringValue;

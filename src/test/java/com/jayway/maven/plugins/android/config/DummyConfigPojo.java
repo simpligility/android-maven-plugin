@@ -4,6 +4,7 @@ public class DummyConfigPojo {
 
 	private String stringValue;
 	private Boolean booleanValue;
+    private String[] methodValue;
 
 	public DummyConfigPojo(String stringValue, Boolean booleanValue) {
 		this.stringValue = stringValue;
@@ -18,4 +19,7 @@ public class DummyConfigPojo {
 		return booleanValue;
 	}
 
+    public String[] getMethodValue() {
+        return methodValue;
+    }
 }
