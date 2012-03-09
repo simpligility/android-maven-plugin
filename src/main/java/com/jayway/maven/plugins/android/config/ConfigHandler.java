@@ -34,13 +34,21 @@ public class ConfigHandler {
 		for (Field field : parsedFields) {
 			Object value = null;
 			String fieldBaseName = getFieldNameWithoutPrefix(field, "parsed");
-			if (configPojoInstance != null) {
+			// first take the setting from the config pojo (e.g. nested config in plugin configuration)
+            if (configPojoInstance != null) {
 				value = getValueFromPojo(fieldBaseName);
 			}
-			if (value == null) {
-				value = getValueFromMojo(fieldBaseName);
-			}
-			if (value == null) {
+            // then override with value from properties supplied in pom, settings or command line
+            // unless it is null or an empty array
+            Object propertyValue = getValueFromMojo(fieldBaseName);
+            if (propertyValue == null ||
+                    (propertyValue instanceof Object[] && ((Object[]) propertyValue).length == 0)) {
+                // no useful value
+            } else {
+                value = propertyValue;
+            }
+            // and only if we still have no value, get the default as declared in the annotation
+            if (value == null) {
 				value = getValueFromAnnotation(field);
 			}
 
