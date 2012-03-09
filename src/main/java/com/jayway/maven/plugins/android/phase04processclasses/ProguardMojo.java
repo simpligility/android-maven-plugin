@@ -9,6 +9,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.jayway.maven.plugins.android.config.ConfigHandler;
+import com.jayway.maven.plugins.android.config.ConfigPojo;
+import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.Proguard;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.RepositoryUtils;
@@ -67,6 +70,7 @@ public class ProguardMojo extends AbstractAndroidMojo {
      *
      * @parameter
      */
+    @ConfigPojo
     protected Proguard proguard;
 
     /**
@@ -144,11 +148,22 @@ public class ProguardMojo extends AbstractAndroidMojo {
      */
     protected List<Artifact> pluginDependencies;
 
+    @PullParameter(defaultValue = "true")
     private Boolean parsedSkip;
+
+    @PullParameter(defaultValue = "proguard.cfg")
     private String parsedConfig;
+
+    @PullParameter(defaultValueGetterMethod = "getProguardJarPath")
     private String parsedProguardJarPath;
+
+    @PullParameter(defaultValueGetterMethod = "getDefaultJvmArguments")
     private String[] parsedJvmArguments;
+
+    @PullParameter(defaultValue = "true")
     private Boolean parsedFilterMavenDescriptor;
+
+    @PullParameter(defaultValue = "true")
     private Boolean parsedFilterManifest;
 
     public static final String PROGUARD_OBFUSCATED_JAR = "proguard-obfuscated.jar";
@@ -197,82 +212,13 @@ public class ProguardMojo extends AbstractAndroidMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        parseConfiguration();
-        
+        ConfigHandler configHandler = new ConfigHandler(this);
+        configHandler.parseConfiguration();
+
         if (!parsedSkip) {
             executeProguard();
         }
     }
-
-    private void parseConfiguration() throws MojoExecutionException {
-
-        // take setting from pom configuration
-        if (proguard != null) {
-            if (proguard.isSkip() != null) {
-                parsedSkip = proguard.isSkip();
-            }
-            if (StringUtils.isNotEmpty(proguard.getConfig())) {
-                parsedConfig = proguard.getConfig();
-            }
-            if (StringUtils.isNotEmpty(proguard.getProguardJarPath())) {
-                parsedProguardJarPath = proguard.getProguardJarPath();
-            }
-            if (proguard.getJvmArguments() != null && proguard.getJvmArguments().length > 0) {
-                parsedJvmArguments =  proguardJvmArguments;
-            }
-            if (proguard.isFilterManifest() != null) {
-                parsedFilterManifest = proguard.isFilterManifest();
-            }
-            if (proguard.isFilterMavenDescriptor() != null) {
-                parsedFilterMavenDescriptor = proguard.isFilterMavenDescriptor();
-            }
-        }
-
-        // now override with parameters  from properties from pom, settings or command line
-        if (proguardSkip != null) {
-            parsedSkip = proguardSkip;
-        }
-        if (proguardConfig != null) {
-            parsedConfig = proguardConfig;
-        }
-        if (proguardProguardJarPath != null) {
-            parsedProguardJarPath = proguardProguardJarPath;
-        }
-        if (proguardJvmArguments != null && proguardJvmArguments.length > 0) {
-            parsedJvmArguments = proguardJvmArguments;
-        }
-        if (proguardFilterManifest != null) {
-            parsedFilterManifest = proguardFilterManifest;
-        }
-        if (proguardFilterMavenDescriptor != null) {
-            parsedFilterMavenDescriptor = proguardFilterMavenDescriptor;
-        }
-
-        // nothing was configured - set up defaults
-        if (parsedSkip == null) {
-            parsedSkip = true;
-        }
-        if (parsedConfig == null) {
-            parsedConfig = "proguard.cfg";
-        }
-        if (StringUtils.isEmpty(parsedProguardJarPath)) {
-            String proguardJarPathFromDepenencies = getProguardJarPathFromDependencies();
-            if (StringUtils.isEmpty(proguardJarPathFromDepenencies)) {
-                parsedProguardJarPath = getAndroidSdk().getPathForTool("proguard/lib/proguard.jar");
-            } else {
-                parsedProguardJarPath = proguardJarPathFromDepenencies;
-            }
-        }
-        if (parsedJvmArguments == null || parsedJvmArguments.length == 0) {
-            parsedJvmArguments = new String[] {"-Xmx512M"};
-        }
-        if (parsedFilterManifest == null) {
-            parsedFilterManifest = false;
-        }
-        if (parsedFilterMavenDescriptor == null) {
-            parsedFilterMavenDescriptor = false;
-        }
-     }
 
     private void executeProguard() throws MojoExecutionException {
 
@@ -465,6 +411,15 @@ public class ProguardMojo extends AbstractAndroidMojo {
         }
     }
 
+
+    public String getProguardJarPath() throws MojoExecutionException {
+        String proguardJarPath = getProguardJarPathFromDependencies();
+        if (StringUtils.isEmpty(proguardJarPath)) {
+            proguardJarPath = getAndroidSdk().getPathForTool("proguard/lib/proguard.jar");
+        }
+        return proguardJarPath;
+    }
+
     private String getProguardJarPathFromDependencies() throws MojoExecutionException {
         Artifact proguardArtifact = null;
         int proguardArtifactDistance = -1;
@@ -489,6 +444,12 @@ public class ProguardMojo extends AbstractAndroidMojo {
         } else
             return null;
 
+    }
+
+
+
+    public String[] getDefaultJvmArguments() {
+        return new String[] {"-Xmx512M"};
     }
 
 }
