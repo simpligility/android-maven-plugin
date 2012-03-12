@@ -1,5 +1,10 @@
 package com.jayway.maven.plugins.android.configuration;
 
+import java.util.List;
+
+import com.jayway.maven.plugins.android.standalonemojos.CompatibleScreen;
+import com.jayway.maven.plugins.android.standalonemojos.SupportsScreens;
+
 /**
  * Configuration for the manifest update. This class is only the definition of the parameters that are shadowed in
  * {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo} and used there.
@@ -37,6 +42,20 @@ public class Manifest {
 	 */
 	protected Boolean debuggable;
 
+    /**
+     * Mirror of
+     * {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestSupportsScreens}
+     * .
+     */
+    protected SupportsScreens supportsScreens;
+
+    /**
+     * Mirror of
+     * {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestCompatibleScreens}
+     * .
+     */
+    protected List<CompatibleScreen> compatibleScreens;
+
     public String getVersionName() {
         return versionName;
     }
@@ -59,5 +78,13 @@ public class Manifest {
 
     public Boolean getDebuggable() {
         return debuggable;
+    }
+
+    public SupportsScreens getSupportsScreens() {
+        return supportsScreens;
+    }
+
+    public List<CompatibleScreen> getCompatibleScreens() {
+        return compatibleScreens;
     }
 }
