@@ -6,6 +6,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 
+/**
+ * PullParameter is an annotation identifying a property as a configuration property for ConfigHandler.
+ *
+ * @see ConfigHandler
+ *
+ * @author Adrian Stabiszewski https://github.com/grundid/
+ * @author Manfred Moser <manfred@simpligility.com>
+ */
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PullParameter {

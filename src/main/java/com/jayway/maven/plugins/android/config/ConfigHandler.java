@@ -6,6 +6,17 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * ConfigHandler is able to parse the configuration of a Mojo based on the Maven injected parameters as well as
+ * a config pojo and annontations for default values on properties named parsed*. See the ProguardMojo for a working
+ * implementation.
+ *
+ * @see ConfigPojo
+ * @see PullParameter
+ *
+ * @author Adrian Stabiszewski https://github.com/grundid/
+ * @author Manfred Moser <manfred@simpligility.com>
+ */
 public class ConfigHandler {
 
 	private Object mojo;
@@ -67,18 +78,23 @@ public class ConfigHandler {
 
 		if (!defaultValue.isEmpty()) { // TODO find a better way to define an empty default value
 			Class<?> fieldType = field.getType();
-			if (fieldType.isAssignableFrom(String.class))
-				return defaultValue;
-			else if (fieldType.isAssignableFrom(Boolean.class))
+			if (fieldType.isAssignableFrom(String.class)) {
+                return defaultValue;
+            } else if (fieldType.isAssignableFrom(Boolean.class)) {
 				return Boolean.valueOf(defaultValue);
+            }
 
-			// TODO add more handler types as required, for example integer, long, ...
+			// TODO add more handler types as required, for example integer, long, ... we will do that when we encounter
+            // them in other mojos..
 			throw new RuntimeException("no handler for type: " + fieldType);
 		}
 		else {
 			try {
-				Method method = mojo.getClass().getMethod(annotation.defaultValueGetterMethod());
-				return method.invoke(mojo);
+                Method method = mojo.getClass().getDeclaredMethod(
+                        annotation.defaultValueGetterMethod());
+                // even access it if the method is private
+                method.setAccessible(true);
+                return method.invoke(mojo);
 			}
 			catch (Exception e) {
 				throw new RuntimeException(e);
@@ -97,10 +113,10 @@ public class ConfigHandler {
 	private Object getValueFromObject(Object object, String fieldBaseName) {
 		try {
 			Field pojoField = findFieldByName(object, fieldBaseName);
-			if (pojoField != null)
+			if (pojoField != null) {
 				return pojoField.get(object);
-		}
-		catch (Exception e) {
+            }
+		} catch (Exception e) {
 		}
 		return null;
 	}
@@ -119,9 +135,9 @@ public class ConfigHandler {
 		if (field.getName().startsWith(prefix)) {
 			String fieldName = field.getName().substring(prefix.length());
 			return fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
-		}
-		else
+		} else {
 			return field.getName();
+        }
 	}
 
 	private String toFirstLetterUppercase(String s) {
