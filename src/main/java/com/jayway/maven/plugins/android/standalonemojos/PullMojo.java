@@ -78,11 +78,10 @@ public class PullMojo extends AbstractAndroidMojo {
      * The path of the source file or directory on the emulator/device.
      * 
      * @parameter expression="${android.pull.source}"
-     * @required
      */
     private String pullSource;
 
-    @PullParameter
+    @PullParameter(required = true)
     private String parsedSource;
 
     /**
@@ -99,11 +98,10 @@ public class PullMojo extends AbstractAndroidMojo {
      * Any missing directories will be created.
      * 
      * @parameter expression="${android.pull.destination}"
-     * @required
      */
     private String pullDestination;
 
-    @PullParameter
+    @PullParameter(required = true)
     private String parsedDestination;
 
     public void execute() throws MojoExecutionException, MojoFailureException {

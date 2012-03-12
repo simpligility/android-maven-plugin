@@ -83,11 +83,10 @@ public class PushMojo extends AbstractAndroidMojo {
      * If you specify a directory, all containing files will be pushed recursively.
      *
      * @parameter expression="${android.push.source}"
-     * @required
      */
     private String pushSource;
 
-    @PullParameter
+    @PullParameter(required = true)
     private String parsedSource;
 
     /**
@@ -97,11 +96,10 @@ public class PushMojo extends AbstractAndroidMojo {
      * This works analogous if the source is a directory.
      *
      * @parameter expression="${android.push.destination}"
-     * @required
      */
     private String pushDestination;
 
-    @PullParameter
+    @PullParameter(required = true)
     private String parsedDestination;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
