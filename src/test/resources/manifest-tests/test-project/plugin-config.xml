@@ -35,6 +35,7 @@
             <skip>false</skip>
             <debug>true</debug>
             <coverage>false</coverage>
+            <coverageFile></coverageFile>
             <logOnly>false</logOnly>
             <classes><class>foo</class></classes>
           </test>
