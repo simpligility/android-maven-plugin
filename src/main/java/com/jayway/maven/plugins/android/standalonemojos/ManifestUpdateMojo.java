@@ -3,6 +3,9 @@ package com.jayway.maven.plugins.android.standalonemojos;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -16,7 +19,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import com.jayway.maven.plugins.android.configuration.Manifest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -25,11 +27,17 @@ import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.w3c.dom.*;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
+import com.jayway.maven.plugins.android.common.XmlHelper;
+import com.jayway.maven.plugins.android.configuration.Manifest;
 
 /**
  * Updates various version attributes present in the <code>AndroidManifest.xml</code> file.
@@ -43,17 +51,36 @@ import com.jayway.maven.plugins.android.common.AndroidExtension;
  *
  */
 public class ManifestUpdateMojo extends AbstractAndroidMojo {
-	private static final String ATTR_VERSION_NAME        = "android:versionName";
+    // basic attributes
+    private static final String ATTR_VERSION_NAME        = "android:versionName";
 	private static final String ATTR_VERSION_CODE        = "android:versionCode";
 	private static final String ATTR_SHARED_USER_ID      = "android:sharedUserId";
 	private static final String ATTR_DEBUGGABLE          = "android:debuggable";
 
+    // supports-screens attributes
+	private static final String ATTR_SCREEN_DENSITY      = "android:screenDensity";
+    private static final String ATTR_SCREEN_SIZE         = "android:screenSize";
+
+    // compatible-screens attributes
+    private static final String ATTR_ANY_DENSITY         = "android:anyDensity";
+    private static final String ATTR_SMALL_SCREENS       = "android:smallScreens";
+    private static final String ATTR_NORMAL_SCREENS      = "android:normalScreens";
+    private static final String ATTR_LARGE_SCREENS       = "android:largeScreens";
+    private static final String ATTR_XLARGE_SCREENS      = "android:xlargeScreens";
+    private static final String ATTR_RESIZEABLE          = "android:resizeable";
+    private static final String ATTR_REQUIRES_SMALLEST_WIDTH_DP = "android:requiresSmallestWidthDp";
+    private static final String ATTR_LARGEST_WIDTH_LIMIT_DP     = "android:largestWidthLimitDp";
+    private static final String ATTR_COMPATIBLE_WIDTH_LIMIT_DP  = "android:compatibleWidthLimitDp";
+
 	private static final String ELEM_APPLICATION         = "application";
+    private static final String ELEM_SUPPORTS_SCREENS    = "supports-screens";
+    private static final String ELEM_COMPATIBLE_SCREENS  = "compatible-screens";
+    private static final String ELEM_SCREEN              = "screen";
 
     /**
      * Configuration for the manifest-update goal.
      * <p>
-     * You can configure this mojo to update the following manifest attributes:
+     * You can configure this mojo to update the following basic manifest attributes:
      * </p>
      * <p>
      * <code>android:versionName</code> on the <code>manifest</code> element.
@@ -62,10 +89,18 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
      * <code>android:debuggable</code> on the <code>application</code> element.
      * </p>
      * <p>
-     * Note: This process will reformat the <code>AndroidManifest.xml</code> per JAXP {@link Transformer} defaults if
-     * updates are made to the manifest.
+     * Moreover, you may specify custom values for the <code>supports-screens</code> and
+     * <code>compatible-screens</code> elements. This is useful if you're using custom build
+     * profiles to build APKs tailored to specific screen configurations. Values passed via POM
+     * configuration for these elements will be merged with whatever is found in the Manifest file.
+     * Values defined in the POM will take precedence.
+     * </p>
+     * <p>
+     * Note: This process will reformat the <code>AndroidManifest.xml</code> per JAXP
+     * {@link Transformer} defaults if updates are made to the manifest.
      * <p>
      * You can configure attributes in the plugin configuration like so
+     * 
      * <pre>
      *   &lt;plugin&gt;
      *     &lt;groupId&gt;com.jayway.maven.plugins.android.generation2&lt;/groupId&gt;
@@ -84,16 +119,30 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
      *             &lt;versionCodeUpdateFromVersion&gt;true|false&lt;/versionCodeUpdateFromVersion&gt;
      *             &lt;sharedUserId&gt;anId&lt;/sharedUserId&gt;
      *             &lt;debuggable&gt;true|false&lt;/debuggable&gt;
+     *             
+     *             &lt;supports-screens&gt;
+     *               &lt;anyDensity&gt;true&lt;/anyDensity&gt;
+     *               &lt;xlargeScreens&gt;false&lt;/xlargeScreens&gt;
+     *             &lt;/supports-screens&gt;
+     *             
+     *             &lt;compatible-screens&gt;
+     *               &lt;compatible-screen&gt;
+     *                 &lt;screenSize&gt;small&lt;/screenSize&gt;
+     *                 &lt;screenDensity&gt;ldpi&lt;/screenDensity&gt;
+     *               &lt;/compatible-screen&gt;
+     *             &lt;/compatible-screens&gt;
      *           &lt;/manifest&gt;
      *         &lt;/configuration&gt;
      *       &lt;/execution&gt;
      *     &lt;/executions&gt;
      *   &lt;/plugin&gt;
      * </pre>
-     * or use properties set in the pom or settings file or supplied as command line parameter. Add "android." in front
-     * of the property name for command line usage. All parameters follow a manifest.* naming convention.
+     * 
+     * or use properties set in the pom or settings file or supplied as command line parameter. Add
+     * "android." in front of the property name for command line usage. All parameters follow a
+     * manifest.* naming convention.
      * <p>
-     *
+     * 
      * @parameter
      */
     private Manifest manifest;
@@ -144,6 +193,9 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 	 */
 	protected Boolean manifestDebuggable;
 
+    protected SupportsScreens manifestSupportsScreens;
+
+    protected List<CompatibleScreen> manifestCompatibleScreens;
 
     private String parsedVersionName;
     private Integer parsedVersionCode;
@@ -151,6 +203,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
     private Boolean parsedVersionCodeUpdateFromVersion;
     private String parsedSharedUserId;
     private Boolean parsedDebuggable;
+    private SupportsScreens parsedSupportsScreens;
+    private List<CompatibleScreen> parsedCompatibleScreens;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 		if (!AndroidExtension.isAndroidPackaging(project.getPackaging())) {
@@ -170,6 +224,10 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 		getLog().debug("    versionCodeUpdateFromVersion=" + parsedVersionCodeUpdateFromVersion);
 		getLog().debug("    sharedUserId=" + parsedSharedUserId);
 		getLog().debug("    debuggable=" + parsedDebuggable);
+        getLog().debug(
+                "    supports-screens: " + (parsedSupportsScreens == null ? "not set" : "set"));
+        getLog().debug(
+                "    compatible-screens: " + (parsedCompatibleScreens == null ? "not set" : "set"));
 
 		if (!androidManifestFile.exists()) {
 			return; // skip, no AndroidManifest.xml file found.
@@ -221,6 +279,16 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
             } else {
                 parsedDebuggable = manifestDebuggable;
             }
+            if (manifest.getSupportsScreens() != null) {
+                parsedSupportsScreens = manifest.getSupportsScreens();
+            } else {
+                parsedSupportsScreens = manifestSupportsScreens;
+            }
+            if (manifest.getCompatibleScreens() != null) {
+                parsedCompatibleScreens = manifest.getCompatibleScreens();
+            } else {
+                parsedCompatibleScreens = manifestCompatibleScreens;
+            }
         } else {
             parsedVersionName = manifestVersionName;
             parsedVersionCode = manifestVersionCode;
@@ -228,6 +296,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
             parsedVersionCodeUpdateFromVersion = manifestVersionCodeUpdateFromVersion;
             parsedSharedUserId = manifestSharedUserId;
             parsedDebuggable = manifestDebuggable;
+            parsedSupportsScreens = manifestSupportsScreens;
+            parsedCompatibleScreens = manifestCompatibleScreens;
         }
     }
 
@@ -357,14 +427,116 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 			}
 		}
 
-		if (dirty) {
-			if (!manifestFile.delete()) {
-				getLog().warn("Could not remove old " + manifestFile);
-			}
-			getLog().info("Made changes to manifest file, updating " + manifestFile);
-			writeManifest(manifestFile, doc);
-		} else {
-			getLog().info("No changes found to write to manifest file");
-		}
-	}
+		if (parsedSupportsScreens != null) {
+            Element supportsScreensElem = XmlHelper.getOrCreateElement(doc, manifestElement,
+                    ELEM_SUPPORTS_SCREENS);
+
+            getLog().info("Setting " + ELEM_SUPPORTS_SCREENS);
+
+            if (parsedSupportsScreens.getAnyDensity() != null) {
+                supportsScreensElem.setAttribute(ATTR_ANY_DENSITY,
+                        parsedSupportsScreens.getAnyDensity());
+                dirty = true;
+            }
+            if (parsedSupportsScreens.getSmallScreens() != null) {
+                supportsScreensElem.setAttribute(ATTR_SMALL_SCREENS,
+                        parsedSupportsScreens.getSmallScreens());
+                dirty = true;
+            }
+            if (parsedSupportsScreens.getNormalScreens() != null) {
+                supportsScreensElem.setAttribute(ATTR_NORMAL_SCREENS,
+                        parsedSupportsScreens.getNormalScreens());
+                dirty = true;
+            }
+            if (parsedSupportsScreens.getLargeScreens() != null) {
+                supportsScreensElem.setAttribute(ATTR_LARGE_SCREENS,
+                        parsedSupportsScreens.getLargeScreens());
+                dirty = true;
+            }
+            if (parsedSupportsScreens.getXlargeScreens() != null) {
+                supportsScreensElem.setAttribute(ATTR_XLARGE_SCREENS,
+                        parsedSupportsScreens.getXlargeScreens());
+                dirty = true;
+            }
+            if (parsedSupportsScreens.getCompatibleWidthLimitDp() != null) {
+                supportsScreensElem.setAttribute(ATTR_COMPATIBLE_WIDTH_LIMIT_DP,
+                        parsedSupportsScreens.getCompatibleWidthLimitDp());
+                dirty = true;
+            }
+            if (parsedSupportsScreens.getLargestWidthLimitDp() != null) {
+                supportsScreensElem.setAttribute(ATTR_LARGEST_WIDTH_LIMIT_DP,
+                        parsedSupportsScreens.getLargestWidthLimitDp());
+                dirty = true;
+            }
+            if (parsedSupportsScreens.getRequiresSmallestWidthDp() != null) {
+                supportsScreensElem.setAttribute(ATTR_REQUIRES_SMALLEST_WIDTH_DP,
+                        parsedSupportsScreens.getRequiresSmallestWidthDp());
+                dirty = true;
+            }
+            if (parsedSupportsScreens.getResizeable() != null) {
+                supportsScreensElem.setAttribute(ATTR_RESIZEABLE,
+                        parsedSupportsScreens.getResizeable());
+                dirty = true;
+            }
+        }
+
+        if (parsedCompatibleScreens != null) {
+            getLog().info("Setting " + ELEM_COMPATIBLE_SCREENS);
+            updateCompatibleScreens(doc, manifestElement);
+            dirty = true;
+        }
+
+        if (dirty) {
+            if (!manifestFile.delete()) {
+                getLog().warn("Could not remove old " + manifestFile);
+            }
+            getLog().info("Made changes to manifest file, updating " + manifestFile);
+            writeManifest(manifestFile, doc);
+        } else {
+            getLog().info("No changes found to write to manifest file");
+        }
+    }
+
+    private void updateCompatibleScreens(Document doc, Element manifestElement) {
+        Element compatibleScreensElem = XmlHelper.getOrCreateElement(doc, manifestElement,
+                ELEM_COMPATIBLE_SCREENS);
+
+        // read those screen elements that were already defined in the Manifest
+        NodeList manifestScreenElems = compatibleScreensElem.getElementsByTagName(ELEM_SCREEN);
+        int numManifestScreens = manifestScreenElems.getLength();
+        ArrayList<CompatibleScreen> manifestScreens = new ArrayList<CompatibleScreen>(
+                numManifestScreens);
+        for (int i = 0; i < numManifestScreens; i++) {
+            Element screenElem = (Element) manifestScreenElems.item(i);
+
+            CompatibleScreen screen = new CompatibleScreen();
+            screen.setScreenDensity(screenElem.getAttribute(ATTR_SCREEN_DENSITY));
+            screen.setScreenSize(screenElem.getAttribute(ATTR_SCREEN_SIZE));
+
+            manifestScreens.add(screen);
+            getLog().debug("Found Manifest compatible-screen: " + screen);
+        }
+
+        // remove all child nodes, since we'll rebuild the element
+        XmlHelper.removeDirectChildren(compatibleScreensElem);
+
+        for (CompatibleScreen screen : parsedCompatibleScreens) {
+            getLog().debug("Found POM compatible-screen: " + screen);
+        }
+
+        // merge those screens defined in the POM, overriding any matching screens
+        // already defined in the Manifest
+        HashSet<CompatibleScreen> mergedScreens = new HashSet<CompatibleScreen>();
+        mergedScreens.addAll(manifestScreens);
+        mergedScreens.addAll(parsedCompatibleScreens);
+
+        for (CompatibleScreen screen : mergedScreens) {
+            getLog().debug("Using compatible-screen: " + screen);
+            Element screenElem = doc.createElement(ELEM_SCREEN);
+            screenElem.setAttribute(ATTR_SCREEN_SIZE, screen.getScreenSize());
+            screenElem.setAttribute(ATTR_SCREEN_DENSITY, screen.getScreenDensity());
+
+            compatibleScreensElem.appendChild(screenElem);
+        }
+    }
 }
