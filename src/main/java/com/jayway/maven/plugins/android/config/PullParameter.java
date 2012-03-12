@@ -1,5 +1,6 @@
 package com.jayway.maven.plugins.android.config;
 
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -21,4 +22,6 @@ public @interface PullParameter {
 	String defaultValue() default "";
 	
 	String defaultValueGetterMethod() default "";
+
+    boolean required() default false;
 }
