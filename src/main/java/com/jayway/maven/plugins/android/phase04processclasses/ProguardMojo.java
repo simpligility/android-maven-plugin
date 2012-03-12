@@ -81,6 +81,9 @@ public class ProguardMojo extends AbstractAndroidMojo {
      */
     private Boolean proguardSkip;
 
+    @PullParameter(defaultValue = "true")
+    private Boolean parsedSkip;
+
     /**
      * Path to the ProGuard configuration file (relative to project root). Defaults to "proguard.cfg"
      *
@@ -88,6 +91,9 @@ public class ProguardMojo extends AbstractAndroidMojo {
      * @optional
      */
     private String proguardConfig;
+
+    @PullParameter(defaultValue = "proguard.cfg")
+    private String parsedConfig;
 
     /**
      * Path to the proguard jar and therefore version of proguard to be used. By default this will load the jar from
@@ -115,6 +121,9 @@ public class ProguardMojo extends AbstractAndroidMojo {
      */
     private String proguardProguardJarPath;
 
+    @PullParameter(defaultValueGetterMethod = "getProguardJarPath")
+    private String parsedProguardJarPath;
+
     /**
      * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build. Defaults to "-Xmx512M".
      *
@@ -122,6 +131,9 @@ public class ProguardMojo extends AbstractAndroidMojo {
      * @optional
      */
     private String[] proguardJvmArguments;
+
+    @PullParameter(defaultValueGetterMethod = "getDefaultJvmArguments")
+    private String[] parsedJvmArguments;
 
     /**
      * If set to true will add a filter to remove META-INF/maven/* files. Defaults to false.
@@ -131,6 +143,9 @@ public class ProguardMojo extends AbstractAndroidMojo {
      */
     private Boolean proguardFilterMavenDescriptor;
 
+    @PullParameter(defaultValue = "true")
+    private Boolean parsedFilterMavenDescriptor;
+
     /**
      * If set to true will add a filter to remove META-INF/MANIFEST.MF files.  Defaults to false.
      * 
@@ -138,6 +153,9 @@ public class ProguardMojo extends AbstractAndroidMojo {
      * @optional
      */
     private Boolean proguardFilterManifest;
+
+    @PullParameter(defaultValue = "true")
+    private Boolean parsedFilterManifest;
 
     /**
      * The plugin dependencies.
@@ -147,24 +165,6 @@ public class ProguardMojo extends AbstractAndroidMojo {
      * @readonly
      */
     protected List<Artifact> pluginDependencies;
-
-    @PullParameter(defaultValue = "true")
-    private Boolean parsedSkip;
-
-    @PullParameter(defaultValue = "proguard.cfg")
-    private String parsedConfig;
-
-    @PullParameter(defaultValueGetterMethod = "getProguardJarPath")
-    private String parsedProguardJarPath;
-
-    @PullParameter(defaultValueGetterMethod = "getDefaultJvmArguments")
-    private String[] parsedJvmArguments;
-
-    @PullParameter(defaultValue = "true")
-    private Boolean parsedFilterMavenDescriptor;
-
-    @PullParameter(defaultValue = "true")
-    private Boolean parsedFilterManifest;
 
     public static final String PROGUARD_OBFUSCATED_JAR = "proguard-obfuscated.jar";
 
@@ -264,6 +264,11 @@ public class ProguardMojo extends AbstractAndroidMojo {
         }
     }
 
+    /**
+     * Convert the jvm arguments in parsedJvmArguments as populated by the config in format as needed by the java
+     * command. Also preserve backwards compatibility in terms of dashes required or not..
+     * @param commands
+     */
     private void collectJvmArguments(List<String> commands) {
         if (parsedJvmArguments != null) {
             for (String jvmArgument : parsedJvmArguments) {
@@ -412,7 +417,12 @@ public class ProguardMojo extends AbstractAndroidMojo {
     }
 
 
-    public String getProguardJarPath() throws MojoExecutionException {
+    /**
+     * Get the path to the proguard jar.
+     * @return
+     * @throws MojoExecutionException
+     */
+    private String getProguardJarPath() throws MojoExecutionException {
         String proguardJarPath = getProguardJarPathFromDependencies();
         if (StringUtils.isEmpty(proguardJarPath)) {
             proguardJarPath = getAndroidSdk().getPathForTool("proguard/lib/proguard.jar");
@@ -446,9 +456,12 @@ public class ProguardMojo extends AbstractAndroidMojo {
 
     }
 
-
-
-    public String[] getDefaultJvmArguments() {
+    /**
+     * Get the default JVM arguments for the proguard invocation.
+     * @see #parsedJvmArguments
+     * @return
+     */
+    private String[] getDefaultJvmArguments() {
         return new String[] {"-Xmx512M"};
     }
 
