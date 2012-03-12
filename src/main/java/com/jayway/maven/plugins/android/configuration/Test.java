@@ -31,6 +31,10 @@ public class Test {
       */
     private Boolean coverage;
     /**
+      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testCoverageFile}
+      */
+    private String coverageFile;
+    /**
       * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testLogOnly}
       */
     private Boolean logOnly;
@@ -69,6 +73,10 @@ public class Test {
 
     public Boolean isCoverage() {
         return coverage;
+    }
+
+    public String getCoverageFile() {
+        return coverageFile;
     }
 
     public Boolean isLogOnly() {
