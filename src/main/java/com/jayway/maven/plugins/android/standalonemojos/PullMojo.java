@@ -19,6 +19,10 @@ package com.jayway.maven.plugins.android.standalonemojos;
 import java.io.File;
 import java.io.IOException;
 
+import com.jayway.maven.plugins.android.common.DeviceHelper;
+import com.jayway.maven.plugins.android.config.ConfigHandler;
+import com.jayway.maven.plugins.android.config.ConfigPojo;
+import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.Pull;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -58,8 +62,8 @@ public class PullMojo extends AbstractAndroidMojo {
      * <p>The parameters can also be configured as property in the pom or settings file
      * <pre>
      * &lt;properties&gt;
-     *     &lt;pull.source&gt;pathondevice&lt;/pull.source&gt;
-     *     &lt;pull.destination&gt;path&lt;/pull.destination&gt;
+     *     &lt;android.pull.source&gt;pathondevice&lt;/android.pull.source&gt;
+     *     &lt;android.pull.destination&gt;path&lt;/android.pull.destination&gt;
      * &lt;/properties&gt;
      * </pre>
      * or from command-line with parameter <code>-Dandroid.pull.source=path</code>
@@ -67,6 +71,7 @@ public class PullMojo extends AbstractAndroidMojo {
      *
      * @parameter
      */
+    @ConfigPojo
     private Pull pull;
 
     /**
@@ -76,6 +81,9 @@ public class PullMojo extends AbstractAndroidMojo {
      * @required
      */
     private String pullSource;
+
+    @PullParameter
+    private String parsedSource;
 
     /**
      * The path of the destination to copy the file to.
@@ -95,12 +103,13 @@ public class PullMojo extends AbstractAndroidMojo {
      */
     private String pullDestination;
 
-    private String parsedSource;
+    @PullParameter
     private String parsedDestination;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        parseConfiguration();
+        ConfigHandler configHandler = new ConfigHandler(this);
+        configHandler.parseConfiguration();
 
         doWithDevices(new DeviceCallback() {
             public void doWithDevice(final IDevice device) throws MojoExecutionException {
@@ -163,60 +172,28 @@ public class PullMojo extends AbstractAndroidMojo {
                                     .getName(parsedDestination);
                         }
 
-                        File destinationFile = new File(parentDir,
-                                destinationFileName);
-                        String destionationFilePath = destinationFile
-                                .getAbsolutePath();
-
+                        File destinationFile = new File(parentDir, destinationFileName);
+                        String destinationFilePath = destinationFile.getAbsolutePath();
                         message = "Pull of " + parsedSource + " to "
-                                + destionationFilePath + " from ";
+                                + destinationFilePath + " from " + DeviceHelper.getDescriptiveName(device);
 
                         syncService.pullFile(sourceFileEntry,
-                                destionationFilePath,
+                                destinationFilePath,
                                 new LogSyncProgressMonitor(getLog()));
                     }
 
-                    getLog().info(
-                            message + device.getSerialNumber() + " (avdName="
-                                    + device.getAvdName() + ") successful.");
+                    getLog().info(message + " successful.");
                 } catch (SyncException e) {
-                    throw new MojoExecutionException(message
-                        + device.getSerialNumber() + " (avdName="
-                        + device.getAvdName() + ") failed.", e);
+                    throw new MojoExecutionException(message + " failed.", e);
                 } catch (IOException e) {
-                    throw new MojoExecutionException(message
-                        + device.getSerialNumber() + " (avdName="
-                        + device.getAvdName() + ") failed.", e);
+                    throw new MojoExecutionException(message + " failed.", e);
                 } catch (TimeoutException e) {
-                    throw new MojoExecutionException(message
-                        + device.getSerialNumber() + " (avdName="
-                        + device.getAvdName() + ") failed.", e);
+                    throw new MojoExecutionException(message + " failed.", e);
                 } catch (AdbCommandRejectedException e) {
-                    throw new MojoExecutionException(message
-                        + device.getSerialNumber() + " (avdName="
-                        + device.getAvdName() + ") failed.", e);
+                    throw new MojoExecutionException(message + " failed.", e);
                 }
             }
         });
-
-    }
-
-    private void parseConfiguration() {
-        if (pull != null) {
-            if (StringUtils.isNotEmpty(pull.getSource())) {
-                parsedSource = pull.getSource();    
-            } else {
-                parsedSource = pullSource;
-            }
-            if (StringUtils.isNotEmpty(pull.getDestination())) {
-                parsedDestination = pull.getDestination();
-            } else {
-                parsedDestination = pullDestination;
-            }
-        } else {
-            parsedSource = pullSource;
-            parsedDestination = pullDestination;
-        }
     }
 
     /**
