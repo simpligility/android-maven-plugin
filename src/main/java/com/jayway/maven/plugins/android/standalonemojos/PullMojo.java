@@ -19,6 +19,7 @@ package com.jayway.maven.plugins.android.standalonemojos;
 import java.io.File;
 import java.io.IOException;
 
+import com.jayway.maven.plugins.android.common.DeviceHelper;
 import com.jayway.maven.plugins.android.config.ConfigHandler;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.config.PullParameter;
@@ -171,38 +172,25 @@ public class PullMojo extends AbstractAndroidMojo {
                                     .getName(parsedDestination);
                         }
 
-                        File destinationFile = new File(parentDir,
-                                destinationFileName);
-                        String destionationFilePath = destinationFile
-                                .getAbsolutePath();
-
+                        File destinationFile = new File(parentDir, destinationFileName);
+                        String destinationFilePath = destinationFile.getAbsolutePath();
                         message = "Pull of " + parsedSource + " to "
-                                + destionationFilePath + " from ";
+                                + destinationFilePath + " from " + DeviceHelper.getDescriptiveName(device);
 
                         syncService.pullFile(sourceFileEntry,
-                                destionationFilePath,
+                                destinationFilePath,
                                 new LogSyncProgressMonitor(getLog()));
                     }
 
-                    getLog().info(
-                            message + device.getSerialNumber() + " (avdName="
-                                    + device.getAvdName() + ") successful.");
+                    getLog().info(message + " successful.");
                 } catch (SyncException e) {
-                    throw new MojoExecutionException(message
-                        + device.getSerialNumber() + " (avdName="
-                        + device.getAvdName() + ") failed.", e);
+                    throw new MojoExecutionException(message + " failed.", e);
                 } catch (IOException e) {
-                    throw new MojoExecutionException(message
-                        + device.getSerialNumber() + " (avdName="
-                        + device.getAvdName() + ") failed.", e);
+                    throw new MojoExecutionException(message + " failed.", e);
                 } catch (TimeoutException e) {
-                    throw new MojoExecutionException(message
-                        + device.getSerialNumber() + " (avdName="
-                        + device.getAvdName() + ") failed.", e);
+                    throw new MojoExecutionException(message + " failed.", e);
                 } catch (AdbCommandRejectedException e) {
-                    throw new MojoExecutionException(message
-                        + device.getSerialNumber() + " (avdName="
-                        + device.getAvdName() + ") failed.", e);
+                    throw new MojoExecutionException(message + " failed.", e);
                 }
             }
         });
