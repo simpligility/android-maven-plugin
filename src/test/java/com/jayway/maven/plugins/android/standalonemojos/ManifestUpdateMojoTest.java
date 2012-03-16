@@ -1,15 +1,14 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import java.io.File;
-import java.io.IOException;
-
+import com.jayway.maven.plugins.android.AbstractAndroidMojoTestCase;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojoTestCase;
+import java.io.File;
+import java.io.IOException;
 
 public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<ManifestUpdateMojo> {
     @Override
@@ -63,6 +62,16 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
         File manifestFile = new File(dir, "AndroidManifest.xml");
         assertExpectedAndroidManifest(manifestFile, dir);
     }
+
+    @Test
+    public void testMinorVersionAndroidProject() throws Exception {
+        ManifestUpdateMojo mojo = createMojo("manifest-tests/minorversion-android-project");
+        mojo.execute();
+        File dir = getProjectDir(mojo);
+        File manifestFile = new File(dir, "AndroidManifest.xml");
+        assertExpectedAndroidManifest(manifestFile, dir);
+    }
+
 
 	@Test
     public void testVersionCodeUpdateAndIncrementFail() throws Exception {
