@@ -1,43 +1,30 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.common.AndroidExtension;
+import com.jayway.maven.plugins.android.common.XmlHelper;
+import com.jayway.maven.plugins.android.configuration.Manifest;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
-import org.apache.maven.artifact.versioning.ArtifactVersion;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.common.AndroidExtension;
-import com.jayway.maven.plugins.android.common.XmlHelper;
-import com.jayway.maven.plugins.android.configuration.Manifest;
 
 /**
  * Updates various version attributes present in the <code>AndroidManifest.xml</code> file.
@@ -376,10 +363,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 		if (parsedVersionCodeUpdateFromVersion) {
 			String verString = project.getVersion();
 			getLog().debug("Generating versionCode for " + verString);
-			ArtifactVersion artifactVersion = new DefaultArtifactVersion(verString);
-			String verCode = Integer.toString(artifactVersion.getMajorVersion()) +
-							 Integer.toString(artifactVersion.getMinorVersion()) +
-					         Integer.toString(artifactVersion.getIncrementalVersion());
+			String verCode = verString.replaceAll("\\D", "");
 			getLog().info("Setting " + ATTR_VERSION_CODE + " to " + verCode);
 			manifestElement.setAttribute(ATTR_VERSION_CODE, verCode);
 			dirty = true;
