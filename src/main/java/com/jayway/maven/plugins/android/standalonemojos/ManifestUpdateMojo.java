@@ -364,6 +364,18 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 			String verString = project.getVersion();
 			getLog().debug("Generating versionCode for " + verString);
 			String verCode = verString.replaceAll("\\D", "");
+
+            Attr versionCodeAttr = manifestElement.getAttributeNode(ATTR_VERSION_CODE);
+            int currentVersionCode = 0;
+            if (versionCodeAttr != null) {
+                currentVersionCode = NumberUtils.toInt(versionCodeAttr.getValue(), 0);
+            }
+
+            if(Integer.parseInt(verCode) < currentVersionCode){
+                getLog().info(verCode + " < " + currentVersionCode + " so padding versionCode");
+                verCode = StringUtils.rightPad(verCode, versionCodeAttr.getValue().length(), "0");
+            }
+
 			getLog().info("Setting " + ATTR_VERSION_CODE + " to " + verCode);
 			manifestElement.setAttribute(ATTR_VERSION_CODE, verCode);
 			dirty = true;
