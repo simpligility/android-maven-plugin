@@ -28,6 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB_PRECOMPILED;
 import static org.apache.maven.RepositoryUtils.toDependency;
 
 /**
@@ -90,7 +91,7 @@ public class NativeHelper {
                 filteredArtifacts.add( artifact );
             } else if ( isNativeLibrary( sharedLibraries, artifact.getType() ) && ( Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) || Artifact.SCOPE_RUNTIME.equals( artifact.getScope() ) ) ) {
                 filteredArtifacts.add( artifact );
-            } else if ( APKLIB.equals( artifact.getType() ) ) {
+            } else if ( APKLIB.equals( artifact.getType() ) || APKLIB_PRECOMPILED.equals( artifact.getType() ) ) {
                 // Check if the artifact contains a libs folder - if so, include it in the list
                 File libsFolder = new File( AbstractAndroidMojo.getLibraryUnpackDirectory( unpackDirectory, artifact )+"/libs" );
                 if ( libsFolder.exists() ) {

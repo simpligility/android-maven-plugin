@@ -18,6 +18,7 @@ package com.jayway.maven.plugins.android.phase09package;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB_PRECOMPILED;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -561,7 +562,7 @@ public class ApkMojo extends AbstractAndroidMojo {
                             throw new MojoExecutionException("Could not copy native dependency.", e);
                         }
                     }
-                    else if (APKLIB.equals(resolvedArtifact.getType()))
+                    else if (APKLIB.equals(resolvedArtifact.getType()) || APKLIB_PRECOMPILED.equals(resolvedArtifact.getType()))
                     {
                         natives.add(new File(getLibraryUnpackDirectory(resolvedArtifact)+"/libs"));
                     }
@@ -698,7 +699,7 @@ public class ApkMojo extends AbstractAndroidMojo {
         // Next pull APK Lib assets, reverse the order to give precedence to libs higher up the chain
         List<Artifact> artifactList = new ArrayList<Artifact>(getAllRelevantDependencyArtifacts());
 		for (Artifact artifact: artifactList) {
-			if (artifact.getType().equals(APKLIB)) {
+			if (artifact.getType().equals(APKLIB) || artifact.getType().equals(APKLIB_PRECOMPILED)) {
 				File apklibAsssetsDirectory = new File(getLibraryUnpackDirectory(artifact) + "/assets");
 				if (apklibAsssetsDirectory.exists()) {
 		            try {
@@ -757,6 +758,16 @@ public class ApkMojo extends AbstractAndroidMojo {
             }
         }
 
+        //.apklib2 dependency force us to crunch resources before packaging
+        //for backward compatibility with SDK versions less than 8
+        // we won't crunch resources if there are no .apklib2 dependency
+        boolean crunch = false;
+        for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
+            if (artifact.getType().equals(APKLIB_PRECOMPILED)) {
+                crunch = true;
+                break;
+            }
+        }
 
         File androidJar = getAndroidSdk().getAndroidJar();
         File outputFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_");
@@ -768,29 +779,55 @@ public class ApkMojo extends AbstractAndroidMojo {
         commands.add(androidManifestFile.getAbsolutePath());
         for (File resOverlayDir : overlayDirectories) {
             if (resOverlayDir != null && resOverlayDir.exists()) {
+                if (crunch) {
+                    commands.add("-S");
+                    commands.add(crunchResources(resOverlayDir, "overlay"));
+                }
                 commands.add("-S");
                 commands.add(resOverlayDir.getAbsolutePath());
             }
         }
         if (combinedRes.exists()) {
+            if (crunch) {
+                commands.add("-S");
+                commands.add(crunchResources(combinedRes, "combined"));
+            }
             commands.add("-S");
             commands.add(combinedRes.getAbsolutePath());
         } else {
             if (resourceDirectory.exists()) {
+                if (crunch) {
+                    commands.add("-S");
+                    commands.add(crunchResources(resourceDirectory, "resource"));
+                }
                 commands.add("-S");
                 commands.add(resourceDirectory.getAbsolutePath());
             }
         }
 		for (Artifact artifact: getAllRelevantDependencyArtifacts()) {
 			if (artifact.getType().equals(APKLIB)) {
-                final String apkLibResDir = getLibraryUnpackDirectory(artifact) + "/res";
+                final File apkLibDir = new File(getLibraryUnpackDirectory(artifact));
+                final File apkLibResDir = new File(apkLibDir, "res");
+
+                if (apkLibResDir.exists()){
+                    if (crunch) {
+                        commands.add("-S");
+                        commands.add(crunchResources(apkLibResDir, apkLibDir.getName() + "/res"));
+                    }
+                    commands.add("-S");
+                    commands.add(apkLibResDir.getAbsolutePath());
+                }
+			}
+            if (artifact.getType().equals(APKLIB_PRECOMPILED)) {
+                final String apkLibResDir = getLibraryUnpackDirectory(artifact) + "/bin/res";
                 if (new File(apkLibResDir).exists()){
                     commands.add("-S");
                     commands.add(apkLibResDir);
                 }
-			}
+            }
 		}
 		commands.add("--auto-add-overlay");
+        if (crunch) commands.add("--no-crunch");
 
         // Use the combined assets.
         // Indeed, aapt does not support several -A arguments.
@@ -828,6 +865,29 @@ public class ApkMojo extends AbstractAndroidMojo {
         } catch (ExecutionException e) {
             throw new MojoExecutionException("", e);
         }
+    }
+
+    private String crunchResources(File srcDir, String suffix) throws MojoExecutionException {
+
+        String result = project.getBuild().getDirectory() + "/crunched-resources/" + suffix;
+
+        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        executor.setLogger(this.getLog());
+
+        List<String> commands = new ArrayList<String>();
+        commands.add("crunch");
+        commands.add("-S");
+        commands.add(srcDir.getAbsolutePath());
+        commands.add("-C");
+        commands.add(result);
+        getLog().info(getAndroidSdk().getPathForTool("aapt") + " " + commands.toString());
+        try {
+            executor.executeCommand(getAndroidSdk().getPathForTool("aapt"), commands, project.getBasedir(), false);
+            return result;
+        } catch (ExecutionException e) {
+            throw new MojoExecutionException("", e);
+        }
+
     }
 
     protected AndroidSigner getAndroidSigner() {

@@ -292,4 +292,11 @@ public class AndroidSdk {
         return sourcePropertyFiles;
     }
 
+    public String getApiLevel() {
+        return platform.apiLevel;
+    }
+
+    public String getName() {
+        return platform.name;
+    }
 }
