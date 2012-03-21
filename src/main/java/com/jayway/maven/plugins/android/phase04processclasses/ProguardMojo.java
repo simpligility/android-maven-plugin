@@ -190,7 +190,7 @@ public class ProguardMojo extends AbstractAndroidMojo {
         private Collection<String> excludedFilter;
 
         public ProGuardInput(String path, Collection<String> excludedFilter) {
-            this.path = path;
+            this.path = "'" + path + "'";
             this.excludedFilter = excludedFilter;
         }
 
@@ -237,9 +237,9 @@ public class ProguardMojo extends AbstractAndroidMojo {
         collectJvmArguments(commands);
 
         commands.add("-jar");
-        commands.add(parsedProguardJarPath);
+        commands.add("'" + parsedProguardJarPath + "'");
 
-        commands.add("@" + parsedConfig);
+        commands.add("@'" + parsedConfig + "'");
 
         collectInputFiles(commands);
 
