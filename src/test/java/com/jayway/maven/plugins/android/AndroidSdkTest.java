@@ -81,12 +81,13 @@ public class AndroidSdkTest {
 
     @Test
     public void givenPlatformNullThenPlatformisSomethingValidLooking() throws IllegalAccessException, URISyntaxException {
-        final File path = (File) ReflectionUtils.getValueIncludingSuperclasses("sdkPath",sdkTestSupport.getSdk_with_platform_default());
+        final File sdkPath = (File) ReflectionUtils.getValueIncludingSuperclasses("sdkPath",sdkTestSupport.getSdk_with_platform_default());
         final File platform = sdkTestSupport.getSdk_with_platform_default().getPlatform();
-        final String platformPath = platform.getAbsolutePath();
-        final String pathPath = path.getAbsolutePath();
-        final String regex = new File(pathPath + "/platforms/android-.*").toURI().toString();
-        Assert.assertTrue(new File(platformPath).toURI().toString().matches(regex));
+        final String platformPath = platform.getAbsoluteFile().toURI().toString();
+        final String regex = "/platforms/android-.*";
+        //Strip off the sdkPath part  
+        String matcher = platformPath.substring( sdkPath.toURI().toString().length() -1 );
+        Assert.assertTrue(String.format("Platform [%s] does not match regex: [%s]", matcher,regex), matcher.matches(regex));
     }
 
     /**
