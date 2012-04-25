@@ -370,6 +370,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
             }
             currentVersionCode++;
             manifestElement.setAttribute(ATTR_VERSION_CODE, String.valueOf(currentVersionCode));
+            project.getProperties().setProperty("android.manifest.versionCode", String.valueOf(currentVersionCode));
             dirty = true;
         }
 
@@ -382,6 +383,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 					         Integer.toString(artifactVersion.getIncrementalVersion());
 			getLog().info("Setting " + ATTR_VERSION_CODE + " to " + verCode);
 			manifestElement.setAttribute(ATTR_VERSION_CODE, verCode);
+			project.getProperties().setProperty("android.manifest.versionCode", String.valueOf(verCode));
 			dirty = true;
 		}
 
@@ -396,6 +398,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 				manifestElement.setAttribute(ATTR_VERSION_CODE, String.valueOf(parsedVersionCode));
 				dirty = true;
 			}
+			project.getProperties().setProperty("android.manifest.versionCode", String.valueOf(parsedVersionCode));
 		}
 
 		if (!StringUtils.isEmpty(parsedSharedUserId)) {
