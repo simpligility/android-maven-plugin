@@ -165,8 +165,9 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 	protected Integer manifestVersionCode;
 
 	/**
-	  * Auto increment the <code>android:versionCode</code> attribute with each build. The
-	  * resulting value is exposed via the  project property <code>android.manifest.versionCode</code>.
+	  * Auto increment the <code>android:versionCode</code> attribute with each build. The value is
+	  * exposed via the project property <code>android.manifest.versionCodeAutoIncrement</code> and
+	  * the resulting value as <code>android.manifest.versionCode</code>.
 	  *
 	  * @parameter expression="${android.manifest.versionCodeAutoIncrement}" default-value="false"
 	  */
@@ -176,8 +177,9 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 	 * Update the <code>android:versionCode</code> attribute automatically from the project version
 	 * e.g 3.0.1 will become version code 301. As described in this blog post
 	 * http://www.simpligility.com/2010/11/release-version-management-for-your-android-application/
-	 * but done without using resource filtering. The resulting value is exposed via the project
-	 * property <code>android.manifest.versionCode</code>.
+	 * but done without using resource filtering. The value is exposed via the project property
+	 * property <code>android.manifest.versionCodeUpdateFromVersion</code> and the resulting value
+	 * as <code>android.manifest.versionCode</code>.
 	 *
 	 * @parameter expression="${android.manifest.versionCodeUpdateFromVersion}" default-value="false"
 	 */
