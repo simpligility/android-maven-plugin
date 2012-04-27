@@ -149,21 +149,24 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 
 	/**
 	 * Update the <code>android:versionName</code> with the specified parameter. If left empty it
-     * will use the version number of the project.
+	 * will use the version number of the project. Exposed via the project property
+	 * <code>android.manifest.versionName</code>.
 	 *
 	 * @parameter expression="${android.manifest.versionName}" default-value="${project.version}"
 	 */
 	protected String manifestVersionName;
 
 	/**
-	 * Update the <code>android:versionCode</code> attribute with the specified parameter.
+	 * Update the <code>android:versionCode</code> attribute with the specified parameter. Exposed via
+	 * the project property <code>android.manifest.versionCode</code>.
 	 *
 	 * @parameter expression="${android.manifest.versionCode}"
 	 */
 	protected Integer manifestVersionCode;
 
 	/**
-	  * Auto increment the <code>android:versionCode</code> attribute with each build.
+	  * Auto increment the <code>android:versionCode</code> attribute with each build. The
+	  * resulting value is exposed via the  project property <code>android.manifest.versionCode</code>.
 	  *
 	  * @parameter expression="${android.manifest.versionCodeAutoIncrement}" default-value="false"
 	  */
@@ -173,21 +176,24 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 	 * Update the <code>android:versionCode</code> attribute automatically from the project version
 	 * e.g 3.0.1 will become version code 301. As described in this blog post
 	 * http://www.simpligility.com/2010/11/release-version-management-for-your-android-application/
-	 * but done without using resource filtering.
+	 * but done without using resource filtering. The resulting value is exposed via the project
+	 * property <code>android.manifest.versionCode</code>.
 	 *
 	 * @parameter expression="${android.manifest.versionCodeUpdateFromVersion}" default-value="false"
 	 */
 	protected Boolean manifestVersionCodeUpdateFromVersion = false;
 
 	/**
-	 * Update the <code>android:sharedUserId</code> attribute with the specified parameter.
+	 * Update the <code>android:sharedUserId</code> attribute with the specified parameter. If
+	 * specified, exposes the project property <code>android.manifest.sharedUserId</code>.
 	 *
 	 * @parameter expression="${android.manifest.sharedUserId}"
 	 */
 	protected String manifestSharedUserId;
 
 	/**
-	 * Update the <code>android:debuggable</code> attribute with the specified parameter.
+	 * Update the <code>android:debuggable</code> attribute with the specified parameter. Exposed via
+	 * the project property <code>android.manifest.debuggable</code>.
 	 *
 	 * @parameter expression="${android.manifest.debuggable}"
 	 */
@@ -360,6 +366,15 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
 			throw new MojoFailureException("versionCodeAutoIncrement, versionCodeUpdateFromVersion and versionCode " +
 					"are mutual exclusive. They cannot be specified at the same time. " +
 					"Please specify either versionCodeAutoIncrement, versionCodeUpdateFromVersion or versionCode!");
+		}
+
+		// Expose the version properties and other simple parsed manifest entries
+		project.getProperties().setProperty("android.manifest.versionName", parsedVersionName);
+		project.getProperties().setProperty("android.manifest.versionCodeAutoIncrement", String.valueOf(parsedVersionCodeAutoIncrement));
+		project.getProperties().setProperty("android.manifest.versionCodeUpdateFromVersion", String.valueOf(parsedVersionCodeUpdateFromVersion));
+		project.getProperties().setProperty("android.manifest.debuggable", String.valueOf(parsedDebuggable));
+		if (parsedSharedUserId != null) {
+			project.getProperties().setProperty("android.manifest.sharedUserId", parsedSharedUserId);
 		}
 
 		if (parsedVersionCodeAutoIncrement) {
