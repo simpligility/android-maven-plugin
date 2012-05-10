@@ -37,6 +37,10 @@ import java.util.zip.ZipOutputStream;
 import com.jayway.maven.plugins.android.common.AetherHelper;
 import com.jayway.maven.plugins.android.common.NativeHelper;
 import com.jayway.maven.plugins.android.configuration.Sign;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.FileFileFilter;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -596,11 +600,10 @@ public class ApkMojo extends AbstractAndroidMojo {
     private void copyLocalNativeLibraries( final File localNativeLibrariesDirectory, final File destinationDirectory ) throws MojoExecutionException {
         getLog().debug( "Copying existing native libraries from " + localNativeLibrariesDirectory );
         try {
-            org.apache.commons.io.FileUtils.copyDirectory( localNativeLibrariesDirectory, destinationDirectory, new FileFilter() {
-                public boolean accept( final File pathname ) {
-                    return pathname.getName().endsWith( ".so" );
-                }
-            } );
+            IOFileFilter libSuffixFilter = FileFilterUtils.suffixFileFilter(".so");
+            IOFileFilter libFiles = FileFilterUtils.and(FileFileFilter.FILE, libSuffixFilter);
+            FileFilter filter = FileFilterUtils.or(DirectoryFileFilter.DIRECTORY, libFiles);
+            org.apache.commons.io.FileUtils.copyDirectory(localNativeLibrariesDirectory, destinationDirectory, filter);
         }
         catch ( IOException e ) {
             getLog().error( "Could not copy native libraries: " + e.getMessage(), e );
