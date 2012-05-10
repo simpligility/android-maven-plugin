@@ -75,7 +75,7 @@ public class MakefileHelper {
                 makeFile.append( artifact.getArtifactId() );
                 makeFile.append( '\n' );
                 makeFile.append( "LOCAL_SRC_FILES := " );
-                makeFile.append( resolveRelativePath( outputDir, artifact.getFile() ) );
+                makeFile.append( resolveRelativePath( outputDir, artifact.getFile()) );
                 makeFile.append( '\n' );
                 if (useHeaderArchives)
                 {
@@ -120,11 +120,20 @@ public class MakefileHelper {
      * @param file
      * @return
      */
-    private static String resolveRelativePath( File outputDirectory, File file ) {
+    public static String resolveRelativePath( File outputDirectory, File file) {
         // FIXME: This should really examine the paths used and correct the directory accordingly
 
-        StringBuilder stringBuilder = new StringBuilder();
-        final String[] split = outputDirectory.getAbsolutePath().split(File.separator);
+        final StringBuilder stringBuilder = new StringBuilder();
+
+        String separator = File.separator;
+
+        // If on Windows, the file separator will be \\ which is an invalid Java regexp - rewrite into something
+        // more sensible (like 4 slashes) - fix for issue 264
+        if (separator.equals("\\")) {
+            separator = "\\\\";
+        }
+
+        final String[] split = outputDirectory.getAbsolutePath().split(separator);
 
         if (split == null || split.length == 0)
         {
