@@ -44,7 +44,8 @@ public class AndroidNdk {
 
     public String getStripper(String toolchain)
     {
-        // $NDK_PATH/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin/arm-linux-androideabi-strip
+        // LINUX : $NDK_PATH/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin/arm-linux-androideabi-strip
+        // WINDOWS : $NDK_PATH/toolchains/arm-linux-androideabi-4.4.3/prebuilt/windows/bin/arm-linux-androideabi-strip.exe
         // FIXME: Must take into consideration windows here as well ...
         return new File( ndkPath, "toolchains/" + toolchain + "/prebuilt/linux-x86/bin/arm-linux-androideabi-strip" ).getAbsolutePath();
     }
