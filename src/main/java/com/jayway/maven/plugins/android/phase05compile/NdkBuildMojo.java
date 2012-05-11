@@ -253,6 +253,12 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      */
     private String buildWarningsRegularExpression = ".*[warning|note]: .*";
 
+    /**
+     *
+     * @parameter expression="${android.ndk.build.skip-native-library-stripping}" default="false"
+     */
+    private boolean skipStripping = false;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         // Validate the NDK
@@ -422,7 +428,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
 
             // slight limitation at this stage - we only handle a single .so artifact
             if ( files == null || files.length != 1 ) {
-                getLog().warn( "Error while detecting native compile artifacts: " + ( files == null || files.length == 0 ? "None found" : "Found more than 1 artifact" ) );
+                getLog().warn( "Error while detecting native compile artifacts: "+( files == null || files.length == 0 ? "None found" : "Found more than 1 artifact" ) );
                 if ( files != null && files.length > 1) {
                     getLog().error( "Currently, only a single, final native library is supported by the build" );
                     throw new MojoExecutionException( "Currently, only a single, final native library is supported by the build" );
@@ -432,11 +438,19 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
                     getLog().error( "No native compiled library found, did the native compile complete successfully?" );
                     throw new MojoExecutionException( "No native compiled library found, did the native compile complete successfully?" );
                 }
-            } else {
-                getLog().debug( "Adding native compile artifact: " + files[ 0 ] );
-                final String artifactType = resolveArtifactType(files[0]);
-                projectHelper.attachArtifact( this.project, artifactType, ( ndkClassifier != null ? ndkClassifier : ndkArchitecture ), files[ 0 ] );
             }
+
+            getLog().debug( "Post processing native compiled artifact: " + files[ 0 ] );
+            final String artifactType = resolveArtifactType(files[0]);
+            if ("so".equals(artifactType) && !skipStripping) {
+                getLog().debug( "Detected shared library artifact, will now strip it");
+                // Execute the stripper and
+                // On linux, this is installed in $NDK_PATH/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin/arm-linux-androideabi-strip
+                // Care must be taken to ensure that the toolchain in question is indeed the correct one
+                // FIXME: Should we add a 'toolchain' parameter which we then pass to the NDK using the NDK_TOOLCHAIN=xyz on the commandline
+            }
+
+            projectHelper.attachArtifact( this.project, artifactType, ( ndkClassifier != null ? ndkClassifier : ndkArchitecture ), files[ 0 ] );
 
         }
 
