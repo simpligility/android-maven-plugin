@@ -282,11 +282,23 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             if (!libsDirectoryExists) {
                 getLog().info("Creating native output directory " + nativeLibDirectory);
 
-                if (nativeLibDirectory.getParentFile().exists()) {
-                    nativeLibDirectory.mkdir();
-                } else {
-                    nativeLibDirectory.mkdirs();
-                    directoryToRemove = nativeLibDirectory.getParentFile();
+                if (!nativeLibrariesOutputDirectory.exists())
+                {
+                    if (nativeLibrariesOutputDirectory.getParentFile().exists()) {
+                        nativeLibDirectory.mkdir();
+                    } else {
+                        nativeLibDirectory.mkdirs();
+                        directoryToRemove = nativeLibrariesOutputDirectory.getParentFile();
+                    }
+                }
+                else
+                {
+                    if (nativeLibDirectory.getParentFile().exists()) {
+                        nativeLibDirectory.mkdir();
+                    } else {
+                        nativeLibDirectory.mkdirs();
+                        directoryToRemove = nativeLibDirectory.getParentFile();
+                    }
                 }
 
             }
@@ -294,9 +306,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
 
             executor.setErrorListener(new CommandExecutor.ErrorListener() {
-            @Override
+                @Override
                 public boolean isError(String error) {
-
                     Pattern pattern = Pattern.compile(buildWarningsRegularExpression);
                     Matcher matcher = pattern.matcher(error);
 
@@ -308,30 +319,29 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             });
 
             final Set<Artifact> nativeLibraryArtifacts = findNativeLibraryDependencies();
+
             // If there are any static libraries the code needs to link to, include those in the make file
             final Set<Artifact> resolveNativeLibraryArtifacts = AetherHelper.resolveArtifacts(nativeLibraryArtifacts, repoSystem, repoSession, projectRepos);
-            MakefileHelper.MakefileHolder makefileHolder = null;
 
-            File f = File.createTempFile("android_maven_plugin_makefile", ".mk");
-            f.deleteOnExit();
+            final File androidMavenMakefile = File.createTempFile("android_maven_plugin_makefile", ".mk");
+            androidMavenMakefile.deleteOnExit();
 
-            makefileHolder = MakefileHelper.createMakefileFromArtifacts(f.getParentFile(), resolveNativeLibraryArtifacts, useHeaderArchives, repoSession, projectRepos, repoSystem);
-            IOUtil.copy(makefileHolder.getMakeFile(), new FileOutputStream(f));
+            final MakefileHelper.MakefileHolder makefileHolder = MakefileHelper.createMakefileFromArtifacts(androidMavenMakefile.getParentFile(), resolveNativeLibraryArtifacts, useHeaderArchives, repoSession, projectRepos, repoSystem);
+            IOUtil.copy(makefileHolder.getMakeFile(), new FileOutputStream(androidMavenMakefile));
 
             // Add the path to the generated makefile
-            executor.addEnvironment("ANDROID_MAVEN_PLUGIN_MAKEFILE", f.getAbsolutePath());
+            executor.addEnvironment("ANDROID_MAVEN_PLUGIN_MAKEFILE", androidMavenMakefile.getAbsolutePath());
 
             // Only add the LOCAL_STATIC_LIBRARIES
             if (NativeHelper.hasStaticNativeLibraryArtifact(resolveNativeLibraryArtifacts)) {
                 executor.addEnvironment("ANDROID_MAVEN_PLUGIN_LOCAL_STATIC_LIBRARIES", MakefileHelper.createStaticLibraryList(resolveNativeLibraryArtifacts, true));
             }
+            // Only add the LOCAL_SHARED_LIBRARIES
             if (NativeHelper.hasSharedNativeLibraryArtifact(resolveNativeLibraryArtifacts)) {
                 executor.addEnvironment("ANDROID_MAVEN_PLUGIN_LOCAL_SHARED_LIBRARIES", MakefileHelper.createStaticLibraryList(resolveNativeLibraryArtifacts, false));
             }
 
-            File localCIncludesFile = null;
-
-            localCIncludesFile = File.createTempFile("android_maven_plugin_makefile_captures", ".tmp");
+            final File localCIncludesFile = File.createTempFile("android_maven_plugin_makefile_captures", ".tmp");
             localCIncludesFile.deleteOnExit();
             executor.addEnvironment("ANDROID_MAVEN_PLUGIN_LOCAL_C_INCLUDES_FILE", localCIncludesFile.getAbsolutePath());
 
@@ -409,27 +419,45 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
                             throw new MojoExecutionException("No native compiled library found, did the native compile complete successfully?");
                         }
                     }
-                    final String artifactType = resolveArtifactType(files[0]);
 
+                    final String artifactType = resolveArtifactType(files[0]);
                     if ("so".equals(artifactType) && !skipStripping) {
                         getLog().debug( "Post processing (stripping) native compiled artifact: " + files[ 0 ] );
                         invokeNDKStripper( files[ 0 ] );
                     }
 
                     getLog().debug("Adding native compile artifact: " + files[0]);
-                    projectHelper.attachArtifact(this.project, artifactType, (ndkClassifier != null ? ndkClassifier : ndkArchitecture), files[0]);
+
+                    File fileToAttach = files[0];
+                    if (!libsDirectoryExists)
+                    {
+                        // This indicates the output directory was created by the build (us)
+                        // and that we should really move it to the target
+                        File destFile = new File(project.getBuild().getDirectory(),files[0].getName());
+                        FileUtils.moveFile(files[0],destFile);
+                        fileToAttach = destFile;
+                    }
+
+                    projectHelper.attachArtifact(this.project, artifactType, (ndkClassifier != null ? ndkClassifier : ndkArchitecture), fileToAttach);
 
                 }
 
                 // Process conditionally any of the headers to include into the header archive file
                 processHeaderFileIncludes(localCIncludesFile);
+
             }
             finally {
+                if (!libsDirectoryExists) {
+                    getLog().info("Cleaning up native library output directory after build");
+                    getLog().debug("Removing directory: " + directoryToRemove);
+                    FileUtils.deleteDirectory(directoryToRemove);
+                }
                 if (makefileHolder != null) {
                     getLog().info("Cleaning up extracted include directories used for build");
                     MakefileHelper.cleanupAfterBuild(makefileHolder);
                 }
             }
+
         }
         catch (MojoExecutionException e)
         {
@@ -450,6 +478,12 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             // Care must be taken to ensure that the toolchain in question is indeed the correct one
             // FIXME: Should we add a 'toolchain' parameter which we then pass to the NDK using the NDK_TOOLCHAIN=xyz on the commandline
             final CommandExecutor stripCommandExecutor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+            stripCommandExecutor.setErrorListener(new CommandExecutor.ErrorListener() {
+                public boolean isError(String error) {
+                    getLog().error("Error while stripping binary: " + error);
+                    return true;
+                }
+            });
             stripCommandExecutor.executeCommand( resolveNdkStripper(), Arrays.asList( file.getAbsolutePath() ) );
         } catch ( ExecutionException e ) {
             getLog().error( "Error while attempting to strip shared library", e);
