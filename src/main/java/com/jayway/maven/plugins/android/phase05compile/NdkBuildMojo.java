@@ -259,6 +259,12 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      */
     private boolean skipStripping = false;
 
+    /**
+     *
+     * @parameter expression="${android.ndk.build.ndk-toolchain}" default="arm-linux-androideabi-4.4.3"
+     */
+    private String ndkToolchain = "arm-linux-androideabi-4.4.3";;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         // Validate the NDK
@@ -443,11 +449,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             getLog().debug( "Post processing native compiled artifact: " + files[ 0 ] );
             final String artifactType = resolveArtifactType(files[0]);
             if ("so".equals(artifactType) && !skipStripping) {
-                getLog().debug( "Detected shared library artifact, will now strip it");
-                // Execute the stripper and
-                // On linux, this is installed in $NDK_PATH/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin/arm-linux-androideabi-strip
-                // Care must be taken to ensure that the toolchain in question is indeed the correct one
-                // FIXME: Should we add a 'toolchain' parameter which we then pass to the NDK using the NDK_TOOLCHAIN=xyz on the commandline
+                invokeNDKStripper( files[ 0 ] );
             }
 
             projectHelper.attachArtifact( this.project, artifactType, ( ndkClassifier != null ? ndkClassifier : ndkArchitecture ), files[ 0 ] );
@@ -459,6 +461,21 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
 
     }
 
+    private void invokeNDKStripper( File file ) throws MojoExecutionException {
+        try {
+            getLog().debug( "Detected shared library artifact, will now strip it");
+            // Execute the stripper and
+            // On linux, this is installed in $NDK_PATH/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin/arm-linux-androideabi-strip
+            // Care must be taken to ensure that the toolchain in question is indeed the correct one
+            // FIXME: Should we add a 'toolchain' parameter which we then pass to the NDK using the NDK_TOOLCHAIN=xyz on the commandline
+            final CommandExecutor stripCommandExecutor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+            stripCommandExecutor.executeCommand( resolveNdkStripper(), Arrays.asList( file.getAbsolutePath() ) );
+        } catch ( ExecutionException e ) {
+            getLog().error( "Error while attempting to strip shared library", e);
+            throw new MojoExecutionException( "Error while attempting to strip shared library" );
+        }
+    }
+
     private String resolveNdkBuildExecutable() throws MojoExecutionException {
         if (ndkBuildExecutable != null)
         {
@@ -466,6 +483,10 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             return ndkBuildExecutable;
         }
         return getAndroidNdk().getNdkBuildPath();
+    }
+
+    private String resolveNdkStripper() throws MojoExecutionException {
+        return getAndroidNdk().getStripper( ndkToolchain );
     }
 
     private void processHeaderFileIncludes(File localCIncludesFile) throws MojoExecutionException {
