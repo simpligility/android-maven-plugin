@@ -500,6 +500,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
                         // Find the nativeArtifactFile in the nativeLibDirectory/finalLibraryName
                         nativeArtifactFile = new File( nativeLibDirectory, finalLibraryName + "." + project.getPackaging() );
                         if (!nativeArtifactFile.exists()) {
+                            getLog().error( "Could not locate final native library using the provided finalLibraryName " + finalLibraryName  + " (tried " + nativeArtifactFile.getAbsolutePath() + ")");
                             throw new MojoExecutionException( "Could not locate final native library using the provided finalLibraryName " + finalLibraryName  + " (tried " + nativeArtifactFile.getAbsolutePath() + ")");
                         }
                     }
@@ -549,6 +550,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
 
         }
         catch (MojoExecutionException e) {
+            getLog().error( "Error during build: " + e.getMessage(), e );
             throw e;
         }
         catch (Exception e) {
