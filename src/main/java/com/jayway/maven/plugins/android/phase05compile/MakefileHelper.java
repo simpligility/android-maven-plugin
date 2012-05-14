@@ -20,6 +20,11 @@ import java.util.jar.JarFile;
  */
 public class MakefileHelper {
 
+    public static final String MAKEFILE_CAPTURE_FILE = "ANDROID_MAVEN_PLUGIN_LOCAL_C_INCLUDES_FILE";
+
+    /** Holder for the result of creating a makefile.  This in particular keep tracks of all directories created
+     * for extracted header files.
+     */
     public static class MakefileHolder {
         String makeFile;
         List<File> includeDirectories;
@@ -38,16 +43,19 @@ public class MakefileHelper {
         }
     }
 
-    /** Cleans up all include directories created in the temp directory during the build
-     * @param makefileHolder
+    /** Cleans up all include directories created in the temp directory during the build.
+     *
+     * @param makefileHolder The holder produced by the {@link MakefileHelper#createMakefileFromArtifacts(java.io.File, java.util.Set, boolean, org.sonatype.aether.RepositorySystemSession, java.util.List, org.sonatype.aether.RepositorySystem)}
      */
     public static void cleanupAfterBuild(MakefileHolder makefileHolder) {
 
-        for (File file : makefileHolder.getIncludeDirectories()) {
-            try {
-                FileUtils.deleteDirectory(file);
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (makefileHolder.getIncludeDirectories() != null) {
+            for (File file : makefileHolder.getIncludeDirectories()) {
+                try {
+                    FileUtils.deleteDirectory(file);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -73,15 +81,15 @@ public class MakefileHelper {
         final List<File> includeDirectories = new ArrayList<File>();
 
         // Add now output - allows us to somewhat intelligently determine the include paths to use for the header archive
-        makeFile.append("$(shell echo \"LOCAL_C_INCLUDES=$(LOCAL_C_INCLUDES)\" > $(ANDROID_MAVEN_PLUGIN_LOCAL_C_INCLUDES_FILE))");
+        makeFile.append("$(shell echo \"LOCAL_C_INCLUDES=$(LOCAL_C_INCLUDES)\" > $("+ MAKEFILE_CAPTURE_FILE + "))");
         makeFile.append( '\n' );
-        makeFile.append("$(shell echo \"LOCAL_PATH=$(LOCAL_PATH)\" >> $(ANDROID_MAVEN_PLUGIN_LOCAL_C_INCLUDES_FILE))");
+        makeFile.append("$(shell echo \"LOCAL_PATH=$(LOCAL_PATH)\" >> $(" + MAKEFILE_CAPTURE_FILE + "))");
         makeFile.append( '\n' );
-        makeFile.append("$(shell echo \"LOCAL_MODULE_FILENAME=$(LOCAL_MODULE_FILENAME)\" >> $(ANDROID_MAVEN_PLUGIN_LOCAL_C_INCLUDES_FILE))");
+        makeFile.append("$(shell echo \"LOCAL_MODULE_FILENAME=$(LOCAL_MODULE_FILENAME)\" >> $(" + MAKEFILE_CAPTURE_FILE + "))");
         makeFile.append( '\n' );
-        makeFile.append("$(shell echo \"LOCAL_MODULE=$(LOCAL_MODULE)\" >> $(ANDROID_MAVEN_PLUGIN_LOCAL_C_INCLUDES_FILE))");
+        makeFile.append("$(shell echo \"LOCAL_MODULE=$(LOCAL_MODULE)\" >> $(" + MAKEFILE_CAPTURE_FILE + "))");
         makeFile.append( '\n' );
-        makeFile.append("$(shell echo \"LOCAL_CFLAGS=$(LOCAL_CFLAGS)\" >> $(ANDROID_MAVEN_PLUGIN_LOCAL_C_INCLUDES_FILE))");
+        makeFile.append("$(shell echo \"LOCAL_CFLAGS=$(LOCAL_CFLAGS)\" >> $(" + MAKEFILE_CAPTURE_FILE + "))");
         makeFile.append( '\n' );
 
         if ( !artifacts.isEmpty() )
@@ -115,7 +123,7 @@ public class MakefileHelper {
 
                         File includeDir = new File( System.getProperty( "java.io.tmpdir" ), "android_maven_plugin_native_includes" + System.currentTimeMillis() + "_" + resolvedHarArtifact.getArtifactId());
                         includeDir.deleteOnExit();
-                        includeDirectories.add(includeDir);
+                        includeDirectories.add( includeDir );
 
                         JarHelper.unjar(new JarFile(resolvedHarArtifact.getFile()), includeDir, new JarHelper.UnjarListener() {
                             @Override
@@ -183,14 +191,14 @@ public class MakefileHelper {
     /** Creates a list of artifacts suitable for use in the LOCAL_STATIC_LIBRARIES variable in an Android makefile
      *
      *
-     * @param resolvedstaticLibraryArtifacts
+     * @param resolvedStaticLibraryList
      * @param staticLibrary
      * @return
      */
-    public static String createStaticLibraryList(Set<Artifact> resolvedstaticLibraryArtifacts, boolean staticLibrary) {
+    public static String createLibraryList( Set<Artifact> resolvedStaticLibraryList, boolean staticLibrary ) {
         StringBuilder sb = new StringBuilder();
 
-        for (Iterator<Artifact> iterator = resolvedstaticLibraryArtifacts.iterator(); iterator.hasNext(); ) {
+        for (Iterator<Artifact> iterator = resolvedStaticLibraryList.iterator(); iterator.hasNext(); ) {
             Artifact resolvedstaticLibraryArtifact = iterator.next();
             if ( staticLibrary && "a".equals(resolvedstaticLibraryArtifact.getType() ) ) {
                 sb.append( resolvedstaticLibraryArtifact.getArtifactId() );
