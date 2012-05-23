@@ -34,21 +34,26 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import com.jayway.maven.plugins.android.common.AetherHelper;
-import com.jayway.maven.plugins.android.common.NativeHelper;
-import com.jayway.maven.plugins.android.configuration.Sign;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.util.AbstractScanner;
+import org.codehaus.plexus.util.DirectoryScanner;
+import org.codehaus.plexus.util.SelectorUtils;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.AndroidSigner;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
-import org.codehaus.plexus.util.DirectoryScanner;
+import com.jayway.maven.plugins.android.common.NativeHelper;
+import com.jayway.maven.plugins.android.config.ConfigHandler;
+import com.jayway.maven.plugins.android.config.ConfigPojo;
+import com.jayway.maven.plugins.android.config.PullParameter;
+import com.jayway.maven.plugins.android.configuration.Apk;
+import com.jayway.maven.plugins.android.configuration.ConfigHelper;
+import com.jayway.maven.plugins.android.configuration.Sign;
 
 
 /**
@@ -182,6 +187,47 @@ public class ApkMojo extends AbstractAndroidMojo {
       */
      protected ArtifactFactory artifactFactory;
 
+ 	/**
+ 	 * Pattern for additional META-INF resources to be packaged into the apk.
+ 	 * <p>
+ 	 * The APK builder filters these resources and doesn't include them into the apk.
+ 	 * This leads to bad behaviour of dependent libraries relying on these resources,
+ 	 * for instance service discovery doesn't work.<br/>
+ 	 * By specifying this pattern, the android plugin adds these resources to the final apk. 
+ 	 * </p>
+ 	 * <p>The pattern is relative to META-INF, i.e. one must use
+ 	 * <pre>
+ 	 * <code>
+ 	 * 	&lt;apkMetaIncludes&gt;
+ 	 * 		&lt;metaInclude>services/**&lt;/metaInclude&gt;
+ 	 * 	&lt;/apkMetaIncludes&gt;
+ 	 * </code>
+ 	 * </pre>
+ 	 * ... instead of
+ 	 * <pre>
+ 	 * <code>
+ 	 * 	&lt;apkMetaIncludes&gt;
+ 	 * 		&lt;metaInclude>META-INF/services/**&lt;/metaInclude&gt;
+ 	 * 	&lt;/apkMetaIncludes&gt;
+ 	 * </code>
+ 	 * </pre>
+ 	 * <p>
+ 	 * See also <a href="http://code.google.com/p/maven-android-plugin/issues/detail?id=97">Issue 97</a>
+ 	 * </p>
+ 	 * 
+ 	 * @parameter expression="${android.apk.metaIncludes}" default-value=""
+ 	 */
+     @PullParameter( defaultValueGetterMethod = "getDefaultMetaIncludes" )
+ 	private String[]	apkMetaIncludes;
+
+ 	/**
+ 	 * Embedded configuration of this mojo.
+ 	 * 
+ 	 * @parameter
+ 	 */
+ 	@ConfigPojo( prefix="apk" )
+ 	private Apk apk;
+
     private static final Pattern PATTERN_JAR_EXT = Pattern.compile("^.+\\.jar$", 2);
 
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -190,6 +236,10 @@ public class ApkMojo extends AbstractAndroidMojo {
         if (!generateApk) {
             return;
         }
+
+        ConfigHandler cfh = new ConfigHandler( this );
+        
+        cfh.parseConfiguration();
 
         generateIntermediateAp_();
 
@@ -255,7 +305,89 @@ public class ApkMojo extends AbstractAndroidMojo {
             doAPKWithCommand(outputFile, dexFile, zipArchive, sourceFolders, jarFiles,
                 nativeFolders, signWithDebugKeyStore);
         }
+
+        if( this.apkMetaIncludes != null && this.apkMetaIncludes.length > 0 ) {
+        	try {
+				addMetaInf( outputFile, jarFiles );
+			}
+			catch( IOException e ) {
+				throw new MojoExecutionException("Could not add META-INF resources.", e);
+			}
+        }
     }
+
+	private void addMetaInf( File outputFile, ArrayList<File> jarFiles ) throws IOException
+	{
+		File tmp = File.createTempFile( outputFile.getName(), ".add", outputFile.getParentFile() );
+
+		FileOutputStream fos = new FileOutputStream( tmp );
+		ZipOutputStream zos = new ZipOutputStream( fos );
+		Set<String> entries = new HashSet<String>();
+
+		updateWithMetaInf( zos, outputFile, entries, false );
+
+		for( File f : jarFiles ) {
+			updateWithMetaInf( zos, f, entries, true );
+		}
+
+		zos.close();
+
+		outputFile.delete();
+
+		if( !tmp.renameTo( outputFile ) ) {
+			throw new IOException( String.format( "Cannot rename %s to %s", tmp, outputFile.getName() ) );
+		}
+	}
+
+	private void updateWithMetaInf( ZipOutputStream zos, File jarFile, Set<String> entries, boolean metaInfOnly )
+	throws ZipException, IOException
+	{
+		ZipFile zin = new ZipFile( jarFile );
+
+		for( Enumeration<? extends ZipEntry> en = zin.entries(); en.hasMoreElements(); ) {
+			ZipEntry ze = en.nextElement();
+
+			if( ze.isDirectory() )
+				continue;
+
+			String zn = ze.getName();
+
+			if( metaInfOnly ) {
+				if( !zn.startsWith( "META-INF/" ) ) {
+					continue;
+				}
+
+				if( this.extractDuplicates && !entries.add( zn ) ) {
+					continue;
+				}
+
+				if( !metaInfMatches( zn ) ) {
+					continue;
+				}
+			}
+
+			zos.putNextEntry( new ZipEntry( zn ) );
+
+			InputStream is = zin.getInputStream( ze );
+
+			copyStreamWithoutClosing( is, zos );
+
+			is.close();
+			zos.closeEntry();
+		}
+
+		zin.close();
+	}
+
+	private boolean metaInfMatches( String path )
+	{
+		for( String inc : this.apkMetaIncludes ) {
+			if( SelectorUtils.matchPath( "META-INF/" + inc, path ) )
+				return true;
+		}
+
+		return false;
+	}
 
     private Map<String, List<File>> m_jars = new HashMap<String, List<File>>();
 
@@ -368,7 +500,7 @@ public class ApkMojo extends AbstractAndroidMojo {
     }
 
     private File removeDuplicatesFromJar(File in, List<String> duplicates) {
-        File target = new File(project.getBasedir(), "target");
+        String target = project.getBuild().getOutputDirectory();
         File tmp = new File(target, "unpacked-embedded-jars");
         tmp.mkdirs();
         File out = new File(tmp, in.getName());
@@ -836,5 +968,9 @@ public class ApkMojo extends AbstractAndroidMojo {
         } else {
             return new AndroidSigner(sign.getDebug());
         }
+    }
+
+    private String[] getDefaultMetaIncludes() {
+    	return new String[0];
     }
 }
