@@ -700,10 +700,6 @@ public class ApkMojo extends AbstractAndroidMojo {
                 copyLocalNativeLibraries( nativeLibrariesDirectory, destinationDirectory );
             }
 
-            if ( hasValidBuildNativeLibrariesDirectory ) {
-                copyLocalNativeLibraries( nativeLibrariesOutputDirectory, destinationDirectory );
-            }
-
             if (!artifacts.isEmpty())
             {
                 for (Artifact resolvedArtifact : artifacts)

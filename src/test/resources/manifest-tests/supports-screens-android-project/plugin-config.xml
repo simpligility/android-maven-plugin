@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.jayway.maven.plugins.android.tests</groupId>
+  <artifactId>basic-android-project</artifactId>
+  <version>1.0</version>
+  <packaging>apk</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>com.google.android</groupId>
+      <artifactId>android</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <plugins>
+      <plugin>
+        <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+        <artifactId>android-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <goals>
+              <goal>manifest-update</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <androidManifestFile>${basedir}/AndroidManifest.xml</androidManifestFile>
+          <manifest>
+            <supports-screens>
+              <anyDensity>false</anyDensity>
+              <normalScreens>true</normalScreens>
+              <largeScreens>true</largeScreens>
+              <xlargeScreens>true</xlargeScreens>
+            </supports-screens>
+          </manifest>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

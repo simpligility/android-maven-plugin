@@ -43,7 +43,7 @@ public class AndroidTestFinder {
         }
 
         final List<File> classFiles = findEligebleClassFiles(classesBaseDirectory);
-        final DecendantFinder decendantFinder = new DecendantFinder(TEST_PACKAGES);
+        final DescendantFinder descendantFinder = new DescendantFinder(TEST_PACKAGES);
 
         for (File classFile : classFiles) {
             ClassReader classReader;
@@ -52,7 +52,7 @@ public class AndroidTestFinder {
                 inputStream = new FileInputStream(classFile);
                 classReader = new ClassReader(inputStream);
 
-                classReader.accept(decendantFinder, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES | ClassReader.SKIP_CODE);
+                classReader.accept(descendantFinder, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES | ClassReader.SKIP_CODE);
             } catch (IOException e) {
                 throw new MojoExecutionException("Error reading " + classFile + ".\nCould not determine whether it contains tests. Please specify with plugin config parameter <enableIntegrationTest>true|false</enableIntegrationTest>.", e);
             } finally {
@@ -60,7 +60,7 @@ public class AndroidTestFinder {
             }
         }
 
-        return decendantFinder.isDecendantFound();
+        return descendantFinder.isDescendantFound();
     }
 
     private static List<File> findEligebleClassFiles(File classesBaseDirectory) {

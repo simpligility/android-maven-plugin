@@ -54,4 +54,18 @@ public class DeviceHelper {
             return StringUtils.deleteWhitespace(device.getProperty(MODEL_PROPERTY));
     }
 
+    /**
+     * @return the descriptive name with online/offline/unknown status string appended.
+     */
+    public static String getDescriptiveNameWithStatus(IDevice device) {
+        String status;
+        if (device.isOnline()) {
+            status = "Online";
+        } else if (device.isOffline()) {
+            status = "Offline";
+        } else {
+            status = "Unknown";
+        }
+        return getDescriptiveName(device) + " " + status;
+    }
 }
