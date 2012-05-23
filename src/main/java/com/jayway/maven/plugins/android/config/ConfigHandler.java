@@ -22,8 +22,7 @@ public class ConfigHandler {
 	private Object mojo;
 	private Object configPojoInstance;
 	private String configPojoName;
-
-    private static final String PARSED_PARAMETER_PREFIX = "parsed";
+	private String configPojoPrefix;
 
 	public ConfigHandler(Object mojo) {
 		this.mojo = mojo;
@@ -152,7 +151,7 @@ public class ConfigHandler {
 	}
 
     private String getFieldNameWithoutParsedPrefix(Field field) {
-        return getFieldNameWithoutPrefix(field, PARSED_PARAMETER_PREFIX);
+        return getFieldNameWithoutPrefix(field, configPojoPrefix);
     }
 
     private void initConfigPojo() {
@@ -160,6 +159,7 @@ public class ConfigHandler {
 			Field configPojo = findPropertiesByAnnotation(ConfigPojo.class).iterator().next();
 			configPojoName = configPojo.getName();
 			configPojoInstance = configPojo.get(mojo);
+			configPojoPrefix = configPojo.getAnnotation( ConfigPojo.class ).prefix();
 		}
 		catch (Exception e) {
 			// ignore, we can live without a config pojo
