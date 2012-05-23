@@ -18,14 +18,4 @@ public class Apk
 	 * Mirror of {@link com.jayway.maven.plugins.android.phase09package.ApkMojo#apkMetaIncludes}.
 	 */
 	private String[]	metaIncludes;
-
-	/**
-	 * Mirror of {@link com.jayway.maven.plugins.android.phase09package.ApkMojo#apkExtractDuplicates}.
-	 */
-	Boolean				extractDuplicates;
-
-	/**
-	 * Mirror of {@link com.jayway.maven.plugins.android.phase09package.ApkMojo#apkSourceDirectories}.
-	 */
-	private File[]		sourceDirectories;
 }

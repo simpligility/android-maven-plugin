@@ -11,7 +11,9 @@
 				<artifactId>android-maven-plugin</artifactId>
 				<configuration>
 					<apk>
-						<extractDuplicates>true</extractDuplicates>
+						<metaIncludes>
+							<include>persistence.xml</include>
+						</metaIncludes>
 					</apk>
 				</configuration>
 			</plugin>
