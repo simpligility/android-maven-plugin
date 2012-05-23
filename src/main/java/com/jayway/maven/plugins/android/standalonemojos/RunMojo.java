@@ -34,6 +34,9 @@ import com.android.ddmlib.TimeoutException;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.DeviceCallback;
 
+import com.jayway.maven.plugins.android.config.ConfigHandler;
+import com.jayway.maven.plugins.android.config.ConfigPojo;
+import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.Run;
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -77,6 +80,7 @@ import org.xml.sax.SAXException;
  * devices. The application will NOT be deployed and running will silently fail if the application is not deployed.
  * </p>
  * @author Lorenzo Villani <lorenzo@villani.me>
+ * @author Manfred Mosr <manfred@simpligility.com>
  * @see "http://developer.android.com/guide/topics/fundamentals.html"
  * @see "http://developer.android.com/guide/topics/intents/intents-filters.html"
  * 
@@ -95,23 +99,25 @@ public class RunMojo extends AbstractAndroidMojo {
      * <p>The debug parameter can also be configured as property in the pom or settings file
      * <pre>
      * &lt;properties&gt;
-     *     &lt;run.debug&gt;true&lt;/run.debug&gt;
+     *     &lt;android.run.debug&gt;true&lt;/android.run.debug&gt;
      * &lt;/properties&gt;
      * </pre>
      * or from command-line with parameter <code>-Dandroid.run.debug=true</code>.</p>
      *
      * @parameter
      */
+    @ConfigPojo
     private Run run;
 
     /**
      * Debug parameter for the the run goal. If true, the device or emulator will pause execution of the process at
-     * startup to wait for a debugger to connect. Also see the "run" parameter documentation.
-     * @parameter expression="${android.run.debug}" default-value="false"
+     * startup to wait for a debugger to connect. Also see the "run" parameter documentation. Default value is false.
+     * @parameter expression="${android.run.debug}"
      */
     protected Boolean runDebug;
 
     /* the value for the debug flag after parsing pom and parameter */
+    @PullParameter(defaultValue = "false")
     private Boolean parsedDebug;
 
     /**
@@ -162,7 +168,8 @@ public class RunMojo extends AbstractAndroidMojo {
 
             launcherInfo = getLauncherActivity();
 
-            parseConfiguration();
+            ConfigHandler configHandler = new ConfigHandler(this);
+            configHandler.parseConfiguration();
 
             launch( launcherInfo );
         }
@@ -170,20 +177,6 @@ public class RunMojo extends AbstractAndroidMojo {
         {
             throw new MojoFailureException( "Unable to run launcher Activity", ex );
         }
-    }
-
-    private void parseConfiguration() {
-        if (run != null) {
-            if (run.isDebug() != null){
-                parsedDebug = run.isDebug();
-            } else {
-                parsedDebug = runDebug;
-            }
-
-        } else {
-            parsedDebug = runDebug;
-        }
-
     }
 
     // ----------------------------------------------------------------------

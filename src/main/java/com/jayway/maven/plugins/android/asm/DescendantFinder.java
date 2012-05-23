@@ -21,25 +21,26 @@ import org.objectweb.asm.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Finds decendants of any class from specific parent packages.
- * Will remember if any match was found, and returns that fact in {@link #isDecendantFound()}.
+ * Finds descendants of any class from specific parent packages.
+ * Will remember if any match was found, and returns that fact in {@link #isDescendantFound()}.
  *
  * @author hugo.josefson@jayway.com
  */
-class DecendantFinder implements ClassVisitor {
+class DescendantFinder extends ClassVisitor {
 
     /**
      * Constructs this finder.
      *
-     * @param parentPackages Packages to find decendants of. Must be formatted with <code>/</code> (slash) instead of
+     * @param parentPackages Packages to find descendants of. Must be formatted with <code>/</code> (slash) instead of
      *                       <code>.</code> (dot). For example: <code>junit/framework/</code>
      */
-    public DecendantFinder(String... parentPackages) {
+    public DescendantFinder(String... parentPackages) {
+        super(Opcodes.ASM4);
         this.parentPackages = parentPackages;
     }
 
     private final String[] parentPackages;
-    private final AtomicBoolean isDecendantFound = new AtomicBoolean(false);
+    private final AtomicBoolean isDescendantFound = new AtomicBoolean(false);
 
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         for (String testPackage : parentPackages) {
@@ -51,7 +52,7 @@ class DecendantFinder implements ClassVisitor {
     }
 
     private void flagAsFound() {
-        isDecendantFound.set(true);
+        isDescendantFound.set(true);
     }
 
     /**
@@ -59,8 +60,8 @@ class DecendantFinder implements ClassVisitor {
      *
      * @return <code>true</code> is a match was found, <code>false</code> otherwise.
      */
-    public boolean isDecendantFound() {
-        return isDecendantFound.get();
+    public boolean isDescendantFound() {
+        return isDescendantFound.get();
     }
 
     public void visitSource(String source, String debug) {

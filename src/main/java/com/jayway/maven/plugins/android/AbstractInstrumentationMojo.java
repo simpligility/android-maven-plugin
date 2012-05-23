@@ -97,6 +97,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      *   &lt;instrumentationRunner&gt;className&lt;/instrumentationRunner&gt;
      *   &lt;debug&gt;true|false&lt;/debug&gt;
      *   &lt;coverage&gt;true|false&lt;/coverage&gt;
+     *   &lt;coverageFile&gt;&lt;/coverageFile&gt;
      *   &lt;logOnly&gt;true|false&lt;/logOnly&gt;  avd
      *   &lt;testSize&gt;small|medium|large&lt;/testSize&gt;
      *   &lt;createReport&gt;true|false&lt;/createReport&gt;
@@ -115,8 +116,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
 
 
     /**
-     * Enables or disables integration test related goals. If <code>true</code> they will be run; if <code>false</code>,
-     * they will be skipped. If <code>auto</code>, they will run if any of the classes inherit from any class in
+     * Enables or disables integration test related goals. If <code>true</code> they will be skipped; if <code>false</code>,
+     * they will be run. If <code>auto</code>, they will run if any of the classes inherit from any class in
      * <code>junit.framework.**</code> or <code>android.test.**</code>.
      *
      * @parameter expression="${android.test.skip}" default-value="auto"
@@ -158,6 +159,15 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      * @parameter default-value=false expression="${android.test.coverage}"
      */
     private Boolean testCoverage;
+
+    /**
+     * Location on device into which coverage should be stored (blank for
+     * Android default /data/data/your.package.here/files/coverage.ec).
+     *
+     * @optional
+     * @parameter default-value= expression="${android.test.coverageFile}"
+     */
+    private String testCoverageFile;
 
     /**
      * Enable this flag to run a log only and not execute the tests.
@@ -218,7 +228,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      * @optional
      * @parameter expression="${android.test.packages}
      */
-    protected List testPackages;
+    protected List<String> testPackages;
 
     /**
      * <p>Whether to execute test classes which are specified as part of the instrumentation tests.</p>
@@ -232,7 +242,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
      * @optional
      * @parameter expression="${android.test.classes}
      */
-    protected List testClasses;
+    protected List<String> testClasses;
 
     private boolean classesExists;
     private boolean packagesExists;
@@ -241,10 +251,11 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
     private String parsedSkip;
     private String parsedInstrumentationPackage;
     private String parsedInstrumentationRunner;
-    private List parsedClasses;
-    private List parsedPackages;
+    private List<String> parsedClasses;
+    private List<String> parsedPackages;
     private String parsedTestSize;
     private Boolean parsedCoverage;
+    private String parsedCoverageFile;
     private Boolean parsedDebug;
     private Boolean parsedLogOnly;
     private Boolean parsedCreateReport;
@@ -279,7 +290,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
                     "see http://developer.android.com/guide/developing/testing/testing_otheride.html");
         }
 
-        doWithDevices(new DeviceCallback() {
+        DeviceCallback instrumentationTestExecutor = new DeviceCallback() {
             public void doWithDevice(final IDevice device) throws MojoExecutionException, MojoFailureException {
                 RemoteAndroidTestRunner remoteAndroidTestRunner =
                     new RemoteAndroidTestRunner(parsedInstrumentationPackage, parsedInstrumentationRunner, device);
@@ -290,12 +301,15 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
                 }
 
                 if(classesExists) {
-                    remoteAndroidTestRunner.setClassNames((String[]) parsedClasses.toArray());
+                    remoteAndroidTestRunner.setClassNames(parsedClasses.toArray(new String[parsedClasses.size()]));
                     getLog().info("Running tests for specified test classes/methods: " + parsedClasses);
                 }
 
                 remoteAndroidTestRunner.setDebug(parsedDebug);
                 remoteAndroidTestRunner.setCoverage(parsedCoverage);
+                if (! "".equals(parsedCoverageFile)) {
+                    remoteAndroidTestRunner.addInstrumentationArg("coverageFile", parsedCoverageFile);
+                }
                 remoteAndroidTestRunner.setLogOnly(parsedLogOnly);
 
                 if (StringUtils.isNotBlank(parsedTestSize)) {
@@ -329,7 +343,11 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
                     throw new MojoExecutionException("IO problem", e);
                 }
             }
-        });
+        };
+
+        instrumentationTestExecutor = new ScreenshotServiceWrapper(instrumentationTestExecutor, project, getLog());
+
+        doWithDevices(instrumentationTestExecutor);
     }
 
     private void parseConfiguration() {
@@ -350,12 +368,12 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
             } else {
                 parsedInstrumentationRunner = testInstrumentationRunner;
             }
-            if (test.getClasses() == null || test.getClasses().size() == 0) {
+            if (test.getClasses() != null && !test.getClasses().isEmpty()) {
                 parsedClasses = test.getClasses();
             } else {
                 parsedClasses = testClasses;
             }
-            if (test.getPackages() == null || test.getPackages().size() == 0) {
+            if (test.getPackages() != null && !test.getPackages().isEmpty()) {
                 parsedPackages = test.getPackages();
             } else {
                 parsedPackages = testPackages;
@@ -369,6 +387,11 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
                 parsedCoverage= test.isCoverage();
             } else {
                 parsedCoverage = testCoverage;
+            }
+            if (test.getCoverageFile() != null) {
+                parsedCoverageFile = test.getCoverageFile();
+            } else {
+                parsedCoverageFile = "";
             }
             if (test.isDebug() != null) {
                 parsedDebug = test.isDebug();
@@ -394,8 +417,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo {
             parsedClasses = testClasses;
             parsedPackages = testPackages;
             parsedTestSize = testTestSize;
-            parsedCoverage= testCoverage;
-            parsedDebug= testDebug;
+            parsedCoverage = testCoverage;
+            parsedCoverageFile = testCoverageFile;
+            parsedDebug = testDebug;
             parsedLogOnly = testLogOnly;
             parsedCreateReport = testCreateReport;
         }

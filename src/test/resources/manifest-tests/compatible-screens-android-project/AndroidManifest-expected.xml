@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  android:versionName="1.0">
+
+  <compatible-screens>
+    <screen android:screenSize="small" android:screenDensity="mdpi"/>
+    <screen android:screenSize="normal" android:screenDensity="mdpi"/>
+    <screen android:screenSize="normal" android:screenDensity="hdpi"/>
+    <screen android:screenSize="large" android:screenDensity="xhdpi"/>
+  </compatible-screens>
+  
+  <application android:name="TestApplication"/>
+
+</manifest>
