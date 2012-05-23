@@ -27,13 +27,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -54,6 +48,9 @@ import com.jayway.maven.plugins.android.AndroidSigner;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.common.NativeHelper;
+import com.jayway.maven.plugins.android.config.ConfigHandler;
+import com.jayway.maven.plugins.android.config.ConfigPojo;
+import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.Apk;
 import com.jayway.maven.plugins.android.configuration.ConfigHelper;
 import com.jayway.maven.plugins.android.configuration.Sign;
@@ -126,17 +123,8 @@ public class ApkMojo extends AbstractAndroidMojo {
      * Android does not support duplicates, and all dependencies are inlined in the APK. If duplicates files are found,
      * the resource is kept in the first dependency and removes from others.
      *
-     * @parameter expression="${android.apk.extractDuplicates}" default-value="false"
-     */
-    private boolean apkExtractDuplicates;
-    
-    /**
-     * Deprecated in favour of {@link #apkExtractDuplicates}
-     * 
-     * @deprecated
      * @parameter expression="${android.extractDuplicates}" default-value="false"
      */
-    @Deprecated
     private boolean extractDuplicates;
 
      /**
@@ -181,83 +169,64 @@ public class ApkMojo extends AbstractAndroidMojo {
      * <pre>
      * &lt;configuration&gt;
      * 	  ...
-     *    &lt;apkSourceDirectories&gt;
+     *    &lt;sourceDirectories&gt;
      *      &lt;sourceDirectory&gt;${project.basedir}/additionals&lt;/sourceDirectory&gt;
-     *    &lt;/apkSourceDirectories&gt;
+     *	  &lt;/sourceDirectories&gt;
      *	  ...
      * &lt;/configuration&gt;
      * </pre>
      *
-     * @parameter expression="${android.sourceDirectories}"
+     * @parameter expression="${android.sourceDirectories}" default-value=""
      */
-    private File[] apkSourceDirectories;
-
-    /**
-     * Deprecated in favour of {@link #apkSourceDirectories}.
-     * 
-     * @deprecated
-	 * @parameter expression="${android.sourceDirectories}"
-	 */
-    @Deprecated
     private File[] sourceDirectories;
 
-	/**
-	 * Pattern for additional META-INF resources to be packaged into the apk.
-	 * <p>
-	 * The APK builder filters these resources and doesn't include them into the apk.
-	 * This leads to bad behaviour of dependent libraries relying on these resources,
-	 * for instance service discovery doesn't work.<br/>
-	 * By specifying this pattern, the android plugin adds these resources to the final apk. 
-	 * </p>
-	 * <p>The pattern is relative to META-INF, i.e. one must use
-	 * <pre>
-	 * <code>
-	 * 	&lt;apkMetaIncludes&gt;
-	 * 		&lt;metaInclude>services/**&lt;/metaInclude&gt;
-	 * 	&lt;/apkMetaIncludes&gt;
-	 * </code>
-	 * </pre>
-	 * ... instead of
-	 * <pre>
-	 * <code>
-	 * 	&lt;apkMetaIncludes&gt;
-	 * 		&lt;metaInclude>META-INF/services/**&lt;/metaInclude&gt;
-	 * 	&lt;/apkMetaIncludes&gt;
-	 * </code>
-	 * </pre>
-	 * <p>
-	 * See also <a href="http://code.google.com/p/maven-android-plugin/issues/detail?id=97">Issue 97</a>
-	 * </p>
-	 * 
-	 * @parameter expression="${android.apk.metaIncludes}" default-value=""
-	 */
-	private String[]	apkMetaIncludes;
-
-	private Apk apk;
-
-    
-	public Apk getApk()
-	{
-		return apk;
-	}
-
-	
-	/**
-	 * Embedded configuration of this mojo.
-	 * 
-	 * @parameter
-	 */
-	public void setApk( Apk apk )
-	{
-		this.apk = apk;
-	}
-
-	/**
+    /**
       * @component
       * @readonly
       * @required
       */
      protected ArtifactFactory artifactFactory;
+
+ 	/**
+ 	 * Pattern for additional META-INF resources to be packaged into the apk.
+ 	 * <p>
+ 	 * The APK builder filters these resources and doesn't include them into the apk.
+ 	 * This leads to bad behaviour of dependent libraries relying on these resources,
+ 	 * for instance service discovery doesn't work.<br/>
+ 	 * By specifying this pattern, the android plugin adds these resources to the final apk. 
+ 	 * </p>
+ 	 * <p>The pattern is relative to META-INF, i.e. one must use
+ 	 * <pre>
+ 	 * <code>
+ 	 * 	&lt;apkMetaIncludes&gt;
+ 	 * 		&lt;metaInclude>services/**&lt;/metaInclude&gt;
+ 	 * 	&lt;/apkMetaIncludes&gt;
+ 	 * </code>
+ 	 * </pre>
+ 	 * ... instead of
+ 	 * <pre>
+ 	 * <code>
+ 	 * 	&lt;apkMetaIncludes&gt;
+ 	 * 		&lt;metaInclude>META-INF/services/**&lt;/metaInclude&gt;
+ 	 * 	&lt;/apkMetaIncludes&gt;
+ 	 * </code>
+ 	 * </pre>
+ 	 * <p>
+ 	 * See also <a href="http://code.google.com/p/maven-android-plugin/issues/detail?id=97">Issue 97</a>
+ 	 * </p>
+ 	 * 
+ 	 * @parameter expression="${android.apk.metaIncludes}" default-value=""
+ 	 */
+     @PullParameter( defaultValueGetterMethod = "getDefaultMetaIncludes" )
+ 	private String[]	apkMetaIncludes;
+
+ 	/**
+ 	 * Embedded configuration of this mojo.
+ 	 * 
+ 	 * @parameter
+ 	 */
+ 	@ConfigPojo( prefix="apk" )
+ 	private Apk apk;
 
     private static final Pattern PATTERN_JAR_EXT = Pattern.compile("^.+\\.jar$", 2);
 
@@ -268,7 +237,9 @@ public class ApkMojo extends AbstractAndroidMojo {
             return;
         }
 
-        ConfigHelper.copyValues( this, "apk" );
+        ConfigHandler cfh = new ConfigHandler( this );
+        
+        cfh.parseConfiguration();
 
         generateIntermediateAp_();
 
@@ -305,8 +276,8 @@ public class ApkMojo extends AbstractAndroidMojo {
         File dexFile = new File(project.getBuild().getDirectory(), "classes.dex");
         File zipArchive = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_");
         ArrayList<File> sourceFolders = new ArrayList<File>();
-	if (apkSourceDirectories != null) {
-		for(File f:apkSourceDirectories) {
+	if (sourceDirectories != null) {
+		for(File f:sourceDirectories) {
 			sourceFolders.add(f);
 		}
 	}
@@ -386,7 +357,7 @@ public class ApkMojo extends AbstractAndroidMojo {
 					continue;
 				}
 
-				if( this.apkExtractDuplicates && !entries.add( zn ) ) {
+				if( this.extractDuplicates && !entries.add( zn ) ) {
 					continue;
 				}
 
@@ -456,7 +427,7 @@ public class ApkMojo extends AbstractAndroidMojo {
         sourceFolders.add(new File(project.getBuild().getOutputDirectory()));
 
         for (Artifact artifact : getRelevantCompileArtifacts()) {
-            if (apkExtractDuplicates) {
+            if (extractDuplicates) {
                 try {
                     computeDuplicateFiles(artifact.getFile());
                 } catch (Exception e) {
@@ -467,7 +438,7 @@ public class ApkMojo extends AbstractAndroidMojo {
         }
 
         // Check duplicates.
-        if (apkExtractDuplicates) {
+        if (extractDuplicates) {
             List<String> duplicates = new ArrayList<String>();
             List<File> jarToModify = new ArrayList<File>();
             for (String s : m_jars.keySet()) {
@@ -997,5 +968,9 @@ public class ApkMojo extends AbstractAndroidMojo {
         } else {
             return new AndroidSigner(sign.getDebug());
         }
+    }
+
+    private String[] getDefaultMetaIncludes() {
+    	return new String[0];
     }
 }
