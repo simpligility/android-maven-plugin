@@ -387,7 +387,7 @@ public class ProguardMojo extends AbstractAndroidMojo {
         // that is shipped with the SDK (since that is not a complete Java distribution)
         String javaHome = System.getProperty("java.home");
         String jdkLibsPath = null;
-        if (javaHome.startsWith("/System/Library/Java")) {
+        if (javaHome.startsWith("/System/Library/Java") || javaHome.startsWith("/Library/Java")) {
             // MacOS X uses different naming conventions for JDK installations
             jdkLibsPath = javaHome + "/../Classes";
             addLibraryJar(jdkLibsPath + "/classes.jar");
