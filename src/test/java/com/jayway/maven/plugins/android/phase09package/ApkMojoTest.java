@@ -27,7 +27,7 @@ extends AbstractAndroidMojoTestCase<ApkMojo>
 
 		suite.add( new Object[] { "apk-config-project1", new String[0] } );
 		suite.add( new Object[] { "apk-config-project2", new String[] { "persistence.xml" } } );
-		suite.add( new Object[] { "apk-config-project2", new String[] { "services/**", "persistence.xml" } } );
+		suite.add( new Object[] { "apk-config-project3", new String[] { "services/**", "persistence.xml" } } );
 
 		return suite;
 	}

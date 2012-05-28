@@ -64,12 +64,15 @@ public class ConfigHandler {
 				value = getValueFromAnnotation(field);
 			}
 
-			try {
-				field.set(mojo, value);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+        // If we actually have a value now, we set it
+        if (value != null) {
+          try {
+            field.set(mojo, value);
+          }
+          catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
 		}
 	}
 
@@ -83,7 +86,7 @@ public class ConfigHandler {
 			Class<?> fieldType = field.getType();
 			if (fieldType.isAssignableFrom(String.class)) {
                 return defaultValue;
-            } else if (fieldType.isAssignableFrom(Boolean.class)) {
+            } else if (fieldType.isAssignableFrom(Boolean.class) || fieldType.isAssignableFrom(boolean.class)) {
 				return Boolean.valueOf(defaultValue);
             }
 
@@ -92,11 +95,18 @@ public class ConfigHandler {
 			throw new RuntimeException("No handler for type " + fieldType + " on " + currentParameterName + " found.");
 		} else if (!required) {
             try {
-                Method method = mojo.getClass().getDeclaredMethod(
-                        annotation.defaultValueGetterMethod());
-                // even access it if the method is private
-                method.setAccessible(true);
-                return method.invoke(mojo);
+                if (!annotation.defaultValueGetterMethod().isEmpty()) {
+                    Method method = mojo.getClass().getDeclaredMethod(
+                            annotation.defaultValueGetterMethod());
+                    // even access it if the method is private
+                    method.setAccessible(true);
+                    return method.invoke(mojo);
+                }
+                else {
+                    // Is ok to return null at this point - this will then indicate the default value
+                    // null or the default of the primitive (in the case of primitives)
+                    return null;
+                }
             } catch (Exception e) {
                 throw new RuntimeException("Problem encountered accessing default value for "
                         + currentParameterName + " parameter", e);
