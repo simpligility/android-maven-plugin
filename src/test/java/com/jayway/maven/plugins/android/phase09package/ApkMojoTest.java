@@ -1,4 +1,3 @@
-
 package com.jayway.maven.plugins.android.phase09package;
 
 import java.util.ArrayList;
