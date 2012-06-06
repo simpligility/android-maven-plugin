@@ -34,6 +34,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -224,6 +225,19 @@ public class ApkMojo extends AbstractAndroidMojo {
      @PullParameter( defaultValueGetterMethod = "getDefaultMetaIncludes" )
  	private String[]	apkMetaIncludes;
 
+    /** Defines whether or not the APK is being produced in debug mode or not.
+     * @parameter expression="${android.apk.debug}"
+     */
+    @PullParameter(defaultValue = "false")
+    private Boolean apkDebug;
+
+    /**
+     * @parameter expression="${android.nativeToolchain}"
+     *
+     */
+    @PullParameter (defaultValue = "arm-linux-androideabi-4.4.3")
+    private String apkNativeToolchain;
+
  	/**
  	 * Embedded configuration of this mojo.
  	 * 
@@ -304,7 +318,7 @@ public class ApkMojo extends AbstractAndroidMojo {
 
         if (useInternalAPKBuilder) {
             doAPKWithAPKBuilder(outputFile, dexFile, zipArchive, sourceFolders, jarFiles,
-                nativeFolders, false, signWithDebugKeyStore, false);
+                nativeFolders, false, signWithDebugKeyStore, apkDebug);
         } else {
             doAPKWithCommand(outputFile, dexFile, zipArchive, sourceFolders, jarFiles,
                 nativeFolders, signWithDebugKeyStore);
@@ -657,6 +671,11 @@ public class ApkMojo extends AbstractAndroidMojo {
 
             // Point directly to the directory in this case - no need to copy files around
             natives.add(nativeLibrariesDirectory);
+
+            // FIXME: This would pollute a libs folder which is under source control
+            // FIXME: Would be better to not support this case?
+            optionallyCopyGdbServer(nativeLibrariesDirectory);
+
         }
         else if (!artifacts.isEmpty() || hasValidNativeLibrariesDirectory)
         {
@@ -703,7 +722,42 @@ public class ApkMojo extends AbstractAndroidMojo {
                     }
                 }
             }
+
+            // Finally, think about copying the gdbserver binary into the APK output as well
+            optionallyCopyGdbServer(destinationDirectory);
+
         }
+    }
+
+    private void optionallyCopyGdbServer(File destinationDirectory) throws MojoExecutionException {
+
+        try {
+            if (apkDebug)
+            {
+                // Copy the gdbserver binary to libs/<architecture>/
+                final File gdbServerFile = getAndroidNdk().getGdbServer( apkNativeToolchain );
+
+                String architecture = nativeLibrariesDependenciesHardwareArchitectureDefault;
+                if (StringUtils.isNotBlank(nativeLibrariesDependenciesHardwareArchitectureOverride))
+                {
+                    architecture = nativeLibrariesDependenciesHardwareArchitectureOverride;
+                }
+                final File destDir = new File( destinationDirectory, architecture );
+                final File destFile = new File( destDir, "gdbserver" );
+                if (!destFile.exists())
+                {
+                    FileUtils.copyFile( gdbServerFile , destFile );
+                }
+                else
+                {
+                    getLog().info( "Note: gdbserver binary already exists at destination, will not copy over" );
+                }
+            }
+        } catch ( Exception e ) {
+            getLog().error( "Error while copying gdbserver: " + e.getMessage(), e );
+            throw new MojoExecutionException( "Error while copying gdbserver: " + e.getMessage(), e  );
+        }
+
     }
 
     private File getFinalDestinationDirectoryFor(Artifact resolvedArtifact, File destinationDirectory) {
@@ -732,10 +786,16 @@ public class ApkMojo extends AbstractAndroidMojo {
     private void copyLocalNativeLibraries( final File localNativeLibrariesDirectory, final File destinationDirectory ) throws MojoExecutionException {
         getLog().debug( "Copying existing native libraries from " + localNativeLibrariesDirectory );
         try {
+
             IOFileFilter libSuffixFilter = FileFilterUtils.suffixFileFilter(".so");
-            IOFileFilter libFiles = FileFilterUtils.and( FileFileFilter.FILE, libSuffixFilter);
+
+            IOFileFilter gdbserverNameFilter = FileFilterUtils.nameFileFilter( "gdbserver" );
+            IOFileFilter orFilter = FileFilterUtils.or( libSuffixFilter, gdbserverNameFilter );
+
+            IOFileFilter libFiles = FileFilterUtils.and( FileFileFilter.FILE, orFilter);
             FileFilter filter = FileFilterUtils.or( DirectoryFileFilter.DIRECTORY, libFiles );
             org.apache.commons.io.FileUtils.copyDirectory(localNativeLibrariesDirectory, destinationDirectory, filter);
+
         }
         catch ( IOException e ) {
             getLog().error( "Could not copy native libraries: " + e.getMessage(), e );

@@ -44,7 +44,7 @@ public class AndroidNdk {
         }
     }
 
-    public String getStripper(String toolchain) throws MojoExecutionException {
+    public File getStripper(String toolchain) throws MojoExecutionException {
         final File stripper;
         if ( SystemUtils.IS_OS_LINUX) {
             stripper = new File( ndkPath, "toolchains/" + toolchain + "/prebuilt/linux-x86/bin/arm-linux-androideabi-strip" );
@@ -65,7 +65,7 @@ public class AndroidNdk {
         }
 
         // We should be good to go
-        return stripper.getAbsolutePath();
+        return stripper;
     }
 
     /**
@@ -83,4 +83,17 @@ public class AndroidNdk {
     }
 
 
+    public File getGdbServer( String toolchain ) throws MojoExecutionException {
+        final File gdbServerFile;
+
+        gdbServerFile = new File( ndkPath, "toolchains/" + toolchain + "/prebuilt/gdbserver" );
+
+        // Some basic validation
+        if (!gdbServerFile.exists()) {
+            throw new MojoExecutionException( "gdbserver binary " + gdbServerFile.getAbsolutePath() + " does not exist, please double check the toolchain and OS used" );
+        }
+
+        // We should be good to go
+        return gdbServerFile;
+    }
 }
