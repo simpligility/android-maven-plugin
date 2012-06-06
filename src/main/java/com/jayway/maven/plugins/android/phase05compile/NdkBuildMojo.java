@@ -83,17 +83,6 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
     private String ndkBuildDirectory;
 
     /**
-     * <p>Parameter designed to pick up <code>-Dandroid.ndk.path</code> in case there is no pom with an
-     * <code>&lt;ndk&gt;</code> configuration tag.</p>
-     * <p>Corresponds to {@link com.jayway.maven.plugins.android.configuration.Ndk#path}.</p>
-     *
-     * @parameter expression="${android.ndk.path}"
-     * @readonly
-     */
-    @PullParameter
-    private File ndkPath;
-
-    /**
      * Specifies the classifier with which the artifact should be stored in the repository
      *
      * @parameter expression="${android.ndk.build.native-classifier}"
@@ -116,8 +105,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      *
      * @parameter expression="${android.ndk.build.clear-native-artifacts}" default="false"
      */
-    @PullParameter
-    private boolean clearNativeArtifacts;
+    @PullParameter (defaultValue = "false")
+    private Boolean clearNativeArtifacts;
 
     /**
      * Flag indicating whether the resulting native library should be attached as an artifact to the build.  This
@@ -125,13 +114,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      *
      * @parameter expression="${android.ndk.build.attach-native-artifact}" default="false"
      */
-    @PullParameter
-    private boolean attachNativeArtifacts;
-
-    /**
-     * The <code>ANDROID_NDK_HOME</code> environment variable name.
-     */
-    public static final String ENV_ANDROID_NDK_HOME = "ANDROID_NDK_HOME";
+    @PullParameter(defaultValue = "false")
+    private Boolean attachNativeArtifacts;
 
     /**
      * Build folder to place built native libraries into
@@ -179,7 +163,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      * @parameter expression="${android.ndk.build.attach-header-files}" default="true"
      */
     @PullParameter (defaultValue = "true")
-    private boolean attachHeaderFiles;
+    private Boolean attachHeaderFiles;
 
     /**
      * Flag indicating whether the make files last LOCAL_SRC_INCLUDES should be used for determing what header
@@ -190,7 +174,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      * @parameter expression="${android.ndk.build.use-local-src-include-paths}" default="false"
      */
     @PullParameter(defaultValue = "false")
-    private boolean useLocalSrcIncludePaths;
+    private Boolean useLocalSrcIncludePaths;
 
     /**
      * Specifies the set of header files includes/excludes which should be used for bundling the exported header
@@ -244,7 +228,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      * @parameter expression="${android.ndk.build.use-header-archives}" default="true"
      */
     @PullParameter(defaultValue = "true")
-    private boolean useHeaderArchives;
+    private Boolean useHeaderArchives;
 
     /**
      * Defines additional system properties which should be exported to the ndk-build script.  This
@@ -269,7 +253,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      * @parameter expression="${android.ndk.build.ignore-build-warnings}" default="true"
      */
     @PullParameter( defaultValue = "true" )
-    private boolean ignoreBuildWarnings;
+    private Boolean ignoreBuildWarnings;
 
     /**
      * Defines the regular expression used to detect whether error/warning output from ndk-build is a minor compile warning
@@ -286,8 +270,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
     /**
      * @parameter expression="${android.ndk.build.skip-native-library-stripping}" default="false"
      */
-    @PullParameter
-    private boolean skipStripping;
+    @PullParameter(defaultValue = "false")
+    private Boolean skipStripping;
 
     /**
      * @parameter expression="${android.ndk.build.ndk-toolchain}" default="arm-linux-androideabi-4.4.3"
@@ -602,7 +586,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             } );
             stripCommandExecutor.setLogger( getLog() );
 
-            stripCommandExecutor.executeCommand( resolveNdkStripper(), Arrays.asList( file.getAbsolutePath() ) );
+            stripCommandExecutor.executeCommand( resolveNdkStripper().getAbsolutePath(), Arrays.asList( file.getAbsolutePath() ) );
         } catch ( ExecutionException e ) {
             getLog().error( "Error while attempting to strip shared library", e );
             throw new MojoExecutionException( "Error while attempting to strip shared library" );
@@ -617,7 +601,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
         return getAndroidNdk().getNdkBuildPath();
     }
 
-    private String resolveNdkStripper() throws MojoExecutionException {
+    private File resolveNdkStripper() throws MojoExecutionException {
         return getAndroidNdk().getStripper( ndkToolchain );
     }
 
@@ -710,39 +694,4 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
         }
     }
 
-    /**
-     * <p>Returns the Android NDK to use.</p>
-     * <p/>
-     * <p>Current implementation looks for <code>&lt;ndk&gt;&lt;path&gt;</code> configuration in pom, then System
-     * property <code>android.ndk.path</code>, then environment variable <code>ANDROID_NDK_HOME</code>.
-     * <p/>
-     * <p>This is where we collect all logic for how to lookup where it is, and which one to choose. The lookup is
-     * based on available parameters. This method should be the only one you should need to look at to understand how
-     * the Android NDK is chosen, and from where on disk.</p>
-     *
-     * @return the Android NDK to use.
-     * @throws org.apache.maven.plugin.MojoExecutionException
-     *          if no Android NDK path configuration is available at all.
-     */
-    protected AndroidNdk getAndroidNdk() throws MojoExecutionException {
-        File chosenNdkPath;
-        // There is no <ndk> tag in the pom.
-        if ( ndkPath != null ) {
-            // -Dandroid.ndk.path is set on command line, or via <properties><ndk.path>...
-            chosenNdkPath = ndkPath;
-        } else {
-            // No -Dandroid.ndk.path is set on command line, or via <properties><ndk.path>...
-            chosenNdkPath = new File( getAndroidNdkHomeOrThrow() );
-        }
-        return new AndroidNdk( chosenNdkPath );
-    }
-
-
-    private String getAndroidNdkHomeOrThrow() throws MojoExecutionException {
-        final String androidHome = System.getenv( ENV_ANDROID_NDK_HOME );
-        if ( isBlank( androidHome ) ) {
-            throw new MojoExecutionException( "No Android NDK path could be found. You may configure it in the pom using <ndk><path>...</path></ndk> or <properties><ndk.path>...</ndk.path></properties> or on command-line using -Dandroid.ndk.path=... or by setting environment variable "+ENV_ANDROID_NDK_HOME );
-        }
-        return androidHome;
-    }
 }

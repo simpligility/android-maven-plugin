@@ -22,9 +22,7 @@ import com.android.ddmlib.InstallException;
 import com.jayway.maven.plugins.android.common.AetherHelper;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.DeviceHelper;
-import com.jayway.maven.plugins.android.configuration.Proguard;
 import com.jayway.maven.plugins.android.configuration.Sdk;
-import com.jayway.maven.plugins.android.phase04processclasses.ProguardMojo;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.JXPathNotFoundException;
 import org.apache.commons.jxpath.xml.DocumentContainer;
@@ -66,6 +64,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
 
     /** Android Debug Bridge initialisation timeout in milliseconds. */
     private static final long ADB_TIMEOUT_MS = 60L * 1000;
+
+    /**
+     * The <code>ANDROID_NDK_HOME</code> environment variable name.
+     */
+    public static final String ENV_ANDROID_NDK_HOME = "ANDROID_NDK_HOME";
 
     /**
      * The maven project.
@@ -360,6 +363,17 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * expression="${android.attachSources}"
      */
     protected boolean attachSources;
+
+    /**
+     * <p>Parameter designed to pick up <code>-Dandroid.ndk.path</code> in case there is no pom with an
+     * <code>&lt;ndk&gt;</code> configuration tag.</p>
+     * <p>Corresponds to {@link com.jayway.maven.plugins.android.configuration.Ndk#path}.</p>
+     *
+     * @parameter expression="${android.ndk.path}"
+     * @readonly
+     */
+    private File ndkPath;
+
 
     private static final Object adbLock = new Object();
     private static boolean adbInitialized = false;
@@ -862,4 +876,42 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     public static String getLibraryUnpackDirectory( File unpackedApkLibsDirectory, Artifact apkLibraryArtifact ) {
         return unpackedApkLibsDirectory.getAbsolutePath()+"/"+apkLibraryArtifact.getId().replace( ":", "_" );
     }
+
+    /**
+     * <p>Returns the Android NDK to use.</p>
+     * <p/>
+     * <p>Current implementation looks for <code>&lt;ndk&gt;&lt;path&gt;</code> configuration in pom, then System
+     * property <code>android.ndk.path</code>, then environment variable <code>ANDROID_NDK_HOME</code>.
+     * <p/>
+     * <p>This is where we collect all logic for how to lookup where it is, and which one to choose. The lookup is
+     * based on available parameters. This method should be the only one you should need to look at to understand how
+     * the Android NDK is chosen, and from where on disk.</p>
+     *
+     * @return the Android NDK to use.
+     * @throws org.apache.maven.plugin.MojoExecutionException
+     *          if no Android NDK path configuration is available at all.
+     */
+    protected AndroidNdk getAndroidNdk() throws MojoExecutionException {
+        File chosenNdkPath;
+        // There is no <ndk> tag in the pom.
+        if ( ndkPath != null ) {
+            // -Dandroid.ndk.path is set on command line, or via <properties><ndk.path>...
+            chosenNdkPath = ndkPath;
+        } else {
+            // No -Dandroid.ndk.path is set on command line, or via <properties><ndk.path>...
+            chosenNdkPath = new File( getAndroidNdkHomeOrThrow() );
+        }
+        return new AndroidNdk( chosenNdkPath );
+    }
+
+
+    private String getAndroidNdkHomeOrThrow() throws MojoExecutionException {
+        final String androidHome = System.getenv( ENV_ANDROID_NDK_HOME );
+        if ( isBlank( androidHome ) ) {
+            throw new MojoExecutionException( "No Android NDK path could be found. You may configure it in the pom using <ndk><path>...</path></ndk> or <properties><ndk.path>...</ndk.path></properties> or on command-line using -Dandroid.ndk.path=... or by setting environment variable "+ENV_ANDROID_NDK_HOME );
+        }
+        return androidHome;
+    }
+
+
 }

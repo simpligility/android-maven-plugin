@@ -1,10 +1,6 @@
 
 package com.jayway.maven.plugins.android.configuration;
 
-import java.io.File;
-
-import com.jayway.maven.plugins.android.phase09package.ApkMojo;
-
 /**
  * Embedded configuration of {@link com.jayway.maven.plugins.android.phase09package.ApkMojo}.
  * 
@@ -18,4 +14,14 @@ public class Apk
 	 * Mirror of {@link com.jayway.maven.plugins.android.phase09package.ApkMojo#apkMetaIncludes}.
 	 */
 	private String[]	metaIncludes;
+
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.phase09package.ApkMojo#apkDebug}.
+     */
+    private Boolean debug;
+
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.phase09package.ApkMojo#apkNativeToolchain}.
+     */
+    private String nativeToolchain;
 }
