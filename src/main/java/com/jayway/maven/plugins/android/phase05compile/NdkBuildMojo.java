@@ -73,13 +73,13 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      *
      * @parameter expression="${android.ndk.ndk-build-executable}"
      */
-    @PullParameter
+    @PullParameter (defaultValueIsNull = true)
     private String ndkBuildExecutable;
 
     /**
-     * @parameter expression="${android.ndk.ndk-build-directory}" default="${basedir}";
+     * @parameter expression="${android.ndk.ndk-build-directory}"
      */
-    @PullParameter
+    @PullParameter (defaultValueIsNull = true)
     private String ndkBuildDirectory;
 
     /**
@@ -87,7 +87,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      *
      * @parameter expression="${android.ndk.build.native-classifier}"
      */
-    @PullParameter
+    @PullParameter (defaultValueIsNull = true)
     private String ndkClassifier;
 
     /**
@@ -95,7 +95,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      *
      * @parameter expression="${android.ndk.build.command-line}"
      */
-    @PullParameter
+    @PullParameter (defaultValueIsNull = true)
     protected String ndkBuildAdditionalCommandline;
 
     /**
@@ -103,7 +103,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      * will essentially 'move' all the native artifacts (.so) to the ${project.build.directory}/libs/&lt;architecture&gt;.
      * If an APK is built as part of the invocation, the libraries will be included from here.
      *
-     * @parameter expression="${android.ndk.build.clear-native-artifacts}" default="false"
+     * @parameter expression="${android.ndk.build.clear-native-artifacts}"
      */
     @PullParameter (defaultValue = "false")
     private Boolean clearNativeArtifacts;
@@ -112,7 +112,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      * Flag indicating whether the resulting native library should be attached as an artifact to the build.  This
      * means the resulting .so is installed into the repository as well as being included in the final APK.
      *
-     * @parameter expression="${android.ndk.build.attach-native-artifact}" default="false"
+     * @parameter expression="${android.ndk.build.attach-native-artifact}"
      */
     @PullParameter(defaultValue = "false")
     private Boolean attachNativeArtifacts;
@@ -122,7 +122,6 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      *
      * @parameter expression="${android.ndk.build.ndk-output-directory}" default-value="${project.build.directory}/ndk-libs"
      */
-    @PullParameter
     private File ndkOutputDirectory;
 
     /**
@@ -130,7 +129,6 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      *
      * @parameter expression="${android.nativeLibrariesOutputDirectory}" default-value="${project.basedir}/obj/local"
      */
-    @PullParameter
     private File nativeLibrariesOutputDirectory;
 
     /**
@@ -138,13 +136,13 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      *
      * @parameter expression="${android.nativeTarget}"
      */
-    @PullParameter
+    @PullParameter (defaultValueIsNull = true)
     private String target;
 
     /**
      * Defines the architecture for the NDK build
      *
-     * @parameter expression="${android.ndk.build.architecture}" default="armeabi"
+     * @parameter expression="${android.ndk.build.architecture}"
      */
     @PullParameter(defaultValue = "armeabi")
     private String ndkArchitecture;
@@ -160,7 +158,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      * Flag indicating whether the header files used in the build should be included and attached to the build as
      * an additional artifact.
      *
-     * @parameter expression="${android.ndk.build.attach-header-files}" default="true"
+     * @parameter expression="${android.ndk.build.attach-header-files}"
      */
     @PullParameter (defaultValue = "true")
     private Boolean attachHeaderFiles;
@@ -171,7 +169,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      * <strong>Note: </strong> By setting this flag to true, all header files used in the project will be
      * added to the resulting header archive.  This may be undesirable in most cases and is therefore turned off by default.
      *
-     * @parameter expression="${android.ndk.build.use-local-src-include-paths}" default="false"
+     * @parameter expression="${android.ndk.build.use-local-src-include-paths}"
      */
     @PullParameter(defaultValue = "false")
     private Boolean useLocalSrcIncludePaths;
@@ -210,7 +208,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      *
      * @parameter
      */
-    @PullParameter()
+    @PullParameter( defaultValueIsNull = true )
     private List<HeaderFilesDirective> headerFilesDirectives;
 
 
@@ -225,7 +223,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      * Flag indicating whether the header files for native, static library dependencies should be used.  If true,
      * the header archive for each statically linked dependency will be resolved.
      *
-     * @parameter expression="${android.ndk.build.use-header-archives}" default="true"
+     * @parameter expression="${android.ndk.build.use-header-archives}"
      */
     @PullParameter(defaultValue = "true")
     private Boolean useHeaderArchives;
@@ -243,14 +241,14 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      *
      * @parameter
      */
-    @PullParameter
+    @PullParameter (defaultValueIsNull = true)
     private Map<String, String> systemProperties;
 
     /**
      * Flag indicating whether warnings should be ignored while compiling.  If true,
      * the build will not fail if warning are found during compile.
      *
-     * @parameter expression="${android.ndk.build.ignore-build-warnings}" default="true"
+     * @parameter expression="${android.ndk.build.ignore-build-warnings}"
      */
     @PullParameter( defaultValue = "true" )
     private Boolean ignoreBuildWarnings;
@@ -262,19 +260,19 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      * If the pattern matches, the output from the compiler will <strong>not</strong> be considered an error and compile
      * will be successful.
      *
-     * @parameter expression="${android.ndk.build.build-warnings-regular-expression}" default=".*[warning|note]: .*"
+     * @parameter expression="${android.ndk.build.build-warnings-regular-expression}"
      */
     @PullParameter( defaultValue = ".*[warning|note]: .*" )
     private String buildWarningsRegularExpression;
 
     /**
-     * @parameter expression="${android.ndk.build.skip-native-library-stripping}" default="false"
+     * @parameter expression="${android.ndk.build.skip-native-library-stripping}"
      */
     @PullParameter(defaultValue = "false")
     private Boolean skipStripping;
 
     /**
-     * @parameter expression="${android.ndk.build.ndk-toolchain}" default="arm-linux-androideabi-4.4.3"
+     * @parameter expression="${android.ndk.build.ndk-toolchain}"
      */
     @PullParameter (defaultValue = "arm-linux-androideabi-4.4.3")
     private String ndkToolchain;
@@ -285,7 +283,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      *
      * @parameter expression="${android.ndk.build.build.final-library.name}"
      */
-    @PullParameter
+    @PullParameter (defaultValueIsNull = true)
     private String ndkFinalLibraryName;
 
     /**
@@ -293,7 +291,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
      *
      * @parameter
      */
-    @PullParameter
+    @PullParameter (defaultValueIsNull = true)
     private String makefile;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -452,10 +450,10 @@ public class NdkBuildMojo extends AbstractAndroidMojo {
             // very last of the parameters
             if ( target != null ) {
                 commands.add( target );
-            } else if ( "a".equals( project.getPackaging() ) ) {
+            } else /*if ( "a".equals( project.getPackaging() ) )*/ {
                 // Hack for the moment - seems .so projects will happily use .so
-                getLog().info( "Statically linked native library being built, forcing NDK target to "+project.getArtifactId() );
-                getLog().info( "If target is not "+project.getArtifactId()+" please investigate and use the 'target' configuration parameter!" );
+                // getLog().info( "Statically linked native library being built, forcing NDK target to "+project.getArtifactId() );
+                // getLog().info( "If target is not "+project.getArtifactId()+" please investigate and use the 'target' configuration parameter!" );
                 commands.add( project.getArtifactId() );
             }
 

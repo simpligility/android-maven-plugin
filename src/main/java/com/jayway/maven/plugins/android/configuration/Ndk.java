@@ -38,15 +38,15 @@ public class Ndk {
     /**
      *
      */
-    private boolean useHeaderArchives;
+    private Boolean useHeaderArchives;
     /**
      *
      */
-    private boolean attachHeaderFiles;
+    private Boolean attachHeaderFiles;
     /**
      *
      */
-    private boolean useLocalSrcIncludePaths;
+    private Boolean useLocalSrcIncludePaths;
 
     /**
      *
@@ -69,20 +69,20 @@ public class Ndk {
     /**
      *
      */
-    private boolean clearNativeArtifacts;
+    private Boolean clearNativeArtifacts;
     /**
      *
      */
-    private boolean attachNativeArtifacts;
+    private Boolean attachNativeArtifacts;
 
     /**
      *
      */
-    private File outputDirectory;
+    // private File outputDirectory;
     /**
      *
      */
-    private File nativeLibrariesOutputDirectory;
+    // private File nativeLibrariesOutputDirectory;
     /**
      *
      */
@@ -109,7 +109,7 @@ public class Ndk {
     /**
      *
      */
-    private boolean skipStripping = false;
+    private Boolean skipStripping = false;
 
     /**
      *
@@ -119,7 +119,7 @@ public class Ndk {
     /**
      *
      */
-    private boolean ignoreBuildWarnings;
+    private Boolean ignoreBuildWarnings;
     /**
      *
      */
