@@ -16,6 +16,8 @@ package com.jayway.maven.plugins.android;
 import java.io.*;
 
 import com.jayway.maven.plugins.android.phase05compile.NdkBuildMojo;
+import org.apache.commons.lang.SystemUtils;
+import org.apache.maven.plugin.MojoExecutionException;
 
 /**
  * Represents an Android NDK.
@@ -42,14 +44,56 @@ public class AndroidNdk {
         }
     }
 
+    public File getStripper(String toolchain) throws MojoExecutionException {
+        final File stripper;
+        if ( SystemUtils.IS_OS_LINUX) {
+            stripper = new File( ndkPath, "toolchains/" + toolchain + "/prebuilt/linux-x86/bin/arm-linux-androideabi-strip" );
+        }
+        else if (SystemUtils.IS_OS_WINDOWS) {
+            stripper = new File( ndkPath, "toolchains/" + toolchain + "/prebuilt/windows/bin/arm-linux-androideabi-strip.exe" );
+        }
+        else if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX) {
+            stripper = new File( ndkPath, "toolchains/" + toolchain + "/prebuilt/darwin-x86/bin/arm-linux-androideabi-strip" );
+        }
+        else {
+            throw new MojoExecutionException( "Could not resolve stripper for current OS: " + SystemUtils.OS_NAME );
+        }
+
+        // Some basic validation
+        if (!stripper.exists()) {
+            throw new MojoExecutionException( "Strip binary " + stripper.getAbsolutePath() + " does not exist, please double check the toolchain and OS used" );
+        }
+
+        // We should be good to go
+        return stripper;
+    }
+
     /**
      * Returns the complete path for the ndk-build tool, based on this NDK.
      *
      * @return the complete path as a <code>String</code>, including the tool's filename.
      */
     public String getNdkBuildPath() {
-        return new File( ndkPath, "/ndk-build" ).getAbsolutePath();
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return new File( ndkPath, "/ndk-build.cmd" ).getAbsolutePath();
+        }
+        else {
+            return new File( ndkPath, "/ndk-build" ).getAbsolutePath();
+        }
     }
 
 
+    public File getGdbServer( String toolchain ) throws MojoExecutionException {
+        final File gdbServerFile;
+
+        gdbServerFile = new File( ndkPath, "toolchains/" + toolchain + "/prebuilt/gdbserver" );
+
+        // Some basic validation
+        if (!gdbServerFile.exists()) {
+            throw new MojoExecutionException( "gdbserver binary " + gdbServerFile.getAbsolutePath() + " does not exist, please double check the toolchain and OS used" );
+        }
+
+        // We should be good to go
+        return gdbServerFile;
+    }
 }
