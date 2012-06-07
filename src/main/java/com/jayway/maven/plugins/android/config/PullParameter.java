@@ -24,6 +24,4 @@ public @interface PullParameter {
 	String defaultValueGetterMethod() default "";
 
     boolean required() default false;
-
-    boolean defaultValueIsNull() default false;
 }
