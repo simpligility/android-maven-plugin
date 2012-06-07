@@ -64,7 +64,6 @@ public class ConfigHandler {
 				value = getValueFromAnnotation(field);
 			}
 
-          if (value != null) {
           try {
             field.set(mojo, value);
           }
@@ -73,16 +72,15 @@ public class ConfigHandler {
           }
           }
         }
-		}
 
 	private Object getValueFromAnnotation(Field field) {
 		PullParameter annotation = field.getAnnotation(PullParameter.class);
 		String defaultValue = annotation.defaultValue();
         boolean required = annotation.required();
         String currentParameterName = "android." + configPojoName + "." + getFieldNameWithoutParsedPrefix(field);
-      Class<?> fieldType = field.getType();
 
         if (!defaultValue.isEmpty()) { // TODO find a better way to define an empty default value
+			Class<?> fieldType = field.getType();
 			if (fieldType.isAssignableFrom(String.class)) {
                 return defaultValue;
             } else if (fieldType.isAssignableFrom(Boolean.class)) {
@@ -93,7 +91,6 @@ public class ConfigHandler {
             // them in other mojos..
 			throw new RuntimeException("No handler for type " + fieldType + " on " + currentParameterName + " found.");
 		} else if (!required) {
-            if (!annotation.defaultValueGetterMethod().isEmpty()) {
                 try {
                         Method method = mojo.getClass().getDeclaredMethod(
                                 annotation.defaultValueGetterMethod());
@@ -101,28 +98,9 @@ public class ConfigHandler {
                         method.setAccessible(true);
                         return method.invoke(mojo);
                 } catch (Exception e) {
-                    throw new RuntimeException("Problem encountered accessing default value method for "
+                throw new RuntimeException("Problem encountered accessing default value for "
                             + currentParameterName + " parameter", e);
                 }
-            }
-            else {
-                if (annotation.defaultValueIsNull())
-                {
-                    if (!fieldType.isPrimitive())
-                    {
-                        // Ok, no value, not required & the default value is defined to be null
-                        return null;
-                    }
-                    else {
-                        throw new RuntimeException("Null default specified for primitive " + currentParameterName + " parameter");
-                    }
-                }
-                else
-                {
-                    throw new RuntimeException("Problem encountered obtaining default value method for "
-                            + currentParameterName + " parameter");
-                }
-            }
 		} else {
             throw new RuntimeException("Required parameter " + currentParameterName + " has no value. "
                 + "Please supply with -D" + currentParameterName
