@@ -14,6 +14,8 @@
 package com.jayway.maven.plugins.android.configuration;
 
 import java.io.File;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Configuration for an Android NDK. Only receives config parameter values, and there is no logic in here. Logic is in
@@ -22,16 +24,105 @@ import java.io.File;
  * @author Johan Lindquist <johanlindquist@gmail.com>
  */
 public class Ndk {
+
     /**
      * Directory of the installed Android NDK, for example <code>/usr/local/android-ndk-r4</code>
-     *
-     * @parameter expression="${android.ndk.path}"
-     * @required
+     * @see com.jayway.maven.plugins.android.phase05compile.NdkBuildMojo#ndkPath
      */
     private File path;
 
-    public File getPath() {
-        return path;
-    }
+    /**
+     *
+     */
+    private List<HeaderFilesDirective> headerFilesDirectives;
+    /**
+     *
+     */
+    private Boolean useHeaderArchives;
+    /**
+     *
+     */
+    private Boolean attachHeaderFiles;
+    /**
+     *
+     */
+    private Boolean useLocalSrcIncludePaths;
+
+    /**
+     *
+     */
+    private String buildExecutable;
+    /**
+     *
+     */
+    private String buildAdditionalCommandline;
+    /**
+     *
+     */
+    private String toolchain;
+
+    /**
+     *
+     */
+    private String classifier;
+
+    /**
+     *
+     */
+    private Boolean clearNativeArtifacts;
+    /**
+     *
+     */
+    private Boolean attachNativeArtifacts;
+
+    /**
+     *
+     */
+    // private File outputDirectory;
+    /**
+     *
+     */
+    // private File nativeLibrariesOutputDirectory;
+    /**
+     *
+     */
+    private String buildDirectory;
+
+    /**
+     *
+     */
+    private String finalLibraryName;
+
+    /**
+     *
+     */
+    private String makefile;
+    /**
+     *
+     */
+    private String target;
+    /**
+     *
+     */
+    private String architecture;
+
+    /**
+     *
+     */
+    private Boolean skipStripping = false;
+
+    /**
+     *
+     */
+    private Map<String, String> systemProperties;
+
+    /**
+     *
+     */
+    private Boolean ignoreBuildWarnings;
+    /**
+     *
+     */
+    private String buildWarningsRegularExpression;
 
 }

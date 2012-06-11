@@ -64,14 +64,14 @@ public class ConfigHandler {
 				value = getValueFromAnnotation(field);
 			}
 
-			try {
-				field.set(mojo, value);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
+          try {
+            field.set(mojo, value);
+          }
+          catch (Exception e) {
+            e.printStackTrace();
+          }
+          }
+        }
 
 	private Object getValueFromAnnotation(Field field) {
 		PullParameter annotation = field.getAnnotation(PullParameter.class);
@@ -91,16 +91,16 @@ public class ConfigHandler {
             // them in other mojos..
 			throw new RuntimeException("No handler for type " + fieldType + " on " + currentParameterName + " found.");
 		} else if (!required) {
-            try {
-                Method method = mojo.getClass().getDeclaredMethod(
-                        annotation.defaultValueGetterMethod());
-                // even access it if the method is private
-                method.setAccessible(true);
-                return method.invoke(mojo);
-            } catch (Exception e) {
+                try {
+                        Method method = mojo.getClass().getDeclaredMethod(
+                                annotation.defaultValueGetterMethod());
+                        // even access it if the method is private
+                        method.setAccessible(true);
+                        return method.invoke(mojo);
+                } catch (Exception e) {
                 throw new RuntimeException("Problem encountered accessing default value for "
-                        + currentParameterName + " parameter", e);
-            }
+                            + currentParameterName + " parameter", e);
+                }
 		} else {
             throw new RuntimeException("Required parameter " + currentParameterName + " has no value. "
                 + "Please supply with -D" + currentParameterName
