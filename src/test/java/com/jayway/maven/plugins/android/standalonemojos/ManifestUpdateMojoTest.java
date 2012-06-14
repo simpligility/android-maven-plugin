@@ -1,15 +1,14 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import java.io.File;
-import java.io.IOException;
-
+import com.jayway.maven.plugins.android.AbstractAndroidMojoTestCase;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojoTestCase;
+import java.io.File;
+import java.io.IOException;
 
 public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<ManifestUpdateMojo> {
     @Override
@@ -17,7 +16,6 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
         return "manifest-update";
     }
 
-    @Test
     public void testBasicAndroidProjectVersion() throws Exception {
         ManifestUpdateMojo mojo = createMojo("manifest-tests/basic-android-project");
         mojo.execute();
@@ -26,7 +24,6 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
         assertExpectedAndroidManifest(manifestFile, dir);
     }
 
-	@Test
     public void testBasicAndroidProjectManifest() throws Exception {
         ManifestUpdateMojo mojo = createMojo("manifest-tests/basic-android-project-manifest");
         mojo.execute();
@@ -35,7 +32,6 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
         assertExpectedAndroidManifest(manifestFile, dir);
     }
 
-    @Test
     public void testBasicJarProject() throws Exception {
         ManifestUpdateMojo mojo = createMojo("manifest-tests/basic-jar-project");
         mojo.execute();
@@ -44,7 +40,6 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
         Assert.assertFalse("Should not have an AndroidManifest for a jar project", manifestFile.exists());
     }
 
-    @Test
     public void testVersionlessAndroidProject() throws Exception {
         ManifestUpdateMojo mojo = createMojo("manifest-tests/versionless-android-project");
         mojo.execute();
@@ -53,7 +48,6 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
         assertExpectedAndroidManifest(manifestFile, dir);
     }
 
-    @Test
     public void testManyVersionsAndroidProject() throws Exception {
         ManifestUpdateMojo mojo = createMojo("manifest-tests/manyversions-android-project");
         for (int i = 0; i < 50; i++) { // Simulate 50 runs of the mojo
@@ -64,7 +58,22 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
         assertExpectedAndroidManifest(manifestFile, dir);
     }
 
-	@Test
+    public void testMinorVersionAndroidProject() throws Exception {
+        ManifestUpdateMojo mojo = createMojo("manifest-tests/minorversion-android-project");
+        mojo.execute();
+        File dir = getProjectDir(mojo);
+        File manifestFile = new File(dir, "AndroidManifest.xml");
+        assertExpectedAndroidManifest(manifestFile, dir);
+    }
+
+    public void testWhenNewVersionHasLessDigitsItshouldBePaddedSoVersionCodeIsNotLess() throws Exception {
+        ManifestUpdateMojo mojo = createMojo("manifest-tests/differentLengthVersion-android-project");
+        mojo.execute();
+        File dir = getProjectDir(mojo);
+        File manifestFile = new File(dir, "AndroidManifest.xml");
+        assertExpectedAndroidManifest(manifestFile, dir);
+    }
+
     public void testVersionCodeUpdateAndIncrementFail() throws Exception {
         ManifestUpdateMojo mojo = createMojo("manifest-tests/bad-android-project1");
         try {
@@ -76,7 +85,6 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
 		Assert.assertTrue("bad-android-project1 did not throw MojoFailureException", false);
     }
 
-    // FIXME: is there a reason why this test is not annotated with @Test?
 	public void testVersionCodeAndVersionCodeUpdateFail() throws Exception {
 	    ManifestUpdateMojo mojo = createMojo("manifest-tests/bad-android-project2");
 	    try {
@@ -88,7 +96,6 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
 		Assert.assertTrue("bad-android-project2 did not throw MojoFailureException", false);
 	}
 
-    // FIXME: is there a reason why this test is not annotated with @Test?
 	public void testVersionCodeAndVersionIncrementFail() throws Exception {
 	    ManifestUpdateMojo mojo = createMojo("manifest-tests/bad-android-project3");
 	    try {
@@ -100,7 +107,6 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
 		Assert.assertTrue("bad-android-project3 did not throw MojoFailureException", false);
 	}
 
-    @Test
     public void testSupportsScreensUpdate() throws Exception {
         ManifestUpdateMojo mojo = createMojo("manifest-tests/supports-screens-android-project");
         mojo.execute();
