@@ -15,9 +15,11 @@ import org.sonatype.aether.collection.CollectRequest;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.graph.DependencyFilter;
 import org.sonatype.aether.graph.DependencyNode;
+import org.sonatype.aether.graph.Exclusion;
 import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.DependencyRequest;
 import org.sonatype.aether.util.filter.AndDependencyFilter;
+import org.sonatype.aether.util.filter.ExclusionsDependencyFilter;
 import org.sonatype.aether.util.filter.ScopeDependencyFilter;
 import org.sonatype.aether.util.graph.PreorderNodeListGenerator;
 
@@ -133,7 +135,17 @@ public class NativeHelper {
             collectRequest.setRepositories( projectRepos );
             final DependencyNode node = repoSystem.collectDependencies( repoSession, collectRequest ).getRoot();
 
+            Collection<String> exclusionPatterns = new ArrayList<String>();
+            if (dependency.getExclusions() != null && !dependency.getExclusions().isEmpty())
+            {
+                for (Exclusion exclusion : dependency.getExclusions()) {
+                    exclusionPatterns.add(exclusion.getGroupId()+ ":" +  exclusion.getArtifactId());
+                }
+            }
+
             final DependencyRequest dependencyRequest = new DependencyRequest( node, new AndDependencyFilter(
+             new ExclusionsDependencyFilter(exclusionPatterns)
+            ,new AndDependencyFilter(
                     new ScopeDependencyFilter( Arrays.asList( "compile", "runtime" ), Arrays.asList( "test" ) ),
                     // Also exclude any optional dependencies
                     new DependencyFilter() {
@@ -142,7 +154,7 @@ public class NativeHelper {
                             return !dependencyNode.getDependency().isOptional();
                         }
                     }
-            ));
+            )));
 
 
             repoSystem.resolveDependencies( repoSession, dependencyRequest );
