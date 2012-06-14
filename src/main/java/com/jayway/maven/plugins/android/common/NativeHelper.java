@@ -136,7 +136,7 @@ public class NativeHelper {
             final DependencyNode node = repoSystem.collectDependencies( repoSession, collectRequest ).getRoot();
 
             Collection<String> exclusionPatterns = new ArrayList<String>();
-            if (!dependency.getExclusions().isEmpty())
+            if (dependency.getExclusions() != null && !dependency.getExclusions().isEmpty())
             {
                 for (Exclusion exclusion : dependency.getExclusions()) {
                     exclusionPatterns.add(exclusion.getGroupId()+ ":" +  exclusion.getArtifactId());
