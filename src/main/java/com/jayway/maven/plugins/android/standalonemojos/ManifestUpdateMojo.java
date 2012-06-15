@@ -8,6 +8,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.w3c.dom.*;
@@ -378,27 +380,38 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo {
             dirty = true;
         }
 
-		if (parsedVersionCodeUpdateFromVersion) {
-			String verString = project.getVersion();
-			getLog().debug("Generating versionCode for " + verString);
-			String verCode = verString.replaceAll("\\D", "");
+        if (parsedVersionCodeUpdateFromVersion) {
+            String verString = project.getVersion();
+            getLog().debug("Generating versionCode for " + verString);
+            ArtifactVersion artifactVersion = new DefaultArtifactVersion(verString);
+            // invalid version, something went wrong in parsing, do the old fall back method
+            String verCode;
+            if (artifactVersion.getMajorVersion() == 0 & artifactVersion.getMinorVersion() == 0
+                    && artifactVersion.getIncrementalVersion() == 0) {
+                getLog().warn("Problem parsing version number occurred. Using fall back to determine version code. ");
 
-            Attr versionCodeAttr = manifestElement.getAttributeNode(ATTR_VERSION_CODE);
-            int currentVersionCode = 0;
-            if (versionCodeAttr != null) {
-                currentVersionCode = NumberUtils.toInt(versionCodeAttr.getValue(), 0);
+                verCode = verString.replaceAll("\\D", "");
+
+                Attr versionCodeAttr = manifestElement.getAttributeNode(ATTR_VERSION_CODE);
+                int currentVersionCode = 0;
+                if (versionCodeAttr != null) {
+                    currentVersionCode = NumberUtils.toInt(versionCodeAttr.getValue(), 0);
+                }
+
+                if(Integer.parseInt(verCode) < currentVersionCode){
+                    getLog().info(verCode + " < " + currentVersionCode + " so padding versionCode");
+                    verCode = StringUtils.rightPad(verCode, versionCodeAttr.getValue().length(), "0");
+                }
+            } else {
+                verCode = Integer.toString(artifactVersion.getMajorVersion()) +
+                        Integer.toString(artifactVersion.getMinorVersion()) +
+                        Integer.toString(artifactVersion.getIncrementalVersion());
             }
-
-            if(Integer.parseInt(verCode) < currentVersionCode){
-                getLog().info(verCode + " < " + currentVersionCode + " so padding versionCode");
-                verCode = StringUtils.rightPad(verCode, versionCodeAttr.getValue().length(), "0");
-            }
-
-			getLog().info("Setting " + ATTR_VERSION_CODE + " to " + verCode);
-			manifestElement.setAttribute(ATTR_VERSION_CODE, verCode);
-			project.getProperties().setProperty("android.manifest.versionCode", String.valueOf(verCode));
-			dirty = true;
-		}
+            getLog().info("Setting " + ATTR_VERSION_CODE + " to " + verCode);
+            manifestElement.setAttribute(ATTR_VERSION_CODE, verCode);
+            project.getProperties().setProperty("android.manifest.versionCode", String.valueOf(verCode));
+            dirty = true;
+        }
 
 		if (parsedVersionCode != null) {
 			Attr versionCodeAttr = manifestElement.getAttributeNode(ATTR_VERSION_CODE);
