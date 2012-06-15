@@ -18,6 +18,7 @@ package com.jayway.maven.plugins.android.phase01generatesources;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB_PRECOMPILED;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKSOURCES;
 
 import java.io.File;
@@ -174,7 +175,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     private void extractApkLibDependencies() throws MojoExecutionException {
         for (Artifact artifact :getAllRelevantDependencyArtifacts()) {
             String type = artifact.getType();
-			if (type.equals(APKLIB)) {
+			if (type.equals(APKLIB) || type.equals(APKLIB_PRECOMPILED)) {
 				getLog().debug("Extracting apklib " + artifact.getArtifactId() + "...");
 				extractApklib(artifact);
 			}
@@ -220,9 +221,30 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 					+ ". Message: " + e.getLocalizedMessage(), e);
 		}
 
-		projectHelper.addResource(project, apklibDirectory.getAbsolutePath() + "/src", null, Arrays.asList("**/*.java", "**/*.aidl"));
-		project.addCompileSourceRoot(apklibDirectory.getAbsolutePath() + "/src");
+        if (APKLIB.equals(apklibArtifact.getType())) {
+            projectHelper.addResource(project, apklibDirectory.getAbsolutePath() + "/src", null, Arrays.asList("**/*.java", "**/*.aidl"));
+            project.addCompileSourceRoot(apklibDirectory.getAbsolutePath() + "/src");
+        }
 
+        if (APKLIB_PRECOMPILED.equals(apklibArtifact.getType()) &&
+                    new File(apklibDirectory.getAbsolutePath() + "/bin/classes.jar").exists()) {
+            final UnArchiver jarUnArchiver = new ZipUnArchiver(new File(apklibDirectory, "/bin/classes.jar")) {
+                @Override
+                protected Logger getLogger() {
+                    return new ConsoleLogger(Logger.LEVEL_DEBUG, "dependencies-unarchiver");
+                }
+            };
+            File outputDirectory = new File(project.getBuild().getOutputDirectory());
+            outputDirectory.mkdirs();
+            jarUnArchiver.setDestDirectory(outputDirectory);
+            try {
+                getLog().info("Extracting jar: /bin/classes.jar" + " to " + project.getBuild().getOutputDirectory());
+                jarUnArchiver.extract();
+            } catch (ArchiverException e) {
+                throw new MojoExecutionException("ArchiverException while extracting " + outputDirectory.getAbsolutePath()
+                        + ". Message: " + e.getLocalizedMessage(), e);
+            }
+        }
 	}
 
 
@@ -290,6 +312,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         commands.add(genDirectory.getAbsolutePath());
         commands.add("-M");
         commands.add(androidManifestFile.getAbsolutePath());
+        if (APKLIB_PRECOMPILED.equals(project.getPackaging())) {
+            commands.add("--non-constant-id");
+        }
         if (StringUtils.isNotBlank(customPackage)) {
             commands.add("--custom-package");
             commands.add(customPackage);
@@ -314,6 +339,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 			if (artifact.getType().equals(APKLIB)) {
 		   		commands.add("-S");
 				commands.add(getLibraryUnpackDirectory(artifact)+"/res");
+            }
+            if (artifact.getType().equals(APKLIB_PRECOMPILED)) {
+                commands.add("-S");
+                commands.add(getLibraryUnpackDirectory(artifact)+"/bin/res");
 			}
 		}
 		commands.add("--auto-add-overlay");
@@ -347,7 +376,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
         genDirectory.mkdirs();
 
 		for (Artifact artifact : getAllRelevantDependencyArtifacts()) {
-			if (artifact.getType().equals(APKLIB)) {
+			if (artifact.getType().equals(APKLIB) || artifact.getType().equals(APKLIB_PRECOMPILED)) {
 				generateRForApkLibDependency(artifact);
 			}
 		}
@@ -371,6 +400,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 		commands.add(extractPackageNameFromAndroidManifest(new File(unpackDir + "/" + "AndroidManifest.xml")));
 		commands.add("-M");
 		commands.add(androidManifestFile.getAbsolutePath());
+        if (APKLIB_PRECOMPILED.equals(project.getPackaging())) {
+            commands.add("--non-constant-id");
+        }
 		if (resourceDirectory.exists()){
             commands.add("-S");
             commands.add(resourceDirectory.getAbsolutePath());
@@ -383,6 +415,13 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
                     commands.add(apkLibResDir);
                 }
 			}
+            if (artifact.getType().equals(APKLIB_PRECOMPILED)) {
+                final String apkLibResDir = getLibraryUnpackDirectory(artifact) + "/bin/res";
+                if (new File(apkLibResDir).exists()){
+                    commands.add("-S");
+                    commands.add(apkLibResDir);
+                }
+            }
 		}
 		commands.add("--auto-add-overlay");
 		if (assetsDirectory.exists()) {
@@ -390,7 +429,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
 			commands.add(assetsDirectory.getAbsolutePath());
 		}
         for (Artifact artifact : getAllRelevantDependencyArtifacts()) {
-            if (artifact.getType().equals(APKLIB)) {
+            if (artifact.getType().equals(APKLIB) || artifact.getType().equals(APKLIB_PRECOMPILED)) {
                 final String apkLibAssetsDir = getLibraryUnpackDirectory(artifact) + "/assets";
                 if (new File(apkLibAssetsDir).exists()){
                     commands.add("-A");
@@ -461,11 +500,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo {
     }
 
     /**
-     * @return true if the pom type is APK, APKLIB, or APKSOURCES
+     * @return true if the pom type is APK, APKLIB, APKLIB_PRECOMPILED or APKSOURCES
      */
     private boolean isCurrentProjectAndroid() {
         Set<String> androidArtifacts = new HashSet<String>() {{
-            addAll(Arrays.asList(APK, APKLIB, APKSOURCES));
+            addAll(Arrays.asList(APK, APKLIB, APKLIB_PRECOMPILED, APKSOURCES));
         }};
         return androidArtifacts.contains(project.getArtifact().getType());
     }

@@ -7,6 +7,9 @@ public final class AndroidExtension {
 	/** Android library project. */
 	public static final String APKLIB = "apklib";
 	
+    /** Android library project. */
+    public static final String APKLIB_PRECOMPILED = "apklib2";
+
 	/** @deprecated Use {@link APKLIB} instead. */
 	public static String APKSOURCES = "apksources";
 	
@@ -25,6 +28,7 @@ public final class AndroidExtension {
 	public static boolean isAndroidPackaging(String packaging) {
 		return APK.equals(packaging)
 			|| APKLIB.equals(packaging)
+            || APKLIB_PRECOMPILED.equals(packaging)
 			|| APKSOURCES.equals(packaging);
 	}
 }
