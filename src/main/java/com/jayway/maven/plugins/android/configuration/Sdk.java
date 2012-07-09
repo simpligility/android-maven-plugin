@@ -23,7 +23,8 @@ import java.io.File;
  *
  * @author hugo.josefson@jayway.com
  */
-public class Sdk {
+public class Sdk
+{
 
     /**
      * Directory of the installed Android SDK, for example <code>/opt/android-sdk-linux_x86-1.5_r1</code>
@@ -43,11 +44,13 @@ public class Sdk {
      */
     private String platform;
 
-    public File getPath() {
+    public File getPath()
+    {
         return path;
     }
 
-    public String getPlatform() {
+    public String getPlatform()
+    {
         return platform;
     }
 }

@@ -3,10 +3,11 @@ package com.jayway.maven.plugins.android.configuration;
 /**
  * @author Johan Lindquist
  */
-public class HeaderFilesDirective {
+public class HeaderFilesDirective
+{
 
-    /** Base directory from where to include/exclude files from.
-     *
+    /**
+     * Base directory from where to include/exclude files from.
      */
     private String directory;
 
@@ -30,27 +31,33 @@ public class HeaderFilesDirective {
      */
     private String[] excludes;
 
-    public String getDirectory() {
+    public String getDirectory()
+    {
         return directory;
     }
 
-    public void setDirectory(String directory) {
+    public void setDirectory(String directory)
+    {
         this.directory = directory;
     }
 
-    public String[] getExcludes() {
+    public String[] getExcludes()
+    {
         return excludes;
     }
 
-    public void setExcludes(String[] excludes) {
+    public void setExcludes(String[] excludes)
+    {
         this.excludes = excludes;
     }
 
-    public String[] getIncludes() {
+    public String[] getIncludes()
+    {
         return includes;
     }
 
-    public void setIncludes(String[] includes) {
+    public void setIncludes(String[] includes)
+    {
         this.includes = includes;
     }
 }

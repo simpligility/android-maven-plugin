@@ -33,7 +33,8 @@ import java.io.File;
  * @phase pre-integration-test
  * @requiresDependencyResolution runtime
  */
-public class DeployMojo extends AbstractAndroidMojo {
+public class DeployMojo extends AbstractAndroidMojo
+{
 
     /**
      * Optionally used to specify a different apk file to deploy to a connected emulator or usb device, instead of the
@@ -43,10 +44,13 @@ public class DeployMojo extends AbstractAndroidMojo {
      */
     private File file;
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        if (file == null) {
+    public void execute() throws MojoExecutionException, MojoFailureException
+    {
+        if ( file == null )
+        {
             deployBuiltApk();
-        } else {
+        } else
+        {
             deployApk(file);
         }
     }

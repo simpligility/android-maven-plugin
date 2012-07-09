@@ -29,10 +29,13 @@ import org.apache.maven.plugin.MojoFailureException;
  * @goal internal-integration-test
  * @phase integration-test
  */
-public class InternalIntegrationTestMojo extends AbstractInstrumentationMojo {
+public class InternalIntegrationTestMojo extends AbstractInstrumentationMojo
+{
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        if (isEnableIntegrationTest()) {
+    public void execute() throws MojoExecutionException, MojoFailureException
+    {
+        if ( isEnableIntegrationTest() )
+        {
             instrument();
         }
     }

@@ -21,7 +21,8 @@ package com.jayway.maven.plugins.android.configuration;
  *
  * @author hugo.josefson@jayway.com
  */
-public class Sign {
+public class Sign
+{
 
     /**
      * Whether to sign with the debug keystore. Valid values are:
@@ -37,7 +38,8 @@ public class Sign {
      */
     private String debug;
 
-    public String getDebug() {
+    public String getDebug()
+    {
         return debug;
     }
 }

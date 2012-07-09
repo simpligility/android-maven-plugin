@@ -11,9 +11,11 @@ import org.apache.maven.plugin.MojoFailureException;
  * @goal zipalign
  * @requiresProject false
  */
-public class ZipalignMojo extends AbstractZipalignMojo {
+public class ZipalignMojo extends AbstractZipalignMojo
+{
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() throws MojoExecutionException, MojoFailureException
+    {
         zipalign();
     }
 
