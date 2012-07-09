@@ -108,12 +108,14 @@ public class NativeHelper
                 log.debug( "Including attached artifact: " + artifact.getArtifactId() + "(" + artifact.getGroupId() +
                         ")" );
                 filteredArtifacts.add( artifact );
-            } else if ( isNativeLibrary( sharedLibraries, artifact.getType() ) &&
+            }
+            else if ( isNativeLibrary( sharedLibraries, artifact.getType() ) &&
                     ( Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) ||
                             Artifact.SCOPE_RUNTIME.equals( artifact.getScope() ) ) )
             {
                 filteredArtifacts.add( artifact );
-            } else if ( APKLIB.equals( artifact.getType() ) )
+            }
+            else if ( APKLIB.equals( artifact.getType() ) )
             {
                 // Check if the artifact contains a libs folder - if so, include it in the list
                 File libsFolder = new File(

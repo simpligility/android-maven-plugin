@@ -133,7 +133,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
         if ( OS_NAME.toLowerCase().contains( "windows" ) )
         {
             result = true;
-        } else
+        }
+        else
         {
             result = false;
         }
@@ -163,7 +164,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
             if ( isWindows() )
             {
                 filename = writeEmulatorStartScriptWindows();
-            } else
+            }
+            else
             {
                 filename = writeEmulatorStartScriptUnix();
             }
@@ -198,7 +200,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                     getLog().info( START_EMULATOR_WAIT_MSG + parsedWait );
                     // wait for the emulator to start up
                     Thread.sleep( new Long( parsedWait ) );
-                } else
+                }
+                else
                 {
                     getLog().info( String.format(
                             "Emulator already running [Serial No: '%s', AVD Name '%s']. " + "Skipping start and wait.",
@@ -341,7 +344,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                     {
                         stopEmulator( device );
                     }
-                } else
+                }
+                else
                 {
                     getLog().info( "Skipping stop. Not an emulator. " + DeviceHelper.getDescriptiveName( device ) );
                 }
@@ -369,7 +373,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                 if ( device.isEmulator() )
                 {
                     stopEmulator( device );
-                } else
+                }
+                else
                 {
                     getLog().info( "Skipping stop. Not an emulator. " + DeviceHelper.getDescriptiveName( device ) );
                 }
@@ -388,7 +393,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
         if ( devicePort == - 1 )
         {
             getLog().info( "Unable to retrieve port to stop emulator " + DeviceHelper.getDescriptiveName( device ) );
-        } else
+        }
+        else
         {
             getLog().info( "Stopping emulator " + DeviceHelper.getDescriptiveName( device ) );
 
@@ -397,7 +403,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
             if ( ! killed )
             {
                 getLog().info( "Emulator failed to stop " + DeviceHelper.getDescriptiveName( device ) );
-            } else
+            }
+            else
             {
                 getLog().info( "Emulator stopped successfully " + DeviceHelper.getDescriptiveName( device ) );
             }
@@ -519,7 +526,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
             if ( emulator.getAvd() != null )
             {
                 parsedAvd = emulator.getAvd();
-            } else
+            }
+            else
             {
                 parsedAvd = determineAvd();
             }
@@ -527,7 +535,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
             if ( emulator.getOptions() != null )
             {
                 parsedOptions = emulator.getOptions();
-            } else
+            }
+            else
             {
                 parsedOptions = determineOptions();
             }
@@ -535,7 +544,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
             if ( emulator.getWait() != null )
             {
                 parsedWait = emulator.getWait();
-            } else
+            }
+            else
             {
                 parsedWait = determineWait();
             }
@@ -560,7 +570,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
         if ( emulatorWait != null )
         {
             wait = emulatorWait;
-        } else
+        }
+        else
         {
             wait = "5000";
         }
@@ -579,7 +590,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
         if ( emulatorOptions != null )
         {
             options = emulatorOptions;
-        } else
+        }
+        else
         {
             options = "";
         }
@@ -597,7 +609,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
         if ( emulatorAvd != null )
         {
             avd = emulatorAvd;
-        } else
+        }
+        else
         {
             avd = "Default";
         }

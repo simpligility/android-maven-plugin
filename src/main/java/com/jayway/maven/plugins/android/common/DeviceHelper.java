@@ -70,10 +70,12 @@ public class DeviceHelper
         if ( device.isOnline() )
         {
             status = "Online";
-        } else if ( device.isOffline() )
+        }
+        else if ( device.isOffline() )
         {
             status = "Offline";
-        } else
+        }
+        else
         {
             status = "Unknown";
         }

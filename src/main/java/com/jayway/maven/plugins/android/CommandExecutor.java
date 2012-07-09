@@ -225,7 +225,8 @@ public interface CommandExecutor
                         {
                             logger.debug( "ANDROID-040-000: Executed command: Commandline = " + commandline +
                                     ", Result = " + result );
-                        } else
+                        }
+                        else
                         {
                             System.out.println( "ANDROID-040-000: Executed command: Commandline = " + commandline +
                                     ", Result = " + result );
@@ -321,7 +322,8 @@ public interface CommandExecutor
                         if ( errorListener != null )
                         {
                             error = errorListener.isError( line );
-                        } else
+                        }
+                        else
                         {
                             error = true;
                         }

@@ -37,7 +37,8 @@ public class AetherHelper
             defaultArtifact =
                     new DefaultArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getClassifier(),
                             artifact.getType(), artifact.getVersion() );
-        } else
+        }
+        else
         {
             defaultArtifact = new DefaultArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getType(),
                     artifact.getVersion() );

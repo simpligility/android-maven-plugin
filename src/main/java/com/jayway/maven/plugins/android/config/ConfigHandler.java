@@ -64,7 +64,8 @@ public class ConfigHandler
                     ( propertyValue instanceof Object[] && ( ( Object[] ) propertyValue ).length == 0 ) )
             {
                 // no useful value
-            } else
+            }
+            else
             {
                 value = propertyValue;
             }
@@ -97,7 +98,8 @@ public class ConfigHandler
             if ( fieldType.isAssignableFrom( String.class ) )
             {
                 return defaultValue;
-            } else if ( fieldType.isAssignableFrom( Boolean.class ) )
+            }
+            else if ( fieldType.isAssignableFrom( Boolean.class ) )
             {
                 return Boolean.valueOf( defaultValue );
             }
@@ -106,7 +108,8 @@ public class ConfigHandler
             // them in other mojos..
             throw new RuntimeException(
                     "No handler for type " + fieldType + " on " + currentParameterName + " found." );
-        } else if ( ! required )
+        }
+        else if ( ! required )
         {
             try
             {
@@ -119,7 +122,8 @@ public class ConfigHandler
                 throw new RuntimeException(
                         "Problem encountered accessing default value for " + currentParameterName + " parameter", e );
             }
-        } else
+        }
+        else
         {
             throw new RuntimeException(
                     "Required parameter " + currentParameterName + " has no value. " + "Please supply with -D" +
@@ -172,7 +176,8 @@ public class ConfigHandler
         {
             String fieldName = field.getName().substring( prefix.length() );
             return fieldName.substring( 0, 1 ).toLowerCase() + fieldName.substring( 1 );
-        } else
+        }
+        else
         {
             return field.getName();
         }

@@ -93,7 +93,8 @@ public class AndroidSdk
         {
             platform = null;
             // letting this through to preserve compatibility for now
-        } else
+        }
+        else
         {
             platform = findPlatformByNameOrApiLevel( platformOrApiLevel );
             if ( platform == null )
@@ -282,7 +283,8 @@ public class AndroidSdk
             final File[] platformDirectories = platformsDirectory.listFiles();
             Arrays.sort( platformDirectories );
             return platformDirectories[ platformDirectories.length - 1 ];
-        } else
+        }
+        else
         {
             final File platformDirectory = new File( platform.path );
             assertPathIsDirectory( platformDirectory );

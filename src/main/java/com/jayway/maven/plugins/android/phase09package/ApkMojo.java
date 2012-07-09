@@ -284,7 +284,8 @@ public class ApkMojo extends AbstractAndroidMojo
             createApkFile( unsignedOutputFile, false );
             projectHelper.attachArtifact( project, unsignedOutputFile,
                     classifier == null ? "unsigned" : classifier + "_unsigned" );
-        } else
+        }
+        else
         {
             createApkFile( outputFile, signWithDebugKeyStore );
         }
@@ -293,7 +294,8 @@ public class ApkMojo extends AbstractAndroidMojo
         {
             // Set the generated .apk file as the main artifact (because the pom states <packaging>apk</packaging>)
             project.getArtifact().setFile( outputFile );
-        } else
+        }
+        else
         {
             // If there is a classifier specified, attach the artifact using that
             projectHelper.attachArtifact( project, outputFile, classifier );
@@ -335,7 +337,8 @@ public class ApkMojo extends AbstractAndroidMojo
         {
             doAPKWithAPKBuilder( outputFile, dexFile, zipArchive, sourceFolders, jarFiles, nativeFolders, false,
                     signWithDebugKeyStore, apkDebug );
-        } else
+        }
+        else
         {
             doAPKWithCommand( outputFile, dexFile, zipArchive, sourceFolders, jarFiles, nativeFolders,
                     signWithDebugKeyStore );
@@ -560,7 +563,8 @@ public class ApkMojo extends AbstractAndroidMojo
                 {
                     builder.addResourcesFromJar( new File( jarFile, filename ) );
                 }
-            } else
+            }
+            else
             {
                 builder.addResourcesFromJar( jarFile );
             }
@@ -584,7 +588,8 @@ public class ApkMojo extends AbstractAndroidMojo
         if ( out.exists() )
         {
             return out;
-        } else
+        }
+        else
         {
             try
             {
@@ -769,7 +774,8 @@ public class ApkMojo extends AbstractAndroidMojo
             // FIXME: Would be better to not support this case?
             optionallyCopyGdbServer( nativeLibrariesDirectory );
 
-        } else if ( ! artifacts.isEmpty() || hasValidNativeLibrariesDirectory )
+        }
+        else if ( ! artifacts.isEmpty() || hasValidNativeLibrariesDirectory )
         {
             // In this case, we may have both .so files in it's normal location
             // as well as .so dependencies
@@ -811,7 +817,8 @@ public class ApkMojo extends AbstractAndroidMojo
                         {
                             throw new MojoExecutionException( "Could not copy native dependency.", e );
                         }
-                    } else if ( APKLIB.equals( resolvedArtifact.getType() ) )
+                    }
+                    else if ( APKLIB.equals( resolvedArtifact.getType() ) )
                     {
                         natives.add( new File( getLibraryUnpackDirectory( resolvedArtifact ) + "/libs" ) );
                     }
@@ -844,7 +851,8 @@ public class ApkMojo extends AbstractAndroidMojo
                 if ( ! destFile.exists() )
                 {
                     FileUtils.copyFile( gdbServerFile, destFile );
-                } else
+                }
+                else
                 {
                     getLog().info( "Note: gdbserver binary already exists at destination, will not copy over" );
                 }
@@ -923,7 +931,8 @@ public class ApkMojo extends AbstractAndroidMojo
         if ( resourceOverlayDirectories == null || resourceOverlayDirectories.length == 0 )
         {
             overlayDirectories = new File[]{ resourceOverlayDirectory };
-        } else
+        }
+        else
         {
             overlayDirectories = resourceOverlayDirectories;
         }
@@ -1124,7 +1133,8 @@ public class ApkMojo extends AbstractAndroidMojo
         {
             commands.add( "-S" );
             commands.add( combinedRes.getAbsolutePath() );
-        } else
+        }
+        else
         {
             if ( resourceDirectory.exists() )
             {
@@ -1196,7 +1206,8 @@ public class ApkMojo extends AbstractAndroidMojo
         if ( sign == null )
         {
             return new AndroidSigner( signDebug );
-        } else
+        }
+        else
         {
             return new AndroidSigner( sign.getDebug() );
         }

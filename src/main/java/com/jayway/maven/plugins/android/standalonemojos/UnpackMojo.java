@@ -70,7 +70,8 @@ public class UnpackMojo extends AbstractAndroidMojo
         if ( lazyLibraryUnpack && outputDirectory.exists() )
         {
             getLog().info( "skip library unpacking due to lazyLibraryUnpack policy" );
-        } else
+        }
+        else
         {
             for ( Artifact artifact : getRelevantCompileArtifacts() )
             {
@@ -86,7 +87,8 @@ public class UnpackMojo extends AbstractAndroidMojo
                                 "IOException while copying " + artifact.getFile().getAbsolutePath() + " into " +
                                         outputDirectory.getAbsolutePath(), e );
                     }
-                } else
+                }
+                else
                 {
                     try
                     {

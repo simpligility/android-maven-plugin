@@ -111,7 +111,8 @@ public class ApkBuilder
                             addNativeLibrariesMethod = method;
                             break;
                         }
-                    } else if ( parameterTypes.length == 1 )
+                    }
+                    else if ( parameterTypes.length == 1 )
                     {
                         if ( parameterTypes[ 0 ] == File.class )
                         {
@@ -310,7 +311,8 @@ public class ApkBuilder
             if ( addNativeLibrariesMethod.getParameterTypes().length == 2 )
             {
                 addNativeLibrariesMethod.invoke( builder, new Object[]{ nativeFolder, abiFilter } );
-            } else
+            }
+            else
             {
                 addNativeLibrariesMethod.invoke( builder, new Object[]{ nativeFolder } );
             }

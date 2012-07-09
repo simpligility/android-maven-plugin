@@ -59,12 +59,14 @@ public class UndeployMojo extends AbstractAndroidMojo
         if ( packageToUndeploy != null && ! "".equals( packageToUndeploy ) && ! "null".equals( packageToUndeploy ) )
         {
             undeployApk( packageToUndeploy );
-        } else
+        }
+        else
         {
             if ( file != null )
             {
                 undeployApk( file );
-            } else
+            }
+            else
             {
                 if ( ! SUPPORTED_PACKAGING_TYPES.contains( project.getPackaging() ) )
                 {

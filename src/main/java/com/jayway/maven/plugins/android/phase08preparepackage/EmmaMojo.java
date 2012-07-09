@@ -100,25 +100,29 @@ public class EmmaMojo extends AbstractAndroidMojo
             if ( emma.isEnable() == null )
             {
                 parsedEnable = emmaEnable;
-            } else
+            }
+            else
             {
                 parsedEnable = emma.isEnable();
             }
             if ( emma.getClassFolders() != null )
             {
                 parsedEmmaClassFolders = getAllCompiledDirectory();
-            } else
+            }
+            else
             {
                 parsedEmmaClassFolders = getDefaultCompiledFolders();
             }
             if ( emma.getOutputMetaFile() != null )
             {
                 parsedOutputMetadataFile = emma.getOutputMetaFile();
-            } else
+            }
+            else
             {
                 parsedOutputMetadataFile = getDefaultMetaDataFile();
             }
-        } else
+        }
+        else
         {
             parsedEnable = emmaEnable;
             parsedEmmaClassFolders = new String[]{ emmaClassFolders };
@@ -148,7 +152,8 @@ public class EmmaMojo extends AbstractAndroidMojo
         if ( classFoldersTemp == null )
         {
             return new String[]{ emmaClassFolders };
-        } else
+        }
+        else
         {
             classFolders = classFoldersTemp.split( "," );
         }

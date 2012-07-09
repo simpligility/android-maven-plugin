@@ -179,7 +179,8 @@ public class MakefileHelper
                 if ( "a".equals( artifact.getType() ) )
                 {
                     makeFile.append( "include $(PREBUILT_STATIC_LIBRARY)\n" );
-                } else
+                }
+                else
                 {
                     makeFile.append( "include $(PREBUILT_SHARED_LIBRARY)\n" );
                 }

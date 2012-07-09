@@ -59,15 +59,18 @@ public class AndroidNdk
         {
             stripper = new File( ndkPath,
                     "toolchains/" + toolchain + "/prebuilt/linux-x86/bin/arm-linux-androideabi-strip" );
-        } else if ( SystemUtils.IS_OS_WINDOWS )
+        }
+        else if ( SystemUtils.IS_OS_WINDOWS )
         {
             stripper = new File( ndkPath,
                     "toolchains/" + toolchain + "/prebuilt/windows/bin/arm-linux-androideabi-strip.exe" );
-        } else if ( SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX )
+        }
+        else if ( SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX )
         {
             stripper = new File( ndkPath,
                     "toolchains/" + toolchain + "/prebuilt/darwin-x86/bin/arm-linux-androideabi-strip" );
-        } else
+        }
+        else
         {
             throw new MojoExecutionException( "Could not resolve stripper for current OS: " + SystemUtils.OS_NAME );
         }
@@ -93,7 +96,8 @@ public class AndroidNdk
         if ( SystemUtils.IS_OS_WINDOWS )
         {
             return new File( ndkPath, "/ndk-build.cmd" ).getAbsolutePath();
-        } else
+        }
+        else
         {
             return new File( ndkPath, "/ndk-build" ).getAbsolutePath();
         }

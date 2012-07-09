@@ -165,7 +165,8 @@ public class PushMojo extends AbstractAndroidMojo
         if ( parsedDestination.endsWith( "/" ) )
         {
             destinationPath = parsedDestination + sourceFile.getName();
-        } else
+        }
+        else
         {
             destinationPath = parsedDestination;
         }
@@ -175,7 +176,8 @@ public class PushMojo extends AbstractAndroidMojo
             // only put the source in
             final String sourcePath = sourceFile.getAbsolutePath();
             result.put( sourcePath, destinationPath );
-        } else if ( sourceFile.isDirectory() )
+        }
+        else if ( sourceFile.isDirectory() )
         {
             // find recursively all files to be pushed
             @SuppressWarnings( "unchecked" ) Collection<File> filesList = FileUtils.listFiles( sourceFile, null, true );
@@ -187,7 +189,8 @@ public class PushMojo extends AbstractAndroidMojo
 
                 result.put( file.getAbsolutePath(), destinationPath + filePath );
             }
-        } else
+        }
+        else
         {
             throw new MojoExecutionException(
                     "Cannot execute push goal: File or directory " + sourceFile.getAbsolutePath() +

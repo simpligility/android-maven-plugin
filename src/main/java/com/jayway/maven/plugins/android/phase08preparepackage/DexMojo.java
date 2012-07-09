@@ -154,7 +154,8 @@ public class DexMojo extends AbstractAndroidMojo
             // progurad has been run, use this jar
             getLog().debug( "Obfuscated jar exists, using that as input" );
             inputs.add( proguardJar );
-        } else
+        }
+        else
         {
             getLog().debug( "Using non-obfuscated input" );
             // no proguard, use original config
@@ -178,32 +179,37 @@ public class DexMojo extends AbstractAndroidMojo
             if ( dex.getJvmArguments() == null )
             {
                 parsedJvmArguments = dexJvmArguments;
-            } else
+            }
+            else
             {
                 parsedJvmArguments = dex.getJvmArguments();
             }
             if ( dex.isCoreLibrary() == null )
             {
                 parsedCoreLibrary = dexCoreLibrary;
-            } else
+            }
+            else
             {
                 parsedCoreLibrary = dex.isCoreLibrary();
             }
             if ( dex.isNoLocals() == null )
             {
                 parsedNoLocals = dexNoLocals;
-            } else
+            }
+            else
             {
                 parsedNoLocals = dex.isNoLocals();
             }
             if ( dex.isOptimize() == null )
             {
                 parsedOptimize = dexOptimize;
-            } else
+            }
+            else
             {
                 parsedOptimize = dex.isOptimize();
             }
-        } else
+        }
+        else
         {
             parsedJvmArguments = dexJvmArguments;
             parsedCoreLibrary = dexCoreLibrary;

@@ -282,7 +282,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         if ( parsedClasses != null )
         {
             classesExists = parsedClasses.size() > 0;
-        } else
+        }
+        else
         {
             classesExists = false;
         }
@@ -380,77 +381,88 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             if ( StringUtils.isNotEmpty( test.getSkip() ) )
             {
                 parsedSkip = test.getSkip();
-            } else
+            }
+            else
             {
                 parsedSkip = testSkip;
             }
             if ( StringUtils.isNotEmpty( test.getInstrumentationPackage() ) )
             {
                 parsedInstrumentationPackage = test.getInstrumentationPackage();
-            } else
+            }
+            else
             {
                 parsedInstrumentationPackage = testInstrumentationPackage;
             }
             if ( StringUtils.isNotEmpty( test.getInstrumentationRunner() ) )
             {
                 parsedInstrumentationRunner = test.getInstrumentationRunner();
-            } else
+            }
+            else
             {
                 parsedInstrumentationRunner = testInstrumentationRunner;
             }
             if ( test.getClasses() != null && ! test.getClasses().isEmpty() )
             {
                 parsedClasses = test.getClasses();
-            } else
+            }
+            else
             {
                 parsedClasses = testClasses;
             }
             if ( test.getPackages() != null && ! test.getPackages().isEmpty() )
             {
                 parsedPackages = test.getPackages();
-            } else
+            }
+            else
             {
                 parsedPackages = testPackages;
             }
             if ( StringUtils.isNotEmpty( test.getTestSize() ) )
             {
                 parsedTestSize = test.getTestSize();
-            } else
+            }
+            else
             {
                 parsedTestSize = testTestSize;
             }
             if ( test.isCoverage() != null )
             {
                 parsedCoverage = test.isCoverage();
-            } else
+            }
+            else
             {
                 parsedCoverage = testCoverage;
             }
             if ( test.getCoverageFile() != null )
             {
                 parsedCoverageFile = test.getCoverageFile();
-            } else
+            }
+            else
             {
                 parsedCoverageFile = "";
             }
             if ( test.isDebug() != null )
             {
                 parsedDebug = test.isDebug();
-            } else
+            }
+            else
             {
                 parsedDebug = testDebug;
             }
             if ( test.isLogOnly() != null )
             {
                 parsedLogOnly = test.isLogOnly();
-            } else
+            }
+            else
             {
                 parsedLogOnly = testLogOnly;
             }
             if ( test.isCreateReport() != null )
             {
                 parsedCreateReport = test.isCreateReport();
-            } else
+            }
+            else
             {
                 parsedCreateReport = testCreateReport;
             }
@@ -738,7 +750,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             if ( status == ERROR )
             {
                 ++ testErrorCount;
-            } else
+            }
+            else
             {
                 ++ testFailureCount;
             }
@@ -753,7 +766,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                 {
                     errorFailureNode = junitReport.createElement( TAG_ERROR );
                     errorfailureAttributes = errorFailureNode.getAttributes();
-                } else
+                }
+                else
                 {
                     errorFailureNode = junitReport.createElement( TAG_FAILURE );
                     errorfailureAttributes = errorFailureNode.getAttributes();
@@ -871,11 +885,13 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                         // match start of stack trace "\r\nat org.junit....."
                     }
                     return trace.substring( messageStart, messageEnd );
-                } else
+                }
+                else
                 {
                     return StringUtils.EMPTY;
                 }
-            } else
+            }
+            else
             {
                 return StringUtils.EMPTY;
             }
@@ -893,7 +909,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             if ( StringUtils.isNotBlank( trace ) )
             {
                 return trace.substring( 0, trace.indexOf( ":" ) );
-            } else
+            }
+            else
             {
                 return StringUtils.EMPTY;
             }
