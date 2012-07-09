@@ -291,8 +291,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 {
                     if ( ! combinedRes.mkdirs() )
                     {
-                        throw new MojoExecutionException( "Could not create directory for combined resources at " +
-                                combinedRes.getAbsolutePath() );
+                        throw new MojoExecutionException(
+                                "Could not create directory for combined resources at " + combinedRes
+                                        .getAbsolutePath() );
                     }
                 }
                 org.apache.commons.io.FileUtils.copyDirectory( extractedDependenciesRes, combinedRes );

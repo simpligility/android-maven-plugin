@@ -57,8 +57,8 @@ public class NdkCleanMojo extends AbstractMojo
         {
             if ( ! skipBuildLibsOutputDirectory )
             {
-                getLog().debug( "Cleaning out native library code directory : " +
-                        ndkBuildLibsOutputDirectory.getAbsolutePath() );
+                getLog().debug( "Cleaning out native library code directory : " + ndkBuildLibsOutputDirectory
+                        .getAbsolutePath() );
                 try
                 {
                     FileUtils.deleteDirectory( ndkBuildLibsOutputDirectory );

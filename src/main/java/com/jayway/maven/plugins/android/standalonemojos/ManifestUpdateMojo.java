@@ -449,8 +449,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             ArtifactVersion artifactVersion = new DefaultArtifactVersion( verString );
             // invalid version, something went wrong in parsing, do the old fall back method
             String verCode;
-            if ( artifactVersion.getMajorVersion() == 0 & artifactVersion.getMinorVersion() == 0 &&
-                    artifactVersion.getIncrementalVersion() == 0 )
+            if ( artifactVersion.getMajorVersion() == 0 & artifactVersion.getMinorVersion() == 0
+                    && artifactVersion.getIncrementalVersion() == 0 )
             {
                 getLog().warn( "Problem parsing version number occurred. Using fall back to determine version code. " );
 
@@ -502,8 +502,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         {
             Attr sharedUserIdAttrib = manifestElement.getAttributeNode( ATTR_SHARED_USER_ID );
 
-            if ( sharedUserIdAttrib == null ||
-                    ! StringUtils.equals( parsedSharedUserId, sharedUserIdAttrib.getValue() ) )
+            if ( sharedUserIdAttrib == null || ! StringUtils
+                    .equals( parsedSharedUserId, sharedUserIdAttrib.getValue() ) )
             {
                 getLog().info( "Setting " + ATTR_SHARED_USER_ID + " to " + parsedSharedUserId );
                 manifestElement.setAttribute( ATTR_SHARED_USER_ID, parsedSharedUserId );
@@ -524,8 +524,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
                 {
                     Element element = ( Element ) node;
                     Attr debuggableAttrib = element.getAttributeNode( ATTR_DEBUGGABLE );
-                    if ( debuggableAttrib == null ||
-                            parsedDebuggable != BooleanUtils.toBoolean( debuggableAttrib.getValue() ) )
+                    if ( debuggableAttrib == null || parsedDebuggable != BooleanUtils
+                            .toBoolean( debuggableAttrib.getValue() ) )
                     {
                         getLog().info( "Setting " + ATTR_DEBUGGABLE + " to " + parsedDebuggable );
                         element.setAttribute( ATTR_DEBUGGABLE, String.valueOf( parsedDebuggable ) );

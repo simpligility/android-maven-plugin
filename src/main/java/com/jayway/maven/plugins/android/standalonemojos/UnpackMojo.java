@@ -99,8 +99,8 @@ public class UnpackMojo extends AbstractAndroidMojo
                                     @Override
                                     public boolean include( JarEntry jarEntry )
                                     {
-                                        return ! jarEntry.getName().startsWith( "META-INF" ) &&
-                                                jarEntry.getName().endsWith( ".class" );
+                                        return ! jarEntry.getName().startsWith( "META-INF" ) && jarEntry.getName()
+                                                .endsWith( ".class" );
                                     }
                                 } );
                     }

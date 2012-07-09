@@ -218,8 +218,8 @@ public class RunMojo extends AbstractAndroidMojo
         xPath = xPathFactory.newXPath();
 
         xPathExpression = xPath.compile(
-                "//manifest/application/activity/intent-filter[action[@name=\"android.intent.action.MAIN\"] " +
-                        "and category[@name=\"android.intent.category.LAUNCHER\"]]/.." );
+                "//manifest/application/activity/intent-filter[action[@name=\"android.intent.action.MAIN\"] "
+                        + "and category[@name=\"android.intent.category.LAUNCHER\"]]/.." );
 
         //
         // Run XPath query

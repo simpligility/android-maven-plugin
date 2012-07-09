@@ -181,24 +181,28 @@ public class PushMojo extends AbstractAndroidMojo
             final String sourcePath = sourceFile.getAbsolutePath();
             result.put( sourcePath, destinationPath );
         }
-        else if ( sourceFile.isDirectory() )
-        {
-            // find recursively all files to be pushed
-            @SuppressWarnings( "unchecked" ) Collection<File> filesList = FileUtils.listFiles( sourceFile, null, true );
-            for ( File file : filesList )
-            {
-                // make the file's path relative - this is kind of a hack but it
-                // works just fine in this controlled environment
-                String filePath = file.getAbsolutePath().substring( sourceFile.getAbsolutePath().length() );
-
-                result.put( file.getAbsolutePath(), destinationPath + filePath );
-            }
-        }
         else
         {
-            throw new MojoExecutionException(
-                    "Cannot execute push goal: File or directory " + sourceFile.getAbsolutePath() +
-                            " does not exist." );
+            if ( sourceFile.isDirectory() )
+            {
+                // find recursively all files to be pushed
+                @SuppressWarnings( "unchecked" ) Collection<File> filesList =
+                        FileUtils.listFiles( sourceFile, null, true );
+                for ( File file : filesList )
+                {
+                    // make the file's path relative - this is kind of a hack but it
+                    // works just fine in this controlled environment
+                    String filePath = file.getAbsolutePath().substring( sourceFile.getAbsolutePath().length() );
+
+                    result.put( file.getAbsolutePath(), destinationPath + filePath );
+                }
+            }
+            else
+            {
+                throw new MojoExecutionException(
+                        "Cannot execute push goal: File or directory " + sourceFile.getAbsolutePath() +
+                                " does not exist." );
+            }
         }
         return result;
     }

@@ -60,8 +60,8 @@ public class ConfigHandler
             // then override with value from properties supplied in pom, settings or command line
             // unless it is null or an empty array
             Object propertyValue = getValueFromMojo( fieldBaseName );
-            if ( propertyValue == null ||
-                    ( propertyValue instanceof Object[] && ( ( Object[] ) propertyValue ).length == 0 ) )
+            if ( propertyValue == null || ( propertyValue instanceof Object[]
+                    && ( ( Object[] ) propertyValue ).length == 0 ) )
             {
                 // no useful value
             }
@@ -100,9 +100,12 @@ public class ConfigHandler
             {
                 return defaultValue;
             }
-            else if ( fieldType.isAssignableFrom( Boolean.class ) )
+            else
             {
-                return Boolean.valueOf( defaultValue );
+                if ( fieldType.isAssignableFrom( Boolean.class ) )
+                {
+                    return Boolean.valueOf( defaultValue );
+                }
             }
 
             // TODO add more handler types as required, for example integer, long, ... we will do that when we encounter
@@ -110,27 +113,31 @@ public class ConfigHandler
             throw new RuntimeException(
                     "No handler for type " + fieldType + " on " + currentParameterName + " found." );
         }
-        else if ( ! required )
-        {
-            try
-            {
-                Method method = mojo.getClass().getDeclaredMethod( annotation.defaultValueGetterMethod() );
-                // even access it if the method is private
-                method.setAccessible( true );
-                return method.invoke( mojo );
-            }
-            catch ( Exception e )
-            {
-                throw new RuntimeException(
-                        "Problem encountered accessing default value for " + currentParameterName + " parameter", e );
-            }
-        }
         else
         {
-            throw new RuntimeException(
-                    "Required parameter " + currentParameterName + " has no value. " + "Please supply with -D" +
-                            currentParameterName +
-                            "=value on the command line or as property or plugin configuration in your pom or settings file." );
+            if ( ! required )
+            {
+                try
+                {
+                    Method method = mojo.getClass().getDeclaredMethod( annotation.defaultValueGetterMethod() );
+                    // even access it if the method is private
+                    method.setAccessible( true );
+                    return method.invoke( mojo );
+                }
+                catch ( Exception e )
+                {
+                    throw new RuntimeException(
+                            "Problem encountered accessing default value for " + currentParameterName + " parameter",
+                            e );
+                }
+            }
+            else
+            {
+                throw new RuntimeException(
+                        "Required parameter " + currentParameterName + " has no value. " + "Please supply with -D" +
+                                currentParameterName +
+                                "=value on the command line or as property or plugin configuration in your pom or settings file." );
+            }
         }
     }
 

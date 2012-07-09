@@ -757,17 +757,17 @@ public class ApkMojo extends AbstractAndroidMojo
         // b) it contains at least 1 file
         final boolean hasValidNativeLibrariesDirectory =
                 nativeLibrariesDirectory != null && nativeLibrariesDirectory.exists() &&
-                        ( nativeLibrariesDirectory.listFiles() != null &&
-                                nativeLibrariesDirectory.listFiles().length > 0 );
+                        ( nativeLibrariesDirectory.listFiles() != null
+                                && nativeLibrariesDirectory.listFiles().length > 0 );
 
         // Retrieve any native dependencies or attached artifacts.  This may include artifacts from the ndk-build MOJO
         NativeHelper nativeHelper =
                 new NativeHelper( project, projectRepos, repoSession, repoSystem, artifactFactory, getLog() );
         final Set<Artifact> artifacts = nativeHelper.getNativeDependenciesArtifacts( unpackedApkLibsDirectory, true );
 
-        final boolean hasValidBuildNativeLibrariesDirectory = nativeLibrariesOutputDirectory.exists() &&
-                ( nativeLibrariesOutputDirectory.listFiles() != null &&
-                        nativeLibrariesOutputDirectory.listFiles().length > 0 );
+        final boolean hasValidBuildNativeLibrariesDirectory =
+                nativeLibrariesOutputDirectory.exists() && ( nativeLibrariesOutputDirectory.listFiles() != null
+                        && nativeLibrariesOutputDirectory.listFiles().length > 0 );
 
         if ( artifacts.isEmpty() && hasValidNativeLibrariesDirectory && ! hasValidBuildNativeLibrariesDirectory )
         {
@@ -783,60 +783,67 @@ public class ApkMojo extends AbstractAndroidMojo
             optionallyCopyGdbServer( nativeLibrariesDirectory );
 
         }
-        else if ( ! artifacts.isEmpty() || hasValidNativeLibrariesDirectory )
+        else
         {
-            // In this case, we may have both .so files in it's normal location
-            // as well as .so dependencies
-
-            // Create the ${project.build.outputDirectory}/libs
-            final File destinationDirectory = new File( nativeLibrariesOutputDirectory.getAbsolutePath() );
-            destinationDirectory.mkdirs();
-
-            // Point directly to the directory
-            natives.add( destinationDirectory );
-
-            // If we have a valid native libs, copy those files - these already come in the structure required
-            if ( hasValidNativeLibrariesDirectory )
+            if ( ! artifacts.isEmpty() || hasValidNativeLibrariesDirectory )
             {
-                copyLocalNativeLibraries( nativeLibrariesDirectory, destinationDirectory );
-            }
+                // In this case, we may have both .so files in it's normal location
+                // as well as .so dependencies
 
-            if ( ! artifacts.isEmpty() )
-            {
-                for ( Artifact resolvedArtifact : artifacts )
+                // Create the ${project.build.outputDirectory}/libs
+                final File destinationDirectory = new File( nativeLibrariesOutputDirectory.getAbsolutePath() );
+                destinationDirectory.mkdirs();
+
+                // Point directly to the directory
+                natives.add( destinationDirectory );
+
+                // If we have a valid native libs, copy those files - these already come in the structure required
+                if ( hasValidNativeLibrariesDirectory )
                 {
-                    if ( "so".equals( resolvedArtifact.getType() ) )
-                    {
-                        final File artifactFile = resolvedArtifact.getFile();
-                        try
-                        {
-                            final String artifactId = resolvedArtifact.getArtifactId();
-                            final String filename =
-                                    artifactId.startsWith( "lib" ) ? artifactId + ".so" : "lib" + artifactId + ".so";
+                    copyLocalNativeLibraries( nativeLibrariesDirectory, destinationDirectory );
+                }
 
-                            final File finalDestinationDirectory =
-                                    getFinalDestinationDirectoryFor( resolvedArtifact, destinationDirectory );
-                            final File file = new File( finalDestinationDirectory, filename );
-                            getLog().debug(
-                                    "Copying native dependency " + artifactId + " (" + resolvedArtifact.getGroupId() +
-                                            ") to " + file );
-                            org.apache.commons.io.FileUtils.copyFile( artifactFile, file );
-                        }
-                        catch ( Exception e )
-                        {
-                            throw new MojoExecutionException( "Could not copy native dependency.", e );
-                        }
-                    }
-                    else if ( APKLIB.equals( resolvedArtifact.getType() ) )
+                if ( ! artifacts.isEmpty() )
+                {
+                    for ( Artifact resolvedArtifact : artifacts )
                     {
-                        natives.add( new File( getLibraryUnpackDirectory( resolvedArtifact ) + "/libs" ) );
+                        if ( "so".equals( resolvedArtifact.getType() ) )
+                        {
+                            final File artifactFile = resolvedArtifact.getFile();
+                            try
+                            {
+                                final String artifactId = resolvedArtifact.getArtifactId();
+                                final String filename = artifactId.startsWith( "lib" ) ? artifactId + ".so" :
+                                        "lib" + artifactId + ".so";
+
+                                final File finalDestinationDirectory =
+                                        getFinalDestinationDirectoryFor( resolvedArtifact, destinationDirectory );
+                                final File file = new File( finalDestinationDirectory, filename );
+                                getLog().debug(
+                                        "Copying native dependency " + artifactId + " (" + resolvedArtifact.getGroupId()
+                                                +
+                                                ") to " + file );
+                                org.apache.commons.io.FileUtils.copyFile( artifactFile, file );
+                            }
+                            catch ( Exception e )
+                            {
+                                throw new MojoExecutionException( "Could not copy native dependency.", e );
+                            }
+                        }
+                        else
+                        {
+                            if ( APKLIB.equals( resolvedArtifact.getType() ) )
+                            {
+                                natives.add( new File( getLibraryUnpackDirectory( resolvedArtifact ) + "/libs" ) );
+                            }
+                        }
                     }
                 }
+
+                // Finally, think about copying the gdbserver binary into the APK output as well
+                optionallyCopyGdbServer( destinationDirectory );
+
             }
-
-            // Finally, think about copying the gdbserver binary into the APK output as well
-            optionallyCopyGdbServer( destinationDirectory );
-
         }
     }
 
@@ -957,8 +964,9 @@ public class ApkMojo extends AbstractAndroidMojo
                 {
                     if ( ! combinedRes.mkdirs() )
                     {
-                        throw new MojoExecutionException( "Could not create directory for combined resources at " +
-                                combinedRes.getAbsolutePath() );
+                        throw new MojoExecutionException(
+                                "Could not create directory for combined resources at " + combinedRes
+                                        .getAbsolutePath() );
                     }
                 }
                 org.apache.commons.io.FileUtils.copyDirectory( extractedDependenciesRes, combinedRes );
