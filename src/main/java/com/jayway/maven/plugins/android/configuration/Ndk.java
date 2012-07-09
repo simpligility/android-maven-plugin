@@ -23,10 +23,12 @@ import java.util.Map;
  *
  * @author Johan Lindquist <johanlindquist@gmail.com>
  */
-public class Ndk {
+public class Ndk
+{
 
     /**
      * Directory of the installed Android NDK, for example <code>/usr/local/android-ndk-r4</code>
+     *
      * @see com.jayway.maven.plugins.android.phase05compile.NdkBuildMojo#ndkPath
      */
     private File path;

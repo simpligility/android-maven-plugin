@@ -17,7 +17,11 @@
 package com.jayway.maven.plugins.android;
 
 import org.apache.maven.plugin.logging.Log;
-import org.codehaus.plexus.util.cli.*;
+import org.codehaus.plexus.util.cli.CommandLineException;
+import org.codehaus.plexus.util.cli.CommandLineUtils;
+import org.codehaus.plexus.util.cli.Commandline;
+import org.codehaus.plexus.util.cli.DefaultConsumer;
+import org.codehaus.plexus.util.cli.StreamConsumer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,7 +32,8 @@ import java.util.Map;
 /**
  *
  */
-public interface CommandExecutor {
+public interface CommandExecutor
+{
     /**
      * Sets the plexus logger.
      *
@@ -44,8 +49,7 @@ public interface CommandExecutor {
      * @throws ExecutionException if compiler or executable writes anything to the standard error stream or if the process
      *                            returns a process result != 0.
      */
-    void executeCommand(String executable, List<String> commands)
-            throws ExecutionException;
+    void executeCommand(String executable, List<String> commands) throws ExecutionException;
 
     /**
      * Executes the command for the specified executable and list of command options.
@@ -57,8 +61,7 @@ public interface CommandExecutor {
      * @throws ExecutionException if compiler or executable writes anything to the standard error stream (provided the
      *                            failsOnErrorOutput is not false) or if the process returns a process result != 0.
      */
-    void executeCommand(String executable, List<String> commands, boolean failsOnErrorOutput)
-            throws ExecutionException;
+    void executeCommand(String executable, List<String> commands, boolean failsOnErrorOutput) throws ExecutionException;
 
     /**
      * Executes the command for the specified executable and list of command options. If the compiler or executable is
@@ -104,28 +107,32 @@ public interface CommandExecutor {
      */
     String getStandardError();
 
-    /** Adds an environment variable with the specified name and value to the executor.
+    /**
+     * Adds an environment variable with the specified name and value to the executor.
      *
      * @param name
      * @param value
      */
-    void addEnvironment( String name, String value );
+    void addEnvironment(String name, String value);
 
     void setErrorListener(ErrorListener errorListener);
 
-    public static interface ErrorListener {
+    public static interface ErrorListener
+    {
         boolean isError(String error);
     }
 
     /**
      * Provides factory services for creating a default instance of the command executor.
      */
-    public static class Factory {
+    public static class Factory
+    {
 
         /**
          * Constructor
          */
-        private Factory() {
+        private Factory()
+        {
         }
 
         /**
@@ -133,8 +140,10 @@ public interface CommandExecutor {
          *
          * @return a default instance of the command executor
          */
-        public static CommandExecutor createDefaultCommmandExecutor() {
-            return new CommandExecutor() {
+        public static CommandExecutor createDefaultCommmandExecutor()
+        {
+            return new CommandExecutor()
+            {
 
                 private Map<String, String> environment;
                 /**
@@ -161,7 +170,8 @@ public interface CommandExecutor {
                  */
                 public ErrorListener errorListener;
 
-                public void setLogger(Log logger) {
+                public void setLogger(Log logger)
+                {
                     this.logger = logger;
                 }
 
@@ -169,20 +179,22 @@ public interface CommandExecutor {
 
                 private Commandline commandline;
 
-                public void executeCommand(String executable, List<String> commands)
-                        throws ExecutionException {
+                public void executeCommand(String executable, List<String> commands) throws ExecutionException
+                {
                     executeCommand(executable, commands, null, true);
                 }
 
                 public void executeCommand(String executable, List<String> commands, boolean failsOnErrorOutput)
-                        throws ExecutionException {
+                        throws ExecutionException
+                {
                     executeCommand(executable, commands, null, failsOnErrorOutput);
                 }
 
                 public void executeCommand(String executable, List<String> commands, File workingDirectory,
-                                           boolean failsOnErrorOutput)
-                        throws ExecutionException {
-                    if (commands == null) {
+                                           boolean failsOnErrorOutput) throws ExecutionException
+                {
+                    if ( commands == null )
+                    {
                         commands = new ArrayList<String>();
                     }
                     stdOut = new StreamConsumerImpl();
@@ -192,65 +204,82 @@ public interface CommandExecutor {
                     commandline.setExecutable(executable);
 
                     // Add the environment variables as needed
-                    if (environment != null) {
-                        for ( Map.Entry<String, String> entry : environment.entrySet() ) {
-                            commandline.addEnvironment( entry.getKey(), entry.getValue() );
+                    if ( environment != null )
+                    {
+                        for ( Map.Entry<String, String> entry : environment.entrySet() )
+                        {
+                            commandline.addEnvironment(entry.getKey(), entry.getValue());
                         }
                     }
 
                     commandline.addArguments(commands.toArray(new String[commands.size()]));
-                    if (workingDirectory != null && workingDirectory.exists()) {
+                    if ( workingDirectory != null && workingDirectory.exists() )
+                    {
                         commandline.setWorkingDirectory(workingDirectory.getAbsolutePath());
                     }
-                    try {
+                    try
+                    {
                         result = CommandLineUtils.executeCommandLine(commandline, stdOut, stdErr);
-                        if (logger != null) {
+                        if ( logger != null )
+                        {
                             logger.debug("ANDROID-040-000: Executed command: Commandline = " + commandline +
                                     ", Result = " + result);
-                        } else {
+                        } else
+                        {
                             System.out.println("ANDROID-040-000: Executed command: Commandline = " + commandline +
                                     ", Result = " + result);
                         }
-                        if ((failsOnErrorOutput && stdErr.hasError()) || result != 0) {
+                        if ( (failsOnErrorOutput && stdErr.hasError()) || result != 0 )
+                        {
                             throw new ExecutionException("ANDROID-040-001: Could not execute: Command = " +
                                     commandline.toString() + ", Result = " + result);
                         }
-                    } catch (CommandLineException e) {
+                    } catch ( CommandLineException e )
+                    {
                         throw new ExecutionException(
-                                "ANDROID-040-002: Could not execute: Command = " + commandline.toString() + ", Error message = " + e.getMessage());
+                                "ANDROID-040-002: Could not execute: Command = " + commandline.toString() +
+                                        ", Error message = " + e.getMessage());
                     }
                     setPid(commandline.getPid());
                 }
 
-                public int getResult() {
+                public int getResult()
+                {
                     return result;
                 }
 
-                public String getStandardOut() {
+                public String getStandardOut()
+                {
                     return stdOut.toString();
                 }
 
-                public String getStandardError() {
+                public String getStandardError()
+                {
                     return stdErr.toString();
                 }
 
                 @Override
-                public void addEnvironment( String name, String value ) {
-                    if (environment == null) {
-                        environment = new HashMap<String, String>(  );
+                public void addEnvironment(String name, String value)
+                {
+                    if ( environment == null )
+                    {
+                        environment = new HashMap<String, String>();
                     }
-                    environment.put( name, value );
+                    environment.put(name, value);
                 }
 
-                public void setErrorListener(ErrorListener errorListener) {
+                public void setErrorListener(ErrorListener errorListener)
+                {
                     this.errorListener = errorListener;
                 }
 
-                public void setPid(long pid) {
+                public void setPid(long pid)
+                {
                     this.pid = pid;
                 }
 
-                public long getPid() {
+                public long getPid()
+                {
                     return pid;
                 }
 
@@ -259,8 +288,8 @@ public interface CommandExecutor {
                  * NOTE: I am using this to decide whether to fail the NMaven build. If the compiler implementation chooses
                  * to write warnings to the error stream, then the build will fail on warnings!!!
                  */
-                class ErrorStreamConsumer
-                        implements StreamConsumer {
+                class ErrorStreamConsumer implements StreamConsumer
+                {
 
                     /**
                      * Is true if there was anything consumed from the stream, otherwise false
@@ -272,23 +301,26 @@ public interface CommandExecutor {
                      */
                     private StringBuffer sbe = new StringBuffer();
 
-                    public ErrorStreamConsumer() {
-                        if (logger == null) {
+                    public ErrorStreamConsumer()
+                    {
+                        if ( logger == null )
+                        {
                             System.out.println("ANDROID-040-003: Error Log not set: Will not output error logs");
                         }
                         error = false;
                     }
 
-                    public void consumeLine(String line) {
+                    public void consumeLine(String line)
+                    {
                         sbe.append(line);
-                        if (logger != null) {
+                        if ( logger != null )
+                        {
                             logger.info(line);
                         }
-                        if (errorListener != null)
+                        if ( errorListener != null )
                         {
                             error = errorListener.isError(line);
-                        }
-                        else
+                        } else
                         {
                             error = true;
                         }
@@ -299,7 +331,8 @@ public interface CommandExecutor {
                      *
                      * @return false if the command utility wrote to the Standard Error Stream, otherwise returns true.
                      */
-                    public boolean hasError() {
+                    public boolean hasError()
+                    {
                         return error;
                     }
 
@@ -308,7 +341,8 @@ public interface CommandExecutor {
                      *
                      * @return error stream
                      */
-                    public String toString() {
+                    public String toString()
+                    {
                         return sbe.toString();
                     }
                 }
@@ -316,20 +350,23 @@ public interface CommandExecutor {
                 /**
                  * StreamConsumer instance that buffers the entire output
                  */
-                class StreamConsumerImpl
-                        implements StreamConsumer {
+                class StreamConsumerImpl implements StreamConsumer
+                {
 
                     private DefaultConsumer consumer;
 
                     private StringBuffer sb = new StringBuffer();
 
-                    public StreamConsumerImpl() {
+                    public StreamConsumerImpl()
+                    {
                         consumer = new DefaultConsumer();
                     }
 
-                    public void consumeLine(String line) {
+                    public void consumeLine(String line)
+                    {
                         sb.append(line);
-                        if (logger != null) {
+                        if ( logger != null )
+                        {
                             consumer.consumeLine(line);
                         }
                     }
@@ -339,7 +376,8 @@ public interface CommandExecutor {
                      *
                      * @return the stream
                      */
-                    public String toString() {
+                    public String toString()
+                    {
                         return sb.toString();
                     }
                 }

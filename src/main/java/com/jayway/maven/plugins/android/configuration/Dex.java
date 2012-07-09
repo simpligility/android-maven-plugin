@@ -7,37 +7,42 @@ package com.jayway.maven.plugins.android.configuration;
  *
  * @author Manfred Moser <manfred@simpligility.com>
  */
-public class Dex {
+public class Dex
+{
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#dexJvmArguments}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#dexJvmArguments}
+     */
     private String[] jvmArguments;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#dexCoreLibrary}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#dexCoreLibrary}
+     */
     private Boolean coreLibrary;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#dexNoLocals}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#dexNoLocals}
+     */
     private Boolean noLocals;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#dexOptimize}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#dexOptimize}
+     */
     private Boolean optimize;
 
-    public String[] getJvmArguments() {
+    public String[] getJvmArguments()
+    {
         return jvmArguments;
     }
 
-    public Boolean isCoreLibrary() {
+    public Boolean isCoreLibrary()
+    {
         return coreLibrary;
     }
 
-    public Boolean isNoLocals() {
+    public Boolean isNoLocals()
+    {
         return noLocals;
     }
 
-    public Boolean isOptimize() {
+    public Boolean isOptimize()
+    {
         return optimize;
     }
 }

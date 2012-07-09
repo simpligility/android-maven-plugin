@@ -16,7 +16,12 @@
 package com.jayway.maven.plugins.android.asm;
 
 import org.apache.commons.lang.StringUtils;
-import org.objectweb.asm.*;
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.Attribute;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -26,7 +31,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author hugo.josefson@jayway.com
  */
-class DescendantFinder extends ClassVisitor {
+class DescendantFinder extends ClassVisitor
+{
 
     /**
      * Constructs this finder.
@@ -34,7 +40,8 @@ class DescendantFinder extends ClassVisitor {
      * @param parentPackages Packages to find descendants of. Must be formatted with <code>/</code> (slash) instead of
      *                       <code>.</code> (dot). For example: <code>junit/framework/</code>
      */
-    public DescendantFinder(String... parentPackages) {
+    public DescendantFinder(String... parentPackages)
+    {
         super(Opcodes.ASM4);
         this.parentPackages = parentPackages;
     }
@@ -42,16 +49,20 @@ class DescendantFinder extends ClassVisitor {
     private final String[] parentPackages;
     private final AtomicBoolean isDescendantFound = new AtomicBoolean(false);
 
-    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        for (String testPackage : parentPackages) {
-            if (StringUtils.startsWith(superName, testPackage)) {
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces)
+    {
+        for ( String testPackage : parentPackages )
+        {
+            if ( StringUtils.startsWith(superName, testPackage) )
+            {
                 flagAsFound();
-//                System.out.println(name + " extends " + superName);
+                //                System.out.println(name + " extends " + superName);
             }
         }
     }
 
-    private void flagAsFound() {
+    private void flagAsFound()
+    {
         isDescendantFound.set(true);
     }
 
@@ -60,34 +71,43 @@ class DescendantFinder extends ClassVisitor {
      *
      * @return <code>true</code> is a match was found, <code>false</code> otherwise.
      */
-    public boolean isDescendantFound() {
+    public boolean isDescendantFound()
+    {
         return isDescendantFound.get();
     }
 
-    public void visitSource(String source, String debug) {
+    public void visitSource(String source, String debug)
+    {
     }
 
-    public void visitOuterClass(String owner, String name, String desc) {
+    public void visitOuterClass(String owner, String name, String desc)
+    {
     }
 
-    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+    public AnnotationVisitor visitAnnotation(String desc, boolean visible)
+    {
         return null;
     }
 
-    public void visitAttribute(Attribute attr) {
+    public void visitAttribute(Attribute attr)
+    {
     }
 
-    public void visitInnerClass(String name, String outerName, String innerName, int access) {
+    public void visitInnerClass(String name, String outerName, String innerName, int access)
+    {
     }
 
-    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value)
+    {
         return null;
     }
 
-    public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+    public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions)
+    {
         return null;
     }
 
-    public void visitEnd() {
+    public void visitEnd()
+    {
     }
 }

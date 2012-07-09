@@ -15,17 +15,6 @@
  */
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import java.io.IOException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
 import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.NullOutputReceiver;
@@ -33,7 +22,6 @@ import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.DeviceCallback;
-
 import com.jayway.maven.plugins.android.config.ConfigHandler;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.config.PullParameter;
@@ -44,6 +32,16 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.IOException;
 
 /**
  * Runs the first Activity shown in the top-level launcher as determined by its Intent filters.
@@ -79,14 +77,15 @@ import org.xml.sax.SAXException;
  * The device parameter is taken into consideration so potentially the Activity found is started on all attached
  * devices. The application will NOT be deployed and running will silently fail if the application is not deployed.
  * </p>
+ *
  * @author Lorenzo Villani <lorenzo@villani.me>
  * @author Manfred Mosr <manfred@simpligility.com>
+ * @goal run
  * @see "http://developer.android.com/guide/topics/fundamentals.html"
  * @see "http://developer.android.com/guide/topics/intents/intents-filters.html"
- * 
- * @goal run
  */
-public class RunMojo extends AbstractAndroidMojo {
+public class RunMojo extends AbstractAndroidMojo
+{
 
     /**
      * <p>The configuration for the run goal can be set up in the plugin configuration in the pom file as:</p>
@@ -112,6 +111,7 @@ public class RunMojo extends AbstractAndroidMojo {
     /**
      * Debug parameter for the the run goal. If true, the device or emulator will pause execution of the process at
      * startup to wait for a debugger to connect. Also see the "run" parameter documentation. Default value is false.
+     *
      * @parameter expression="${android.run.debug}"
      */
     protected Boolean runDebug;
@@ -122,11 +122,10 @@ public class RunMojo extends AbstractAndroidMojo {
 
     /**
      * Thrown when no "Launcher activities" could be found inside <code>AndroidManifest.xml</code>
-     * 
+     *
      * @author Lorenzo Villani
      */
-    private static class ActivityNotFoundException
-        extends Exception
+    private static class ActivityNotFoundException extends Exception
     {
         private static final long serialVersionUID = 1L;
 
@@ -135,13 +134,13 @@ public class RunMojo extends AbstractAndroidMojo {
          */
         public ActivityNotFoundException()
         {
-            super( "Unable to determine Launcher activity" );
+            super("Unable to determine Launcher activity");
         }
     }
 
     /**
      * Holds information about the "Launcher" activity.
-     * 
+     *
      * @author Lorenzo Villani
      */
     private static class LauncherInfo
@@ -159,8 +158,7 @@ public class RunMojo extends AbstractAndroidMojo {
      * {@inheritDoc}
      */
     @Override
-    public void execute()
-        throws MojoExecutionException, MojoFailureException
+    public void execute() throws MojoExecutionException, MojoFailureException
     {
         try
         {
@@ -171,11 +169,10 @@ public class RunMojo extends AbstractAndroidMojo {
             ConfigHandler configHandler = new ConfigHandler(this);
             configHandler.parseConfiguration();
 
-            launch( launcherInfo );
-        }
-        catch ( Exception ex )
+            launch(launcherInfo);
+        } catch ( Exception ex )
         {
-            throw new MojoFailureException( "Unable to run launcher Activity", ex );
+            throw new MojoFailureException("Unable to run launcher Activity", ex);
         }
     }
 
@@ -185,7 +182,7 @@ public class RunMojo extends AbstractAndroidMojo {
 
     /**
      * Gets the first "Launcher" Activity by running an XPath query on <code>AndroidManifest.xml</code>.
-     * 
+     *
      * @return A {@link LauncherInfo}
      * @throws MojoExecutionException
      * @throws ParserConfigurationException
@@ -195,8 +192,8 @@ public class RunMojo extends AbstractAndroidMojo {
      * @throws ActivityNotFoundException
      */
     private LauncherInfo getLauncherActivity()
-        throws ParserConfigurationException, SAXException, IOException, XPathExpressionException,
-        ActivityNotFoundException
+            throws ParserConfigurationException, SAXException, IOException, XPathExpressionException,
+            ActivityNotFoundException
     {
         Document document;
         DocumentBuilder documentBuilder;
@@ -213,20 +210,20 @@ public class RunMojo extends AbstractAndroidMojo {
 
         documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
-        document = documentBuilder.parse( androidManifestFile );
+        document = documentBuilder.parse(androidManifestFile);
 
         xPathFactory = XPathFactory.newInstance();
 
         xPath = xPathFactory.newXPath();
 
-        xPathExpression =
-            xPath.compile( "//manifest/application/activity/intent-filter[action[@name=\"android.intent.action.MAIN\"] "
-                + "and category[@name=\"android.intent.category.LAUNCHER\"]]/.." );
+        xPathExpression = xPath.compile(
+                "//manifest/application/activity/intent-filter[action[@name=\"android.intent.action.MAIN\"] " +
+                        "and category[@name=\"android.intent.category.LAUNCHER\"]]/..");
 
         //
         // Run XPath query
         //
-        result = xPathExpression.evaluate( document, XPathConstants.NODESET );
+        result = xPathExpression.evaluate(document, XPathConstants.NODESET);
 
         if ( result instanceof NodeList )
         {
@@ -240,19 +237,16 @@ public class RunMojo extends AbstractAndroidMojo {
                 LauncherInfo launcherInfo;
 
                 launcherInfo = new LauncherInfo();
-                launcherInfo.activity =
-                    activities.item( 0 ).getAttributes().getNamedItem( "android:name" ).getNodeValue();
-                launcherInfo.packageName = document.getDocumentElement().getAttribute( "package" ).toString();
+                launcherInfo.activity = activities.item(0).getAttributes().getNamedItem("android:name").getNodeValue();
+                launcherInfo.packageName = document.getDocumentElement().getAttribute("package").toString();
 
                 return launcherInfo;
-            }
-            else
+            } else
             {
                 // If we get here, we couldn't find a launcher activity.
                 throw new ActivityNotFoundException();
             }
-        }
-        else
+        } else
         {
             // If we get here we couldn't find any Activity
             throw new ActivityNotFoundException();
@@ -261,7 +255,7 @@ public class RunMojo extends AbstractAndroidMojo {
 
     /**
      * Executes the "Launcher activity".
-     * 
+     *
      * @param info A {@link LauncherInfo}.
      * @throws MojoFailureException
      * @throws MojoExecutionException
@@ -270,37 +264,32 @@ public class RunMojo extends AbstractAndroidMojo {
     {
         final String command;
 
-        command = String.format( "am start %s-n %s/%s", parsedDebug ? "-D " : "", info.packageName, info.activity );
+        command = String.format("am start %s-n %s/%s", parsedDebug ? "-D " : "", info.packageName, info.activity);
 
-        doWithDevices( new DeviceCallback()
+        doWithDevices(new DeviceCallback()
         {
             @Override
-            public void doWithDevice( IDevice device )
-                throws MojoExecutionException, MojoFailureException
+            public void doWithDevice(IDevice device) throws MojoExecutionException, MojoFailureException
             {
                 try
                 {
-                    getLog().info("Attempting to start " + info.packageName + info.activity + " on device "
-                            + device.getSerialNumber() + " (avdName = " + device.getAvdName() + ")");
-                    device.executeShellCommand( command, new NullOutputReceiver() );
-                }
-                catch ( IOException ex )
+                    getLog().info("Attempting to start " + info.packageName + info.activity + " on device " +
+                            device.getSerialNumber() + " (avdName = " + device.getAvdName() + ")");
+                    device.executeShellCommand(command, new NullOutputReceiver());
+                } catch ( IOException ex )
                 {
-                    throw new MojoFailureException( "Input/Output error", ex );
-                }
-                catch ( TimeoutException ex )
+                    throw new MojoFailureException("Input/Output error", ex);
+                } catch ( TimeoutException ex )
                 {
-                    throw new MojoFailureException( "Command timeout", ex );
-                }
-                catch ( AdbCommandRejectedException ex )
+                    throw new MojoFailureException("Command timeout", ex);
+                } catch ( AdbCommandRejectedException ex )
                 {
-                    throw new MojoFailureException( "ADB rejected the command", ex );
-                }
-                catch ( ShellCommandUnresponsiveException ex )
+                    throw new MojoFailureException("ADB rejected the command", ex);
+                } catch ( ShellCommandUnresponsiveException ex )
                 {
-                    throw new MojoFailureException( "Unresponsive command", ex );
+                    throw new MojoFailureException("Unresponsive command", ex);
                 }
             }
-        } );
+        });
     }
 }
