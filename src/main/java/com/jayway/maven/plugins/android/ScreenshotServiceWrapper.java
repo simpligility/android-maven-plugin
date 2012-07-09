@@ -58,7 +58,8 @@ public class ScreenshotServiceWrapper implements DeviceCallback
         try
         {
             forceMkdir( dir );
-        } catch ( IOException e )
+        }
+        catch ( IOException e )
         {
             log.warn( "Unable to create screenshot directory: " + screenshotParentDir.getAbsolutePath(), e );
         }

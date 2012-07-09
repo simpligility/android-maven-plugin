@@ -131,16 +131,20 @@ public class PushMojo extends AbstractAndroidMojo
 
                         getLog().info( message + " successful." );
                     }
-                } catch ( SyncException e )
+                }
+                catch ( SyncException e )
                 {
                     throw new MojoExecutionException( message + " failed.", e );
-                } catch ( IOException e )
+                }
+                catch ( IOException e )
                 {
                     throw new MojoExecutionException( message + " failed.", e );
-                } catch ( TimeoutException e )
+                }
+                catch ( TimeoutException e )
                 {
                     throw new MojoExecutionException( message + " failed.", e );
-                } catch ( AdbCommandRejectedException e )
+                }
+                catch ( AdbCommandRejectedException e )
                 {
                     throw new MojoExecutionException( message + " failed.", e );
                 }

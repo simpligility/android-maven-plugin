@@ -61,11 +61,13 @@ public class JarHelper
                         try
                         {
                             IOUtil.copy( in, out );
-                        } finally
+                        }
+                        finally
                         {
                             IOUtils.closeQuietly( out );
                         }
-                    } finally
+                    }
+                    finally
                     {
                         IOUtils.closeQuietly( in );
                     }

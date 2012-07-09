@@ -83,10 +83,12 @@ public class ApklibMojo extends AbstractAndroidMojo
             addNativeLibraries( jarArchiver );
 
             jarArchiver.createArchive();
-        } catch ( ArchiverException e )
+        }
+        catch ( ArchiverException e )
         {
             throw new MojoExecutionException( "ArchiverException while creating ." + APKLIB + " file.", e );
-        } catch ( IOException e )
+        }
+        catch ( IOException e )
         {
             throw new MojoExecutionException( "IOException while creating ." + APKLIB + " file.", e );
         }
@@ -100,7 +102,8 @@ public class ApklibMojo extends AbstractAndroidMojo
         try
         {
             addDirectory( jarArchiver, nativeLibrariesDirectory, "libs" );
-        } catch ( ArchiverException e )
+        }
+        catch ( ArchiverException e )
         {
             throw new MojoExecutionException( "IOException while creating ." + APKLIB + " file.", e );
         }
@@ -268,7 +271,8 @@ public class ApklibMojo extends AbstractAndroidMojo
         try
         {
             executor.executeCommand( getAndroidSdk().getPathForTool( "aapt" ), commands, project.getBasedir(), false );
-        } catch ( ExecutionException e )
+        }
+        catch ( ExecutionException e )
         {
             throw new MojoExecutionException( "", e );
         }

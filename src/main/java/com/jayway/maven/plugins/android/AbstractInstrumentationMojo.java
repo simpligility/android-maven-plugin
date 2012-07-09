@@ -352,16 +352,20 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                     {
                         throw new MojoFailureException( testRunListener.getExceptionMessages() );
                     }
-                } catch ( TimeoutException e )
+                }
+                catch ( TimeoutException e )
                 {
                     throw new MojoExecutionException( "timeout", e );
-                } catch ( AdbCommandRejectedException e )
+                }
+                catch ( AdbCommandRejectedException e )
                 {
                     throw new MojoExecutionException( "adb command rejected", e );
-                } catch ( ShellCommandUnresponsiveException e )
+                }
+                catch ( ShellCommandUnresponsiveException e )
                 {
                     throw new MojoExecutionException( "shell command " + "unresponsive", e );
-                } catch ( IOException e )
+                }
+                catch ( IOException e )
                 {
                     throw new MojoExecutionException( "IO problem", e );
                 }
@@ -714,7 +718,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
                     testSuitesNode.appendChild( testSuiteNode );
 
-                } catch ( ParserConfigurationException e )
+                }
+                catch ( ParserConfigurationException e )
                 {
                     threwException = true;
                     exceptionMessages.append( "Failed to create document" );
@@ -926,7 +931,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             try
             {
                 xformer = xfactory.newTransformer();
-            } catch ( TransformerConfigurationException e )
+            }
+            catch ( TransformerConfigurationException e )
             {
                 e.printStackTrace();
             }
@@ -949,17 +955,20 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
                 xformer.transform( source, result );
                 getLog().info( "Report file written to " + reportFile.getAbsolutePath() );
-            } catch ( IOException e )
+            }
+            catch ( IOException e )
             {
                 threwException = true;
                 exceptionMessages.append( "Failed to write test report file" );
                 exceptionMessages.append( e.getMessage() );
-            } catch ( TransformerException e )
+            }
+            catch ( TransformerException e )
             {
                 threwException = true;
                 exceptionMessages.append( "Failed to transform document to write to test report file" );
                 exceptionMessages.append( e.getMessage() );
-            } finally
+            }
+            finally
             {
                 IOUtils.closeQuietly( writer );
             }

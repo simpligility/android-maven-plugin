@@ -63,7 +63,8 @@ public class AetherHelper
                 resolvedArtifacts.add( resolvedArtifact );
             }
             return resolvedArtifacts;
-        } catch ( Exception e )
+        }
+        catch ( Exception e )
         {
             throw new MojoExecutionException( "Error resolving dependencies: " + e.getMessage(), e );
         }
@@ -88,7 +89,8 @@ public class AetherHelper
                             artifact.getArtifactHandler() );
             defaultArtifact.setFile( artifactResult.getArtifact().getFile() );
             return defaultArtifact;
-        } catch ( ArtifactResolutionException e )
+        }
+        catch ( ArtifactResolutionException e )
         {
             throw new MojoExecutionException( "Error while resolving artifact: " + e.getMessage(), e );
         }
