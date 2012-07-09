@@ -70,18 +70,18 @@ public class ApkBuilder
         try
         {
             URLClassLoader child =
-                    new URLClassLoader(new URL[]{sdkLibs.toURI().toURL()}, ApkBuilder.class.getClassLoader());
-            apkBuilderClass = child.loadClass("com.android.sdklib.build.ApkBuilder");
+                    new URLClassLoader( new URL[]{sdkLibs.toURI().toURL()}, ApkBuilder.class.getClassLoader() );
+            apkBuilderClass = child.loadClass( "com.android.sdklib.build.ApkBuilder" );
         } catch ( MalformedURLException e )
         {
             // This one cannot happen.
-            throw new RuntimeException("Cannot create a correct URL from file " + sdkLibs.getAbsolutePath());
+            throw new RuntimeException( "Cannot create a correct URL from file " + sdkLibs.getAbsolutePath() );
         } catch ( ClassNotFoundException e )
         {
-            log.error(e);
-            throw new MojoExecutionException("Cannot load 'com.android.sdklib.build.ApkBuilder'");
+            log.error( e );
+            throw new MojoExecutionException( "Cannot load 'com.android.sdklib.build.ApkBuilder'" );
         }
-        log.debug("ApkBuilder loaded " + apkBuilderClass);
+        log.debug( "ApkBuilder loaded " + apkBuilderClass );
 
         // In order to improve performence and to check that all methods are available
         // we cache used methods.
@@ -90,30 +90,30 @@ public class ApkBuilder
         try
         {
             apkBuilderConstructor = apkBuilderClass
-                    .getConstructor(new Class[]{File.class, File.class, File.class, String.class, PrintStream.class});
+                    .getConstructor( new Class[]{File.class, File.class, File.class, String.class, PrintStream.class} );
 
-            setDebugMethod = apkBuilderClass.getMethod("setDebugMode", new Class[]{Boolean.TYPE});
+            setDebugMethod = apkBuilderClass.getMethod( "setDebugMode", new Class[]{Boolean.TYPE} );
 
-            addResourcesFromJarMethod = apkBuilderClass.getMethod("addResourcesFromJar", new Class[]{File.class});
+            addResourcesFromJarMethod = apkBuilderClass.getMethod( "addResourcesFromJar", new Class[]{File.class} );
 
             //The addNativeLibraries signature changed for api 14
             Method[] builderMethods = apkBuilderClass.getMethods();
             for ( Method method : builderMethods )
             {
-                if ( "addNativeLibraries".equals(method.getName()) )
+                if ( "addNativeLibraries".equals( method.getName() ) )
                 {
                     Class<?>[] parameterTypes = method.getParameterTypes();
                     //The old method (pre v14) took a second string parameter.
                     if ( parameterTypes.length == 2 )
                     {
-                        if ( parameterTypes[0] == File.class && parameterTypes[1] == String.class )
+                        if ( parameterTypes[ 0 ] == File.class && parameterTypes[ 1 ] == String.class )
                         {
                             addNativeLibrariesMethod = method;
                             break;
                         }
                     } else if ( parameterTypes.length == 1 )
                     {
-                        if ( parameterTypes[0] == File.class )
+                        if ( parameterTypes[ 0 ] == File.class )
                         {
                             addNativeLibrariesMethod = method;
                             break;
@@ -122,15 +122,15 @@ public class ApkBuilder
                 }
             }
 
-            addSourceFolderMethod = apkBuilderClass.getMethod("addSourceFolder", new Class[]{File.class});
+            addSourceFolderMethod = apkBuilderClass.getMethod( "addSourceFolder", new Class[]{File.class} );
 
-            sealApkMethod = apkBuilderClass.getMethod("sealApk", new Class[0]);
+            sealApkMethod = apkBuilderClass.getMethod( "sealApk", new Class[ 0 ] );
 
-            getDebugKeyStoreMethod = apkBuilderClass.getMethod("getDebugKeystore", new Class[0]);
+            getDebugKeyStoreMethod = apkBuilderClass.getMethod( "getDebugKeystore", new Class[ 0 ] );
         } catch ( Exception e )
         {
-            log.error("Cannot find required method", e);
-            throw new MojoExecutionException("Cannot find the required method", e);
+            log.error( "Cannot find required method", e );
+            throw new MojoExecutionException( "Cannot find the required method", e );
         }
     }
 
@@ -201,24 +201,24 @@ public class ApkBuilder
     {
         if ( apkBuilderClass == null )
         {
-            throw new MojoExecutionException("The APKBuilder class was not initialized");
+            throw new MojoExecutionException( "The APKBuilder class was not initialized" );
         }
 
         try
         {
             // We need to first get the debug key store
-            Object debugKeyStore = getDebugKeyStoreMethod.invoke(null, new Object[0]);
+            Object debugKeyStore = getDebugKeyStoreMethod.invoke( null, new Object[ 0 ] );
 
             builder = apkBuilderConstructor.newInstance(
-                    new Object[]{apkFile, resFile, dexFile, (signed) ? debugKeyStore : null, verboseStream});
+                    new Object[]{apkFile, resFile, dexFile, ( signed ) ? debugKeyStore : null, verboseStream} );
         } catch ( InvocationTargetException e )
         {
-            log.error("Cannot create the APKBuilder object", e.getCause());
-            throw new MojoExecutionException("Cannot create the APKBuilder object", e.getCause());
+            log.error( "Cannot create the APKBuilder object", e.getCause() );
+            throw new MojoExecutionException( "Cannot create the APKBuilder object", e.getCause() );
         } catch ( Exception e )
         {
-            log.error("Cannot create the APKBuilder object", e);
-            throw new MojoExecutionException("Cannot create the APKBuilder object", e);
+            log.error( "Cannot create the APKBuilder object", e );
+            throw new MojoExecutionException( "Cannot create the APKBuilder object", e );
         }
     }
 
@@ -232,15 +232,15 @@ public class ApkBuilder
     {
         try
         {
-            setDebugMethod.invoke(builder, new Object[]{debug});
+            setDebugMethod.invoke( builder, new Object[]{debug} );
         } catch ( InvocationTargetException e )
         {
-            log.error("Cannot set the debug mode", e.getCause());
-            throw new MojoExecutionException("Cannot create the APKBuilder object", e.getCause());
+            log.error( "Cannot set the debug mode", e.getCause() );
+            throw new MojoExecutionException( "Cannot create the APKBuilder object", e.getCause() );
         } catch ( Exception e )
         {
-            log.error("Cannot set the debug mode", e);
-            throw new MojoExecutionException("Cannot create the APKBuilder object", e);
+            log.error( "Cannot set the debug mode", e );
+            throw new MojoExecutionException( "Cannot create the APKBuilder object", e );
         }
     }
 
@@ -254,15 +254,15 @@ public class ApkBuilder
     {
         try
         {
-            addSourceFolderMethod.invoke(builder, new Object[]{sourceFolder});
+            addSourceFolderMethod.invoke( builder, new Object[]{sourceFolder} );
         } catch ( InvocationTargetException e )
         {
-            log.error("Cannot add source folder", e.getCause());
-            throw new MojoExecutionException("Cannot add source folder", e.getCause());
+            log.error( "Cannot add source folder", e.getCause() );
+            throw new MojoExecutionException( "Cannot add source folder", e.getCause() );
         } catch ( Exception e )
         {
-            log.error("Cannot add source folder", e);
-            throw new MojoExecutionException("Cannot add source folder", e);
+            log.error( "Cannot add source folder", e );
+            throw new MojoExecutionException( "Cannot add source folder", e );
         }
     }
 
@@ -276,16 +276,16 @@ public class ApkBuilder
     {
         try
         {
-            addResourcesFromJarMethod.invoke(builder, new Object[]{jarFile});
+            addResourcesFromJarMethod.invoke( builder, new Object[]{jarFile} );
         } catch ( InvocationTargetException e )
         {
             final String message = "Cannot add resources from " + jarFile.getAbsolutePath();
-            log.error(message, e.getCause());
-            throw new MojoExecutionException(message, e.getCause());
+            log.error( message, e.getCause() );
+            throw new MojoExecutionException( message, e.getCause() );
         } catch ( Exception e )
         {
-            log.error("Cannot add source folder", e);
-            throw new MojoExecutionException("Cannot add resources from jar", e);
+            log.error( "Cannot add source folder", e );
+            throw new MojoExecutionException( "Cannot add resources from jar", e );
         }
     }
 
@@ -309,19 +309,19 @@ public class ApkBuilder
             //The pre-14 version took a second abiFilter string parameter.
             if ( addNativeLibrariesMethod.getParameterTypes().length == 2 )
             {
-                addNativeLibrariesMethod.invoke(builder, new Object[]{nativeFolder, abiFilter});
+                addNativeLibrariesMethod.invoke( builder, new Object[]{nativeFolder, abiFilter} );
             } else
             {
-                addNativeLibrariesMethod.invoke(builder, new Object[]{nativeFolder});
+                addNativeLibrariesMethod.invoke( builder, new Object[]{nativeFolder} );
             }
         } catch ( InvocationTargetException e )
         {
-            log.error("Cannot add native libraries", e.getCause());
-            throw new MojoExecutionException("Cannot add native libraries", e.getCause());
+            log.error( "Cannot add native libraries", e.getCause() );
+            throw new MojoExecutionException( "Cannot add native libraries", e.getCause() );
         } catch ( Exception e )
         {
-            log.error("Cannot add native libraries", e);
-            throw new MojoExecutionException("Cannot add native libraries", e);
+            log.error( "Cannot add native libraries", e );
+            throw new MojoExecutionException( "Cannot add native libraries", e );
         }
     }
 
@@ -334,15 +334,15 @@ public class ApkBuilder
     {
         try
         {
-            sealApkMethod.invoke(builder, new Object[0]);
+            sealApkMethod.invoke( builder, new Object[ 0 ] );
         } catch ( InvocationTargetException e )
         {
-            log.error("Cannot seal the APK", e.getCause());
-            throw new MojoExecutionException("Cannot seal the APK", e.getCause());
+            log.error( "Cannot seal the APK", e.getCause() );
+            throw new MojoExecutionException( "Cannot seal the APK", e.getCause() );
         } catch ( Exception e )
         {
-            log.error("Cannot seal the APK", e);
-            throw new MojoExecutionException("Cannot seal the APK", e);
+            log.error( "Cannot seal the APK", e );
+            throw new MojoExecutionException( "Cannot seal the APK", e );
         }
 
     }

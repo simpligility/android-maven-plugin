@@ -19,11 +19,11 @@ public final class ConfigHelper
         try
         {
             final Class<? extends AbstractMojo> mojoClass = mojo.getClass();
-            final Field confField = mojoClass.getDeclaredField(confFieldName);
+            final Field confField = mojoClass.getDeclaredField( confFieldName );
 
-            confField.setAccessible(true);
+            confField.setAccessible( true );
 
-            final Object conf = confField.get(mojo);
+            final Object conf = confField.get( mojo );
 
             if ( conf == null )
             {
@@ -32,9 +32,9 @@ public final class ConfigHelper
 
             for ( final Field field : conf.getClass().getDeclaredFields() )
             {
-                field.setAccessible(true);
+                field.setAccessible( true );
 
-                final Object value = field.get(conf);
+                final Object value = field.get( conf );
 
                 if ( value == null )
                 {
@@ -43,11 +43,11 @@ public final class ConfigHelper
 
                 final Class<?> cls = value.getClass();
 
-                if ( (cls == String.class) && (((String) value).length() == 0) )
+                if ( ( cls == String.class ) && ( ( (String) value ).length() == 0 ) )
                 {
                     continue;
                 }
-                if ( cls.isArray() && (Array.getLength(value) == 0) )
+                if ( cls.isArray() && ( Array.getLength( value ) == 0 ) )
                 {
                     continue;
                 }
@@ -55,15 +55,15 @@ public final class ConfigHelper
                 {
                     String mojoFieldName = field.getName();
 
-                    mojoFieldName = Character.toUpperCase(mojoFieldName.charAt(0)) + mojoFieldName.substring(1);
+                    mojoFieldName = Character.toUpperCase( mojoFieldName.charAt( 0 ) ) + mojoFieldName.substring( 1 );
                     mojoFieldName = confFieldName + mojoFieldName;
 
                     try
                     {
-                        final Field mojoField = mojoClass.getDeclaredField(mojoFieldName);
+                        final Field mojoField = mojoClass.getDeclaredField( mojoFieldName );
 
-                        mojoField.setAccessible(true);
-                        mojoField.set(mojo, value);
+                        mojoField.setAccessible( true );
+                        mojoField.set( mojo, value );
                     } catch ( final NoSuchFieldException e )
                     {
                         ;
@@ -74,10 +74,10 @@ public final class ConfigHelper
                 {
                     try
                     {
-                        final Field mojoField = mojoClass.getDeclaredField(field.getName());
+                        final Field mojoField = mojoClass.getDeclaredField( field.getName() );
 
-                        mojoField.setAccessible(true);
-                        mojoField.set(mojo, value);
+                        mojoField.setAccessible( true );
+                        mojoField.set( mojo, value );
                     } catch ( final NoSuchFieldException e )
                     {
                         ;
@@ -89,7 +89,7 @@ public final class ConfigHelper
             }
         } catch ( final Exception e )
         {
-            throw new MojoExecutionException(e.getMessage(), e);
+            throw new MojoExecutionException( e.getMessage(), e );
         }
     }
 }

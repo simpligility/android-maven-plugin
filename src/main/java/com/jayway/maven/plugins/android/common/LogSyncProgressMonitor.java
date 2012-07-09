@@ -37,12 +37,12 @@ public class LogSyncProgressMonitor implements SyncService.ISyncProgressMonitor
 
     public void start(int totalWork)
     {
-        log.info("Starting transfer of " + totalWork + ". See debug log for progress");
+        log.info( "Starting transfer of " + totalWork + ". See debug log for progress" );
     }
 
     public void stop()
     {
-        log.info("Stopped transfer");
+        log.info( "Stopped transfer" );
     }
 
     public boolean isCanceled()
@@ -52,11 +52,11 @@ public class LogSyncProgressMonitor implements SyncService.ISyncProgressMonitor
 
     public void startSubTask(String name)
     {
-        log.info(INDENT + "Started sub task " + name);
+        log.info( INDENT + "Started sub task " + name );
     }
 
     public void advance(int work)
     {
-        log.debug(INDENT + "Transferred " + work);
+        log.debug( INDENT + "Transferred " + work );
     }
 }

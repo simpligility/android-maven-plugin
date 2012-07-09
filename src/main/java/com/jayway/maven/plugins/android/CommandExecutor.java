@@ -181,13 +181,13 @@ public interface CommandExecutor
 
                 public void executeCommand(String executable, List<String> commands) throws ExecutionException
                 {
-                    executeCommand(executable, commands, null, true);
+                    executeCommand( executable, commands, null, true );
                 }
 
                 public void executeCommand(String executable, List<String> commands, boolean failsOnErrorOutput)
                         throws ExecutionException
                 {
-                    executeCommand(executable, commands, null, failsOnErrorOutput);
+                    executeCommand( executable, commands, null, failsOnErrorOutput );
                 }
 
                 public void executeCommand(String executable, List<String> commands, File workingDirectory,
@@ -201,46 +201,46 @@ public interface CommandExecutor
                     stdErr = new ErrorStreamConsumer();
 
                     commandline = new Commandline();
-                    commandline.setExecutable(executable);
+                    commandline.setExecutable( executable );
 
                     // Add the environment variables as needed
                     if ( environment != null )
                     {
                         for ( Map.Entry<String, String> entry : environment.entrySet() )
                         {
-                            commandline.addEnvironment(entry.getKey(), entry.getValue());
+                            commandline.addEnvironment( entry.getKey(), entry.getValue() );
                         }
                     }
 
-                    commandline.addArguments(commands.toArray(new String[commands.size()]));
+                    commandline.addArguments( commands.toArray( new String[ commands.size() ] ) );
                     if ( workingDirectory != null && workingDirectory.exists() )
                     {
-                        commandline.setWorkingDirectory(workingDirectory.getAbsolutePath());
+                        commandline.setWorkingDirectory( workingDirectory.getAbsolutePath() );
                     }
                     try
                     {
-                        result = CommandLineUtils.executeCommandLine(commandline, stdOut, stdErr);
+                        result = CommandLineUtils.executeCommandLine( commandline, stdOut, stdErr );
                         if ( logger != null )
                         {
-                            logger.debug("ANDROID-040-000: Executed command: Commandline = " + commandline +
-                                    ", Result = " + result);
+                            logger.debug( "ANDROID-040-000: Executed command: Commandline = " + commandline +
+                                    ", Result = " + result );
                         } else
                         {
-                            System.out.println("ANDROID-040-000: Executed command: Commandline = " + commandline +
-                                    ", Result = " + result);
+                            System.out.println( "ANDROID-040-000: Executed command: Commandline = " + commandline +
+                                    ", Result = " + result );
                         }
-                        if ( (failsOnErrorOutput && stdErr.hasError()) || result != 0 )
+                        if ( ( failsOnErrorOutput && stdErr.hasError() ) || result != 0 )
                         {
-                            throw new ExecutionException("ANDROID-040-001: Could not execute: Command = " +
-                                    commandline.toString() + ", Result = " + result);
+                            throw new ExecutionException( "ANDROID-040-001: Could not execute: Command = " +
+                                    commandline.toString() + ", Result = " + result );
                         }
                     } catch ( CommandLineException e )
                     {
                         throw new ExecutionException(
                                 "ANDROID-040-002: Could not execute: Command = " + commandline.toString() +
-                                        ", Error message = " + e.getMessage());
+                                        ", Error message = " + e.getMessage() );
                     }
-                    setPid(commandline.getPid());
+                    setPid( commandline.getPid() );
                 }
 
                 public int getResult()
@@ -265,7 +265,7 @@ public interface CommandExecutor
                     {
                         environment = new HashMap<String, String>();
                     }
-                    environment.put(name, value);
+                    environment.put( name, value );
                 }
 
                 public void setErrorListener(ErrorListener errorListener)
@@ -305,21 +305,21 @@ public interface CommandExecutor
                     {
                         if ( logger == null )
                         {
-                            System.out.println("ANDROID-040-003: Error Log not set: Will not output error logs");
+                            System.out.println( "ANDROID-040-003: Error Log not set: Will not output error logs" );
                         }
                         error = false;
                     }
 
                     public void consumeLine(String line)
                     {
-                        sbe.append(line);
+                        sbe.append( line );
                         if ( logger != null )
                         {
-                            logger.info(line);
+                            logger.info( line );
                         }
                         if ( errorListener != null )
                         {
-                            error = errorListener.isError(line);
+                            error = errorListener.isError( line );
                         } else
                         {
                             error = true;
@@ -364,10 +364,10 @@ public interface CommandExecutor
 
                     public void consumeLine(String line)
                     {
-                        sb.append(line);
+                        sb.append( line );
                         if ( logger != null )
                         {
-                            consumer.consumeLine(line);
+                            consumer.consumeLine( line );
                         }
                     }
 

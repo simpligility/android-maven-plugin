@@ -168,11 +168,11 @@ public class ProguardMojo extends AbstractAndroidMojo
     public static final String PROGUARD_OBFUSCATED_JAR = "proguard-obfuscated.jar";
 
     private static final Collection<String> ANDROID_LIBRARY_EXCLUDED_FILTER =
-            Arrays.asList("org/xml/**", "org/w3c/**", "org/apache/http/**", "java/**", "javax/**",
-                    "android/net/http/AndroidHttpClient.class");
+            Arrays.asList( "org/xml/**", "org/w3c/**", "org/apache/http/**", "java/**", "javax/**",
+                    "android/net/http/AndroidHttpClient.class" );
 
-    private static final Collection<String> MAVEN_DESCRIPTOR = Arrays.asList("META-INF/maven/**");
-    private static final Collection<String> META_INF_MANIFEST = Arrays.asList("META-INF/MANIFEST.MF");
+    private static final Collection<String> MAVEN_DESCRIPTOR = Arrays.asList( "META-INF/maven/**" );
+    private static final Collection<String> META_INF_MANIFEST = Arrays.asList( "META-INF/MANIFEST.MF" );
 
     private Collection<String> globalInJarExcludes = new HashSet<String>();
 
@@ -196,19 +196,19 @@ public class ProguardMojo extends AbstractAndroidMojo
 
         public String toCommandLine()
         {
-            if ( excludedFilter != null && !excludedFilter.isEmpty() )
+            if ( excludedFilter != null && ! excludedFilter.isEmpty() )
             {
-                StringBuilder sb = new StringBuilder(path);
-                sb.append('(');
+                StringBuilder sb = new StringBuilder( path );
+                sb.append( '(' );
                 for ( Iterator<String> it = excludedFilter.iterator(); it.hasNext(); )
                 {
-                    sb.append('!').append(it.next());
+                    sb.append( '!' ).append( it.next() );
                     if ( it.hasNext() )
                     {
-                        sb.append(',');
+                        sb.append( ',' );
                     }
                 }
-                sb.append(')');
+                sb.append( ')' );
                 return sb.toString();
             } else
             {
@@ -220,10 +220,10 @@ public class ProguardMojo extends AbstractAndroidMojo
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        ConfigHandler configHandler = new ConfigHandler(this);
+        ConfigHandler configHandler = new ConfigHandler( this );
         configHandler.parseConfiguration();
 
-        if ( !parsedSkip )
+        if ( ! parsedSkip )
         {
             executeProguard();
         }
@@ -232,48 +232,48 @@ public class ProguardMojo extends AbstractAndroidMojo
     private void executeProguard() throws MojoExecutionException
     {
 
-        File proguardDir = new File(project.getBuild().getDirectory(), "proguard");
-        if ( !proguardDir.exists() && !proguardDir.mkdir() )
+        File proguardDir = new File( project.getBuild().getDirectory(), "proguard" );
+        if ( ! proguardDir.exists() && ! proguardDir.mkdir() )
         {
-            throw new MojoExecutionException("Cannot create proguard output directory");
-        } else if ( proguardDir.exists() && !proguardDir.isDirectory() )
+            throw new MojoExecutionException( "Cannot create proguard output directory" );
+        } else if ( proguardDir.exists() && ! proguardDir.isDirectory() )
         {
-            throw new MojoExecutionException("Non-directory exists at " + proguardDir.getAbsolutePath());
+            throw new MojoExecutionException( "Non-directory exists at " + proguardDir.getAbsolutePath() );
         }
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
+        executor.setLogger( this.getLog() );
         List<String> commands = new ArrayList<String>();
 
-        collectJvmArguments(commands);
+        collectJvmArguments( commands );
 
-        commands.add("-jar");
-        commands.add(parsedProguardJarPath);
+        commands.add( "-jar" );
+        commands.add( parsedProguardJarPath );
 
-        commands.add("@" + parsedConfig);
+        commands.add( "@" + parsedConfig );
 
-        collectInputFiles(commands);
+        collectInputFiles( commands );
 
-        commands.add("-outjars");
-        commands.add("'" + project.getBuild().getDirectory() + File.separator + PROGUARD_OBFUSCATED_JAR + "'");
+        commands.add( "-outjars" );
+        commands.add( "'" + project.getBuild().getDirectory() + File.separator + PROGUARD_OBFUSCATED_JAR + "'" );
 
-        commands.add("-dump");
-        commands.add("'" + proguardDir + File.separator + "dump.txt'");
-        commands.add("-printseeds");
-        commands.add("'" + proguardDir + File.separator + "seeds.txt'");
-        commands.add("-printusage");
-        commands.add("'" + proguardDir + File.separator + "usage.txt'");
-        commands.add("-printmapping");
-        commands.add("'" + proguardDir + File.separator + "mapping.txt'");
+        commands.add( "-dump" );
+        commands.add( "'" + proguardDir + File.separator + "dump.txt'" );
+        commands.add( "-printseeds" );
+        commands.add( "'" + proguardDir + File.separator + "seeds.txt'" );
+        commands.add( "-printusage" );
+        commands.add( "'" + proguardDir + File.separator + "usage.txt'" );
+        commands.add( "-printmapping" );
+        commands.add( "'" + proguardDir + File.separator + "mapping.txt'" );
 
         final String javaExecutable = getJavaExecutable().getAbsolutePath();
-        getLog().info(javaExecutable + " " + commands.toString());
+        getLog().info( javaExecutable + " " + commands.toString() );
         try
         {
-            executor.executeCommand(javaExecutable, commands, project.getBasedir(), false);
+            executor.executeCommand( javaExecutable, commands, project.getBasedir(), false );
         } catch ( ExecutionException e )
         {
-            throw new MojoExecutionException("", e);
+            throw new MojoExecutionException( "", e );
         }
     }
 
@@ -292,11 +292,11 @@ public class ProguardMojo extends AbstractAndroidMojo
                 // preserve backward compatibility allowing argument with or without dash (e.g.
                 // Xmx512m as well as -Xmx512m should work) (see
                 // http://code.google.com/p/maven-android-plugin/issues/detail?id=153)
-                if ( !jvmArgument.startsWith("-") )
+                if ( ! jvmArgument.startsWith( "-" ) )
                 {
                     jvmArgument = "-" + jvmArgument;
                 }
-                commands.add(jvmArgument);
+                commands.add( jvmArgument );
             }
         }
     }
@@ -305,24 +305,24 @@ public class ProguardMojo extends AbstractAndroidMojo
     {
         // commons-logging breaks everything horribly, so we skip it from the program
         // dependencies and declare it to be a library dependency instead
-        skipArtifact("commons-logging", "commons-logging", true);
+        skipArtifact( "commons-logging", "commons-logging", true );
 
         collectProgramInputFiles();
         for ( ProGuardInput injar : inJars )
         {
             // don't add android packaging files, these are not input to proguard
-            if ( !AndroidExtension.isAndroidPackaging(FileUtils.extension(injar.path)) )
+            if ( ! AndroidExtension.isAndroidPackaging( FileUtils.extension( injar.path ) ) )
             {
-                commands.add("-injars");
-                commands.add(injar.toCommandLine());
+                commands.add( "-injars" );
+                commands.add( injar.toCommandLine() );
             }
         }
 
         collectLibraryInputFiles();
         for ( ProGuardInput libraryjar : libraryJars )
         {
-            commands.add("-libraryjars");
-            commands.add(libraryjar.toCommandLine());
+            commands.add( "-libraryjars" );
+            commands.add( libraryjar.toCommandLine() );
         }
     }
 
@@ -333,17 +333,18 @@ public class ProguardMojo extends AbstractAndroidMojo
      */
     private static File getJavaExecutable()
     {
-        final String javaHome = System.getProperty("java.home");
+        final String javaHome = System.getProperty( "java.home" );
         final String slash = File.separator;
-        return new File(javaHome + slash + "bin" + slash + "java");
+        return new File( javaHome + slash + "bin" + slash + "java" );
     }
 
     private void skipArtifact(String groupId, String artifactId, boolean shiftToLibraries)
     {
-        artifactBlacklist.add(RepositoryUtils.toArtifact(new DefaultArtifact(groupId, artifactId, null, null)));
+        artifactBlacklist.add( RepositoryUtils.toArtifact( new DefaultArtifact( groupId, artifactId, null, null ) ) );
         if ( shiftToLibraries )
         {
-            artifactsToShift.add(RepositoryUtils.toArtifact(new DefaultArtifact(groupId, artifactId, null, null)));
+            artifactsToShift
+                    .add( RepositoryUtils.toArtifact( new DefaultArtifact( groupId, artifactId, null, null ) ) );
         }
     }
 
@@ -351,8 +352,8 @@ public class ProguardMojo extends AbstractAndroidMojo
     {
         for ( Artifact artifactToSkip : artifactBlacklist )
         {
-            if ( artifactToSkip.getGroupId().equals(artifact.getGroupId()) &&
-                    artifactToSkip.getArtifactId().equals(artifact.getArtifactId()) )
+            if ( artifactToSkip.getGroupId().equals( artifact.getGroupId() ) &&
+                    artifactToSkip.getArtifactId().equals( artifact.getArtifactId() ) )
             {
                 return true;
             }
@@ -364,8 +365,8 @@ public class ProguardMojo extends AbstractAndroidMojo
     {
         for ( Artifact artifactToShift : artifactsToShift )
         {
-            if ( artifactToShift.getGroupId().equals(artifact.getGroupId()) &&
-                    artifactToShift.getArtifactId().equals(artifact.getArtifactId()) )
+            if ( artifactToShift.getGroupId().equals( artifact.getGroupId() ) &&
+                    artifactToShift.getArtifactId().equals( artifact.getArtifactId() ) )
             {
                 return true;
             }
@@ -377,45 +378,45 @@ public class ProguardMojo extends AbstractAndroidMojo
     {
         if ( parsedFilterManifest )
         {
-            globalInJarExcludes.addAll(META_INF_MANIFEST);
+            globalInJarExcludes.addAll( META_INF_MANIFEST );
         }
         if ( parsedFilterMavenDescriptor )
         {
-            globalInJarExcludes.addAll(MAVEN_DESCRIPTOR);
+            globalInJarExcludes.addAll( MAVEN_DESCRIPTOR );
         }
 
         // we first add the application's own class files
-        addInJar(project.getBuild().getOutputDirectory());
+        addInJar( project.getBuild().getOutputDirectory() );
 
         // we then add all its dependencies (incl. transitive ones), unless they're blacklisted
         for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
         {
-            if ( isBlacklistedArtifact(artifact) )
+            if ( isBlacklistedArtifact( artifact ) )
             {
                 continue;
             }
-            addInJar(artifact.getFile().getAbsolutePath(), globalInJarExcludes);
+            addInJar( artifact.getFile().getAbsolutePath(), globalInJarExcludes );
         }
     }
 
     private void addInJar(String path, Collection<String> filterExpression)
     {
-        inJars.add(new ProGuardInput(path, filterExpression));
+        inJars.add( new ProGuardInput( path, filterExpression ) );
     }
 
     private void addInJar(String path)
     {
-        addInJar(path, null);
+        addInJar( path, null );
     }
 
     private void addLibraryJar(String path, Collection<String> filterExpression)
     {
-        libraryJars.add(new ProGuardInput(path, filterExpression));
+        libraryJars.add( new ProGuardInput( path, filterExpression ) );
     }
 
     private void addLibraryJar(String path)
     {
-        addLibraryJar(path, null);
+        addLibraryJar( path, null );
     }
 
     private void collectLibraryInputFiles()
@@ -424,39 +425,39 @@ public class ProguardMojo extends AbstractAndroidMojo
         // we have to add the Java framework classes to the library JARs, since they are not
         // distributed with the JAR on Central, and since we'll strip them out of the android.jar
         // that is shipped with the SDK (since that is not a complete Java distribution)
-        String javaHome = System.getProperty("java.home");
+        String javaHome = System.getProperty( "java.home" );
         String jdkLibsPath = null;
-        if ( javaHome.startsWith("/System/Library/Java") || javaHome.startsWith("/Library/Java") )
+        if ( javaHome.startsWith( "/System/Library/Java" ) || javaHome.startsWith( "/Library/Java" ) )
         {
             // MacOS X uses different naming conventions for JDK installations
             jdkLibsPath = javaHome + "/../Classes";
-            addLibraryJar(jdkLibsPath + "/classes.jar");
+            addLibraryJar( jdkLibsPath + "/classes.jar" );
         } else
         {
             jdkLibsPath = javaHome + slash + "lib";
-            addLibraryJar(jdkLibsPath + slash + "rt.jar");
+            addLibraryJar( jdkLibsPath + slash + "rt.jar" );
         }
         // we also need to add the JAR containing e.g. javax.servlet
-        addLibraryJar(jdkLibsPath + slash + "jsse.jar");
+        addLibraryJar( jdkLibsPath + slash + "jsse.jar" );
         // and the javax.crypto stuff
-        addLibraryJar(jdkLibsPath + slash + "jce.jar");
+        addLibraryJar( jdkLibsPath + slash + "jce.jar" );
 
         // we treat any dependencies with provided scope as library JARs
         for ( Artifact artifact : project.getArtifacts() )
         {
-            if ( artifact.getScope().equals(JavaScopes.PROVIDED) )
+            if ( artifact.getScope().equals( JavaScopes.PROVIDED ) )
             {
-                if ( artifact.getArtifactId().equals("android") )
+                if ( artifact.getArtifactId().equals( "android" ) )
                 {
-                    addLibraryJar(artifact.getFile().getAbsolutePath(), ANDROID_LIBRARY_EXCLUDED_FILTER);
+                    addLibraryJar( artifact.getFile().getAbsolutePath(), ANDROID_LIBRARY_EXCLUDED_FILTER );
                 } else
                 {
-                    addLibraryJar(artifact.getFile().getAbsolutePath());
+                    addLibraryJar( artifact.getFile().getAbsolutePath() );
                 }
-            } else if ( isShiftedArtifact(artifact) )
+            } else if ( isShiftedArtifact( artifact ) )
             {
                 // this is a blacklisted artifact that should be processed as a library instead
-                addLibraryJar(artifact.getFile().getAbsolutePath());
+                addLibraryJar( artifact.getFile().getAbsolutePath() );
             }
         }
     }
@@ -471,9 +472,9 @@ public class ProguardMojo extends AbstractAndroidMojo
     private String getProguardJarPath() throws MojoExecutionException
     {
         String proguardJarPath = getProguardJarPathFromDependencies();
-        if ( StringUtils.isEmpty(proguardJarPath) )
+        if ( StringUtils.isEmpty( proguardJarPath ) )
         {
-            proguardJarPath = getAndroidSdk().getPathForTool("proguard/lib/proguard.jar");
+            proguardJarPath = getAndroidSdk().getPathForTool( "proguard/lib/proguard.jar" );
         }
         return proguardJarPath;
     }
@@ -481,15 +482,16 @@ public class ProguardMojo extends AbstractAndroidMojo
     private String getProguardJarPathFromDependencies() throws MojoExecutionException
     {
         Artifact proguardArtifact = null;
-        int proguardArtifactDistance = -1;
+        int proguardArtifactDistance = - 1;
         for ( Artifact artifact : pluginDependencies )
         {
-            getLog().debug("pluginArtifact: " + artifact.getFile());
-            if ( ("proguard".equals(artifact.getArtifactId())) || ("proguard-base".equals(artifact.getArtifactId())) )
+            getLog().debug( "pluginArtifact: " + artifact.getFile() );
+            if ( ( "proguard".equals( artifact.getArtifactId() ) ) ||
+                    ( "proguard-base".equals( artifact.getArtifactId() ) ) )
             {
                 int distance = artifact.getDependencyTrail().size();
-                getLog().debug("proguard DependencyTrail: " + distance);
-                if ( proguardArtifactDistance == -1 )
+                getLog().debug( "proguard DependencyTrail: " + distance );
+                if ( proguardArtifactDistance == - 1 )
                 {
                     proguardArtifact = artifact;
                     proguardArtifactDistance = distance;
@@ -502,7 +504,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         }
         if ( proguardArtifact != null )
         {
-            getLog().debug("proguardArtifact: " + proguardArtifact.getFile());
+            getLog().debug( "proguardArtifact: " + proguardArtifact.getFile() );
             return proguardArtifact.getFile().getAbsoluteFile().toString();
         } else
         {

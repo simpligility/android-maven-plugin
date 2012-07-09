@@ -42,18 +42,18 @@ class DescendantFinder extends ClassVisitor
      */
     public DescendantFinder(String... parentPackages)
     {
-        super(Opcodes.ASM4);
+        super( Opcodes.ASM4 );
         this.parentPackages = parentPackages;
     }
 
     private final String[] parentPackages;
-    private final AtomicBoolean isDescendantFound = new AtomicBoolean(false);
+    private final AtomicBoolean isDescendantFound = new AtomicBoolean( false );
 
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces)
     {
         for ( String testPackage : parentPackages )
         {
-            if ( StringUtils.startsWith(superName, testPackage) )
+            if ( StringUtils.startsWith( superName, testPackage ) )
             {
                 flagAsFound();
                 //                System.out.println(name + " extends " + superName);
@@ -63,7 +63,7 @@ class DescendantFinder extends ClassVisitor
 
     private void flagAsFound()
     {
-        isDescendantFound.set(true);
+        isDescendantFound.set( true );
     }
 
     /**

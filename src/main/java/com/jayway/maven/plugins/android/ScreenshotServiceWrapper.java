@@ -28,27 +28,27 @@ public class ScreenshotServiceWrapper implements DeviceCallback
     {
         this.delegate = delegate;
         this.log = log;
-        screenshotParentDir = new File(project.getBuild().getDirectory(), "screenshots");
-        create(screenshotParentDir);
+        screenshotParentDir = new File( project.getBuild().getDirectory(), "screenshots" );
+        create( screenshotParentDir );
     }
 
 
     @Override
     public void doWithDevice(final IDevice device) throws MojoExecutionException, MojoFailureException
     {
-        String deviceName = getDescriptiveName(device);
+        String deviceName = getDescriptiveName( device );
 
-        File deviceGifFile = new File(screenshotParentDir, deviceName + ".gif");
-        File deviceScreenshotDir = new File(screenshotParentDir, deviceName);
-        create(deviceScreenshotDir);
+        File deviceGifFile = new File( screenshotParentDir, deviceName + ".gif" );
+        File deviceScreenshotDir = new File( screenshotParentDir, deviceName );
+        create( deviceScreenshotDir );
 
         OnDemandScreenshotService screenshotService =
-                new OnDemandScreenshotService(device, new ImageSaver(deviceScreenshotDir),
-                        new ImageScaler(new AnimatedGifCreator(deviceGifFile), square(320)));
+                new OnDemandScreenshotService( device, new ImageSaver( deviceScreenshotDir ),
+                        new ImageScaler( new AnimatedGifCreator( deviceGifFile ), square( 320 ) ) );
 
         screenshotService.start();
 
-        delegate.doWithDevice(device);
+        delegate.doWithDevice( device );
 
         screenshotService.finish();
     }
@@ -57,10 +57,10 @@ public class ScreenshotServiceWrapper implements DeviceCallback
     {
         try
         {
-            forceMkdir(dir);
+            forceMkdir( dir );
         } catch ( IOException e )
         {
-            log.warn("Unable to create screenshot directory: " + screenshotParentDir.getAbsolutePath(), e);
+            log.warn( "Unable to create screenshot directory: " + screenshotParentDir.getAbsolutePath(), e );
         }
     }
 }

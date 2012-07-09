@@ -134,7 +134,7 @@ public class RunMojo extends AbstractAndroidMojo
          */
         public ActivityNotFoundException()
         {
-            super("Unable to determine Launcher activity");
+            super( "Unable to determine Launcher activity" );
         }
     }
 
@@ -166,13 +166,13 @@ public class RunMojo extends AbstractAndroidMojo
 
             launcherInfo = getLauncherActivity();
 
-            ConfigHandler configHandler = new ConfigHandler(this);
+            ConfigHandler configHandler = new ConfigHandler( this );
             configHandler.parseConfiguration();
 
-            launch(launcherInfo);
+            launch( launcherInfo );
         } catch ( Exception ex )
         {
-            throw new MojoFailureException("Unable to run launcher Activity", ex);
+            throw new MojoFailureException( "Unable to run launcher Activity", ex );
         }
     }
 
@@ -210,7 +210,7 @@ public class RunMojo extends AbstractAndroidMojo
 
         documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
-        document = documentBuilder.parse(androidManifestFile);
+        document = documentBuilder.parse( androidManifestFile );
 
         xPathFactory = XPathFactory.newInstance();
 
@@ -218,12 +218,12 @@ public class RunMojo extends AbstractAndroidMojo
 
         xPathExpression = xPath.compile(
                 "//manifest/application/activity/intent-filter[action[@name=\"android.intent.action.MAIN\"] " +
-                        "and category[@name=\"android.intent.category.LAUNCHER\"]]/..");
+                        "and category[@name=\"android.intent.category.LAUNCHER\"]]/.." );
 
         //
         // Run XPath query
         //
-        result = xPathExpression.evaluate(document, XPathConstants.NODESET);
+        result = xPathExpression.evaluate( document, XPathConstants.NODESET );
 
         if ( result instanceof NodeList )
         {
@@ -237,8 +237,9 @@ public class RunMojo extends AbstractAndroidMojo
                 LauncherInfo launcherInfo;
 
                 launcherInfo = new LauncherInfo();
-                launcherInfo.activity = activities.item(0).getAttributes().getNamedItem("android:name").getNodeValue();
-                launcherInfo.packageName = document.getDocumentElement().getAttribute("package").toString();
+                launcherInfo.activity =
+                        activities.item( 0 ).getAttributes().getNamedItem( "android:name" ).getNodeValue();
+                launcherInfo.packageName = document.getDocumentElement().getAttribute( "package" ).toString();
 
                 return launcherInfo;
             } else
@@ -264,32 +265,32 @@ public class RunMojo extends AbstractAndroidMojo
     {
         final String command;
 
-        command = String.format("am start %s-n %s/%s", parsedDebug ? "-D " : "", info.packageName, info.activity);
+        command = String.format( "am start %s-n %s/%s", parsedDebug ? "-D " : "", info.packageName, info.activity );
 
-        doWithDevices(new DeviceCallback()
+        doWithDevices( new DeviceCallback()
         {
             @Override
             public void doWithDevice(IDevice device) throws MojoExecutionException, MojoFailureException
             {
                 try
                 {
-                    getLog().info("Attempting to start " + info.packageName + info.activity + " on device " +
-                            device.getSerialNumber() + " (avdName = " + device.getAvdName() + ")");
-                    device.executeShellCommand(command, new NullOutputReceiver());
+                    getLog().info( "Attempting to start " + info.packageName + info.activity + " on device " +
+                            device.getSerialNumber() + " (avdName = " + device.getAvdName() + ")" );
+                    device.executeShellCommand( command, new NullOutputReceiver() );
                 } catch ( IOException ex )
                 {
-                    throw new MojoFailureException("Input/Output error", ex);
+                    throw new MojoFailureException( "Input/Output error", ex );
                 } catch ( TimeoutException ex )
                 {
-                    throw new MojoFailureException("Command timeout", ex);
+                    throw new MojoFailureException( "Command timeout", ex );
                 } catch ( AdbCommandRejectedException ex )
                 {
-                    throw new MojoFailureException("ADB rejected the command", ex);
+                    throw new MojoFailureException( "ADB rejected the command", ex );
                 } catch ( ShellCommandUnresponsiveException ex )
                 {
-                    throw new MojoFailureException("Unresponsive command", ex);
+                    throw new MojoFailureException( "Unresponsive command", ex );
                 }
             }
-        });
+        } );
     }
 }

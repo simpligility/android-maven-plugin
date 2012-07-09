@@ -55,7 +55,7 @@ public class UnpackMojo extends AbstractAndroidMojo
     {
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
+        executor.setLogger( this.getLog() );
 
         if ( generateApk )
         {
@@ -66,10 +66,10 @@ public class UnpackMojo extends AbstractAndroidMojo
 
     private File unpackClasses() throws MojoExecutionException
     {
-        File outputDirectory = new File(project.getBuild().getDirectory(), "android-classes");
+        File outputDirectory = new File( project.getBuild().getDirectory(), "android-classes" );
         if ( lazyLibraryUnpack && outputDirectory.exists() )
         {
-            getLog().info("skip library unpacking due to lazyLibraryUnpack policy");
+            getLog().info( "skip library unpacking due to lazyLibraryUnpack policy" );
         } else
         {
             for ( Artifact artifact : getRelevantCompileArtifacts() )
@@ -79,31 +79,32 @@ public class UnpackMojo extends AbstractAndroidMojo
                 {
                     try
                     {
-                        FileUtils.copyDirectory(artifact.getFile(), outputDirectory);
+                        FileUtils.copyDirectory( artifact.getFile(), outputDirectory );
                     } catch ( IOException e )
                     {
                         throw new MojoExecutionException(
                                 "IOException while copying " + artifact.getFile().getAbsolutePath() + " into " +
-                                        outputDirectory.getAbsolutePath(), e);
+                                        outputDirectory.getAbsolutePath(), e );
                     }
                 } else
                 {
                     try
                     {
-                        JarHelper.unjar(new JarFile(artifact.getFile()), outputDirectory, new JarHelper.UnjarListener()
-                        {
-                            @Override
-                            public boolean include(JarEntry jarEntry)
-                            {
-                                return !jarEntry.getName().startsWith("META-INF") &&
-                                        jarEntry.getName().endsWith(".class");
-                            }
-                        });
+                        JarHelper.unjar( new JarFile( artifact.getFile() ), outputDirectory,
+                                new JarHelper.UnjarListener()
+                                {
+                                    @Override
+                                    public boolean include(JarEntry jarEntry)
+                                    {
+                                        return ! jarEntry.getName().startsWith( "META-INF" ) &&
+                                                jarEntry.getName().endsWith( ".class" );
+                                    }
+                                } );
                     } catch ( IOException e )
                     {
                         throw new MojoExecutionException(
                                 "IOException while unjarring " + artifact.getFile().getAbsolutePath() + " into " +
-                                        outputDirectory.getAbsolutePath(), e);
+                                        outputDirectory.getAbsolutePath(), e );
                     }
                 }
 
@@ -112,13 +113,13 @@ public class UnpackMojo extends AbstractAndroidMojo
 
         try
         {
-            File sourceDirectory = new File(project.getBuild().getOutputDirectory());
-            FileUtils.copyDirectory(sourceDirectory, outputDirectory);
+            File sourceDirectory = new File( project.getBuild().getOutputDirectory() );
+            FileUtils.copyDirectory( sourceDirectory, outputDirectory );
         } catch ( IOException e )
         {
             throw new MojoExecutionException(
                     "IOException while copying " + sourceDirectory.getAbsolutePath() + " into " +
-                            outputDirectory.getAbsolutePath(), e);
+                            outputDirectory.getAbsolutePath(), e );
         }
         return outputDirectory;
     }

@@ -51,7 +51,7 @@ public class DeployMojo extends AbstractAndroidMojo
             deployBuiltApk();
         } else
         {
-            deployApk(file);
+            deployApk( file );
         }
     }
 

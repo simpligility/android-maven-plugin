@@ -66,7 +66,7 @@ public class NativeHelper
     {
         for ( Artifact resolveNativeLibraryArtifact : resolveNativeLibraryArtifacts )
         {
-            if ( "a".equals(resolveNativeLibraryArtifact.getType()) )
+            if ( "a".equals( resolveNativeLibraryArtifact.getType() ) )
             {
                 return true;
             }
@@ -78,7 +78,7 @@ public class NativeHelper
     {
         for ( Artifact resolveNativeLibraryArtifact : resolveNativeLibraryArtifacts )
         {
-            if ( "so".equals(resolveNativeLibraryArtifact.getType()) )
+            if ( "so".equals( resolveNativeLibraryArtifact.getType() ) )
             {
                 return true;
             }
@@ -96,45 +96,45 @@ public class NativeHelper
         final Set<Artifact> allArtifacts = project.getDependencyArtifacts();
 
         // Add all attached artifacts as well - this could come from the NDK mojo for example
-        boolean result = allArtifacts.addAll(project.getAttachedArtifacts());
+        boolean result = allArtifacts.addAll( project.getAttachedArtifacts() );
 
         for ( Artifact artifact : allArtifacts )
         {
             // A null value in the scope indicates that the artifact has been attached
             // as part of a previous build step (NDK mojo)
-            if ( isNativeLibrary(sharedLibraries, artifact.getType()) && artifact.getScope() == null )
+            if ( isNativeLibrary( sharedLibraries, artifact.getType() ) && artifact.getScope() == null )
             {
                 // Including attached artifact
-                log.debug(
-                        "Including attached artifact: " + artifact.getArtifactId() + "(" + artifact.getGroupId() + ")");
-                filteredArtifacts.add(artifact);
-            } else if ( isNativeLibrary(sharedLibraries, artifact.getType()) &&
-                    (Artifact.SCOPE_COMPILE.equals(artifact.getScope()) ||
-                            Artifact.SCOPE_RUNTIME.equals(artifact.getScope())) )
+                log.debug( "Including attached artifact: " + artifact.getArtifactId() + "(" + artifact.getGroupId() +
+                        ")" );
+                filteredArtifacts.add( artifact );
+            } else if ( isNativeLibrary( sharedLibraries, artifact.getType() ) &&
+                    ( Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) ||
+                            Artifact.SCOPE_RUNTIME.equals( artifact.getScope() ) ) )
             {
-                filteredArtifacts.add(artifact);
-            } else if ( APKLIB.equals(artifact.getType()) )
+                filteredArtifacts.add( artifact );
+            } else if ( APKLIB.equals( artifact.getType() ) )
             {
                 // Check if the artifact contains a libs folder - if so, include it in the list
-                File libsFolder =
-                        new File(AbstractAndroidMojo.getLibraryUnpackDirectory(unpackDirectory, artifact) + "/libs");
+                File libsFolder = new File(
+                        AbstractAndroidMojo.getLibraryUnpackDirectory( unpackDirectory, artifact ) + "/libs" );
                 if ( libsFolder.exists() )
                 {
-                    filteredArtifacts.add(artifact);
+                    filteredArtifacts.add( artifact );
                 }
             }
         }
 
-        Set<Artifact> transientArtifacts = processTransientDependencies(project.getDependencies(), sharedLibraries);
+        Set<Artifact> transientArtifacts = processTransientDependencies( project.getDependencies(), sharedLibraries );
 
-        filteredArtifacts.addAll(transientArtifacts);
+        filteredArtifacts.addAll( transientArtifacts );
 
         return filteredArtifacts;
     }
 
     private boolean isNativeLibrary(boolean sharedLibraries, String artifactType)
     {
-        return (sharedLibraries ? "so".equals(artifactType) : "a".equals(artifactType));
+        return ( sharedLibraries ? "so".equals( artifactType ) : "a".equals( artifactType ) );
     }
 
     private Set<Artifact> processTransientDependencies(List<org.apache.maven.model.Dependency> dependencies,
@@ -144,10 +144,11 @@ public class NativeHelper
         Set<Artifact> transientArtifacts = new LinkedHashSet<Artifact>();
         for ( org.apache.maven.model.Dependency dependency : dependencies )
         {
-            if ( !"provided".equals(dependency.getScope()) && !dependency.isOptional() )
+            if ( ! "provided".equals( dependency.getScope() ) && ! dependency.isOptional() )
             {
-                transientArtifacts.addAll(processTransientDependencies(
-                        toDependency(dependency, repoSession.getArtifactTypeRegistry()), sharedLibraries));
+                transientArtifacts.addAll(
+                        processTransientDependencies( toDependency( dependency, repoSession.getArtifactTypeRegistry() ),
+                                sharedLibraries ) );
             }
         }
 
@@ -164,83 +165,85 @@ public class NativeHelper
 
             final CollectRequest collectRequest = new CollectRequest();
 
-            collectRequest.setRoot(dependency);
-            collectRequest.setRepositories(projectRepos);
-            final DependencyNode node = repoSystem.collectDependencies(repoSession, collectRequest).getRoot();
+            collectRequest.setRoot( dependency );
+            collectRequest.setRepositories( projectRepos );
+            final DependencyNode node = repoSystem.collectDependencies( repoSession, collectRequest ).getRoot();
 
             Collection<String> exclusionPatterns = new ArrayList<String>();
-            if ( dependency.getExclusions() != null && !dependency.getExclusions().isEmpty() )
+            if ( dependency.getExclusions() != null && ! dependency.getExclusions().isEmpty() )
             {
                 for ( Exclusion exclusion : dependency.getExclusions() )
                 {
-                    exclusionPatterns.add(exclusion.getGroupId() + ":" + exclusion.getArtifactId());
+                    exclusionPatterns.add( exclusion.getGroupId() + ":" + exclusion.getArtifactId() );
                 }
             }
 
-            final DependencyRequest dependencyRequest = new DependencyRequest(node,
-                    new AndDependencyFilter(new ExclusionsDependencyFilter(exclusionPatterns), new AndDependencyFilter(
-                            new ScopeDependencyFilter(Arrays.asList("compile", "runtime"), Arrays.asList("test")),
-                            // Also exclude any optional dependencies
-                            new DependencyFilter()
-                            {
-                                @Override
-                                public boolean accept(DependencyNode dependencyNode,
-                                                      List<DependencyNode> dependencyNodes)
-                                {
-                                    return !dependencyNode.getDependency().isOptional();
-                                }
-                            })));
+            final DependencyRequest dependencyRequest = new DependencyRequest( node,
+                    new AndDependencyFilter( new ExclusionsDependencyFilter( exclusionPatterns ),
+                            new AndDependencyFilter( new ScopeDependencyFilter( Arrays.asList( "compile", "runtime" ),
+                                    Arrays.asList( "test" ) ),
+                                    // Also exclude any optional dependencies
+                                    new DependencyFilter()
+                                    {
+                                        @Override
+                                        public boolean accept(DependencyNode dependencyNode,
+                                                              List<DependencyNode> dependencyNodes)
+                                        {
+                                            return ! dependencyNode.getDependency().isOptional();
+                                        }
+                                    } ) ) );
 
 
-            repoSystem.resolveDependencies(repoSession, dependencyRequest);
+            repoSystem.resolveDependencies( repoSession, dependencyRequest );
 
             PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
-            node.accept(nlg);
+            node.accept( nlg );
 
-            final List<Dependency> dependencies = nlg.getDependencies(false);
+            final List<Dependency> dependencies = nlg.getDependencies( false );
 
             for ( Dependency dep : dependencies )
             {
                 final org.sonatype.aether.artifact.Artifact depAetherArtifact = dep.getArtifact();
-                if ( isNativeLibrary(sharedLibraries, depAetherArtifact.getExtension()) )
+                if ( isNativeLibrary( sharedLibraries, depAetherArtifact.getExtension() ) )
                 {
                     final Artifact mavenArtifact = artifactFactory
-                            .createDependencyArtifact(depAetherArtifact.getGroupId(), depAetherArtifact.getArtifactId(),
-                                    VersionRange.createFromVersion(depAetherArtifact.getVersion()),
+                            .createDependencyArtifact( depAetherArtifact.getGroupId(),
+                                    depAetherArtifact.getArtifactId(),
+                                    VersionRange.createFromVersion( depAetherArtifact.getVersion() ),
                                     depAetherArtifact.getExtension(), depAetherArtifact.getClassifier(),
-                                    dep.getScope());
-                    mavenArtifact.setFile(depAetherArtifact.getFile());
-                    artifacts.add(mavenArtifact);
+                                    dep.getScope() );
+                    mavenArtifact.setFile( depAetherArtifact.getFile() );
+                    artifacts.add( mavenArtifact );
                 }
             }
 
             return artifacts;
         } catch ( Exception e )
         {
-            throw new MojoExecutionException("Error while processing transient dependencies", e);
+            throw new MojoExecutionException( "Error while processing transient dependencies", e );
         }
     }
 
     public static void validateNDKVersion(File ndkHomeDir) throws MojoExecutionException
     {
-        final File ndkVersionFile = new File(ndkHomeDir, "RELEASE.TXT");
+        final File ndkVersionFile = new File( ndkHomeDir, "RELEASE.TXT" );
 
-        if ( !ndkVersionFile.exists() )
+        if ( ! ndkVersionFile.exists() )
         {
             throw new MojoExecutionException(
                     "Could not locate RELEASE.TXT in the Android NDK base directory '" + ndkHomeDir.getAbsolutePath() +
-                            "'.  Please verify your setup! " + AndroidNdk.PROPER_NDK_HOME_DIRECTORY_MESSAGE);
+                            "'.  Please verify your setup! " + AndroidNdk.PROPER_NDK_HOME_DIRECTORY_MESSAGE );
         }
 
         try
         {
-            String versionStr = FileUtils.readFileToString(ndkVersionFile);
-            validateNDKVersion(NDK_REQUIRED_VERSION, versionStr);
+            String versionStr = FileUtils.readFileToString( ndkVersionFile );
+            validateNDKVersion( NDK_REQUIRED_VERSION, versionStr );
         } catch ( Exception e )
         {
             throw new MojoExecutionException(
                     "Error while extracting NDK version from '" + ndkVersionFile.getAbsolutePath() +
-                            "'. Please verify your setup! " + AndroidNdk.PROPER_NDK_HOME_DIRECTORY_MESSAGE);
+                            "'. Please verify your setup! " + AndroidNdk.PROPER_NDK_HOME_DIRECTORY_MESSAGE );
         }
     }
 
@@ -252,12 +255,12 @@ public class NativeHelper
         if ( versionStr != null )
         {
             versionStr = versionStr.trim();
-            Pattern pattern = Pattern.compile("[r]([0-9]{1,3})([a-z]{0,1}).*");
-            Matcher m = pattern.matcher(versionStr);
+            Pattern pattern = Pattern.compile( "[r]([0-9]{1,3})([a-z]{0,1}).*" );
+            Matcher m = pattern.matcher( versionStr );
             if ( m.matches() )
             {
-                final String group = m.group(1);
-                version = Integer.parseInt(group);
+                final String group = m.group( 1 );
+                version = Integer.parseInt( group );
             }
         }
 
@@ -265,7 +268,7 @@ public class NativeHelper
         {
             throw new MojoExecutionException(
                     "You are running an old NDK (version " + versionStr + "), please update to at least r'" +
-                            desiredVersion + "' or later");
+                            desiredVersion + "' or later" );
         }
     }
 

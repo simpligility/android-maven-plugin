@@ -72,25 +72,25 @@ public class EmmaMojo extends AbstractAndroidMojo
 
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        getLog().debug("Emma start working. Before parse configuration");
+        getLog().debug( "Emma start working. Before parse configuration" );
         parseConfiguration();
         if ( parsedEnable )
         {
             getLog().info(
-                    "Emma OVERWRITE compiled class is on for this project !!! please don't use this project on production");
+                    "Emma OVERWRITE compiled class is on for this project !!! please don't use this project on production" );
             getLog().debug(
-                    "configuration:  Class Folders - this file will be modificated by emma " + parsedEmmaClassFolders);
-            getLog().debug("configuration:  parsedOutputMetadataFile " + parsedOutputMetadataFile);
+                    "configuration:  Class Folders - this file will be modificated by emma " + parsedEmmaClassFolders );
+            getLog().debug( "configuration:  parsedOutputMetadataFile " + parsedOutputMetadataFile );
             InstrProcessor processor = InstrProcessor.create();
-            processor.setInstrPath(parsedEmmaClassFolders, true);
-            processor.setInstrOutDir(parsedEmmaClassFolders[0]); //always to first define folder
-            processor.setMetaOutFile(parsedOutputMetadataFile);
-            processor.setOutMode(OutMode.OUT_MODE_OVERWRITE);
-            processor.setMetaOutMerge(Boolean.TRUE);
+            processor.setInstrPath( parsedEmmaClassFolders, true );
+            processor.setInstrOutDir( parsedEmmaClassFolders[ 0 ] ); //always to first define folder
+            processor.setMetaOutFile( parsedOutputMetadataFile );
+            processor.setOutMode( OutMode.OUT_MODE_OVERWRITE );
+            processor.setMetaOutMerge( Boolean.TRUE );
             processor.run();
         }
-        getLog().debug("Emma OVERWRITE is OFF for this project (" + project.getArtifactId() +
-                ") taeget/classes files are safe");
+        getLog().debug( "Emma OVERWRITE is OFF for this project (" + project.getArtifactId() +
+                ") taeget/classes files are safe" );
     }
 
     private void parseConfiguration() throws MojoExecutionException
@@ -129,15 +129,15 @@ public class EmmaMojo extends AbstractAndroidMojo
     private String getDefaultMetaDataFile()
     {
         File outputFolder =
-                new File(project.getBuild().getDirectory() + File.separator + EMMA_FOLDER_NAME + File.separator +
-                        COVERAGE_METADATA_NAME);
+                new File( project.getBuild().getDirectory() + File.separator + EMMA_FOLDER_NAME + File.separator +
+                        COVERAGE_METADATA_NAME );
         return outputFolder.getAbsolutePath();
     }
 
     private String[] getDefaultCompiledFolders()
     {
         File sourceJavaFolder =
-                new File(project.getBuild().getDirectory() + File.separator + CLASSES_FOLDER_NAME + File.separator);
+                new File( project.getBuild().getDirectory() + File.separator + CLASSES_FOLDER_NAME + File.separator );
         return new String[]{sourceJavaFolder.getAbsolutePath()};
     }
 
@@ -150,17 +150,17 @@ public class EmmaMojo extends AbstractAndroidMojo
             return new String[]{emmaClassFolders};
         } else
         {
-            classFolders = classFoldersTemp.split(",");
+            classFolders = classFoldersTemp.split( "," );
         }
         ArrayList<String> classFoldersArray = new ArrayList<String>();
         for ( String folder : classFolders )
         {
-            File directory = new File(folder);
+            File directory = new File( folder );
             if ( directory.exists() && directory.isDirectory() )
             {
-                classFoldersArray.add(directory.getAbsolutePath());
+                classFoldersArray.add( directory.getAbsolutePath() );
             }
         }
-        return classFoldersArray.toArray(new String[0]);
+        return classFoldersArray.toArray( new String[ 0 ] );
     }
 }

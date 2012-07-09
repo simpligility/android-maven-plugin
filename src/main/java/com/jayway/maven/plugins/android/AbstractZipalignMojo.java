@@ -97,61 +97,61 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
 
         // If we're not on a supported packaging with just skip (Issue 87)
         // http://code.google.com/p/maven-android-plugin/issues/detail?id=87
-        if ( !SUPPORTED_PACKAGING_TYPES.contains(project.getPackaging()) )
+        if ( ! SUPPORTED_PACKAGING_TYPES.contains( project.getPackaging() ) )
         {
-            getLog().info("Skipping zipalign on " + project.getPackaging());
+            getLog().info( "Skipping zipalign on " + project.getPackaging() );
             return;
         }
 
         parseParameters();
         if ( parsedSkip )
         {
-            getLog().info("Skipping zipalign");
+            getLog().info( "Skipping zipalign" );
         } else
         {
             CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-            executor.setLogger(this.getLog());
+            executor.setLogger( this.getLog() );
 
             String command = getAndroidSdk().getZipalignPath();
 
             List<String> parameters = new ArrayList<String>();
             if ( parsedVerbose )
             {
-                parameters.add("-v");
+                parameters.add( "-v" );
             }
-            parameters.add("-f"); // force overwriting existing output file
-            parameters.add("4"); // byte alignment has to be 4!
-            parameters.add(parsedInputApk);
-            parameters.add(parsedOutputApk);
+            parameters.add( "-f" ); // force overwriting existing output file
+            parameters.add( "4" ); // byte alignment has to be 4!
+            parameters.add( parsedInputApk );
+            parameters.add( parsedOutputApk );
 
             try
             {
-                getLog().info("Running command: " + command);
-                getLog().info("with parameters: " + parameters);
-                executor.executeCommand(command, parameters);
+                getLog().info( "Running command: " + command );
+                getLog().info( "with parameters: " + parameters );
+                executor.executeCommand( command, parameters );
 
                 // Attach the resulting artifact (Issue 88)
                 // http://code.google.com/p/maven-android-plugin/issues/detail?id=88
-                File aligned = new File(parsedOutputApk);
+                File aligned = new File( parsedOutputApk );
                 if ( aligned.exists() )
                 {
-                    projectHelper.attachArtifact(project, APK, "aligned", aligned);
-                    getLog().info("Attach " + aligned.getAbsolutePath() + " to the project");
+                    projectHelper.attachArtifact( project, APK, "aligned", aligned );
+                    getLog().info( "Attach " + aligned.getAbsolutePath() + " to the project" );
                 } else
                 {
-                    getLog().error("Cannot attach " + aligned.getAbsolutePath() + " to the project" +
-                            " - The file does not exist");
+                    getLog().error( "Cannot attach " + aligned.getAbsolutePath() + " to the project" +
+                            " - The file does not exist" );
                 }
             } catch ( ExecutionException e )
             {
-                throw new MojoExecutionException("", e);
+                throw new MojoExecutionException( "", e );
             }
         }
     }
 
     private void parseParameters()
     {
-        getLog().debug("Parsing parameters");
+        getLog().debug( "Parsing parameters" );
         // <zipalign> exist in pom file
         if ( zipalign != null )
         {
@@ -202,10 +202,10 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
             parsedOutputApk = determineOutputApk();
         }
 
-        getLog().debug("skip:" + parsedSkip);
-        getLog().debug("verbose:" + parsedVerbose);
-        getLog().debug("inputApk:" + parsedInputApk);
-        getLog().debug("outputApk:" + parsedOutputApk);
+        getLog().debug( "skip:" + parsedSkip );
+        getLog().debug( "verbose:" + parsedVerbose );
+        getLog().debug( "inputApk:" + parsedInputApk );
+        getLog().debug( "outputApk:" + parsedOutputApk );
     }
 
     /**
@@ -221,7 +221,7 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
             enabled = zipalignSkip;
         } else
         {
-            getLog().debug("Using default for zipalign.skip=false");
+            getLog().debug( "Using default for zipalign.skip=false" );
             enabled = Boolean.FALSE;
         }
         return enabled;
@@ -240,7 +240,7 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
             enabled = zipalignVerbose;
         } else
         {
-            getLog().debug("Using default for zipalign.verbose=false");
+            getLog().debug( "Using default for zipalign.verbose=false" );
             enabled = Boolean.FALSE;
         }
         return enabled;
@@ -255,7 +255,7 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
     {
         if ( apkFile == null )
         {
-            apkFile = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + "." + APK);
+            apkFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + "." + APK );
         }
         return apkFile.getAbsolutePath();
     }
@@ -270,8 +270,8 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
     {
         if ( alignedApkFile == null )
         {
-            alignedApkFile =
-                    new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + "-aligned." + APK);
+            alignedApkFile = new File( project.getBuild().getDirectory(),
+                    project.getBuild().getFinalName() + "-aligned." + APK );
         }
         return alignedApkFile.getAbsolutePath();
     }
@@ -290,7 +290,7 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
         } else
         {
             String inputPath = getApkLocation();
-            getLog().debug("Using default for zipalign.inputApk: " + inputPath);
+            getLog().debug( "Using default for zipalign.inputApk: " + inputPath );
             inputApk = inputPath;
         }
         return inputApk;
@@ -310,7 +310,7 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
         } else
         {
             String outputPath = getAlignedApkLocation();
-            getLog().debug("Using default for zipalign.outputApk: " + outputPath);
+            getLog().debug( "Using default for zipalign.outputApk: " + outputPath );
             outputApk = outputPath;
         }
         return outputApk;

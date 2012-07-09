@@ -31,12 +31,12 @@ public class DevicesMojo extends AbstractAndroidMojo
      */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        doWithDevices(new DeviceCallback()
+        doWithDevices( new DeviceCallback()
         {
             public void doWithDevice(final IDevice device) throws MojoExecutionException
             {
-                getLog().info(DeviceHelper.getDescriptiveNameWithStatus(device));
+                getLog().info( DeviceHelper.getDescriptiveNameWithStatus( device ) );
             }
-        });
+        } );
     }
 }

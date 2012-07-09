@@ -40,13 +40,13 @@ public class AndroidTestFinder
     public static boolean containsAndroidTests(File classesBaseDirectory) throws MojoExecutionException
     {
 
-        if ( classesBaseDirectory == null || !classesBaseDirectory.isDirectory() )
+        if ( classesBaseDirectory == null || ! classesBaseDirectory.isDirectory() )
         {
-            throw new IllegalArgumentException("classesBaseDirectory must be a valid directory!");
+            throw new IllegalArgumentException( "classesBaseDirectory must be a valid directory!" );
         }
 
-        final List<File> classFiles = findEligebleClassFiles(classesBaseDirectory);
-        final DescendantFinder descendantFinder = new DescendantFinder(TEST_PACKAGES);
+        final List<File> classFiles = findEligebleClassFiles( classesBaseDirectory );
+        final DescendantFinder descendantFinder = new DescendantFinder( TEST_PACKAGES );
 
         for ( File classFile : classFiles )
         {
@@ -54,19 +54,19 @@ public class AndroidTestFinder
             FileInputStream inputStream = null;
             try
             {
-                inputStream = new FileInputStream(classFile);
-                classReader = new ClassReader(inputStream);
+                inputStream = new FileInputStream( classFile );
+                classReader = new ClassReader( inputStream );
 
-                classReader.accept(descendantFinder, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES |
-                        ClassReader.SKIP_CODE);
+                classReader.accept( descendantFinder, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES |
+                        ClassReader.SKIP_CODE );
             } catch ( IOException e )
             {
-                throw new MojoExecutionException("Error reading " + classFile +
+                throw new MojoExecutionException( "Error reading " + classFile +
                         ".\nCould not determine whether it contains tests. Please specify with plugin config " +
-                        "parameter <enableIntegrationTest>true|false</enableIntegrationTest>.", e);
+                        "parameter <enableIntegrationTest>true|false</enableIntegrationTest>.", e );
             } finally
             {
-                IOUtils.closeQuietly(inputStream);
+                IOUtils.closeQuietly( inputStream );
             }
         }
 
@@ -77,10 +77,10 @@ public class AndroidTestFinder
     {
         final List<File> classFiles = new LinkedList<File>();
         final DirectoryWalker walker = new DirectoryWalker();
-        walker.setBaseDir(classesBaseDirectory);
+        walker.setBaseDir( classesBaseDirectory );
         walker.addSCMExcludes();
-        walker.addInclude("**/*.class");
-        walker.addDirectoryWalkListener(new DirectoryWalkListener()
+        walker.addInclude( "**/*.class" );
+        walker.addDirectoryWalkListener( new DirectoryWalkListener()
         {
             public void directoryWalkStarting(File basedir)
             {
@@ -88,7 +88,7 @@ public class AndroidTestFinder
 
             public void directoryWalkStep(int percentage, File file)
             {
-                classFiles.add(file);
+                classFiles.add( file );
             }
 
             public void directoryWalkFinished()
@@ -98,7 +98,7 @@ public class AndroidTestFinder
             public void debug(String message)
             {
             }
-        });
+        } );
         walker.scan();
         return classFiles;
     }

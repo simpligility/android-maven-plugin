@@ -95,12 +95,12 @@ public class AndroidSdk
             // letting this through to preserve compatibility for now
         } else
         {
-            platform = findPlatformByNameOrApiLevel(platformOrApiLevel);
+            platform = findPlatformByNameOrApiLevel( platformOrApiLevel );
             if ( platform == null )
             {
-                throw new InvalidSdkException("Invalid SDK: Platform/API level " + platformOrApiLevel +
+                throw new InvalidSdkException( "Invalid SDK: Platform/API level " + platformOrApiLevel +
                         " not available. This command should give you all you need:\n" + sdkPath.getAbsolutePath() +
-                        File.separator + "tools" + File.separator + "android update sdk --no-ui --obsolete --force");
+                        File.separator + "tools" + File.separator + "android update sdk --no-ui --obsolete --force" );
             }
         }
     }
@@ -109,7 +109,7 @@ public class AndroidSdk
     {
         for ( Platform p : availablePlatforms )
         {
-            if ( p.name.equals(platformOrApiLevel) || p.apiLevel.equals(platformOrApiLevel) )
+            if ( p.name.equals( platformOrApiLevel ) || p.apiLevel.equals( platformOrApiLevel ) )
             {
                 return p;
             }
@@ -125,33 +125,33 @@ public class AndroidSdk
     public Layout getLayout()
     {
 
-        assertPathIsDirectory(sdkPath);
+        assertPathIsDirectory( sdkPath );
 
-        final File platformTools = new File(sdkPath, PLATFORM_TOOLS_FOLDER_NAME);
+        final File platformTools = new File( sdkPath, PLATFORM_TOOLS_FOLDER_NAME );
         if ( platformTools.exists() && platformTools.isDirectory() )
         {
             return Layout.LAYOUT_2_3;
         }
 
-        final File platforms = new File(sdkPath, PLATFORMS_FOLDER_NAME);
+        final File platforms = new File( sdkPath, PLATFORMS_FOLDER_NAME );
         if ( platforms.exists() && platforms.isDirectory() )
         {
             return Layout.LAYOUT_1_5;
         }
 
         throw new InvalidSdkException(
-                "Android SDK could not be identified from path \"" + sdkPath + "\". " + PARAMETER_MESSAGE);
+                "Android SDK could not be identified from path \"" + sdkPath + "\". " + PARAMETER_MESSAGE );
     }
 
     private void assertPathIsDirectory(final File path)
     {
         if ( path == null )
         {
-            throw new InvalidSdkException(PARAMETER_MESSAGE);
+            throw new InvalidSdkException( PARAMETER_MESSAGE );
         }
-        if ( !path.isDirectory() )
+        if ( ! path.isDirectory() )
         {
-            throw new InvalidSdkException("Path \"" + path + "\" is not a directory. " + PARAMETER_MESSAGE);
+            throw new InvalidSdkException( "Path \"" + path + "\" is not a directory. " + PARAMETER_MESSAGE );
         }
     }
 
@@ -174,14 +174,14 @@ public class AndroidSdk
 
         for ( String possiblePath : possiblePaths )
         {
-            File file = new File(possiblePath);
-            if ( file.exists() && !file.isDirectory() )
+            File file = new File( possiblePath );
+            if ( file.exists() && ! file.isDirectory() )
             {
                 return file.getAbsolutePath();
             }
         }
 
-        throw new InvalidSdkException("Could not find tool '" + tool + "'. " + PARAMETER_MESSAGE);
+        throw new InvalidSdkException( "Could not find tool '" + tool + "'. " + PARAMETER_MESSAGE );
     }
 
     /**
@@ -191,7 +191,7 @@ public class AndroidSdk
      */
     public String getEmulatorPath()
     {
-        return getPathForTool("emulator");
+        return getPathForTool( "emulator" );
     }
 
     /**
@@ -201,7 +201,7 @@ public class AndroidSdk
      */
     public String getAdbPath()
     {
-        return getPathForTool("adb");
+        return getPathForTool( "adb" );
     }
 
     /**
@@ -211,7 +211,7 @@ public class AndroidSdk
      */
     public String getZipalignPath()
     {
-        return getPathForTool("zipalign");
+        return getPathForTool( "zipalign" );
     }
 
     /**
@@ -228,7 +228,7 @@ public class AndroidSdk
             case LAYOUT_2_3:
                 return getPlatform() + "/framework.aidl";
             default:
-                throw new InvalidSdkException("Unsupported layout \"" + layout + "\"! " + PARAMETER_MESSAGE);
+                throw new InvalidSdkException( "Unsupported layout \"" + layout + "\"! " + PARAMETER_MESSAGE );
         }
     }
 
@@ -246,9 +246,9 @@ public class AndroidSdk
         {
             case LAYOUT_1_5: //intentional fall-through
             case LAYOUT_2_3:
-                return new File(getPlatform() + "/android.jar");
+                return new File( getPlatform() + "/android.jar" );
             default:
-                throw new MojoExecutionException("Invalid Layout \"" + getLayout() + "\"! " + PARAMETER_MESSAGE);
+                throw new MojoExecutionException( "Invalid Layout \"" + getLayout() + "\"! " + PARAMETER_MESSAGE );
         }
     }
 
@@ -262,30 +262,30 @@ public class AndroidSdk
     public File getSDKLibJar() throws MojoExecutionException
     {
         // The file is sdkPath/tools/lib/sdklib.jar
-        File sdklib = new File(sdkPath + "/tools/lib/sdklib.jar");
+        File sdklib = new File( sdkPath + "/tools/lib/sdklib.jar" );
         if ( sdklib.exists() )
         {
             return sdklib;
         }
-        throw new MojoExecutionException("Can't find the 'sdklib.jar' : " + sdklib.getAbsolutePath());
+        throw new MojoExecutionException( "Can't find the 'sdklib.jar' : " + sdklib.getAbsolutePath() );
     }
 
     public File getPlatform()
     {
-        assertPathIsDirectory(sdkPath);
+        assertPathIsDirectory( sdkPath );
 
-        final File platformsDirectory = new File(sdkPath, PLATFORMS_FOLDER_NAME);
-        assertPathIsDirectory(platformsDirectory);
+        final File platformsDirectory = new File( sdkPath, PLATFORMS_FOLDER_NAME );
+        assertPathIsDirectory( platformsDirectory );
 
         if ( platform == null )
         {
             final File[] platformDirectories = platformsDirectory.listFiles();
-            Arrays.sort(platformDirectories);
-            return platformDirectories[platformDirectories.length - 1];
+            Arrays.sort( platformDirectories );
+            return platformDirectories[ platformDirectories.length - 1 ];
         } else
         {
-            final File platformDirectory = new File(platform.path);
-            assertPathIsDirectory(platformDirectory);
+            final File platformDirectory = new File( platform.path );
+            assertPathIsDirectory( platformDirectory );
             return platformDirectory;
         }
     }
@@ -302,20 +302,20 @@ public class AndroidSdk
         ArrayList<File> platformDirectories = getPlatformDirectories();
         for ( File pDir : platformDirectories )
         {
-            File propFile = new File(pDir, SOURCE_PROPERTIES_FILENAME);
+            File propFile = new File( pDir, SOURCE_PROPERTIES_FILENAME );
             Properties properties = new Properties();
             try
             {
-                properties.load(new FileInputStream(propFile));
+                properties.load( new FileInputStream( propFile ) );
             } catch ( IOException e )
             {
-                throw new InvalidSdkException("Error reading " + propFile.getAbsoluteFile());
+                throw new InvalidSdkException( "Error reading " + propFile.getAbsoluteFile() );
             }
-            if ( properties.containsKey(PLATFORM_VERSION_PROPERTY) && properties.containsKey(API_LEVEL_PROPERTY) )
+            if ( properties.containsKey( PLATFORM_VERSION_PROPERTY ) && properties.containsKey( API_LEVEL_PROPERTY ) )
             {
-                String platform = properties.getProperty(PLATFORM_VERSION_PROPERTY);
-                String apiLevel = properties.getProperty(API_LEVEL_PROPERTY);
-                availablePlatforms.add(new Platform(platform, apiLevel, pDir.getAbsolutePath()));
+                String platform = properties.getProperty( PLATFORM_VERSION_PROPERTY );
+                String apiLevel = properties.getProperty( API_LEVEL_PROPERTY );
+                availablePlatforms.add( new Platform( platform, apiLevel, pDir.getAbsolutePath() ) );
             }
         }
     }
@@ -328,15 +328,15 @@ public class AndroidSdk
     private ArrayList<File> getPlatformDirectories()
     {
         ArrayList<File> sourcePropertyFiles = new ArrayList<File>();
-        final File platformsDirectory = new File(sdkPath, PLATFORMS_FOLDER_NAME);
-        assertPathIsDirectory(platformsDirectory);
+        final File platformsDirectory = new File( sdkPath, PLATFORMS_FOLDER_NAME );
+        assertPathIsDirectory( platformsDirectory );
         final File[] platformDirectories = platformsDirectory.listFiles();
         for ( File file : platformDirectories )
         {
             // only looking in android- folder so only works on reasonably new sdk revisions..
-            if ( file.isDirectory() && file.getName().startsWith("android-") )
+            if ( file.isDirectory() && file.getName().startsWith( "android-" ) )
             {
-                sourcePropertyFiles.add(file);
+                sourcePropertyFiles.add( file );
             }
         }
         return sourcePropertyFiles;

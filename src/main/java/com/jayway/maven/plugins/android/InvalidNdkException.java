@@ -24,6 +24,6 @@ public class InvalidNdkException extends RuntimeException
 {
     public InvalidNdkException(String message)
     {
-        super(message);
+        super( message );
     }
 }
