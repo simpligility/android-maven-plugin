@@ -36,7 +36,7 @@ public class ExecutionException extends Exception
      *
      * @param message the exception message
      */
-    public ExecutionException(String message)
+    public ExecutionException( String message )
     {
         super( message );
     }
@@ -47,7 +47,7 @@ public class ExecutionException extends Exception
      * @param message the exception message
      * @param cause   the cause of the exception
      */
-    public ExecutionException(String message, Throwable cause)
+    public ExecutionException( String message, Throwable cause )
     {
         super( message, cause );
     }
@@ -57,7 +57,7 @@ public class ExecutionException extends Exception
      *
      * @param cause the cause of the exception
      */
-    public ExecutionException(Throwable cause)
+    public ExecutionException( Throwable cause )
     {
         super( cause );
     }

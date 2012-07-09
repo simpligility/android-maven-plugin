@@ -40,7 +40,7 @@ public class UndeployMojo extends AbstractAndroidMojo
      */
     private String _package;
 
-    public void setPackage(String packageName)
+    public void setPackage( String packageName )
     {
         this._package = packageName;
     }

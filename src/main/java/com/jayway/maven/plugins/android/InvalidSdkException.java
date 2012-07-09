@@ -22,7 +22,7 @@ package com.jayway.maven.plugins.android;
  */
 public class InvalidSdkException extends RuntimeException
 {
-    public InvalidSdkException(String message)
+    public InvalidSdkException( String message )
     {
         super( message );
     }

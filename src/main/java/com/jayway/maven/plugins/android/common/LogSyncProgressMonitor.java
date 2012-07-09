@@ -30,12 +30,12 @@ public class LogSyncProgressMonitor implements SyncService.ISyncProgressMonitor
     private static final String INDENT = "  ";
     private Log log;
 
-    public LogSyncProgressMonitor(Log log)
+    public LogSyncProgressMonitor( Log log )
     {
         this.log = log;
     }
 
-    public void start(int totalWork)
+    public void start( int totalWork )
     {
         log.info( "Starting transfer of " + totalWork + ". See debug log for progress" );
     }
@@ -50,12 +50,12 @@ public class LogSyncProgressMonitor implements SyncService.ISyncProgressMonitor
         return false;
     }
 
-    public void startSubTask(String name)
+    public void startSubTask( String name )
     {
         log.info( INDENT + "Started sub task " + name );
     }
 
-    public void advance(int work)
+    public void advance( int work )
     {
         log.debug( INDENT + "Transferred " + work );
     }

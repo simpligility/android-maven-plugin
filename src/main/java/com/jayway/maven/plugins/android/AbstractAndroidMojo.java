@@ -403,7 +403,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected Set<Artifact> getRelevantCompileArtifacts()
     {
-        final List<Artifact> allArtifacts = (List<Artifact>) project.getCompileArtifacts();
+        final List<Artifact> allArtifacts = ( List<Artifact> ) project.getCompileArtifacts();
         final Set<Artifact> results = filterOutIrrelevantArtifacts( allArtifacts );
         return results;
     }
@@ -414,7 +414,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected Set<Artifact> getRelevantDependencyArtifacts()
     {
-        final Set<Artifact> allArtifacts = (Set<Artifact>) project.getDependencyArtifacts();
+        final Set<Artifact> allArtifacts = ( Set<Artifact> ) project.getDependencyArtifacts();
         final Set<Artifact> results = filterOutIrrelevantArtifacts( allArtifacts );
         return results;
     }
@@ -426,12 +426,12 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected Set<Artifact> getAllRelevantDependencyArtifacts()
     {
-        final Set<Artifact> allArtifacts = (Set<Artifact>) project.getArtifacts();
+        final Set<Artifact> allArtifacts = ( Set<Artifact> ) project.getArtifacts();
         final Set<Artifact> results = filterOutIrrelevantArtifacts( allArtifacts );
         return results;
     }
 
-    private Set<Artifact> filterOutIrrelevantArtifacts(Iterable<Artifact> allArtifacts)
+    private Set<Artifact> filterOutIrrelevantArtifacts( Iterable<Artifact> allArtifacts )
     {
         final Set<Artifact> results = new LinkedHashSet<Artifact>();
         for ( Artifact artifact : allArtifacts )
@@ -463,7 +463,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @return a {@link File} to the resolved artifact, never <code>null</code>.
      * @throws MojoExecutionException if the artifact could not be resolved.
      */
-    protected File resolveArtifactToFile(Artifact artifact) throws MojoExecutionException
+    protected File resolveArtifactToFile( Artifact artifact ) throws MojoExecutionException
     {
         Artifact resolvedArtifact = AetherHelper.resolveArtifact( artifact, repoSystem, repoSession, projectRepos );
         final File jar = resolvedArtifact.getFile();
@@ -505,7 +505,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      *
      * @param adb
      */
-    private void waitUntilConnected(AndroidDebugBridge adb)
+    private void waitUntilConnected( AndroidDebugBridge adb )
     {
         int trials = 10;
         while ( trials > 0 )
@@ -531,7 +531,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @param androidDebugBridge
      * @throws MojoExecutionException
      */
-    protected void waitForInitialDeviceList(final AndroidDebugBridge androidDebugBridge) throws MojoExecutionException
+    protected void waitForInitialDeviceList( final AndroidDebugBridge androidDebugBridge ) throws MojoExecutionException
     {
         if ( ! androidDebugBridge.hasInitialDeviceList() )
         {
@@ -561,7 +561,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @param apkFile the file to deploy
      * @throws MojoExecutionException If there is a problem deploying the apk file.
      */
-    protected void deployApk(final File apkFile) throws MojoExecutionException, MojoFailureException
+    protected void deployApk( final File apkFile ) throws MojoExecutionException, MojoFailureException
     {
         if ( undeployBeforeDeploy )
         {
@@ -569,7 +569,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         }
         doWithDevices( new DeviceCallback()
         {
-            public void doWithDevice(final IDevice device) throws MojoExecutionException
+            public void doWithDevice( final IDevice device ) throws MojoExecutionException
             {
                 try
                 {
@@ -631,7 +631,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @throws org.apache.maven.plugin.MojoFailureException
      *          in case there is a problem
      */
-    protected void doWithDevices(final DeviceCallback deviceCallback)
+    protected void doWithDevices( final DeviceCallback deviceCallback )
             throws MojoExecutionException, MojoFailureException
     {
         final AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
@@ -703,7 +703,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @param apkFile the file to undeploy
      * @return <code>true</code> if successfully undeployed, <code>false</code> otherwise.
      */
-    protected boolean undeployApk(File apkFile) throws MojoExecutionException, MojoFailureException
+    protected boolean undeployApk( File apkFile ) throws MojoExecutionException, MojoFailureException
     {
         final String packageName;
         packageName = extractPackageNameFromApk( apkFile );
@@ -718,14 +718,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @param packageName the package name to undeploy.
      * @return <code>true</code> if successfully undeployed, <code>false</code> otherwise.
      */
-    protected boolean undeployApk(final String packageName) throws MojoExecutionException, MojoFailureException
+    protected boolean undeployApk( final String packageName ) throws MojoExecutionException, MojoFailureException
     {
 
         final AtomicBoolean result = new AtomicBoolean( true ); // if no devices are present, it counts as successful
 
         doWithDevices( new DeviceCallback()
         {
-            public void doWithDevice(final IDevice device) throws MojoExecutionException
+            public void doWithDevice( final IDevice device ) throws MojoExecutionException
             {
                 try
                 {
@@ -751,7 +751,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @param apkFile apk file to extract package name from.
      * @return the package name from inside the apk file.
      */
-    protected String extractPackageNameFromApk(File apkFile) throws MojoExecutionException
+    protected String extractPackageNameFromApk( File apkFile ) throws MojoExecutionException
     {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
@@ -786,7 +786,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @param aaptDumpXmlTree output from <code>aapt dump xmltree &lt;apkFile&gt; AndroidManifest.xml
      * @return the package name from inside the apkFile.
      */
-    protected String extractPackageNameFromAndroidManifestXmlTree(String aaptDumpXmlTree)
+    protected String extractPackageNameFromAndroidManifestXmlTree( String aaptDumpXmlTree )
     {
         final Scanner scanner = new Scanner( aaptDumpXmlTree );
         // Finds the root element named "manifest".
@@ -800,7 +800,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         return packageName;
     }
 
-    protected String extractPackageNameFromAndroidManifest(File androidManifestFile) throws MojoExecutionException
+    protected String extractPackageNameFromAndroidManifest( File androidManifestFile ) throws MojoExecutionException
     {
         final URL xmlURL;
         try
@@ -815,7 +815,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         final DocumentContainer documentContainer = new DocumentContainer( xmlURL );
         final Object packageName =
                 JXPathContext.newContext( documentContainer ).getValue( "manifest/@package", String.class );
-        return (String) packageName;
+        return ( String ) packageName;
     }
 
     /**
@@ -825,7 +825,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @return the instrumentation test runner declared in AndroidManifest.xml, or {@code null} if it is not declared.
      * @throws MojoExecutionException
      */
-    protected String extractInstrumentationRunnerFromAndroidManifest(File androidManifestFile)
+    protected String extractInstrumentationRunnerFromAndroidManifest( File androidManifestFile )
             throws MojoExecutionException
     {
         final URL xmlURL;
@@ -848,10 +848,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         {
             return null;
         }
-        return (String) instrumentationRunner;
+        return ( String ) instrumentationRunner;
     }
 
-    protected int deleteFilesFromDirectory(File baseDirectory, String... includes) throws MojoExecutionException
+    protected int deleteFilesFromDirectory( File baseDirectory, String... includes ) throws MojoExecutionException
     {
         final String[] files = findFilesInDirectory( baseDirectory, includes );
         if ( files == null )
@@ -879,7 +879,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @return <code>String[]</code> of the files' paths and names, relative to <code>baseDirectory</code>. Empty
      *         <code>String[]</code> if <code>baseDirectory</code> does not exist.
      */
-    protected String[] findFilesInDirectory(File baseDirectory, String... includes)
+    protected String[] findFilesInDirectory( File baseDirectory, String... includes )
     {
         if ( baseDirectory.exists() )
         {
@@ -986,12 +986,12 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         return androidHome;
     }
 
-    protected String getLibraryUnpackDirectory(Artifact apkLibraryArtifact)
+    protected String getLibraryUnpackDirectory( Artifact apkLibraryArtifact )
     {
         return AbstractAndroidMojo.getLibraryUnpackDirectory( unpackedApkLibsDirectory, apkLibraryArtifact );
     }
 
-    public static String getLibraryUnpackDirectory(File unpackedApkLibsDirectory, Artifact apkLibraryArtifact)
+    public static String getLibraryUnpackDirectory( File unpackedApkLibsDirectory, Artifact apkLibraryArtifact )
     {
         return unpackedApkLibsDirectory.getAbsolutePath() + "/" + apkLibraryArtifact.getId().replace( ":", "_" );
     }

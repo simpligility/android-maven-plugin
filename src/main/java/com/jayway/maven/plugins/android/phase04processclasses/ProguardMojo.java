@@ -80,7 +80,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      */
     private Boolean proguardSkip;
 
-    @PullParameter(defaultValue = "true")
+    @PullParameter( defaultValue = "true" )
     private Boolean parsedSkip;
 
     /**
@@ -91,7 +91,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      */
     private String proguardConfig;
 
-    @PullParameter(defaultValue = "proguard.cfg")
+    @PullParameter( defaultValue = "proguard.cfg" )
     private String parsedConfig;
 
     /**
@@ -120,7 +120,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      */
     private String proguardProguardJarPath;
 
-    @PullParameter(defaultValueGetterMethod = "getProguardJarPath")
+    @PullParameter( defaultValueGetterMethod = "getProguardJarPath" )
     private String parsedProguardJarPath;
 
     /**
@@ -131,7 +131,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      */
     private String[] proguardJvmArguments;
 
-    @PullParameter(defaultValueGetterMethod = "getDefaultJvmArguments")
+    @PullParameter( defaultValueGetterMethod = "getDefaultJvmArguments" )
     private String[] parsedJvmArguments;
 
     /**
@@ -142,7 +142,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      */
     private Boolean proguardFilterMavenDescriptor;
 
-    @PullParameter(defaultValue = "true")
+    @PullParameter( defaultValue = "true" )
     private Boolean parsedFilterMavenDescriptor;
 
     /**
@@ -153,7 +153,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      */
     private Boolean proguardFilterManifest;
 
-    @PullParameter(defaultValue = "true")
+    @PullParameter( defaultValue = "true" )
     private Boolean parsedFilterManifest;
 
     /**
@@ -188,7 +188,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         private String path;
         private Collection<String> excludedFilter;
 
-        public ProGuardInput(String path, Collection<String> excludedFilter)
+        public ProGuardInput( String path, Collection<String> excludedFilter )
         {
             this.path = path;
             this.excludedFilter = excludedFilter;
@@ -283,7 +283,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      *
      * @param commands
      */
-    private void collectJvmArguments(List<String> commands)
+    private void collectJvmArguments( List<String> commands )
     {
         if ( parsedJvmArguments != null )
         {
@@ -301,7 +301,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         }
     }
 
-    private void collectInputFiles(List<String> commands)
+    private void collectInputFiles( List<String> commands )
     {
         // commons-logging breaks everything horribly, so we skip it from the program
         // dependencies and declare it to be a library dependency instead
@@ -338,7 +338,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         return new File( javaHome + slash + "bin" + slash + "java" );
     }
 
-    private void skipArtifact(String groupId, String artifactId, boolean shiftToLibraries)
+    private void skipArtifact( String groupId, String artifactId, boolean shiftToLibraries )
     {
         artifactBlacklist.add( RepositoryUtils.toArtifact( new DefaultArtifact( groupId, artifactId, null, null ) ) );
         if ( shiftToLibraries )
@@ -348,7 +348,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         }
     }
 
-    private boolean isBlacklistedArtifact(Artifact artifact)
+    private boolean isBlacklistedArtifact( Artifact artifact )
     {
         for ( Artifact artifactToSkip : artifactBlacklist )
         {
@@ -361,7 +361,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         return false;
     }
 
-    private boolean isShiftedArtifact(Artifact artifact)
+    private boolean isShiftedArtifact( Artifact artifact )
     {
         for ( Artifact artifactToShift : artifactsToShift )
         {
@@ -399,22 +399,22 @@ public class ProguardMojo extends AbstractAndroidMojo
         }
     }
 
-    private void addInJar(String path, Collection<String> filterExpression)
+    private void addInJar( String path, Collection<String> filterExpression )
     {
         inJars.add( new ProGuardInput( path, filterExpression ) );
     }
 
-    private void addInJar(String path)
+    private void addInJar( String path )
     {
         addInJar( path, null );
     }
 
-    private void addLibraryJar(String path, Collection<String> filterExpression)
+    private void addLibraryJar( String path, Collection<String> filterExpression )
     {
         libraryJars.add( new ProGuardInput( path, filterExpression ) );
     }
 
-    private void addLibraryJar(String path)
+    private void addLibraryJar( String path )
     {
         addLibraryJar( path, null );
     }
@@ -521,7 +521,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      */
     private String[] getDefaultJvmArguments()
     {
-        return new String[]{"-Xmx512M"};
+        return new String[]{ "-Xmx512M" };
     }
 
 }

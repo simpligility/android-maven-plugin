@@ -23,7 +23,7 @@ public class JarHelper
     public static interface UnjarListener
     {
 
-        public boolean include(JarEntry jarEntry);
+        public boolean include( JarEntry jarEntry );
     }
 
     /**
@@ -34,11 +34,11 @@ public class JarHelper
      * @param unjarListener
      * @throws IOException
      */
-    public static void unjar(JarFile jarFile, File outputDirectory, UnjarListener unjarListener) throws IOException
+    public static void unjar( JarFile jarFile, File outputDirectory, UnjarListener unjarListener ) throws IOException
     {
         for ( Enumeration en = jarFile.entries(); en.hasMoreElements(); )
         {
-            JarEntry entry = (JarEntry) en.nextElement();
+            JarEntry entry = ( JarEntry ) en.nextElement();
             File entryFile = new File( outputDirectory, entry.getName() );
             if ( unjarListener.include( entry ) )
             {

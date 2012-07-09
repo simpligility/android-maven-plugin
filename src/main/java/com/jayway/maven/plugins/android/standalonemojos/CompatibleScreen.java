@@ -10,7 +10,7 @@ public class CompatibleScreen
         return screenSize;
     }
 
-    public void setScreenSize(String screenSize)
+    public void setScreenSize( String screenSize )
     {
         this.screenSize = screenSize;
     }
@@ -20,17 +20,17 @@ public class CompatibleScreen
         return screenDensity;
     }
 
-    public void setScreenDensity(String screenDensity)
+    public void setScreenDensity( String screenDensity )
     {
         this.screenDensity = screenDensity;
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals( Object obj )
     {
         if ( obj instanceof CompatibleScreen )
         {
-            CompatibleScreen that = (CompatibleScreen) obj;
+            CompatibleScreen that = ( CompatibleScreen ) obj;
             return this.screenDensity.equals( that.screenDensity ) && this.screenSize.equals( that.screenSize );
         }
         return false;

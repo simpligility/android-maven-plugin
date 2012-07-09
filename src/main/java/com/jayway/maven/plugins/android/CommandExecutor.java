@@ -39,7 +39,7 @@ public interface CommandExecutor
      *
      * @param logger the plexus logger
      */
-    void setLogger(Log logger);
+    void setLogger( Log logger );
 
     /**
      * Executes the command for the specified executable and list of command options.
@@ -49,7 +49,7 @@ public interface CommandExecutor
      * @throws ExecutionException if compiler or executable writes anything to the standard error stream or if the process
      *                            returns a process result != 0.
      */
-    void executeCommand(String executable, List<String> commands) throws ExecutionException;
+    void executeCommand( String executable, List<String> commands ) throws ExecutionException;
 
     /**
      * Executes the command for the specified executable and list of command options.
@@ -61,7 +61,8 @@ public interface CommandExecutor
      * @throws ExecutionException if compiler or executable writes anything to the standard error stream (provided the
      *                            failsOnErrorOutput is not false) or if the process returns a process result != 0.
      */
-    void executeCommand(String executable, List<String> commands, boolean failsOnErrorOutput) throws ExecutionException;
+    void executeCommand( String executable, List<String> commands, boolean failsOnErrorOutput )
+            throws ExecutionException;
 
     /**
      * Executes the command for the specified executable and list of command options. If the compiler or executable is
@@ -74,7 +75,7 @@ public interface CommandExecutor
      * @throws ExecutionException if compiler or executable writes anything to the standard error stream (provided the
      *                            failsOnErrorOutput is not false) or if the process returns a process result != 0.
      */
-    void executeCommand(String executable, List<String> commands, File workingDirectory, boolean failsOnErrorOutput)
+    void executeCommand( String executable, List<String> commands, File workingDirectory, boolean failsOnErrorOutput )
             throws ExecutionException;
 
     /**
@@ -113,13 +114,13 @@ public interface CommandExecutor
      * @param name
      * @param value
      */
-    void addEnvironment(String name, String value);
+    void addEnvironment( String name, String value );
 
-    void setErrorListener(ErrorListener errorListener);
+    void setErrorListener( ErrorListener errorListener );
 
     public static interface ErrorListener
     {
-        boolean isError(String error);
+        boolean isError( String error );
     }
 
     /**
@@ -170,7 +171,7 @@ public interface CommandExecutor
                  */
                 public ErrorListener errorListener;
 
-                public void setLogger(Log logger)
+                public void setLogger( Log logger )
                 {
                     this.logger = logger;
                 }
@@ -179,19 +180,19 @@ public interface CommandExecutor
 
                 private Commandline commandline;
 
-                public void executeCommand(String executable, List<String> commands) throws ExecutionException
+                public void executeCommand( String executable, List<String> commands ) throws ExecutionException
                 {
                     executeCommand( executable, commands, null, true );
                 }
 
-                public void executeCommand(String executable, List<String> commands, boolean failsOnErrorOutput)
+                public void executeCommand( String executable, List<String> commands, boolean failsOnErrorOutput )
                         throws ExecutionException
                 {
                     executeCommand( executable, commands, null, failsOnErrorOutput );
                 }
 
-                public void executeCommand(String executable, List<String> commands, File workingDirectory,
-                                           boolean failsOnErrorOutput) throws ExecutionException
+                public void executeCommand( String executable, List<String> commands, File workingDirectory,
+                                            boolean failsOnErrorOutput ) throws ExecutionException
                 {
                     if ( commands == null )
                     {
@@ -259,7 +260,7 @@ public interface CommandExecutor
                 }
 
                 @Override
-                public void addEnvironment(String name, String value)
+                public void addEnvironment( String name, String value )
                 {
                     if ( environment == null )
                     {
@@ -268,12 +269,12 @@ public interface CommandExecutor
                     environment.put( name, value );
                 }
 
-                public void setErrorListener(ErrorListener errorListener)
+                public void setErrorListener( ErrorListener errorListener )
                 {
                     this.errorListener = errorListener;
                 }
 
-                public void setPid(long pid)
+                public void setPid( long pid )
                 {
                     this.pid = pid;
                 }
@@ -310,7 +311,7 @@ public interface CommandExecutor
                         error = false;
                     }
 
-                    public void consumeLine(String line)
+                    public void consumeLine( String line )
                     {
                         sbe.append( line );
                         if ( logger != null )
@@ -362,7 +363,7 @@ public interface CommandExecutor
                         consumer = new DefaultConsumer();
                     }
 
-                    public void consumeLine(String line)
+                    public void consumeLine( String line )
                     {
                         sb.append( line );
                         if ( logger != null )

@@ -84,7 +84,7 @@ public class PushMojo extends AbstractAndroidMojo
      */
     private String pushSource;
 
-    @PullParameter(required = true)
+    @PullParameter( required = true )
     private String parsedSource;
 
     /**
@@ -97,7 +97,7 @@ public class PushMojo extends AbstractAndroidMojo
      */
     private String pushDestination;
 
-    @PullParameter(required = true)
+    @PullParameter( required = true )
     private String parsedDestination;
 
     public void execute() throws MojoExecutionException, MojoFailureException
@@ -110,7 +110,7 @@ public class PushMojo extends AbstractAndroidMojo
 
         doWithDevices( new DeviceCallback()
         {
-            public void doWithDevice(final IDevice device) throws MojoExecutionException
+            public void doWithDevice( final IDevice device ) throws MojoExecutionException
             {
                 // message will be set in for each loop according to the processed files
                 String message = "";
@@ -178,7 +178,7 @@ public class PushMojo extends AbstractAndroidMojo
         } else if ( sourceFile.isDirectory() )
         {
             // find recursively all files to be pushed
-            @SuppressWarnings("unchecked") Collection<File> filesList = FileUtils.listFiles( sourceFile, null, true );
+            @SuppressWarnings( "unchecked" ) Collection<File> filesList = FileUtils.listFiles( sourceFile, null, true );
             for ( File file : filesList )
             {
                 // make the file's path relative - this is kind of a hack but it

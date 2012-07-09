@@ -22,7 +22,7 @@ package com.jayway.maven.plugins.android;
  */
 public class InvalidNdkException extends RuntimeException
 {
-    public InvalidNdkException(String message)
+    public InvalidNdkException( String message )
     {
         super( message );
     }

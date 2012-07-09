@@ -68,7 +68,7 @@ public class AndroidSdk
         final String apiLevel;
         final String path;
 
-        public Platform(String name, String apiLevel, String path)
+        public Platform( String name, String apiLevel, String path )
         {
             super();
             this.name = name;
@@ -84,7 +84,7 @@ public class AndroidSdk
     private Set<Platform> availablePlatforms;
 
 
-    public AndroidSdk(File sdkPath, String platformOrApiLevel)
+    public AndroidSdk( File sdkPath, String platformOrApiLevel )
     {
         this.sdkPath = sdkPath;
         findAvailablePlatforms();
@@ -105,7 +105,7 @@ public class AndroidSdk
         }
     }
 
-    private Platform findPlatformByNameOrApiLevel(String platformOrApiLevel)
+    private Platform findPlatformByNameOrApiLevel( String platformOrApiLevel )
     {
         for ( Platform p : availablePlatforms )
         {
@@ -143,7 +143,7 @@ public class AndroidSdk
                 "Android SDK could not be identified from path \"" + sdkPath + "\". " + PARAMETER_MESSAGE );
     }
 
-    private void assertPathIsDirectory(final File path)
+    private void assertPathIsDirectory( final File path )
     {
         if ( path == null )
         {
@@ -161,16 +161,16 @@ public class AndroidSdk
      * @param tool which tool, for example <code>adb</code> or <code>dx.jar</code>.
      * @return the complete path as a <code>String</code>, including the tool's filename.
      */
-    public String getPathForTool(String tool)
+    public String getPathForTool( String tool )
     {
 
-        String[] possiblePaths = {sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool,
+        String[] possiblePaths = { sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool,
                 sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool + ".exe",
                 sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool + ".bat",
                 sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/lib/" + tool, getPlatform() + "/tools/" + tool,
                 getPlatform() + "/tools/" + tool + ".exe", getPlatform() + "/tools/" + tool + ".bat",
                 getPlatform() + "/tools/lib/" + tool, sdkPath + "/tools/" + tool, sdkPath + "/tools/" + tool + ".exe",
-                sdkPath + "/tools/" + tool + ".bat", sdkPath + "/tools/lib/" + tool};
+                sdkPath + "/tools/" + tool + ".bat", sdkPath + "/tools/lib/" + tool };
 
         for ( String possiblePath : possiblePaths )
         {

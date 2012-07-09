@@ -94,7 +94,7 @@ public class ApklibMojo extends AbstractAndroidMojo
         return apklibrary;
     }
 
-    private void addNativeLibraries(final JarArchiver jarArchiver) throws MojoExecutionException
+    private void addNativeLibraries( final JarArchiver jarArchiver ) throws MojoExecutionException
     {
 
         try
@@ -111,7 +111,7 @@ public class ApklibMojo extends AbstractAndroidMojo
         // TODO:        - But where is that directory configured?
     }
 
-    protected void addJavaResources(JarArchiver jarArchiver, List<Resource> javaResources, String prefix)
+    protected void addJavaResources( JarArchiver jarArchiver, List<Resource> javaResources, String prefix )
             throws ArchiverException, IOException
     {
         for ( Resource javaResource : javaResources )
@@ -129,7 +129,7 @@ public class ApklibMojo extends AbstractAndroidMojo
      * @throws ArchiverException
      * @throws java.io.IOException in case the resource path can not be resolved
      */
-    protected void addJavaResource(JarArchiver jarArchiver, Resource javaResource, String prefix)
+    protected void addJavaResource( JarArchiver jarArchiver, Resource javaResource, String prefix )
             throws ArchiverException, IOException
     {
         if ( javaResource != null )
@@ -157,7 +157,7 @@ public class ApklibMojo extends AbstractAndroidMojo
      * @param prefix any string, or null.
      * @return the prefix with a "/" at the end, never null.
      */
-    protected String endWithSlash(String prefix)
+    protected String endWithSlash( String prefix )
     {
         prefix = StringUtils.defaultIfEmpty( prefix, "/" );
         if ( ! prefix.endsWith( "/" ) )
@@ -175,7 +175,7 @@ public class ApklibMojo extends AbstractAndroidMojo
      * @param prefix      An optional prefix for where in the Jar file the directory's contents should go.
      * @throws ArchiverException
      */
-    protected void addDirectory(JarArchiver jarArchiver, File directory, String prefix) throws ArchiverException
+    protected void addDirectory( JarArchiver jarArchiver, File directory, String prefix ) throws ArchiverException
     {
         if ( directory != null && directory.exists() )
         {
@@ -200,7 +200,7 @@ public class ApklibMojo extends AbstractAndroidMojo
 
         if ( resourceOverlayDirectories == null || resourceOverlayDirectories.length == 0 )
         {
-            overlayDirectories = new File[]{resourceOverlayDirectory};
+            overlayDirectories = new File[]{ resourceOverlayDirectory };
         } else
         {
             overlayDirectories = resourceOverlayDirectories;

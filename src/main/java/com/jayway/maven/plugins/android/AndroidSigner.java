@@ -32,7 +32,7 @@ public class AndroidSigner
 
     private final Debug debug;
 
-    public AndroidSigner(String debug)
+    public AndroidSigner( String debug )
     {
         if ( debug == null )
         {
@@ -47,7 +47,7 @@ public class AndroidSigner
         }
     }
 
-    public AndroidSigner(Debug debug)
+    public AndroidSigner( Debug debug )
     {
         this.debug = debug;
     }

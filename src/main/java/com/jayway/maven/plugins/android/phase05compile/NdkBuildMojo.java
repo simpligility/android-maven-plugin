@@ -75,7 +75,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      *
      * @parameter
      */
-    @ConfigPojo(prefix = "ndk")
+    @ConfigPojo( prefix = "ndk" )
     private Ndk ndk;
 
     /**
@@ -115,7 +115,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      *
      * @parameter expression="${android.ndk.build.clear-native-artifacts}" default-value="false"
      */
-    @PullParameter(defaultValue = "false")
+    @PullParameter( defaultValue = "false" )
     private Boolean clearNativeArtifacts;
 
     /**
@@ -124,7 +124,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      *
      * @parameter expression="${android.ndk.build.attach-native-artifact}" default-value="false"
      */
-    @PullParameter(defaultValue = "false")
+    @PullParameter( defaultValue = "false" )
     private Boolean attachNativeArtifacts;
 
     /**
@@ -154,7 +154,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      *
      * @parameter expression="${android.ndk.build.architecture}" default-value="armeabi"
      */
-    @PullParameter(defaultValue = "armeabi")
+    @PullParameter( defaultValue = "armeabi" )
     private String ndkArchitecture;
 
     /**
@@ -170,7 +170,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      *
      * @parameter expression="${android.ndk.build.attach-header-files}" default-value="true"
      */
-    @PullParameter(defaultValue = "true")
+    @PullParameter( defaultValue = "true" )
     private Boolean attachHeaderFiles;
 
     /**
@@ -181,7 +181,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      *
      * @parameter expression="${android.ndk.build.use-local-src-include-paths}" default-value="false"
      */
-    @PullParameter(defaultValue = "false")
+    @PullParameter( defaultValue = "false" )
     private Boolean useLocalSrcIncludePaths;
 
     /**
@@ -235,7 +235,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      *
      * @parameter expression="${android.ndk.build.use-header-archives}" default-value="true"
      */
-    @PullParameter(defaultValue = "true")
+    @PullParameter( defaultValue = "true" )
     private Boolean useHeaderArchives;
 
     /**
@@ -260,7 +260,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      *
      * @parameter expression="${android.ndk.build.ignore-build-warnings}" default-value="true"
      */
-    @PullParameter(defaultValue = "true")
+    @PullParameter( defaultValue = "true" )
     private Boolean ignoreBuildWarnings;
 
     /**
@@ -272,19 +272,19 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      *
      * @parameter expression="${android.ndk.build.build-warnings-regular-expression}" default-value=".*[warning|note]: .*"
      */
-    @PullParameter(defaultValue = ".*[warning|note]: .*")
+    @PullParameter( defaultValue = ".*[warning|note]: .*" )
     private String buildWarningsRegularExpression;
 
     /**
      * @parameter expression="${android.ndk.build.skip-native-library-stripping}" default-value="false"
      */
-    @PullParameter(defaultValue = "false")
+    @PullParameter( defaultValue = "false" )
     private Boolean skipStripping;
 
     /**
      * @parameter expression="${android.ndk.build.ndk-toolchain}" default-value="arm-linux-androideabi-4.4.3"
      */
-    @PullParameter(defaultValue = "arm-linux-androideabi-4.4.3")
+    @PullParameter( defaultValue = "arm-linux-androideabi-4.4.3" )
     private String ndkToolchain;
 
 
@@ -369,7 +369,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             executor.setErrorListener( new CommandExecutor.ErrorListener()
             {
                 @Override
-                public boolean isError(String error)
+                public boolean isError( String error )
                 {
 
                     // Unconditionally ignore *All* build warning if configured to
@@ -530,7 +530,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                     {
                         File[] files = nativeLibDirectory.listFiles( new FilenameFilter()
                         {
-                            public boolean accept(final File dir, final String name)
+                            public boolean accept( final File dir, final String name )
                             {
                                 if ( "a".equals( project.getPackaging() ) )
                                 {
@@ -648,12 +648,12 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
     }
 
-    private void validateMakefile(MavenProject project, String makefile)
+    private void validateMakefile( MavenProject project, String makefile )
     {
         // TODO: actually perform validation
     }
 
-    private void invokeNDKStripper(File file) throws MojoExecutionException
+    private void invokeNDKStripper( File file ) throws MojoExecutionException
     {
         try
         {
@@ -662,7 +662,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             final CommandExecutor stripCommandExecutor = CommandExecutor.Factory.createDefaultCommmandExecutor();
             stripCommandExecutor.setErrorListener( new CommandExecutor.ErrorListener()
             {
-                public boolean isError(String error)
+                public boolean isError( String error )
                 {
                     getLog().error( "Error while stripping binary: " + error );
                     return true;
@@ -694,7 +694,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         return getAndroidNdk().getStripper( ndkToolchain );
     }
 
-    private void processMakefileCapture(File localCIncludesFile) throws MojoExecutionException
+    private void processMakefileCapture( File localCIncludesFile ) throws MojoExecutionException
     {
 
         try
@@ -717,7 +717,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                             final HeaderFilesDirective headerFilesDirective = new HeaderFilesDirective();
                             File includeDir = new File( project.getBasedir(), include );
                             headerFilesDirective.setDirectory( includeDir.getAbsolutePath() );
-                            headerFilesDirective.setIncludes( new String[]{"**/*.h"} );
+                            headerFilesDirective.setIncludes( new String[]{ "**/*.h" } );
                             finalHeaderFilesDirectives.add( headerFilesDirective );
                         }
                     }
@@ -733,7 +733,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                     getLog().debug( "No header files included, will add default set" );
                     final HeaderFilesDirective e = new HeaderFilesDirective();
                     e.setDirectory( new File( project.getBasedir() + "/jni" ).getAbsolutePath() );
-                    e.setIncludes( new String[]{"**/*.h"} );
+                    e.setIncludes( new String[]{ "**/*.h" } );
                     finalHeaderFilesDirectives.add( e );
                 }
                 createHeaderArchive( finalHeaderFilesDirectives );
@@ -745,7 +745,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
     }
 
-    private void createHeaderArchive(List<HeaderFilesDirective> finalHeaderFilesDirectives)
+    private void createHeaderArchive( List<HeaderFilesDirective> finalHeaderFilesDirectives )
             throws MojoExecutionException
     {
         try
@@ -796,7 +796,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      * @param file The file being added as an artifact
      * @return The artifact type (so or a)
      */
-    private String resolveArtifactType(File file)
+    private String resolveArtifactType( File file )
     {
         if ( "so".equals( project.getPackaging() ) || "a".equals( project.getPackaging() ) )
         {

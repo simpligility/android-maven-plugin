@@ -298,7 +298,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
         DeviceCallback instrumentationTestExecutor = new DeviceCallback()
         {
-            public void doWithDevice(final IDevice device) throws MojoExecutionException, MojoFailureException
+            public void doWithDevice( final IDevice device ) throws MojoExecutionException, MojoFailureException
             {
                 RemoteAndroidTestRunner remoteAndroidTestRunner =
                         new RemoteAndroidTestRunner( parsedInstrumentationPackage, parsedInstrumentationRunner,
@@ -525,7 +525,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * @param lines A list of strings
      * @return Comma separated String from given list
      */
-    protected static String buildCommaSeparatedString(List<String> lines)
+    protected static String buildCommaSeparatedString( List<String> lines )
     {
         if ( lines == null || lines.size() == 0 )
         {
@@ -626,13 +626,13 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         private boolean threwException = false;
         private final StringBuilder exceptionMessages = new StringBuilder();
 
-        public AndroidTestRunListener(MavenProject project, IDevice device)
+        public AndroidTestRunListener( MavenProject project, IDevice device )
         {
             this.project = project;
             this.device = device;
         }
 
-        public void testRunStarted(String runName, int testCount)
+        public void testRunStarted( String runName, int testCount )
         {
             this.testCount = testCount;
             getLog().info( INDENT + "Run started: " + runName + ", " + testCount + " tests:" );
@@ -711,7 +711,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             }
         }
 
-        public void testStarted(TestIdentifier test)
+        public void testStarted( TestIdentifier test )
         {
             getLog().info( INDENT + INDENT + "Start: " + test.toString() );
 
@@ -733,7 +733,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             }
         }
 
-        public void testFailed(TestFailure status, TestIdentifier test, String trace)
+        public void testFailed( TestFailure status, TestIdentifier test, String trace )
         {
             if ( status == ERROR )
             {
@@ -773,7 +773,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             }
         }
 
-        public void testEnded(TestIdentifier test, Map<String, String> testMetrics)
+        public void testEnded( TestIdentifier test, Map<String, String> testMetrics )
         {
             getLog().info( INDENT + INDENT + "End: " + test.toString() );
             logMetrics( testMetrics );
@@ -792,7 +792,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             }
         }
 
-        public void testRunEnded(long elapsedTime, Map<String, String> runMetrics)
+        public void testRunEnded( long elapsedTime, Map<String, String> runMetrics )
         {
             getLog().info( INDENT + "Run ended: " + elapsedTime + " ms" );
             if ( hasFailuresOrErrors() )
@@ -834,13 +834,13 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             }
         }
 
-        public void testRunFailed(String errorMessage)
+        public void testRunFailed( String errorMessage )
         {
             testRunFailureCause = errorMessage;
             getLog().info( INDENT + "Run failed: " + errorMessage );
         }
 
-        public void testRunStopped(long elapsedTime)
+        public void testRunStopped( long elapsedTime )
         {
             getLog().info( INDENT + "Run stopped:" + elapsedTime );
         }
@@ -853,7 +853,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
          * @param trace
          * @return message or empty string
          */
-        private String parseForMessage(String trace)
+        private String parseForMessage( String trace )
         {
             if ( StringUtils.isNotBlank( trace ) )
             {
@@ -888,7 +888,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
          * @param trace
          * @return Exception class as string or empty string
          */
-        private String parseForException(String trace)
+        private String parseForException( String trace )
         {
             if ( StringUtils.isNotBlank( trace ) )
             {
@@ -953,7 +953,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
          *
          * @param metrics
          */
-        private void logMetrics(Map<String, String> metrics)
+        private void logMetrics( Map<String, String> metrics )
         {
             for ( Map.Entry<String, String> entry : metrics.entrySet() )
             {

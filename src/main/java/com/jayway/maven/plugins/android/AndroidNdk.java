@@ -33,13 +33,13 @@ public class AndroidNdk
 
     private final File ndkPath;
 
-    public AndroidNdk(File ndkPath)
+    public AndroidNdk( File ndkPath )
     {
         assertPathIsDirectory( ndkPath );
         this.ndkPath = ndkPath;
     }
 
-    private void assertPathIsDirectory(final File path)
+    private void assertPathIsDirectory( final File path )
     {
         if ( path == null )
         {
@@ -52,7 +52,7 @@ public class AndroidNdk
         }
     }
 
-    public File getStripper(String toolchain) throws MojoExecutionException
+    public File getStripper( String toolchain ) throws MojoExecutionException
     {
         final File stripper;
         if ( SystemUtils.IS_OS_LINUX )
@@ -100,7 +100,7 @@ public class AndroidNdk
     }
 
 
-    public File getGdbServer(String toolchain) throws MojoExecutionException
+    public File getGdbServer( String toolchain ) throws MojoExecutionException
     {
         final File gdbServerFile;
 

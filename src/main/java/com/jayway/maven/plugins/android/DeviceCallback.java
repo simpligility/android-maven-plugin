@@ -34,5 +34,5 @@ public interface DeviceCallback
      * @throws org.apache.maven.plugin.MojoFailureException
      *                                in case there is a problem, you may throw this
      */
-    void doWithDevice(IDevice device) throws MojoExecutionException, MojoFailureException;
+    void doWithDevice( IDevice device ) throws MojoExecutionException, MojoFailureException;
 }

@@ -24,7 +24,7 @@ public class ScreenshotServiceWrapper implements DeviceCallback
     private final Log log;
     private final File screenshotParentDir;
 
-    public ScreenshotServiceWrapper(DeviceCallback delegate, MavenProject project, Log log)
+    public ScreenshotServiceWrapper( DeviceCallback delegate, MavenProject project, Log log )
     {
         this.delegate = delegate;
         this.log = log;
@@ -34,7 +34,7 @@ public class ScreenshotServiceWrapper implements DeviceCallback
 
 
     @Override
-    public void doWithDevice(final IDevice device) throws MojoExecutionException, MojoFailureException
+    public void doWithDevice( final IDevice device ) throws MojoExecutionException, MojoFailureException
     {
         String deviceName = getDescriptiveName( device );
 
@@ -53,7 +53,7 @@ public class ScreenshotServiceWrapper implements DeviceCallback
         screenshotService.finish();
     }
 
-    private void create(File dir)
+    private void create( File dir )
     {
         try
         {
