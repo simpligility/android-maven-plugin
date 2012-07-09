@@ -142,7 +142,7 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
                 else
                 {
                     getLog().error( "Cannot attach " + aligned.getAbsolutePath() + " to the project" +
-                            " - The file does not exist" );
+                                    " - The file does not exist" );
                 }
             }
             catch ( ExecutionException e )

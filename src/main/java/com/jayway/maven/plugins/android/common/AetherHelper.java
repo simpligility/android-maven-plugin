@@ -34,9 +34,8 @@ public class AetherHelper
         DefaultArtifact defaultArtifact;
         if ( artifact.getClassifier() != null )
         {
-            defaultArtifact =
-                    new DefaultArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getClassifier(),
-                            artifact.getType(), artifact.getVersion() );
+            defaultArtifact = new DefaultArtifact( artifact.getGroupId(), artifact.getArtifactId(),
+                    artifact.getClassifier(), artifact.getType(), artifact.getVersion() );
         }
         else
         {
@@ -80,13 +79,13 @@ public class AetherHelper
             org.sonatype.aether.artifact.Artifact aetherArtifact = AetherHelper.createAetherArtifact( artifact );
             artifactRequest.setArtifact( aetherArtifact );
             artifactRequest.setRepositories( repositories );
-            final ArtifactResult artifactResult =
-                    repositorySystem.resolveArtifact( repositorySystemSession, artifactRequest );
+            final ArtifactResult artifactResult = repositorySystem
+                    .resolveArtifact( repositorySystemSession, artifactRequest );
 
-            final org.apache.maven.artifact.DefaultArtifact defaultArtifact =
-                    new org.apache.maven.artifact.DefaultArtifact( artifact.getGroupId(), artifact.getArtifactId(),
-                            artifact.getVersion(), artifact.getScope(), artifact.getType(), artifact.getClassifier(),
-                            artifact.getArtifactHandler() );
+            final org.apache.maven.artifact.DefaultArtifact defaultArtifact
+                    = new org.apache.maven.artifact.DefaultArtifact( artifact.getGroupId(), artifact.getArtifactId(),
+                    artifact.getVersion(), artifact.getScope(), artifact.getType(), artifact.getClassifier(),
+                    artifact.getArtifactHandler() );
             defaultArtifact.setFile( artifactResult.getArtifact().getFile() );
             return defaultArtifact;
         }

@@ -167,8 +167,8 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     public static final String PROGUARD_OBFUSCATED_JAR = "proguard-obfuscated.jar";
 
-    private static final Collection<String> ANDROID_LIBRARY_EXCLUDED_FILTER =
-            Arrays.asList( "org/xml/**", "org/w3c/**", "org/apache/http/**", "java/**", "javax/**",
+    private static final Collection<String> ANDROID_LIBRARY_EXCLUDED_FILTER = Arrays
+            .asList( "org/xml/**", "org/w3c/**", "org/apache/http/**", "java/**", "javax/**",
                     "android/net/http/AndroidHttpClient.class" );
 
     private static final Collection<String> MAVEN_DESCRIPTOR = Arrays.asList( "META-INF/maven/**" );
@@ -499,7 +499,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         {
             getLog().debug( "pluginArtifact: " + artifact.getFile() );
             if ( ( "proguard".equals( artifact.getArtifactId() ) ) || ( "proguard-base"
-                    .equals( artifact.getArtifactId() ) ) )
+                                                                                .equals( artifact.getArtifactId() ) ) )
             {
                 int distance = artifact.getDependencyTrail().size();
                 getLog().debug( "proguard DependencyTrail: " + distance );

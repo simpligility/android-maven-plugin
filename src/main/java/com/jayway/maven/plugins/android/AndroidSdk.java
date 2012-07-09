@@ -60,8 +60,8 @@ public class AndroidSdk
 
     private static final String PARAMETER_MESSAGE =
             "Please provide a proper Android SDK directory path as configuration parameter <sdk><path>...</path></sdk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.sdk.path=... or set environment variable "
-                    +
-                    AbstractAndroidMojo.ENV_ANDROID_HOME + ".";
+            +
+            AbstractAndroidMojo.ENV_ANDROID_HOME + ".";
 
     private static final class Platform
     {
@@ -101,8 +101,10 @@ public class AndroidSdk
             if ( platform == null )
             {
                 throw new InvalidSdkException( "Invalid SDK: Platform/API level " + platformOrApiLevel +
-                        " not available. This command should give you all you need:\n" + sdkPath.getAbsolutePath() +
-                        File.separator + "tools" + File.separator + "android update sdk --no-ui --obsolete --force" );
+                                               " not available. This command should give you all you need:\n" + sdkPath
+                        .getAbsolutePath() +
+                                               File.separator + "tools" + File.separator
+                                               + "android update sdk --no-ui --obsolete --force" );
             }
         }
     }

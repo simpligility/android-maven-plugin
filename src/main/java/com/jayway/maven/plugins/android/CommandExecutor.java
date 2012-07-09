@@ -224,24 +224,24 @@ public interface CommandExecutor
                         if ( logger != null )
                         {
                             logger.debug( "ANDROID-040-000: Executed command: Commandline = " + commandline +
-                                    ", Result = " + result );
+                                          ", Result = " + result );
                         }
                         else
                         {
                             System.out.println( "ANDROID-040-000: Executed command: Commandline = " + commandline +
-                                    ", Result = " + result );
+                                                ", Result = " + result );
                         }
                         if ( ( failsOnErrorOutput && stdErr.hasError() ) || result != 0 )
                         {
                             throw new ExecutionException( "ANDROID-040-001: Could not execute: Command = " +
-                                    commandline.toString() + ", Result = " + result );
+                                                          commandline.toString() + ", Result = " + result );
                         }
                     }
                     catch ( CommandLineException e )
                     {
                         throw new ExecutionException(
                                 "ANDROID-040-002: Could not execute: Command = " + commandline.toString() +
-                                        ", Error message = " + e.getMessage() );
+                                ", Error message = " + e.getMessage() );
                     }
                     setPid( commandline.getPid() );
                 }

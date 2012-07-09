@@ -125,7 +125,7 @@ public class PushMojo extends AbstractAndroidMojo
                         String destinationPath = pushFileEntry.getValue();
 
                         message = "Push of " + sourcePath + " to " +
-                                destinationPath + " on " + DeviceHelper.getDescriptiveName( device );
+                                  destinationPath + " on " + DeviceHelper.getDescriptiveName( device );
 
                         syncService.pushFile( sourcePath, destinationPath, new LogSyncProgressMonitor( getLog() ) );
 
@@ -186,8 +186,8 @@ public class PushMojo extends AbstractAndroidMojo
             if ( sourceFile.isDirectory() )
             {
                 // find recursively all files to be pushed
-                @SuppressWarnings( "unchecked" ) Collection<File> filesList =
-                        FileUtils.listFiles( sourceFile, null, true );
+                @SuppressWarnings( "unchecked" ) Collection<File> filesList = FileUtils
+                        .listFiles( sourceFile, null, true );
                 for ( File file : filesList )
                 {
                     // make the file's path relative - this is kind of a hack but it
@@ -201,7 +201,7 @@ public class PushMojo extends AbstractAndroidMojo
             {
                 throw new MojoExecutionException(
                         "Cannot execute push goal: File or directory " + sourceFile.getAbsolutePath() +
-                                " does not exist." );
+                        " does not exist." );
             }
         }
         return result;

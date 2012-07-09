@@ -284,8 +284,8 @@ public class DexMojo extends AbstractAndroidMojo
 
     protected File createApkSourcesFile() throws MojoExecutionException
     {
-        final File apksources =
-                new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apksources" );
+        final File apksources = new File( project.getBuild().getDirectory(),
+                project.getBuild().getFinalName() + ".apksources" );
         FileUtils.deleteQuietly( apksources );
 
         try

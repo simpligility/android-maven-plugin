@@ -293,17 +293,16 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             // if both packages and classes are specified --> ERROR
             throw new MojoFailureException(
                     "packages and classes are mutually exclusive. They cannot be specified at " +
-                            "the same time. Please specify either packages or classes. For details, " +
-                            "see http://developer.android.com/guide/developing/testing/testing_otheride.html" );
+                    "the same time. Please specify either packages or classes. For details, " +
+                    "see http://developer.android.com/guide/developing/testing/testing_otheride.html" );
         }
 
         DeviceCallback instrumentationTestExecutor = new DeviceCallback()
         {
             public void doWithDevice( final IDevice device ) throws MojoExecutionException, MojoFailureException
             {
-                RemoteAndroidTestRunner remoteAndroidTestRunner =
-                        new RemoteAndroidTestRunner( parsedInstrumentationPackage, parsedInstrumentationRunner,
-                                device );
+                RemoteAndroidTestRunner remoteAndroidTestRunner = new RemoteAndroidTestRunner(
+                        parsedInstrumentationPackage, parsedInstrumentationRunner, device );
 
                 if ( packagesExists )
                 {
@@ -328,13 +327,13 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
                 if ( StringUtils.isNotBlank( parsedTestSize ) )
                 {
-                    IRemoteAndroidTestRunner.TestSize validSize =
-                            IRemoteAndroidTestRunner.TestSize.getTestSize( parsedTestSize );
+                    IRemoteAndroidTestRunner.TestSize validSize = IRemoteAndroidTestRunner.TestSize
+                            .getTestSize( parsedTestSize );
                     remoteAndroidTestRunner.setTestSize( validSize );
                 }
 
                 getLog().info( "Running instrumentation tests in " + parsedInstrumentationPackage + " on " +
-                        device.getSerialNumber() + " (avdName=" + device.getAvdName() + ")" );
+                               device.getSerialNumber() + " (avdName=" + device.getAvdName() + ")" );
                 try
                 {
                     AndroidTestRunListener testRunListener = new AndroidTestRunListener( project, device );
@@ -819,7 +818,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                 getLog().error( INDENT + "FAILURES!!!" );
             }
             getLog().info( INDENT + "Tests run: " + testCount + ",  Failures: " + testFailureCount + ",  Errors: " +
-                    testErrorCount );
+                           testErrorCount );
             if ( parsedCreateReport )
             {
                 NamedNodeMap testSuiteAttributes = testSuiteNode.getAttributes();
@@ -941,9 +940,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             FileWriter writer = null;
             try
             {
-                String directory =
-                        new StringBuilder().append( project.getBuild().getDirectory() ).append( "/surefire-reports" )
-                                .toString();
+                String directory = new StringBuilder().append( project.getBuild().getDirectory() )
+                        .append( "/surefire-reports" ).toString();
 
                 FileUtils.forceMkdir( new File( directory ) );
 

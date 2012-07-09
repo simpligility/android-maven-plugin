@@ -371,8 +371,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         try
         {
             writer = new FileWriter( manifestFile, false );
-            String xmldecl = String.format( "<?xml version=\"%s\" encoding=\"%s\"?>%n", doc.getXmlVersion(),
-                    doc.getXmlEncoding() );
+            String xmldecl = String
+                    .format( "<?xml version=\"%s\" encoding=\"%s\"?>%n", doc.getXmlVersion(), doc.getXmlEncoding() );
             writer.write( xmldecl );
             Result result = new StreamResult( writer );
 
@@ -408,12 +408,12 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         }
 
         if ( ( parsedVersionCodeAutoIncrement && parsedVersionCode != null ) ||
-                ( parsedVersionCodeUpdateFromVersion && parsedVersionCode != null ) ||
-                ( parsedVersionCodeAutoIncrement && parsedVersionCodeUpdateFromVersion ) )
+             ( parsedVersionCodeUpdateFromVersion && parsedVersionCode != null ) ||
+             ( parsedVersionCodeAutoIncrement && parsedVersionCodeUpdateFromVersion ) )
         {
             throw new MojoFailureException( "versionCodeAutoIncrement, versionCodeUpdateFromVersion and versionCode " +
-                    "are mutual exclusive. They cannot be specified at the same time. " +
-                    "Please specify either versionCodeAutoIncrement, versionCodeUpdateFromVersion or versionCode!" );
+                                            "are mutual exclusive. They cannot be specified at the same time. " +
+                                            "Please specify either versionCodeAutoIncrement, versionCodeUpdateFromVersion or versionCode!" );
         }
 
         // Expose the version properties and other simple parsed manifest entries
@@ -450,7 +450,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             // invalid version, something went wrong in parsing, do the old fall back method
             String verCode;
             if ( artifactVersion.getMajorVersion() == 0 & artifactVersion.getMinorVersion() == 0
-                    && artifactVersion.getIncrementalVersion() == 0 )
+                 && artifactVersion.getIncrementalVersion() == 0 )
             {
                 getLog().warn( "Problem parsing version number occurred. Using fall back to determine version code. " );
 
@@ -472,8 +472,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             else
             {
                 verCode = Integer.toString( artifactVersion.getMajorVersion() ) +
-                        Integer.toString( artifactVersion.getMinorVersion() ) +
-                        Integer.toString( artifactVersion.getIncrementalVersion() );
+                          Integer.toString( artifactVersion.getMinorVersion() ) +
+                          Integer.toString( artifactVersion.getIncrementalVersion() );
             }
             getLog().info( "Setting " + ATTR_VERSION_CODE + " to " + verCode );
             manifestElement.setAttribute( ATTR_VERSION_CODE, verCode );

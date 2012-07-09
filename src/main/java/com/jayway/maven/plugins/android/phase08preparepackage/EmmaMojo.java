@@ -90,7 +90,7 @@ public class EmmaMojo extends AbstractAndroidMojo
             processor.run();
         }
         getLog().debug( "Emma OVERWRITE is OFF for this project (" + project.getArtifactId() +
-                ") taeget/classes files are safe" );
+                        ") taeget/classes files are safe" );
     }
 
     private void parseConfiguration() throws MojoExecutionException
@@ -132,16 +132,16 @@ public class EmmaMojo extends AbstractAndroidMojo
 
     private String getDefaultMetaDataFile()
     {
-        File outputFolder =
-                new File( project.getBuild().getDirectory() + File.separator + EMMA_FOLDER_NAME + File.separator +
-                        COVERAGE_METADATA_NAME );
+        File outputFolder = new File(
+                project.getBuild().getDirectory() + File.separator + EMMA_FOLDER_NAME + File.separator +
+                COVERAGE_METADATA_NAME );
         return outputFolder.getAbsolutePath();
     }
 
     private String[] getDefaultCompiledFolders()
     {
-        File sourceJavaFolder =
-                new File( project.getBuild().getDirectory() + File.separator + CLASSES_FOLDER_NAME + File.separator );
+        File sourceJavaFolder = new File(
+                project.getBuild().getDirectory() + File.separator + CLASSES_FOLDER_NAME + File.separator );
         return new String[]{ sourceJavaFolder.getAbsolutePath() };
     }
 
