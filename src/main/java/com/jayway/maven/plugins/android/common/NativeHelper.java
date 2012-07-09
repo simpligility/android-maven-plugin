@@ -109,20 +109,26 @@ public class NativeHelper
                         ")" );
                 filteredArtifacts.add( artifact );
             }
-            else if ( isNativeLibrary( sharedLibraries, artifact.getType() ) &&
-                    ( Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) ||
-                            Artifact.SCOPE_RUNTIME.equals( artifact.getScope() ) ) )
+            else
             {
-                filteredArtifacts.add( artifact );
-            }
-            else if ( APKLIB.equals( artifact.getType() ) )
-            {
-                // Check if the artifact contains a libs folder - if so, include it in the list
-                File libsFolder = new File(
-                        AbstractAndroidMojo.getLibraryUnpackDirectory( unpackDirectory, artifact ) + "/libs" );
-                if ( libsFolder.exists() )
+                if ( isNativeLibrary( sharedLibraries, artifact.getType() ) && (
+                        Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) || Artifact.SCOPE_RUNTIME
+                                .equals( artifact.getScope() ) ) )
                 {
                     filteredArtifacts.add( artifact );
+                }
+                else
+                {
+                    if ( APKLIB.equals( artifact.getType() ) )
+                    {
+                        // Check if the artifact contains a libs folder - if so, include it in the list
+                        File libsFolder = new File(
+                                AbstractAndroidMojo.getLibraryUnpackDirectory( unpackDirectory, artifact ) + "/libs" );
+                        if ( libsFolder.exists() )
+                        {
+                            filteredArtifacts.add( artifact );
+                        }
+                    }
                 }
             }
         }

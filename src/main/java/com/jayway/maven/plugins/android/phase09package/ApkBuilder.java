@@ -114,12 +114,15 @@ public class ApkBuilder
                             break;
                         }
                     }
-                    else if ( parameterTypes.length == 1 )
+                    else
                     {
-                        if ( parameterTypes[ 0 ] == File.class )
+                        if ( parameterTypes.length == 1 )
                         {
-                            addNativeLibrariesMethod = method;
-                            break;
+                            if ( parameterTypes[ 0 ] == File.class )
+                            {
+                                addNativeLibrariesMethod = method;
+                                break;
+                            }
                         }
                     }
                 }

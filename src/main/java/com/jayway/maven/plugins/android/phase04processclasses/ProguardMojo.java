@@ -238,9 +238,12 @@ public class ProguardMojo extends AbstractAndroidMojo
         {
             throw new MojoExecutionException( "Cannot create proguard output directory" );
         }
-        else if ( proguardDir.exists() && ! proguardDir.isDirectory() )
+        else
         {
-            throw new MojoExecutionException( "Non-directory exists at " + proguardDir.getAbsolutePath() );
+            if ( proguardDir.exists() && ! proguardDir.isDirectory() )
+            {
+                throw new MojoExecutionException( "Non-directory exists at " + proguardDir.getAbsolutePath() );
+            }
         }
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
@@ -355,8 +358,8 @@ public class ProguardMojo extends AbstractAndroidMojo
     {
         for ( Artifact artifactToSkip : artifactBlacklist )
         {
-            if ( artifactToSkip.getGroupId().equals( artifact.getGroupId() ) &&
-                    artifactToSkip.getArtifactId().equals( artifact.getArtifactId() ) )
+            if ( artifactToSkip.getGroupId().equals( artifact.getGroupId() ) && artifactToSkip.getArtifactId()
+                    .equals( artifact.getArtifactId() ) )
             {
                 return true;
             }
@@ -368,8 +371,8 @@ public class ProguardMojo extends AbstractAndroidMojo
     {
         for ( Artifact artifactToShift : artifactsToShift )
         {
-            if ( artifactToShift.getGroupId().equals( artifact.getGroupId() ) &&
-                    artifactToShift.getArtifactId().equals( artifact.getArtifactId() ) )
+            if ( artifactToShift.getGroupId().equals( artifact.getGroupId() ) && artifactToShift.getArtifactId()
+                    .equals( artifact.getArtifactId() ) )
             {
                 return true;
             }
@@ -460,10 +463,13 @@ public class ProguardMojo extends AbstractAndroidMojo
                     addLibraryJar( artifact.getFile().getAbsolutePath() );
                 }
             }
-            else if ( isShiftedArtifact( artifact ) )
+            else
             {
-                // this is a blacklisted artifact that should be processed as a library instead
-                addLibraryJar( artifact.getFile().getAbsolutePath() );
+                if ( isShiftedArtifact( artifact ) )
+                {
+                    // this is a blacklisted artifact that should be processed as a library instead
+                    addLibraryJar( artifact.getFile().getAbsolutePath() );
+                }
             }
         }
     }
@@ -492,8 +498,8 @@ public class ProguardMojo extends AbstractAndroidMojo
         for ( Artifact artifact : pluginDependencies )
         {
             getLog().debug( "pluginArtifact: " + artifact.getFile() );
-            if ( ( "proguard".equals( artifact.getArtifactId() ) ) ||
-                    ( "proguard-base".equals( artifact.getArtifactId() ) ) )
+            if ( ( "proguard".equals( artifact.getArtifactId() ) ) || ( "proguard-base"
+                    .equals( artifact.getArtifactId() ) ) )
             {
                 int distance = artifact.getDependencyTrail().size();
                 getLog().debug( "proguard DependencyTrail: " + distance );
@@ -502,10 +508,13 @@ public class ProguardMojo extends AbstractAndroidMojo
                     proguardArtifact = artifact;
                     proguardArtifactDistance = distance;
                 }
-                else if ( distance < proguardArtifactDistance )
+                else
                 {
-                    proguardArtifact = artifact;
-                    proguardArtifactDistance = distance;
+                    if ( distance < proguardArtifactDistance )
+                    {
+                        proguardArtifact = artifact;
+                        proguardArtifactDistance = distance;
+                    }
                 }
             }
         }

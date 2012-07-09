@@ -28,7 +28,8 @@ public class AndroidNdk
 {
 
     public static final String PROPER_NDK_HOME_DIRECTORY_MESSAGE =
-            "Please provide a proper Android NDK directory path as configuration parameter <ndk><path>...</path></ndk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.ndk.path=... or set environment variable " +
+            "Please provide a proper Android NDK directory path as configuration parameter <ndk><path>...</path></ndk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.ndk.path=... or set environment variable "
+                    +
                     NdkBuildMojo.ENV_ANDROID_NDK_HOME + ".";
 
     private final File ndkPath;
@@ -60,19 +61,26 @@ public class AndroidNdk
             stripper = new File( ndkPath,
                     "toolchains/" + toolchain + "/prebuilt/linux-x86/bin/arm-linux-androideabi-strip" );
         }
-        else if ( SystemUtils.IS_OS_WINDOWS )
-        {
-            stripper = new File( ndkPath,
-                    "toolchains/" + toolchain + "/prebuilt/windows/bin/arm-linux-androideabi-strip.exe" );
-        }
-        else if ( SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX )
-        {
-            stripper = new File( ndkPath,
-                    "toolchains/" + toolchain + "/prebuilt/darwin-x86/bin/arm-linux-androideabi-strip" );
-        }
         else
         {
-            throw new MojoExecutionException( "Could not resolve stripper for current OS: " + SystemUtils.OS_NAME );
+            if ( SystemUtils.IS_OS_WINDOWS )
+            {
+                stripper = new File( ndkPath,
+                        "toolchains/" + toolchain + "/prebuilt/windows/bin/arm-linux-androideabi-strip.exe" );
+            }
+            else
+            {
+                if ( SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX )
+                {
+                    stripper = new File( ndkPath,
+                            "toolchains/" + toolchain + "/prebuilt/darwin-x86/bin/arm-linux-androideabi-strip" );
+                }
+                else
+                {
+                    throw new MojoExecutionException(
+                            "Could not resolve stripper for current OS: " + SystemUtils.OS_NAME );
+                }
+            }
         }
 
         // Some basic validation

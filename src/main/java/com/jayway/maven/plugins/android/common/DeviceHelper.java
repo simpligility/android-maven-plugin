@@ -71,13 +71,16 @@ public class DeviceHelper
         {
             status = "Online";
         }
-        else if ( device.isOffline() )
-        {
-            status = "Offline";
-        }
         else
         {
-            status = "Unknown";
+            if ( device.isOffline() )
+            {
+                status = "Offline";
+            }
+            else
+            {
+                status = "Unknown";
+            }
         }
         return getDescriptiveName( device ) + " " + status;
     }

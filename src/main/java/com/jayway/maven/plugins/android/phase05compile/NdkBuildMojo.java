@@ -539,15 +539,15 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                             {
                                 if ( "a".equals( project.getPackaging() ) )
                                 {
-                                    return name.startsWith(
-                                            "lib" + ( target != null ? target : project.getArtifactId() ) ) &&
-                                            name.endsWith( ".a" );
+                                    return name
+                                            .startsWith( "lib" + ( target != null ? target : project.getArtifactId() ) )
+                                            && name.endsWith( ".a" );
                                 }
                                 else
                                 {
-                                    return name.startsWith(
-                                            "lib" + ( target != null ? target : project.getArtifactId() ) ) &&
-                                            name.endsWith( ".so" );
+                                    return name
+                                            .startsWith( "lib" + ( target != null ? target : project.getArtifactId() ) )
+                                            && name.endsWith( ".so" );
                                 }
                             }
                         } );
@@ -555,8 +555,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                         if ( files == null || files.length != 1 )
                         {
 
-                            getLog().warn( "Error while detecting native compile artifacts: " +
-                                    ( files == null || files.length == 0 ? "None found" :
+                            getLog().warn( "Error while detecting native compile artifacts: " + (
+                                    files == null || files.length == 0 ? "None found" :
                                             "Found more than 1 artifact" ) );
 
                             if ( files != null && files.length > 1 )

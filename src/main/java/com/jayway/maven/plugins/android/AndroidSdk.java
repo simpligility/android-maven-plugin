@@ -59,7 +59,8 @@ public class AndroidSdk
     private static final String PLATFORM_TOOLS_FOLDER_NAME = "platform-tools";
 
     private static final String PARAMETER_MESSAGE =
-            "Please provide a proper Android SDK directory path as configuration parameter <sdk><path>...</path></sdk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.sdk.path=... or set environment variable " +
+            "Please provide a proper Android SDK directory path as configuration parameter <sdk><path>...</path></sdk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.sdk.path=... or set environment variable "
+                    +
                     AbstractAndroidMojo.ENV_ANDROID_HOME + ".";
 
     private static final class Platform

@@ -660,24 +660,35 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                             deviceFound = true;
                             deviceCallback.doWithDevice( idevice );
                         }
-                        else if ( "usb".equals( device ) && ! idevice.isEmulator() )
+                        else
                         {
-                            getLog().info( "Device " + DeviceHelper.getDescriptiveName( idevice ) + " found." );
-                            deviceFound = true;
-                            deviceCallback.doWithDevice( idevice );
-                        }
-                        else if ( idevice.isEmulator() && ( device.equalsIgnoreCase( idevice.getAvdName() ) ||
-                                device.equalsIgnoreCase( idevice.getSerialNumber() ) ) )
-                        {
-                            getLog().info( "Emulator " + DeviceHelper.getDescriptiveName( idevice ) + " found." );
-                            deviceFound = true;
-                            deviceCallback.doWithDevice( idevice );
-                        }
-                        else if ( ! idevice.isEmulator() && device.equals( idevice.getSerialNumber() ) )
-                        {
-                            getLog().info( "Device " + DeviceHelper.getDescriptiveName( idevice ) + " found." );
-                            deviceFound = true;
-                            deviceCallback.doWithDevice( idevice );
+                            if ( "usb".equals( device ) && ! idevice.isEmulator() )
+                            {
+                                getLog().info( "Device " + DeviceHelper.getDescriptiveName( idevice ) + " found." );
+                                deviceFound = true;
+                                deviceCallback.doWithDevice( idevice );
+                            }
+                            else
+                            {
+                                if ( idevice.isEmulator() && ( device.equalsIgnoreCase( idevice.getAvdName() ) || device
+                                        .equalsIgnoreCase( idevice.getSerialNumber() ) ) )
+                                {
+                                    getLog().info(
+                                            "Emulator " + DeviceHelper.getDescriptiveName( idevice ) + " found." );
+                                    deviceFound = true;
+                                    deviceCallback.doWithDevice( idevice );
+                                }
+                                else
+                                {
+                                    if ( ! idevice.isEmulator() && device.equals( idevice.getSerialNumber() ) )
+                                    {
+                                        getLog().info(
+                                                "Device " + DeviceHelper.getDescriptiveName( idevice ) + " found." );
+                                        deviceFound = true;
+                                        deviceCallback.doWithDevice( idevice );
+                                    }
+                                }
+                            }
                         }
                     }
                     if ( ! deviceFound )
@@ -822,8 +833,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         catch ( MalformedURLException e )
         {
             throw new MojoExecutionException(
-                    "Error while trying to figure out package name from inside AndroidManifest.xml file " +
-                            androidManifestFile, e );
+                    "Error while trying to figure out package name from inside AndroidManifest.xml file "
+                            + androidManifestFile, e );
         }
         final DocumentContainer documentContainer = new DocumentContainer( xmlURL );
         final Object packageName =
@@ -849,8 +860,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         catch ( MalformedURLException e )
         {
             throw new MojoExecutionException(
-                    "Error while trying to figure out instrumentation runner from inside AndroidManifest.xml file " +
-                            androidManifestFile, e );
+                    "Error while trying to figure out instrumentation runner from inside AndroidManifest.xml file "
+                            + androidManifestFile, e );
         }
         final DocumentContainer documentContainer = new DocumentContainer( xmlURL );
         final Object instrumentationRunner;
