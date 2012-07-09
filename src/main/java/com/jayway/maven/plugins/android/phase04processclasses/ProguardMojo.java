@@ -210,7 +210,8 @@ public class ProguardMojo extends AbstractAndroidMojo
                 }
                 sb.append( ')' );
                 return sb.toString();
-            } else
+            }
+            else
             {
                 return path;
             }
@@ -236,7 +237,8 @@ public class ProguardMojo extends AbstractAndroidMojo
         if ( ! proguardDir.exists() && ! proguardDir.mkdir() )
         {
             throw new MojoExecutionException( "Cannot create proguard output directory" );
-        } else if ( proguardDir.exists() && ! proguardDir.isDirectory() )
+        }
+        else if ( proguardDir.exists() && ! proguardDir.isDirectory() )
         {
             throw new MojoExecutionException( "Non-directory exists at " + proguardDir.getAbsolutePath() );
         }
@@ -432,7 +434,8 @@ public class ProguardMojo extends AbstractAndroidMojo
             // MacOS X uses different naming conventions for JDK installations
             jdkLibsPath = javaHome + "/../Classes";
             addLibraryJar( jdkLibsPath + "/classes.jar" );
-        } else
+        }
+        else
         {
             jdkLibsPath = javaHome + slash + "lib";
             addLibraryJar( jdkLibsPath + slash + "rt.jar" );
@@ -450,11 +453,13 @@ public class ProguardMojo extends AbstractAndroidMojo
                 if ( artifact.getArtifactId().equals( "android" ) )
                 {
                     addLibraryJar( artifact.getFile().getAbsolutePath(), ANDROID_LIBRARY_EXCLUDED_FILTER );
-                } else
+                }
+                else
                 {
                     addLibraryJar( artifact.getFile().getAbsolutePath() );
                 }
-            } else if ( isShiftedArtifact( artifact ) )
+            }
+            else if ( isShiftedArtifact( artifact ) )
             {
                 // this is a blacklisted artifact that should be processed as a library instead
                 addLibraryJar( artifact.getFile().getAbsolutePath() );
@@ -495,7 +500,8 @@ public class ProguardMojo extends AbstractAndroidMojo
                 {
                     proguardArtifact = artifact;
                     proguardArtifactDistance = distance;
-                } else if ( distance < proguardArtifactDistance )
+                }
+                else if ( distance < proguardArtifactDistance )
                 {
                     proguardArtifact = artifact;
                     proguardArtifactDistance = distance;
@@ -506,7 +512,8 @@ public class ProguardMojo extends AbstractAndroidMojo
         {
             getLog().debug( "proguardArtifact: " + proguardArtifact.getFile() );
             return proguardArtifact.getFile().getAbsoluteFile().toString();
-        } else
+        }
+        else
         {
             return null;
         }

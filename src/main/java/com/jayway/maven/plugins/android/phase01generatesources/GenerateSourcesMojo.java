@@ -273,7 +273,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         if ( resourceOverlayDirectories == null || resourceOverlayDirectories.length == 0 )
         {
             overlayDirectories = new File[]{ resourceOverlayDirectory };
-        } else
+        }
+        else
         {
             overlayDirectories = resourceOverlayDirectories;
         }
@@ -360,7 +361,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             commands.add( "-S" );
             commands.add( combinedRes.getAbsolutePath() );
-        } else
+        }
+        else
         {
             if ( resourceDirectory.exists() )
             {

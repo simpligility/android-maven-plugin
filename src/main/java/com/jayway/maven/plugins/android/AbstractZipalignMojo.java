@@ -107,7 +107,8 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
         if ( parsedSkip )
         {
             getLog().info( "Skipping zipalign" );
-        } else
+        }
+        else
         {
             CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
             executor.setLogger( this.getLog() );
@@ -137,7 +138,8 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
                 {
                     projectHelper.attachArtifact( project, APK, "aligned", aligned );
                     getLog().info( "Attach " + aligned.getAbsolutePath() + " to the project" );
-                } else
+                }
+                else
                 {
                     getLog().error( "Cannot attach " + aligned.getAbsolutePath() + " to the project" +
                             " - The file does not exist" );
@@ -159,7 +161,8 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
             if ( zipalign.isSkip() != null )
             {
                 parsedSkip = zipalign.isSkip();
-            } else
+            }
+            else
             {
                 parsedSkip = determineSkip();
             }
@@ -168,7 +171,8 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
             if ( zipalign.isVerbose() != null )
             {
                 parsedVerbose = zipalign.isVerbose();
-            } else
+            }
+            else
             {
                 parsedVerbose = determineVerbose();
             }
@@ -177,7 +181,8 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
             if ( zipalign.getInputApk() != null )
             {
                 parsedInputApk = zipalign.getInputApk();
-            } else
+            }
+            else
             {
                 parsedInputApk = determineInputApk();
             }
@@ -187,7 +192,8 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
             if ( zipalign.getOutputApk() != null )
             {
                 parsedOutputApk = zipalign.getOutputApk();
-            } else
+            }
+            else
             {
                 parsedOutputApk = determineOutputApk();
             }
@@ -219,7 +225,8 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
         if ( zipalignSkip != null )
         {
             enabled = zipalignSkip;
-        } else
+        }
+        else
         {
             getLog().debug( "Using default for zipalign.skip=false" );
             enabled = Boolean.FALSE;
@@ -238,7 +245,8 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
         if ( zipalignVerbose != null )
         {
             enabled = zipalignVerbose;
-        } else
+        }
+        else
         {
             getLog().debug( "Using default for zipalign.verbose=false" );
             enabled = Boolean.FALSE;
@@ -287,7 +295,8 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
         if ( zipalignInputApk != null )
         {
             inputApk = zipalignInputApk;
-        } else
+        }
+        else
         {
             String inputPath = getApkLocation();
             getLog().debug( "Using default for zipalign.inputApk: " + inputPath );
@@ -307,7 +316,8 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
         if ( zipalignOutputApk != null )
         {
             outputApk = zipalignOutputApk;
-        } else
+        }
+        else
         {
             String outputPath = getAlignedApkLocation();
             getLog().debug( "Using default for zipalign.outputApk: " + outputPath );

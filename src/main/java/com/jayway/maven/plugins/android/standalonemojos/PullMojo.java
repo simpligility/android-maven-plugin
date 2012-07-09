@@ -139,7 +139,8 @@ public class PullMojo extends AbstractAndroidMojo
                         {
                             // pull source directory directly
                             fileEntries = new FileEntry[]{ sourceFileEntry };
-                        } else
+                        }
+                        else
                         {
                             // pull the children of source directory only
                             fileEntries = fileListingService.getChildren( sourceFileEntry, true, null );
@@ -148,7 +149,8 @@ public class PullMojo extends AbstractAndroidMojo
                         message = "Pull of " + parsedSource + " to " + destinationDirPath + " from ";
 
                         syncService.pull( fileEntries, destinationDirPath, new LogSyncProgressMonitor( getLog() ) );
-                    } else
+                    }
+                    else
                     {
                         // pulling file
                         File parentDir = new File( FilenameUtils.getFullPath( parsedDestination ) );
@@ -163,7 +165,8 @@ public class PullMojo extends AbstractAndroidMojo
                         {
                             // keep original filename
                             destinationFileName = FilenameUtils.getName( parsedSource );
-                        } else
+                        }
+                        else
                         {
                             // rename filename
                             destinationFileName = FilenameUtils.getName( parsedDestination );

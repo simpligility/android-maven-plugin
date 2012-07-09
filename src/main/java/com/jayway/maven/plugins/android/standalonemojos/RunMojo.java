@@ -242,12 +242,14 @@ public class RunMojo extends AbstractAndroidMojo
                 launcherInfo.packageName = document.getDocumentElement().getAttribute( "package" ).toString();
 
                 return launcherInfo;
-            } else
+            }
+            else
             {
                 // If we get here, we couldn't find a launcher activity.
                 throw new ActivityNotFoundException();
             }
-        } else
+        }
+        else
         {
             // If we get here we couldn't find any Activity
             throw new ActivityNotFoundException();

@@ -341,17 +341,20 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                     if ( nativeLibrariesOutputDirectory.getParentFile().exists() )
                     {
                         nativeLibDirectory.mkdir();
-                    } else
+                    }
+                    else
                     {
                         nativeLibDirectory.mkdirs();
                         directoryToRemove = nativeLibrariesOutputDirectory.getParentFile();
                     }
-                } else
+                }
+                else
                 {
                     if ( nativeLibDirectory.getParentFile().exists() )
                     {
                         nativeLibDirectory.mkdir();
-                    } else
+                    }
+                    else
                     {
                         nativeLibDirectory.mkdirs();
                         directoryToRemove = nativeLibDirectory.getParentFile();
@@ -488,7 +491,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             if ( target != null )
             {
                 commands.add( target );
-            } else /*if ( "a".equals( project.getPackaging() ) )*/
+            }
+            else /*if ( "a".equals( project.getPackaging() ) )*/
             {
                 // Hack for the moment - seems .so projects will happily use .so
                 // getLog().info( "Statically linked native library being built, forcing NDK target to "+project.getArtifactId() );
@@ -511,7 +515,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                     if ( ! libsDirectoryExists )
                     {
                         FileUtils.moveDirectory( nativeLibDirectory, destinationDirectory );
-                    } else
+                    }
+                    else
                     {
                         FileUtils.copyDirectory( nativeLibDirectory, destinationDirectory );
                         FileUtils.cleanDirectory( nativeLibDirectory );
@@ -537,7 +542,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                                     return name.startsWith(
                                             "lib" + ( target != null ? target : project.getArtifactId() ) ) &&
                                             name.endsWith( ".a" );
-                                } else
+                                }
+                                else
                                 {
                                     return name.startsWith(
                                             "lib" + ( target != null ? target : project.getArtifactId() ) ) &&
@@ -560,7 +566,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                                         "Currently, only a single, final native library is supported by the build" );
                                 throw new MojoExecutionException(
                                         "Currently, only a single, final native library is supported by the build" );
-                            } else
+                            }
+                            else
                             {
                                 getLog().error(
                                         "No native compiled library found, did the native compile complete successfully?" );
@@ -569,7 +576,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                             }
                         }
                         nativeArtifactFile = files[ 0 ];
-                    } else
+                    }
+                    else
                     {
                         // Find the nativeArtifactFile in the nativeLibDirectory/ndkFinalLibraryName
                         nativeArtifactFile =
@@ -721,7 +729,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                             finalHeaderFilesDirectives.add( headerFilesDirective );
                         }
                     }
-                } else
+                }
+                else
                 {
                     if ( headerFilesDirectives != null )
                     {
@@ -801,7 +810,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         if ( "so".equals( project.getPackaging() ) || "a".equals( project.getPackaging() ) )
         {
             return project.getPackaging();
-        } else
+        }
+        else
         {
             // At this point, the file (as found by our filtering previously will end with either 'so' or 'a'
             return file.getName().endsWith( "so" ) ? "so" : "a";

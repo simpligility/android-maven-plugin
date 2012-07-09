@@ -656,18 +656,21 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                             getLog().info( "Emulator " + DeviceHelper.getDescriptiveName( idevice ) + " found." );
                             deviceFound = true;
                             deviceCallback.doWithDevice( idevice );
-                        } else if ( "usb".equals( device ) && ! idevice.isEmulator() )
+                        }
+                        else if ( "usb".equals( device ) && ! idevice.isEmulator() )
                         {
                             getLog().info( "Device " + DeviceHelper.getDescriptiveName( idevice ) + " found." );
                             deviceFound = true;
                             deviceCallback.doWithDevice( idevice );
-                        } else if ( idevice.isEmulator() && ( device.equalsIgnoreCase( idevice.getAvdName() ) ||
+                        }
+                        else if ( idevice.isEmulator() && ( device.equalsIgnoreCase( idevice.getAvdName() ) ||
                                 device.equalsIgnoreCase( idevice.getSerialNumber() ) ) )
                         {
                             getLog().info( "Emulator " + DeviceHelper.getDescriptiveName( idevice ) + " found." );
                             deviceFound = true;
                             deviceCallback.doWithDevice( idevice );
-                        } else if ( ! idevice.isEmulator() && device.equals( idevice.getSerialNumber() ) )
+                        }
+                        else if ( ! idevice.isEmulator() && device.equals( idevice.getSerialNumber() ) )
                         {
                             getLog().info( "Device " + DeviceHelper.getDescriptiveName( idevice ) + " found." );
                             deviceFound = true;
@@ -678,7 +681,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                     {
                         throw new MojoExecutionException( "No device found for android.device=" + device );
                     }
-                } else
+                }
+                else
                 {
                     getLog().info( "android.device parameter not set, using all attached devices" );
                     for ( IDevice idevice : devices )
@@ -686,11 +690,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                         deviceCallback.doWithDevice( idevice );
                     }
                 }
-            } else
+            }
+            else
             {
                 throw new MojoExecutionException( "No online devices attached." );
             }
-        } else
+        }
+        else
         {
             throw new MojoExecutionException( "Android Debug Bridge is not connected." );
         }
@@ -892,7 +898,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
             directoryScanner.scan();
             String[] files = directoryScanner.getIncludedFiles();
             return files;
-        } else
+        }
+        else
         {
             return new String[ 0 ];
         }
@@ -928,7 +935,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                 // An <sdk><path> tag is set in the pom.
 
                 chosenSdkPath = sdk.getPath();
-            } else
+            }
+            else
             {
                 // There is no <sdk><path> tag in the pom.
 
@@ -936,7 +944,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                 {
                     // -Dandroid.sdk.path is set on command line, or via <properties><android.sdk.path>...
                     chosenSdkPath = sdkPath;
-                } else
+                }
+                else
                 {
                     // No -Dandroid.sdk.path is set on command line, or via <properties><android.sdk.path>...
                     chosenSdkPath = new File( getAndroidHomeOrThrow() );
@@ -948,11 +957,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
             if ( ! isBlank( sdk.getPlatform() ) )
             {
                 chosenSdkPlatform = sdk.getPlatform();
-            } else
+            }
+            else
             {
                 chosenSdkPlatform = sdkPlatform;
             }
-        } else
+        }
+        else
         {
             // There is no <sdk> tag in the pom.
 
@@ -960,7 +971,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
             {
                 // -Dandroid.sdk.path is set on command line, or via <properties><android.sdk.path>...
                 chosenSdkPath = sdkPath;
-            } else
+            }
+            else
             {
                 // No -Dandroid.sdk.path is set on command line, or via <properties><android.sdk.path>...
                 chosenSdkPath = new File( getAndroidHomeOrThrow() );
@@ -1018,7 +1030,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         {
             // -Dandroid.ndk.path is set on command line, or via <properties><ndk.path>...
             chosenNdkPath = ndkPath;
-        } else
+        }
+        else
         {
             // No -Dandroid.ndk.path is set on command line, or via <properties><ndk.path>...
             chosenNdkPath = new File( getAndroidNdkHomeOrThrow() );

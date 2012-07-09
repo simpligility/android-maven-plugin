@@ -267,60 +267,69 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             if ( StringUtils.isNotEmpty( manifest.getVersionName() ) )
             {
                 parsedVersionName = manifest.getVersionName();
-            } else
+            }
+            else
             {
                 parsedVersionName = manifestVersionName;
             }
             if ( manifest.getVersionCode() != null )
             {
                 parsedVersionCode = manifest.getVersionCode();
-            } else
+            }
+            else
             {
                 parsedVersionCode = manifestVersionCode;
             }
             if ( manifest.getVersionCodeAutoIncrement() != null )
             {
                 parsedVersionCodeAutoIncrement = manifest.getVersionCodeAutoIncrement();
-            } else
+            }
+            else
             {
                 parsedVersionCodeAutoIncrement = manifestVersionCodeAutoIncrement;
             }
             if ( manifest.getVersionCodeUpdateFromVersion() != null )
             {
                 parsedVersionCodeUpdateFromVersion = manifest.getVersionCodeUpdateFromVersion();
-            } else
+            }
+            else
             {
                 parsedVersionCodeUpdateFromVersion = manifestVersionCodeUpdateFromVersion;
             }
             if ( StringUtils.isNotEmpty( manifest.getSharedUserId() ) )
             {
                 parsedSharedUserId = manifest.getSharedUserId();
-            } else
+            }
+            else
             {
                 parsedSharedUserId = manifestSharedUserId;
             }
             if ( manifest.getDebuggable() != null )
             {
                 parsedDebuggable = manifest.getDebuggable();
-            } else
+            }
+            else
             {
                 parsedDebuggable = manifestDebuggable;
             }
             if ( manifest.getSupportsScreens() != null )
             {
                 parsedSupportsScreens = manifest.getSupportsScreens();
-            } else
+            }
+            else
             {
                 parsedSupportsScreens = manifestSupportsScreens;
             }
             if ( manifest.getCompatibleScreens() != null )
             {
                 parsedCompatibleScreens = manifest.getCompatibleScreens();
-            } else
+            }
+            else
             {
                 parsedCompatibleScreens = manifestCompatibleScreens;
             }
-        } else
+        }
+        else
         {
             parsedVersionName = manifestVersionName;
             parsedVersionCode = manifestVersionCode;
@@ -454,7 +463,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
                     getLog().info( verCode + " < " + currentVersionCode + " so padding versionCode" );
                     verCode = StringUtils.rightPad( verCode, versionCodeAttr.getValue().length(), "0" );
                 }
-            } else
+            }
+            else
             {
                 verCode = Integer.toString( artifactVersion.getMajorVersion() ) +
                         Integer.toString( artifactVersion.getMinorVersion() ) +
@@ -591,7 +601,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             }
             getLog().info( "Made changes to manifest file, updating " + manifestFile );
             writeManifest( manifestFile, doc );
-        } else
+        }
+        else
         {
             getLog().info( "No changes found to write to manifest file" );
         }

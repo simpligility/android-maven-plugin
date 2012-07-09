@@ -25,7 +25,8 @@ public class XmlHelper
         {
             element = doc.createElement( elementName );
             manifestElement.appendChild( element );
-        } else
+        }
+        else
         {
             element = ( Element ) nodeList.item( 0 );
         }
