@@ -219,7 +219,7 @@ public class RunMojo extends AbstractAndroidMojo
 
         xPathExpression = xPath.compile(
                 "//manifest/application/activity/intent-filter[action[@name=\"android.intent.action.MAIN\"] "
-                        + "and category[@name=\"android.intent.category.LAUNCHER\"]]/.." );
+                + "and category[@name=\"android.intent.category.LAUNCHER\"]]/.." );
 
         //
         // Run XPath query
@@ -238,8 +238,8 @@ public class RunMojo extends AbstractAndroidMojo
                 LauncherInfo launcherInfo;
 
                 launcherInfo = new LauncherInfo();
-                launcherInfo.activity =
-                        activities.item( 0 ).getAttributes().getNamedItem( "android:name" ).getNodeValue();
+                launcherInfo.activity = activities.item( 0 ).getAttributes().getNamedItem( "android:name" )
+                        .getNodeValue();
                 launcherInfo.packageName = document.getDocumentElement().getAttribute( "package" ).toString();
 
                 return launcherInfo;
@@ -278,7 +278,7 @@ public class RunMojo extends AbstractAndroidMojo
                 try
                 {
                     getLog().info( "Attempting to start " + info.packageName + info.activity + " on device " +
-                            device.getSerialNumber() + " (avdName = " + device.getAvdName() + ")" );
+                                   device.getSerialNumber() + " (avdName = " + device.getAvdName() + ")" );
                     device.executeShellCommand( command, new NullOutputReceiver() );
                 }
                 catch ( IOException ex )

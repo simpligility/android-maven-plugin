@@ -58,13 +58,15 @@ public class AndroidTestFinder
                 classReader = new ClassReader( inputStream );
 
                 classReader.accept( descendantFinder, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES |
-                        ClassReader.SKIP_CODE );
+                                                      ClassReader.SKIP_CODE );
             }
             catch ( IOException e )
             {
                 throw new MojoExecutionException( "Error reading " + classFile +
-                        ".\nCould not determine whether it contains tests. Please specify with plugin config " +
-                        "parameter <enableIntegrationTest>true|false</enableIntegrationTest>.", e );
+                                                  ".\nCould not determine whether it contains tests. Please specify with plugin config "
+                                                  +
+                                                  "parameter <enableIntegrationTest>true|false</enableIntegrationTest>.",
+                        e );
             }
             finally
             {

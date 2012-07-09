@@ -64,8 +64,8 @@ public class ApklibMojo extends AbstractAndroidMojo
 
     protected File createApkLibraryFile() throws MojoExecutionException
     {
-        final File apklibrary =
-                new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + "." + APKLIB );
+        final File apklibrary = new File( project.getBuild().getDirectory(),
+                project.getBuild().getFinalName() + "." + APKLIB );
         FileUtils.deleteQuietly( apklibrary );
 
         try

@@ -106,7 +106,7 @@ public class NativeHelper
             {
                 // Including attached artifact
                 log.debug( "Including attached artifact: " + artifact.getArtifactId() + "(" + artifact.getGroupId() +
-                        ")" );
+                           ")" );
                 filteredArtifacts.add( artifact );
             }
             else
@@ -241,7 +241,7 @@ public class NativeHelper
         {
             throw new MojoExecutionException(
                     "Could not locate RELEASE.TXT in the Android NDK base directory '" + ndkHomeDir.getAbsolutePath() +
-                            "'.  Please verify your setup! " + AndroidNdk.PROPER_NDK_HOME_DIRECTORY_MESSAGE );
+                    "'.  Please verify your setup! " + AndroidNdk.PROPER_NDK_HOME_DIRECTORY_MESSAGE );
         }
 
         try
@@ -253,7 +253,7 @@ public class NativeHelper
         {
             throw new MojoExecutionException(
                     "Error while extracting NDK version from '" + ndkVersionFile.getAbsolutePath() +
-                            "'. Please verify your setup! " + AndroidNdk.PROPER_NDK_HOME_DIRECTORY_MESSAGE );
+                    "'. Please verify your setup! " + AndroidNdk.PROPER_NDK_HOME_DIRECTORY_MESSAGE );
         }
     }
 
@@ -278,7 +278,7 @@ public class NativeHelper
         {
             throw new MojoExecutionException(
                     "You are running an old NDK (version " + versionStr + "), please update to at least r'" +
-                            desiredVersion + "' or later" );
+                    desiredVersion + "' or later" );
         }
     }
 

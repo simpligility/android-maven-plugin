@@ -95,8 +95,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             {
                 if ( artifact.getType().equals( APKLIB ) )
                 {
-                    apklibAidlFiles =
-                            findRelativeAidlFileNames( new File( getLibraryUnpackDirectory( artifact ) + "/src" ) );
+                    apklibAidlFiles = findRelativeAidlFileNames(
+                            new File( getLibraryUnpackDirectory( artifact ) + "/src" ) );
                     relativeApklibAidlFileNames.put( artifact.getArtifactId(), apklibAidlFiles );
                 }
             }
@@ -136,10 +136,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             if ( type.equals( APKSOURCES ) )
             {
                 getLog().debug( "Detected apksources dependency " + artifact + " with file " + artifact.getFile() +
-                        ". Will resolve and extract..." );
+                                ". Will resolve and extract..." );
 
-                Artifact resolvedArtifact =
-                        AetherHelper.resolveArtifact( artifact, repoSystem, repoSession, projectRepos );
+                Artifact resolvedArtifact = AetherHelper
+                        .resolveArtifact( artifact, repoSystem, repoSession, projectRepos );
 
                 File apksourcesFile = resolvedArtifact.getFile();
 
@@ -169,7 +169,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         if ( apksourcesFile.isDirectory() )
         {
             getLog().warn( "The apksources artifact points to '" + apksourcesFile +
-                    "' which is a directory; skipping unpacking it." );
+                           "' which is a directory; skipping unpacking it." );
             return;
         }
         final UnArchiver unArchiver = new ZipUnArchiver( apksourcesFile )
@@ -190,7 +190,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             throw new MojoExecutionException(
                     "ArchiverException while extracting " + apksourcesFile.getAbsolutePath() + ". Message: " +
-                            e.getLocalizedMessage(), e );
+                    e.getLocalizedMessage(), e );
         }
     }
 
@@ -210,8 +210,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private void extractApklib( Artifact apklibArtifact ) throws MojoExecutionException
     {
 
-        final Artifact resolvedArtifact =
-                AetherHelper.resolveArtifact( apklibArtifact, repoSystem, repoSession, projectRepos );
+        final Artifact resolvedArtifact = AetherHelper
+                .resolveArtifact( apklibArtifact, repoSystem, repoSession, projectRepos );
 
         File apkLibFile = resolvedArtifact.getFile();
 
@@ -255,7 +255,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             throw new MojoExecutionException(
                     "ArchiverException while extracting " + apklibDirectory.getAbsolutePath() + ". Message: " +
-                            e.getLocalizedMessage(), e );
+                    e.getLocalizedMessage(), e );
         }
 
         projectHelper.addResource( project, apklibDirectory.getAbsolutePath() + "/src", null,
@@ -532,8 +532,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 targetDirectory.mkdirs();
 
                 final String shortAidlFileName = new File( relativeAidlFileName ).getName();
-                final String shortJavaFileName =
-                        shortAidlFileName.substring( 0, shortAidlFileName.lastIndexOf( "." ) ) + ".java";
+                final String shortJavaFileName = shortAidlFileName.substring( 0, shortAidlFileName.lastIndexOf( "." ) )
+                                                 + ".java";
                 final File aidlFileInSourceDirectory = new File( sourceDir, relativeAidlFileName );
 
                 List<String> commands = new ArrayList<String>( protoCommands );

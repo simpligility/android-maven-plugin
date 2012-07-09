@@ -61,7 +61,7 @@ public class ConfigHandler
             // unless it is null or an empty array
             Object propertyValue = getValueFromMojo( fieldBaseName );
             if ( propertyValue == null || ( propertyValue instanceof Object[]
-                    && ( ( Object[] ) propertyValue ).length == 0 ) )
+                                            && ( ( Object[] ) propertyValue ).length == 0 ) )
             {
                 // no useful value
             }
@@ -135,8 +135,8 @@ public class ConfigHandler
             {
                 throw new RuntimeException(
                         "Required parameter " + currentParameterName + " has no value. " + "Please supply with -D" +
-                                currentParameterName +
-                                "=value on the command line or as property or plugin configuration in your pom or settings file." );
+                        currentParameterName +
+                        "=value on the command line or as property or plugin configuration in your pom or settings file." );
             }
         }
     }

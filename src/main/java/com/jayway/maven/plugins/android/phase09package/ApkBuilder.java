@@ -69,8 +69,8 @@ public class ApkBuilder
         // Loads the ApkBuilder class
         try
         {
-            URLClassLoader child =
-                    new URLClassLoader( new URL[]{ sdkLibs.toURI().toURL() }, ApkBuilder.class.getClassLoader() );
+            URLClassLoader child = new URLClassLoader( new URL[]{ sdkLibs.toURI().toURL() },
+                    ApkBuilder.class.getClassLoader() );
             apkBuilderClass = child.loadClass( "com.android.sdklib.build.ApkBuilder" );
         }
         catch ( MalformedURLException e )

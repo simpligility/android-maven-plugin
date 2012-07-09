@@ -86,7 +86,7 @@ public class UnpackMojo extends AbstractAndroidMojo
                     {
                         throw new MojoExecutionException(
                                 "IOException while copying " + artifact.getFile().getAbsolutePath() + " into " +
-                                        outputDirectory.getAbsolutePath(), e );
+                                outputDirectory.getAbsolutePath(), e );
                     }
                 }
                 else
@@ -108,7 +108,7 @@ public class UnpackMojo extends AbstractAndroidMojo
                     {
                         throw new MojoExecutionException(
                                 "IOException while unjarring " + artifact.getFile().getAbsolutePath() + " into " +
-                                        outputDirectory.getAbsolutePath(), e );
+                                outputDirectory.getAbsolutePath(), e );
                     }
                 }
 
@@ -124,7 +124,7 @@ public class UnpackMojo extends AbstractAndroidMojo
         {
             throw new MojoExecutionException(
                     "IOException while copying " + sourceDirectory.getAbsolutePath() + " into " +
-                            outputDirectory.getAbsolutePath(), e );
+                    outputDirectory.getAbsolutePath(), e );
         }
         return outputDirectory;
     }

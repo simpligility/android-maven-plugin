@@ -389,7 +389,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     private File ndkPath;
 
 
+    /**
+     *
+     */
     private static final Object adbLock = new Object();
+    /**
+     *
+     */
     private static boolean adbInitialized = false;
 
     /**
@@ -431,6 +437,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         return results;
     }
 
+    /**
+     *
+     * @param allArtifacts
+     * @return
+     */
     private Set<Artifact> filterOutIrrelevantArtifacts( Iterable<Artifact> allArtifacts )
     {
         final Set<Artifact> results = new LinkedHashSet<Artifact>();
@@ -492,8 +503,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                 AndroidDebugBridge.init( false );
                 adbInitialized = true;
             }
-            AndroidDebugBridge androidDebugBridge =
-                    AndroidDebugBridge.createBridge( getAndroidSdk().getAdbPath(), false );
+            AndroidDebugBridge androidDebugBridge = AndroidDebugBridge
+                    .createBridge( getAndroidSdk().getAdbPath(), false );
             waitUntilConnected( androidDebugBridge );
             return androidDebugBridge;
         }
@@ -587,6 +598,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         } );
     }
 
+    /**
+     *
+     * @throws MojoExecutionException
+     * @throws MojoFailureException
+     */
     protected void deployDependencies() throws MojoExecutionException, MojoFailureException
     {
         Set<Artifact> directDependentArtifacts = project.getDependencyArtifacts();
@@ -611,6 +627,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         }
     }
 
+    /**
+     *
+     * @throws MojoExecutionException
+     * @throws MojoFailureException
+     */
     protected void deployBuiltApk() throws MojoExecutionException, MojoFailureException
     {
         // If we're not on a supported packaging with just skip (Issue 112)
@@ -823,6 +844,12 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         return packageName;
     }
 
+    /**
+     *
+     * @param androidManifestFile
+     * @return
+     * @throws MojoExecutionException
+     */
     protected String extractPackageNameFromAndroidManifest( File androidManifestFile ) throws MojoExecutionException
     {
         final URL xmlURL;
@@ -837,8 +864,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                             + androidManifestFile, e );
         }
         final DocumentContainer documentContainer = new DocumentContainer( xmlURL );
-        final Object packageName =
-                JXPathContext.newContext( documentContainer ).getValue( "manifest/@package", String.class );
+        final Object packageName = JXPathContext.newContext( documentContainer )
+                .getValue( "manifest/@package", String.class );
         return ( String ) packageName;
     }
 
@@ -877,6 +904,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         return ( String ) instrumentationRunner;
     }
 
+    /**
+     * TODO .. not used. Delete?
+     *
+     * @param baseDirectory
+     * @param includes
+     * @return
+     * @throws MojoExecutionException
+     */
     protected int deleteFilesFromDirectory( File baseDirectory, String... includes ) throws MojoExecutionException
     {
         final String[] files = findFilesInDirectory( baseDirectory, includes );
@@ -1005,6 +1040,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         return new AndroidSdk( chosenSdkPath, chosenSdkPlatform );
     }
 
+    /**
+     *
+     * @return
+     * @throws MojoExecutionException
+     */
     private String getAndroidHomeOrThrow() throws MojoExecutionException
     {
         final String androidHome = System.getenv( ENV_ANDROID_HOME );
@@ -1018,11 +1058,22 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         return androidHome;
     }
 
+    /**
+     *
+     * @param apkLibraryArtifact
+     * @return
+     */
     protected String getLibraryUnpackDirectory( Artifact apkLibraryArtifact )
     {
         return AbstractAndroidMojo.getLibraryUnpackDirectory( unpackedApkLibsDirectory, apkLibraryArtifact );
     }
 
+    /**
+     *
+     * @param unpackedApkLibsDirectory
+     * @param apkLibraryArtifact
+     * @return
+     */
     public static String getLibraryUnpackDirectory( File unpackedApkLibsDirectory, Artifact apkLibraryArtifact )
     {
         return unpackedApkLibsDirectory.getAbsolutePath() + "/" + apkLibraryArtifact.getId().replace( ":", "_" );
@@ -1060,15 +1111,20 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     }
 
 
+    /**
+     *
+     * @return
+     * @throws MojoExecutionException
+     */
     private String getAndroidNdkHomeOrThrow() throws MojoExecutionException
     {
         final String androidHome = System.getenv( ENV_ANDROID_NDK_HOME );
         if ( isBlank( androidHome ) )
         {
-            throw new MojoExecutionException( "No Android NDK path could be found. You may configure it in the pom " +
-                    "using <ndk><path>...</path></ndk> or <properties><ndk.path>...</ndk.path></properties> or on " +
-                    "command-line using -Dandroid.ndk.path=... or by setting environment variable " +
-                    ENV_ANDROID_NDK_HOME );
+            throw new MojoExecutionException( "No Android NDK path could be found. You may configure it in the pom "
+                    + "using <ndk><path>...</path></ndk> or <properties><ndk.path>...</ndk.path></properties> or on "
+                    + "command-line using -Dandroid.ndk.path=... or by setting environment variable "
+                    + ENV_ANDROID_NDK_HOME );
         }
         return androidHome;
     }

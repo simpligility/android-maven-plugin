@@ -110,7 +110,7 @@ public class MakefileHelper
         makeFile.append( '\n' );
         makeFile.append(
                 "$(shell echo \"LOCAL_MODULE_FILENAME=$(LOCAL_MODULE_FILENAME)\" >> $(" + MAKEFILE_CAPTURE_FILE +
-                        "))" );
+                "))" );
         makeFile.append( '\n' );
         makeFile.append( "$(shell echo \"LOCAL_MODULE=$(LOCAL_MODULE)\" >> $(" + MAKEFILE_CAPTURE_FILE + "))" );
         makeFile.append( '\n' );
@@ -148,12 +148,12 @@ public class MakefileHelper
                         Artifact harArtifact = new DefaultArtifact( artifact.getGroupId(), artifact.getArtifactId(),
                                 artifact.getVersion(), artifact.getScope(), "har", artifact.getClassifier(),
                                 artifact.getArtifactHandler() );
-                        final Artifact resolvedHarArtifact =
-                                AetherHelper.resolveArtifact( harArtifact, repoSystem, repoSession, projectRepos );
+                        final Artifact resolvedHarArtifact = AetherHelper
+                                .resolveArtifact( harArtifact, repoSystem, repoSession, projectRepos );
 
                         File includeDir = new File( System.getProperty( "java.io.tmpdir" ),
                                 "android_maven_plugin_native_includes" + System.currentTimeMillis() + "_" +
-                                        resolvedHarArtifact.getArtifactId() );
+                                resolvedHarArtifact.getArtifactId() );
                         includeDir.deleteOnExit();
                         includeDirectories.add( includeDir );
 

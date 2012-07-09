@@ -42,9 +42,9 @@ public class ScreenshotServiceWrapper implements DeviceCallback
         File deviceScreenshotDir = new File( screenshotParentDir, deviceName );
         create( deviceScreenshotDir );
 
-        OnDemandScreenshotService screenshotService =
-                new OnDemandScreenshotService( device, new ImageSaver( deviceScreenshotDir ),
-                        new ImageScaler( new AnimatedGifCreator( deviceGifFile ), square( 320 ) ) );
+        OnDemandScreenshotService screenshotService = new OnDemandScreenshotService( device,
+                new ImageSaver( deviceScreenshotDir ),
+                new ImageScaler( new AnimatedGifCreator( deviceGifFile ), square( 320 ) ) );
 
         screenshotService.start();
 
