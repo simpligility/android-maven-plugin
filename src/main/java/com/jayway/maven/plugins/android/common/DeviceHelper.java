@@ -21,7 +21,7 @@ public class DeviceHelper
      * AbstractInstrumentationMojo#testCreateReport javadoc since
      * that is the public documentation.
      */
-    public static String getDescriptiveName(IDevice device)
+    public static String getDescriptiveName( IDevice device )
     {
         // if any of this logic changes update javadoc for
         // AbstractInstrumentationMojo#testCreateReport
@@ -48,7 +48,7 @@ public class DeviceHelper
     /**
      * @return the manufacturer of the device as set in #MANUFACTURER_PROPERTY, typically "unknown" for emulators
      */
-    public static String getManufacturer(IDevice device)
+    public static String getManufacturer( IDevice device )
     {
         return StringUtils.deleteWhitespace( device.getProperty( MANUFACTURER_PROPERTY ) );
     }
@@ -56,7 +56,7 @@ public class DeviceHelper
     /**
      * @return the model of the device as set in #MODEL_PROPERTY, typically "sdk" for emulators
      */
-    public static String getModel(IDevice device)
+    public static String getModel( IDevice device )
     {
         return StringUtils.deleteWhitespace( device.getProperty( MODEL_PROPERTY ) );
     }
@@ -64,7 +64,7 @@ public class DeviceHelper
     /**
      * @return the descriptive name with online/offline/unknown status string appended.
      */
-    public static String getDescriptiveNameWithStatus(IDevice device)
+    public static String getDescriptiveNameWithStatus( IDevice device )
     {
         String status;
         if ( device.isOnline() )

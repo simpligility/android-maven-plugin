@@ -336,7 +336,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     /**
      * Read manifest using JAXP
      */
-    private Document readManifest(File manifestFile) throws IOException, ParserConfigurationException, SAXException
+    private Document readManifest( File manifestFile ) throws IOException, ParserConfigurationException, SAXException
     {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
@@ -347,7 +347,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     /**
      * Write manifest using JAXP transformer
      */
-    private void writeManifest(File manifestFile, Document doc) throws IOException, TransformerException
+    private void writeManifest( File manifestFile, Document doc ) throws IOException, TransformerException
     {
         TransformerFactory xfactory = TransformerFactory.newInstance();
         Transformer xformer = xfactory.newTransformer();
@@ -370,7 +370,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         }
     }
 
-    public void updateManifest(File manifestFile)
+    public void updateManifest( File manifestFile )
             throws IOException, ParserConfigurationException, SAXException, TransformerException, MojoFailureException
     {
         Document doc = readManifest( manifestFile );
@@ -507,7 +507,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
                 getLog().info( "Testing if node " + node.getNodeName() + " is application" );
                 if ( node.getNodeType() == Node.ELEMENT_NODE )
                 {
-                    Element element = (Element) node;
+                    Element element = ( Element ) node;
                     Attr debuggableAttrib = element.getAttributeNode( ATTR_DEBUGGABLE );
                     if ( debuggableAttrib == null ||
                             parsedDebuggable != BooleanUtils.toBoolean( debuggableAttrib.getValue() ) )
@@ -597,7 +597,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         }
     }
 
-    private void updateCompatibleScreens(Document doc, Element manifestElement)
+    private void updateCompatibleScreens( Document doc, Element manifestElement )
     {
         Element compatibleScreensElem = XmlHelper.getOrCreateElement( doc, manifestElement, ELEM_COMPATIBLE_SCREENS );
 
@@ -607,7 +607,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         ArrayList<CompatibleScreen> manifestScreens = new ArrayList<CompatibleScreen>( numManifestScreens );
         for ( int i = 0; i < numManifestScreens; i++ )
         {
-            Element screenElem = (Element) manifestScreenElems.item( i );
+            Element screenElem = ( Element ) manifestScreenElems.item( i );
 
             CompatibleScreen screen = new CompatibleScreen();
             screen.setScreenDensity( screenElem.getAttribute( ATTR_SCREEN_DENSITY ) );

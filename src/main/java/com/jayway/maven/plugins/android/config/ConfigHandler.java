@@ -24,13 +24,13 @@ public class ConfigHandler
     private String configPojoName;
     private String configPojoPrefix;
 
-    public ConfigHandler(Object mojo)
+    public ConfigHandler( Object mojo )
     {
         this.mojo = mojo;
         initConfigPojo();
     }
 
-    private Collection<Field> findPropertiesByAnnotation(Class<? extends Annotation> annotation)
+    private Collection<Field> findPropertiesByAnnotation( Class<? extends Annotation> annotation )
     {
         Collection<Field> result = new ArrayList<Field>();
         for ( Field field : mojo.getClass().getDeclaredFields() )
@@ -61,7 +61,7 @@ public class ConfigHandler
             // unless it is null or an empty array
             Object propertyValue = getValueFromMojo( fieldBaseName );
             if ( propertyValue == null ||
-                    ( propertyValue instanceof Object[] && ( (Object[]) propertyValue ).length == 0 ) )
+                    ( propertyValue instanceof Object[] && ( ( Object[] ) propertyValue ).length == 0 ) )
             {
                 // no useful value
             } else
@@ -84,7 +84,7 @@ public class ConfigHandler
         }
     }
 
-    private Object getValueFromAnnotation(Field field)
+    private Object getValueFromAnnotation( Field field )
     {
         PullParameter annotation = field.getAnnotation( PullParameter.class );
         String defaultValue = annotation.defaultValue();
@@ -128,17 +128,17 @@ public class ConfigHandler
         }
     }
 
-    private Object getValueFromMojo(String fieldBaseName)
+    private Object getValueFromMojo( String fieldBaseName )
     {
         return getValueFromObject( mojo, configPojoName + toFirstLetterUppercase( fieldBaseName ) );
     }
 
-    private Object getValueFromPojo(String fieldBaseName)
+    private Object getValueFromPojo( String fieldBaseName )
     {
         return getValueFromObject( configPojoInstance, fieldBaseName );
     }
 
-    private Object getValueFromObject(Object object, String fieldBaseName)
+    private Object getValueFromObject( Object object, String fieldBaseName )
     {
         try
         {
@@ -153,7 +153,7 @@ public class ConfigHandler
         return null;
     }
 
-    private Field findFieldByName(Object object, String name)
+    private Field findFieldByName( Object object, String name )
     {
         for ( Field field : object.getClass().getDeclaredFields() )
         {
@@ -166,7 +166,7 @@ public class ConfigHandler
         return null;
     }
 
-    private String getFieldNameWithoutPrefix(Field field, String prefix)
+    private String getFieldNameWithoutPrefix( Field field, String prefix )
     {
         if ( field.getName().startsWith( prefix ) )
         {
@@ -178,12 +178,12 @@ public class ConfigHandler
         }
     }
 
-    private String toFirstLetterUppercase(String s)
+    private String toFirstLetterUppercase( String s )
     {
         return s.substring( 0, 1 ).toUpperCase() + s.substring( 1 );
     }
 
-    private String getFieldNameWithoutParsedPrefix(Field field)
+    private String getFieldNameWithoutParsedPrefix( Field field )
     {
         return getFieldNameWithoutPrefix( field, configPojoPrefix );
     }

@@ -117,7 +117,7 @@ public class RunMojo extends AbstractAndroidMojo
     protected Boolean runDebug;
 
     /* the value for the debug flag after parsing pom and parameter */
-    @PullParameter(defaultValue = "false")
+    @PullParameter( defaultValue = "false" )
     private Boolean parsedDebug;
 
     /**
@@ -229,7 +229,7 @@ public class RunMojo extends AbstractAndroidMojo
         {
             NodeList activities;
 
-            activities = (NodeList) result;
+            activities = ( NodeList ) result;
 
             if ( activities.getLength() > 0 )
             {
@@ -261,7 +261,7 @@ public class RunMojo extends AbstractAndroidMojo
      * @throws MojoFailureException
      * @throws MojoExecutionException
      */
-    private void launch(final LauncherInfo info) throws MojoExecutionException, MojoFailureException
+    private void launch( final LauncherInfo info ) throws MojoExecutionException, MojoFailureException
     {
         final String command;
 
@@ -270,7 +270,7 @@ public class RunMojo extends AbstractAndroidMojo
         doWithDevices( new DeviceCallback()
         {
             @Override
-            public void doWithDevice(IDevice device) throws MojoExecutionException, MojoFailureException
+            public void doWithDevice( IDevice device ) throws MojoExecutionException, MojoFailureException
             {
                 try
                 {

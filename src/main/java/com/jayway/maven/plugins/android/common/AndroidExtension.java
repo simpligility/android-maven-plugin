@@ -31,7 +31,7 @@ public final class AndroidExtension
      * @param packaging Project packaging.
      * @return True if an Android project.
      */
-    public static boolean isAndroidPackaging(String packaging)
+    public static boolean isAndroidPackaging( String packaging )
     {
         return APK.equals( packaging ) || APKLIB.equals( packaging ) || APKSOURCES.equals( packaging );
     }

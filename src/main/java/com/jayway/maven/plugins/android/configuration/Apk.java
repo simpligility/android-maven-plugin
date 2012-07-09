@@ -5,7 +5,7 @@ package com.jayway.maven.plugins.android.configuration;
  *
  * @author <a href="mailto:pa314159&#64;gmail.com">Pappy Răzvan STĂNESCU &lt;pa314159&#64;gmail.com&gt;</a>
  */
-@SuppressWarnings("unused")
+@SuppressWarnings( "unused" )
 public class Apk
 {
 

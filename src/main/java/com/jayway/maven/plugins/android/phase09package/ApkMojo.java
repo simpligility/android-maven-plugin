@@ -227,7 +227,7 @@ public class ApkMojo extends AbstractAndroidMojo
      *
      * @parameter expression="${android.apk.metaIncludes}" default-value=""
      */
-    @PullParameter(defaultValueGetterMethod = "getDefaultMetaIncludes")
+    @PullParameter( defaultValueGetterMethod = "getDefaultMetaIncludes" )
     private String[] apkMetaIncludes;
 
     /**
@@ -235,13 +235,13 @@ public class ApkMojo extends AbstractAndroidMojo
      *
      * @parameter expression="${android.apk.debug}"
      */
-    @PullParameter(defaultValue = "false")
+    @PullParameter( defaultValue = "false" )
     private Boolean apkDebug;
 
     /**
      * @parameter expression="${android.nativeToolchain}"
      */
-    @PullParameter(defaultValue = "arm-linux-androideabi-4.4.3")
+    @PullParameter( defaultValue = "arm-linux-androideabi-4.4.3" )
     private String apkNativeToolchain;
 
     /**
@@ -249,7 +249,7 @@ public class ApkMojo extends AbstractAndroidMojo
      *
      * @parameter
      */
-    @ConfigPojo(prefix = "apk")
+    @ConfigPojo( prefix = "apk" )
     private Apk apk;
 
     private static final Pattern PATTERN_JAR_EXT = Pattern.compile( "^.+\\.jar$", 2 );
@@ -300,7 +300,7 @@ public class ApkMojo extends AbstractAndroidMojo
         }
     }
 
-    void createApkFile(File outputFile, boolean signWithDebugKeyStore) throws MojoExecutionException
+    void createApkFile( File outputFile, boolean signWithDebugKeyStore ) throws MojoExecutionException
     {
         File dexFile = new File( project.getBuild().getDirectory(), "classes.dex" );
         File zipArchive = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_" );
@@ -353,7 +353,7 @@ public class ApkMojo extends AbstractAndroidMojo
         }
     }
 
-    private void addMetaInf(File outputFile, ArrayList<File> jarFiles) throws IOException
+    private void addMetaInf( File outputFile, ArrayList<File> jarFiles ) throws IOException
     {
         File tmp = File.createTempFile( outputFile.getName(), ".add", outputFile.getParentFile() );
 
@@ -378,7 +378,7 @@ public class ApkMojo extends AbstractAndroidMojo
         }
     }
 
-    private void updateWithMetaInf(ZipOutputStream zos, File jarFile, Set<String> entries, boolean metaInfOnly)
+    private void updateWithMetaInf( ZipOutputStream zos, File jarFile, Set<String> entries, boolean metaInfOnly )
             throws ZipException, IOException
     {
         ZipFile zin = new ZipFile( jarFile );
@@ -425,7 +425,7 @@ public class ApkMojo extends AbstractAndroidMojo
         zin.close();
     }
 
-    private boolean metaInfMatches(String path)
+    private boolean metaInfMatches( String path )
     {
         for ( String inc : this.apkMetaIncludes )
         {
@@ -440,7 +440,7 @@ public class ApkMojo extends AbstractAndroidMojo
 
     private Map<String, List<File>> m_jars = new HashMap<String, List<File>>();
 
-    private void computeDuplicateFiles(File jar) throws ZipException, IOException
+    private void computeDuplicateFiles( File jar ) throws ZipException, IOException
     {
         ZipFile file = new ZipFile( jar );
         Enumeration<? extends ZipEntry> list = file.entries();
@@ -474,9 +474,9 @@ public class ApkMojo extends AbstractAndroidMojo
      * @param debug                 enables the debug mode
      * @throws MojoExecutionException if the APK cannot be created.
      */
-    private void doAPKWithAPKBuilder(File outputFile, File dexFile, File zipArchive, ArrayList<File> sourceFolders,
-                                     ArrayList<File> jarFiles, ArrayList<File> nativeFolders, boolean verbose,
-                                     boolean signWithDebugKeyStore, boolean debug) throws MojoExecutionException
+    private void doAPKWithAPKBuilder( File outputFile, File dexFile, File zipArchive, ArrayList<File> sourceFolders,
+                                      ArrayList<File> jarFiles, ArrayList<File> nativeFolders, boolean verbose,
+                                      boolean signWithDebugKeyStore, boolean debug ) throws MojoExecutionException
     {
         sourceFolders.add( new File( project.getBuild().getOutputDirectory() ) );
 
@@ -550,7 +550,7 @@ public class ApkMojo extends AbstractAndroidMojo
             {
                 String[] filenames = jarFile.list( new FilenameFilter()
                 {
-                    public boolean accept(File dir, String name)
+                    public boolean accept( File dir, String name )
                     {
                         return PATTERN_JAR_EXT.matcher( name ).matches();
                     }
@@ -574,7 +574,7 @@ public class ApkMojo extends AbstractAndroidMojo
         builder.sealApk();
     }
 
-    private File removeDuplicatesFromJar(File in, List<String> duplicates)
+    private File removeDuplicatesFromJar( File in, List<String> duplicates )
     {
         String target = project.getBuild().getOutputDirectory();
         File tmp = new File( target, "unpacked-embedded-jars" );
@@ -658,7 +658,7 @@ public class ApkMojo extends AbstractAndroidMojo
      * @param out the output stream
      * @throws IOException if the stream cannot be copied
      */
-    private static void copyStreamWithoutClosing(InputStream in, OutputStream out) throws IOException
+    private static void copyStreamWithoutClosing( InputStream in, OutputStream out ) throws IOException
     {
         byte[] b = new byte[ 4096 ];
         for ( int n; ( n = in.read( b ) ) != - 1; )
@@ -680,9 +680,9 @@ public class ApkMojo extends AbstractAndroidMojo
      * @param signWithDebugKeyStore enables the signature of the APK using the debug key
      * @throws MojoExecutionException if the APK cannot be created.
      */
-    private void doAPKWithCommand(File outputFile, File dexFile, File zipArchive, ArrayList<File> sourceFolders,
-                                  ArrayList<File> jarFiles, ArrayList<File> nativeFolders,
-                                  boolean signWithDebugKeyStore) throws MojoExecutionException
+    private void doAPKWithCommand( File outputFile, File dexFile, File zipArchive, ArrayList<File> sourceFolders,
+                                   ArrayList<File> jarFiles, ArrayList<File> nativeFolders,
+                                   boolean signWithDebugKeyStore ) throws MojoExecutionException
     {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
@@ -737,7 +737,7 @@ public class ApkMojo extends AbstractAndroidMojo
         ApkBuilder.initialize( getLog(), file );
     }
 
-    private void processNativeLibraries(final List<File> natives) throws MojoExecutionException
+    private void processNativeLibraries( final List<File> natives ) throws MojoExecutionException
     {
         // Examine the native libraries directory for content. This will only be true if:
         // a) the directory exists
@@ -824,7 +824,7 @@ public class ApkMojo extends AbstractAndroidMojo
         }
     }
 
-    private void optionallyCopyGdbServer(File destinationDirectory) throws MojoExecutionException
+    private void optionallyCopyGdbServer( File destinationDirectory ) throws MojoExecutionException
     {
 
         try
@@ -857,7 +857,7 @@ public class ApkMojo extends AbstractAndroidMojo
 
     }
 
-    private File getFinalDestinationDirectoryFor(Artifact resolvedArtifact, File destinationDirectory)
+    private File getFinalDestinationDirectoryFor( Artifact resolvedArtifact, File destinationDirectory )
     {
         final String hardwareArchitecture = getHardwareArchitectureFor( resolvedArtifact );
 
@@ -867,7 +867,7 @@ public class ApkMojo extends AbstractAndroidMojo
         return finalDestinationDirectory;
     }
 
-    private String getHardwareArchitectureFor(Artifact resolvedArtifact)
+    private String getHardwareArchitectureFor( Artifact resolvedArtifact )
     {
 
         if ( StringUtils.isNotBlank( nativeLibrariesDependenciesHardwareArchitectureOverride ) )
@@ -884,7 +884,7 @@ public class ApkMojo extends AbstractAndroidMojo
         return nativeLibrariesDependenciesHardwareArchitectureDefault;
     }
 
-    private void copyLocalNativeLibraries(final File localNativeLibrariesDirectory, final File destinationDirectory)
+    private void copyLocalNativeLibraries( final File localNativeLibrariesDirectory, final File destinationDirectory )
             throws MojoExecutionException
     {
         getLog().debug( "Copying existing native libraries from " + localNativeLibrariesDirectory );
@@ -922,7 +922,7 @@ public class ApkMojo extends AbstractAndroidMojo
 
         if ( resourceOverlayDirectories == null || resourceOverlayDirectories.length == 0 )
         {
-            overlayDirectories = new File[]{resourceOverlayDirectory};
+            overlayDirectories = new File[]{ resourceOverlayDirectory };
         } else
         {
             overlayDirectories = resourceOverlayDirectories;
@@ -961,7 +961,7 @@ public class ApkMojo extends AbstractAndroidMojo
                      * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
                      * @see java.io.FileFilter#accept(java.io.File)
                      */
-                    public boolean accept(File file)
+                    public boolean accept( File file )
                     {
                         for ( String pattern : DirectoryScanner.DEFAULTEXCLUDES )
                         {
@@ -999,7 +999,7 @@ public class ApkMojo extends AbstractAndroidMojo
                              * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
                              * @see java.io.FileFilter#accept(java.io.File)
                              */
-                            public boolean accept(File file)
+                            public boolean accept( File file )
                             {
                                 for ( String pattern : AbstractScanner.DEFAULTEXCLUDES )
                                 {
@@ -1042,7 +1042,7 @@ public class ApkMojo extends AbstractAndroidMojo
                                      * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
                                      * @see java.io.FileFilter#accept(java.io.File)
                                      */
-                                    public boolean accept(File file)
+                                    public boolean accept( File file )
                                     {
                                         for ( String pattern : AbstractScanner.DEFAULTEXCLUDES )
                                         {
@@ -1081,7 +1081,7 @@ public class ApkMojo extends AbstractAndroidMojo
                      * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
                      * @see java.io.FileFilter#accept(java.io.File)
                      */
-                    public boolean accept(File file)
+                    public boolean accept( File file )
                     {
                         for ( String pattern : AbstractScanner.DEFAULTEXCLUDES )
                         {

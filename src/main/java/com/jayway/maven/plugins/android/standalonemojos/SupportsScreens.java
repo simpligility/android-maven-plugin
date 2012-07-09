@@ -15,7 +15,7 @@ public class SupportsScreens
         return resizeable;
     }
 
-    public void setResizeable(String resizable)
+    public void setResizeable( String resizable )
     {
         this.resizeable = resizable;
     }
@@ -25,7 +25,7 @@ public class SupportsScreens
         return smallScreens;
     }
 
-    public void setSmallScreens(String smallScreens)
+    public void setSmallScreens( String smallScreens )
     {
         this.smallScreens = smallScreens;
     }
@@ -35,7 +35,7 @@ public class SupportsScreens
         return normalScreens;
     }
 
-    public void setNormalScreens(String normalScreens)
+    public void setNormalScreens( String normalScreens )
     {
         this.normalScreens = normalScreens;
     }
@@ -45,7 +45,7 @@ public class SupportsScreens
         return largeScreens;
     }
 
-    public void setLargeScreens(String largeScreens)
+    public void setLargeScreens( String largeScreens )
     {
         this.largeScreens = largeScreens;
     }
@@ -55,7 +55,7 @@ public class SupportsScreens
         return xlargeScreens;
     }
 
-    public void setXlargeScreens(String xlargeScreens)
+    public void setXlargeScreens( String xlargeScreens )
     {
         this.xlargeScreens = xlargeScreens;
     }
@@ -65,7 +65,7 @@ public class SupportsScreens
         return anyDensity;
     }
 
-    public void setAnyDensity(String anyDensity)
+    public void setAnyDensity( String anyDensity )
     {
         this.anyDensity = anyDensity;
     }
@@ -75,7 +75,7 @@ public class SupportsScreens
         return requiresSmallestWidthDp;
     }
 
-    public void setRequiresSmallestWidthDp(String requiresSmallestWidthDp)
+    public void setRequiresSmallestWidthDp( String requiresSmallestWidthDp )
     {
         this.requiresSmallestWidthDp = requiresSmallestWidthDp;
     }
@@ -85,7 +85,7 @@ public class SupportsScreens
         return compatibleWidthLimitDp;
     }
 
-    public void setCompatibleWidthLimitDp(String compatibleWidthLimitDp)
+    public void setCompatibleWidthLimitDp( String compatibleWidthLimitDp )
     {
         this.compatibleWidthLimitDp = compatibleWidthLimitDp;
     }
@@ -95,7 +95,7 @@ public class SupportsScreens
         return largestWidthLimitDp;
     }
 
-    public void setLargestWidthLimitDp(String largestWidthLimitDp)
+    public void setLargestWidthLimitDp( String largestWidthLimitDp )
     {
         this.largestWidthLimitDp = largestWidthLimitDp;
     }

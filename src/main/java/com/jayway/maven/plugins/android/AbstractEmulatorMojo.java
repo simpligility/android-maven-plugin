@@ -219,7 +219,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      * @param device The device to check
      * @return Boolean results of the check
      */
-    private boolean isExistingEmulator(IDevice device)
+    private boolean isExistingEmulator( IDevice device )
     {
         return ( device.getAvdName().equalsIgnoreCase( parsedAvd ) );
     }
@@ -382,7 +382,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      *
      * @param device The device to stop
      */
-    private void stopEmulator(IDevice device)
+    private void stopEmulator( IDevice device )
     {
         int devicePort = extractPortFromDevice( device );
         if ( devicePort == - 1 )
@@ -412,7 +412,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      * @param device The device to extract the port number from.
      * @return Returns the port number of the device
      */
-    private int extractPortFromDevice(IDevice device)
+    private int extractPortFromDevice( IDevice device )
     {
         String portStr = StringUtils.substringAfterLast( device.getSerialNumber(), "-" );
         if ( StringUtils.isNotBlank( portStr ) && StringUtils.isNumeric( portStr ) )
@@ -434,7 +434,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     private boolean sendEmulatorCommand(
             //final Launcher launcher,
             //final PrintStream logger,
-            final int port, final String command)
+            final int port, final String command )
     {
         Callable<Boolean> task = new Callable<Boolean>()
         {

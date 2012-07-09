@@ -121,7 +121,7 @@ public class EmmaMojo extends AbstractAndroidMojo
         } else
         {
             parsedEnable = emmaEnable;
-            parsedEmmaClassFolders = new String[]{emmaClassFolders};
+            parsedEmmaClassFolders = new String[]{ emmaClassFolders };
             parsedOutputMetadataFile = emmaOutputMetaFile.getAbsolutePath();
         }
     }
@@ -138,7 +138,7 @@ public class EmmaMojo extends AbstractAndroidMojo
     {
         File sourceJavaFolder =
                 new File( project.getBuild().getDirectory() + File.separator + CLASSES_FOLDER_NAME + File.separator );
-        return new String[]{sourceJavaFolder.getAbsolutePath()};
+        return new String[]{ sourceJavaFolder.getAbsolutePath() };
     }
 
     private String[] getAllCompiledDirectory() throws MojoExecutionException
@@ -147,7 +147,7 @@ public class EmmaMojo extends AbstractAndroidMojo
         String[] classFolders;
         if ( classFoldersTemp == null )
         {
-            return new String[]{emmaClassFolders};
+            return new String[]{ emmaClassFolders };
         } else
         {
             classFolders = classFoldersTemp.split( "," );

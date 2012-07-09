@@ -94,7 +94,7 @@ public class UnpackMojo extends AbstractAndroidMojo
                                 new JarHelper.UnjarListener()
                                 {
                                     @Override
-                                    public boolean include(JarEntry jarEntry)
+                                    public boolean include( JarEntry jarEntry )
                                     {
                                         return ! jarEntry.getName().startsWith( "META-INF" ) &&
                                                 jarEntry.getName().endsWith( ".class" );

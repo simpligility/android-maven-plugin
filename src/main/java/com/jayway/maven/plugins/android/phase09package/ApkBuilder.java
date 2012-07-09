@@ -40,7 +40,7 @@ public class ApkBuilder
     /**
      * The ApkBuilder class object.
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings( "rawtypes" )
     private static Class apkBuilderClass;
 
     /**
@@ -55,8 +55,8 @@ public class ApkBuilder
      * @param sdkLibs the File pointing on {@code sdklib.jar}
      * @throws MojoExecutionException if the ApkBuilder class cannot be loaded
      */
-    @SuppressWarnings("unchecked")
-    public static void initialize(Log log, File sdkLibs) throws MojoExecutionException
+    @SuppressWarnings( "unchecked" )
+    public static void initialize( Log log, File sdkLibs ) throws MojoExecutionException
     {
         if ( apkBuilderClass != null )
         {
@@ -70,7 +70,7 @@ public class ApkBuilder
         try
         {
             URLClassLoader child =
-                    new URLClassLoader( new URL[]{sdkLibs.toURI().toURL()}, ApkBuilder.class.getClassLoader() );
+                    new URLClassLoader( new URL[]{ sdkLibs.toURI().toURL() }, ApkBuilder.class.getClassLoader() );
             apkBuilderClass = child.loadClass( "com.android.sdklib.build.ApkBuilder" );
         } catch ( MalformedURLException e )
         {
@@ -89,12 +89,12 @@ public class ApkBuilder
 
         try
         {
-            apkBuilderConstructor = apkBuilderClass
-                    .getConstructor( new Class[]{File.class, File.class, File.class, String.class, PrintStream.class} );
+            apkBuilderConstructor = apkBuilderClass.getConstructor(
+                    new Class[]{ File.class, File.class, File.class, String.class, PrintStream.class } );
 
-            setDebugMethod = apkBuilderClass.getMethod( "setDebugMode", new Class[]{Boolean.TYPE} );
+            setDebugMethod = apkBuilderClass.getMethod( "setDebugMode", new Class[]{ Boolean.TYPE } );
 
-            addResourcesFromJarMethod = apkBuilderClass.getMethod( "addResourcesFromJar", new Class[]{File.class} );
+            addResourcesFromJarMethod = apkBuilderClass.getMethod( "addResourcesFromJar", new Class[]{ File.class } );
 
             //The addNativeLibraries signature changed for api 14
             Method[] builderMethods = apkBuilderClass.getMethods();
@@ -122,7 +122,7 @@ public class ApkBuilder
                 }
             }
 
-            addSourceFolderMethod = apkBuilderClass.getMethod( "addSourceFolder", new Class[]{File.class} );
+            addSourceFolderMethod = apkBuilderClass.getMethod( "addSourceFolder", new Class[]{ File.class } );
 
             sealApkMethod = apkBuilderClass.getMethod( "sealApk", new Class[ 0 ] );
 
@@ -142,7 +142,7 @@ public class ApkBuilder
     /**
      * The APKBuilder Constructor Method.
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings( "rawtypes" )
     private static Constructor apkBuilderConstructor;
 
     /**
@@ -196,7 +196,7 @@ public class ApkBuilder
      * @throws MojoExecutionException if the class was not initialized, or if the reflective calls
      *                                failed.
      */
-    public ApkBuilder(File apkFile, File resFile, File dexFile, boolean signed, PrintStream verboseStream)
+    public ApkBuilder( File apkFile, File resFile, File dexFile, boolean signed, PrintStream verboseStream )
             throws MojoExecutionException
     {
         if ( apkBuilderClass == null )
@@ -210,7 +210,7 @@ public class ApkBuilder
             Object debugKeyStore = getDebugKeyStoreMethod.invoke( null, new Object[ 0 ] );
 
             builder = apkBuilderConstructor.newInstance(
-                    new Object[]{apkFile, resFile, dexFile, ( signed ) ? debugKeyStore : null, verboseStream} );
+                    new Object[]{ apkFile, resFile, dexFile, ( signed ) ? debugKeyStore : null, verboseStream } );
         } catch ( InvocationTargetException e )
         {
             log.error( "Cannot create the APKBuilder object", e.getCause() );
@@ -228,11 +228,11 @@ public class ApkBuilder
      * @param debug does the debug mode need to be enabled?
      * @throws MojoExecutionException if the debug mode cannot be set
      */
-    public void setDebugMode(boolean debug) throws MojoExecutionException
+    public void setDebugMode( boolean debug ) throws MojoExecutionException
     {
         try
         {
-            setDebugMethod.invoke( builder, new Object[]{debug} );
+            setDebugMethod.invoke( builder, new Object[]{ debug } );
         } catch ( InvocationTargetException e )
         {
             log.error( "Cannot set the debug mode", e.getCause() );
@@ -250,11 +250,11 @@ public class ApkBuilder
      * @param sourceFolder the source folder
      * @throws MojoExecutionException if the source folder cannot be added
      */
-    public void addSourceFolder(File sourceFolder) throws MojoExecutionException
+    public void addSourceFolder( File sourceFolder ) throws MojoExecutionException
     {
         try
         {
-            addSourceFolderMethod.invoke( builder, new Object[]{sourceFolder} );
+            addSourceFolderMethod.invoke( builder, new Object[]{ sourceFolder } );
         } catch ( InvocationTargetException e )
         {
             log.error( "Cannot add source folder", e.getCause() );
@@ -272,11 +272,11 @@ public class ApkBuilder
      * @param jarFile the jar File.
      * @throws MojoExecutionException if the resources cannot be added
      */
-    public void addResourcesFromJar(File jarFile) throws MojoExecutionException
+    public void addResourcesFromJar( File jarFile ) throws MojoExecutionException
     {
         try
         {
-            addResourcesFromJarMethod.invoke( builder, new Object[]{jarFile} );
+            addResourcesFromJarMethod.invoke( builder, new Object[]{ jarFile } );
         } catch ( InvocationTargetException e )
         {
             final String message = "Cannot add resources from " + jarFile.getAbsolutePath();
@@ -301,7 +301,7 @@ public class ApkBuilder
      *                     included in the final archive
      * @throws MojoExecutionException if the library cannot be added.
      */
-    public void addNativeLibraries(File nativeFolder, String abiFilter) throws MojoExecutionException
+    public void addNativeLibraries( File nativeFolder, String abiFilter ) throws MojoExecutionException
     {
         try
         {
@@ -309,10 +309,10 @@ public class ApkBuilder
             //The pre-14 version took a second abiFilter string parameter.
             if ( addNativeLibrariesMethod.getParameterTypes().length == 2 )
             {
-                addNativeLibrariesMethod.invoke( builder, new Object[]{nativeFolder, abiFilter} );
+                addNativeLibrariesMethod.invoke( builder, new Object[]{ nativeFolder, abiFilter } );
             } else
             {
-                addNativeLibrariesMethod.invoke( builder, new Object[]{nativeFolder} );
+                addNativeLibrariesMethod.invoke( builder, new Object[]{ nativeFolder } );
             }
         } catch ( InvocationTargetException e )
         {

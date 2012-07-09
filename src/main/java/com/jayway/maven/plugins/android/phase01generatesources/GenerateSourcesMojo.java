@@ -163,7 +163,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         project.addCompileSourceRoot( extractedDependenciesJavaSources.getAbsolutePath() );
     }
 
-    private void extractApksources(File apksourcesFile) throws MojoExecutionException
+    private void extractApksources( File apksourcesFile ) throws MojoExecutionException
     {
         if ( apksourcesFile.isDirectory() )
         {
@@ -205,7 +205,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
     }
 
-    private void extractApklib(Artifact apklibArtifact) throws MojoExecutionException
+    private void extractApklib( Artifact apklibArtifact ) throws MojoExecutionException
     {
 
         final Artifact resolvedArtifact =
@@ -272,7 +272,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         if ( resourceOverlayDirectories == null || resourceOverlayDirectories.length == 0 )
         {
-            overlayDirectories = new File[]{resourceOverlayDirectory};
+            overlayDirectories = new File[]{ resourceOverlayDirectory };
         } else
         {
             overlayDirectories = resourceOverlayDirectories;
@@ -312,7 +312,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                      * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
                      * @see java.io.FileFilter#accept(java.io.File)
                      */
-                    public boolean accept(File file)
+                    public boolean accept( File file )
                     {
                         for ( String pattern : AbstractScanner.DEFAULTEXCLUDES )
                         {
@@ -424,7 +424,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         project.addCompileSourceRoot( genDirectory.getAbsolutePath() );
     }
 
-    private void generateRForApkLibDependency(Artifact apklibArtifact) throws MojoExecutionException
+    private void generateRForApkLibDependency( Artifact apklibArtifact ) throws MojoExecutionException
     {
         final String unpackDir = getLibraryUnpackDirectory( apklibArtifact );
         getLog().debug( "Generating R file for apklibrary: " + apklibArtifact.getGroupId() );
@@ -501,7 +501,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * @param files Map of source directory File instances to the relative paths to all AIDL files within
      * @throws MojoExecutionException If the AIDL compiler fails
      */
-    private void generateAidlFiles(Map<File /*sourceDirectory*/, String[] /*relativeAidlFileNames*/> files)
+    private void generateAidlFiles( Map<File /*sourceDirectory*/, String[] /*relativeAidlFileNames*/> files )
             throws MojoExecutionException
     {
         List<String> protoCommands = new ArrayList<String>();
@@ -544,7 +544,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
     }
 
-    private String[] findRelativeAidlFileNames(File sourceDirectory)
+    private String[] findRelativeAidlFileNames( File sourceDirectory )
     {
         String[] relativeAidlFileNames = findFilesInDirectory( sourceDirectory, "**/*.aidl" );
         getLog().info( "ANDROID-904-002: Found aidl files: Count = " + relativeAidlFileNames.length );

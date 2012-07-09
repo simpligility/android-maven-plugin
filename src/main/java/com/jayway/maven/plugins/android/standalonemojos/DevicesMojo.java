@@ -33,7 +33,7 @@ public class DevicesMojo extends AbstractAndroidMojo
     {
         doWithDevices( new DeviceCallback()
         {
-            public void doWithDevice(final IDevice device) throws MojoExecutionException
+            public void doWithDevice( final IDevice device ) throws MojoExecutionException
             {
                 getLog().info( DeviceHelper.getDescriptiveNameWithStatus( device ) );
             }

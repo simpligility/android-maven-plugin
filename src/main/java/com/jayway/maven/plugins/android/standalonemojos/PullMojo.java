@@ -80,7 +80,7 @@ public class PullMojo extends AbstractAndroidMojo
      */
     private String pullSource;
 
-    @PullParameter(required = true)
+    @PullParameter( required = true )
     private String parsedSource;
 
     /**
@@ -100,7 +100,7 @@ public class PullMojo extends AbstractAndroidMojo
      */
     private String pullDestination;
 
-    @PullParameter(required = true)
+    @PullParameter( required = true )
     private String parsedDestination;
 
     public void execute() throws MojoExecutionException, MojoFailureException
@@ -111,7 +111,7 @@ public class PullMojo extends AbstractAndroidMojo
 
         doWithDevices( new DeviceCallback()
         {
-            public void doWithDevice(final IDevice device) throws MojoExecutionException
+            public void doWithDevice( final IDevice device ) throws MojoExecutionException
             {
                 // message will be set later according to the processed files
                 String message = "";
@@ -138,7 +138,7 @@ public class PullMojo extends AbstractAndroidMojo
                         if ( parsedDestination.endsWith( File.separator ) )
                         {
                             // pull source directory directly
-                            fileEntries = new FileEntry[]{sourceFileEntry};
+                            fileEntries = new FileEntry[]{ sourceFileEntry };
                         } else
                         {
                             // pull the children of source directory only
@@ -209,7 +209,8 @@ public class PullMojo extends AbstractAndroidMojo
      * @return a {@link FileEntry} object for the given file path
      * @throws MojoExecutionException if the file path could not be found on the device
      */
-    private FileEntry getFileEntry(String filePath, FileListingService fileListingService) throws MojoExecutionException
+    private FileEntry getFileEntry( String filePath, FileListingService fileListingService )
+            throws MojoExecutionException
     {
         // static resolution of symlink
         if ( filePath.startsWith( "/sdcard" ) )

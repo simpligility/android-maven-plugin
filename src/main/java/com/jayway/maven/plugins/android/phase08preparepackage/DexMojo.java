@@ -212,7 +212,7 @@ public class DexMojo extends AbstractAndroidMojo
         }
     }
 
-    private void runDex(CommandExecutor executor, File outputFile, Set<File> inputFiles) throws MojoExecutionException
+    private void runDex( CommandExecutor executor, File outputFile, Set<File> inputFiles ) throws MojoExecutionException
     {
         List<String> commands = new ArrayList<String>();
         if ( parsedJvmArguments != null )
@@ -309,7 +309,7 @@ public class DexMojo extends AbstractAndroidMojo
      * @param prefix any string, or null.
      * @return the prefix with a "/" at the end, never null.
      */
-    protected String endWithSlash(String prefix)
+    protected String endWithSlash( String prefix )
     {
         prefix = StringUtils.defaultIfEmpty( prefix, "/" );
         if ( ! prefix.endsWith( "/" ) )
@@ -327,7 +327,7 @@ public class DexMojo extends AbstractAndroidMojo
      * @param prefix      An optional prefix for where in the Jar file the directory's contents should go.
      * @throws ArchiverException
      */
-    protected void addDirectory(JarArchiver jarArchiver, File directory, String prefix) throws ArchiverException
+    protected void addDirectory( JarArchiver jarArchiver, File directory, String prefix ) throws ArchiverException
     {
         if ( directory != null && directory.exists() )
         {
@@ -338,7 +338,7 @@ public class DexMojo extends AbstractAndroidMojo
         }
     }
 
-    protected void addJavaResources(JarArchiver jarArchiver, List<Resource> javaResources) throws ArchiverException
+    protected void addJavaResources( JarArchiver jarArchiver, List<Resource> javaResources ) throws ArchiverException
     {
         for ( Resource javaResource : javaResources )
         {
@@ -353,7 +353,7 @@ public class DexMojo extends AbstractAndroidMojo
      * @param javaResource The Java resource to add.
      * @throws ArchiverException
      */
-    protected void addJavaResource(JarArchiver jarArchiver, Resource javaResource) throws ArchiverException
+    protected void addJavaResource( JarArchiver jarArchiver, Resource javaResource ) throws ArchiverException
     {
         if ( javaResource != null )
         {

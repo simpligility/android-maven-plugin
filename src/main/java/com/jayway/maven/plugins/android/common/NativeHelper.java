@@ -51,8 +51,8 @@ public class NativeHelper
     private Log log;
     private List<RemoteRepository> projectRepos;
 
-    public NativeHelper(MavenProject project, List<RemoteRepository> projectRepos, RepositorySystemSession repoSession,
-                        RepositorySystem repoSystem, ArtifactFactory artifactFactory, Log log)
+    public NativeHelper( MavenProject project, List<RemoteRepository> projectRepos, RepositorySystemSession repoSession,
+                         RepositorySystem repoSystem, ArtifactFactory artifactFactory, Log log )
     {
         this.project = project;
         this.projectRepos = projectRepos;
@@ -62,7 +62,7 @@ public class NativeHelper
         this.log = log;
     }
 
-    public static boolean hasStaticNativeLibraryArtifact(Set<Artifact> resolveNativeLibraryArtifacts)
+    public static boolean hasStaticNativeLibraryArtifact( Set<Artifact> resolveNativeLibraryArtifacts )
     {
         for ( Artifact resolveNativeLibraryArtifact : resolveNativeLibraryArtifacts )
         {
@@ -74,7 +74,7 @@ public class NativeHelper
         return false;
     }
 
-    public static boolean hasSharedNativeLibraryArtifact(Set<Artifact> resolveNativeLibraryArtifacts)
+    public static boolean hasSharedNativeLibraryArtifact( Set<Artifact> resolveNativeLibraryArtifacts )
     {
         for ( Artifact resolveNativeLibraryArtifact : resolveNativeLibraryArtifacts )
         {
@@ -86,13 +86,13 @@ public class NativeHelper
         return false;
     }
 
-    public Set<Artifact> getNativeDependenciesArtifacts(File unpackDirectory, boolean sharedLibraries)
+    public Set<Artifact> getNativeDependenciesArtifacts( File unpackDirectory, boolean sharedLibraries )
             throws MojoExecutionException
     {
         final Set<Artifact> filteredArtifacts = new LinkedHashSet<Artifact>();
 
         // Add all dependent artifacts declared in the pom file
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings( "unchecked" )
         final Set<Artifact> allArtifacts = project.getDependencyArtifacts();
 
         // Add all attached artifacts as well - this could come from the NDK mojo for example
@@ -132,13 +132,13 @@ public class NativeHelper
         return filteredArtifacts;
     }
 
-    private boolean isNativeLibrary(boolean sharedLibraries, String artifactType)
+    private boolean isNativeLibrary( boolean sharedLibraries, String artifactType )
     {
         return ( sharedLibraries ? "so".equals( artifactType ) : "a".equals( artifactType ) );
     }
 
-    private Set<Artifact> processTransientDependencies(List<org.apache.maven.model.Dependency> dependencies,
-                                                       boolean sharedLibraries) throws MojoExecutionException
+    private Set<Artifact> processTransientDependencies( List<org.apache.maven.model.Dependency> dependencies,
+                                                        boolean sharedLibraries ) throws MojoExecutionException
     {
 
         Set<Artifact> transientArtifacts = new LinkedHashSet<Artifact>();
@@ -156,7 +156,7 @@ public class NativeHelper
 
     }
 
-    private Set<Artifact> processTransientDependencies(Dependency dependency, boolean sharedLibraries)
+    private Set<Artifact> processTransientDependencies( Dependency dependency, boolean sharedLibraries )
             throws MojoExecutionException
     {
         try
@@ -186,8 +186,8 @@ public class NativeHelper
                                     new DependencyFilter()
                                     {
                                         @Override
-                                        public boolean accept(DependencyNode dependencyNode,
-                                                              List<DependencyNode> dependencyNodes)
+                                        public boolean accept( DependencyNode dependencyNode,
+                                                               List<DependencyNode> dependencyNodes )
                                         {
                                             return ! dependencyNode.getDependency().isOptional();
                                         }
@@ -224,7 +224,7 @@ public class NativeHelper
         }
     }
 
-    public static void validateNDKVersion(File ndkHomeDir) throws MojoExecutionException
+    public static void validateNDKVersion( File ndkHomeDir ) throws MojoExecutionException
     {
         final File ndkVersionFile = new File( ndkHomeDir, "RELEASE.TXT" );
 
@@ -247,7 +247,7 @@ public class NativeHelper
         }
     }
 
-    public static void validateNDKVersion(int desiredVersion, String versionStr) throws MojoExecutionException
+    public static void validateNDKVersion( int desiredVersion, String versionStr ) throws MojoExecutionException
     {
 
         int version = 0;

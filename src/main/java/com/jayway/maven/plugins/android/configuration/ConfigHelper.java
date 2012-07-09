@@ -14,7 +14,7 @@ import java.lang.reflect.Field;
 public final class ConfigHelper
 {
 
-    static public void copyValues(AbstractMojo mojo, String confFieldName) throws MojoExecutionException
+    static public void copyValues( AbstractMojo mojo, String confFieldName ) throws MojoExecutionException
     {
         try
         {
@@ -43,7 +43,7 @@ public final class ConfigHelper
 
                 final Class<?> cls = value.getClass();
 
-                if ( ( cls == String.class ) && ( ( (String) value ).length() == 0 ) )
+                if ( ( cls == String.class ) && ( ( ( String ) value ).length() == 0 ) )
                 {
                     continue;
                 }

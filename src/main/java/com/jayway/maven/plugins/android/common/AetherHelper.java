@@ -29,7 +29,7 @@ public class AetherHelper
      * @param artifact The Maven artifact to convert
      * @return The resulting Aether artifact
      */
-    public static org.sonatype.aether.artifact.Artifact createAetherArtifact(Artifact artifact)
+    public static org.sonatype.aether.artifact.Artifact createAetherArtifact( Artifact artifact )
     {
         DefaultArtifact defaultArtifact;
         if ( artifact.getClassifier() != null )
@@ -46,9 +46,9 @@ public class AetherHelper
         return defaultArtifact;
     }
 
-    public static Set<Artifact> resolveArtifacts(Set<Artifact> artifacts, RepositorySystem repositorySystem,
-                                                 RepositorySystemSession repositorySystemSession,
-                                                 List<RemoteRepository> repositories) throws MojoExecutionException
+    public static Set<Artifact> resolveArtifacts( Set<Artifact> artifacts, RepositorySystem repositorySystem,
+                                                  RepositorySystemSession repositorySystemSession,
+                                                  List<RemoteRepository> repositories ) throws MojoExecutionException
     {
         try
         {
@@ -68,9 +68,9 @@ public class AetherHelper
         }
     }
 
-    public static Artifact resolveArtifact(Artifact artifact, RepositorySystem repositorySystem,
-                                           RepositorySystemSession repositorySystemSession,
-                                           List<RemoteRepository> repositories) throws MojoExecutionException
+    public static Artifact resolveArtifact( Artifact artifact, RepositorySystem repositorySystem,
+                                            RepositorySystemSession repositorySystemSession,
+                                            List<RemoteRepository> repositories ) throws MojoExecutionException
     {
         try
         {

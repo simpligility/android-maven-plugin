@@ -35,9 +35,9 @@ import java.util.List;
 public class AndroidTestFinder
 {
 
-    private static final String[] TEST_PACKAGES = {"junit/framework/", "android/test/"};
+    private static final String[] TEST_PACKAGES = { "junit/framework/", "android/test/" };
 
-    public static boolean containsAndroidTests(File classesBaseDirectory) throws MojoExecutionException
+    public static boolean containsAndroidTests( File classesBaseDirectory ) throws MojoExecutionException
     {
 
         if ( classesBaseDirectory == null || ! classesBaseDirectory.isDirectory() )
@@ -73,7 +73,7 @@ public class AndroidTestFinder
         return descendantFinder.isDescendantFound();
     }
 
-    private static List<File> findEligebleClassFiles(File classesBaseDirectory)
+    private static List<File> findEligebleClassFiles( File classesBaseDirectory )
     {
         final List<File> classFiles = new LinkedList<File>();
         final DirectoryWalker walker = new DirectoryWalker();
@@ -82,11 +82,11 @@ public class AndroidTestFinder
         walker.addInclude( "**/*.class" );
         walker.addDirectoryWalkListener( new DirectoryWalkListener()
         {
-            public void directoryWalkStarting(File basedir)
+            public void directoryWalkStarting( File basedir )
             {
             }
 
-            public void directoryWalkStep(int percentage, File file)
+            public void directoryWalkStep( int percentage, File file )
             {
                 classFiles.add( file );
             }
@@ -95,7 +95,7 @@ public class AndroidTestFinder
             {
             }
 
-            public void debug(String message)
+            public void debug( String message )
             {
             }
         } );

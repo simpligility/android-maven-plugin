@@ -36,7 +36,7 @@ public class HeaderFilesDirective
         return directory;
     }
 
-    public void setDirectory(String directory)
+    public void setDirectory( String directory )
     {
         this.directory = directory;
     }
@@ -46,7 +46,7 @@ public class HeaderFilesDirective
         return excludes;
     }
 
-    public void setExcludes(String[] excludes)
+    public void setExcludes( String[] excludes )
     {
         this.excludes = excludes;
     }
@@ -56,7 +56,7 @@ public class HeaderFilesDirective
         return includes;
     }
 
-    public void setIncludes(String[] includes)
+    public void setIncludes( String[] includes )
     {
         this.includes = includes;
     }
