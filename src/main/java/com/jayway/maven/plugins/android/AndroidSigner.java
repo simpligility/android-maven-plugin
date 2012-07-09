@@ -36,14 +36,14 @@ public class AndroidSigner
     {
         if ( debug == null )
         {
-            throw new IllegalArgumentException("android.sign.debug must be 'true', 'false', 'both' or 'auto'.");
+            throw new IllegalArgumentException( "android.sign.debug must be 'true', 'false', 'both' or 'auto'." );
         }
         try
         {
-            this.debug = Debug.valueOf(debug.toUpperCase());
+            this.debug = Debug.valueOf( debug.toUpperCase() );
         } catch ( IllegalArgumentException e )
         {
-            throw new IllegalArgumentException("android.sign.debug must be 'true', 'false', 'both' or 'auto'.", e);
+            throw new IllegalArgumentException( "android.sign.debug must be 'true', 'false', 'both' or 'auto'.", e );
         }
     }
 
@@ -71,7 +71,7 @@ public class AndroidSigner
             //TODO: This is where to add logic for skipping debug sign if there are other keystores configured.
             return true;
         }
-        throw new IllegalStateException("Could not determine whether to sign with debug keystore.");
+        throw new IllegalStateException( "Could not determine whether to sign with debug keystore." );
     }
 
     public boolean shouldCreateBothSignedAndUnsignedApk()

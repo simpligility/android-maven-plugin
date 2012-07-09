@@ -21,7 +21,7 @@ package com.jayway.maven.plugins.android;
 public class ExecutionException extends Exception
 {
 
-    static final long serialVersionUID = -7843278034782074384L;
+    static final long serialVersionUID = - 7843278034782074384L;
 
     /**
      * Constructs an <code>ExecutionException</code>  with no exception message.
@@ -38,7 +38,7 @@ public class ExecutionException extends Exception
      */
     public ExecutionException(String message)
     {
-        super(message);
+        super( message );
     }
 
     /**
@@ -49,7 +49,7 @@ public class ExecutionException extends Exception
      */
     public ExecutionException(String message, Throwable cause)
     {
-        super(message, cause);
+        super( message, cause );
     }
 
     /**
@@ -59,7 +59,7 @@ public class ExecutionException extends Exception
      */
     public ExecutionException(Throwable cause)
     {
-        super(cause);
+        super( cause );
     }
 }
 

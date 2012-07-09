@@ -267,17 +267,17 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
         if ( parsedInstrumentationPackage == null )
         {
-            parsedInstrumentationPackage = extractPackageNameFromAndroidManifest(androidManifestFile);
+            parsedInstrumentationPackage = extractPackageNameFromAndroidManifest( androidManifestFile );
         }
 
         if ( parsedInstrumentationRunner == null )
         {
-            parsedInstrumentationRunner = extractInstrumentationRunnerFromAndroidManifest(androidManifestFile);
+            parsedInstrumentationRunner = extractInstrumentationRunnerFromAndroidManifest( androidManifestFile );
         }
 
         // only run Tests in specific package
-        packagesList = buildCommaSeparatedString(parsedPackages);
-        packagesExists = StringUtils.isNotBlank(packagesList);
+        packagesList = buildCommaSeparatedString( parsedPackages );
+        packagesExists = StringUtils.isNotBlank( packagesList );
 
         if ( parsedClasses != null )
         {
@@ -290,9 +290,10 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         if ( classesExists && packagesExists )
         {
             // if both packages and classes are specified --> ERROR
-            throw new MojoFailureException("packages and classes are mutually exclusive. They cannot be specified at " +
-                    "the same time. Please specify either packages or classes. For details, " +
-                    "see http://developer.android.com/guide/developing/testing/testing_otheride.html");
+            throw new MojoFailureException(
+                    "packages and classes are mutually exclusive. They cannot be specified at " +
+                            "the same time. Please specify either packages or classes. For details, " +
+                            "see http://developer.android.com/guide/developing/testing/testing_otheride.html" );
         }
 
         DeviceCallback instrumentationTestExecutor = new DeviceCallback()
@@ -300,73 +301,75 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             public void doWithDevice(final IDevice device) throws MojoExecutionException, MojoFailureException
             {
                 RemoteAndroidTestRunner remoteAndroidTestRunner =
-                        new RemoteAndroidTestRunner(parsedInstrumentationPackage, parsedInstrumentationRunner, device);
+                        new RemoteAndroidTestRunner( parsedInstrumentationPackage, parsedInstrumentationRunner,
+                                device );
 
                 if ( packagesExists )
                 {
-                    remoteAndroidTestRunner.setTestPackageName(packagesList);
-                    getLog().info("Running tests for specified test packages: " + packagesList);
+                    remoteAndroidTestRunner.setTestPackageName( packagesList );
+                    getLog().info( "Running tests for specified test packages: " + packagesList );
                 }
 
                 if ( classesExists )
                 {
-                    remoteAndroidTestRunner.setClassNames(parsedClasses.toArray(new String[parsedClasses.size()]));
-                    getLog().info("Running tests for specified test classes/methods: " + parsedClasses);
+                    remoteAndroidTestRunner
+                            .setClassNames( parsedClasses.toArray( new String[ parsedClasses.size() ] ) );
+                    getLog().info( "Running tests for specified test classes/methods: " + parsedClasses );
                 }
 
-                remoteAndroidTestRunner.setDebug(parsedDebug);
-                remoteAndroidTestRunner.setCoverage(parsedCoverage);
-                if ( !"".equals(parsedCoverageFile) )
+                remoteAndroidTestRunner.setDebug( parsedDebug );
+                remoteAndroidTestRunner.setCoverage( parsedCoverage );
+                if ( ! "".equals( parsedCoverageFile ) )
                 {
-                    remoteAndroidTestRunner.addInstrumentationArg("coverageFile", parsedCoverageFile);
+                    remoteAndroidTestRunner.addInstrumentationArg( "coverageFile", parsedCoverageFile );
                 }
-                remoteAndroidTestRunner.setLogOnly(parsedLogOnly);
+                remoteAndroidTestRunner.setLogOnly( parsedLogOnly );
 
-                if ( StringUtils.isNotBlank(parsedTestSize) )
+                if ( StringUtils.isNotBlank( parsedTestSize ) )
                 {
                     IRemoteAndroidTestRunner.TestSize validSize =
-                            IRemoteAndroidTestRunner.TestSize.getTestSize(parsedTestSize);
-                    remoteAndroidTestRunner.setTestSize(validSize);
+                            IRemoteAndroidTestRunner.TestSize.getTestSize( parsedTestSize );
+                    remoteAndroidTestRunner.setTestSize( validSize );
                 }
 
-                getLog().info("Running instrumentation tests in " + parsedInstrumentationPackage + " on " +
-                        device.getSerialNumber() + " (avdName=" + device.getAvdName() + ")");
+                getLog().info( "Running instrumentation tests in " + parsedInstrumentationPackage + " on " +
+                        device.getSerialNumber() + " (avdName=" + device.getAvdName() + ")" );
                 try
                 {
-                    AndroidTestRunListener testRunListener = new AndroidTestRunListener(project, device);
-                    remoteAndroidTestRunner.run(testRunListener);
+                    AndroidTestRunListener testRunListener = new AndroidTestRunListener( project, device );
+                    remoteAndroidTestRunner.run( testRunListener );
                     if ( testRunListener.hasFailuresOrErrors() )
                     {
-                        throw new MojoFailureException("Tests failed on device.");
+                        throw new MojoFailureException( "Tests failed on device." );
                     }
                     if ( testRunListener.testRunFailed() )
                     {
                         throw new MojoFailureException(
-                                "Test run failed to complete: " + testRunListener.getTestRunFailureCause());
+                                "Test run failed to complete: " + testRunListener.getTestRunFailureCause() );
                     }
                     if ( testRunListener.threwException() )
                     {
-                        throw new MojoFailureException(testRunListener.getExceptionMessages());
+                        throw new MojoFailureException( testRunListener.getExceptionMessages() );
                     }
                 } catch ( TimeoutException e )
                 {
-                    throw new MojoExecutionException("timeout", e);
+                    throw new MojoExecutionException( "timeout", e );
                 } catch ( AdbCommandRejectedException e )
                 {
-                    throw new MojoExecutionException("adb command rejected", e);
+                    throw new MojoExecutionException( "adb command rejected", e );
                 } catch ( ShellCommandUnresponsiveException e )
                 {
-                    throw new MojoExecutionException("shell command " + "unresponsive", e);
+                    throw new MojoExecutionException( "shell command " + "unresponsive", e );
                 } catch ( IOException e )
                 {
-                    throw new MojoExecutionException("IO problem", e);
+                    throw new MojoExecutionException( "IO problem", e );
                 }
             }
         };
 
-        instrumentationTestExecutor = new ScreenshotServiceWrapper(instrumentationTestExecutor, project, getLog());
+        instrumentationTestExecutor = new ScreenshotServiceWrapper( instrumentationTestExecutor, project, getLog() );
 
-        doWithDevices(instrumentationTestExecutor);
+        doWithDevices( instrumentationTestExecutor );
     }
 
     private void parseConfiguration()
@@ -374,42 +377,42 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         // we got config in pom ... lets use it,
         if ( test != null )
         {
-            if ( StringUtils.isNotEmpty(test.getSkip()) )
+            if ( StringUtils.isNotEmpty( test.getSkip() ) )
             {
                 parsedSkip = test.getSkip();
             } else
             {
                 parsedSkip = testSkip;
             }
-            if ( StringUtils.isNotEmpty(test.getInstrumentationPackage()) )
+            if ( StringUtils.isNotEmpty( test.getInstrumentationPackage() ) )
             {
                 parsedInstrumentationPackage = test.getInstrumentationPackage();
             } else
             {
                 parsedInstrumentationPackage = testInstrumentationPackage;
             }
-            if ( StringUtils.isNotEmpty(test.getInstrumentationRunner()) )
+            if ( StringUtils.isNotEmpty( test.getInstrumentationRunner() ) )
             {
                 parsedInstrumentationRunner = test.getInstrumentationRunner();
             } else
             {
                 parsedInstrumentationRunner = testInstrumentationRunner;
             }
-            if ( test.getClasses() != null && !test.getClasses().isEmpty() )
+            if ( test.getClasses() != null && ! test.getClasses().isEmpty() )
             {
                 parsedClasses = test.getClasses();
             } else
             {
                 parsedClasses = testClasses;
             }
-            if ( test.getPackages() != null && !test.getPackages().isEmpty() )
+            if ( test.getPackages() != null && ! test.getPackages().isEmpty() )
             {
                 parsedPackages = test.getPackages();
             } else
             {
                 parsedPackages = testPackages;
             }
-            if ( StringUtils.isNotEmpty(test.getTestSize()) )
+            if ( StringUtils.isNotEmpty( test.getTestSize() ) )
             {
                 parsedTestSize = test.getTestSize();
             } else
@@ -480,38 +483,38 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         parseConfiguration();
         if ( mavenTestSkip )
         {
-            getLog().info("maven.test.skip set - skipping tests");
+            getLog().info( "maven.test.skip set - skipping tests" );
             return false;
         }
 
         if ( mavenSkipTests )
         {
-            getLog().info("maven.skip.tests set - skipping tests");
+            getLog().info( "maven.skip.tests set - skipping tests" );
             return false;
         }
 
-        if ( "true".equalsIgnoreCase(parsedSkip) )
+        if ( "true".equalsIgnoreCase( parsedSkip ) )
         {
-            getLog().info("android.test.skip set - skipping tests");
+            getLog().info( "android.test.skip set - skipping tests" );
             return false;
         }
 
-        if ( "false".equalsIgnoreCase(parsedSkip) )
+        if ( "false".equalsIgnoreCase( parsedSkip ) )
         {
             return true;
         }
 
-        if ( parsedSkip == null || "auto".equalsIgnoreCase(parsedSkip) )
+        if ( parsedSkip == null || "auto".equalsIgnoreCase( parsedSkip ) )
         {
-            if ( extractInstrumentationRunnerFromAndroidManifest(androidManifestFile) == null )
+            if ( extractInstrumentationRunnerFromAndroidManifest( androidManifestFile ) == null )
             {
-                getLog().info("No InstrumentationRunner found - skipping tests");
+                getLog().info( "No InstrumentationRunner found - skipping tests" );
                 return false;
             }
-            return AndroidTestFinder.containsAndroidTests(new File(project.getBuild().getOutputDirectory()));
+            return AndroidTestFinder.containsAndroidTests( new File( project.getBuild().getOutputDirectory() ) );
         }
 
-        throw new MojoFailureException("android.test.skip must be configured as 'true', 'false' or 'auto'.");
+        throw new MojoFailureException( "android.test.skip must be configured as 'true', 'false' or 'auto'." );
 
     }
 
@@ -529,16 +532,16 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             return null;
         }
 
-        List<String> strings = new ArrayList<String>(lines.size());
+        List<String> strings = new ArrayList<String>( lines.size() );
         for ( String str : lines )
         { // filter out blank strings
-            if ( StringUtils.isNotBlank(str) )
+            if ( StringUtils.isNotBlank( str ) )
             {
-                strings.add(StringUtils.trimToEmpty(str));
+                strings.add( StringUtils.trimToEmpty( str ) );
             }
         }
 
-        return StringUtils.join(strings, ",");
+        return StringUtils.join( strings, "," );
     }
 
     /**
@@ -592,7 +595,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         /**
          * time format for the output of milliseconds in seconds in the xml file *
          */
-        private final NumberFormat timeFormatter = new DecimalFormat("#0.0000");
+        private final NumberFormat timeFormatter = new DecimalFormat( "#0.0000" );
 
         private int testCount = 0;
         private int testFailureCount = 0;
@@ -632,7 +635,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         public void testRunStarted(String runName, int testCount)
         {
             this.testCount = testCount;
-            getLog().info(INDENT + "Run started: " + runName + ", " + testCount + " tests:");
+            getLog().info( INDENT + "Run started: " + runName + ", " + testCount + " tests:" );
 
             if ( parsedCreateReport )
             {
@@ -643,90 +646,90 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                     parser = fact.newDocumentBuilder();
                     junitReport = parser.newDocument();
 
-                    Node testSuitesNode = junitReport.createElement(TAG_TESTSUITES);
-                    junitReport.appendChild(testSuitesNode);
+                    Node testSuitesNode = junitReport.createElement( TAG_TESTSUITES );
+                    junitReport.appendChild( testSuitesNode );
 
-                    testSuiteNode = junitReport.createElement(TAG_TESTSUITE);
+                    testSuiteNode = junitReport.createElement( TAG_TESTSUITE );
                     NamedNodeMap testSuiteAttributes = testSuiteNode.getAttributes();
 
-                    Attr nameAttr = junitReport.createAttribute(ATTR_TESTSUITE_NAME);
-                    nameAttr.setValue(runName);
-                    testSuiteAttributes.setNamedItem(nameAttr);
+                    Attr nameAttr = junitReport.createAttribute( ATTR_TESTSUITE_NAME );
+                    nameAttr.setValue( runName );
+                    testSuiteAttributes.setNamedItem( nameAttr );
 
-                    Attr hostnameAttr = junitReport.createAttribute(ATTR_TESTSUITE_HOSTNAME);
-                    hostnameAttr.setValue(DeviceHelper.getDescriptiveName(device));
-                    testSuiteAttributes.setNamedItem(hostnameAttr);
+                    Attr hostnameAttr = junitReport.createAttribute( ATTR_TESTSUITE_HOSTNAME );
+                    hostnameAttr.setValue( DeviceHelper.getDescriptiveName( device ) );
+                    testSuiteAttributes.setNamedItem( hostnameAttr );
 
-                    Node propertiesNode = junitReport.createElement(TAG_PROPERTIES);
+                    Node propertiesNode = junitReport.createElement( TAG_PROPERTIES );
                     Node propertyNode;
                     NamedNodeMap propertyAttributes;
                     Attr propNameAttr;
                     Attr propValueAttr;
                     for ( Map.Entry<Object, Object> systemProperty : System.getProperties().entrySet() )
                     {
-                        propertyNode = junitReport.createElement(TAG_PROPERTY);
+                        propertyNode = junitReport.createElement( TAG_PROPERTY );
                         propertyAttributes = propertyNode.getAttributes();
 
-                        propNameAttr = junitReport.createAttribute(ATTR_PROPERTY_NAME);
-                        propNameAttr.setValue(systemProperty.getKey().toString());
-                        propertyAttributes.setNamedItem(propNameAttr);
+                        propNameAttr = junitReport.createAttribute( ATTR_PROPERTY_NAME );
+                        propNameAttr.setValue( systemProperty.getKey().toString() );
+                        propertyAttributes.setNamedItem( propNameAttr );
 
-                        propValueAttr = junitReport.createAttribute(ATTR_PROPERTY_VALUE);
-                        propValueAttr.setValue(systemProperty.getValue().toString());
-                        propertyAttributes.setNamedItem(propValueAttr);
+                        propValueAttr = junitReport.createAttribute( ATTR_PROPERTY_VALUE );
+                        propValueAttr.setValue( systemProperty.getValue().toString() );
+                        propertyAttributes.setNamedItem( propValueAttr );
 
-                        propertiesNode.appendChild(propertyNode);
+                        propertiesNode.appendChild( propertyNode );
 
                     }
                     Map<String, String> deviceProperties = device.getProperties();
                     for ( Map.Entry<String, String> deviceProperty : deviceProperties.entrySet() )
                     {
-                        propertyNode = junitReport.createElement(TAG_PROPERTY);
+                        propertyNode = junitReport.createElement( TAG_PROPERTY );
                         propertyAttributes = propertyNode.getAttributes();
 
-                        propNameAttr = junitReport.createAttribute(ATTR_PROPERTY_NAME);
-                        propNameAttr.setValue(deviceProperty.getKey());
-                        propertyAttributes.setNamedItem(propNameAttr);
+                        propNameAttr = junitReport.createAttribute( ATTR_PROPERTY_NAME );
+                        propNameAttr.setValue( deviceProperty.getKey() );
+                        propertyAttributes.setNamedItem( propNameAttr );
 
-                        propValueAttr = junitReport.createAttribute(ATTR_PROPERTY_VALUE);
-                        propValueAttr.setValue(deviceProperty.getValue());
-                        propertyAttributes.setNamedItem(propValueAttr);
+                        propValueAttr = junitReport.createAttribute( ATTR_PROPERTY_VALUE );
+                        propValueAttr.setValue( deviceProperty.getValue() );
+                        propertyAttributes.setNamedItem( propValueAttr );
 
-                        propertiesNode.appendChild(propertyNode);
+                        propertiesNode.appendChild( propertyNode );
                     }
 
-                    testSuiteNode.appendChild(propertiesNode);
+                    testSuiteNode.appendChild( propertiesNode );
 
-                    testSuitesNode.appendChild(testSuiteNode);
+                    testSuitesNode.appendChild( testSuiteNode );
 
                 } catch ( ParserConfigurationException e )
                 {
                     threwException = true;
-                    exceptionMessages.append("Failed to create document");
-                    exceptionMessages.append(e.getMessage());
+                    exceptionMessages.append( "Failed to create document" );
+                    exceptionMessages.append( e.getMessage() );
                 }
             }
         }
 
         public void testStarted(TestIdentifier test)
         {
-            getLog().info(INDENT + INDENT + "Start: " + test.toString());
+            getLog().info( INDENT + INDENT + "Start: " + test.toString() );
 
             if ( parsedCreateReport )
             {
                 // reset start time for each test run
                 currentTestCaseStartTime = new Date().getTime();
 
-                currentTestCaseNode = junitReport.createElement(TAG_TESTCASE);
+                currentTestCaseNode = junitReport.createElement( TAG_TESTCASE );
                 NamedNodeMap testCaseAttributes = currentTestCaseNode.getAttributes();
 
-                Attr classAttr = junitReport.createAttribute(ATTR_TESTCASE_CLASSNAME);
-                classAttr.setValue(test.getClassName());
-                testCaseAttributes.setNamedItem(classAttr);
+                Attr classAttr = junitReport.createAttribute( ATTR_TESTCASE_CLASSNAME );
+                classAttr.setValue( test.getClassName() );
+                testCaseAttributes.setNamedItem( classAttr );
 
-                Attr methodAttr = junitReport.createAttribute(ATTR_TESTCASE_NAME);
-                methodAttr.setValue(test.getTestName());
-                testCaseAttributes.setNamedItem(methodAttr);
+                Attr methodAttr = junitReport.createAttribute( ATTR_TESTCASE_NAME );
+                methodAttr.setValue( test.getTestName() );
+                testCaseAttributes.setNamedItem( methodAttr );
             }
         }
 
@@ -734,13 +737,13 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         {
             if ( status == ERROR )
             {
-                ++testErrorCount;
+                ++ testErrorCount;
             } else
             {
-                ++testFailureCount;
+                ++ testFailureCount;
             }
-            getLog().info(INDENT + INDENT + status.name() + ":" + test.toString());
-            getLog().info(INDENT + INDENT + trace);
+            getLog().info( INDENT + INDENT + status.name() + ":" + test.toString() );
+            getLog().info( INDENT + INDENT + trace );
 
             if ( parsedCreateReport )
             {
@@ -748,82 +751,82 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                 NamedNodeMap errorfailureAttributes;
                 if ( status == ERROR )
                 {
-                    errorFailureNode = junitReport.createElement(TAG_ERROR);
+                    errorFailureNode = junitReport.createElement( TAG_ERROR );
                     errorfailureAttributes = errorFailureNode.getAttributes();
                 } else
                 {
-                    errorFailureNode = junitReport.createElement(TAG_FAILURE);
+                    errorFailureNode = junitReport.createElement( TAG_FAILURE );
                     errorfailureAttributes = errorFailureNode.getAttributes();
                 }
 
-                errorFailureNode.setTextContent(trace);
+                errorFailureNode.setTextContent( trace );
 
-                Attr msgAttr = junitReport.createAttribute(ATTR_MESSAGE);
-                msgAttr.setValue(parseForMessage(trace));
-                errorfailureAttributes.setNamedItem(msgAttr);
+                Attr msgAttr = junitReport.createAttribute( ATTR_MESSAGE );
+                msgAttr.setValue( parseForMessage( trace ) );
+                errorfailureAttributes.setNamedItem( msgAttr );
 
-                Attr typeAttr = junitReport.createAttribute(ATTR_TYPE);
-                typeAttr.setValue(parseForException(trace));
-                errorfailureAttributes.setNamedItem(typeAttr);
+                Attr typeAttr = junitReport.createAttribute( ATTR_TYPE );
+                typeAttr.setValue( parseForException( trace ) );
+                errorfailureAttributes.setNamedItem( typeAttr );
 
-                currentTestCaseNode.appendChild(errorFailureNode);
+                currentTestCaseNode.appendChild( errorFailureNode );
             }
         }
 
         public void testEnded(TestIdentifier test, Map<String, String> testMetrics)
         {
-            getLog().info(INDENT + INDENT + "End: " + test.toString());
-            logMetrics(testMetrics);
+            getLog().info( INDENT + INDENT + "End: " + test.toString() );
+            logMetrics( testMetrics );
 
             if ( parsedCreateReport )
             {
-                testSuiteNode.appendChild(currentTestCaseNode);
+                testSuiteNode.appendChild( currentTestCaseNode );
                 NamedNodeMap testCaseAttributes = currentTestCaseNode.getAttributes();
 
-                Attr timeAttr = junitReport.createAttribute(ATTR_TESTCASE_TIME);
+                Attr timeAttr = junitReport.createAttribute( ATTR_TESTCASE_TIME );
 
                 long now = new Date().getTime();
-                double seconds = (now - currentTestCaseStartTime) / 1000.0;
-                timeAttr.setValue(timeFormatter.format(seconds));
-                testCaseAttributes.setNamedItem(timeAttr);
+                double seconds = ( now - currentTestCaseStartTime ) / 1000.0;
+                timeAttr.setValue( timeFormatter.format( seconds ) );
+                testCaseAttributes.setNamedItem( timeAttr );
             }
         }
 
         public void testRunEnded(long elapsedTime, Map<String, String> runMetrics)
         {
-            getLog().info(INDENT + "Run ended: " + elapsedTime + " ms");
+            getLog().info( INDENT + "Run ended: " + elapsedTime + " ms" );
             if ( hasFailuresOrErrors() )
             {
-                getLog().error(INDENT + "FAILURES!!!");
+                getLog().error( INDENT + "FAILURES!!!" );
             }
-            getLog().info(INDENT + "Tests run: " + testCount + ",  Failures: " + testFailureCount + ",  Errors: " +
-                    testErrorCount);
+            getLog().info( INDENT + "Tests run: " + testCount + ",  Failures: " + testFailureCount + ",  Errors: " +
+                    testErrorCount );
             if ( parsedCreateReport )
             {
                 NamedNodeMap testSuiteAttributes = testSuiteNode.getAttributes();
 
-                Attr testCountAttr = junitReport.createAttribute(ATTR_TESTSUITE_TESTS);
-                testCountAttr.setValue(Integer.toString(testCount));
-                testSuiteAttributes.setNamedItem(testCountAttr);
+                Attr testCountAttr = junitReport.createAttribute( ATTR_TESTSUITE_TESTS );
+                testCountAttr.setValue( Integer.toString( testCount ) );
+                testSuiteAttributes.setNamedItem( testCountAttr );
 
-                Attr testFailuresAttr = junitReport.createAttribute(ATTR_TESTSUITE_FAILURES);
-                testFailuresAttr.setValue(Integer.toString(testFailureCount));
-                testSuiteAttributes.setNamedItem(testFailuresAttr);
+                Attr testFailuresAttr = junitReport.createAttribute( ATTR_TESTSUITE_FAILURES );
+                testFailuresAttr.setValue( Integer.toString( testFailureCount ) );
+                testSuiteAttributes.setNamedItem( testFailuresAttr );
 
-                Attr testErrorsAttr = junitReport.createAttribute(ATTR_TESTSUITE_ERRORS);
-                testErrorsAttr.setValue(Integer.toString(testErrorCount));
-                testSuiteAttributes.setNamedItem(testErrorsAttr);
+                Attr testErrorsAttr = junitReport.createAttribute( ATTR_TESTSUITE_ERRORS );
+                testErrorsAttr.setValue( Integer.toString( testErrorCount ) );
+                testSuiteAttributes.setNamedItem( testErrorsAttr );
 
-                Attr timeAttr = junitReport.createAttribute(ATTR_TESTSUITE_TIME);
-                timeAttr.setValue(timeFormatter.format(elapsedTime / 1000.0));
-                testSuiteAttributes.setNamedItem(timeAttr);
+                Attr timeAttr = junitReport.createAttribute( ATTR_TESTSUITE_TIME );
+                timeAttr.setValue( timeFormatter.format( elapsedTime / 1000.0 ) );
+                testSuiteAttributes.setNamedItem( timeAttr );
 
-                Attr timeStampAttr = junitReport.createAttribute(ATTR_TESTSUITE_TIMESTAMP);
-                timeStampAttr.setValue(new Date().toString());
-                testSuiteAttributes.setNamedItem(timeStampAttr);
+                Attr timeStampAttr = junitReport.createAttribute( ATTR_TESTSUITE_TIMESTAMP );
+                timeStampAttr.setValue( new Date().toString() );
+                testSuiteAttributes.setNamedItem( timeStampAttr );
             }
 
-            logMetrics(runMetrics);
+            logMetrics( runMetrics );
 
             if ( parsedCreateReport )
             {
@@ -834,12 +837,12 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         public void testRunFailed(String errorMessage)
         {
             testRunFailureCause = errorMessage;
-            getLog().info(INDENT + "Run failed: " + errorMessage);
+            getLog().info( INDENT + "Run failed: " + errorMessage );
         }
 
         public void testRunStopped(long elapsedTime)
         {
-            getLog().info(INDENT + "Run stopped:" + elapsedTime);
+            getLog().info( INDENT + "Run stopped:" + elapsedTime );
         }
 
 
@@ -852,22 +855,22 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
          */
         private String parseForMessage(String trace)
         {
-            if ( StringUtils.isNotBlank(trace) )
+            if ( StringUtils.isNotBlank( trace ) )
             {
                 String newline = "\r\n";
                 // if there is message like
                 // junit.junit.framework.AssertionFailedError ... there is no message
-                int messageEnd = trace.indexOf(newline);
-                boolean hasMessage = !trace.startsWith("junit.") && messageEnd > 0;
+                int messageEnd = trace.indexOf( newline );
+                boolean hasMessage = ! trace.startsWith( "junit." ) && messageEnd > 0;
                 if ( hasMessage )
                 {
-                    int messageStart = trace.indexOf(":") + 2;
+                    int messageStart = trace.indexOf( ":" ) + 2;
                     if ( messageStart > messageEnd )
                     {
-                        messageEnd = trace.indexOf(newline + "at");
+                        messageEnd = trace.indexOf( newline + "at" );
                         // match start of stack trace "\r\nat org.junit....."
                     }
-                    return trace.substring(messageStart, messageEnd);
+                    return trace.substring( messageStart, messageEnd );
                 } else
                 {
                     return StringUtils.EMPTY;
@@ -887,9 +890,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
          */
         private String parseForException(String trace)
         {
-            if ( StringUtils.isNotBlank(trace) )
+            if ( StringUtils.isNotBlank( trace ) )
             {
-                return trace.substring(0, trace.indexOf(":"));
+                return trace.substring( 0, trace.indexOf( ":" ) );
             } else
             {
                 return StringUtils.EMPTY;
@@ -910,38 +913,38 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             {
                 e.printStackTrace();
             }
-            Source source = new DOMSource(junitReport);
+            Source source = new DOMSource( junitReport );
 
             FileWriter writer = null;
             try
             {
                 String directory =
-                        new StringBuilder().append(project.getBuild().getDirectory()).append("/surefire-reports")
+                        new StringBuilder().append( project.getBuild().getDirectory() ).append( "/surefire-reports" )
                                 .toString();
 
-                FileUtils.forceMkdir(new File(directory));
+                FileUtils.forceMkdir( new File( directory ) );
 
-                String fileName = new StringBuilder().append(directory).append("/TEST-")
-                        .append(DeviceHelper.getDescriptiveName(device)).append(".xml").toString();
-                File reportFile = new File(fileName);
-                writer = new FileWriter(reportFile);
-                Result result = new StreamResult(writer);
+                String fileName = new StringBuilder().append( directory ).append( "/TEST-" )
+                        .append( DeviceHelper.getDescriptiveName( device ) ).append( ".xml" ).toString();
+                File reportFile = new File( fileName );
+                writer = new FileWriter( reportFile );
+                Result result = new StreamResult( writer );
 
-                xformer.transform(source, result);
-                getLog().info("Report file written to " + reportFile.getAbsolutePath());
+                xformer.transform( source, result );
+                getLog().info( "Report file written to " + reportFile.getAbsolutePath() );
             } catch ( IOException e )
             {
                 threwException = true;
-                exceptionMessages.append("Failed to write test report file");
-                exceptionMessages.append(e.getMessage());
+                exceptionMessages.append( "Failed to write test report file" );
+                exceptionMessages.append( e.getMessage() );
             } catch ( TransformerException e )
             {
                 threwException = true;
-                exceptionMessages.append("Failed to transform document to write to test report file");
-                exceptionMessages.append(e.getMessage());
+                exceptionMessages.append( "Failed to transform document to write to test report file" );
+                exceptionMessages.append( e.getMessage() );
             } finally
             {
-                IOUtils.closeQuietly(writer);
+                IOUtils.closeQuietly( writer );
             }
         }
 
@@ -954,7 +957,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         {
             for ( Map.Entry<String, String> entry : metrics.entrySet() )
             {
-                getLog().info(INDENT + INDENT + entry.getKey() + ": " + entry.getValue());
+                getLog().info( INDENT + INDENT + entry.getKey() + ": " + entry.getValue() );
             }
         }
 

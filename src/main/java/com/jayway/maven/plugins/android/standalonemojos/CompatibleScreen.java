@@ -31,7 +31,7 @@ public class CompatibleScreen
         if ( obj instanceof CompatibleScreen )
         {
             CompatibleScreen that = (CompatibleScreen) obj;
-            return this.screenDensity.equals(that.screenDensity) && this.screenSize.equals(that.screenSize);
+            return this.screenDensity.equals( that.screenDensity ) && this.screenSize.equals( that.screenSize );
         }
         return false;
     }
@@ -39,7 +39,7 @@ public class CompatibleScreen
     @Override
     public int hashCode()
     {
-        return (screenDensity + screenSize).hashCode();
+        return ( screenDensity + screenSize ).hashCode();
     }
 
     @Override

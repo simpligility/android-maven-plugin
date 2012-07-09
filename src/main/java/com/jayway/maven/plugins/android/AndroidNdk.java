@@ -35,7 +35,7 @@ public class AndroidNdk
 
     public AndroidNdk(File ndkPath)
     {
-        assertPathIsDirectory(ndkPath);
+        assertPathIsDirectory( ndkPath );
         this.ndkPath = ndkPath;
     }
 
@@ -43,12 +43,12 @@ public class AndroidNdk
     {
         if ( path == null )
         {
-            throw new InvalidNdkException(PROPER_NDK_HOME_DIRECTORY_MESSAGE);
+            throw new InvalidNdkException( PROPER_NDK_HOME_DIRECTORY_MESSAGE );
         }
-        if ( !path.isDirectory() )
+        if ( ! path.isDirectory() )
         {
             throw new InvalidNdkException(
-                    "Path \"" + path + "\" is not a directory. " + PROPER_NDK_HOME_DIRECTORY_MESSAGE);
+                    "Path \"" + path + "\" is not a directory. " + PROPER_NDK_HOME_DIRECTORY_MESSAGE );
         }
     }
 
@@ -57,26 +57,26 @@ public class AndroidNdk
         final File stripper;
         if ( SystemUtils.IS_OS_LINUX )
         {
-            stripper = new File(ndkPath,
-                    "toolchains/" + toolchain + "/prebuilt/linux-x86/bin/arm-linux-androideabi-strip");
+            stripper = new File( ndkPath,
+                    "toolchains/" + toolchain + "/prebuilt/linux-x86/bin/arm-linux-androideabi-strip" );
         } else if ( SystemUtils.IS_OS_WINDOWS )
         {
-            stripper = new File(ndkPath,
-                    "toolchains/" + toolchain + "/prebuilt/windows/bin/arm-linux-androideabi-strip.exe");
+            stripper = new File( ndkPath,
+                    "toolchains/" + toolchain + "/prebuilt/windows/bin/arm-linux-androideabi-strip.exe" );
         } else if ( SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX )
         {
-            stripper = new File(ndkPath,
-                    "toolchains/" + toolchain + "/prebuilt/darwin-x86/bin/arm-linux-androideabi-strip");
+            stripper = new File( ndkPath,
+                    "toolchains/" + toolchain + "/prebuilt/darwin-x86/bin/arm-linux-androideabi-strip" );
         } else
         {
-            throw new MojoExecutionException("Could not resolve stripper for current OS: " + SystemUtils.OS_NAME);
+            throw new MojoExecutionException( "Could not resolve stripper for current OS: " + SystemUtils.OS_NAME );
         }
 
         // Some basic validation
-        if ( !stripper.exists() )
+        if ( ! stripper.exists() )
         {
-            throw new MojoExecutionException("Strip binary " + stripper.getAbsolutePath() +
-                    " does not exist, please double check the toolchain and OS used");
+            throw new MojoExecutionException( "Strip binary " + stripper.getAbsolutePath() +
+                    " does not exist, please double check the toolchain and OS used" );
         }
 
         // We should be good to go
@@ -92,10 +92,10 @@ public class AndroidNdk
     {
         if ( SystemUtils.IS_OS_WINDOWS )
         {
-            return new File(ndkPath, "/ndk-build.cmd").getAbsolutePath();
+            return new File( ndkPath, "/ndk-build.cmd" ).getAbsolutePath();
         } else
         {
-            return new File(ndkPath, "/ndk-build").getAbsolutePath();
+            return new File( ndkPath, "/ndk-build" ).getAbsolutePath();
         }
     }
 
@@ -104,13 +104,13 @@ public class AndroidNdk
     {
         final File gdbServerFile;
 
-        gdbServerFile = new File(ndkPath, "toolchains/" + toolchain + "/prebuilt/gdbserver");
+        gdbServerFile = new File( ndkPath, "toolchains/" + toolchain + "/prebuilt/gdbserver" );
 
         // Some basic validation
-        if ( !gdbServerFile.exists() )
+        if ( ! gdbServerFile.exists() )
         {
-            throw new MojoExecutionException("gdbserver binary " + gdbServerFile.getAbsolutePath() +
-                    " does not exist, please double check the toolchain and OS used");
+            throw new MojoExecutionException( "gdbserver binary " + gdbServerFile.getAbsolutePath() +
+                    " does not exist, please double check the toolchain and OS used" );
         }
 
         // We should be good to go

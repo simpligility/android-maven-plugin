@@ -26,23 +26,23 @@ public class DeviceHelper
         // if any of this logic changes update javadoc for
         // AbstractInstrumentationMojo#testCreateReport
         String SEPARATOR = "_";
-        StringBuilder identfier = new StringBuilder().append(device.getSerialNumber());
+        StringBuilder identfier = new StringBuilder().append( device.getSerialNumber() );
         if ( device.getAvdName() != null )
         {
-            identfier.append(SEPARATOR).append(device.getAvdName());
+            identfier.append( SEPARATOR ).append( device.getAvdName() );
         }
-        String manufacturer = getManufacturer(device);
-        if ( StringUtils.isNotBlank(manufacturer) )
+        String manufacturer = getManufacturer( device );
+        if ( StringUtils.isNotBlank( manufacturer ) )
         {
-            identfier.append(SEPARATOR).append(manufacturer);
+            identfier.append( SEPARATOR ).append( manufacturer );
         }
-        String model = getModel(device);
-        if ( StringUtils.isNotBlank(model) )
+        String model = getModel( device );
+        if ( StringUtils.isNotBlank( model ) )
         {
-            identfier.append(SEPARATOR).append(model);
+            identfier.append( SEPARATOR ).append( model );
         }
 
-        return FileNameHelper.fixFileName(identfier.toString());
+        return FileNameHelper.fixFileName( identfier.toString() );
     }
 
     /**
@@ -50,7 +50,7 @@ public class DeviceHelper
      */
     public static String getManufacturer(IDevice device)
     {
-        return StringUtils.deleteWhitespace(device.getProperty(MANUFACTURER_PROPERTY));
+        return StringUtils.deleteWhitespace( device.getProperty( MANUFACTURER_PROPERTY ) );
     }
 
     /**
@@ -58,7 +58,7 @@ public class DeviceHelper
      */
     public static String getModel(IDevice device)
     {
-        return StringUtils.deleteWhitespace(device.getProperty(MODEL_PROPERTY));
+        return StringUtils.deleteWhitespace( device.getProperty( MODEL_PROPERTY ) );
     }
 
     /**
@@ -77,6 +77,6 @@ public class DeviceHelper
         {
             status = "Unknown";
         }
-        return getDescriptiveName(device) + " " + status;
+        return getDescriptiveName( device ) + " " + status;
     }
 }

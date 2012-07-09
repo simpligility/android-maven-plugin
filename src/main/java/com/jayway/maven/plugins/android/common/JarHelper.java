@@ -39,35 +39,35 @@ public class JarHelper
         for ( Enumeration en = jarFile.entries(); en.hasMoreElements(); )
         {
             JarEntry entry = (JarEntry) en.nextElement();
-            File entryFile = new File(outputDirectory, entry.getName());
-            if ( unjarListener.include(entry) )
+            File entryFile = new File( outputDirectory, entry.getName() );
+            if ( unjarListener.include( entry ) )
             {
                 // Create the output directory if need be
-                if ( !entryFile.getParentFile().exists() )
+                if ( ! entryFile.getParentFile().exists() )
                 {
-                    if ( !entryFile.getParentFile().mkdirs() )
+                    if ( ! entryFile.getParentFile().mkdirs() )
                     {
-                        throw new IOException("Error creating output directory: " + entryFile.getParentFile());
+                        throw new IOException( "Error creating output directory: " + entryFile.getParentFile() );
                     }
                 }
 
                 // If the entry is an actual file, unzip that too
-                if ( !entry.isDirectory() )
+                if ( ! entry.isDirectory() )
                 {
-                    final InputStream in = jarFile.getInputStream(entry);
+                    final InputStream in = jarFile.getInputStream( entry );
                     try
                     {
-                        final OutputStream out = new FileOutputStream(entryFile);
+                        final OutputStream out = new FileOutputStream( entryFile );
                         try
                         {
-                            IOUtil.copy(in, out);
+                            IOUtil.copy( in, out );
                         } finally
                         {
-                            IOUtils.closeQuietly(out);
+                            IOUtils.closeQuietly( out );
                         }
                     } finally
                     {
-                        IOUtils.closeQuietly(in);
+                        IOUtils.closeQuietly( in );
                     }
                 }
             }

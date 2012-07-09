@@ -13,21 +13,21 @@ public class XmlHelper
         NodeList childNodes = parent.getChildNodes();
         while ( childNodes.getLength() > 0 )
         {
-            parent.removeChild(childNodes.item(0));
+            parent.removeChild( childNodes.item( 0 ) );
         }
     }
 
     public static Element getOrCreateElement(Document doc, Element manifestElement, String elementName)
     {
-        NodeList nodeList = manifestElement.getElementsByTagName(elementName);
+        NodeList nodeList = manifestElement.getElementsByTagName( elementName );
         Element element = null;
         if ( nodeList.getLength() == 0 )
         {
-            element = doc.createElement(elementName);
-            manifestElement.appendChild(element);
+            element = doc.createElement( elementName );
+            manifestElement.appendChild( element );
         } else
         {
-            element = (Element) nodeList.item(0);
+            element = (Element) nodeList.item( 0 );
         }
         return element;
     }

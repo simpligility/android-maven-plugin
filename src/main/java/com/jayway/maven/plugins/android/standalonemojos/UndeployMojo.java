@@ -56,25 +56,25 @@ public class UndeployMojo extends AbstractAndroidMojo
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         String packageToUndeploy = _package;
-        if ( packageToUndeploy != null && !"".equals(packageToUndeploy) && !"null".equals(packageToUndeploy) )
+        if ( packageToUndeploy != null && ! "".equals( packageToUndeploy ) && ! "null".equals( packageToUndeploy ) )
         {
-            undeployApk(packageToUndeploy);
+            undeployApk( packageToUndeploy );
         } else
         {
             if ( file != null )
             {
-                undeployApk(file);
+                undeployApk( file );
             } else
             {
-                if ( !SUPPORTED_PACKAGING_TYPES.contains(project.getPackaging()) )
+                if ( ! SUPPORTED_PACKAGING_TYPES.contains( project.getPackaging() ) )
                 {
-                    getLog().info("Skipping undeploy on " + project.getPackaging());
+                    getLog().info( "Skipping undeploy on " + project.getPackaging() );
                     getLog().info(
-                            "Execute undeploy within an Maven Android project or specify package with e.g. -Dandroid.package=com.simpligility.android.helloflashlight");
+                            "Execute undeploy within an Maven Android project or specify package with e.g. -Dandroid.package=com.simpligility.android.helloflashlight" );
                     return;
                 }
-                packageToUndeploy = extractPackageNameFromAndroidManifest(androidManifestFile);
-                undeployApk(packageToUndeploy);
+                packageToUndeploy = extractPackageNameFromAndroidManifest( androidManifestFile );
+                undeployApk( packageToUndeploy );
             }
         }
 

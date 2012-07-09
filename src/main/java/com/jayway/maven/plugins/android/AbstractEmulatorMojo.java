@@ -56,7 +56,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     /**
      * operating system name.
      */
-    public static final String OS_NAME = System.getProperty("os.name").toLowerCase(Locale.US);
+    public static final String OS_NAME = System.getProperty( "os.name" ).toLowerCase( Locale.US );
 
     /**
      * Configuration for the emulator goals. Either use the plugin configuration like this
@@ -120,7 +120,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     /**
      * Folder that contains the startup script and the pid file.
      */
-    private static final String scriptFolder = System.getProperty("java.io.tmpdir");
+    private static final String scriptFolder = System.getProperty( "java.io.tmpdir" );
 
     /**
      * Are we running on a flavour of Windows.
@@ -130,14 +130,14 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     private boolean isWindows()
     {
         boolean result;
-        if ( OS_NAME.toLowerCase().contains("windows") )
+        if ( OS_NAME.toLowerCase().contains( "windows" ) )
         {
             result = true;
         } else
         {
             result = false;
         }
-        getLog().debug("isWindows: " + result);
+        getLog().debug( "isWindows: " + result );
         return result;
     }
 
@@ -155,7 +155,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
         parseParameters();
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
+        executor.setLogger( this.getLog() );
 
         try
         {
@@ -171,10 +171,10 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
             final AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
             if ( androidDebugBridge.isConnected() )
             {
-                waitForInitialDeviceList(androidDebugBridge);
-                List<IDevice> devices = Arrays.asList(androidDebugBridge.getDevices());
+                waitForInitialDeviceList( androidDebugBridge );
+                List<IDevice> devices = Arrays.asList( androidDebugBridge.getDevices() );
                 int numberOfDevices = devices.size();
-                getLog().info("Found " + numberOfDevices + " devices connected with the Android Debug Bridge");
+                getLog().info( "Found " + numberOfDevices + " devices connected with the Android Debug Bridge" );
 
                 IDevice existingEmulator = null;
 
@@ -182,7 +182,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                 {
                     if ( device.isEmulator() )
                     {
-                        if ( isExistingEmulator(device) )
+                        if ( isExistingEmulator( device ) )
                         {
                             existingEmulator = device;
                             break;
@@ -192,22 +192,22 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
 
                 if ( existingEmulator == null )
                 {
-                    getLog().info(START_EMULATOR_MSG + filename);
-                    executor.executeCommand(filename, null);
+                    getLog().info( START_EMULATOR_MSG + filename );
+                    executor.executeCommand( filename, null );
 
-                    getLog().info(START_EMULATOR_WAIT_MSG + parsedWait);
+                    getLog().info( START_EMULATOR_WAIT_MSG + parsedWait );
                     // wait for the emulator to start up
-                    Thread.sleep(new Long(parsedWait));
+                    Thread.sleep( new Long( parsedWait ) );
                 } else
                 {
-                    getLog().info(String.format(
+                    getLog().info( String.format(
                             "Emulator already running [Serial No: '%s', AVD Name '%s']. " + "Skipping start and wait.",
-                            existingEmulator.getSerialNumber(), existingEmulator.getAvdName()));
+                            existingEmulator.getSerialNumber(), existingEmulator.getAvdName() ) );
                 }
             }
         } catch ( Exception e )
         {
-            throw new MojoExecutionException("", e);
+            throw new MojoExecutionException( "", e );
         }
     }
 
@@ -221,7 +221,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      */
     private boolean isExistingEmulator(IDevice device)
     {
-        return (device.getAvdName().equalsIgnoreCase(parsedAvd));
+        return ( device.getAvdName().equalsIgnoreCase( parsedAvd ) );
     }
 
     /**
@@ -236,29 +236,29 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
 
         String filename = scriptFolder + "\\android-maven-plugin-emulator-start.vbs";
 
-        File file = new File(filename);
+        File file = new File( filename );
         PrintWriter writer = null;
         try
         {
-            writer = new PrintWriter(new FileWriter(file));
+            writer = new PrintWriter( new FileWriter( file ) );
 
 
             // command needs to be assembled before unique window title since it parses settings and sets up parsedAvd
             // and others.
             String command = assembleStartCommandLine();
             String uniqueWindowTitle = "AndroidMavenPlugin-AVD" + parsedAvd;
-            writer.println("Dim oShell");
-            writer.println("Set oShell = WScript.CreateObject(\"WScript.shell\")");
-            String cmdPath = System.getenv("COMSPEC");
+            writer.println( "Dim oShell" );
+            writer.println( "Set oShell = WScript.CreateObject(\"WScript.shell\")" );
+            String cmdPath = System.getenv( "COMSPEC" );
             if ( cmdPath == null )
             {
                 cmdPath = "cmd.exe";
             }
             String cmd = cmdPath + " /X /C START /SEPARATE \"\"" + uniqueWindowTitle + "\"\"  " + command.trim();
-            writer.println("oShell.run \"" + cmd + "\"");
+            writer.println( "oShell.run \"" + cmd + "\"" );
         } catch ( IOException e )
         {
-            getLog().error("Failure writing file " + filename);
+            getLog().error( "Failure writing file " + filename );
         } finally
         {
             if ( writer != null )
@@ -267,7 +267,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                 writer.close();
             }
         }
-        file.setExecutable(true);
+        file.setExecutable( true );
         return filename;
     }
 
@@ -283,27 +283,27 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
         String filename = scriptFolder + "/android-maven-plugin-emulator-start.sh";
 
         File sh;
-        sh = new File("/bin/bash");
-        if ( !sh.exists() )
+        sh = new File( "/bin/bash" );
+        if ( ! sh.exists() )
         {
-            sh = new File("/usr/bin/bash");
+            sh = new File( "/usr/bin/bash" );
         }
-        if ( !sh.exists() )
+        if ( ! sh.exists() )
         {
-            sh = new File("/bin/sh");
+            sh = new File( "/bin/sh" );
         }
 
-        File file = new File(filename);
+        File file = new File( filename );
         PrintWriter writer = null;
         try
         {
-            writer = new PrintWriter(new FileWriter(file));
-            writer.println("#!" + sh.getAbsolutePath());
-            writer.print(assembleStartCommandLine());
-            writer.print(" 1>/dev/null 2>&1 &"); // redirect outputs and run as background task
+            writer = new PrintWriter( new FileWriter( file ) );
+            writer.println( "#!" + sh.getAbsolutePath() );
+            writer.print( assembleStartCommandLine() );
+            writer.print( " 1>/dev/null 2>&1 &" ); // redirect outputs and run as background task
         } catch ( IOException e )
         {
-            getLog().error("Failure writing file " + filename);
+            getLog().error( "Failure writing file " + filename );
         } finally
         {
             if ( writer != null )
@@ -312,7 +312,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                 writer.close();
             }
         }
-        file.setExecutable(true);
+        file.setExecutable( true );
         return filename;
     }
 
@@ -329,21 +329,21 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
         final AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
         if ( androidDebugBridge.isConnected() )
         {
-            List<IDevice> devices = Arrays.asList(androidDebugBridge.getDevices());
+            List<IDevice> devices = Arrays.asList( androidDebugBridge.getDevices() );
             int numberOfDevices = devices.size();
-            getLog().info("Found " + numberOfDevices + " devices connected with the Android Debug Bridge");
+            getLog().info( "Found " + numberOfDevices + " devices connected with the Android Debug Bridge" );
 
             for ( IDevice device : devices )
             {
                 if ( device.isEmulator() )
                 {
-                    if ( isExistingEmulator(device) )
+                    if ( isExistingEmulator( device ) )
                     {
-                        stopEmulator(device);
+                        stopEmulator( device );
                     }
                 } else
                 {
-                    getLog().info("Skipping stop. Not an emulator. " + DeviceHelper.getDescriptiveName(device));
+                    getLog().info( "Skipping stop. Not an emulator. " + DeviceHelper.getDescriptiveName( device ) );
                 }
             }
         }
@@ -360,18 +360,18 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
         final AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
         if ( androidDebugBridge.isConnected() )
         {
-            List<IDevice> devices = Arrays.asList(androidDebugBridge.getDevices());
+            List<IDevice> devices = Arrays.asList( androidDebugBridge.getDevices() );
             int numberOfDevices = devices.size();
-            getLog().info("Found " + numberOfDevices + " devices connected with the Android Debug Bridge");
+            getLog().info( "Found " + numberOfDevices + " devices connected with the Android Debug Bridge" );
 
             for ( IDevice device : devices )
             {
                 if ( device.isEmulator() )
                 {
-                    stopEmulator(device);
+                    stopEmulator( device );
                 } else
                 {
-                    getLog().info("Skipping stop. Not an emulator. " + DeviceHelper.getDescriptiveName(device));
+                    getLog().info( "Skipping stop. Not an emulator. " + DeviceHelper.getDescriptiveName( device ) );
                 }
             }
         }
@@ -384,22 +384,22 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      */
     private void stopEmulator(IDevice device)
     {
-        int devicePort = extractPortFromDevice(device);
-        if ( devicePort == -1 )
+        int devicePort = extractPortFromDevice( device );
+        if ( devicePort == - 1 )
         {
-            getLog().info("Unable to retrieve port to stop emulator " + DeviceHelper.getDescriptiveName(device));
+            getLog().info( "Unable to retrieve port to stop emulator " + DeviceHelper.getDescriptiveName( device ) );
         } else
         {
-            getLog().info("Stopping emulator " + DeviceHelper.getDescriptiveName(device));
+            getLog().info( "Stopping emulator " + DeviceHelper.getDescriptiveName( device ) );
 
-            sendEmulatorCommand(devicePort, "avd stop");
-            boolean killed = sendEmulatorCommand(devicePort, "kill");
-            if ( !killed )
+            sendEmulatorCommand( devicePort, "avd stop" );
+            boolean killed = sendEmulatorCommand( devicePort, "kill" );
+            if ( ! killed )
             {
-                getLog().info("Emulator failed to stop " + DeviceHelper.getDescriptiveName(device));
+                getLog().info( "Emulator failed to stop " + DeviceHelper.getDescriptiveName( device ) );
             } else
             {
-                getLog().info("Emulator stopped successfully " + DeviceHelper.getDescriptiveName(device));
+                getLog().info( "Emulator stopped successfully " + DeviceHelper.getDescriptiveName( device ) );
             }
         }
     }
@@ -414,14 +414,14 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      */
     private int extractPortFromDevice(IDevice device)
     {
-        String portStr = StringUtils.substringAfterLast(device.getSerialNumber(), "-");
-        if ( StringUtils.isNotBlank(portStr) && StringUtils.isNumeric(portStr) )
+        String portStr = StringUtils.substringAfterLast( device.getSerialNumber(), "-" );
+        if ( StringUtils.isNotBlank( portStr ) && StringUtils.isNumeric( portStr ) )
         {
-            return Integer.parseInt(portStr);
+            return Integer.parseInt( portStr );
         }
 
         //If the port is not available then return -1
-        return -1;
+        return - 1;
     }
 
     /**
@@ -445,16 +445,16 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                 PrintWriter out = null;
                 try
                 {
-                    socket = new Socket("127.0.0.1", port);
-                    out = new PrintWriter(socket.getOutputStream(), true);
-                    in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    socket = new Socket( "127.0.0.1", port );
+                    out = new PrintWriter( socket.getOutputStream(), true );
+                    in = new BufferedReader( new InputStreamReader( socket.getInputStream() ) );
                     if ( in.readLine() == null )
                     {
                         return false;
                     }
 
-                    out.write(command);
-                    out.write("\r\n");
+                    out.write( command );
+                    out.write( "\r\n" );
                 } finally
                 {
                     try
@@ -478,11 +478,11 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
         try
         {
             ExecutorService executor = Executors.newSingleThreadExecutor();
-            Future<Boolean> future = executor.submit(task);
+            Future<Boolean> future = executor.submit( task );
             result = future.get();
         } catch ( Exception e )
         {
-            getLog().error(String.format("Failed to execute emulator command '%s': %s", command, e));
+            getLog().error( String.format( "Failed to execute emulator command '%s': %s", command, e ) );
         }
 
         return result;
@@ -500,13 +500,13 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     private String assembleStartCommandLine() throws MojoExecutionException
     {
         StringBuilder startCommandline =
-                new StringBuilder().append(getAndroidSdk().getEmulatorPath()).append(" -avd ").append(parsedAvd)
-                        .append(" ");
-        if ( !StringUtils.isEmpty(parsedOptions) )
+                new StringBuilder().append( getAndroidSdk().getEmulatorPath() ).append( " -avd " ).append( parsedAvd )
+                        .append( " " );
+        if ( ! StringUtils.isEmpty( parsedOptions ) )
         {
-            startCommandline.append(parsedOptions);
+            startCommandline.append( parsedOptions );
         }
-        getLog().info("Android emulator command: " + startCommandline);
+        getLog().info( "Android emulator command: " + startCommandline );
         return startCommandline.toString();
     }
 

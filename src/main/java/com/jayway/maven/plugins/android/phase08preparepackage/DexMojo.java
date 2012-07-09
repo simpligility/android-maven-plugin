@@ -106,9 +106,9 @@ public class DexMojo extends AbstractAndroidMojo
     {
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
+        executor.setLogger( this.getLog() );
 
-        File outputFile = new File(project.getBuild().getDirectory() + File.separator + "classes.dex");
+        File outputFile = new File( project.getBuild().getDirectory() + File.separator + "classes.dex" );
 
         Set<File> inputFiles = getDexInputFiles();
 
@@ -116,21 +116,21 @@ public class DexMojo extends AbstractAndroidMojo
 
         if ( generateApk )
         {
-            runDex(executor, outputFile, inputFiles);
+            runDex( executor, outputFile, inputFiles );
         }
 
         if ( attachJar )
         {
             File jarFile = new File(
-                    project.getBuild().getDirectory() + File.separator + project.getBuild().getFinalName() + ".jar");
-            projectHelper.attachArtifact(project, "jar", project.getArtifact().getClassifier(), jarFile);
+                    project.getBuild().getDirectory() + File.separator + project.getBuild().getFinalName() + ".jar" );
+            projectHelper.attachArtifact( project, "jar", project.getArtifact().getClassifier(), jarFile );
         }
 
         if ( attachSources )
         {
             // Also attach an .apksources, containing sources from this project.
             final File apksources = createApkSourcesFile();
-            projectHelper.attachArtifact(project, "apksources", apksources);
+            projectHelper.attachArtifact( project, "apksources", apksources );
         }
     }
 
@@ -145,23 +145,23 @@ public class DexMojo extends AbstractAndroidMojo
         Set<File> inputs = new HashSet<File>();
 
         // ugly, don't know a better way to get this in mvn
-        File proguardJar = new File(project.getBuild().getDirectory(), ProguardMojo.PROGUARD_OBFUSCATED_JAR);
+        File proguardJar = new File( project.getBuild().getDirectory(), ProguardMojo.PROGUARD_OBFUSCATED_JAR );
 
-        getLog().debug("Checking for existence of: " + proguardJar.toString());
+        getLog().debug( "Checking for existence of: " + proguardJar.toString() );
 
         if ( proguardJar.exists() )
         {
             // progurad has been run, use this jar
-            getLog().debug("Obfuscated jar exists, using that as input");
-            inputs.add(proguardJar);
+            getLog().debug( "Obfuscated jar exists, using that as input" );
+            inputs.add( proguardJar );
         } else
         {
-            getLog().debug("Using non-obfuscated input");
+            getLog().debug( "Using non-obfuscated input" );
             // no proguard, use original config
-            inputs.add(new File(project.getBuild().getOutputDirectory()));
+            inputs.add( new File( project.getBuild().getOutputDirectory() ) );
             for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
             {
-                inputs.add(artifact.getFile().getAbsoluteFile());
+                inputs.add( artifact.getFile().getAbsoluteFile() );
             }
         }
 
@@ -221,45 +221,45 @@ public class DexMojo extends AbstractAndroidMojo
             {
                 // preserve backward compatibility allowing argument with or without dash (e.g. Xmx512m as well as
                 // -Xmx512m should work) (see http://code.google.com/p/maven-android-plugin/issues/detail?id=153)
-                if ( !jvmArgument.startsWith("-") )
+                if ( ! jvmArgument.startsWith( "-" ) )
                 {
                     jvmArgument = "-" + jvmArgument;
                 }
-                getLog().debug("Adding jvm argument " + jvmArgument);
-                commands.add(jvmArgument);
+                getLog().debug( "Adding jvm argument " + jvmArgument );
+                commands.add( jvmArgument );
             }
         }
-        commands.add("-jar");
-        commands.add(getAndroidSdk().getPathForTool("dx.jar"));
-        commands.add("--dex");
-        if ( !parsedOptimize )
+        commands.add( "-jar" );
+        commands.add( getAndroidSdk().getPathForTool( "dx.jar" ) );
+        commands.add( "--dex" );
+        if ( ! parsedOptimize )
         {
-            commands.add("--no-optimize");
+            commands.add( "--no-optimize" );
         }
         if ( parsedCoreLibrary )
         {
-            commands.add("--core-library");
+            commands.add( "--core-library" );
         }
-        commands.add("--output=" + outputFile.getAbsolutePath());
+        commands.add( "--output=" + outputFile.getAbsolutePath() );
         if ( parsedNoLocals )
         {
-            commands.add("--no-locals");
+            commands.add( "--no-locals" );
         }
 
         for ( File inputFile : inputFiles )
         {
-            getLog().debug("Adding dex input: " + inputFile.getAbsolutePath());
-            commands.add(inputFile.getAbsolutePath());
+            getLog().debug( "Adding dex input: " + inputFile.getAbsolutePath() );
+            commands.add( inputFile.getAbsolutePath() );
         }
 
         final String javaExecutable = getJavaExecutable().getAbsolutePath();
-        getLog().info(javaExecutable + " " + commands.toString());
+        getLog().info( javaExecutable + " " + commands.toString() );
         try
         {
-            executor.executeCommand(javaExecutable, commands, project.getBasedir(), false);
+            executor.executeCommand( javaExecutable, commands, project.getBasedir(), false );
         } catch ( ExecutionException e )
         {
-            throw new MojoExecutionException("", e);
+            throw new MojoExecutionException( "", e );
         }
     }
 
@@ -270,34 +270,34 @@ public class DexMojo extends AbstractAndroidMojo
      */
     private static File getJavaExecutable()
     {
-        final String javaHome = System.getProperty("java.home");
+        final String javaHome = System.getProperty( "java.home" );
         final String slash = File.separator;
-        return new File(javaHome + slash + "bin" + slash + "java");
+        return new File( javaHome + slash + "bin" + slash + "java" );
     }
 
     protected File createApkSourcesFile() throws MojoExecutionException
     {
         final File apksources =
-                new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apksources");
-        FileUtils.deleteQuietly(apksources);
+                new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apksources" );
+        FileUtils.deleteQuietly( apksources );
 
         try
         {
             JarArchiver jarArchiver = new JarArchiver();
-            jarArchiver.setDestFile(apksources);
+            jarArchiver.setDestFile( apksources );
 
-            addDirectory(jarArchiver, assetsDirectory, "assets");
-            addDirectory(jarArchiver, resourceDirectory, "res");
-            addDirectory(jarArchiver, sourceDirectory, "src/main/java");
-            addJavaResources(jarArchiver, project.getBuild().getResources());
+            addDirectory( jarArchiver, assetsDirectory, "assets" );
+            addDirectory( jarArchiver, resourceDirectory, "res" );
+            addDirectory( jarArchiver, sourceDirectory, "src/main/java" );
+            addJavaResources( jarArchiver, project.getBuild().getResources() );
 
             jarArchiver.createArchive();
         } catch ( ArchiverException e )
         {
-            throw new MojoExecutionException("ArchiverException while creating .apksource file.", e);
+            throw new MojoExecutionException( "ArchiverException while creating .apksource file.", e );
         } catch ( IOException e )
         {
-            throw new MojoExecutionException("IOException while creating .apksource file.", e);
+            throw new MojoExecutionException( "IOException while creating .apksource file.", e );
         }
 
         return apksources;
@@ -311,8 +311,8 @@ public class DexMojo extends AbstractAndroidMojo
      */
     protected String endWithSlash(String prefix)
     {
-        prefix = StringUtils.defaultIfEmpty(prefix, "/");
-        if ( !prefix.endsWith("/") )
+        prefix = StringUtils.defaultIfEmpty( prefix, "/" );
+        if ( ! prefix.endsWith( "/" ) )
         {
             prefix = prefix + "/";
         }
@@ -332,9 +332,9 @@ public class DexMojo extends AbstractAndroidMojo
         if ( directory != null && directory.exists() )
         {
             final DefaultFileSet fileSet = new DefaultFileSet();
-            fileSet.setPrefix(endWithSlash(prefix));
-            fileSet.setDirectory(directory);
-            jarArchiver.addFileSet(fileSet);
+            fileSet.setPrefix( endWithSlash( prefix ) );
+            fileSet.setDirectory( directory );
+            jarArchiver.addFileSet( fileSet );
         }
     }
 
@@ -342,7 +342,7 @@ public class DexMojo extends AbstractAndroidMojo
     {
         for ( Resource javaResource : javaResources )
         {
-            addJavaResource(jarArchiver, javaResource);
+            addJavaResource( jarArchiver, javaResource );
         }
     }
 
@@ -357,13 +357,13 @@ public class DexMojo extends AbstractAndroidMojo
     {
         if ( javaResource != null )
         {
-            final File javaResourceDirectory = new File(javaResource.getDirectory());
+            final File javaResourceDirectory = new File( javaResource.getDirectory() );
             if ( javaResourceDirectory.exists() )
             {
                 final DefaultFileSet javaResourceFileSet = new DefaultFileSet();
-                javaResourceFileSet.setDirectory(javaResourceDirectory);
-                javaResourceFileSet.setPrefix(endWithSlash("src/main/resources"));
-                jarArchiver.addFileSet(javaResourceFileSet);
+                javaResourceFileSet.setDirectory( javaResourceDirectory );
+                javaResourceFileSet.setPrefix( endWithSlash( "src/main/resources" ) );
+                jarArchiver.addFileSet( javaResourceFileSet );
             }
         }
     }

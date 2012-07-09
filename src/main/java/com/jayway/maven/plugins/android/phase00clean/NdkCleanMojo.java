@@ -55,32 +55,32 @@ public class NdkCleanMojo extends AbstractMojo
     {
         if ( ndkBuildLibsOutputDirectory.exists() )
         {
-            if ( !skipBuildLibsOutputDirectory )
+            if ( ! skipBuildLibsOutputDirectory )
             {
-                getLog().debug("Cleaning out native library code directory : " +
-                        ndkBuildLibsOutputDirectory.getAbsolutePath());
+                getLog().debug( "Cleaning out native library code directory : " +
+                        ndkBuildLibsOutputDirectory.getAbsolutePath() );
                 try
                 {
-                    FileUtils.deleteDirectory(ndkBuildLibsOutputDirectory);
+                    FileUtils.deleteDirectory( ndkBuildLibsOutputDirectory );
                 } catch ( IOException e )
                 {
-                    getLog().error("Error deleting directory: " + e.getMessage(), e);
+                    getLog().error( "Error deleting directory: " + e.getMessage(), e );
                 }
             }
         }
 
         if ( ndkBuildObjOutputDirectory.exists() )
         {
-            if ( !skipBuildObjsOutputDirectory )
+            if ( ! skipBuildObjsOutputDirectory )
             {
                 getLog().debug(
-                        "Cleaning out native object code directory: " + ndkBuildObjOutputDirectory.getAbsolutePath());
+                        "Cleaning out native object code directory: " + ndkBuildObjOutputDirectory.getAbsolutePath() );
                 try
                 {
-                    FileUtils.deleteDirectory(ndkBuildObjOutputDirectory);
+                    FileUtils.deleteDirectory( ndkBuildObjOutputDirectory );
                 } catch ( IOException e )
                 {
-                    getLog().error("Error deleting directory: " + e.getMessage(), e);
+                    getLog().error( "Error deleting directory: " + e.getMessage(), e );
                 }
             }
         }

@@ -214,7 +214,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
 
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        if ( !AndroidExtension.isAndroidPackaging(project.getPackaging()) )
+        if ( ! AndroidExtension.isAndroidPackaging( project.getPackaging() ) )
         {
             return; // skip, not an android project.
         }
@@ -226,36 +226,36 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
 
         parseConfiguration();
 
-        getLog().info("Attempting to update manifest " + androidManifestFile);
-        getLog().debug("    versionName=" + parsedVersionName);
-        getLog().debug("    versionCode=" + parsedVersionCode);
-        getLog().debug("    versionCodeAutoIncrement=" + parsedVersionCodeAutoIncrement);
-        getLog().debug("    versionCodeUpdateFromVersion=" + parsedVersionCodeUpdateFromVersion);
-        getLog().debug("    sharedUserId=" + parsedSharedUserId);
-        getLog().debug("    debuggable=" + parsedDebuggable);
-        getLog().debug("    supports-screens: " + (parsedSupportsScreens == null ? "not set" : "set"));
-        getLog().debug("    compatible-screens: " + (parsedCompatibleScreens == null ? "not set" : "set"));
+        getLog().info( "Attempting to update manifest " + androidManifestFile );
+        getLog().debug( "    versionName=" + parsedVersionName );
+        getLog().debug( "    versionCode=" + parsedVersionCode );
+        getLog().debug( "    versionCodeAutoIncrement=" + parsedVersionCodeAutoIncrement );
+        getLog().debug( "    versionCodeUpdateFromVersion=" + parsedVersionCodeUpdateFromVersion );
+        getLog().debug( "    sharedUserId=" + parsedSharedUserId );
+        getLog().debug( "    debuggable=" + parsedDebuggable );
+        getLog().debug( "    supports-screens: " + ( parsedSupportsScreens == null ? "not set" : "set" ) );
+        getLog().debug( "    compatible-screens: " + ( parsedCompatibleScreens == null ? "not set" : "set" ) );
 
-        if ( !androidManifestFile.exists() )
+        if ( ! androidManifestFile.exists() )
         {
             return; // skip, no AndroidManifest.xml file found.
         }
 
         try
         {
-            updateManifest(androidManifestFile);
+            updateManifest( androidManifestFile );
         } catch ( IOException e )
         {
-            throw new MojoFailureException("XML I/O error: " + androidManifestFile, e);
+            throw new MojoFailureException( "XML I/O error: " + androidManifestFile, e );
         } catch ( ParserConfigurationException e )
         {
-            throw new MojoFailureException("Unable to prepare XML parser", e);
+            throw new MojoFailureException( "Unable to prepare XML parser", e );
         } catch ( SAXException e )
         {
-            throw new MojoFailureException("Unable to parse XML: " + androidManifestFile, e);
+            throw new MojoFailureException( "Unable to parse XML: " + androidManifestFile, e );
         } catch ( TransformerException e )
         {
-            throw new MojoFailureException("Unable write XML: " + androidManifestFile, e);
+            throw new MojoFailureException( "Unable write XML: " + androidManifestFile, e );
         }
     }
 
@@ -264,7 +264,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         // manifest element found in plugin config in pom
         if ( manifest != null )
         {
-            if ( StringUtils.isNotEmpty(manifest.getVersionName()) )
+            if ( StringUtils.isNotEmpty( manifest.getVersionName() ) )
             {
                 parsedVersionName = manifest.getVersionName();
             } else
@@ -292,7 +292,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             {
                 parsedVersionCodeUpdateFromVersion = manifestVersionCodeUpdateFromVersion;
             }
-            if ( StringUtils.isNotEmpty(manifest.getSharedUserId()) )
+            if ( StringUtils.isNotEmpty( manifest.getSharedUserId() ) )
             {
                 parsedSharedUserId = manifest.getSharedUserId();
             } else
@@ -340,7 +340,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
-        Document doc = db.parse(manifestFile);
+        Document doc = db.parse( manifestFile );
         return doc;
     }
 
@@ -351,168 +351,169 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     {
         TransformerFactory xfactory = TransformerFactory.newInstance();
         Transformer xformer = xfactory.newTransformer();
-        xformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        Source source = new DOMSource(doc);
+        xformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
+        Source source = new DOMSource( doc );
 
         FileWriter writer = null;
         try
         {
-            writer = new FileWriter(manifestFile, false);
-            String xmldecl = String.format("<?xml version=\"%s\" encoding=\"%s\"?>%n", doc.getXmlVersion(),
-                    doc.getXmlEncoding());
-            writer.write(xmldecl);
-            Result result = new StreamResult(writer);
+            writer = new FileWriter( manifestFile, false );
+            String xmldecl = String.format( "<?xml version=\"%s\" encoding=\"%s\"?>%n", doc.getXmlVersion(),
+                    doc.getXmlEncoding() );
+            writer.write( xmldecl );
+            Result result = new StreamResult( writer );
 
-            xformer.transform(source, result);
+            xformer.transform( source, result );
         } finally
         {
-            IOUtils.closeQuietly(writer);
+            IOUtils.closeQuietly( writer );
         }
     }
 
     public void updateManifest(File manifestFile)
             throws IOException, ParserConfigurationException, SAXException, TransformerException, MojoFailureException
     {
-        Document doc = readManifest(manifestFile);
+        Document doc = readManifest( manifestFile );
 
         Element manifestElement = doc.getDocumentElement();
 
         boolean dirty = false;
 
-        if ( StringUtils.isEmpty(parsedVersionName) )
+        if ( StringUtils.isEmpty( parsedVersionName ) )
         {  // default to ${project.version}
             parsedVersionName = project.getVersion();
         }
 
-        Attr versionNameAttrib = manifestElement.getAttributeNode(ATTR_VERSION_NAME);
+        Attr versionNameAttrib = manifestElement.getAttributeNode( ATTR_VERSION_NAME );
 
-        if ( versionNameAttrib == null || !StringUtils.equals(parsedVersionName, versionNameAttrib.getValue()) )
+        if ( versionNameAttrib == null || ! StringUtils.equals( parsedVersionName, versionNameAttrib.getValue() ) )
         {
-            getLog().info("Setting " + ATTR_VERSION_NAME + " to " + parsedVersionName);
-            manifestElement.setAttribute(ATTR_VERSION_NAME, parsedVersionName);
+            getLog().info( "Setting " + ATTR_VERSION_NAME + " to " + parsedVersionName );
+            manifestElement.setAttribute( ATTR_VERSION_NAME, parsedVersionName );
             dirty = true;
         }
 
-        if ( (parsedVersionCodeAutoIncrement && parsedVersionCode != null) ||
-                (parsedVersionCodeUpdateFromVersion && parsedVersionCode != null) ||
-                (parsedVersionCodeAutoIncrement && parsedVersionCodeUpdateFromVersion) )
+        if ( ( parsedVersionCodeAutoIncrement && parsedVersionCode != null ) ||
+                ( parsedVersionCodeUpdateFromVersion && parsedVersionCode != null ) ||
+                ( parsedVersionCodeAutoIncrement && parsedVersionCodeUpdateFromVersion ) )
         {
-            throw new MojoFailureException("versionCodeAutoIncrement, versionCodeUpdateFromVersion and versionCode " +
+            throw new MojoFailureException( "versionCodeAutoIncrement, versionCodeUpdateFromVersion and versionCode " +
                     "are mutual exclusive. They cannot be specified at the same time. " +
-                    "Please specify either versionCodeAutoIncrement, versionCodeUpdateFromVersion or versionCode!");
+                    "Please specify either versionCodeAutoIncrement, versionCodeUpdateFromVersion or versionCode!" );
         }
 
         // Expose the version properties and other simple parsed manifest entries
-        project.getProperties().setProperty("android.manifest.versionName", parsedVersionName);
-        project.getProperties().setProperty("android.manifest.versionCodeAutoIncrement",
-                String.valueOf(parsedVersionCodeAutoIncrement));
-        project.getProperties().setProperty("android.manifest.versionCodeUpdateFromVersion",
-                String.valueOf(parsedVersionCodeUpdateFromVersion));
-        project.getProperties().setProperty("android.manifest.debuggable", String.valueOf(parsedDebuggable));
+        project.getProperties().setProperty( "android.manifest.versionName", parsedVersionName );
+        project.getProperties().setProperty( "android.manifest.versionCodeAutoIncrement",
+                String.valueOf( parsedVersionCodeAutoIncrement ) );
+        project.getProperties().setProperty( "android.manifest.versionCodeUpdateFromVersion",
+                String.valueOf( parsedVersionCodeUpdateFromVersion ) );
+        project.getProperties().setProperty( "android.manifest.debuggable", String.valueOf( parsedDebuggable ) );
         if ( parsedSharedUserId != null )
         {
-            project.getProperties().setProperty("android.manifest.sharedUserId", parsedSharedUserId);
+            project.getProperties().setProperty( "android.manifest.sharedUserId", parsedSharedUserId );
         }
 
         if ( parsedVersionCodeAutoIncrement )
         {
-            Attr versionCode = manifestElement.getAttributeNode(ATTR_VERSION_CODE);
+            Attr versionCode = manifestElement.getAttributeNode( ATTR_VERSION_CODE );
             int currentVersionCode = 0;
             if ( versionCode != null )
             {
-                currentVersionCode = NumberUtils.toInt(versionCode.getValue(), 0);
+                currentVersionCode = NumberUtils.toInt( versionCode.getValue(), 0 );
             }
             currentVersionCode++;
-            manifestElement.setAttribute(ATTR_VERSION_CODE, String.valueOf(currentVersionCode));
-            project.getProperties().setProperty("android.manifest.versionCode", String.valueOf(currentVersionCode));
+            manifestElement.setAttribute( ATTR_VERSION_CODE, String.valueOf( currentVersionCode ) );
+            project.getProperties().setProperty( "android.manifest.versionCode", String.valueOf( currentVersionCode ) );
             dirty = true;
         }
 
         if ( parsedVersionCodeUpdateFromVersion )
         {
             String verString = project.getVersion();
-            getLog().debug("Generating versionCode for " + verString);
-            ArtifactVersion artifactVersion = new DefaultArtifactVersion(verString);
+            getLog().debug( "Generating versionCode for " + verString );
+            ArtifactVersion artifactVersion = new DefaultArtifactVersion( verString );
             // invalid version, something went wrong in parsing, do the old fall back method
             String verCode;
             if ( artifactVersion.getMajorVersion() == 0 & artifactVersion.getMinorVersion() == 0 &&
                     artifactVersion.getIncrementalVersion() == 0 )
             {
-                getLog().warn("Problem parsing version number occurred. Using fall back to determine version code. ");
+                getLog().warn( "Problem parsing version number occurred. Using fall back to determine version code. " );
 
-                verCode = verString.replaceAll("\\D", "");
+                verCode = verString.replaceAll( "\\D", "" );
 
-                Attr versionCodeAttr = manifestElement.getAttributeNode(ATTR_VERSION_CODE);
+                Attr versionCodeAttr = manifestElement.getAttributeNode( ATTR_VERSION_CODE );
                 int currentVersionCode = 0;
                 if ( versionCodeAttr != null )
                 {
-                    currentVersionCode = NumberUtils.toInt(versionCodeAttr.getValue(), 0);
+                    currentVersionCode = NumberUtils.toInt( versionCodeAttr.getValue(), 0 );
                 }
 
-                if ( Integer.parseInt(verCode) < currentVersionCode )
+                if ( Integer.parseInt( verCode ) < currentVersionCode )
                 {
-                    getLog().info(verCode + " < " + currentVersionCode + " so padding versionCode");
-                    verCode = StringUtils.rightPad(verCode, versionCodeAttr.getValue().length(), "0");
+                    getLog().info( verCode + " < " + currentVersionCode + " so padding versionCode" );
+                    verCode = StringUtils.rightPad( verCode, versionCodeAttr.getValue().length(), "0" );
                 }
             } else
             {
-                verCode = Integer.toString(artifactVersion.getMajorVersion()) +
-                        Integer.toString(artifactVersion.getMinorVersion()) +
-                        Integer.toString(artifactVersion.getIncrementalVersion());
+                verCode = Integer.toString( artifactVersion.getMajorVersion() ) +
+                        Integer.toString( artifactVersion.getMinorVersion() ) +
+                        Integer.toString( artifactVersion.getIncrementalVersion() );
             }
-            getLog().info("Setting " + ATTR_VERSION_CODE + " to " + verCode);
-            manifestElement.setAttribute(ATTR_VERSION_CODE, verCode);
-            project.getProperties().setProperty("android.manifest.versionCode", String.valueOf(verCode));
+            getLog().info( "Setting " + ATTR_VERSION_CODE + " to " + verCode );
+            manifestElement.setAttribute( ATTR_VERSION_CODE, verCode );
+            project.getProperties().setProperty( "android.manifest.versionCode", String.valueOf( verCode ) );
             dirty = true;
         }
 
         if ( parsedVersionCode != null )
         {
-            Attr versionCodeAttr = manifestElement.getAttributeNode(ATTR_VERSION_CODE);
+            Attr versionCodeAttr = manifestElement.getAttributeNode( ATTR_VERSION_CODE );
             int currentVersionCode = 0;
             if ( versionCodeAttr != null )
             {
-                currentVersionCode = NumberUtils.toInt(versionCodeAttr.getValue(), 0);
+                currentVersionCode = NumberUtils.toInt( versionCodeAttr.getValue(), 0 );
             }
             if ( currentVersionCode != parsedVersionCode )
             {
-                getLog().info("Setting " + ATTR_VERSION_CODE + " to " + parsedVersionCode);
-                manifestElement.setAttribute(ATTR_VERSION_CODE, String.valueOf(parsedVersionCode));
+                getLog().info( "Setting " + ATTR_VERSION_CODE + " to " + parsedVersionCode );
+                manifestElement.setAttribute( ATTR_VERSION_CODE, String.valueOf( parsedVersionCode ) );
                 dirty = true;
             }
-            project.getProperties().setProperty("android.manifest.versionCode", String.valueOf(parsedVersionCode));
+            project.getProperties().setProperty( "android.manifest.versionCode", String.valueOf( parsedVersionCode ) );
         }
 
-        if ( !StringUtils.isEmpty(parsedSharedUserId) )
+        if ( ! StringUtils.isEmpty( parsedSharedUserId ) )
         {
-            Attr sharedUserIdAttrib = manifestElement.getAttributeNode(ATTR_SHARED_USER_ID);
+            Attr sharedUserIdAttrib = manifestElement.getAttributeNode( ATTR_SHARED_USER_ID );
 
-            if ( sharedUserIdAttrib == null || !StringUtils.equals(parsedSharedUserId, sharedUserIdAttrib.getValue()) )
+            if ( sharedUserIdAttrib == null ||
+                    ! StringUtils.equals( parsedSharedUserId, sharedUserIdAttrib.getValue() ) )
             {
-                getLog().info("Setting " + ATTR_SHARED_USER_ID + " to " + parsedSharedUserId);
-                manifestElement.setAttribute(ATTR_SHARED_USER_ID, parsedSharedUserId);
+                getLog().info( "Setting " + ATTR_SHARED_USER_ID + " to " + parsedSharedUserId );
+                manifestElement.setAttribute( ATTR_SHARED_USER_ID, parsedSharedUserId );
                 dirty = true;
             }
         }
 
         if ( parsedDebuggable != null )
         {
-            NodeList appElems = manifestElement.getElementsByTagName(ELEM_APPLICATION);
+            NodeList appElems = manifestElement.getElementsByTagName( ELEM_APPLICATION );
 
             // Update all application nodes. Not sure whether there will ever be more than one.
-            for ( int i = 0; i < appElems.getLength(); ++i )
+            for ( int i = 0; i < appElems.getLength(); ++ i )
             {
-                Node node = appElems.item(i);
-                getLog().info("Testing if node " + node.getNodeName() + " is application");
+                Node node = appElems.item( i );
+                getLog().info( "Testing if node " + node.getNodeName() + " is application" );
                 if ( node.getNodeType() == Node.ELEMENT_NODE )
                 {
                     Element element = (Element) node;
-                    Attr debuggableAttrib = element.getAttributeNode(ATTR_DEBUGGABLE);
+                    Attr debuggableAttrib = element.getAttributeNode( ATTR_DEBUGGABLE );
                     if ( debuggableAttrib == null ||
-                            parsedDebuggable != BooleanUtils.toBoolean(debuggableAttrib.getValue()) )
+                            parsedDebuggable != BooleanUtils.toBoolean( debuggableAttrib.getValue() ) )
                     {
-                        getLog().info("Setting " + ATTR_DEBUGGABLE + " to " + parsedDebuggable);
-                        element.setAttribute(ATTR_DEBUGGABLE, String.valueOf(parsedDebuggable));
+                        getLog().info( "Setting " + ATTR_DEBUGGABLE + " to " + parsedDebuggable );
+                        element.setAttribute( ATTR_DEBUGGABLE, String.valueOf( parsedDebuggable ) );
                         dirty = true;
                     }
                 }
@@ -521,123 +522,123 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
 
         if ( parsedSupportsScreens != null )
         {
-            Element supportsScreensElem = XmlHelper.getOrCreateElement(doc, manifestElement, ELEM_SUPPORTS_SCREENS);
+            Element supportsScreensElem = XmlHelper.getOrCreateElement( doc, manifestElement, ELEM_SUPPORTS_SCREENS );
 
-            getLog().info("Setting " + ELEM_SUPPORTS_SCREENS);
+            getLog().info( "Setting " + ELEM_SUPPORTS_SCREENS );
 
             if ( parsedSupportsScreens.getAnyDensity() != null )
             {
-                supportsScreensElem.setAttribute(ATTR_ANY_DENSITY, parsedSupportsScreens.getAnyDensity());
+                supportsScreensElem.setAttribute( ATTR_ANY_DENSITY, parsedSupportsScreens.getAnyDensity() );
                 dirty = true;
             }
             if ( parsedSupportsScreens.getSmallScreens() != null )
             {
-                supportsScreensElem.setAttribute(ATTR_SMALL_SCREENS, parsedSupportsScreens.getSmallScreens());
+                supportsScreensElem.setAttribute( ATTR_SMALL_SCREENS, parsedSupportsScreens.getSmallScreens() );
                 dirty = true;
             }
             if ( parsedSupportsScreens.getNormalScreens() != null )
             {
-                supportsScreensElem.setAttribute(ATTR_NORMAL_SCREENS, parsedSupportsScreens.getNormalScreens());
+                supportsScreensElem.setAttribute( ATTR_NORMAL_SCREENS, parsedSupportsScreens.getNormalScreens() );
                 dirty = true;
             }
             if ( parsedSupportsScreens.getLargeScreens() != null )
             {
-                supportsScreensElem.setAttribute(ATTR_LARGE_SCREENS, parsedSupportsScreens.getLargeScreens());
+                supportsScreensElem.setAttribute( ATTR_LARGE_SCREENS, parsedSupportsScreens.getLargeScreens() );
                 dirty = true;
             }
             if ( parsedSupportsScreens.getXlargeScreens() != null )
             {
-                supportsScreensElem.setAttribute(ATTR_XLARGE_SCREENS, parsedSupportsScreens.getXlargeScreens());
+                supportsScreensElem.setAttribute( ATTR_XLARGE_SCREENS, parsedSupportsScreens.getXlargeScreens() );
                 dirty = true;
             }
             if ( parsedSupportsScreens.getCompatibleWidthLimitDp() != null )
             {
-                supportsScreensElem.setAttribute(ATTR_COMPATIBLE_WIDTH_LIMIT_DP,
-                        parsedSupportsScreens.getCompatibleWidthLimitDp());
+                supportsScreensElem.setAttribute( ATTR_COMPATIBLE_WIDTH_LIMIT_DP,
+                        parsedSupportsScreens.getCompatibleWidthLimitDp() );
                 dirty = true;
             }
             if ( parsedSupportsScreens.getLargestWidthLimitDp() != null )
             {
                 supportsScreensElem
-                        .setAttribute(ATTR_LARGEST_WIDTH_LIMIT_DP, parsedSupportsScreens.getLargestWidthLimitDp());
+                        .setAttribute( ATTR_LARGEST_WIDTH_LIMIT_DP, parsedSupportsScreens.getLargestWidthLimitDp() );
                 dirty = true;
             }
             if ( parsedSupportsScreens.getRequiresSmallestWidthDp() != null )
             {
-                supportsScreensElem.setAttribute(ATTR_REQUIRES_SMALLEST_WIDTH_DP,
-                        parsedSupportsScreens.getRequiresSmallestWidthDp());
+                supportsScreensElem.setAttribute( ATTR_REQUIRES_SMALLEST_WIDTH_DP,
+                        parsedSupportsScreens.getRequiresSmallestWidthDp() );
                 dirty = true;
             }
             if ( parsedSupportsScreens.getResizeable() != null )
             {
-                supportsScreensElem.setAttribute(ATTR_RESIZEABLE, parsedSupportsScreens.getResizeable());
+                supportsScreensElem.setAttribute( ATTR_RESIZEABLE, parsedSupportsScreens.getResizeable() );
                 dirty = true;
             }
         }
 
         if ( parsedCompatibleScreens != null )
         {
-            getLog().info("Setting " + ELEM_COMPATIBLE_SCREENS);
-            updateCompatibleScreens(doc, manifestElement);
+            getLog().info( "Setting " + ELEM_COMPATIBLE_SCREENS );
+            updateCompatibleScreens( doc, manifestElement );
             dirty = true;
         }
 
         if ( dirty )
         {
-            if ( !manifestFile.delete() )
+            if ( ! manifestFile.delete() )
             {
-                getLog().warn("Could not remove old " + manifestFile);
+                getLog().warn( "Could not remove old " + manifestFile );
             }
-            getLog().info("Made changes to manifest file, updating " + manifestFile);
-            writeManifest(manifestFile, doc);
+            getLog().info( "Made changes to manifest file, updating " + manifestFile );
+            writeManifest( manifestFile, doc );
         } else
         {
-            getLog().info("No changes found to write to manifest file");
+            getLog().info( "No changes found to write to manifest file" );
         }
     }
 
     private void updateCompatibleScreens(Document doc, Element manifestElement)
     {
-        Element compatibleScreensElem = XmlHelper.getOrCreateElement(doc, manifestElement, ELEM_COMPATIBLE_SCREENS);
+        Element compatibleScreensElem = XmlHelper.getOrCreateElement( doc, manifestElement, ELEM_COMPATIBLE_SCREENS );
 
         // read those screen elements that were already defined in the Manifest
-        NodeList manifestScreenElems = compatibleScreensElem.getElementsByTagName(ELEM_SCREEN);
+        NodeList manifestScreenElems = compatibleScreensElem.getElementsByTagName( ELEM_SCREEN );
         int numManifestScreens = manifestScreenElems.getLength();
-        ArrayList<CompatibleScreen> manifestScreens = new ArrayList<CompatibleScreen>(numManifestScreens);
+        ArrayList<CompatibleScreen> manifestScreens = new ArrayList<CompatibleScreen>( numManifestScreens );
         for ( int i = 0; i < numManifestScreens; i++ )
         {
-            Element screenElem = (Element) manifestScreenElems.item(i);
+            Element screenElem = (Element) manifestScreenElems.item( i );
 
             CompatibleScreen screen = new CompatibleScreen();
-            screen.setScreenDensity(screenElem.getAttribute(ATTR_SCREEN_DENSITY));
-            screen.setScreenSize(screenElem.getAttribute(ATTR_SCREEN_SIZE));
+            screen.setScreenDensity( screenElem.getAttribute( ATTR_SCREEN_DENSITY ) );
+            screen.setScreenSize( screenElem.getAttribute( ATTR_SCREEN_SIZE ) );
 
-            manifestScreens.add(screen);
-            getLog().debug("Found Manifest compatible-screen: " + screen);
+            manifestScreens.add( screen );
+            getLog().debug( "Found Manifest compatible-screen: " + screen );
         }
 
         // remove all child nodes, since we'll rebuild the element
-        XmlHelper.removeDirectChildren(compatibleScreensElem);
+        XmlHelper.removeDirectChildren( compatibleScreensElem );
 
         for ( CompatibleScreen screen : parsedCompatibleScreens )
         {
-            getLog().debug("Found POM compatible-screen: " + screen);
+            getLog().debug( "Found POM compatible-screen: " + screen );
         }
 
         // merge those screens defined in the POM, overriding any matching screens
         // already defined in the Manifest
         HashSet<CompatibleScreen> mergedScreens = new HashSet<CompatibleScreen>();
-        mergedScreens.addAll(manifestScreens);
-        mergedScreens.addAll(parsedCompatibleScreens);
+        mergedScreens.addAll( manifestScreens );
+        mergedScreens.addAll( parsedCompatibleScreens );
 
         for ( CompatibleScreen screen : mergedScreens )
         {
-            getLog().debug("Using compatible-screen: " + screen);
-            Element screenElem = doc.createElement(ELEM_SCREEN);
-            screenElem.setAttribute(ATTR_SCREEN_SIZE, screen.getScreenSize());
-            screenElem.setAttribute(ATTR_SCREEN_DENSITY, screen.getScreenDensity());
+            getLog().debug( "Using compatible-screen: " + screen );
+            Element screenElem = doc.createElement( ELEM_SCREEN );
+            screenElem.setAttribute( ATTR_SCREEN_SIZE, screen.getScreenSize() );
+            screenElem.setAttribute( ATTR_SCREEN_DENSITY, screen.getScreenDensity() );
 
-            compatibleScreensElem.appendChild(screenElem);
+            compatibleScreensElem.appendChild( screenElem );
         }
     }
 }

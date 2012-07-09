@@ -33,6 +33,6 @@ public final class AndroidExtension
      */
     public static boolean isAndroidPackaging(String packaging)
     {
-        return APK.equals(packaging) || APKLIB.equals(packaging) || APKSOURCES.equals(packaging);
+        return APK.equals( packaging ) || APKLIB.equals( packaging ) || APKSOURCES.equals( packaging );
     }
 }

@@ -24,6 +24,6 @@ public class InvalidSdkException extends RuntimeException
 {
     public InvalidSdkException(String message)
     {
-        super(message);
+        super( message );
     }
 }

@@ -13,7 +13,7 @@ public class FileNameHelper
 
     public static String fixFileName(String fileName)
     {
-        return fileName.replaceAll(ILLEGAL_CHARACTERS_REGEX, SEPERATOR);
+        return fileName.replaceAll( ILLEGAL_CHARACTERS_REGEX, SEPERATOR );
     }
 
 }

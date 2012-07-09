@@ -35,14 +35,14 @@ public class AetherHelper
         if ( artifact.getClassifier() != null )
         {
             defaultArtifact =
-                    new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getClassifier(),
-                            artifact.getType(), artifact.getVersion());
+                    new DefaultArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getClassifier(),
+                            artifact.getType(), artifact.getVersion() );
         } else
         {
-            defaultArtifact = new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getType(),
-                    artifact.getVersion());
+            defaultArtifact = new DefaultArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getType(),
+                    artifact.getVersion() );
         }
-        defaultArtifact.setFile(artifact.getFile());
+        defaultArtifact.setFile( artifact.getFile() );
         return defaultArtifact;
     }
 
@@ -57,14 +57,14 @@ public class AetherHelper
 
             for ( Artifact artifact : artifacts )
             {
-                final Artifact resolvedArtifact =
-                        AetherHelper.resolveArtifact(artifact, repositorySystem, repositorySystemSession, repositories);
-                resolvedArtifacts.add(resolvedArtifact);
+                final Artifact resolvedArtifact = AetherHelper
+                        .resolveArtifact( artifact, repositorySystem, repositorySystemSession, repositories );
+                resolvedArtifacts.add( resolvedArtifact );
             }
             return resolvedArtifacts;
         } catch ( Exception e )
         {
-            throw new MojoExecutionException("Error resolving dependencies: " + e.getMessage(), e);
+            throw new MojoExecutionException( "Error resolving dependencies: " + e.getMessage(), e );
         }
     }
 
@@ -75,21 +75,21 @@ public class AetherHelper
         try
         {
             final ArtifactRequest artifactRequest = new ArtifactRequest();
-            org.sonatype.aether.artifact.Artifact aetherArtifact = AetherHelper.createAetherArtifact(artifact);
-            artifactRequest.setArtifact(aetherArtifact);
-            artifactRequest.setRepositories(repositories);
+            org.sonatype.aether.artifact.Artifact aetherArtifact = AetherHelper.createAetherArtifact( artifact );
+            artifactRequest.setArtifact( aetherArtifact );
+            artifactRequest.setRepositories( repositories );
             final ArtifactResult artifactResult =
-                    repositorySystem.resolveArtifact(repositorySystemSession, artifactRequest);
+                    repositorySystem.resolveArtifact( repositorySystemSession, artifactRequest );
 
             final org.apache.maven.artifact.DefaultArtifact defaultArtifact =
-                    new org.apache.maven.artifact.DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(),
+                    new org.apache.maven.artifact.DefaultArtifact( artifact.getGroupId(), artifact.getArtifactId(),
                             artifact.getVersion(), artifact.getScope(), artifact.getType(), artifact.getClassifier(),
-                            artifact.getArtifactHandler());
-            defaultArtifact.setFile(artifactResult.getArtifact().getFile());
+                            artifact.getArtifactHandler() );
+            defaultArtifact.setFile( artifactResult.getArtifact().getFile() );
             return defaultArtifact;
         } catch ( ArtifactResolutionException e )
         {
-            throw new MojoExecutionException("Error while resolving artifact: " + e.getMessage(), e);
+            throw new MojoExecutionException( "Error while resolving artifact: " + e.getMessage(), e );
         }
     }
 

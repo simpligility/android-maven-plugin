@@ -103,12 +103,12 @@ public class PushMojo extends AbstractAndroidMojo
     public void execute() throws MojoExecutionException, MojoFailureException
     {
 
-        ConfigHandler configHandler = new ConfigHandler(this);
+        ConfigHandler configHandler = new ConfigHandler( this );
         configHandler.parseConfiguration();
 
         final Map<String, String> sourceDestinationMap = calculateSourceDestinationMapping();
 
-        doWithDevices(new DeviceCallback()
+        doWithDevices( new DeviceCallback()
         {
             public void doWithDevice(final IDevice device) throws MojoExecutionException
             {
@@ -125,27 +125,27 @@ public class PushMojo extends AbstractAndroidMojo
                         String destinationPath = pushFileEntry.getValue();
 
                         message = "Push of " + sourcePath + " to " +
-                                destinationPath + " on " + DeviceHelper.getDescriptiveName(device);
+                                destinationPath + " on " + DeviceHelper.getDescriptiveName( device );
 
-                        syncService.pushFile(sourcePath, destinationPath, new LogSyncProgressMonitor(getLog()));
+                        syncService.pushFile( sourcePath, destinationPath, new LogSyncProgressMonitor( getLog() ) );
 
-                        getLog().info(message + " successful.");
+                        getLog().info( message + " successful." );
                     }
                 } catch ( SyncException e )
                 {
-                    throw new MojoExecutionException(message + " failed.", e);
+                    throw new MojoExecutionException( message + " failed.", e );
                 } catch ( IOException e )
                 {
-                    throw new MojoExecutionException(message + " failed.", e);
+                    throw new MojoExecutionException( message + " failed.", e );
                 } catch ( TimeoutException e )
                 {
-                    throw new MojoExecutionException(message + " failed.", e);
+                    throw new MojoExecutionException( message + " failed.", e );
                 } catch ( AdbCommandRejectedException e )
                 {
-                    throw new MojoExecutionException(message + " failed.", e);
+                    throw new MojoExecutionException( message + " failed.", e );
                 }
             }
-        });
+        } );
     }
 
     /**
@@ -160,9 +160,9 @@ public class PushMojo extends AbstractAndroidMojo
     {
         Map<String, String> result = new HashMap<String, String>();
 
-        File sourceFile = new File(parsedSource);
+        File sourceFile = new File( parsedSource );
         final String destinationPath;
-        if ( parsedDestination.endsWith("/") )
+        if ( parsedDestination.endsWith( "/" ) )
         {
             destinationPath = parsedDestination + sourceFile.getName();
         } else
@@ -174,23 +174,24 @@ public class PushMojo extends AbstractAndroidMojo
         {
             // only put the source in
             final String sourcePath = sourceFile.getAbsolutePath();
-            result.put(sourcePath, destinationPath);
+            result.put( sourcePath, destinationPath );
         } else if ( sourceFile.isDirectory() )
         {
             // find recursively all files to be pushed
-            @SuppressWarnings("unchecked") Collection<File> filesList = FileUtils.listFiles(sourceFile, null, true);
+            @SuppressWarnings("unchecked") Collection<File> filesList = FileUtils.listFiles( sourceFile, null, true );
             for ( File file : filesList )
             {
                 // make the file's path relative - this is kind of a hack but it
                 // works just fine in this controlled environment
-                String filePath = file.getAbsolutePath().substring(sourceFile.getAbsolutePath().length());
+                String filePath = file.getAbsolutePath().substring( sourceFile.getAbsolutePath().length() );
 
-                result.put(file.getAbsolutePath(), destinationPath + filePath);
+                result.put( file.getAbsolutePath(), destinationPath + filePath );
             }
         } else
         {
             throw new MojoExecutionException(
-                    "Cannot execute push goal: File or directory " + sourceFile.getAbsolutePath() + " does not exist.");
+                    "Cannot execute push goal: File or directory " + sourceFile.getAbsolutePath() +
+                            " does not exist." );
         }
         return result;
     }

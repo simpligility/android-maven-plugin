@@ -47,18 +47,18 @@ public class RedeployMojo extends AbstractAndroidMojo
     {
         if ( file == null )
         {
-            if ( !SUPPORTED_PACKAGING_TYPES.contains(project.getPackaging()) )
+            if ( ! SUPPORTED_PACKAGING_TYPES.contains( project.getPackaging() ) )
             {
-                getLog().info("Skipping redeploy on " + project.getPackaging());
+                getLog().info( "Skipping redeploy on " + project.getPackaging() );
                 return;
             }
-            String packageToUndeploy = extractPackageNameFromAndroidManifest(androidManifestFile);
-            undeployApk(packageToUndeploy);
+            String packageToUndeploy = extractPackageNameFromAndroidManifest( androidManifestFile );
+            undeployApk( packageToUndeploy );
             deployBuiltApk();
         } else
         {
-            undeployApk(file);
-            deployApk(file);
+            undeployApk( file );
+            deployApk( file );
         }
     }
 
