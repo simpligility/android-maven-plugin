@@ -64,7 +64,8 @@ public final class ConfigHelper
 
                         mojoField.setAccessible( true );
                         mojoField.set( mojo, value );
-                    } catch ( final NoSuchFieldException e )
+                    }
+                    catch ( final NoSuchFieldException e )
                     {
                         ;
                     }
@@ -78,16 +79,19 @@ public final class ConfigHelper
 
                         mojoField.setAccessible( true );
                         mojoField.set( mojo, value );
-                    } catch ( final NoSuchFieldException e )
+                    }
+                    catch ( final NoSuchFieldException e )
                     {
                         ;
-                    } catch ( final IllegalArgumentException e )
+                    }
+                    catch ( final IllegalArgumentException e )
                     {
                         // probably not a deprecated parameter, see Proguard configuration;
                     }
                 }
             }
-        } catch ( final Exception e )
+        }
+        catch ( final Exception e )
         {
             throw new MojoExecutionException( e.getMessage(), e );
         }

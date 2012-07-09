@@ -41,7 +41,8 @@ public class AndroidSigner
         try
         {
             this.debug = Debug.valueOf( debug.toUpperCase() );
-        } catch ( IllegalArgumentException e )
+        }
+        catch ( IllegalArgumentException e )
         {
             throw new IllegalArgumentException( "android.sign.debug must be 'true', 'false', 'both' or 'auto'.", e );
         }

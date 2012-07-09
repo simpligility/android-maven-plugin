@@ -309,7 +309,8 @@ public class AndroidSdk
             try
             {
                 properties.load( new FileInputStream( propFile ) );
-            } catch ( IOException e )
+            }
+            catch ( IOException e )
             {
                 throw new InvalidSdkException( "Error reading " + propFile.getAbsoluteFile() );
             }

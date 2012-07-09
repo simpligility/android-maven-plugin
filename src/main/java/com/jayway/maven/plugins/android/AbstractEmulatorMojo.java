@@ -208,7 +208,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                             existingEmulator.getSerialNumber(), existingEmulator.getAvdName() ) );
                 }
             }
-        } catch ( Exception e )
+        }
+        catch ( Exception e )
         {
             throw new MojoExecutionException( "", e );
         }
@@ -259,10 +260,12 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
             }
             String cmd = cmdPath + " /X /C START /SEPARATE \"\"" + uniqueWindowTitle + "\"\"  " + command.trim();
             writer.println( "oShell.run \"" + cmd + "\"" );
-        } catch ( IOException e )
+        }
+        catch ( IOException e )
         {
             getLog().error( "Failure writing file " + filename );
-        } finally
+        }
+        finally
         {
             if ( writer != null )
             {
@@ -304,10 +307,12 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
             writer.println( "#!" + sh.getAbsolutePath() );
             writer.print( assembleStartCommandLine() );
             writer.print( " 1>/dev/null 2>&1 &" ); // redirect outputs and run as background task
-        } catch ( IOException e )
+        }
+        catch ( IOException e )
         {
             getLog().error( "Failure writing file " + filename );
-        } finally
+        }
+        finally
         {
             if ( writer != null )
             {
@@ -462,14 +467,16 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
 
                     out.write( command );
                     out.write( "\r\n" );
-                } finally
+                }
+                finally
                 {
                     try
                     {
                         out.close();
                         in.close();
                         socket.close();
-                    } catch ( Exception e )
+                    }
+                    catch ( Exception e )
                     {
                         // Do nothing
                     }
@@ -487,7 +494,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Future<Boolean> future = executor.submit( task );
             result = future.get();
-        } catch ( Exception e )
+        }
+        catch ( Exception e )
         {
             getLog().error( String.format( "Failed to execute emulator command '%s': %s", command, e ) );
         }

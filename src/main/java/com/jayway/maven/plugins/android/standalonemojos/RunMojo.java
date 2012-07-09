@@ -170,7 +170,8 @@ public class RunMojo extends AbstractAndroidMojo
             configHandler.parseConfiguration();
 
             launch( launcherInfo );
-        } catch ( Exception ex )
+        }
+        catch ( Exception ex )
         {
             throw new MojoFailureException( "Unable to run launcher Activity", ex );
         }
@@ -279,16 +280,20 @@ public class RunMojo extends AbstractAndroidMojo
                     getLog().info( "Attempting to start " + info.packageName + info.activity + " on device " +
                             device.getSerialNumber() + " (avdName = " + device.getAvdName() + ")" );
                     device.executeShellCommand( command, new NullOutputReceiver() );
-                } catch ( IOException ex )
+                }
+                catch ( IOException ex )
                 {
                     throw new MojoFailureException( "Input/Output error", ex );
-                } catch ( TimeoutException ex )
+                }
+                catch ( TimeoutException ex )
                 {
                     throw new MojoFailureException( "Command timeout", ex );
-                } catch ( AdbCommandRejectedException ex )
+                }
+                catch ( AdbCommandRejectedException ex )
                 {
                     throw new MojoFailureException( "ADB rejected the command", ex );
-                } catch ( ShellCommandUnresponsiveException ex )
+                }
+                catch ( ShellCommandUnresponsiveException ex )
                 {
                     throw new MojoFailureException( "Unresponsive command", ex );
                 }

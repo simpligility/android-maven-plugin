@@ -244,16 +244,20 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         try
         {
             updateManifest( androidManifestFile );
-        } catch ( IOException e )
+        }
+        catch ( IOException e )
         {
             throw new MojoFailureException( "XML I/O error: " + androidManifestFile, e );
-        } catch ( ParserConfigurationException e )
+        }
+        catch ( ParserConfigurationException e )
         {
             throw new MojoFailureException( "Unable to prepare XML parser", e );
-        } catch ( SAXException e )
+        }
+        catch ( SAXException e )
         {
             throw new MojoFailureException( "Unable to parse XML: " + androidManifestFile, e );
-        } catch ( TransformerException e )
+        }
+        catch ( TransformerException e )
         {
             throw new MojoFailureException( "Unable write XML: " + androidManifestFile, e );
         }
@@ -373,7 +377,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             Result result = new StreamResult( writer );
 
             xformer.transform( source, result );
-        } finally
+        }
+        finally
         {
             IOUtils.closeQuietly( writer );
         }

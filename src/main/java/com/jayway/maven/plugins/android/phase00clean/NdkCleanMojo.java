@@ -62,7 +62,8 @@ public class NdkCleanMojo extends AbstractMojo
                 try
                 {
                     FileUtils.deleteDirectory( ndkBuildLibsOutputDirectory );
-                } catch ( IOException e )
+                }
+                catch ( IOException e )
                 {
                     getLog().error( "Error deleting directory: " + e.getMessage(), e );
                 }
@@ -78,7 +79,8 @@ public class NdkCleanMojo extends AbstractMojo
                 try
                 {
                     FileUtils.deleteDirectory( ndkBuildObjOutputDirectory );
-                } catch ( IOException e )
+                }
+                catch ( IOException e )
                 {
                     getLog().error( "Error deleting directory: " + e.getMessage(), e );
                 }

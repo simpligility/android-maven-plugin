@@ -220,7 +220,8 @@ public class NativeHelper
             }
 
             return artifacts;
-        } catch ( Exception e )
+        }
+        catch ( Exception e )
         {
             throw new MojoExecutionException( "Error while processing transient dependencies", e );
         }
@@ -241,7 +242,8 @@ public class NativeHelper
         {
             String versionStr = FileUtils.readFileToString( ndkVersionFile );
             validateNDKVersion( NDK_REQUIRED_VERSION, versionStr );
-        } catch ( Exception e )
+        }
+        catch ( Exception e )
         {
             throw new MojoExecutionException(
                     "Error while extracting NDK version from '" + ndkVersionFile.getAbsolutePath() +

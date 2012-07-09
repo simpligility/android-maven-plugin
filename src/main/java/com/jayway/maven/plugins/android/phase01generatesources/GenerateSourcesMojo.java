@@ -120,7 +120,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 }
             }
             generateAidlFiles( files );
-        } catch ( MojoExecutionException e )
+        }
+        catch ( MojoExecutionException e )
         {
             getLog().error( "Error when generating sources.", e );
             throw e;
@@ -184,7 +185,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         try
         {
             unArchiver.extract();
-        } catch ( ArchiverException e )
+        }
+        catch ( ArchiverException e )
         {
             throw new MojoExecutionException(
                     "ArchiverException while extracting " + apksourcesFile.getAbsolutePath() + ". Message: " +
@@ -248,7 +250,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         try
         {
             unArchiver.extract();
-        } catch ( ArchiverException e )
+        }
+        catch ( ArchiverException e )
         {
             throw new MojoExecutionException(
                     "ArchiverException while extracting " + apklibDirectory.getAbsolutePath() + ". Message: " +
@@ -293,7 +296,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                     }
                 }
                 org.apache.commons.io.FileUtils.copyDirectory( extractedDependenciesRes, combinedRes );
-            } catch ( IOException e )
+            }
+            catch ( IOException e )
             {
                 throw new MojoExecutionException( "", e );
             }
@@ -327,7 +331,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                         return true;
                     }
                 } );
-            } catch ( IOException e )
+            }
+            catch ( IOException e )
             {
                 throw new MojoExecutionException( "", e );
             }
@@ -401,7 +406,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         try
         {
             executor.executeCommand( getAndroidSdk().getPathForTool( "aapt" ), commands, project.getBasedir(), false );
-        } catch ( ExecutionException e )
+        }
+        catch ( ExecutionException e )
         {
             throw new MojoExecutionException( "", e );
         }
@@ -489,7 +495,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         try
         {
             executor.executeCommand( getAndroidSdk().getPathForTool( "aapt" ), commands, project.getBasedir(), false );
-        } catch ( ExecutionException e )
+        }
+        catch ( ExecutionException e )
         {
             throw new MojoExecutionException( "", e );
         }
@@ -538,7 +545,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
                     executor.executeCommand( getAndroidSdk().getPathForTool( "aidl" ), commands, project.getBasedir(),
                             false );
-                } catch ( ExecutionException e )
+                }
+                catch ( ExecutionException e )
                 {
                     throw new MojoExecutionException( "", e );
                 }

@@ -144,7 +144,8 @@ public abstract class AbstractZipalignMojo extends AbstractAndroidMojo
                     getLog().error( "Cannot attach " + aligned.getAbsolutePath() + " to the project" +
                             " - The file does not exist" );
                 }
-            } catch ( ExecutionException e )
+            }
+            catch ( ExecutionException e )
             {
                 throw new MojoExecutionException( "", e );
             }

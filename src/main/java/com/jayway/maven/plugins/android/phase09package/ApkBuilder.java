@@ -72,11 +72,13 @@ public class ApkBuilder
             URLClassLoader child =
                     new URLClassLoader( new URL[]{ sdkLibs.toURI().toURL() }, ApkBuilder.class.getClassLoader() );
             apkBuilderClass = child.loadClass( "com.android.sdklib.build.ApkBuilder" );
-        } catch ( MalformedURLException e )
+        }
+        catch ( MalformedURLException e )
         {
             // This one cannot happen.
             throw new RuntimeException( "Cannot create a correct URL from file " + sdkLibs.getAbsolutePath() );
-        } catch ( ClassNotFoundException e )
+        }
+        catch ( ClassNotFoundException e )
         {
             log.error( e );
             throw new MojoExecutionException( "Cannot load 'com.android.sdklib.build.ApkBuilder'" );
@@ -128,7 +130,8 @@ public class ApkBuilder
             sealApkMethod = apkBuilderClass.getMethod( "sealApk", new Class[ 0 ] );
 
             getDebugKeyStoreMethod = apkBuilderClass.getMethod( "getDebugKeystore", new Class[ 0 ] );
-        } catch ( Exception e )
+        }
+        catch ( Exception e )
         {
             log.error( "Cannot find required method", e );
             throw new MojoExecutionException( "Cannot find the required method", e );
@@ -212,11 +215,13 @@ public class ApkBuilder
 
             builder = apkBuilderConstructor.newInstance(
                     new Object[]{ apkFile, resFile, dexFile, ( signed ) ? debugKeyStore : null, verboseStream } );
-        } catch ( InvocationTargetException e )
+        }
+        catch ( InvocationTargetException e )
         {
             log.error( "Cannot create the APKBuilder object", e.getCause() );
             throw new MojoExecutionException( "Cannot create the APKBuilder object", e.getCause() );
-        } catch ( Exception e )
+        }
+        catch ( Exception e )
         {
             log.error( "Cannot create the APKBuilder object", e );
             throw new MojoExecutionException( "Cannot create the APKBuilder object", e );
@@ -234,11 +239,13 @@ public class ApkBuilder
         try
         {
             setDebugMethod.invoke( builder, new Object[]{ debug } );
-        } catch ( InvocationTargetException e )
+        }
+        catch ( InvocationTargetException e )
         {
             log.error( "Cannot set the debug mode", e.getCause() );
             throw new MojoExecutionException( "Cannot create the APKBuilder object", e.getCause() );
-        } catch ( Exception e )
+        }
+        catch ( Exception e )
         {
             log.error( "Cannot set the debug mode", e );
             throw new MojoExecutionException( "Cannot create the APKBuilder object", e );
@@ -256,11 +263,13 @@ public class ApkBuilder
         try
         {
             addSourceFolderMethod.invoke( builder, new Object[]{ sourceFolder } );
-        } catch ( InvocationTargetException e )
+        }
+        catch ( InvocationTargetException e )
         {
             log.error( "Cannot add source folder", e.getCause() );
             throw new MojoExecutionException( "Cannot add source folder", e.getCause() );
-        } catch ( Exception e )
+        }
+        catch ( Exception e )
         {
             log.error( "Cannot add source folder", e );
             throw new MojoExecutionException( "Cannot add source folder", e );
@@ -278,12 +287,14 @@ public class ApkBuilder
         try
         {
             addResourcesFromJarMethod.invoke( builder, new Object[]{ jarFile } );
-        } catch ( InvocationTargetException e )
+        }
+        catch ( InvocationTargetException e )
         {
             final String message = "Cannot add resources from " + jarFile.getAbsolutePath();
             log.error( message, e.getCause() );
             throw new MojoExecutionException( message, e.getCause() );
-        } catch ( Exception e )
+        }
+        catch ( Exception e )
         {
             log.error( "Cannot add source folder", e );
             throw new MojoExecutionException( "Cannot add resources from jar", e );
@@ -316,11 +327,13 @@ public class ApkBuilder
             {
                 addNativeLibrariesMethod.invoke( builder, new Object[]{ nativeFolder } );
             }
-        } catch ( InvocationTargetException e )
+        }
+        catch ( InvocationTargetException e )
         {
             log.error( "Cannot add native libraries", e.getCause() );
             throw new MojoExecutionException( "Cannot add native libraries", e.getCause() );
-        } catch ( Exception e )
+        }
+        catch ( Exception e )
         {
             log.error( "Cannot add native libraries", e );
             throw new MojoExecutionException( "Cannot add native libraries", e );
@@ -337,11 +350,13 @@ public class ApkBuilder
         try
         {
             sealApkMethod.invoke( builder, new Object[ 0 ] );
-        } catch ( InvocationTargetException e )
+        }
+        catch ( InvocationTargetException e )
         {
             log.error( "Cannot seal the APK", e.getCause() );
             throw new MojoExecutionException( "Cannot seal the APK", e.getCause() );
-        } catch ( Exception e )
+        }
+        catch ( Exception e )
         {
             log.error( "Cannot seal the APK", e );
             throw new MojoExecutionException( "Cannot seal the APK", e );

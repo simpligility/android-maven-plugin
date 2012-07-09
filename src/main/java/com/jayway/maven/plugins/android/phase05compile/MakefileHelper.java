@@ -70,7 +70,8 @@ public class MakefileHelper
                 try
                 {
                     FileUtils.deleteDirectory( file );
-                } catch ( IOException e )
+                }
+                catch ( IOException e )
                 {
                     e.printStackTrace();
                 }
@@ -170,7 +171,8 @@ public class MakefileHelper
                         final String str = includeDir.getAbsolutePath();
                         makeFile.append( str );
                         makeFile.append( '\n' );
-                    } catch ( Exception e )
+                    }
+                    catch ( Exception e )
                     {
                         throw new MojoExecutionException(
                                 "Error while resolving header archive file for: " + artifact.getArtifactId(), e );

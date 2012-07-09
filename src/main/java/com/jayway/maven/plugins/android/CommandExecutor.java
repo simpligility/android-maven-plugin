@@ -236,7 +236,8 @@ public interface CommandExecutor
                             throw new ExecutionException( "ANDROID-040-001: Could not execute: Command = " +
                                     commandline.toString() + ", Result = " + result );
                         }
-                    } catch ( CommandLineException e )
+                    }
+                    catch ( CommandLineException e )
                     {
                         throw new ExecutionException(
                                 "ANDROID-040-002: Could not execute: Command = " + commandline.toString() +

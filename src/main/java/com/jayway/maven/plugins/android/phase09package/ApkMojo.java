@@ -323,7 +323,8 @@ public class ApkMojo extends AbstractAndroidMojo
             initializeAPKBuilder();
             // Ok...
             // So we can try to use the internal ApkBuilder
-        } catch ( Throwable e )
+        }
+        catch ( Throwable e )
         {
             // Not supported platform try to old way.
             useInternalAPKBuilder = false;
@@ -349,7 +350,8 @@ public class ApkMojo extends AbstractAndroidMojo
             try
             {
                 addMetaInf( outputFile, jarFiles );
-            } catch ( IOException e )
+            }
+            catch ( IOException e )
             {
                 throw new MojoExecutionException( "Could not add META-INF resources.", e );
             }
@@ -490,7 +492,8 @@ public class ApkMojo extends AbstractAndroidMojo
                 try
                 {
                     computeDuplicateFiles( artifact.getFile() );
-                } catch ( Exception e )
+                }
+                catch ( Exception e )
                 {
                     getLog().warn( "Cannot compute duplicates files from " + artifact.getFile().getAbsolutePath(), e );
                 }
@@ -594,7 +597,8 @@ public class ApkMojo extends AbstractAndroidMojo
             try
             {
                 out.createNewFile();
-            } catch ( IOException e )
+            }
+            catch ( IOException e )
             {
                 e.printStackTrace();
             }
@@ -607,7 +611,8 @@ public class ApkMojo extends AbstractAndroidMojo
         {
             fos = new FileOutputStream( out );
             jos = new ZipOutputStream( fos );
-        } catch ( FileNotFoundException e1 )
+        }
+        catch ( FileNotFoundException e1 )
         {
             getLog().error( "Cannot remove duplicates : the output file " + out.getAbsolutePath() + " does not found" );
             return null;
@@ -632,7 +637,8 @@ public class ApkMojo extends AbstractAndroidMojo
                     jos.closeEntry();
                 }
             }
-        } catch ( IOException e )
+        }
+        catch ( IOException e )
         {
             getLog().error( "Cannot removing duplicates : " + e.getMessage() );
             return null;
@@ -648,7 +654,8 @@ public class ApkMojo extends AbstractAndroidMojo
             fos.close();
             jos = null;
             fos = null;
-        } catch ( IOException e )
+        }
+        catch ( IOException e )
         {
             // ignore it.
         }
@@ -729,7 +736,8 @@ public class ApkMojo extends AbstractAndroidMojo
         {
             executor.executeCommand( getAndroidSdk().getPathForTool( "apkbuilder" ), commands, project.getBasedir(),
                     false );
-        } catch ( ExecutionException e )
+        }
+        catch ( ExecutionException e )
         {
             throw new MojoExecutionException( "", e );
         }
@@ -813,7 +821,8 @@ public class ApkMojo extends AbstractAndroidMojo
                                     "Copying native dependency " + artifactId + " (" + resolvedArtifact.getGroupId() +
                                             ") to " + file );
                             org.apache.commons.io.FileUtils.copyFile( artifactFile, file );
-                        } catch ( Exception e )
+                        }
+                        catch ( Exception e )
                         {
                             throw new MojoExecutionException( "Could not copy native dependency.", e );
                         }
@@ -857,7 +866,8 @@ public class ApkMojo extends AbstractAndroidMojo
                     getLog().info( "Note: gdbserver binary already exists at destination, will not copy over" );
                 }
             }
-        } catch ( Exception e )
+        }
+        catch ( Exception e )
         {
             getLog().error( "Error while copying gdbserver: " + e.getMessage(), e );
             throw new MojoExecutionException( "Error while copying gdbserver: " + e.getMessage(), e );
@@ -909,7 +919,8 @@ public class ApkMojo extends AbstractAndroidMojo
             org.apache.commons.io.FileUtils
                     .copyDirectory( localNativeLibrariesDirectory, destinationDirectory, filter );
 
-        } catch ( IOException e )
+        }
+        catch ( IOException e )
         {
             getLog().error( "Could not copy native libraries: " + e.getMessage(), e );
             throw new MojoExecutionException( "Could not copy native dependency.", e );
@@ -951,7 +962,8 @@ public class ApkMojo extends AbstractAndroidMojo
                     }
                 }
                 org.apache.commons.io.FileUtils.copyDirectory( extractedDependenciesRes, combinedRes );
-            } catch ( IOException e )
+            }
+            catch ( IOException e )
             {
                 throw new MojoExecutionException( "", e );
             }
@@ -984,7 +996,8 @@ public class ApkMojo extends AbstractAndroidMojo
                         return true;
                     }
                 } );
-            } catch ( IOException e )
+            }
+            catch ( IOException e )
             {
                 throw new MojoExecutionException( "", e );
             }
@@ -1024,7 +1037,8 @@ public class ApkMojo extends AbstractAndroidMojo
 
                             }
                         } );
-            } catch ( IOException e )
+            }
+            catch ( IOException e )
             {
                 throw new MojoExecutionException( "", e );
             }
@@ -1068,7 +1082,8 @@ public class ApkMojo extends AbstractAndroidMojo
 
                                     }
                                 } );
-                    } catch ( IOException e )
+                    }
+                    catch ( IOException e )
                     {
                         throw new MojoExecutionException( "", e );
                     }
@@ -1106,7 +1121,8 @@ public class ApkMojo extends AbstractAndroidMojo
 
                     }
                 } );
-            } catch ( IOException e )
+            }
+            catch ( IOException e )
             {
                 throw new MojoExecutionException( "", e );
             }
@@ -1195,7 +1211,8 @@ public class ApkMojo extends AbstractAndroidMojo
         try
         {
             executor.executeCommand( getAndroidSdk().getPathForTool( "aapt" ), commands, project.getBasedir(), false );
-        } catch ( ExecutionException e )
+        }
+        catch ( ExecutionException e )
         {
             throw new MojoExecutionException( "", e );
         }

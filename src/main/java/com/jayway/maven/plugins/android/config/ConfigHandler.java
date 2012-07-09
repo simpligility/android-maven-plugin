@@ -78,7 +78,8 @@ public class ConfigHandler
             try
             {
                 field.set( mojo, value );
-            } catch ( Exception e )
+            }
+            catch ( Exception e )
             {
                 e.printStackTrace();
             }
@@ -117,7 +118,8 @@ public class ConfigHandler
                 // even access it if the method is private
                 method.setAccessible( true );
                 return method.invoke( mojo );
-            } catch ( Exception e )
+            }
+            catch ( Exception e )
             {
                 throw new RuntimeException(
                         "Problem encountered accessing default value for " + currentParameterName + " parameter", e );
@@ -151,7 +153,8 @@ public class ConfigHandler
             {
                 return pojoField.get( object );
             }
-        } catch ( Exception e )
+        }
+        catch ( Exception e )
         {
         }
         return null;
@@ -201,7 +204,8 @@ public class ConfigHandler
             configPojoName = configPojo.getName();
             configPojoInstance = configPojo.get( mojo );
             configPojoPrefix = configPojo.getAnnotation( ConfigPojo.class ).prefix();
-        } catch ( Exception e )
+        }
+        catch ( Exception e )
         {
             // ignore, we can live without a config pojo
         }

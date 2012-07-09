@@ -624,7 +624,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 // Process conditionally any of the headers to include into the header archive file
                 processMakefileCapture( makefileCaptureFile );
 
-            } finally
+            }
+            finally
             {
                 // If we created any directories as part of the build, blow those away after we're done
                 if ( ! libsDirectoryExists )
@@ -644,11 +645,13 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
             }
 
-        } catch ( MojoExecutionException e )
+        }
+        catch ( MojoExecutionException e )
         {
             getLog().error( "Error during build: " + e.getMessage(), e );
             throw e;
-        } catch ( Exception e )
+        }
+        catch ( Exception e )
         {
             getLog().error( "Error while executing: " + e.getMessage() );
             throw new MojoExecutionException( e.getMessage(), e );
@@ -680,7 +683,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
             stripCommandExecutor
                     .executeCommand( resolveNdkStripper().getAbsolutePath(), Arrays.asList( file.getAbsolutePath() ) );
-        } catch ( ExecutionException e )
+        }
+        catch ( ExecutionException e )
         {
             getLog().error( "Error while attempting to strip shared library", e );
             throw new MojoExecutionException( "Error while attempting to strip shared library" );
@@ -747,7 +751,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 }
                 createHeaderArchive( finalHeaderFilesDirectives );
             }
-        } catch ( Exception e )
+        }
+        catch ( Exception e )
         {
             throw new MojoExecutionException( "Error while processing headers to include: " + e.getMessage(), e );
         }
@@ -779,7 +784,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             projectHelper.attachArtifact( project, "har", ( ndkClassifier != null ? ndkClassifier : ndkArchitecture ),
                     jarFile );
 
-        } catch ( Exception e )
+        }
+        catch ( Exception e )
         {
             throw new MojoExecutionException( e.getMessage() );
         }

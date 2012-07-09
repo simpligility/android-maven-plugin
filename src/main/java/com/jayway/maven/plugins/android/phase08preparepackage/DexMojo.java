@@ -263,7 +263,8 @@ public class DexMojo extends AbstractAndroidMojo
         try
         {
             executor.executeCommand( javaExecutable, commands, project.getBasedir(), false );
-        } catch ( ExecutionException e )
+        }
+        catch ( ExecutionException e )
         {
             throw new MojoExecutionException( "", e );
         }
@@ -298,10 +299,12 @@ public class DexMojo extends AbstractAndroidMojo
             addJavaResources( jarArchiver, project.getBuild().getResources() );
 
             jarArchiver.createArchive();
-        } catch ( ArchiverException e )
+        }
+        catch ( ArchiverException e )
         {
             throw new MojoExecutionException( "ArchiverException while creating .apksource file.", e );
-        } catch ( IOException e )
+        }
+        catch ( IOException e )
         {
             throw new MojoExecutionException( "IOException while creating .apksource file.", e );
         }

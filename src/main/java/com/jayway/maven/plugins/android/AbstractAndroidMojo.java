@@ -513,7 +513,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
             try
             {
                 Thread.sleep( 50 );
-            } catch ( InterruptedException e )
+            }
+            catch ( InterruptedException e )
             {
                 e.printStackTrace();
             }
@@ -542,7 +543,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                 try
                 {
                     Thread.sleep( 1000 );
-                } catch ( InterruptedException e )
+                }
+                catch ( InterruptedException e )
                 {
                     throw new MojoExecutionException(
                             "Interrupted waiting for initial device list from Android Debug Bridge" );
@@ -576,7 +578,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                     device.installPackage( apkFile.getAbsolutePath(), true );
                     getLog().info( "Successfully installed " + apkFile.getAbsolutePath() + " to " +
                             DeviceHelper.getDescriptiveName( device ) );
-                } catch ( InstallException e )
+                }
+                catch ( InstallException e )
                 {
                     throw new MojoExecutionException( "Install of " + apkFile.getAbsolutePath() + " failed.", e );
                 }
@@ -739,7 +742,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                     getLog().info( "Successfully uninstalled " + packageName +
                             " from " + DeviceHelper.getDescriptiveName( device ) );
                     result.set( true );
-                } catch ( InstallException e )
+                }
+                catch ( InstallException e )
                 {
                     result.set( false );
                     throw new MojoExecutionException( "Uninstall of " +
@@ -772,11 +776,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
             executor.executeCommand( getAndroidSdk().getPathForTool( "aapt" ), commands, false );
             final String xmlTree = executor.getStandardOut();
             return extractPackageNameFromAndroidManifestXmlTree( xmlTree );
-        } catch ( ExecutionException e )
+        }
+        catch ( ExecutionException e )
         {
             throw new MojoExecutionException(
                     "Error while trying to figure out package name from inside apk file " + apkFile );
-        } finally
+        }
+        finally
         {
             String errout = executor.getStandardError();
             if ( ( errout != null ) && ( errout.trim().length() > 0 ) )
@@ -812,7 +818,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         try
         {
             xmlURL = androidManifestFile.toURI().toURL();
-        } catch ( MalformedURLException e )
+        }
+        catch ( MalformedURLException e )
         {
             throw new MojoExecutionException(
                     "Error while trying to figure out package name from inside AndroidManifest.xml file " +
@@ -838,7 +845,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         try
         {
             xmlURL = androidManifestFile.toURI().toURL();
-        } catch ( MalformedURLException e )
+        }
+        catch ( MalformedURLException e )
         {
             throw new MojoExecutionException(
                     "Error while trying to figure out instrumentation runner from inside AndroidManifest.xml file " +
@@ -850,7 +858,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         {
             instrumentationRunner = JXPathContext.newContext( documentContainer )
                     .getValue( "manifest//instrumentation/@android:name", String.class );
-        } catch ( JXPathNotFoundException e )
+        }
+        catch ( JXPathNotFoundException e )
         {
             return null;
         }
