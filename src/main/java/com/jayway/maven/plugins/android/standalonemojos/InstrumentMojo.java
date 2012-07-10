@@ -29,6 +29,11 @@ import org.apache.maven.plugin.MojoFailureException;
 public class InstrumentMojo extends AbstractInstrumentationMojo
 {
 
+    /**
+     *
+     * @throws MojoExecutionException
+     * @throws MojoFailureException
+     */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         instrument();

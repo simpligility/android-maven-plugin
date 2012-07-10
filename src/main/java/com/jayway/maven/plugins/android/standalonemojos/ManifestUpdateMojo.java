@@ -199,8 +199,14 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      */
     protected Boolean manifestDebuggable;
 
+    /**
+     *
+     */
     protected SupportsScreens manifestSupportsScreens;
 
+    /**
+     *
+     */
     protected List<CompatibleScreen> manifestCompatibleScreens;
 
     private String parsedVersionName;
@@ -212,6 +218,11 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private SupportsScreens parsedSupportsScreens;
     private List<CompatibleScreen> parsedCompatibleScreens;
 
+    /**
+     *
+     * @throws MojoExecutionException
+     * @throws MojoFailureException
+     */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         if ( ! AndroidExtension.isAndroidPackaging( project.getPackaging() ) )
@@ -384,6 +395,15 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         }
     }
 
+    /**
+     *
+     * @param manifestFile
+     * @throws IOException
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws TransformerException
+     * @throws MojoFailureException
+     */
     public void updateManifest( File manifestFile )
             throws IOException, ParserConfigurationException, SAXException, TransformerException, MojoFailureException
     {

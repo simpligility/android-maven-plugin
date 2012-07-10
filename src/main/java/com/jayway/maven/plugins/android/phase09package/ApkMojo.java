@@ -57,7 +57,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
@@ -181,11 +180,11 @@ public class ApkMojo extends AbstractAndroidMojo
      * So an example inside the plugin configuration could be:
      * <pre>
      * &lt;configuration&gt;
-     * 	  ...
+     *   ...
      *    &lt;sourceDirectories&gt;
      *      &lt;sourceDirectory&gt;${project.basedir}/additionals&lt;/sourceDirectory&gt;
-     * 	  &lt;/sourceDirectories&gt;
-     * 	  ...
+     *   &lt;/sourceDirectories&gt;
+     *   ...
      * &lt;/configuration&gt;
      * </pre>
      *
@@ -211,17 +210,17 @@ public class ApkMojo extends AbstractAndroidMojo
      * <p>The pattern is relative to META-INF, i.e. one must use
      * <pre>
      * <code>
-     * 	&lt;apkMetaIncludes&gt;
-     * 		&lt;metaInclude>services/**&lt;/metaInclude&gt;
-     * 	&lt;/apkMetaIncludes&gt;
+     * &lt;apkMetaIncludes&gt;
+     *     &lt;metaInclude>services/**&lt;/metaInclude&gt;
+     * &lt;/apkMetaIncludes&gt;
      * </code>
      * </pre>
      * ... instead of
      * <pre>
      * <code>
-     * 	&lt;apkMetaIncludes&gt;
-     * 		&lt;metaInclude>META-INF/services/**&lt;/metaInclude&gt;
-     * 	&lt;/apkMetaIncludes&gt;
+     * &lt;apkMetaIncludes&gt;
+     *     &lt;metaInclude>META-INF/services/**&lt;/metaInclude&gt;
+     * &lt;/apkMetaIncludes&gt;
      * </code>
      * </pre>
      * <p>
@@ -275,7 +274,7 @@ public class ApkMojo extends AbstractAndroidMojo
 
         cfh.parseConfiguration();
 
-        generateIntermediateAp_();
+        generateIntermediateApk();
 
         // Initialize apk build configuration
         File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + "." + APK );
@@ -450,7 +449,7 @@ public class ApkMojo extends AbstractAndroidMojo
         return false;
     }
 
-    private Map<String, List<File>> m_jars = new HashMap<String, List<File>>();
+    private Map<String, List<File>> jars = new HashMap<String, List<File>>();
 
     private void computeDuplicateFiles( File jar ) throws IOException
     {
@@ -461,11 +460,11 @@ public class ApkMojo extends AbstractAndroidMojo
             ZipEntry ze = list.nextElement();
             if ( ! ( ze.getName().contains( "META-INF/" ) || ze.isDirectory() ) )
             { // Exclude META-INF and Directories
-                List<File> l = m_jars.get( ze.getName() );
+                List<File> l = jars.get( ze.getName() );
                 if ( l == null )
                 {
                     l = new ArrayList<File>();
-                    m_jars.put( ze.getName(), l );
+                    jars.put( ze.getName(), l );
                 }
                 l.add( jar );
             }
@@ -513,9 +512,9 @@ public class ApkMojo extends AbstractAndroidMojo
         {
             List<String> duplicates = new ArrayList<String>();
             List<File> jarToModify = new ArrayList<File>();
-            for ( String s : m_jars.keySet() )
+            for ( String s : jars.keySet() )
             {
-                List<File> l = m_jars.get( s );
+                List<File> l = jars.get( s );
                 if ( l.size() > 1 )
                 {
                     getLog().warn( "Duplicate file " + s + " : " + l );
@@ -679,7 +678,8 @@ public class ApkMojo extends AbstractAndroidMojo
      */
     private static void copyStreamWithoutClosing( InputStream in, OutputStream out ) throws IOException
     {
-        byte[] b = new byte[ 4096 ];
+        int bufferSize = 4096;
+        byte[] b = new byte[ bufferSize ];
         for ( int n; ( n = in.read( b ) ) != - 1; )
         {
             out.write( b, 0, n );
@@ -947,7 +947,7 @@ public class ApkMojo extends AbstractAndroidMojo
      *
      * @throws MojoExecutionException
      */
-    private void generateIntermediateAp_() throws MojoExecutionException
+    private void generateIntermediateApk() throws MojoExecutionException
     {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
