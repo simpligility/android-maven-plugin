@@ -1,10 +1,3 @@
-/*
- * Copyright (C) 2009 Jayway AB Copyright (C) 2007-2008 JVending Masa Licensed under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed
- * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
- */
 package com.jayway.maven.plugins.android.phase08preparepackage;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
@@ -31,6 +24,7 @@ public class EmmaMojo extends AbstractAndroidMojo
     private static final String EMMA_FOLDER_NAME = "emma";
     private static final String CLASSES_FOLDER_NAME = "classes";
     private static final String COVERAGE_METADATA_NAME = "coverage.em";
+
     /**
      * Configuration for the emma command execution. It can be configured in the plugin configuration like so
      * <p/>
@@ -62,7 +56,8 @@ public class EmmaMojo extends AbstractAndroidMojo
     /**
      * Decides whether to enable or not enable emma.
      *
-     * @parameter expression="${android.emma.outputMetaFile}" default-value="${project.build.directory}/emma/coverage.es"
+     * @parameter expression="${android.emma.outputMetaFile}"
+     * default-value="${project.build.directory}/emma/coverage.es"
      */
     private File emmaOutputMetaFile;
 
@@ -76,10 +71,10 @@ public class EmmaMojo extends AbstractAndroidMojo
         parseConfiguration();
         if ( parsedEnable )
         {
-            getLog().info(
-                    "Emma OVERWRITE compiled class is on for this project !!! please don't use this project on production" );
-            getLog().debug(
-                    "configuration:  Class Folders - this file will be modificated by emma " + parsedEmmaClassFolders );
+            getLog().info("Emma OVERWRITE compiled class is on for this project! "
+                    + "Do NOT use this project on production" );
+            getLog().debug( "configuration:  Class Folders - this file will be modified by emma "
+                    + parsedEmmaClassFolders );
             getLog().debug( "configuration:  parsedOutputMetadataFile " + parsedOutputMetadataFile );
             InstrProcessor processor = InstrProcessor.create();
             processor.setInstrPath( parsedEmmaClassFolders, true );
@@ -89,8 +84,8 @@ public class EmmaMojo extends AbstractAndroidMojo
             processor.setMetaOutMerge( Boolean.TRUE );
             processor.run();
         }
-        getLog().debug( "Emma OVERWRITE is OFF for this project (" + project.getArtifactId() +
-                        ") taeget/classes files are safe" );
+        getLog().debug( "Emma OVERWRITE is OFF for this project (" + project.getArtifactId()
+                + ") target/classes files are safe" );
     }
 
     private void parseConfiguration() throws MojoExecutionException
@@ -132,9 +127,8 @@ public class EmmaMojo extends AbstractAndroidMojo
 
     private String getDefaultMetaDataFile()
     {
-        File outputFolder = new File(
-                project.getBuild().getDirectory() + File.separator + EMMA_FOLDER_NAME + File.separator +
-                COVERAGE_METADATA_NAME );
+        File outputFolder = new File( project.getBuild().getDirectory() + File.separator + EMMA_FOLDER_NAME
+                + File.separator + COVERAGE_METADATA_NAME );
         return outputFolder.getAbsolutePath();
     }
 

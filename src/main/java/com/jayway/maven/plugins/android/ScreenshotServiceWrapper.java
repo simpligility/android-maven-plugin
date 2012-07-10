@@ -17,12 +17,16 @@ import static com.github.rtyley.android.screenshot.paparazzo.processors.util.Dim
 import static com.jayway.maven.plugins.android.common.DeviceHelper.getDescriptiveName;
 import static org.apache.commons.io.FileUtils.forceMkdir;
 
+/**
+ * ScreenshotServiceWrapper wraps the feature to capture a screenshot during an instrumentation test run.
+ */
 public class ScreenshotServiceWrapper implements DeviceCallback
 {
 
     private final DeviceCallback delegate;
     private final Log log;
     private final File screenshotParentDir;
+    private static final int MAX_BOUNDS = 320;
 
     public ScreenshotServiceWrapper( DeviceCallback delegate, MavenProject project, Log log )
     {
@@ -42,9 +46,10 @@ public class ScreenshotServiceWrapper implements DeviceCallback
         File deviceScreenshotDir = new File( screenshotParentDir, deviceName );
         create( deviceScreenshotDir );
 
+
         OnDemandScreenshotService screenshotService = new OnDemandScreenshotService( device,
                 new ImageSaver( deviceScreenshotDir ),
-                new ImageScaler( new AnimatedGifCreator( deviceGifFile ), square( 320 ) ) );
+                new ImageScaler( new AnimatedGifCreator( deviceGifFile ), square( MAX_BOUNDS ) ) );
 
         screenshotService.start();
 

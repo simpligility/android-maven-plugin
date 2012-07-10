@@ -44,6 +44,12 @@ public class DeployMojo extends AbstractAndroidMojo
      */
     private File file;
 
+    /**
+     * Deploy the app to the attached devices and emulators.
+     *
+     * @throws MojoExecutionException
+     * @throws MojoFailureException
+     */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         if ( file == null )

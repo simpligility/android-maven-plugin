@@ -102,6 +102,11 @@ public class DexMojo extends AbstractAndroidMojo
     private boolean parsedNoLocals;
     private boolean parsedOptimize;
 
+    /**
+     *
+     * @throws MojoExecutionException
+     * @throws MojoFailureException
+     */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
 
@@ -282,6 +287,11 @@ public class DexMojo extends AbstractAndroidMojo
         return new File( javaHome + slash + "bin" + slash + "java" );
     }
 
+    /**
+     *
+     * @return
+     * @throws MojoExecutionException
+     */
     protected File createApkSourcesFile() throws MojoExecutionException
     {
         final File apksources = new File( project.getBuild().getDirectory(),
@@ -334,9 +344,8 @@ public class DexMojo extends AbstractAndroidMojo
      * @param jarArchiver
      * @param directory   The directory to add.
      * @param prefix      An optional prefix for where in the Jar file the directory's contents should go.
-     * @throws ArchiverException
      */
-    protected void addDirectory( JarArchiver jarArchiver, File directory, String prefix ) throws ArchiverException
+    protected void addDirectory( JarArchiver jarArchiver, File directory, String prefix )
     {
         if ( directory != null && directory.exists() )
         {
@@ -347,7 +356,12 @@ public class DexMojo extends AbstractAndroidMojo
         }
     }
 
-    protected void addJavaResources( JarArchiver jarArchiver, List<Resource> javaResources ) throws ArchiverException
+    /**
+     *
+     * @param jarArchiver
+     * @param javaResources
+     */
+    protected void addJavaResources( JarArchiver jarArchiver, List<Resource> javaResources )
     {
         for ( Resource javaResource : javaResources )
         {
@@ -360,9 +374,8 @@ public class DexMojo extends AbstractAndroidMojo
      *
      * @param jarArchiver
      * @param javaResource The Java resource to add.
-     * @throws ArchiverException
      */
-    protected void addJavaResource( JarArchiver jarArchiver, Resource javaResource ) throws ArchiverException
+    protected void addJavaResource( JarArchiver jarArchiver, Resource javaResource )
     {
         if ( javaResource != null )
         {

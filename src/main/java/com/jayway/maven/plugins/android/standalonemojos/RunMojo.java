@@ -26,7 +26,6 @@ import com.jayway.maven.plugins.android.config.ConfigHandler;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.Run;
-import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.w3c.dom.Document;
@@ -145,9 +144,29 @@ public class RunMojo extends AbstractAndroidMojo
      */
     private static class LauncherInfo
     {
-        public String packageName;
+        private String packageName;
 
-        public String activity;
+        private String activity;
+
+        public String getPackageName()
+        {
+            return packageName;
+        }
+
+        public void setPackageName( String packageName )
+        {
+            this.packageName = packageName;
+        }
+
+        public String getActivity()
+        {
+            return activity;
+        }
+
+        public void setActivity( String activity )
+        {
+            this.activity = activity;
+        }
     }
 
     // ----------------------------------------------------------------------
@@ -277,8 +296,8 @@ public class RunMojo extends AbstractAndroidMojo
             {
                 try
                 {
-                    getLog().info( "Attempting to start " + info.packageName + info.activity + " on device " +
-                                   device.getSerialNumber() + " (avdName = " + device.getAvdName() + ")" );
+                    getLog().info( "Attempting to start " + info.packageName + info.activity + " on device "
+                            + device.getSerialNumber() + " (avdName = " + device.getAvdName() + ")" );
                     device.executeShellCommand( command, new NullOutputReceiver() );
                 }
                 catch ( IOException ex )

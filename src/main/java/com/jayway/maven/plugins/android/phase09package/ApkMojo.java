@@ -67,7 +67,8 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
 
 /**
  * Creates the apk file. By default signs it with debug keystore.<br/>
- * Change that by setting configuration parameter <code>&lt;sign&gt;&lt;debug&gt;false&lt;/debug&gt;&lt;/sign&gt;</code>.
+ * Change that by setting configuration parameter
+ * <code>&lt;sign&gt;&lt;debug&gt;false&lt;/debug&gt;&lt;/sign&gt;</code>.
  *
  * @author hugo.josefson@jayway.com
  * @goal apk
@@ -147,7 +148,8 @@ public class ApkMojo extends AbstractAndroidMojo
 
     /**
      * <p>Default hardware architecture for native library dependencies (with {@code &lt;type>so&lt;/type>}).</p>
-     * <p>This value is used for dependencies without classifier, if {@code nativeLibrariesDependenciesHardwareArchitectureOverride} is not set.</p>
+     * <p>This value is used for dependencies without classifier, if
+     * {@code nativeLibrariesDependenciesHardwareArchitectureOverride} is not set.</p>
      * <p>Valid values currently include {@code armeabi} and {@code armeabi-v7a}.</p>
      *
      * @parameter expression="${android.nativeLibrariesDependenciesHardwareArchitectureDefault}" default-value="armeabi"
@@ -163,7 +165,8 @@ public class ApkMojo extends AbstractAndroidMojo
 
     /**
      * <p>Override hardware architecture for native library dependencies (with {@code &lt;type>so&lt;/type>}).</p>
-     * <p>This overrides any classifier on native library dependencies, and any {@code nativeLibrariesDependenciesHardwareArchitectureDefault}.</p>
+     * <p>This overrides any classifier on native library dependencies, and
+     * any {@code nativeLibrariesDependenciesHardwareArchitectureDefault}.</p>
      * <p>Valid values currently include {@code armeabi} and {@code armeabi-v7a}.</p>
      *
      * @parameter expression="${android.nativeLibrariesDependenciesHardwareArchitectureOverride}"
@@ -254,6 +257,11 @@ public class ApkMojo extends AbstractAndroidMojo
 
     private static final Pattern PATTERN_JAR_EXT = Pattern.compile( "^.+\\.jar$", 2 );
 
+    /**
+     *
+     * @throws MojoExecutionException
+     * @throws MojoFailureException
+     */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
 
@@ -270,8 +278,7 @@ public class ApkMojo extends AbstractAndroidMojo
         generateIntermediateAp_();
 
         // Initialize apk build configuration
-        File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() +
-                                                                       "." + APK );
+        File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + "." + APK );
         final boolean signWithDebugKeyStore = getAndroidSigner().isSignWithDebugKeyStore();
 
         if ( getAndroidSigner().shouldCreateBothSignedAndUnsignedApk() )
@@ -384,7 +391,7 @@ public class ApkMojo extends AbstractAndroidMojo
     }
 
     private void updateWithMetaInf( ZipOutputStream zos, File jarFile, Set<String> entries, boolean metaInfOnly )
-            throws ZipException, IOException
+            throws IOException
     {
         ZipFile zin = new ZipFile( jarFile );
 
@@ -445,7 +452,7 @@ public class ApkMojo extends AbstractAndroidMojo
 
     private Map<String, List<File>> m_jars = new HashMap<String, List<File>>();
 
-    private void computeDuplicateFiles( File jar ) throws ZipException, IOException
+    private void computeDuplicateFiles( File jar ) throws IOException
     {
         ZipFile file = new ZipFile( jar );
         Enumeration<? extends ZipEntry> list = file.entries();
@@ -755,10 +762,9 @@ public class ApkMojo extends AbstractAndroidMojo
         // Examine the native libraries directory for content. This will only be true if:
         // a) the directory exists
         // b) it contains at least 1 file
-        final boolean hasValidNativeLibrariesDirectory = nativeLibrariesDirectory != null && nativeLibrariesDirectory
-                .exists() &&
-                                                         ( nativeLibrariesDirectory.listFiles() != null
-                                                           && nativeLibrariesDirectory.listFiles().length > 0 );
+        final boolean hasValidNativeLibrariesDirectory = nativeLibrariesDirectory != null
+                && nativeLibrariesDirectory.exists()
+                && ( nativeLibrariesDirectory.listFiles() != null && nativeLibrariesDirectory.listFiles().length > 0 );
 
         // Retrieve any native dependencies or attached artifacts.  This may include artifacts from the ndk-build MOJO
         NativeHelper nativeHelper = new NativeHelper( project, projectRepos, repoSession, repoSystem, artifactFactory,
@@ -813,8 +819,9 @@ public class ApkMojo extends AbstractAndroidMojo
                             try
                             {
                                 final String artifactId = resolvedArtifact.getArtifactId();
-                                final String filename = artifactId.startsWith( "lib" ) ? artifactId + ".so" :
-                                        "lib" + artifactId + ".so";
+                                final String filename = artifactId.startsWith( "lib" )
+                                        ? artifactId + ".so"
+                                        : "lib" + artifactId + ".so";
 
                                 final File finalDestinationDirectory = getFinalDestinationDirectoryFor(
                                         resolvedArtifact, destinationDirectory );
@@ -1035,8 +1042,8 @@ public class ApkMojo extends AbstractAndroidMojo
                                 {
                                     if ( AbstractScanner.match( pattern, file.getAbsolutePath() ) )
                                     {
-                                        getLog().debug( "Excluding " + file.getName() + " from asset copy : matching " +
-                                                        pattern );
+                                        getLog().debug( "Excluding " + file.getName() + " from asset copy : matching "
+                                                + pattern );
                                         return false;
                                     }
                                 }
@@ -1079,9 +1086,8 @@ public class ApkMojo extends AbstractAndroidMojo
                                         {
                                             if ( AbstractScanner.match( pattern, file.getAbsolutePath() ) )
                                             {
-                                                getLog().debug(
-                                                        "Excluding " + file.getName() + " from asset copy : matching " +
-                                                        pattern );
+                                                getLog().debug( "Excluding " + file.getName() + " from asset copy : "
+                                                        + "matching " + pattern );
                                                 return false;
                                             }
                                         }
@@ -1226,6 +1232,10 @@ public class ApkMojo extends AbstractAndroidMojo
         }
     }
 
+    /**
+     *
+     * @return
+     */
     protected AndroidSigner getAndroidSigner()
     {
         if ( sign == null )
@@ -1238,6 +1248,10 @@ public class ApkMojo extends AbstractAndroidMojo
         }
     }
 
+    /**
+     *
+     * @return
+     */
     private String[] getDefaultMetaIncludes()
     {
         return new String[ 0 ];
