@@ -49,9 +49,14 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
 public class ApklibMojo extends AbstractAndroidMojo
 {
 
+    /**
+     *
+     * @throws MojoExecutionException
+     * @throws MojoFailureException
+     */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        generateIntermediateAp_();
+        generateIntermediateApk();
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
@@ -62,6 +67,11 @@ public class ApklibMojo extends AbstractAndroidMojo
         project.getArtifact().setFile( outputFile );
     }
 
+    /**
+     *
+     * @return
+     * @throws MojoExecutionException
+     */
     protected File createApkLibraryFile() throws MojoExecutionException
     {
         final File apklibrary = new File( project.getBuild().getDirectory(),
@@ -115,7 +125,7 @@ public class ApklibMojo extends AbstractAndroidMojo
     }
 
     protected void addJavaResources( JarArchiver jarArchiver, List<Resource> javaResources, String prefix )
-            throws ArchiverException, IOException
+            throws IOException
     {
         for ( Resource javaResource : javaResources )
         {
@@ -129,11 +139,10 @@ public class ApklibMojo extends AbstractAndroidMojo
      * @param jarArchiver
      * @param javaResource The Java resource to add.
      * @param prefix       An optional prefix for where in the Jar file the directory's contents should go.
-     * @throws ArchiverException
-     * @throws java.io.IOException in case the resource path can not be resolved
+     * @throws IOException in case the resource path can not be resolved
      */
     protected void addJavaResource( JarArchiver jarArchiver, Resource javaResource, String prefix )
-            throws ArchiverException, IOException
+            throws IOException
     {
         if ( javaResource != null )
         {
@@ -176,9 +185,8 @@ public class ApklibMojo extends AbstractAndroidMojo
      * @param jarArchiver
      * @param directory   The directory to add.
      * @param prefix      An optional prefix for where in the Jar file the directory's contents should go.
-     * @throws ArchiverException
      */
-    protected void addDirectory( JarArchiver jarArchiver, File directory, String prefix ) throws ArchiverException
+    protected void addDirectory( JarArchiver jarArchiver, File directory, String prefix )
     {
         if ( directory != null && directory.exists() )
         {
@@ -194,7 +202,7 @@ public class ApklibMojo extends AbstractAndroidMojo
      *
      * @throws MojoExecutionException
      */
-    private void generateIntermediateAp_() throws MojoExecutionException
+    private void generateIntermediateApk() throws MojoExecutionException
     {
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();

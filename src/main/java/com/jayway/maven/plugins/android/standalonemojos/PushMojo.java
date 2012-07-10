@@ -124,8 +124,8 @@ public class PushMojo extends AbstractAndroidMojo
                         String sourcePath = pushFileEntry.getKey();
                         String destinationPath = pushFileEntry.getValue();
 
-                        message = "Push of " + sourcePath + " to " +
-                                  destinationPath + " on " + DeviceHelper.getDescriptiveName( device );
+                        message = "Push of " + sourcePath + " to " + destinationPath + " on "
+                                + DeviceHelper.getDescriptiveName( device );
 
                         syncService.pushFile( sourcePath, destinationPath, new LogSyncProgressMonitor( getLog() ) );
 
@@ -199,9 +199,8 @@ public class PushMojo extends AbstractAndroidMojo
             }
             else
             {
-                throw new MojoExecutionException(
-                        "Cannot execute push goal: File or directory " + sourceFile.getAbsolutePath() +
-                        " does not exist." );
+                throw new MojoExecutionException( "Cannot execute push goal: File or directory "
+                        + sourceFile.getAbsolutePath() + " does not exist." );
             }
         }
         return result;

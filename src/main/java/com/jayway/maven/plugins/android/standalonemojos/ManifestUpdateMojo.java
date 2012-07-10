@@ -407,13 +407,13 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             dirty = true;
         }
 
-        if ( ( parsedVersionCodeAutoIncrement && parsedVersionCode != null ) ||
-             ( parsedVersionCodeUpdateFromVersion && parsedVersionCode != null ) ||
-             ( parsedVersionCodeAutoIncrement && parsedVersionCodeUpdateFromVersion ) )
+        if ( ( parsedVersionCodeAutoIncrement && parsedVersionCode != null )
+                || ( parsedVersionCodeUpdateFromVersion && parsedVersionCode != null )
+                || ( parsedVersionCodeAutoIncrement && parsedVersionCodeUpdateFromVersion ) )
         {
-            throw new MojoFailureException( "versionCodeAutoIncrement, versionCodeUpdateFromVersion and versionCode " +
-                                            "are mutual exclusive. They cannot be specified at the same time. " +
-                                            "Please specify either versionCodeAutoIncrement, versionCodeUpdateFromVersion or versionCode!" );
+            throw new MojoFailureException( "versionCodeAutoIncrement, versionCodeUpdateFromVersion and versionCode "
+                    + "are mutual exclusive. They cannot be specified at the same time. Please specify either "
+                    + "versionCodeAutoIncrement, versionCodeUpdateFromVersion or versionCode!" );
         }
 
         // Expose the version properties and other simple parsed manifest entries
@@ -471,9 +471,9 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             }
             else
             {
-                verCode = Integer.toString( artifactVersion.getMajorVersion() ) +
-                          Integer.toString( artifactVersion.getMinorVersion() ) +
-                          Integer.toString( artifactVersion.getIncrementalVersion() );
+                verCode = Integer.toString( artifactVersion.getMajorVersion() )
+                        + Integer.toString( artifactVersion.getMinorVersion() )
+                        + Integer.toString( artifactVersion.getIncrementalVersion() );
             }
             getLog().info( "Setting " + ATTR_VERSION_CODE + " to " + verCode );
             manifestElement.setAttribute( ATTR_VERSION_CODE, verCode );

@@ -15,12 +15,10 @@ public class EmulatorStopMojo extends AbstractEmulatorMojo
 {
 
     /**
-     * Start the Android Emulator.
+     * Stop the emulator(s).
      *
-     * @throws org.apache.maven.plugin.MojoExecutionException
-     *
-     * @throws org.apache.maven.plugin.MojoFailureException
-     *
+     * @throws MojoExecutionException
+     * @throws MojoFailureException
      */
     public void execute() throws MojoExecutionException, MojoFailureException
     {

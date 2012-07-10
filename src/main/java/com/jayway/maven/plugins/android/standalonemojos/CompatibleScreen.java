@@ -1,9 +1,13 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
+/**
+ * CompatibleScreen abstracts the AndroidManifest element.
+ */
 public class CompatibleScreen
 {
 
-    private String screenSize, screenDensity;
+    private String screenSize;
+    private String screenDensity;
 
     public String getScreenSize()
     {

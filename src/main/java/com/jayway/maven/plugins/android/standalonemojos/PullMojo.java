@@ -174,8 +174,8 @@ public class PullMojo extends AbstractAndroidMojo
 
                         File destinationFile = new File( parentDir, destinationFileName );
                         String destinationFilePath = destinationFile.getAbsolutePath();
-                        message = "Pull of " + parsedSource + " to " + destinationFilePath + " from " +
-                                  DeviceHelper.getDescriptiveName( device );
+                        message = "Pull of " + parsedSource + " to " + destinationFilePath + " from "
+                                + DeviceHelper.getDescriptiveName( device );
 
                         syncService.pullFile( sourceFileEntry, destinationFilePath,
                                 new LogSyncProgressMonitor( getLog() ) );

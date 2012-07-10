@@ -388,11 +388,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     private File ndkPath;
 
-
     /**
      *
      */
-    private static final Object adbLock = new Object();
+    private static final Object ADB_LOCK = new Object();
     /**
      *
      */
@@ -480,9 +479,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         final File jar = resolvedArtifact.getFile();
         if ( jar == null )
         {
-            throw new MojoExecutionException( "Could not resolve artifact " + artifact.getId() +
-                    ". Please install it with \"mvn install:install-file ...\" or deploy it to a repository " +
-                    "with \"mvn deploy:deploy-file ...\"" );
+            throw new MojoExecutionException( "Could not resolve artifact " + artifact.getId()
+                    + ". Please install it with \"mvn install:install-file ...\" or deploy it to a repository "
+                    + "with \"mvn deploy:deploy-file ...\"" );
         }
         return jar;
     }
@@ -496,7 +495,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected AndroidDebugBridge initAndroidDebugBridge() throws MojoExecutionException
     {
-        synchronized ( adbLock )
+        synchronized ( ADB_LOCK )
         {
             if ( ! adbInitialized )
             {
@@ -519,11 +518,12 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     private void waitUntilConnected( AndroidDebugBridge adb )
     {
         int trials = 10;
+        int connectionWaitTime = 50;
         while ( trials > 0 )
         {
             try
             {
-                Thread.sleep( 50 );
+                Thread.sleep( connectionWaitTime );
             }
             catch ( InterruptedException e )
             {
@@ -587,8 +587,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                 try
                 {
                     device.installPackage( apkFile.getAbsolutePath(), true );
-                    getLog().info( "Successfully installed " + apkFile.getAbsolutePath() + " to " +
-                            DeviceHelper.getDescriptiveName( device ) );
+                    getLog().info( "Successfully installed " + apkFile.getAbsolutePath() + " to "
+                            + DeviceHelper.getDescriptiveName( device ) );
                 }
                 catch ( InstallException e )
                 {
@@ -778,8 +778,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                 catch ( InstallException e )
                 {
                     result.set( false );
-                    throw new MojoExecutionException( "Uninstall of " +
-                            packageName + " failed.", e );
+                    throw new MojoExecutionException( "Uninstall of " + packageName + " failed.", e );
                 }
             }
         } );
@@ -1050,10 +1049,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         final String androidHome = System.getenv( ENV_ANDROID_HOME );
         if ( isBlank( androidHome ) )
         {
-            throw new MojoExecutionException( "No Android SDK path could be found. You may configure it in the " +
-                    "plugin configuration section in the pom file using <sdk><path>...</path></sdk> or " +
-                    "<properties><android.sdk.path>...</android.sdk.path></properties> or on command-line " +
-                    "using -Dandroid.sdk.path=... or by setting environment variable " + ENV_ANDROID_HOME );
+            throw new MojoExecutionException( "No Android SDK path could be found. You may configure it in the "
+                    + "plugin configuration section in the pom file using <sdk><path>...</path></sdk> or "
+                    + "<properties><android.sdk.path>...</android.sdk.path></properties> or on command-line "
+                    + "using -Dandroid.sdk.path=... or by setting environment variable " + ENV_ANDROID_HOME );
         }
         return androidHome;
     }

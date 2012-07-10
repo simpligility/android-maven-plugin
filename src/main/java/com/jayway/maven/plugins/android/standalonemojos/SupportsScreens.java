@@ -1,5 +1,8 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
+/**
+ *
+ */
 public class SupportsScreens
 {
 
