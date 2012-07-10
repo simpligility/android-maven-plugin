@@ -206,7 +206,7 @@ public class ProguardMojo extends AbstractAndroidMojo {
                 sb.append(')');
                 return sb.toString();
             } else
-                return path;
+                return  "\'" + path + "\'";
         }
     }
 
