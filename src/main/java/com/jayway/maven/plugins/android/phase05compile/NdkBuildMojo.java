@@ -63,8 +63,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      *     &lt;path&gt;/opt/android-ndk-r4&lt;/path&gt;
      * &lt;/ndk&gt;
      * </pre>
-     * <p>The <code>&lt;path&gt;</code> parameter is optional. The default is the setting of the ANDROID_NDK_HOME environment
-     * variable. The parameter can be used to override this setting with a different environment variable like this:</p>
+     * <p>The <code>&lt;path&gt;</code> parameter is optional. The default is the setting of the ANDROID_NDK_HOME
+     * environment variable. The parameter can be used to override this setting with a different environment variable
+     * like this:</p>
      * <pre>
      * &lt;ndk&gt;
      *     &lt;path&gt;${env.ANDROID_NDK_HOME}&lt;/path&gt;
@@ -109,8 +110,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo
     protected String ndkBuildAdditionalCommandline;
 
     /**
-     * Flag indicating whether the NDK output directory (libs/&lt;architecture&gt;) should be cleared after build.  This
-     * will essentially 'move' all the native artifacts (.so) to the ${project.build.directory}/libs/&lt;architecture&gt;.
+     * Flag indicating whether the NDK output directory (libs/&lt;architecture&gt;) should be cleared after build. This
+     * will essentially 'move' all the native artifacts (.so) to
+     * the ${project.build.directory}/libs/&lt;architecture&gt;.
      * If an APK is built as part of the invocation, the libraries will be included from here.
      *
      * @parameter expression="${android.ndk.build.clear-native-artifacts}" default-value="false"
@@ -130,7 +132,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
     /**
      * Build folder to place built native libraries into
      *
-     * @parameter expression="${android.ndk.build.ndk-output-directory}" default-value="${project.build.directory}/ndk-libs"
+     * @parameter expression="${android.ndk.build.ndk-output-directory}"
+     * default-value="${project.build.directory}/ndk-libs"
      */
     private File ndkOutputDirectory;
 
@@ -177,7 +180,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      * Flag indicating whether the make files last LOCAL_SRC_INCLUDES should be used for determing what header
      * files to include.  Setting this flag to true, overrides any defined header files directives.
      * <strong>Note: </strong> By setting this flag to true, all header files used in the project will be
-     * added to the resulting header archive.  This may be undesirable in most cases and is therefore turned off by default.
+     * added to the resulting header archive.  This may be undesirable in most cases and is therefore turned off by
+     * default.
      *
      * @parameter expression="${android.ndk.build.use-local-src-include-paths}" default-value="false"
      */
@@ -264,13 +268,14 @@ public class NdkBuildMojo extends AbstractAndroidMojo
     private Boolean ignoreBuildWarnings;
 
     /**
-     * Defines the regular expression used to detect whether error/warning output from ndk-build is a minor compile warning
-     * or is actually an error which should cause the build to fail.
+     * Defines the regular expression used to detect whether error/warning output from ndk-build is a minor compile
+     * warning or is actually an error which should cause the build to fail.
      * <p/>
      * If the pattern matches, the output from the compiler will <strong>not</strong> be considered an error and compile
      * will be successful.
      *
-     * @parameter expression="${android.ndk.build.build-warnings-regular-expression}" default-value=".*[warning|note]: .*"
+     * @parameter expression="${android.ndk.build.build-warnings-regular-expression}"
+     * default-value=".*[warning|note]: .*"
      */
     @PullParameter( defaultValue = ".*[warning|note]: .*" )
     private String buildWarningsRegularExpression;
@@ -304,6 +309,11 @@ public class NdkBuildMojo extends AbstractAndroidMojo
     @PullParameter
     private String makefile;
 
+    /**
+     *
+     * @throws MojoExecutionException
+     * @throws MojoFailureException
+     */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
 
@@ -495,8 +505,10 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             else /*if ( "a".equals( project.getPackaging() ) )*/
             {
                 // Hack for the moment - seems .so projects will happily use .so
-                // getLog().info( "Statically linked native library being built, forcing NDK target to "+project.getArtifactId() );
-                // getLog().info( "If target is not "+project.getArtifactId()+" please investigate and use the 'target' configuration parameter!" );
+                // getLog().info( "Statically linked native library being built, forcing NDK target to
+                // "+project.getArtifactId() );
+                // getLog().info( "If target is not "+project.getArtifactId()+" please investigate and use the
+                // 'target' configuration parameter!" );
                 commands.add( project.getArtifactId() );
             }
 
@@ -525,9 +537,10 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 }
 
                 // Attempt to attach the native library if the project is defined as a "pure" native Android library
-                // (packaging is 'so' or 'a') or if the plugin has been configured to attach the native library to the build
-                if ( "so".equals( project.getPackaging() ) || "a".equals( project.getPackaging() ) ||
-                     attachNativeArtifacts )
+                // (packaging is 'so' or 'a') or if the plugin has been configured to attach the native library to the
+                // build
+                if ( "so".equals( project.getPackaging() ) || "a".equals( project.getPackaging() )
+                        || attachNativeArtifacts )
                 {
 
                     final File nativeArtifactFile;
@@ -555,9 +568,10 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                         if ( files == null || files.length != 1 )
                         {
 
-                            getLog().warn( "Error while detecting native compile artifacts: " + (
-                                    files == null || files.length == 0 ? "None found" :
-                                            "Found more than 1 artifact" ) );
+                            getLog().warn( "Error while detecting native compile artifacts: "
+                                    + ( files == null || files.length == 0
+                                            ? "None found"
+                                            : "Found more than 1 artifact" ) );
 
                             if ( files != null && files.length > 1 )
                             {
@@ -569,10 +583,10 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                             }
                             else
                             {
-                                getLog().error(
-                                        "No native compiled library found, did the native compile complete successfully?" );
-                                throw new MojoExecutionException(
-                                        "No native compiled library found, did the native compile complete successfully?" );
+                                getLog().error( "No native compiled library found, did the native compile complete "
+                                        + "successfully?" );
+                                throw new MojoExecutionException( "No native compiled library found, did the native "
+                                        + "compile complete successfully?" );
                             }
                         }
                         nativeArtifactFile = files[ 0 ];
@@ -585,13 +599,13 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                         if ( ! nativeArtifactFile.exists() )
                         {
                             getLog().error(
-                                    "Could not locate final native library using the provided ndkFinalLibraryName " +
-                                    ndkFinalLibraryName + " (tried " + nativeArtifactFile.getAbsolutePath() +
-                                    ")" );
+                                    "Could not locate final native library using the provided ndkFinalLibraryName "
+                                    + ndkFinalLibraryName + " (tried " + nativeArtifactFile.getAbsolutePath()
+                                    + ")" );
                             throw new MojoExecutionException(
-                                    "Could not locate final native library using the provided ndkFinalLibraryName " +
-                                    ndkFinalLibraryName + " (tried " + nativeArtifactFile.getAbsolutePath() +
-                                    ")" );
+                                    "Could not locate final native library using the provided ndkFinalLibraryName "
+                                    + ndkFinalLibraryName + " (tried " + nativeArtifactFile.getAbsolutePath()
+                                    + ")" );
                         }
                     }
 

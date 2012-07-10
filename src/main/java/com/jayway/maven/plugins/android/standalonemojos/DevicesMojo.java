@@ -24,10 +24,8 @@ public class DevicesMojo extends AbstractAndroidMojo
     /**
      * Display a list of attached devices.
      *
-     * @throws org.apache.maven.plugin.MojoExecutionException
-     *
-     * @throws org.apache.maven.plugin.MojoFailureException
-     *
+     * @throws MojoExecutionException
+     * @throws MojoFailureException
      */
     public void execute() throws MojoExecutionException, MojoFailureException
     {

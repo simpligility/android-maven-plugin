@@ -34,6 +34,11 @@ import org.apache.maven.plugin.MojoFailureException;
 public class DeployDependenciesMojo extends AbstractAndroidMojo
 {
 
+    /**
+     *
+     * @throws MojoExecutionException
+     * @throws MojoFailureException
+     */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         deployDependencies();

@@ -71,7 +71,7 @@ public class EmmaMojo extends AbstractAndroidMojo
         parseConfiguration();
         if ( parsedEnable )
         {
-            getLog().info("Emma OVERWRITE compiled class is on for this project! "
+            getLog().info( "Emma OVERWRITE compiled class is on for this project! "
                     + "Do NOT use this project on production" );
             getLog().debug( "configuration:  Class Folders - this file will be modified by emma "
                     + parsedEmmaClassFolders );
