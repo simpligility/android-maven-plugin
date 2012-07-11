@@ -140,6 +140,109 @@ public interface CommandExecutor
         }
 
         /**
+         * StreamConsumer instance that buffers the entire output
+         */
+        static class StreamConsumerImpl implements StreamConsumer
+        {
+            private DefaultConsumer consumer;
+            private StringBuffer sb = new StringBuffer();
+            private final Log logger;
+
+
+            public StreamConsumerImpl( Log logger )
+            {
+                this.logger = logger;
+                consumer = new DefaultConsumer();
+            }
+
+            public void consumeLine( String line )
+            {
+                sb.append( line );
+                if ( logger != null )
+                {
+                    consumer.consumeLine( line );
+                }
+            }
+
+            /**
+             * Returns the stream
+             *
+             * @return the stream
+             */
+            public String toString()
+            {
+                return sb.toString();
+            }
+        }
+
+        /**
+         * Provides behavior for determining whether the command utility wrote anything to the Standard Error
+         * Stream.
+         * NOTE: I am using this to decide whether to fail the NMaven build. If the compiler implementation
+         * chooses to write warnings to the error stream, then the build will fail on warnings!!!
+         */
+        static class ErrorStreamConsumer implements StreamConsumer
+        {
+            /** Is true if there was anything consumed from the stream, otherwise false */
+            private boolean error;
+            /** Buffer to store the stream */
+            private StringBuffer sbe = new StringBuffer();
+            private final Log logger;
+            private final ErrorListener errorListener;
+
+            public ErrorStreamConsumer( Log logger, ErrorListener errorListener )
+            {
+                this.logger = logger;
+                this.errorListener = errorListener;
+
+                if ( logger == null )
+                {
+                    System.out.println( "ANDROID-040-003: Error Log not set: Will not output error logs" );
+                }
+                error = false;
+            }
+
+            public void consumeLine( String line )
+            {
+                sbe.append( line );
+                if ( logger != null )
+                {
+                    logger.info( line );
+                }
+                if ( errorListener != null )
+                {
+                    error = errorListener.isError( line );
+                }
+                else
+                {
+                    error = true;
+                }
+            }
+
+            /**
+             * Returns false if the command utility wrote to the Standard Error Stream, otherwise returns true.
+             *
+             * @return false if the command utility wrote to the Standard Error Stream, otherwise returns true.
+             */
+            public boolean hasError()
+            {
+                return error;
+            }
+
+            /**
+             * Returns the error stream
+             *
+             * @return error stream
+             */
+            public String toString()
+            {
+                return sbe.toString();
+            }
+        }
+
+
+
+        /**
          * Returns a default instance of the command executor
          *
          * @return a default instance of the command executor
@@ -201,8 +304,8 @@ public interface CommandExecutor
                     {
                         commands = new ArrayList<String>();
                     }
-                    stdOut = new StreamConsumerImpl();
-                    stdErr = new ErrorStreamConsumer();
+                    stdOut = new StreamConsumerImpl( logger );
+                    stdErr = new ErrorStreamConsumer( logger, errorListener );
 
                     commandline = new Commandline();
                     commandline.setExecutable( executable );
@@ -286,107 +389,6 @@ public interface CommandExecutor
                 public long getPid()
                 {
                     return pid;
-                }
-
-                /**
-                 * Provides behavior for determining whether the command utility wrote anything to the Standard Error
-                 * Stream.
-                 * NOTE: I am using this to decide whether to fail the NMaven build. If the compiler implementation
-                 * chooses to write warnings to the error stream, then the build will fail on warnings!!!
-                 */
-                class ErrorStreamConsumer implements StreamConsumer
-                {
-
-                    /**
-                     * Is true if there was anything consumed from the stream, otherwise false
-                     */
-                    private boolean error;
-
-                    /**
-                     * Buffer to store the stream
-                     */
-                    private StringBuffer sbe = new StringBuffer();
-
-                    public ErrorStreamConsumer()
-                    {
-                        if ( logger == null )
-                        {
-                            System.out.println( "ANDROID-040-003: Error Log not set: Will not output error logs" );
-                        }
-                        error = false;
-                    }
-
-                    public void consumeLine( String line )
-                    {
-                        sbe.append( line );
-                        if ( logger != null )
-                        {
-                            logger.info( line );
-                        }
-                        if ( errorListener != null )
-                        {
-                            error = errorListener.isError( line );
-                        }
-                        else
-                        {
-                            error = true;
-                        }
-                    }
-
-                    /**
-                     * Returns false if the command utility wrote to the Standard Error Stream, otherwise returns true.
-                     *
-                     * @return false if the command utility wrote to the Standard Error Stream, otherwise returns true.
-                     */
-                    public boolean hasError()
-                    {
-                        return error;
-                    }
-
-                    /**
-                     * Returns the error stream
-                     *
-                     * @return error stream
-                     */
-                    public String toString()
-                    {
-                        return sbe.toString();
-                    }
-                }
-
-                /**
-                 * StreamConsumer instance that buffers the entire output
-                 */
-                class StreamConsumerImpl implements StreamConsumer
-                {
-
-                    private DefaultConsumer consumer;
-
-                    private StringBuffer sb = new StringBuffer();
-
-                    public StreamConsumerImpl()
-                    {
-                        consumer = new DefaultConsumer();
-                    }
-
-                    public void consumeLine( String line )
-                    {
-                        sb.append( line );
-                        if ( logger != null )
-                        {
-                            consumer.consumeLine( line );
-                        }
-                    }
-
-                    /**
-                     * Returns the stream
-                     *
-                     * @return the stream
-                     */
-                    public String toString()
-                    {
-                        return sb.toString();
-                    }
                 }
             };
 
