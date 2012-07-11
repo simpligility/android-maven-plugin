@@ -46,8 +46,8 @@ public interface CommandExecutor
      *
      * @param executable the name of the executable (csc, xsd, etc).
      * @param commands   the command options for the compiler/executable
-     * @throws ExecutionException if compiler or executable writes anything to the standard error stream or if the process
-     *                            returns a process result != 0.
+     * @throws ExecutionException if compiler or executable writes anything to the standard error stream or if the
+     * process returns a process result != 0.
      */
     void executeCommand( String executable, List<String> commands ) throws ExecutionException;
 
@@ -118,7 +118,10 @@ public interface CommandExecutor
 
     void setErrorListener( ErrorListener errorListener );
 
-    public static interface ErrorListener
+    /**
+     *
+     */
+    public interface ErrorListener
     {
         boolean isError( String error );
     }

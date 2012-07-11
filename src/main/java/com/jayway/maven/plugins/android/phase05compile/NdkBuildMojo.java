@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -522,18 +523,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 // Cleanup libs/armeabi directory if needed - this implies moving any native artifacts into target/libs
                 if ( clearNativeArtifacts )
                 {
-                    final File destinationDirectory = new File( ndkOutputDirectory.getAbsolutePath(),
-                            "/" + ndkArchitecture );
-                    if ( ! libsDirectoryExists )
-                    {
-                        FileUtils.moveDirectory( nativeLibDirectory, destinationDirectory );
-                    }
-                    else
-                    {
-                        FileUtils.copyDirectory( nativeLibDirectory, destinationDirectory );
-                        FileUtils.cleanDirectory( nativeLibDirectory );
-                    }
-                    nativeLibDirectory = destinationDirectory;
+                    nativeLibDirectory = cleanUpNativeArtifacts( nativeLibDirectory, libsDirectoryExists );
                 }
 
                 // Attempt to attach the native library if the project is defined as a "pure" native Android library
@@ -567,7 +557,6 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                         // slight limitation at this stage - we only handle a single .so artifact
                         if ( files == null || files.length != 1 )
                         {
-
                             getLog().warn( "Error while detecting native compile artifacts: "
                                     + ( files == null || files.length == 0
                                             ? "None found"
@@ -671,6 +660,23 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             throw new MojoExecutionException( e.getMessage(), e );
         }
 
+    }
+
+    private File cleanUpNativeArtifacts( File nativeLibDirectory, boolean libsDirectoryExists ) throws IOException
+    {
+        final File destinationDirectory = new File( ndkOutputDirectory.getAbsolutePath(),
+                "/" + ndkArchitecture );
+        if ( ! libsDirectoryExists )
+        {
+            FileUtils.moveDirectory( nativeLibDirectory, destinationDirectory );
+        }
+        else
+        {
+            FileUtils.copyDirectory( nativeLibDirectory, destinationDirectory );
+            FileUtils.cleanDirectory( nativeLibDirectory );
+        }
+        nativeLibDirectory = destinationDirectory;
+        return nativeLibDirectory;
     }
 
     private void validateMakefile( MavenProject project, String makefile )

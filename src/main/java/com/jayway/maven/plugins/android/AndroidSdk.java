@@ -302,7 +302,7 @@ public class AndroidSdk
      *
      * @throws InvalidSdkException
      */
-    private void findAvailablePlatforms() throws InvalidSdkException
+    private void findAvailablePlatforms()
     {
         availablePlatforms = new HashSet<Platform>();
 
