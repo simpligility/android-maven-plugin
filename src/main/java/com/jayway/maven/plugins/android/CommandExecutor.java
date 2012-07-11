@@ -223,25 +223,24 @@ public interface CommandExecutor
                         result = CommandLineUtils.executeCommandLine( commandline, stdOut, stdErr );
                         if ( logger != null )
                         {
-                            logger.debug( "ANDROID-040-000: Executed command: Commandline = " + commandline +
-                                          ", Result = " + result );
+                            logger.debug( "ANDROID-040-000: Executed command: Commandline = " + commandline
+                                    + ", Result = " + result );
                         }
                         else
                         {
-                            System.out.println( "ANDROID-040-000: Executed command: Commandline = " + commandline +
-                                                ", Result = " + result );
+                            System.out.println( "ANDROID-040-000: Executed command: Commandline = " + commandline
+                                    + ", Result = " + result );
                         }
                         if ( ( failsOnErrorOutput && stdErr.hasError() ) || result != 0 )
                         {
-                            throw new ExecutionException( "ANDROID-040-001: Could not execute: Command = " +
-                                                          commandline.toString() + ", Result = " + result );
+                            throw new ExecutionException( "ANDROID-040-001: Could not execute: Command = "
+                                    + commandline.toString() + ", Result = " + result );
                         }
                     }
                     catch ( CommandLineException e )
                     {
-                        throw new ExecutionException(
-                                "ANDROID-040-002: Could not execute: Command = " + commandline.toString() +
-                                ", Error message = " + e.getMessage() );
+                        throw new ExecutionException( "ANDROID-040-002: Could not execute: Command = "
+                                + commandline.toString() + ", Error message = " + e.getMessage() );
                     }
                     setPid( commandline.getPid() );
                 }
@@ -287,9 +286,10 @@ public interface CommandExecutor
                 }
 
                 /**
-                 * Provides behavior for determining whether the command utility wrote anything to the Standard Error Stream.
-                 * NOTE: I am using this to decide whether to fail the NMaven build. If the compiler implementation chooses
-                 * to write warnings to the error stream, then the build will fail on warnings!!!
+                 * Provides behavior for determining whether the command utility wrote anything to the Standard Error
+                 * Stream.
+                 * NOTE: I am using this to decide whether to fail the NMaven build. If the compiler implementation
+                 * chooses to write warnings to the error stream, then the build will fail on warnings!!!
                  */
                 class ErrorStreamConsumer implements StreamConsumer
                 {

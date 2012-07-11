@@ -20,10 +20,9 @@ import java.util.jar.JarFile;
 public class JarHelper
 {
 
-    public static interface UnjarListener
+    public interface UnjarListener
     {
-
-        public boolean include( JarEntry jarEntry );
+       boolean include( JarEntry jarEntry );
     }
 
     /**

@@ -13,7 +13,7 @@ public class DeviceHelper
 
     private static final String MANUFACTURER_PROPERTY = "ro.product.manufacturer";
     private static final String MODEL_PROPERTY = "ro.product.model";
-
+    private static final String SEPARATOR = "_";
     /**
      * Get a device identifier string that is suitable for filenames as well as log messages.
      * This means it is human readable and contains no spaces.
@@ -25,7 +25,6 @@ public class DeviceHelper
     {
         // if any of this logic changes update javadoc for
         // AbstractInstrumentationMojo#testCreateReport
-        String SEPARATOR = "_";
         StringBuilder identfier = new StringBuilder().append( device.getSerialNumber() );
         if ( device.getAvdName() != null )
         {

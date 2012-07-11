@@ -14,7 +14,7 @@ import java.lang.reflect.Field;
 public final class ConfigHelper
 {
 
-    static public void copyValues( AbstractMojo mojo, String confFieldName ) throws MojoExecutionException
+    public static void copyValues( AbstractMojo mojo, String confFieldName ) throws MojoExecutionException
     {
         try
         {
@@ -52,42 +52,38 @@ public final class ConfigHelper
                     continue;
                 }
 
+                String mojoFieldName = field.getName();
+
+                mojoFieldName = Character.toUpperCase( mojoFieldName.charAt( 0 ) ) + mojoFieldName.substring( 1 );
+                mojoFieldName = confFieldName + mojoFieldName;
+
+                try
                 {
-                    String mojoFieldName = field.getName();
+                    final Field mojoField = mojoClass.getDeclaredField( mojoFieldName );
 
-                    mojoFieldName = Character.toUpperCase( mojoFieldName.charAt( 0 ) ) + mojoFieldName.substring( 1 );
-                    mojoFieldName = confFieldName + mojoFieldName;
-
-                    try
-                    {
-                        final Field mojoField = mojoClass.getDeclaredField( mojoFieldName );
-
-                        mojoField.setAccessible( true );
-                        mojoField.set( mojo, value );
-                    }
-                    catch ( final NoSuchFieldException e )
-                    {
-                        ;
-                    }
+                    mojoField.setAccessible( true );
+                    mojoField.set( mojo, value );
+                }
+                catch ( final NoSuchFieldException e )
+                {
+                    ;
                 }
 
                 //  handle deprecated parameters
+                try
                 {
-                    try
-                    {
-                        final Field mojoField = mojoClass.getDeclaredField( field.getName() );
+                    final Field mojoField = mojoClass.getDeclaredField( field.getName() );
 
-                        mojoField.setAccessible( true );
-                        mojoField.set( mojo, value );
-                    }
-                    catch ( final NoSuchFieldException e )
-                    {
-                        ;
-                    }
-                    catch ( final IllegalArgumentException e )
-                    {
-                        // probably not a deprecated parameter, see Proguard configuration;
-                    }
+                    mojoField.setAccessible( true );
+                    mojoField.set( mojo, value );
+                }
+                catch ( final NoSuchFieldException e )
+                {
+                    // swallow
+                }
+                catch ( final IllegalArgumentException e )
+                {
+                    // probably not a deprecated parameter, see Proguard configuration;
                 }
             }
         }

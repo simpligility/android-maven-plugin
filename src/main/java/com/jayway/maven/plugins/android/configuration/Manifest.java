@@ -24,12 +24,14 @@ public class Manifest
     protected Integer versionCode;
 
     /**
-     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestVersionCodeAutoIncrement}.
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo
+     * #manifestVersionCodeAutoIncrement}.
      */
     private Boolean versionCodeAutoIncrement;
 
     /**
-     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestVersionCodeUpdateFromVersion}.
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo
+     * #manifestVersionCodeUpdateFromVersion}.
      */
     protected Boolean versionCodeUpdateFromVersion;
 

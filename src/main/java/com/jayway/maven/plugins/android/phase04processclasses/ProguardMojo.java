@@ -124,7 +124,8 @@ public class ProguardMojo extends AbstractAndroidMojo
     private String parsedProguardJarPath;
 
     /**
-     * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build. Defaults to "-Xmx512M".
+     * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build.
+     * Defaults to "-Xmx512M".
      *
      * @parameter expression="${android.proguard.jvmArguments}"
      * @optional

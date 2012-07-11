@@ -105,8 +105,8 @@ public class NativeHelper
             if ( isNativeLibrary( sharedLibraries, artifact.getType() ) && artifact.getScope() == null )
             {
                 // Including attached artifact
-                log.debug( "Including attached artifact: " + artifact.getArtifactId() + "(" + artifact.getGroupId() +
-                           ")" );
+                log.debug( "Including attached artifact: " + artifact.getArtifactId() + "(" + artifact.getGroupId()
+                        + ")" );
                 filteredArtifacts.add( artifact );
             }
             else
@@ -240,8 +240,8 @@ public class NativeHelper
         if ( ! ndkVersionFile.exists() )
         {
             throw new MojoExecutionException(
-                    "Could not locate RELEASE.TXT in the Android NDK base directory '" + ndkHomeDir.getAbsolutePath() +
-                    "'.  Please verify your setup! " + AndroidNdk.PROPER_NDK_HOME_DIRECTORY_MESSAGE );
+                    "Could not locate RELEASE.TXT in the Android NDK base directory '" + ndkHomeDir.getAbsolutePath()
+                            + "'.  Please verify your setup! " + AndroidNdk.PROPER_NDK_HOME_DIRECTORY_MESSAGE );
         }
 
         try
@@ -251,9 +251,9 @@ public class NativeHelper
         }
         catch ( Exception e )
         {
-            throw new MojoExecutionException(
-                    "Error while extracting NDK version from '" + ndkVersionFile.getAbsolutePath() +
-                    "'. Please verify your setup! " + AndroidNdk.PROPER_NDK_HOME_DIRECTORY_MESSAGE );
+            throw new MojoExecutionException("Error while extracting NDK version from '"
+                    + ndkVersionFile.getAbsolutePath() + "'. Please verify your setup! "
+                    + AndroidNdk.PROPER_NDK_HOME_DIRECTORY_MESSAGE );
         }
     }
 
@@ -276,9 +276,8 @@ public class NativeHelper
 
         if ( version < desiredVersion )
         {
-            throw new MojoExecutionException(
-                    "You are running an old NDK (version " + versionStr + "), please update to at least r'" +
-                    desiredVersion + "' or later" );
+            throw new MojoExecutionException( "You are running an old NDK (version " + versionStr + "), please update "
+                    + "to at least r'" + desiredVersion + "' or later" );
         }
     }
 
