@@ -1027,8 +1027,7 @@ public class ApkMojo extends AbstractAndroidMojo
             try
             {
                 getLog().info( "Copying dependency assets files to combined assets directory." );
-                org.apache.commons.io.FileUtils
-                        .copyDirectory( extractedDependenciesAssets, combinedAssets, new FileFilter()
+                FileUtils.copyDirectory( extractedDependenciesAssets, combinedAssets, new FileFilter()
                         {
                             /**
                              * Excludes files matching one of the common file to exclude.

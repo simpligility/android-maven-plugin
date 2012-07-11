@@ -20,6 +20,9 @@ import java.util.jar.JarFile;
 public class JarHelper
 {
 
+    /**
+     * Listener for jar extraction.
+     */
     public interface UnjarListener
     {
        boolean include( JarEntry jarEntry );

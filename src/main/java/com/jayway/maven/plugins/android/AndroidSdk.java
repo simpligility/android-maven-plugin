@@ -119,6 +119,10 @@ public class AndroidSdk
         return null;
     }
 
+    /**
+     * The file system layout of the SDK. Should probably be removed since the 15 layout is very old
+     * and probably wont work completely. No urgency though..
+     */
     public enum Layout
     {
         LAYOUT_1_5, LAYOUT_2_3

@@ -1,5 +1,8 @@
 package com.jayway.maven.plugins.android.common;
 
+/**
+ * The file system extension for the Android artifact also used for the packaging type of an Android Maven Project.
+ */
 public final class AndroidExtension
 {
     /**

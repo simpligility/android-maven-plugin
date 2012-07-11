@@ -66,7 +66,7 @@ public final class ConfigHelper
                 }
                 catch ( final NoSuchFieldException e )
                 {
-                    ;
+                    // swallow
                 }
 
                 //  handle deprecated parameters
