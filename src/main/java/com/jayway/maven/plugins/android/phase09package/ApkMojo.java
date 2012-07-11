@@ -678,9 +678,10 @@ public class ApkMojo extends AbstractAndroidMojo
      */
     private static void copyStreamWithoutClosing( InputStream in, OutputStream out ) throws IOException
     {
-        int bufferSize = 4096;
+        final int bufferSize = 4096;
         byte[] b = new byte[ bufferSize ];
-        for ( int n; ( n = in.read( b ) ) != - 1; )
+        int n;
+        while ( ( n = in.read( b ) ) != - 1 )
         {
             out.write( b, 0, n );
         }
@@ -964,58 +965,11 @@ public class ApkMojo extends AbstractAndroidMojo
 
         if ( extractedDependenciesRes.exists() )
         {
-            try
-            {
-                getLog().info( "Copying dependency resource files to combined resource directory." );
-                if ( ! combinedRes.exists() )
-                {
-                    if ( ! combinedRes.mkdirs() )
-                    {
-                        throw new MojoExecutionException(
-                                "Could not create directory for combined resources at " + combinedRes
-                                        .getAbsolutePath() );
-                    }
-                }
-                org.apache.commons.io.FileUtils.copyDirectory( extractedDependenciesRes, combinedRes );
-            }
-            catch ( IOException e )
-            {
-                throw new MojoExecutionException( "", e );
-            }
+            copyDependenciesRes();
         }
         if ( resourceDirectory.exists() && combinedRes.exists() )
         {
-            try
-            {
-                getLog().info( "Copying local resource files to combined resource directory." );
-                org.apache.commons.io.FileUtils.copyDirectory( resourceDirectory, combinedRes, new FileFilter()
-                {
-
-                    /**
-                     * Excludes files matching one of the common file to exclude.
-                     * The default excludes pattern are the ones from
-                     * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
-                     * @see java.io.FileFilter#accept(java.io.File)
-                     */
-                    public boolean accept( File file )
-                    {
-                        for ( String pattern : DirectoryScanner.DEFAULTEXCLUDES )
-                        {
-                            if ( DirectoryScanner.match( pattern, file.getAbsolutePath() ) )
-                            {
-                                getLog().debug(
-                                        "Excluding " + file.getName() + " from resource copy : matching " + pattern );
-                                return false;
-                            }
-                        }
-                        return true;
-                    }
-                } );
-            }
-            catch ( IOException e )
-            {
-                throw new MojoExecutionException( "", e );
-            }
+            copyLocalResourceFiles();
         }
 
         // Must combine assets.
@@ -1024,123 +978,15 @@ public class ApkMojo extends AbstractAndroidMojo
         // This allows redefining the assets in the current project
         if ( extractedDependenciesAssets.exists() )
         {
-            try
-            {
-                getLog().info( "Copying dependency assets files to combined assets directory." );
-                FileUtils.copyDirectory( extractedDependenciesAssets, combinedAssets, new FileFilter()
-                        {
-                            /**
-                             * Excludes files matching one of the common file to exclude.
-                             * The default excludes pattern are the ones from
-                             * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
-                             * @see java.io.FileFilter#accept(java.io.File)
-                             */
-                            public boolean accept( File file )
-                            {
-                                for ( String pattern : AbstractScanner.DEFAULTEXCLUDES )
-                                {
-                                    if ( AbstractScanner.match( pattern, file.getAbsolutePath() ) )
-                                    {
-                                        getLog().debug( "Excluding " + file.getName() + " from asset copy : matching "
-                                                + pattern );
-                                        return false;
-                                    }
-                                }
-
-                                return true;
-
-                            }
-                        } );
-            }
-            catch ( IOException e )
-            {
-                throw new MojoExecutionException( "", e );
-            }
+            copyDependencyAssets();
         }
 
-        // Next pull APK Lib assets, reverse the order to give precedence to libs higher up the chain
-        List<Artifact> artifactList = new ArrayList<Artifact>( getAllRelevantDependencyArtifacts() );
-        for ( Artifact artifact : artifactList )
-        {
-            if ( artifact.getType().equals( APKLIB ) )
-            {
-                File apklibAsssetsDirectory = new File( getLibraryUnpackDirectory( artifact ) + "/assets" );
-                if ( apklibAsssetsDirectory.exists() )
-                {
-                    try
-                    {
-                        getLog().info( "Copying dependency assets files to combined assets directory." );
-                        org.apache.commons.io.FileUtils
-                                .copyDirectory( apklibAsssetsDirectory, combinedAssets, new FileFilter()
-                                {
-                                    /**
-                                     * Excludes files matching one of the common file to exclude.
-                                     * The default excludes pattern are the ones from
-                                     * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
-                                     * @see java.io.FileFilter#accept(java.io.File)
-                                     */
-                                    public boolean accept( File file )
-                                    {
-                                        for ( String pattern : AbstractScanner.DEFAULTEXCLUDES )
-                                        {
-                                            if ( AbstractScanner.match( pattern, file.getAbsolutePath() ) )
-                                            {
-                                                getLog().debug( "Excluding " + file.getName() + " from asset copy : "
-                                                        + "matching " + pattern );
-                                                return false;
-                                            }
-                                        }
-
-                                        return true;
-
-                                    }
-                                } );
-                    }
-                    catch ( IOException e )
-                    {
-                        throw new MojoExecutionException( "", e );
-                    }
-
-                }
-            }
-        }
+        processApkLibAssets();
 
         if ( assetsDirectory.exists() )
         {
-            try
-            {
-                getLog().info( "Copying local assets files to combined assets directory." );
-                org.apache.commons.io.FileUtils.copyDirectory( assetsDirectory, combinedAssets, new FileFilter()
-                {
-                    /**
-                     * Excludes files matching one of the common file to exclude.
-                     * The default excludes pattern are the ones from
-                     * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
-                     * @see java.io.FileFilter#accept(java.io.File)
-                     */
-                    public boolean accept( File file )
-                    {
-                        for ( String pattern : AbstractScanner.DEFAULTEXCLUDES )
-                        {
-                            if ( AbstractScanner.match( pattern, file.getAbsolutePath() ) )
-                            {
-                                getLog().debug(
-                                        "Excluding " + file.getName() + " from asset copy : matching " + pattern );
-                                return false;
-                            }
-                        }
-
-                        return true;
-
-                    }
-                } );
-            }
-            catch ( IOException e )
-            {
-                throw new MojoExecutionException( "", e );
-            }
+            copyLocalAssets();
         }
-
 
         File androidJar = getAndroidSdk().getAndroidJar();
         File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_" );
@@ -1230,6 +1076,186 @@ public class ApkMojo extends AbstractAndroidMojo
             throw new MojoExecutionException( "", e );
         }
     }
+
+    private void copyDependenciesRes() throws MojoExecutionException
+    {
+        try
+        {
+            getLog().info( "Copying dependency resource files to combined resource directory." );
+            if ( ! combinedRes.exists() )
+            {
+                if ( ! combinedRes.mkdirs() )
+                {
+                    throw new MojoExecutionException(
+                            "Could not create directory for combined resources at "
+                                    + combinedRes.getAbsolutePath() );
+                }
+            }
+            FileUtils.copyDirectory( extractedDependenciesRes, combinedRes );
+        }
+        catch ( IOException e )
+        {
+            throw new MojoExecutionException( "", e );
+        }
+    }
+
+    private void copyLocalResourceFiles() throws MojoExecutionException
+    {
+        try
+        {
+            getLog().info( "Copying local resource files to combined resource directory." );
+            org.apache.commons.io.FileUtils.copyDirectory( resourceDirectory, combinedRes, new FileFilter()
+            {
+
+                /**
+                 * Excludes files matching one of the common file to exclude.
+                 * The default excludes pattern are the ones from
+                 * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
+                 * @see java.io.FileFilter#accept(java.io.File)
+                 */
+                public boolean accept( File file )
+                {
+                    for ( String pattern : DirectoryScanner.DEFAULTEXCLUDES )
+                    {
+                        if ( DirectoryScanner.match( pattern, file.getAbsolutePath() ) )
+                        {
+                            getLog().debug(
+                                    "Excluding " + file.getName() + " from resource copy : matching " + pattern );
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            } );
+        }
+        catch ( IOException e )
+        {
+            throw new MojoExecutionException( "", e );
+        }
+    }
+
+    private void copyDependencyAssets() throws MojoExecutionException
+    {
+        try
+        {
+            getLog().info( "Copying dependency assets files to combined assets directory." );
+            FileUtils.copyDirectory( extractedDependenciesAssets, combinedAssets, new FileFilter()
+            {
+                /**
+                 * Excludes files matching one of the common file to exclude.
+                 * The default excludes pattern are the ones from
+                 * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
+                 * @see java.io.FileFilter#accept(java.io.File)
+                 */
+                public boolean accept( File file )
+                {
+                    for ( String pattern : AbstractScanner.DEFAULTEXCLUDES )
+                    {
+                        if ( AbstractScanner.match( pattern, file.getAbsolutePath() ) )
+                        {
+                            getLog().debug(
+                                    "Excluding " + file.getName() + " from asset copy : matching " + pattern );
+                            return false;
+                        }
+                    }
+
+                    return true;
+
+                }
+            } );
+        }
+        catch ( IOException e )
+        {
+            throw new MojoExecutionException( "", e );
+        }
+    }
+
+    private void copyLocalAssets() throws MojoExecutionException
+    {
+        try
+        {
+            getLog().info( "Copying local assets files to combined assets directory." );
+            org.apache.commons.io.FileUtils.copyDirectory( assetsDirectory, combinedAssets, new FileFilter()
+            {
+                /**
+                 * Excludes files matching one of the common file to exclude.
+                 * The default excludes pattern are the ones from
+                 * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
+                 * @see java.io.FileFilter#accept(java.io.File)
+                 */
+                public boolean accept( File file )
+                {
+                    for ( String pattern : AbstractScanner.DEFAULTEXCLUDES )
+                    {
+                        if ( AbstractScanner.match( pattern, file.getAbsolutePath() ) )
+                        {
+                            getLog().debug(
+                                    "Excluding " + file.getName() + " from asset copy : matching " + pattern );
+                            return false;
+                        }
+                    }
+
+                    return true;
+
+                }
+            } );
+        }
+        catch ( IOException e )
+        {
+            throw new MojoExecutionException( "", e );
+        }
+    }
+
+    private void processApkLibAssets() throws MojoExecutionException
+    {
+        // Next pull APK Lib assets, reverse the order to give precedence to libs higher up the chain
+        List<Artifact> artifactList = new ArrayList<Artifact>( getAllRelevantDependencyArtifacts() );
+        for ( Artifact artifact : artifactList )
+        {
+            if ( artifact.getType().equals( APKLIB ) )
+            {
+                File apklibAsssetsDirectory = new File( getLibraryUnpackDirectory( artifact ) + "/assets" );
+                if ( apklibAsssetsDirectory.exists() )
+                {
+                    try
+                    {
+                        getLog().info( "Copying dependency assets files to combined assets directory." );
+                        org.apache.commons.io.FileUtils
+                                .copyDirectory( apklibAsssetsDirectory, combinedAssets, new FileFilter()
+                                {
+                                    /**
+                                     * Excludes files matching one of the common file to exclude.
+                                     * The default excludes pattern are the ones from
+                                     * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
+                                     * @see java.io.FileFilter#accept(java.io.File)
+                                     */
+                                    public boolean accept( File file )
+                                    {
+                                        for ( String pattern : AbstractScanner.DEFAULTEXCLUDES )
+                                        {
+                                            if ( AbstractScanner.match( pattern, file.getAbsolutePath() ) )
+                                            {
+                                                getLog().debug( "Excluding " + file.getName() + " from asset copy : "
+                                                        + "matching " + pattern );
+                                                return false;
+                                            }
+                                        }
+
+                                        return true;
+
+                                    }
+                                } );
+                    }
+                    catch ( IOException e )
+                    {
+                        throw new MojoExecutionException( "", e );
+                    }
+
+                }
+            }
+        }
+    }
+
 
     /**
      *

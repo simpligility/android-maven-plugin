@@ -502,56 +502,9 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
 
         if ( parsedSupportsScreens != null )
         {
-            Element supportsScreensElem = XmlHelper.getOrCreateElement( doc, manifestElement, ELEM_SUPPORTS_SCREENS );
-
-            getLog().info( "Setting " + ELEM_SUPPORTS_SCREENS );
-
-            if ( parsedSupportsScreens.getAnyDensity() != null )
+            boolean madeDirty = performSupportScreenModification( doc, manifestElement );
+            if ( madeDirty )
             {
-                supportsScreensElem.setAttribute( ATTR_ANY_DENSITY, parsedSupportsScreens.getAnyDensity() );
-                dirty = true;
-            }
-            if ( parsedSupportsScreens.getSmallScreens() != null )
-            {
-                supportsScreensElem.setAttribute( ATTR_SMALL_SCREENS, parsedSupportsScreens.getSmallScreens() );
-                dirty = true;
-            }
-            if ( parsedSupportsScreens.getNormalScreens() != null )
-            {
-                supportsScreensElem.setAttribute( ATTR_NORMAL_SCREENS, parsedSupportsScreens.getNormalScreens() );
-                dirty = true;
-            }
-            if ( parsedSupportsScreens.getLargeScreens() != null )
-            {
-                supportsScreensElem.setAttribute( ATTR_LARGE_SCREENS, parsedSupportsScreens.getLargeScreens() );
-                dirty = true;
-            }
-            if ( parsedSupportsScreens.getXlargeScreens() != null )
-            {
-                supportsScreensElem.setAttribute( ATTR_XLARGE_SCREENS, parsedSupportsScreens.getXlargeScreens() );
-                dirty = true;
-            }
-            if ( parsedSupportsScreens.getCompatibleWidthLimitDp() != null )
-            {
-                supportsScreensElem.setAttribute( ATTR_COMPATIBLE_WIDTH_LIMIT_DP,
-                        parsedSupportsScreens.getCompatibleWidthLimitDp() );
-                dirty = true;
-            }
-            if ( parsedSupportsScreens.getLargestWidthLimitDp() != null )
-            {
-                supportsScreensElem
-                        .setAttribute( ATTR_LARGEST_WIDTH_LIMIT_DP, parsedSupportsScreens.getLargestWidthLimitDp() );
-                dirty = true;
-            }
-            if ( parsedSupportsScreens.getRequiresSmallestWidthDp() != null )
-            {
-                supportsScreensElem.setAttribute( ATTR_REQUIRES_SMALLEST_WIDTH_DP,
-                        parsedSupportsScreens.getRequiresSmallestWidthDp() );
-                dirty = true;
-            }
-            if ( parsedSupportsScreens.getResizeable() != null )
-            {
-                supportsScreensElem.setAttribute( ATTR_RESIZEABLE, parsedSupportsScreens.getResizeable() );
                 dirty = true;
             }
         }
@@ -576,6 +529,36 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         {
             getLog().info( "No changes found to write to manifest file" );
         }
+    }
+
+    /**
+     * Expose the version properties and other simple parsed manifest entries.
+     */
+    private void exportProperties()
+    {
+        project.getProperties().setProperty( "android.manifest.versionName", parsedVersionName );
+        project.getProperties().setProperty( "android.manifest.versionCodeAutoIncrement",
+                String.valueOf( parsedVersionCodeAutoIncrement ) );
+        project.getProperties().setProperty( "android.manifest.versionCodeUpdateFromVersion",
+                String.valueOf( parsedVersionCodeUpdateFromVersion ) );
+        project.getProperties().setProperty( "android.manifest.debuggable", String.valueOf( parsedDebuggable ) );
+        if ( parsedSharedUserId != null )
+        {
+            project.getProperties().setProperty( "android.manifest.sharedUserId", parsedSharedUserId );
+        }
+    }
+
+    private void performVersioCodeAutoIncrement( Element manifestElement )
+    {
+        Attr versionCode = manifestElement.getAttributeNode( ATTR_VERSION_CODE );
+        int currentVersionCode = 0;
+        if ( versionCode != null )
+        {
+            currentVersionCode = NumberUtils.toInt( versionCode.getValue(), 0 );
+        }
+        currentVersionCode++;
+        manifestElement.setAttribute( ATTR_VERSION_CODE, String.valueOf( currentVersionCode ) );
+        project.getProperties().setProperty( "android.manifest.versionCode", String.valueOf( currentVersionCode ) );
     }
 
     private void performVersionCodeUpdateFromVersion( Element manifestElement )
@@ -617,36 +600,64 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
 
     }
 
-    /**
-     * Expose the version properties and other simple parsed manifest entries.
-     */
-    private void exportProperties()
+    private boolean performSupportScreenModification( Document doc, Element manifestElement )
     {
-        project.getProperties().setProperty( "android.manifest.versionName", parsedVersionName );
-        project.getProperties().setProperty( "android.manifest.versionCodeAutoIncrement",
-                String.valueOf( parsedVersionCodeAutoIncrement ) );
-        project.getProperties().setProperty( "android.manifest.versionCodeUpdateFromVersion",
-                String.valueOf( parsedVersionCodeUpdateFromVersion ) );
-        project.getProperties().setProperty( "android.manifest.debuggable", String.valueOf( parsedDebuggable ) );
-        if ( parsedSharedUserId != null )
-        {
-            project.getProperties().setProperty( "android.manifest.sharedUserId", parsedSharedUserId );
-        }
-    }
+        boolean dirty = false;
+        Element supportsScreensElem = XmlHelper.getOrCreateElement( doc, manifestElement,
+                ELEM_SUPPORTS_SCREENS );
 
-    private void performVersioCodeAutoIncrement( Element manifestElement )
-    {
-        Attr versionCode = manifestElement.getAttributeNode( ATTR_VERSION_CODE );
-        int currentVersionCode = 0;
-        if ( versionCode != null )
-        {
-            currentVersionCode = NumberUtils.toInt( versionCode.getValue(), 0 );
-        }
-        currentVersionCode++;
-        manifestElement.setAttribute( ATTR_VERSION_CODE, String.valueOf( currentVersionCode ) );
-        project.getProperties().setProperty( "android.manifest.versionCode", String.valueOf( currentVersionCode ) );
-    }
+        getLog().info( "Setting " + ELEM_SUPPORTS_SCREENS );
 
+        if ( parsedSupportsScreens.getAnyDensity() != null )
+        {
+            supportsScreensElem.setAttribute( ATTR_ANY_DENSITY, parsedSupportsScreens.getAnyDensity() );
+            dirty = true;
+        }
+        if ( parsedSupportsScreens.getSmallScreens() != null )
+        {
+            supportsScreensElem.setAttribute( ATTR_SMALL_SCREENS, parsedSupportsScreens.getSmallScreens() );
+            dirty = true;
+        }
+        if ( parsedSupportsScreens.getNormalScreens() != null )
+        {
+            supportsScreensElem.setAttribute( ATTR_NORMAL_SCREENS, parsedSupportsScreens.getNormalScreens() );
+            dirty = true;
+        }
+        if ( parsedSupportsScreens.getLargeScreens() != null )
+        {
+            supportsScreensElem.setAttribute( ATTR_LARGE_SCREENS, parsedSupportsScreens.getLargeScreens() );
+            dirty = true;
+        }
+        if ( parsedSupportsScreens.getXlargeScreens() != null )
+        {
+            supportsScreensElem.setAttribute( ATTR_XLARGE_SCREENS, parsedSupportsScreens.getXlargeScreens() );
+            dirty = true;
+        }
+        if ( parsedSupportsScreens.getCompatibleWidthLimitDp() != null )
+        {
+            supportsScreensElem.setAttribute( ATTR_COMPATIBLE_WIDTH_LIMIT_DP,
+                    parsedSupportsScreens.getCompatibleWidthLimitDp() );
+            dirty = true;
+        }
+        if ( parsedSupportsScreens.getLargestWidthLimitDp() != null )
+        {
+            supportsScreensElem
+                    .setAttribute( ATTR_LARGEST_WIDTH_LIMIT_DP, parsedSupportsScreens.getLargestWidthLimitDp() );
+            dirty = true;
+        }
+        if ( parsedSupportsScreens.getRequiresSmallestWidthDp() != null )
+        {
+            supportsScreensElem.setAttribute( ATTR_REQUIRES_SMALLEST_WIDTH_DP,
+                    parsedSupportsScreens.getRequiresSmallestWidthDp() );
+            dirty = true;
+        }
+        if ( parsedSupportsScreens.getResizeable() != null )
+        {
+            supportsScreensElem.setAttribute( ATTR_RESIZEABLE, parsedSupportsScreens.getResizeable() );
+            dirty = true;
+        }
+        return dirty;
+    }
 
     private void updateCompatibleScreens( Document doc, Element manifestElement )
     {
