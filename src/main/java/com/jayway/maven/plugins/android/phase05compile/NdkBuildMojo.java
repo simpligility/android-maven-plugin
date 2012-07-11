@@ -317,13 +317,10 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-
         //ConfigHandler cfh = new ConfigHandler( this );
         //cfh.parseConfiguration();
-
         try
         {
-
             // Validate the NDK
             final File ndkBuildFile = new File( getAndroidNdk().getNdkBuildPath() );
             NativeHelper.validateNDKVersion( ndkBuildFile.getParentFile() );
@@ -332,80 +329,17 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             // dependencies on .a files (or shared files for that matter) the makefile should include
             // the include of our Android Maven plugin generated makefile.
             validateMakefile( project, makefile );
-
-            // This usually points to ${basedir}/obj/local
-            File nativeLibDirectory = new File( nativeLibrariesOutputDirectory, ndkArchitecture );
-            final boolean libsDirectoryExists = nativeLibDirectory.exists();
-
-            // Determine how much of the output directory structure (most likely obj/...) does not exist
-            // and based on what we find, determine how much of it we delete after the build
-            File directoryToRemove = nativeLibDirectory;
-            if ( ! libsDirectoryExists )
-            {
-
-                getLog().info( "Creating native output directory " + nativeLibDirectory );
-
-                // This simply checks how much of the structure already exists - nothing (e.g. we make all the dirs)
-                // or just a partial part (the architecture part)?
-                if ( ! nativeLibrariesOutputDirectory.exists() )
-                {
-                    if ( nativeLibrariesOutputDirectory.getParentFile().exists() )
-                    {
-                        nativeLibDirectory.mkdir();
-                    }
-                    else
-                    {
-                        nativeLibDirectory.mkdirs();
-                        directoryToRemove = nativeLibrariesOutputDirectory.getParentFile();
-                    }
-                }
-                else
-                {
-                    if ( nativeLibDirectory.getParentFile().exists() )
-                    {
-                        nativeLibDirectory.mkdir();
-                    }
-                    else
-                    {
-                        nativeLibDirectory.mkdirs();
-                        directoryToRemove = nativeLibDirectory.getParentFile();
-                    }
-                }
-
-            }
+            Preparation preparation = new Preparation().invoke();
+            File nativeLibDirectory = preparation.getNativeLibDirectory();
+            boolean libsDirectoryExists = preparation.isLibsDirectoryExists();
+            File directoryToRemove = preparation.getDirectoryToRemove();
 
             // Start setting up the command line to be executed
             final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-
             // Add an error listener to the build - this allows the build to conditionally fail
             // depending on a) the output of the build b) whether or not build errors (output on stderr) should be
             // ignored and c) whether the pattern matches or not
-            executor.setErrorListener( new CommandExecutor.ErrorListener()
-            {
-                @Override
-                public boolean isError( String error )
-                {
-
-                    // Unconditionally ignore *All* build warning if configured to
-                    if ( ignoreBuildWarnings )
-                    {
-                        return false;
-                    }
-
-                    final Pattern pattern = Pattern.compile( buildWarningsRegularExpression );
-                    final Matcher matcher = pattern.matcher( error );
-
-                    // If the the reg.exp actually matches, we can safely say this is not an error
-                    // since in theory the user told us so
-                    if ( matcher.matches() )
-                    {
-                        return false;
-                    }
-
-                    // Otherwise, it is just another error
-                    return true;
-                }
-            } );
+            executor.setErrorListener( getNdkErrorListener() );
 
             final Set<Artifact> nativeLibraryArtifacts = findNativeLibraryDependencies();
 
@@ -453,12 +387,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                     executor.addEnvironment( entry.getKey(), entry.getValue() );
                 }
             }
-
             executor.setLogger( this.getLog() );
-
             // Setup the command line for the make
             final List<String> commands = new ArrayList<String>();
-
             // Setup the build directory (defaults to the current directory) but may be different depending
             // on user configuration
             commands.add( "-C" );
@@ -483,9 +414,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             }
 
             // Setup the correct toolchain to use
-            // FIXME: performa validation that this toolchain exists in the NDK
+            // FIXME: perform a validation that this toolchain exists in the NDK
             commands.add( "NDK_TOOLCHAIN=" + ndkToolchain );
-
             // Anything else on the command line the user wants to add - simply splice it up and
             // add it one by one to the command line
             if ( ndkBuildAdditionalCommandline != null )
@@ -496,7 +426,6 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                     commands.add( command );
                 }
             }
-
             // If a build target is specified, tag that onto the command line as the
             // very last of the parameters
             if ( target != null )
@@ -518,136 +447,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
             executor.executeCommand( ndkBuildPath, commands, project.getBasedir(), true );
 
-            try
-            {
-                // Cleanup libs/armeabi directory if needed - this implies moving any native artifacts into target/libs
-                if ( clearNativeArtifacts )
-                {
-                    nativeLibDirectory = cleanUpNativeArtifacts( nativeLibDirectory, libsDirectoryExists );
-                }
-
-                // Attempt to attach the native library if the project is defined as a "pure" native Android library
-                // (packaging is 'so' or 'a') or if the plugin has been configured to attach the native library to the
-                // build
-                if ( "so".equals( project.getPackaging() ) || "a".equals( project.getPackaging() )
-                        || attachNativeArtifacts )
-                {
-
-                    final File nativeArtifactFile;
-                    if ( ndkFinalLibraryName == null )
-                    {
-                        File[] files = nativeLibDirectory.listFiles( new FilenameFilter()
-                        {
-                            public boolean accept( final File dir, final String name )
-                            {
-                                if ( "a".equals( project.getPackaging() ) )
-                                {
-                                    return name.startsWith(
-                                            "lib" + ( target != null ? target : project.getArtifactId() ) ) && name
-                                                   .endsWith( ".a" );
-                                }
-                                else
-                                {
-                                    return name.startsWith(
-                                            "lib" + ( target != null ? target : project.getArtifactId() ) ) && name
-                                                   .endsWith( ".so" );
-                                }
-                            }
-                        } );
-                        // slight limitation at this stage - we only handle a single .so artifact
-                        if ( files == null || files.length != 1 )
-                        {
-                            getLog().warn( "Error while detecting native compile artifacts: "
-                                    + ( files == null || files.length == 0
-                                            ? "None found"
-                                            : "Found more than 1 artifact" ) );
-
-                            if ( files != null && files.length > 1 )
-                            {
-                                getLog().debug( "List of files found: " + Arrays.asList( files ) );
-                                getLog().error(
-                                        "Currently, only a single, final native library is supported by the build" );
-                                throw new MojoExecutionException(
-                                        "Currently, only a single, final native library is supported by the build" );
-                            }
-                            else
-                            {
-                                getLog().error( "No native compiled library found, did the native compile complete "
-                                        + "successfully?" );
-                                throw new MojoExecutionException( "No native compiled library found, did the native "
-                                        + "compile complete successfully?" );
-                            }
-                        }
-                        nativeArtifactFile = files[ 0 ];
-                    }
-                    else
-                    {
-                        // Find the nativeArtifactFile in the nativeLibDirectory/ndkFinalLibraryName
-                        nativeArtifactFile = new File( nativeLibDirectory,
-                                ndkFinalLibraryName + "." + project.getPackaging() );
-                        if ( ! nativeArtifactFile.exists() )
-                        {
-                            getLog().error(
-                                    "Could not locate final native library using the provided ndkFinalLibraryName "
-                                    + ndkFinalLibraryName + " (tried " + nativeArtifactFile.getAbsolutePath()
-                                    + ")" );
-                            throw new MojoExecutionException(
-                                    "Could not locate final native library using the provided ndkFinalLibraryName "
-                                    + ndkFinalLibraryName + " (tried " + nativeArtifactFile.getAbsolutePath()
-                                    + ")" );
-                        }
-                    }
-
-                    final String artifactType = resolveArtifactType( nativeArtifactFile );
-                    if ( "so".equals( artifactType ) && ! skipStripping )
-                    {
-                        getLog().debug( "Post processing (stripping) native compiled artifact: " + nativeArtifactFile );
-                        invokeNDKStripper( nativeArtifactFile );
-                    }
-
-                    getLog().debug( "Adding native compiled artifact: " + nativeArtifactFile );
-
-                    File fileToAttach = nativeArtifactFile;
-                    if ( ! libsDirectoryExists )
-                    {
-                        getLog().debug( "Moving native compiled artifact to target directory for preservation" );
-                        // This indicates the output directory was created by the build (us) and that we should really
-                        // move it to the target (needed to preserve the attached artifact once install is invoked)
-                        final File destFile = new File( project.getBuild().getDirectory(),
-                                nativeArtifactFile.getName() );
-                        FileUtils.moveFile( nativeArtifactFile, destFile );
-                        fileToAttach = destFile;
-                    }
-
-                    projectHelper.attachArtifact( this.project, artifactType,
-                            ( ndkClassifier != null ? ndkClassifier : ndkArchitecture ), fileToAttach );
-
-                }
-
-                // Process conditionally any of the headers to include into the header archive file
-                processMakefileCapture( makefileCaptureFile );
-
-            }
-            finally
-            {
-                // If we created any directories as part of the build, blow those away after we're done
-                if ( ! libsDirectoryExists )
-                {
-                    getLog().info( "Cleaning up native library output directory after build" );
-                    getLog().debug( "Removing directory: " + directoryToRemove );
-                    FileUtils.deleteDirectory( directoryToRemove );
-                }
-
-                // If we created a makefile for the build we should be polite and remove any extracted include
-                // directories after we're done
-                if ( makefileHolder != null )
-                {
-                    getLog().info( "Cleaning up extracted include directories used for build" );
-                    MakefileHelper.cleanupAfterBuild( makefileHolder );
-                }
-
-            }
-
+            cleanUp( nativeLibDirectory, libsDirectoryExists, directoryToRemove, makefileHolder, makefileCaptureFile );
         }
         catch ( MojoExecutionException e )
         {
@@ -660,6 +460,171 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             throw new MojoExecutionException( e.getMessage(), e );
         }
 
+    }
+
+    private void cleanUp( File nativeLibDirectory, boolean libsDirectoryExists, File directoryToRemove,
+                          MakefileHelper.MakefileHolder makefileHolder, File makefileCaptureFile )
+            throws IOException, MojoExecutionException
+    {
+        try
+        {
+            // Cleanup libs/armeabi directory if needed - this implies moving any native artifacts into target/libs
+            if ( clearNativeArtifacts )
+            {
+                nativeLibDirectory = cleanUpNativeArtifacts( nativeLibDirectory, libsDirectoryExists );
+            }
+
+            // Attempt to attach the native library if the project is defined as a "pure" native Android library
+            // (packaging is 'so' or 'a') or if the plugin has been configured to attach the native library to the
+            // build
+            if ( "so".equals( project.getPackaging() ) || "a".equals( project.getPackaging() )
+                    || attachNativeArtifacts )
+            {
+
+                final File nativeArtifactFile;
+                if ( ndkFinalLibraryName == null )
+                {
+                    File[] files = nativeLibDirectory.listFiles( new FilenameFilter()
+                    {
+                        public boolean accept( final File dir, final String name )
+                        {
+                            if ( "a".equals( project.getPackaging() ) )
+                            {
+                                return name.startsWith(
+                                        "lib" + ( target != null ? target : project.getArtifactId() ) ) && name
+                                               .endsWith( ".a" );
+                            }
+                            else
+                            {
+                                return name.startsWith(
+                                        "lib" + ( target != null ? target : project.getArtifactId() ) ) && name
+                                               .endsWith( ".so" );
+                            }
+                        }
+                    } );
+                    // slight limitation at this stage - we only handle a single .so artifact
+                    if ( files == null || files.length != 1 )
+                    {
+                        getLog().warn( "Error while detecting native compile artifacts: "
+                                + ( files == null || files.length == 0
+                                        ? "None found"
+                                        : "Found more than 1 artifact" ) );
+
+                        if ( files != null && files.length > 1 )
+                        {
+                            getLog().debug( "List of files found: " + Arrays.asList( files ) );
+                            getLog().error(
+                                    "Currently, only a single, final native library is supported by the build" );
+                            throw new MojoExecutionException(
+                                    "Currently, only a single, final native library is supported by the build" );
+                        }
+                        else
+                        {
+                            getLog().error( "No native compiled library found, did the native compile complete "
+                                    + "successfully?" );
+                            throw new MojoExecutionException( "No native compiled library found, did the native "
+                                    + "compile complete successfully?" );
+                        }
+                    }
+                    nativeArtifactFile = files[ 0 ];
+                }
+                else
+                {
+                    // Find the nativeArtifactFile in the nativeLibDirectory/ndkFinalLibraryName
+                    nativeArtifactFile = new File( nativeLibDirectory,
+                            ndkFinalLibraryName + "." + project.getPackaging() );
+                    if ( ! nativeArtifactFile.exists() )
+                    {
+                        getLog().error(
+                                "Could not locate final native library using the provided ndkFinalLibraryName "
+                                + ndkFinalLibraryName + " (tried " + nativeArtifactFile.getAbsolutePath()
+                                + ")" );
+                        throw new MojoExecutionException(
+                                "Could not locate final native library using the provided ndkFinalLibraryName "
+                                + ndkFinalLibraryName + " (tried " + nativeArtifactFile.getAbsolutePath()
+                                + ")" );
+                    }
+                }
+
+                final String artifactType = resolveArtifactType( nativeArtifactFile );
+                if ( "so".equals( artifactType ) && ! skipStripping )
+                {
+                    getLog().debug( "Post processing (stripping) native compiled artifact: " + nativeArtifactFile );
+                    invokeNDKStripper( nativeArtifactFile );
+                }
+
+                getLog().debug( "Adding native compiled artifact: " + nativeArtifactFile );
+
+                File fileToAttach = nativeArtifactFile;
+                if ( ! libsDirectoryExists )
+                {
+                    getLog().debug( "Moving native compiled artifact to target directory for preservation" );
+                    // This indicates the output directory was created by the build (us) and that we should really
+                    // move it to the target (needed to preserve the attached artifact once install is invoked)
+                    final File destFile = new File( project.getBuild().getDirectory(),
+                            nativeArtifactFile.getName() );
+                    FileUtils.moveFile( nativeArtifactFile, destFile );
+                    fileToAttach = destFile;
+                }
+
+                projectHelper.attachArtifact( this.project, artifactType,
+                        ( ndkClassifier != null ? ndkClassifier : ndkArchitecture ), fileToAttach );
+
+            }
+
+            // Process conditionally any of the headers to include into the header archive file
+            processMakefileCapture( makefileCaptureFile );
+
+        }
+        finally
+        {
+            // If we created any directories as part of the build, blow those away after we're done
+            if ( ! libsDirectoryExists )
+            {
+                getLog().info( "Cleaning up native library output directory after build" );
+                getLog().debug( "Removing directory: " + directoryToRemove );
+                FileUtils.deleteDirectory( directoryToRemove );
+            }
+
+            // If we created a makefile for the build we should be polite and remove any extracted include
+            // directories after we're done
+            if ( makefileHolder != null )
+            {
+                getLog().info( "Cleaning up extracted include directories used for build" );
+                MakefileHelper.cleanupAfterBuild( makefileHolder );
+            }
+
+        }
+    }
+
+    private CommandExecutor.ErrorListener getNdkErrorListener()
+    {
+        return new CommandExecutor.ErrorListener()
+        {
+            @Override
+            public boolean isError( String error )
+            {
+
+                // Unconditionally ignore *All* build warning if configured to
+                if ( ignoreBuildWarnings )
+                {
+                    return false;
+                }
+
+                final Pattern pattern = Pattern.compile( buildWarningsRegularExpression );
+                final Matcher matcher = pattern.matcher( error );
+
+                // If the the reg.exp actually matches, we can safely say this is not an error
+                // since in theory the user told us so
+                if ( matcher.matches() )
+                {
+                    return false;
+                }
+
+                // Otherwise, it is just another error
+                return true;
+            }
+        };
     }
 
     private File cleanUpNativeArtifacts( File nativeLibDirectory, boolean libsDirectoryExists ) throws IOException
@@ -844,4 +809,68 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         }
     }
 
+    private class Preparation
+    {
+        private File nativeLibDirectory;
+        private boolean libsDirectoryExists;
+        private File directoryToRemove;
+
+        public File getNativeLibDirectory()
+        {
+            return nativeLibDirectory;
+        }
+
+        public boolean isLibsDirectoryExists()
+        {
+            return libsDirectoryExists;
+        }
+
+        public File getDirectoryToRemove()
+        {
+            return directoryToRemove;
+        }
+
+        public Preparation invoke()
+        {
+            // This usually points to ${basedir}/obj/local
+            nativeLibDirectory = new File( nativeLibrariesOutputDirectory, ndkArchitecture );
+            libsDirectoryExists = nativeLibDirectory.exists();
+
+            // Determine how much of the output directory structure (most likely obj/...) does not exist
+            // and based on what we find, determine how much of it we delete after the build
+            directoryToRemove = nativeLibDirectory;
+            if ( ! libsDirectoryExists )
+            {
+                getLog().info( "Creating native output directory " + nativeLibDirectory );
+
+                // This simply checks how much of the structure already exists - nothing (e.g. we make all the dirs)
+                // or just a partial part (the architecture part)?
+                if ( ! nativeLibrariesOutputDirectory.exists() )
+                {
+                    if ( nativeLibrariesOutputDirectory.getParentFile().exists() )
+                    {
+                        nativeLibDirectory.mkdir();
+                    }
+                    else
+                    {
+                        nativeLibDirectory.mkdirs();
+                        directoryToRemove = nativeLibrariesOutputDirectory.getParentFile();
+                    }
+                }
+                else
+                {
+                    if ( nativeLibDirectory.getParentFile().exists() )
+                    {
+                        nativeLibDirectory.mkdir();
+                    }
+                    else
+                    {
+                        nativeLibDirectory.mkdirs();
+                        directoryToRemove = nativeLibDirectory.getParentFile();
+                    }
+                }
+            }
+            return this;
+        }
+    }
 }
