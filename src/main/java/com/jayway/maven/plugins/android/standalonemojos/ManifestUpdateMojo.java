@@ -408,9 +408,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             throws IOException, ParserConfigurationException, SAXException, TransformerException, MojoFailureException
     {
         Document doc = readManifest( manifestFile );
-
         Element manifestElement = doc.getDocumentElement();
-
         boolean dirty = false;
 
         if ( StringUtils.isEmpty( parsedVersionName ) )
@@ -419,7 +417,6 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         }
 
         Attr versionNameAttrib = manifestElement.getAttributeNode( ATTR_VERSION_NAME );
-
         if ( versionNameAttrib == null || ! StringUtils.equals( parsedVersionName, versionNameAttrib.getValue() ) )
         {
             getLog().info( "Setting " + ATTR_VERSION_NAME + " to " + parsedVersionName );
@@ -436,68 +433,16 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
                     + "versionCodeAutoIncrement, versionCodeUpdateFromVersion or versionCode!" );
         }
 
-        // Expose the version properties and other simple parsed manifest entries
-        project.getProperties().setProperty( "android.manifest.versionName", parsedVersionName );
-        project.getProperties().setProperty( "android.manifest.versionCodeAutoIncrement",
-                String.valueOf( parsedVersionCodeAutoIncrement ) );
-        project.getProperties().setProperty( "android.manifest.versionCodeUpdateFromVersion",
-                String.valueOf( parsedVersionCodeUpdateFromVersion ) );
-        project.getProperties().setProperty( "android.manifest.debuggable", String.valueOf( parsedDebuggable ) );
-        if ( parsedSharedUserId != null )
-        {
-            project.getProperties().setProperty( "android.manifest.sharedUserId", parsedSharedUserId );
-        }
-
+        exportProperties();
         if ( parsedVersionCodeAutoIncrement )
         {
-            Attr versionCode = manifestElement.getAttributeNode( ATTR_VERSION_CODE );
-            int currentVersionCode = 0;
-            if ( versionCode != null )
-            {
-                currentVersionCode = NumberUtils.toInt( versionCode.getValue(), 0 );
-            }
-            currentVersionCode++;
-            manifestElement.setAttribute( ATTR_VERSION_CODE, String.valueOf( currentVersionCode ) );
-            project.getProperties().setProperty( "android.manifest.versionCode", String.valueOf( currentVersionCode ) );
+            performVersioCodeAutoIncrement( manifestElement );
             dirty = true;
         }
 
         if ( parsedVersionCodeUpdateFromVersion )
         {
-            String verString = project.getVersion();
-            getLog().debug( "Generating versionCode for " + verString );
-            ArtifactVersion artifactVersion = new DefaultArtifactVersion( verString );
-            // invalid version, something went wrong in parsing, do the old fall back method
-            String verCode;
-            if ( artifactVersion.getMajorVersion() == 0 & artifactVersion.getMinorVersion() == 0
-                 && artifactVersion.getIncrementalVersion() == 0 )
-            {
-                getLog().warn( "Problem parsing version number occurred. Using fall back to determine version code. " );
-
-                verCode = verString.replaceAll( "\\D", "" );
-
-                Attr versionCodeAttr = manifestElement.getAttributeNode( ATTR_VERSION_CODE );
-                int currentVersionCode = 0;
-                if ( versionCodeAttr != null )
-                {
-                    currentVersionCode = NumberUtils.toInt( versionCodeAttr.getValue(), 0 );
-                }
-
-                if ( Integer.parseInt( verCode ) < currentVersionCode )
-                {
-                    getLog().info( verCode + " < " + currentVersionCode + " so padding versionCode" );
-                    verCode = StringUtils.rightPad( verCode, versionCodeAttr.getValue().length(), "0" );
-                }
-            }
-            else
-            {
-                verCode = Integer.toString( artifactVersion.getMajorVersion() )
-                        + Integer.toString( artifactVersion.getMinorVersion() )
-                        + Integer.toString( artifactVersion.getIncrementalVersion() );
-            }
-            getLog().info( "Setting " + ATTR_VERSION_CODE + " to " + verCode );
-            manifestElement.setAttribute( ATTR_VERSION_CODE, verCode );
-            project.getProperties().setProperty( "android.manifest.versionCode", String.valueOf( verCode ) );
+            performVersionCodeUpdateFromVersion( manifestElement );
             dirty = true;
         }
 
@@ -632,6 +577,76 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             getLog().info( "No changes found to write to manifest file" );
         }
     }
+
+    private void performVersionCodeUpdateFromVersion( Element manifestElement )
+    {
+        String verString = project.getVersion();
+        getLog().debug( "Generating versionCode for " + verString );
+        ArtifactVersion artifactVersion = new DefaultArtifactVersion( verString );
+        // invalid version, something went wrong in parsing, do the old fall back method
+        String verCode;
+        if ( artifactVersion.getMajorVersion() == 0 & artifactVersion.getMinorVersion() == 0
+             && artifactVersion.getIncrementalVersion() == 0 )
+        {
+            getLog().warn( "Problem parsing version number occurred. Using fall back to determine version code. " );
+
+            verCode = verString.replaceAll( "\\D", "" );
+
+            Attr versionCodeAttr = manifestElement.getAttributeNode( ATTR_VERSION_CODE );
+            int currentVersionCode = 0;
+            if ( versionCodeAttr != null )
+            {
+                currentVersionCode = NumberUtils.toInt( versionCodeAttr.getValue(), 0 );
+            }
+
+            if ( Integer.parseInt( verCode ) < currentVersionCode )
+            {
+                getLog().info( verCode + " < " + currentVersionCode + " so padding versionCode" );
+                verCode = StringUtils.rightPad( verCode, versionCodeAttr.getValue().length(), "0" );
+            }
+        }
+        else
+        {
+            verCode = Integer.toString( artifactVersion.getMajorVersion() )
+                    + Integer.toString( artifactVersion.getMinorVersion() )
+                    + Integer.toString( artifactVersion.getIncrementalVersion() );
+        }
+        getLog().info( "Setting " + ATTR_VERSION_CODE + " to " + verCode );
+        manifestElement.setAttribute( ATTR_VERSION_CODE, verCode );
+        project.getProperties().setProperty( "android.manifest.versionCode", String.valueOf( verCode ) );
+
+    }
+
+    /**
+     * Expose the version properties and other simple parsed manifest entries.
+     */
+    private void exportProperties()
+    {
+        project.getProperties().setProperty( "android.manifest.versionName", parsedVersionName );
+        project.getProperties().setProperty( "android.manifest.versionCodeAutoIncrement",
+                String.valueOf( parsedVersionCodeAutoIncrement ) );
+        project.getProperties().setProperty( "android.manifest.versionCodeUpdateFromVersion",
+                String.valueOf( parsedVersionCodeUpdateFromVersion ) );
+        project.getProperties().setProperty( "android.manifest.debuggable", String.valueOf( parsedDebuggable ) );
+        if ( parsedSharedUserId != null )
+        {
+            project.getProperties().setProperty( "android.manifest.sharedUserId", parsedSharedUserId );
+        }
+    }
+
+    private void performVersioCodeAutoIncrement( Element manifestElement )
+    {
+        Attr versionCode = manifestElement.getAttributeNode( ATTR_VERSION_CODE );
+        int currentVersionCode = 0;
+        if ( versionCode != null )
+        {
+            currentVersionCode = NumberUtils.toInt( versionCode.getValue(), 0 );
+        }
+        currentVersionCode++;
+        manifestElement.setAttribute( ATTR_VERSION_CODE, String.valueOf( currentVersionCode ) );
+        project.getProperties().setProperty( "android.manifest.versionCode", String.valueOf( currentVersionCode ) );
+    }
+
 
     private void updateCompatibleScreens( Document doc, Element manifestElement )
     {

@@ -192,7 +192,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
         catch ( ArchiverException e )
         {
-            throw new MojoExecutionException("ArchiverException while extracting " + apksourcesFile.getAbsolutePath()
+            throw new MojoExecutionException( "ArchiverException while extracting " + apksourcesFile.getAbsolutePath()
                     + ". Message: " + e.getLocalizedMessage(), e );
         }
     }
@@ -257,7 +257,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
         catch ( ArchiverException e )
         {
-            throw new MojoExecutionException("ArchiverException while extracting " + apklibDirectory.getAbsolutePath()
+            throw new MojoExecutionException( "ArchiverException while extracting " + apklibDirectory.getAbsolutePath()
                     + ". Message: " + e.getLocalizedMessage(), e );
         }
 

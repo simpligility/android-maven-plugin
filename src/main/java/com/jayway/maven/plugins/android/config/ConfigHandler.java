@@ -133,8 +133,8 @@ public class ConfigHandler
             }
             else
             {
-                throw new RuntimeException("Required parameter " + currentParameterName + " has no value. Please "
-                        + "supply with -D" + currentParameterName +"=value on the command line or as property or "
+                throw new RuntimeException( "Required parameter " + currentParameterName + " has no value. Please "
+                        + "supply with -D" + currentParameterName + "=value on the command line or as property or "
                         + "plugin configuration in your pom or settings file." );
             }
         }

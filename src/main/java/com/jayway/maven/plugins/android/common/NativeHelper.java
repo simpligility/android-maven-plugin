@@ -251,7 +251,7 @@ public class NativeHelper
         }
         catch ( Exception e )
         {
-            throw new MojoExecutionException("Error while extracting NDK version from '"
+            throw new MojoExecutionException( "Error while extracting NDK version from '"
                     + ndkVersionFile.getAbsolutePath() + "'. Please verify your setup! "
                     + AndroidNdk.PROPER_NDK_HOME_DIRECTORY_MESSAGE );
         }

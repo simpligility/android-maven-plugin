@@ -111,8 +111,8 @@ public class MakefileHelper
         makeFile.append( '\n' );
         makeFile.append( "$(shell echo \"LOCAL_PATH=$(LOCAL_PATH)\" >> $(" + MAKEFILE_CAPTURE_FILE + "))" );
         makeFile.append( '\n' );
-        makeFile.append("$(shell echo \"LOCAL_MODULE_FILENAME=$(LOCAL_MODULE_FILENAME)\" >> $(" + MAKEFILE_CAPTURE_FILE
-                        + "))" );
+        makeFile.append( "$(shell echo \"LOCAL_MODULE_FILENAME=$(LOCAL_MODULE_FILENAME)\" >> $("
+                + MAKEFILE_CAPTURE_FILE + "))" );
         makeFile.append( '\n' );
         makeFile.append( "$(shell echo \"LOCAL_MODULE=$(LOCAL_MODULE)\" >> $(" + MAKEFILE_CAPTURE_FILE + "))" );
         makeFile.append( '\n' );
