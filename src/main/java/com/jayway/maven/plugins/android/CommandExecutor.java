@@ -172,7 +172,7 @@ public interface CommandExecutor
 
                 /*
                  */
-                public ErrorListener errorListener;
+                private ErrorListener errorListener;
 
                 public void setLogger( Log logger )
                 {

@@ -342,8 +342,8 @@ public class ApkMojo extends AbstractAndroidMojo
 
         if ( useInternalAPKBuilder )
         {
-            doAPKWithAPKBuilder( outputFile, dexFile, zipArchive, sourceFolders, jarFiles, nativeFolders, false,
-                    signWithDebugKeyStore, apkDebug );
+            doAPKWithAPKBuilder( outputFile, dexFile, zipArchive, sourceFolders, jarFiles, nativeFolders,
+                    signWithDebugKeyStore );
         }
         else
         {
@@ -480,14 +480,12 @@ public class ApkMojo extends AbstractAndroidMojo
      * @param sourceFolders         the resources
      * @param jarFiles              the embedded java files
      * @param nativeFolders         the native folders
-     * @param verbose               enables the verbose mode
      * @param signWithDebugKeyStore enables the signature of the APK using the debug key
-     * @param debug                 enables the debug mode
      * @throws MojoExecutionException if the APK cannot be created.
      */
     private void doAPKWithAPKBuilder( File outputFile, File dexFile, File zipArchive, ArrayList<File> sourceFolders,
-                                      ArrayList<File> jarFiles, ArrayList<File> nativeFolders, boolean verbose,
-                                      boolean signWithDebugKeyStore, boolean debug ) throws MojoExecutionException
+                                      ArrayList<File> jarFiles, ArrayList<File> nativeFolders,
+                                      boolean signWithDebugKeyStore ) throws MojoExecutionException
     {
         sourceFolders.add( new File( project.getBuild().getOutputDirectory() ) );
 
@@ -543,12 +541,11 @@ public class ApkMojo extends AbstractAndroidMojo
             }
         }
 
-        ApkBuilder builder = new ApkBuilder( outputFile, zipArchive, dexFile, signWithDebugKeyStore,
-                ( verbose ) ? System.out : null );
+        ApkBuilder builder = new ApkBuilder( outputFile, zipArchive, dexFile, signWithDebugKeyStore, null );
 
-        if ( debug )
+        if ( apkDebug )
         {
-            builder.setDebugMode( debug );
+            builder.setDebugMode( apkDebug );
         }
 
         for ( File sourceFolder : sourceFolders )
