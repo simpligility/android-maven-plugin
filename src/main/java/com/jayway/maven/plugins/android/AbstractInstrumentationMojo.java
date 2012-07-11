@@ -116,9 +116,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
 
     /**
-     * Enables or disables integration test related goals. If <code>true</code> they will be skipped; if <code>false</code>,
-     * they will be run. If <code>auto</code>, they will run if any of the classes inherit from any class in
-     * <code>junit.framework.**</code> or <code>android.test.**</code>.
+     * Enables or disables integration test related goals. If <code>true</code> they will be skipped; if
+     * <code>false</code>, they will be run. If <code>auto</code>, they will run if any of the classes inherit from any
+     * class in <code>junit.framework.**</code> or <code>android.test.**</code>.
      *
      * @parameter expression="${android.test.skip}" default-value="auto"
      */
@@ -291,10 +291,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         if ( classesExists && packagesExists )
         {
             // if both packages and classes are specified --> ERROR
-            throw new MojoFailureException(
-                    "packages and classes are mutually exclusive. They cannot be specified at " +
-                    "the same time. Please specify either packages or classes. For details, " +
-                    "see http://developer.android.com/guide/developing/testing/testing_otheride.html" );
+            throw new  MojoFailureException( "packages and classes are mutually exclusive. They cannot be specified at"
+                    + " the same time. Please specify either packages or classes. For details, see "
+                    + "http://developer.android.com/guide/developing/testing/testing_otheride.html" );
         }
 
         DeviceCallback instrumentationTestExecutor = new DeviceCallback()
@@ -332,8 +331,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                     remoteAndroidTestRunner.setTestSize( validSize );
                 }
 
-                getLog().info( "Running instrumentation tests in " + parsedInstrumentationPackage + " on " +
-                               device.getSerialNumber() + " (avdName=" + device.getAvdName() + ")" );
+                getLog().info( "Running instrumentation tests in " + parsedInstrumentationPackage + " on "
+                        + device.getSerialNumber() + " (avdName=" + device.getAvdName() + ")" );
                 try
                 {
                     AndroidTestRunListener testRunListener = new AndroidTestRunListener( project, device );
@@ -727,9 +726,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             }
         }
 
-        public void testStarted( TestIdentifier test )
+        public void testStarted( TestIdentifier testIdentifier )
         {
-            getLog().info( INDENT + INDENT + "Start: " + test.toString() );
+            getLog().info( INDENT + INDENT + "Start: " + testIdentifier.toString() );
 
             if ( parsedCreateReport )
             {
@@ -740,16 +739,16 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                 NamedNodeMap testCaseAttributes = currentTestCaseNode.getAttributes();
 
                 Attr classAttr = junitReport.createAttribute( ATTR_TESTCASE_CLASSNAME );
-                classAttr.setValue( test.getClassName() );
+                classAttr.setValue( testIdentifier.getClassName() );
                 testCaseAttributes.setNamedItem( classAttr );
 
                 Attr methodAttr = junitReport.createAttribute( ATTR_TESTCASE_NAME );
-                methodAttr.setValue( test.getTestName() );
+                methodAttr.setValue( testIdentifier.getTestName() );
                 testCaseAttributes.setNamedItem( methodAttr );
             }
         }
 
-        public void testFailed( TestFailure status, TestIdentifier test, String trace )
+        public void testFailed( TestFailure status, TestIdentifier testIdentifier, String trace )
         {
             if ( status == ERROR )
             {
@@ -759,7 +758,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             {
                 ++ testFailureCount;
             }
-            getLog().info( INDENT + INDENT + status.name() + ":" + test.toString() );
+            getLog().info( INDENT + INDENT + status.name() + ":" + testIdentifier.toString() );
             getLog().info( INDENT + INDENT + trace );
 
             if ( parsedCreateReport )
@@ -791,9 +790,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             }
         }
 
-        public void testEnded( TestIdentifier test, Map<String, String> testMetrics )
+        public void testEnded( TestIdentifier testIdentifier, Map<String, String> testMetrics )
         {
-            getLog().info( INDENT + INDENT + "End: " + test.toString() );
+            getLog().info( INDENT + INDENT + "End: " + testIdentifier.toString() );
             logMetrics( testMetrics );
 
             if ( parsedCreateReport )
@@ -817,8 +816,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             {
                 getLog().error( INDENT + "FAILURES!!!" );
             }
-            getLog().info( INDENT + "Tests run: " + testCount + ",  Failures: " + testFailureCount + ",  Errors: " +
-                           testErrorCount );
+            getLog().info( INDENT + "Tests run: " + testCount + ",  Failures: " + testFailureCount + ",  Errors: "
+                    + testErrorCount );
             if ( parsedCreateReport )
             {
                 NamedNodeMap testSuiteAttributes = testSuiteNode.getAttributes();

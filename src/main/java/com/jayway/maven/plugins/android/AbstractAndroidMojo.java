@@ -323,7 +323,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @parameter expression="${env.ANDROID_HOME}"
      * @readonly
      */
-    private String envANDROID_HOME;
+    private String envAndroidHome;
 
     /**
      * The <code>ANDROID_HOME</code> environment variable name.
@@ -518,7 +518,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     private void waitUntilConnected( AndroidDebugBridge adb )
     {
         int trials = 10;
-        int connectionWaitTime = 50;
+        final int connectionWaitTime = 50;
         while ( trials > 0 )
         {
             try
@@ -771,8 +771,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                 try
                 {
                     device.uninstallPackage( packageName );
-                    getLog().info( "Successfully uninstalled " + packageName +
-                            " from " + DeviceHelper.getDescriptiveName( device ) );
+                    getLog().info( "Successfully uninstalled " + packageName + " from "
+                            + DeviceHelper.getDescriptiveName( device ) );
                     result.set( true );
                 }
                 catch ( InstallException e )

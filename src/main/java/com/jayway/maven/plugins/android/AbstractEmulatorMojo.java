@@ -120,7 +120,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     /**
      * Folder that contains the startup script and the pid file.
      */
-    private static final String scriptFolder = System.getProperty( "java.io.tmpdir" );
+    private static final String SCRIPT_FOLDER = System.getProperty( "java.io.tmpdir" );
 
     /**
      * Are we running on a flavour of Windows.
@@ -238,7 +238,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     private String writeEmulatorStartScriptWindows() throws MojoExecutionException
     {
 
-        String filename = scriptFolder + "\\android-maven-plugin-emulator-start.vbs";
+        String filename = SCRIPT_FOLDER + "\\android-maven-plugin-emulator-start.vbs";
 
         File file = new File( filename );
         PrintWriter writer = null;
@@ -286,7 +286,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      */
     private String writeEmulatorStartScriptUnix() throws MojoExecutionException
     {
-        String filename = scriptFolder + "/android-maven-plugin-emulator-start.sh";
+        String filename = SCRIPT_FOLDER + "/android-maven-plugin-emulator-start.sh";
 
         File sh;
         sh = new File( "/bin/bash" );

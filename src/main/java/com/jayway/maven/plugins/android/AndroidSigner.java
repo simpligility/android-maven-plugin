@@ -23,6 +23,9 @@ package com.jayway.maven.plugins.android;
 public class AndroidSigner
 {
 
+    /**
+     *
+     */
     public enum Debug
     {
         TRUE, FALSE, BOTH, AUTO

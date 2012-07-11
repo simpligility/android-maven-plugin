@@ -27,10 +27,10 @@ import java.io.File;
 public class AndroidNdk
 {
 
-    public static final String PROPER_NDK_HOME_DIRECTORY_MESSAGE =
-            "Please provide a proper Android NDK directory path as configuration parameter <ndk><path>...</path></ndk> in the plugin <configuration/>. As an alternative, you may add the parameter to commandline: -Dandroid.ndk.path=... or set environment variable "
-            +
-            NdkBuildMojo.ENV_ANDROID_NDK_HOME + ".";
+    public static final String PROPER_NDK_HOME_DIRECTORY_MESSAGE = "Please provide a proper Android NDK directory path"
+            + " as configuration parameter <ndk><path>...</path></ndk> in the plugin <configuration/>. As an "
+            + "alternative, you may add the parameter to commandline: -Dandroid.ndk.path=... or set environment "
+            + "variable " + NdkBuildMojo.ENV_ANDROID_NDK_HOME + ".";
 
     private final File ndkPath;
 
@@ -86,8 +86,8 @@ public class AndroidNdk
         // Some basic validation
         if ( ! stripper.exists() )
         {
-            throw new MojoExecutionException( "Strip binary " + stripper.getAbsolutePath() +
-                                              " does not exist, please double check the toolchain and OS used" );
+            throw new MojoExecutionException( "Strip binary " + stripper.getAbsolutePath()
+                    + " does not exist, please double check the toolchain and OS used" );
         }
 
         // We should be good to go
@@ -121,8 +121,8 @@ public class AndroidNdk
         // Some basic validation
         if ( ! gdbServerFile.exists() )
         {
-            throw new MojoExecutionException( "gdbserver binary " + gdbServerFile.getAbsolutePath() +
-                                              " does not exist, please double check the toolchain and OS used" );
+            throw new MojoExecutionException( "gdbserver binary " + gdbServerFile.getAbsolutePath()
+                    + " does not exist, please double check the toolchain and OS used" );
         }
 
         // We should be good to go
