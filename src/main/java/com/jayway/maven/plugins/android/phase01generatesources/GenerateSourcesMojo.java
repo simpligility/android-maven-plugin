@@ -42,12 +42,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.jayway.maven.plugins.android.common.AndroidExtension.*;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APKSOURCES;
 
 /**
- * Generates <code>R.java</code> based on resources specified by the <code>resources</code> configuration parameter.<br/>
- * Generates java files based on aidl files.<br/>
- * <br/>
+ * Generates <code>R.java</code> based on resources specified by the <code>resources</code> configuration parameter.
+ * Generates java files based on aidl files.
  *
  * @author hugo.josefson@jayway.com
  * @goal generate-sources
@@ -68,7 +69,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     /**
      * Override default generated folder containing aidl classes
      *
-     * @parameter expression="${android.genDirectoryAidl}" default-value="${project.build.directory}/generated-sources/aidl"
+     * @parameter expression="${android.genDirectoryAidl}"
+     * default-value="${project.build.directory}/generated-sources/aidl"
      */
     protected File genDirectoryAidl;
 
@@ -135,8 +137,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             String type = artifact.getType();
             if ( type.equals( APKSOURCES ) )
             {
-                getLog().debug( "Detected apksources dependency " + artifact + " with file " + artifact.getFile() +
-                                ". Will resolve and extract..." );
+                getLog().debug( "Detected apksources dependency " + artifact + " with file " + artifact.getFile()
+                        + ". Will resolve and extract..." );
 
                 Artifact resolvedArtifact = AetherHelper
                         .resolveArtifact( artifact, repoSystem, repoSession, projectRepos );
@@ -150,8 +152,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                     apksourcesFile = resolveArtifactToFile( artifact );
                 }
 
-                //When using maven under eclipse the artifact will by default point to a directory, which isn't correct.
-                //To work around this we'll first try to get the archive from the local repo, and only if it isn't found there we'll do a normal resolve.
+                // When using maven under eclipse the artifact will by default point to a directory, which isn't
+                // correct. To work around this we'll first try to get the archive from the local repo, and only if it
+                // isn't found there we'll do a normal resolve.
+
                 if ( apksourcesFile.isDirectory() )
                 {
                     apksourcesFile = resolveArtifactToFile( artifact );
@@ -168,8 +172,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     {
         if ( apksourcesFile.isDirectory() )
         {
-            getLog().warn( "The apksources artifact points to '" + apksourcesFile +
-                           "' which is a directory; skipping unpacking it." );
+            getLog().warn( "The apksources artifact points to '" + apksourcesFile
+                    + "' which is a directory; skipping unpacking it." );
             return;
         }
         final UnArchiver unArchiver = new ZipUnArchiver( apksourcesFile )
@@ -188,9 +192,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
         catch ( ArchiverException e )
         {
-            throw new MojoExecutionException(
-                    "ArchiverException while extracting " + apksourcesFile.getAbsolutePath() + ". Message: " +
-                    e.getLocalizedMessage(), e );
+            throw new MojoExecutionException("ArchiverException while extracting " + apksourcesFile.getAbsolutePath()
+                    + ". Message: " + e.getLocalizedMessage(), e );
         }
     }
 
@@ -223,7 +226,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
 
         //When using maven under eclipse the artifact will by default point to a directory, which isn't correct.
-        //To work around this we'll first try to get the archive from the local repo, and only if it isn't found there we'll do a normal resolve.
+        //To work around this we'll first try to get the archive from the local repo, and only if it isn't found there
+        // we'll do a normal resolve.
         if ( apkLibFile.isDirectory() )
         {
             apkLibFile = resolveArtifactToFile( apklibArtifact );
@@ -253,9 +257,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
         catch ( ArchiverException e )
         {
-            throw new MojoExecutionException(
-                    "ArchiverException while extracting " + apklibDirectory.getAbsolutePath() + ". Message: " +
-                    e.getLocalizedMessage(), e );
+            throw new MojoExecutionException("ArchiverException while extracting " + apklibDirectory.getAbsolutePath()
+                    + ". Message: " + e.getLocalizedMessage(), e );
         }
 
         projectHelper.addResource( project, apklibDirectory.getAbsolutePath() + "/src", null,
@@ -568,9 +571,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private boolean isCurrentProjectAndroid()
     {
         Set<String> androidArtifacts = new HashSet<String>()
-        {{
+        {
+            {
                 addAll( Arrays.asList( APK, APKLIB, APKSOURCES ) );
-            }};
+            }
+        };
         return androidArtifacts.contains( project.getArtifact().getType() );
     }
 

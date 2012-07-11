@@ -15,7 +15,7 @@ public final class AndroidExtension
     /**
      * @deprecated Use {@link APKLIB} instead.
      */
-    public static String APKSOURCES = "apksources";
+    public static final String APKSOURCES = "apksources";
 
 
     //No instances

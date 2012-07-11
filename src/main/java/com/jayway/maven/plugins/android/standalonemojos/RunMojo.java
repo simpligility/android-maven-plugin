@@ -120,24 +120,6 @@ public class RunMojo extends AbstractAndroidMojo
     private Boolean parsedDebug;
 
     /**
-     * Thrown when no "Launcher activities" could be found inside <code>AndroidManifest.xml</code>
-     *
-     * @author Lorenzo Villani
-     */
-    private static class ActivityNotFoundException extends Exception
-    {
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * Constructor.
-         */
-        public ActivityNotFoundException()
-        {
-            super( "Unable to determine Launcher activity" );
-        }
-    }
-
-    /**
      * Holds information about the "Launcher" activity.
      *
      * @author Lorenzo Villani
@@ -213,7 +195,7 @@ public class RunMojo extends AbstractAndroidMojo
      */
     private LauncherInfo getLauncherActivity()
             throws ParserConfigurationException, SAXException, IOException, XPathExpressionException,
-            ActivityNotFoundException
+            MojoFailureException
     {
         Document document;
         DocumentBuilder documentBuilder;
@@ -266,13 +248,13 @@ public class RunMojo extends AbstractAndroidMojo
             else
             {
                 // If we get here, we couldn't find a launcher activity.
-                throw new ActivityNotFoundException();
+                throw new MojoFailureException( "Could not find a launcher activity in manifest" );
             }
         }
         else
         {
             // If we get here we couldn't find any Activity
-            throw new ActivityNotFoundException();
+            throw new MojoFailureException( "Could not find any activity in manifest" );
         }
     }
 
