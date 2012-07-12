@@ -9,93 +9,105 @@ import java.util.List;
  *
  * @author Manfred Moser <manfred@simpligility.com>
  */
-public class Test {
+public class Test
+{
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSkip}
+     */
     private String skip;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testInstrumentationPackage}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testInstrumentationPackage}
+     */
     private String instrumentationPackage;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testInstrumentationRunner}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testInstrumentationRunner}
+     */
     private String instrumentationRunner;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testDebug}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testDebug}
+     */
     private Boolean debug;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testCoverage}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testCoverage}
+     */
     private Boolean coverage;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testCoverageFile}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testCoverageFile}
+     */
     private String coverageFile;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testLogOnly}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testLogOnly}
+     */
     private Boolean logOnly;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSize}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSize}
+     */
     private String testSize;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testCreateReport}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testCreateReport}
+     */
     private Boolean createReport;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testPackages}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testPackages}
+     */
     protected List<String> packages;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testClasses}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testClasses}
+     */
     protected List<String> classes;
 
-    public String getSkip() {
+    public String getSkip()
+    {
         return skip;
     }
 
-    public String getInstrumentationPackage() {
+    public String getInstrumentationPackage()
+    {
         return instrumentationPackage;
     }
 
-    public String getInstrumentationRunner() {
+    public String getInstrumentationRunner()
+    {
         return instrumentationRunner;
     }
 
-    public Boolean isDebug() {
+    public Boolean isDebug()
+    {
         return debug;
     }
 
-    public Boolean isCoverage() {
+    public Boolean isCoverage()
+    {
         return coverage;
     }
 
-    public String getCoverageFile() {
+    public String getCoverageFile()
+    {
         return coverageFile;
     }
 
-    public Boolean isLogOnly() {
+    public Boolean isLogOnly()
+    {
         return logOnly;
     }
 
-    public String getTestSize() {
+    public String getTestSize()
+    {
         return testSize;
     }
 
-    public Boolean isCreateReport() {
+    public Boolean isCreateReport()
+    {
         return createReport;
     }
 
-    public List<String> getPackages() {
+    public List<String> getPackages()
+    {
         return packages;
     }
 
-    public List<String> getClasses() {
+    public List<String> getClasses()
+    {
         return classes;
     }
 }

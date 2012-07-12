@@ -24,13 +24,15 @@ import org.apache.maven.plugin.MojoFailureException;
  *
  * @author hugo.josefson@jayway.com
  */
-public interface DeviceCallback {
+public interface DeviceCallback
+{
     /**
      * What to do with an {@link IDevice}.
      *
      * @param device the device
      * @throws MojoExecutionException in case there is a problem, you may throw this
-     * @throws org.apache.maven.plugin.MojoFailureException in case there is a problem, you may throw this
+     * @throws org.apache.maven.plugin.MojoFailureException
+     *                                in case there is a problem, you may throw this
      */
-    void doWithDevice(IDevice device) throws MojoExecutionException, MojoFailureException;
+    void doWithDevice( IDevice device ) throws MojoExecutionException, MojoFailureException;
 }

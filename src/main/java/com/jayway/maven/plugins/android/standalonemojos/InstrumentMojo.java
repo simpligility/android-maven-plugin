@@ -26,9 +26,16 @@ import org.apache.maven.plugin.MojoFailureException;
  * @author hugo.josefson@jayway.com
  * @goal instrument
  */
-public class InstrumentMojo extends AbstractInstrumentationMojo {
+public class InstrumentMojo extends AbstractInstrumentationMojo
+{
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    /**
+     *
+     * @throws MojoExecutionException
+     * @throws MojoFailureException
+     */
+    public void execute() throws MojoExecutionException, MojoFailureException
+    {
         instrument();
     }
 

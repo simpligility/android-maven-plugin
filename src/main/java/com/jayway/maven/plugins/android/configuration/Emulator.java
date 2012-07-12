@@ -6,7 +6,8 @@ package com.jayway.maven.plugins.android.configuration;
  *
  * @author Manfred Moser <manfred@simpligility.com>
  */
-public class Emulator {
+public class Emulator
+{
 
     /**
      * Mirror of {@link com.jayway.maven.plugins.android.AbstractEmulatorMojo#emulatorAvd}
@@ -23,15 +24,18 @@ public class Emulator {
      */
     private String options;
 
-    public String getAvd() {
+    public String getAvd()
+    {
         return avd;
     }
 
-    public String getWait() {
+    public String getWait()
+    {
         return wait;
     }
 
-    public String getOptions() {
+    public String getOptions()
+    {
         return options;
     }
 }
