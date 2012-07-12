@@ -31,9 +31,16 @@ import org.apache.maven.plugin.MojoFailureException;
  * @goal deploy-dependencies
  * @requiresDependencyResolution runtime
  */
-public class DeployDependenciesMojo extends AbstractAndroidMojo {
+public class DeployDependenciesMojo extends AbstractAndroidMojo
+{
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    /**
+     *
+     * @throws MojoExecutionException
+     * @throws MojoFailureException
+     */
+    public void execute() throws MojoExecutionException, MojoFailureException
+    {
         deployDependencies();
     }
 

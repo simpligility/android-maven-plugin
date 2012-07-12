@@ -16,106 +16,116 @@
  */
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Enumeration;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.common.JarHelper;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.codehaus.plexus.util.IOUtil;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.CommandExecutor;
+import java.io.File;
+import java.io.IOException;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * Unpack libraries code and dependencies into target.
- *
+ * <p/>
  * This can be useful for using the proguard maven plugin to provide the input jars. Although it is encouraged to use
  * the proguard mojo of the android maven plugin.
+ *
  * @author hugo.josefson@jayway.com
  * @author Manfred Moser
  * @goal unpack
  * @requiresDependencyResolution compile
  */
-public class UnpackMojo extends AbstractAndroidMojo {
-	/**
-	 * If true, the library will be unpacked only when outputDirectory doesn't
-	 * exist, i.e, a clean build for most cases.
-	 * 
-	 * @parameter expression="${android.lazyLibraryUnpack}"
-	 *            default-value="false"
-	 */
-	private boolean lazyLibraryUnpack;
-	
-	public void execute() throws MojoExecutionException, MojoFailureException {
+public class UnpackMojo extends AbstractAndroidMojo
+{
+    /**
+     * If true, the library will be unpacked only when outputDirectory doesn't
+     * exist, i.e, a clean build for most cases.
+     *
+     * @parameter expression="${android.lazyLibraryUnpack}"
+     * default-value="false"
+     */
+    private boolean lazyLibraryUnpack;
 
-		CommandExecutor executor = CommandExecutor.Factory
-				.createDefaultCommmandExecutor();
-		executor.setLogger(this.getLog());
+    public void execute() throws MojoExecutionException, MojoFailureException
+    {
 
-		if (generateApk) {
-			// Unpack all dependent and main classes
-			unpackClasses();
-		}
-	}
+        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        executor.setLogger( this.getLog() );
 
-	private File unpackClasses() throws MojoExecutionException {
-		File outputDirectory = new File(project.getBuild().getDirectory(),
-				"android-classes");
-		if (lazyLibraryUnpack && outputDirectory.exists())
-			getLog().info("skip library unpacking due to lazyLibraryUnpack policy");
-		else {
-			for (Artifact artifact : getRelevantCompileArtifacts()) {
-	
-				if (artifact.getFile().isDirectory()) {
-					try {
-						FileUtils
-								.copyDirectory(artifact.getFile(), outputDirectory);
-					} catch (IOException e) {
-						throw new MojoExecutionException(
-								"IOException while copying "
-										+ artifact.getFile().getAbsolutePath()
-										+ " into "
-										+ outputDirectory.getAbsolutePath(), e);
-					}
-				} else {
-					try {
-                        JarHelper.unjar(new JarFile(artifact.getFile()), outputDirectory, new JarHelper.UnjarListener() {
-                            @Override
-                            public boolean include(JarEntry jarEntry) {
-                                return !jarEntry.getName().startsWith("META-INF") && jarEntry.getName().endsWith(".class");
-                            }
-                        });
-					} catch (IOException e) {
-						throw new MojoExecutionException(
-								"IOException while unjarring "
-										+ artifact.getFile().getAbsolutePath()
-										+ " into "
-										+ outputDirectory.getAbsolutePath(), e);
-					}
-				}
-	
-			}
-		}
-		
-		try {
-			File sourceDirectory = new File(project.getBuild().getOutputDirectory());
-			FileUtils.copyDirectory(sourceDirectory, outputDirectory);
-		} catch (IOException e) {
-			throw new MojoExecutionException("IOException while copying "
-					+ sourceDirectory.getAbsolutePath() + " into "
-					+ outputDirectory.getAbsolutePath(), e);
-		}
-		return outputDirectory;
-	}
+        if ( generateApk )
+        {
+            // Unpack all dependent and main classes
+            unpackClasses();
+        }
+    }
+
+    private File unpackClasses() throws MojoExecutionException
+    {
+        File outputDirectory = new File( project.getBuild().getDirectory(), "android-classes" );
+        if ( lazyLibraryUnpack && outputDirectory.exists() )
+        {
+            getLog().info( "skip library unpacking due to lazyLibraryUnpack policy" );
+        }
+        else
+        {
+            for ( Artifact artifact : getRelevantCompileArtifacts() )
+            {
+
+                if ( artifact.getFile().isDirectory() )
+                {
+                    try
+                    {
+                        FileUtils.copyDirectory( artifact.getFile(), outputDirectory );
+                    }
+                    catch ( IOException e )
+                    {
+                        throw new MojoExecutionException( "IOException while copying "
+                                + artifact.getFile().getAbsolutePath() + " into " + outputDirectory.getAbsolutePath()
+                                , e );
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        JarHelper.unjar( new JarFile( artifact.getFile() ), outputDirectory,
+                                new JarHelper.UnjarListener()
+                                {
+                                    @Override
+                                    public boolean include( JarEntry jarEntry )
+                                    {
+                                        return ! jarEntry.getName().startsWith( "META-INF" ) && jarEntry.getName()
+                                                .endsWith( ".class" );
+                                    }
+                                } );
+                    }
+                    catch ( IOException e )
+                    {
+                        throw new MojoExecutionException( "IOException while unjarring "
+                                + artifact.getFile().getAbsolutePath() + " into " + outputDirectory.getAbsolutePath()
+                                , e );
+                    }
+                }
+
+            }
+        }
+
+        try
+        {
+            File sourceDirectory = new File( project.getBuild().getOutputDirectory() );
+            FileUtils.copyDirectory( sourceDirectory, outputDirectory );
+        }
+        catch ( IOException e )
+        {
+            throw new MojoExecutionException( "IOException while copying " + sourceDirectory.getAbsolutePath()
+                    + " into " + outputDirectory.getAbsolutePath(), e );
+        }
+        return outputDirectory;
+    }
 
 }
