@@ -11,17 +11,17 @@ import org.apache.maven.plugin.MojoFailureException;
  * @goal emulator-stop-all
  * @requiresProject false
  */
-public class EmulatorStopAllMojo extends AbstractEmulatorMojo {
+public class EmulatorStopAllMojo extends AbstractEmulatorMojo
+{
 
     /**
-     * Start the Android Emulator.
+     * Stop all attached emulators.
      *
-     * @throws org.apache.maven.plugin.MojoExecutionException
-     *
-     * @throws org.apache.maven.plugin.MojoFailureException
-     *
+     * @throws MojoExecutionException
+     * @throws MojoFailureException
      */
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() throws MojoExecutionException, MojoFailureException
+    {
         stopAndroidEmulators();
     }
 }

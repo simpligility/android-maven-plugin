@@ -18,14 +18,16 @@ package com.jayway.maven.plugins.android;
 /**
  *
  */
-public class ExecutionException extends Exception {
+public class ExecutionException extends Exception
+{
 
-    static final long serialVersionUID = -7843278034782074384L;
+    static final long serialVersionUID = - 7843278034782074384L;
 
     /**
      * Constructs an <code>ExecutionException</code>  with no exception message.
      */
-    public ExecutionException() {
+    public ExecutionException()
+    {
         super();
     }
 
@@ -34,8 +36,9 @@ public class ExecutionException extends Exception {
      *
      * @param message the exception message
      */
-    public ExecutionException(String message) {
-        super(message);
+    public ExecutionException( String message )
+    {
+        super( message );
     }
 
     /**
@@ -44,8 +47,9 @@ public class ExecutionException extends Exception {
      * @param message the exception message
      * @param cause   the cause of the exception
      */
-    public ExecutionException(String message, Throwable cause) {
-        super(message, cause);
+    public ExecutionException( String message, Throwable cause )
+    {
+        super( message, cause );
     }
 
     /**
@@ -53,8 +57,9 @@ public class ExecutionException extends Exception {
      *
      * @param cause the cause of the exception
      */
-    public ExecutionException(Throwable cause) {
-        super(cause);
+    public ExecutionException( Throwable cause )
+    {
+        super( cause );
     }
 }
 

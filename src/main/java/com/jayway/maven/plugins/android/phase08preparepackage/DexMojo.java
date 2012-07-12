@@ -46,7 +46,8 @@ import java.util.Set;
  * @phase prepare-package
  * @requiresDependencyResolution compile
  */
-public class DexMojo extends AbstractAndroidMojo {
+public class DexMojo extends AbstractAndroidMojo
+{
 
     /**
      * Configuration for the dex command execution. It can be configured in the plugin configuration like so
@@ -61,7 +62,7 @@ public class DexMojo extends AbstractAndroidMojo {
      *   &lt;optimize&gt;true|false&lt;/optimize&gt;
      * &lt;/dex&gt;
      * </pre>
-     *
+     * <p/>
      * or via properties dex.* or command line parameters android.dex.*
      *
      * @parameter
@@ -89,7 +90,7 @@ public class DexMojo extends AbstractAndroidMojo {
      */
     private boolean dexNoLocals;
 
-    /**                                         
+    /**
      * Decides whether to pass the --no-optimize flag to dx.
      *
      * @parameter expression="${android.dex.optimize}" default-value="true"
@@ -101,30 +102,40 @@ public class DexMojo extends AbstractAndroidMojo {
     private boolean parsedNoLocals;
     private boolean parsedOptimize;
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    /**
+     *
+     * @throws MojoExecutionException
+     * @throws MojoFailureException
+     */
+    public void execute() throws MojoExecutionException, MojoFailureException
+    {
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
+        executor.setLogger( this.getLog() );
 
-        File outputFile = new File(project.getBuild().getDirectory() + File.separator + "classes.dex");
+        File outputFile = new File( project.getBuild().getDirectory() + File.separator + "classes.dex" );
 
         Set<File> inputFiles = getDexInputFiles();
 
         parseConfiguration();
-        
-        if (generateApk) {
-            runDex(executor, outputFile, inputFiles);
+
+        if ( generateApk )
+        {
+            runDex( executor, outputFile, inputFiles );
         }
 
-        if (attachJar) {
-            File jarFile = new File(project.getBuild().getDirectory() + File.separator + project.getBuild().getFinalName() + ".jar");
-            projectHelper.attachArtifact(project, "jar", project.getArtifact().getClassifier(), jarFile);
+        if ( attachJar )
+        {
+            File jarFile = new File(
+                    project.getBuild().getDirectory() + File.separator + project.getBuild().getFinalName() + ".jar" );
+            projectHelper.attachArtifact( project, "jar", project.getArtifact().getClassifier(), jarFile );
         }
 
-        if (attachSources) {
+        if ( attachSources )
+        {
             // Also attach an .apksources, containing sources from this project.
             final File apksources = createApkSourcesFile();
-            projectHelper.attachArtifact(project, "apksources", apksources);
+            projectHelper.attachArtifact( project, "apksources", apksources );
         }
     }
 
@@ -133,57 +144,78 @@ public class DexMojo extends AbstractAndroidMojo {
      *
      * @return
      */
-    private Set<File> getDexInputFiles() {
+    private Set<File> getDexInputFiles()
+    {
 
         Set<File> inputs = new HashSet<File>();
 
         // ugly, don't know a better way to get this in mvn
-        File proguardJar = new File(project.getBuild().getDirectory(), ProguardMojo.PROGUARD_OBFUSCATED_JAR);
+        File proguardJar = new File( project.getBuild().getDirectory(), ProguardMojo.PROGUARD_OBFUSCATED_JAR );
 
-        getLog().debug("Checking for existence of: " + proguardJar.toString());
+        getLog().debug( "Checking for existence of: " + proguardJar.toString() );
 
-        if (proguardJar.exists()) {
+        if ( proguardJar.exists() )
+        {
             // progurad has been run, use this jar
-            getLog().debug("Obfuscated jar exists, using that as input");
-            inputs.add(proguardJar);
-        } else {
-            getLog().debug("Using non-obfuscated input");
+            getLog().debug( "Obfuscated jar exists, using that as input" );
+            inputs.add( proguardJar );
+        }
+        else
+        {
+            getLog().debug( "Using non-obfuscated input" );
             // no proguard, use original config
-            inputs.add(new File(project.getBuild().getOutputDirectory()));
-            for (Artifact artifact : getAllRelevantDependencyArtifacts()) {
-                inputs.add(artifact.getFile().getAbsoluteFile());
+            inputs.add( new File( project.getBuild().getOutputDirectory() ) );
+            for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+            {
+                inputs.add( artifact.getFile().getAbsoluteFile() );
             }
         }
 
         return inputs;
     }
 
-    private void parseConfiguration() {
+    private void parseConfiguration()
+    {
         // config in pom found
-        if (dex != null) {
+        if ( dex != null )
+        {
             // the if statements make sure that properties/command line parameter overrides configuration
             // and that the dafaults apply in all cases;
-            if (dex.getJvmArguments() == null) {
-                parsedJvmArguments =  dexJvmArguments;
-            } else {
+            if ( dex.getJvmArguments() == null )
+            {
+                parsedJvmArguments = dexJvmArguments;
+            }
+            else
+            {
                 parsedJvmArguments = dex.getJvmArguments();
             }
-            if (dex.isCoreLibrary() == null) {
+            if ( dex.isCoreLibrary() == null )
+            {
                 parsedCoreLibrary = dexCoreLibrary;
-            } else {
+            }
+            else
+            {
                 parsedCoreLibrary = dex.isCoreLibrary();
             }
-            if (dex.isNoLocals() == null) {
+            if ( dex.isNoLocals() == null )
+            {
                 parsedNoLocals = dexNoLocals;
-            } else {
+            }
+            else
+            {
                 parsedNoLocals = dex.isNoLocals();
             }
-            if (dex.isOptimize() == null) {
+            if ( dex.isOptimize() == null )
+            {
                 parsedOptimize = dexOptimize;
-            } else {
+            }
+            else
+            {
                 parsedOptimize = dex.isOptimize();
             }
-        } else {
+        }
+        else
+        {
             parsedJvmArguments = dexJvmArguments;
             parsedCoreLibrary = dexCoreLibrary;
             parsedNoLocals = dexNoLocals;
@@ -191,45 +223,55 @@ public class DexMojo extends AbstractAndroidMojo {
         }
     }
 
-    private void runDex(CommandExecutor executor, File outputFile,
-                        Set<File> inputFiles) throws MojoExecutionException {
+    private void runDex( CommandExecutor executor, File outputFile, Set<File> inputFiles ) throws MojoExecutionException
+    {
         List<String> commands = new ArrayList<String>();
-        if (parsedJvmArguments != null) {
-            for (String jvmArgument : parsedJvmArguments) {
-                 // preserve backward compatibility allowing argument with or without dash (e.g. Xmx512m as well as
-                 // -Xmx512m should work) (see http://code.google.com/p/maven-android-plugin/issues/detail?id=153)
-                 if (!jvmArgument.startsWith("-")) {
-                        jvmArgument = "-" + jvmArgument;
-                 }
-                getLog().debug("Adding jvm argument " + jvmArgument);
-                commands.add(jvmArgument);
+        if ( parsedJvmArguments != null )
+        {
+            for ( String jvmArgument : parsedJvmArguments )
+            {
+                // preserve backward compatibility allowing argument with or without dash (e.g. Xmx512m as well as
+                // -Xmx512m should work) (see http://code.google.com/p/maven-android-plugin/issues/detail?id=153)
+                if ( ! jvmArgument.startsWith( "-" ) )
+                {
+                    jvmArgument = "-" + jvmArgument;
+                }
+                getLog().debug( "Adding jvm argument " + jvmArgument );
+                commands.add( jvmArgument );
             }
         }
-        commands.add("-jar");
-        commands.add(getAndroidSdk().getPathForTool("dx.jar"));
-        commands.add("--dex");
-        if (!parsedOptimize) {
-            commands.add("--no-optimize");
+        commands.add( "-jar" );
+        commands.add( getAndroidSdk().getPathForTool( "dx.jar" ) );
+        commands.add( "--dex" );
+        if ( ! parsedOptimize )
+        {
+            commands.add( "--no-optimize" );
         }
-        if (parsedCoreLibrary) {
-            commands.add("--core-library");
+        if ( parsedCoreLibrary )
+        {
+            commands.add( "--core-library" );
         }
-        commands.add("--output=" + outputFile.getAbsolutePath());
-        if (parsedNoLocals) {
-        	commands.add("--no-locals");
+        commands.add( "--output=" + outputFile.getAbsolutePath() );
+        if ( parsedNoLocals )
+        {
+            commands.add( "--no-locals" );
         }
 
-        for (File inputFile : inputFiles) {
-            getLog().debug("Adding dex input: " + inputFile.getAbsolutePath());
-            commands.add(inputFile.getAbsolutePath());
+        for ( File inputFile : inputFiles )
+        {
+            getLog().debug( "Adding dex input: " + inputFile.getAbsolutePath() );
+            commands.add( inputFile.getAbsolutePath() );
         }
 
         final String javaExecutable = getJavaExecutable().getAbsolutePath();
-        getLog().info(javaExecutable + " " + commands.toString());
-        try {
-            executor.executeCommand(javaExecutable, commands, project.getBasedir(), false);
-        } catch (ExecutionException e) {
-            throw new MojoExecutionException("", e);
+        getLog().info( javaExecutable + " " + commands.toString() );
+        try
+        {
+            executor.executeCommand( javaExecutable, commands, project.getBasedir(), false );
+        }
+        catch ( ExecutionException e )
+        {
+            throw new MojoExecutionException( "", e );
         }
     }
 
@@ -238,30 +280,43 @@ public class DexMojo extends AbstractAndroidMojo {
      *
      * @return the full path to the current java executable.
      */
-    private static File getJavaExecutable() {
-        final String javaHome = System.getProperty("java.home");
+    private static File getJavaExecutable()
+    {
+        final String javaHome = System.getProperty( "java.home" );
         final String slash = File.separator;
-        return new File(javaHome + slash + "bin" + slash + "java");
+        return new File( javaHome + slash + "bin" + slash + "java" );
     }
 
-    protected File createApkSourcesFile() throws MojoExecutionException {
-        final File apksources = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".apksources");
-        FileUtils.deleteQuietly(apksources);
+    /**
+     *
+     * @return
+     * @throws MojoExecutionException
+     */
+    protected File createApkSourcesFile() throws MojoExecutionException
+    {
+        final File apksources = new File( project.getBuild().getDirectory(),
+                project.getBuild().getFinalName() + ".apksources" );
+        FileUtils.deleteQuietly( apksources );
 
-        try {
+        try
+        {
             JarArchiver jarArchiver = new JarArchiver();
-            jarArchiver.setDestFile(apksources);
+            jarArchiver.setDestFile( apksources );
 
-            addDirectory(jarArchiver, assetsDirectory, "assets");
-            addDirectory(jarArchiver, resourceDirectory, "res");
-            addDirectory(jarArchiver, sourceDirectory, "src/main/java");
-            addJavaResources(jarArchiver, project.getBuild().getResources());
+            addDirectory( jarArchiver, assetsDirectory, "assets" );
+            addDirectory( jarArchiver, resourceDirectory, "res" );
+            addDirectory( jarArchiver, sourceDirectory, "src/main/java" );
+            addJavaResources( jarArchiver, project.getBuild().getResources() );
 
             jarArchiver.createArchive();
-        } catch (ArchiverException e) {
-            throw new MojoExecutionException("ArchiverException while creating .apksource file.", e);
-        } catch (IOException e) {
-            throw new MojoExecutionException("IOException while creating .apksource file.", e);
+        }
+        catch ( ArchiverException e )
+        {
+            throw new MojoExecutionException( "ArchiverException while creating .apksource file.", e );
+        }
+        catch ( IOException e )
+        {
+            throw new MojoExecutionException( "IOException while creating .apksource file.", e );
         }
 
         return apksources;
@@ -273,9 +328,11 @@ public class DexMojo extends AbstractAndroidMojo {
      * @param prefix any string, or null.
      * @return the prefix with a "/" at the end, never null.
      */
-    protected String endWithSlash(String prefix) {
-        prefix = StringUtils.defaultIfEmpty(prefix, "/");
-        if (!prefix.endsWith("/")) {
+    protected String endWithSlash( String prefix )
+    {
+        prefix = StringUtils.defaultIfEmpty( prefix, "/" );
+        if ( ! prefix.endsWith( "/" ) )
+        {
             prefix = prefix + "/";
         }
         return prefix;
@@ -287,20 +344,28 @@ public class DexMojo extends AbstractAndroidMojo {
      * @param jarArchiver
      * @param directory   The directory to add.
      * @param prefix      An optional prefix for where in the Jar file the directory's contents should go.
-     * @throws ArchiverException
      */
-    protected void addDirectory(JarArchiver jarArchiver, File directory, String prefix) throws ArchiverException {
-        if (directory != null && directory.exists()) {
+    protected void addDirectory( JarArchiver jarArchiver, File directory, String prefix )
+    {
+        if ( directory != null && directory.exists() )
+        {
             final DefaultFileSet fileSet = new DefaultFileSet();
-            fileSet.setPrefix(endWithSlash(prefix));
-            fileSet.setDirectory(directory);
-            jarArchiver.addFileSet(fileSet);
+            fileSet.setPrefix( endWithSlash( prefix ) );
+            fileSet.setDirectory( directory );
+            jarArchiver.addFileSet( fileSet );
         }
     }
 
-    protected void addJavaResources(JarArchiver jarArchiver, List<Resource> javaResources) throws ArchiverException {
-        for (Resource javaResource : javaResources) {
-            addJavaResource(jarArchiver, javaResource);
+    /**
+     *
+     * @param jarArchiver
+     * @param javaResources
+     */
+    protected void addJavaResources( JarArchiver jarArchiver, List<Resource> javaResources )
+    {
+        for ( Resource javaResource : javaResources )
+        {
+            addJavaResource( jarArchiver, javaResource );
         }
     }
 
@@ -309,16 +374,18 @@ public class DexMojo extends AbstractAndroidMojo {
      *
      * @param jarArchiver
      * @param javaResource The Java resource to add.
-     * @throws ArchiverException
      */
-    protected void addJavaResource(JarArchiver jarArchiver, Resource javaResource) throws ArchiverException {
-        if (javaResource != null) {
-            final File javaResourceDirectory = new File(javaResource.getDirectory());
-            if (javaResourceDirectory.exists()) {
+    protected void addJavaResource( JarArchiver jarArchiver, Resource javaResource )
+    {
+        if ( javaResource != null )
+        {
+            final File javaResourceDirectory = new File( javaResource.getDirectory() );
+            if ( javaResourceDirectory.exists() )
+            {
                 final DefaultFileSet javaResourceFileSet = new DefaultFileSet();
-                javaResourceFileSet.setDirectory(javaResourceDirectory);
-                javaResourceFileSet.setPrefix(endWithSlash("src/main/resources"));
-                jarArchiver.addFileSet(javaResourceFileSet);
+                javaResourceFileSet.setDirectory( javaResourceDirectory );
+                javaResourceFileSet.setPrefix( endWithSlash( "src/main/resources" ) );
+                jarArchiver.addFileSet( javaResourceFileSet );
             }
         }
     }
