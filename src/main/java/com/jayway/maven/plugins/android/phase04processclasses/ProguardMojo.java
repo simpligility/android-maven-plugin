@@ -214,7 +214,7 @@ public class ProguardMojo extends AbstractAndroidMojo
             }
             else
             {
-                return path;
+                return "\'" + path + "\'";
             }
         }
     }
