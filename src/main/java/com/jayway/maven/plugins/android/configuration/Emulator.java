@@ -24,6 +24,11 @@ public class Emulator
      */
     private String options;
 
+    /**
+     * Override default emulator executable
+     */
+    private String emulatorExecutable;
+
     public String getAvd()
     {
         return avd;
@@ -37,5 +42,10 @@ public class Emulator
     public String getOptions()
     {
         return options;
+    }
+
+    public String getEmulatorExecutable()
+    {
+        return emulatorExecutable;
     }
 }

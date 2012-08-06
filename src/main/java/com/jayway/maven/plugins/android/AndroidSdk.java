@@ -191,16 +191,6 @@ public class AndroidSdk
     }
 
     /**
-     * Get the emulator path.
-     *
-     * @return
-     */
-    public String getEmulatorPath()
-    {
-        return getPathForTool( "emulator" );
-    }
-
-    /**
      * Get the android debug tool path (adb).
      *
      * @return
