@@ -20,6 +20,7 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.common.AetherHelper;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -105,6 +106,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
             generateR();
             generateApklibR();
+            generateBuildConfig();
 
             // When compiling AIDL for this project,
             // make sure we compile AIDL for dependencies as well.
@@ -503,6 +505,55 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         catch ( ExecutionException e )
         {
             throw new MojoExecutionException( "", e );
+        }
+    }
+
+    private void generateBuildConfig() throws MojoExecutionException
+    {
+        getLog().debug( "Generating BuildConfig file" );
+
+        // Determine whether or not we are in debug mode.
+        boolean debug = !Boolean.valueOf( System.getProperty( "android.release", "false" ) );
+
+        // Create the BuildConfig for our package.
+        String packageName = extractPackageNameFromAndroidManifest( androidManifestFile );
+        if ( StringUtils.isNotBlank( customPackage ) )
+        {
+            packageName = customPackage;
+        }
+        generateBuildConfigForPackage( packageName, debug );
+
+        // Generate the BuildConfig for any apklib dependencies.
+        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+        {
+            if ( artifact.getType().equals( "apklib" ) )
+            {
+                File apklibManifeset = new File( getLibraryUnpackDirectory( artifact ), "AndroidManifest.xml" );
+                String apklibPackageName = extractPackageNameFromAndroidManifest( apklibManifeset );
+                generateBuildConfigForPackage( apklibPackageName, debug );
+            }
+        }
+    }
+
+    private void generateBuildConfigForPackage( String packageName, boolean debug ) throws MojoExecutionException
+    {
+        File outputFolder = new File( genDirectory, packageName.replace( ".", File.separator ) );
+        outputFolder.mkdirs();
+        String buildConfig = ""
+                + "package " + packageName + ";\n\n"
+                + "public final class BuildConfig {\n"
+                + "  public static final boolean DEBUG = " + Boolean.toString( debug ) + ";\n"
+                + "}\n"
+        ;
+        File outputFile = new File( outputFolder, "BuildConfig.java" );
+        try
+        {
+            FileUtils.writeStringToFile( outputFile, buildConfig );
+        }
+        catch ( IOException e )
+        {
+            getLog().error( "Error generating BuildConfig ", e );
+            throw new MojoExecutionException( "Error generating BuildConfig", e );
         }
     }
 
