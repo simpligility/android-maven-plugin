@@ -517,7 +517,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     private String assembleStartCommandLine() throws MojoExecutionException
     {
       String emulatorPath = getAndroidSdk().getPathForTool( parsedEmulatorExecutable );
-      StringBuilder startCommandline = new StringBuilder().append( emulatorPath )
+      StringBuilder startCommandline = new StringBuilder( "\"\"" ).append( emulatorPath ).append( "\"\"" )
                 .append( " -avd " ).append( parsedAvd ).append( " " );
         if ( ! StringUtils.isEmpty( parsedOptions ) )
         {
