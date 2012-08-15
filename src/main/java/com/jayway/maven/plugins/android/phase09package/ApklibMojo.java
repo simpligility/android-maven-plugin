@@ -247,7 +247,7 @@ public class ApklibMojo extends AbstractAndroidMojo
                 commands.add( resourceDirectory.getAbsolutePath() );
             }
         }
-        for ( Artifact apkLibraryArtifact : getRelevantDependencyArtifacts() )
+        for ( Artifact apkLibraryArtifact : getAllRelevantDependencyArtifacts() )
         {
             if ( apkLibraryArtifact.getType().equals( APKLIB ) )
             {
