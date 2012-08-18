@@ -114,6 +114,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      */
     private String parsedWait;
 
+    private String parsedEmulatorExecutable;
+
     private static final String START_EMULATOR_MSG = "Starting android emulator with script: ";
     private static final String START_EMULATOR_WAIT_MSG = "Waiting for emulator start:";
 
@@ -514,7 +516,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      */
     private String assembleStartCommandLine() throws MojoExecutionException
     {
-        StringBuilder startCommandline = new StringBuilder().append( getAndroidSdk().getEmulatorPath() )
+      String emulatorPath = getAndroidSdk().getPathForTool( parsedEmulatorExecutable );
+      StringBuilder startCommandline = new StringBuilder( "\"\"" ).append( emulatorPath ).append( "\"\"" )
                 .append( " -avd " ).append( parsedAvd ).append( " " );
         if ( ! StringUtils.isEmpty( parsedOptions ) )
         {
@@ -556,6 +559,15 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
             {
                 parsedWait = determineWait();
             }
+            // <emulator><emulatorExecutable> exists in pom file
+            if ( emulator.getEmulatorExecutable() != null )
+            {
+                parsedEmulatorExecutable = emulator.getEmulatorExecutable();
+            }
+            else
+            {
+                parsedEmulatorExecutable = determineEmulatorExecutable();
+            }
         }
         // commandline options
         else
@@ -563,7 +575,13 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
             parsedAvd = determineAvd();
             parsedOptions = determineOptions();
             parsedWait = determineWait();
+            parsedEmulatorExecutable = determineEmulatorExecutable();
         }
+    }
+
+    private String determineEmulatorExecutable()
+    {
+        return "emulator";
     }
 
     /**
