@@ -52,7 +52,6 @@ import java.util.concurrent.Future;
  */
 public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
 {
-
     /**
      * operating system name.
      */
@@ -65,10 +64,12 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      *   &lt;avd&gt;Default&lt;/avd&gt;
      *   &lt;wait&gt;20000&lt;/wait&gt;
      *   &lt;options&gt;-no-skin&lt;/options&gt;
+     *   &lt;executable&gt;emulator-arm&lt;/executable&gt;
      * &lt;/emulator&gt;
      * </pre>
-     * or configure as properties  on the command line as android.emulator.avd, android.emulator.wait and
-     * android.emulator.options or in pom or settings file as emulator.avd, emulator.wait and emulator.options.
+     * or configure as properties  on the command line as android.emulator.avd, android.emulator.wait,
+     * android.emulator.options and android.emulator.executable or in pom or settings file as emulator.avd,
+     * emulator.wait and emulator.options.
      *
      * @parameter
      */
@@ -106,7 +107,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      * Override default emulator executable. Default uses just "emulator".
      *
      * @parameter expression="${android.emulator.executable}"
-     * @see com.jayway.maven.plugins.android.configuration.Emulator#emulatorExecutable
+     * @see com.jayway.maven.plugins.android.configuration.Emulator#executable
      */
     private String emulatorExecutable;
 
@@ -123,7 +124,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      */
     private String parsedWait;
 
-    private String parsedEmulatorExecutable;
+    private String parsedExecutable;
 
     private static final String START_EMULATOR_MSG = "Starting android emulator with script: ";
     private static final String START_EMULATOR_WAIT_MSG = "Waiting for emulator start:";
@@ -525,7 +526,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      */
     private String assembleStartCommandLine() throws MojoExecutionException
     {
-      String emulatorPath = getAndroidSdk().getPathForTool( parsedEmulatorExecutable );
+      String emulatorPath = getAndroidSdk().getPathForTool( parsedExecutable );
       StringBuilder startCommandline = new StringBuilder( "\"\"" ).append( emulatorPath ).append( "\"\"" )
                 .append( " -avd " ).append( parsedAvd ).append( " " );
         if ( ! StringUtils.isEmpty( parsedOptions ) )
@@ -571,11 +572,11 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
             // <emulator><emulatorExecutable> exists in pom file
             if ( emulator.getExecutable() != null )
             {
-                parsedEmulatorExecutable = emulator.getExecutable();
+                parsedExecutable = emulator.getExecutable();
             }
             else
             {
-                parsedEmulatorExecutable = determineExecutable();
+                parsedExecutable = determineExecutable();
             }
         }
         // commandline options
@@ -584,13 +585,26 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
             parsedAvd = determineAvd();
             parsedOptions = determineOptions();
             parsedWait = determineWait();
-            parsedEmulatorExecutable = determineExecutable();
+            parsedExecutable = determineExecutable();
         }
     }
 
+    /**
+     * Get executable value for emulator from command line options or default to "emulator".
+     * @return
+     */
     private String determineExecutable()
     {
-        return "emulator";
+        String emulator;
+        if ( emulatorExecutable != null )
+        {
+            emulator = emulatorExecutable;
+        }
+        else
+        {
+            emulator = "emulator";
+        }
+        return emulator;
     }
 
     /**
@@ -609,7 +623,6 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
         {
             wait = "5000";
         }
-
         return wait;
     }
 
