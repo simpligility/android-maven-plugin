@@ -8,7 +8,6 @@ package com.jayway.maven.plugins.android.configuration;
  */
 public class Emulator
 {
-
     /**
      * Mirror of {@link com.jayway.maven.plugins.android.AbstractEmulatorMojo#emulatorAvd}
      */
@@ -27,7 +26,7 @@ public class Emulator
     /**
      * Override default emulator executable
      */
-    private String emulatorExecutable;
+    private String executable;
 
     public String getAvd()
     {
@@ -44,8 +43,8 @@ public class Emulator
         return options;
     }
 
-    public String getEmulatorExecutable()
+    public String getExecutable()
     {
-        return emulatorExecutable;
+        return executable;
     }
 }
