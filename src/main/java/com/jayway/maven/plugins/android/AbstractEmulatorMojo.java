@@ -101,6 +101,15 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      */
     private String emulatorOptions;
 
+
+    /**
+     * Override default emulator executable. Default uses just "emulator".
+     *
+     * @parameter expression="${android.emulator.executable}"
+     * @see com.jayway.maven.plugins.android.configuration.Emulator#emulatorExecutable
+     */
+    private String emulatorExecutable;
+
     /**
      * parsed value for avd that will be used for the invocation.
      */
@@ -560,13 +569,13 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                 parsedWait = determineWait();
             }
             // <emulator><emulatorExecutable> exists in pom file
-            if ( emulator.getEmulatorExecutable() != null )
+            if ( emulator.getExecutable() != null )
             {
-                parsedEmulatorExecutable = emulator.getEmulatorExecutable();
+                parsedEmulatorExecutable = emulator.getExecutable();
             }
             else
             {
-                parsedEmulatorExecutable = determineEmulatorExecutable();
+                parsedEmulatorExecutable = determineExecutable();
             }
         }
         // commandline options
@@ -575,11 +584,11 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
             parsedAvd = determineAvd();
             parsedOptions = determineOptions();
             parsedWait = determineWait();
-            parsedEmulatorExecutable = determineEmulatorExecutable();
+            parsedEmulatorExecutable = determineExecutable();
         }
     }
 
-    private String determineEmulatorExecutable()
+    private String determineExecutable()
     {
         return "emulator";
     }
