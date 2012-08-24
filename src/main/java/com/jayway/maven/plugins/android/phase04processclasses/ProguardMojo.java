@@ -169,8 +169,7 @@ public class ProguardMojo extends AbstractAndroidMojo
     public static final String PROGUARD_OBFUSCATED_JAR = "proguard-obfuscated.jar";
 
     private static final Collection<String> ANDROID_LIBRARY_EXCLUDED_FILTER = Arrays
-            .asList( "org/xml/**", "org/w3c/**", "org/apache/http/**", "java/**", "javax/**",
-                    "android/net/http/AndroidHttpClient.class" );
+            .asList( "org/xml/**", "org/w3c/**", "java/**", "javax/**" );
 
     private static final Collection<String> MAVEN_DESCRIPTOR = Arrays.asList( "META-INF/maven/**" );
     private static final Collection<String> META_INF_MANIFEST = Arrays.asList( "META-INF/MANIFEST.MF" );
