@@ -5,6 +5,7 @@ package com.jayway.maven.plugins.android.configuration;
  *
  * @author Matthias Kaeppler
  * @author Manfred Moser
+ * @author Michal Harakal
  * @see com.jayway.maven.plugins.android.phase04processclasses.ProguardMojo
  */
 public class Proguard
@@ -18,6 +19,7 @@ public class Proguard
      */
     private String config;
     private String proguardJarPath;
+    private String outputDirectory;
     private String[] jvmArguments;
     private Boolean filterMavenDescriptor;
     private Boolean filterManifest;
@@ -36,7 +38,12 @@ public class Proguard
     {
         return proguardJarPath;
     }
-
+    
+    public String getOutputDirectory()
+    {
+        return outputDirectory;
+    }
+   
     public String[] getJvmArguments()
     {
         return jvmArguments;
