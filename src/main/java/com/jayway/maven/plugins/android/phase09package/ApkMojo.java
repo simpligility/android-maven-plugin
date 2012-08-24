@@ -167,10 +167,21 @@ public class ApkMojo extends AbstractAndroidMojo
      * <p>This overrides any classifier on native library dependencies, and
      * any {@code nativeLibrariesDependenciesHardwareArchitectureDefault}.</p>
      * <p>Valid values currently include {@code armeabi} and {@code armeabi-v7a}.</p>
+     * <pre>
+     * &lt;configuration&gt;
+     *   ...
+     *    &lt;nativeLibrariesDependenciesHardwareArchitectureOverrides&gt;
+     *      &lt;nativeLibrariesDependenciesHardwareArchitectureOverride&gt;
+     *        armeabi
+     *      &lt;/nativeLibrariesDependenciesHardwareArchitectureOverride&gt;
+     *   &lt;/nativeLibrariesDependenciesHardwareArchitectureOverrides&gt;
+     *   ...
+     * &lt;/configuration&gt;
+     * </pre>
      *
-     * @parameter expression="${android.nativeLibrariesDependenciesHardwareArchitectureOverride}"
+     * @parameter expression="${android.nativeLibrariesDependenciesHardwareArchitectureOverrides}" default-value=""
      */
-    private String nativeLibrariesDependenciesHardwareArchitectureOverride;
+    private List<String> nativeLibrariesDependenciesHardwareArchitectureOverrides;
 
     /**
      * <p>Additional source directories that contain resources to be packaged into the apk.</p>
@@ -757,6 +768,30 @@ public class ApkMojo extends AbstractAndroidMojo
 
     private void processNativeLibraries( final List<File> natives ) throws MojoExecutionException
     {
+        if ( nativeLibrariesDependenciesHardwareArchitectureOverrides.isEmpty() )
+        {
+            processNativeLibraries( natives, nativeLibrariesDependenciesHardwareArchitectureDefault );
+        }
+        else
+        {
+            for ( String ndkArchitecture : nativeLibrariesDependenciesHardwareArchitectureOverrides )
+            {
+                processNativeLibraries( natives, ndkArchitecture );
+            }
+        }
+    }
+
+    private void addNativeDirectory( final List<File> natives, final File nativeDirectory )
+    {
+        if ( ! natives.contains( nativeDirectory ) )
+        {
+            natives.add( nativeDirectory );
+        }
+    }
+
+    private void processNativeLibraries( final List<File> natives, String ndkArchitecture )
+            throws MojoExecutionException
+    {
         // Examine the native libraries directory for content. This will only be true if:
         // a) the directory exists
         // b) it contains at least 1 file
@@ -780,11 +815,11 @@ public class ApkMojo extends AbstractAndroidMojo
                     "No native library dependencies detected, will point directly to " + nativeLibrariesDirectory );
 
             // Point directly to the directory in this case - no need to copy files around
-            natives.add( nativeLibrariesDirectory );
+            addNativeDirectory( natives, nativeLibrariesDirectory );
 
             // FIXME: This would pollute a libs folder which is under source control
             // FIXME: Would be better to not support this case?
-            optionallyCopyGdbServer( nativeLibrariesDirectory );
+            optionallyCopyGdbServer( nativeLibrariesDirectory, ndkArchitecture );
 
         }
         else
@@ -799,7 +834,7 @@ public class ApkMojo extends AbstractAndroidMojo
                 destinationDirectory.mkdirs();
 
                 // Point directly to the directory
-                natives.add( destinationDirectory );
+                addNativeDirectory( natives, destinationDirectory );
 
                 // If we have a valid native libs, copy those files - these already come in the structure required
                 if ( hasValidNativeLibrariesDirectory )
@@ -822,7 +857,7 @@ public class ApkMojo extends AbstractAndroidMojo
                                         : "lib" + artifactId + ".so";
 
                                 final File finalDestinationDirectory = getFinalDestinationDirectoryFor(
-                                        resolvedArtifact, destinationDirectory );
+                                        resolvedArtifact, destinationDirectory, ndkArchitecture );
                                 final File file = new File( finalDestinationDirectory, filename );
                                 getLog().debug(
                                         "Copying native dependency " + artifactId + " (" + resolvedArtifact.getGroupId()
@@ -839,20 +874,21 @@ public class ApkMojo extends AbstractAndroidMojo
                         {
                             if ( APKLIB.equals( resolvedArtifact.getType() ) )
                             {
-                                natives.add( new File( getLibraryUnpackDirectory( resolvedArtifact ) + "/libs" ) );
+                                addNativeDirectory( natives, new File( getLibraryUnpackDirectory( resolvedArtifact )
+                                                                           + "/libs" ) );
                             }
                         }
                     }
                 }
 
                 // Finally, think about copying the gdbserver binary into the APK output as well
-                optionallyCopyGdbServer( destinationDirectory );
+                optionallyCopyGdbServer( destinationDirectory, ndkArchitecture );
 
             }
         }
     }
 
-    private void optionallyCopyGdbServer( File destinationDirectory ) throws MojoExecutionException
+    private void optionallyCopyGdbServer( File destinationDirectory, String architecture ) throws MojoExecutionException
     {
 
         try
@@ -861,12 +897,6 @@ public class ApkMojo extends AbstractAndroidMojo
             {
                 // Copy the gdbserver binary to libs/<architecture>/
                 final File gdbServerFile = getAndroidNdk().getGdbServer( apkNativeToolchain );
-
-                String architecture = nativeLibrariesDependenciesHardwareArchitectureDefault;
-                if ( StringUtils.isNotBlank( nativeLibrariesDependenciesHardwareArchitectureOverride ) )
-                {
-                    architecture = nativeLibrariesDependenciesHardwareArchitectureOverride;
-                }
                 final File destDir = new File( destinationDirectory, architecture );
                 final File destFile = new File( destDir, "gdbserver" );
                 if ( ! destFile.exists() )
@@ -887,9 +917,10 @@ public class ApkMojo extends AbstractAndroidMojo
 
     }
 
-    private File getFinalDestinationDirectoryFor( Artifact resolvedArtifact, File destinationDirectory )
+    private File getFinalDestinationDirectoryFor( Artifact resolvedArtifact, File destinationDirectory,
+                                                  String ndkArchitecture )
     {
-        final String hardwareArchitecture = getHardwareArchitectureFor( resolvedArtifact );
+        final String hardwareArchitecture = getHardwareArchitectureFor( resolvedArtifact, ndkArchitecture );
 
         File finalDestinationDirectory = new File( destinationDirectory, hardwareArchitecture + "/" );
 
@@ -897,12 +928,11 @@ public class ApkMojo extends AbstractAndroidMojo
         return finalDestinationDirectory;
     }
 
-    private String getHardwareArchitectureFor( Artifact resolvedArtifact )
+    private String getHardwareArchitectureFor( Artifact resolvedArtifact, String ndkArchitecture )
     {
-
-        if ( StringUtils.isNotBlank( nativeLibrariesDependenciesHardwareArchitectureOverride ) )
+        if ( !nativeLibrariesDependenciesHardwareArchitectureOverrides.isEmpty() )
         {
-            return nativeLibrariesDependenciesHardwareArchitectureOverride;
+            return ndkArchitecture;
         }
 
         final String classifier = resolvedArtifact.getClassifier();
