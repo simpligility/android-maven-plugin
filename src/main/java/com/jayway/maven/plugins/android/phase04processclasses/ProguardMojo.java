@@ -33,6 +33,7 @@ import java.util.List;
  * @author Jonson
  * @author Matthias Kaeppler
  * @author Manfred Moser
+ * @author Michal Harakal
  * @goal proguard
  * @phase process-classes
  * @requiresDependencyResolution compile
@@ -122,6 +123,18 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     @PullParameter( defaultValueGetterMethod = "getProguardJarPath" )
     private String parsedProguardJarPath;
+    
+    /**
+     * Path to the ProGuard output directory (relative to project root). Defaults to "proguard"
+     *
+     * @parameter expression="${android.proguard.outputDirectory}"
+     * @optional
+     */
+    private String outputDirectory;
+
+    @PullParameter( defaultValue = "proguard" )
+    private String parsedOutputDirectory;
+    
 
     /**
      * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build.
@@ -234,7 +247,8 @@ public class ProguardMojo extends AbstractAndroidMojo
     private void executeProguard() throws MojoExecutionException
     {
 
-        File proguardDir = new File( project.getBuild().getDirectory(), "proguard" );
+        final File proguardDir = new File( project.getBuild().getDirectory(), parsedOutputDirectory );
+          
         if ( ! proguardDir.exists() && ! proguardDir.mkdir() )
         {
             throw new MojoExecutionException( "Cannot create proguard output directory" );
