@@ -127,7 +127,31 @@ public class ProguardMojo extends AbstractAndroidMojo
     /**
      * Path to the ProGuard output directory (relative to project root). Defaults to "proguard"
      *
-     * @parameter expression="${android.proguard.outputDirectory}"
+     */
+     
+     /**
+     * Path relative to the project's build directory(target) where proguard puts folowing files:
+     * <p/>
+     * <ul>
+     *   <li>dump.txt</li>
+     *   <li>seeds.txt</li>
+     *   <li>usage.txt</li>
+     *   <li>mapping.txt</li>
+     * </ul>
+     * <p/>
+     * You can define the directory like this:
+     * <pre>
+     * &lt;proguard&gt;
+     *   &lt;skip&gt;false&lt;/skip&gt;
+     *   &lt;config&gt;proguard.cfg&lt;/config&gt;
+     *   &lt;outputDirectory&gt;my_proguard&lt;/outputDirectory&gt;
+     * &lt;/proguard&gt; 
+     * </pre>
+     * <p/>
+     * Output directory is defined relatively so could be also outside of the target directory.
+     * <p/>
+     *
+     * @parameter expression="${android.proguard.outputDirectory}"  default-value="proguard"
      * @optional
      */
     private String outputDirectory;
