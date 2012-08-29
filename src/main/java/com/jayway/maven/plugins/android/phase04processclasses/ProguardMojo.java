@@ -148,7 +148,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      * &lt;/proguard&gt; 
      * </pre>
      * <p/>
-     * Output directory is defined relatively so could be also outside of the target directory.
+     * Output directory is defined relatively so it could be also outside of the target directory.
      * <p/>
      *
      * @parameter expression="${android.proguard.outputDirectory}"  default-value="proguard"
