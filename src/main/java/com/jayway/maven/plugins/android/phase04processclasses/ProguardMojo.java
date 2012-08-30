@@ -125,12 +125,7 @@ public class ProguardMojo extends AbstractAndroidMojo
     private String parsedProguardJarPath;
     
     /**
-     * Path to the ProGuard output directory (relative to project root). Defaults to "proguard"
-     *
-     */
-     
-     /**
-     * Path relative to the project's build directory(target) where proguard puts folowing files:
+     * Path relative to the project's build directory (target) where proguard puts folowing files:
      * <p/>
      * <ul>
      *   <li>dump.txt</li>
