@@ -31,7 +31,15 @@
 
         <!-- Don't upgrade maven-plugin-plugin until MPLUGIN-187 is fixed:
         http://jira.codehaus.org/browse/MPLUGIN-187 -->
-        <maven-plugin-plugin.version>2.8</maven-plugin-plugin.version>
+        <!-- 3.1 is available but causes build failure like
+
+                The syntax
+      [WARNING]     @parameter expression="${property}"
+      [WARNING]   is deprecated, please use
+      [WARNING]     @parameter property="property"
+      [WARNING]   instead.
+       -->
+        <maven-plugin-plugin.version>2.9</maven-plugin-plugin.version>
 
         <maven.api.version>3.0.3</maven.api.version>
     </properties>
@@ -229,7 +237,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.3.2</version>
+                    <version>2.5.1</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-deploy-plugin</artifactId>
@@ -241,7 +249,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.3.2</version>
+                    <version>2.4</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
@@ -253,19 +261,19 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.2.1</version>
+                    <version>2.3.2</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-scm-plugin</artifactId>
-                    <version>1.5</version>
+                    <version>1.7</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>2.1.2</version>
+                    <version>2.2</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>2.4.1</version>
+                    <version>2.5</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-install-plugin</artifactId>
@@ -273,7 +281,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.5</version>
+                    <version>2.6</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-site-plugin</artifactId>
@@ -281,7 +289,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.10</version>
+                    <version>2.12.3</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -470,7 +478,7 @@
                                 <plugin>
                                     <groupId>org.apache.maven.plugins</groupId>
                                     <artifactId>maven-javadoc-plugin</artifactId>
-                                    <version>2.8</version>
+                                    <version>2.8.1</version>
                                     <configuration>
                                         <quiet>true</quiet>
                                         <links>
