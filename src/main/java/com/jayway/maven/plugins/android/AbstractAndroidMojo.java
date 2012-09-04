@@ -205,8 +205,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File unpackedApkLibsDirectory;
 
     /**
-     * Specifies which device to connect to, by serial number. Special values "usb" and "emulator" are also valid, for
-     * selecting the only USB connected device or the only running emulator, respectively.
+     * Specifies which the serial number of the device to connect to. Using the special values "usb" or
+     * "emulator" is also valid. "usb" will connect to all actual devices connected (via usb). "emulator" will
+     * connect to all emulators connected. Multiple devices will be iterated over in terms of goals to run. All
+     * device interaction goals support this so you can e.. deploy the apk to all attached emulators and devices.
+     * Goals supporting this are devices, deploy, undeploy, redeploy, pull, push and instrument.
      *
      * @parameter expression="${android.device}"
      */
