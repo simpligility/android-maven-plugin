@@ -20,7 +20,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
-import org.codehaus.plexus.util.cli.DefaultConsumer;
 import org.codehaus.plexus.util.cli.StreamConsumer;
 
 import java.io.File;
@@ -144,7 +143,6 @@ public interface CommandExecutor
          */
         static class StreamConsumerImpl implements StreamConsumer
         {
-            private DefaultConsumer consumer;
             private StringBuffer sb = new StringBuffer();
             private final Log logger;
 
@@ -152,7 +150,6 @@ public interface CommandExecutor
             public StreamConsumerImpl( Log logger )
             {
                 this.logger = logger;
-                consumer = new DefaultConsumer();
             }
 
             public void consumeLine( String line )
@@ -160,7 +157,7 @@ public interface CommandExecutor
                 sb.append( line );
                 if ( logger != null )
                 {
-                    consumer.consumeLine( line );
+                    logger.debug( line );
                 }
             }
 
