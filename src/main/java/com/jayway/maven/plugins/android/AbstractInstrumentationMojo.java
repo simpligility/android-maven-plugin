@@ -612,6 +612,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         private final NumberFormat timeFormatter = new DecimalFormat( "#0.0000" );
 
         private int testCount = 0;
+        private int testRunCount = 0;
         private int testFailureCount = 0;
         private int testErrorCount = 0;
         private String testRunFailureCause = null;
@@ -729,6 +730,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         public void testStarted( TestIdentifier testIdentifier )
         {
             getLog().info( INDENT + INDENT + "Start: " + testIdentifier.toString() );
+            testRunCount++;
 
             if ( parsedCreateReport )
             {
@@ -816,8 +818,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             {
                 getLog().error( INDENT + "FAILURES!!!" );
             }
-            getLog().info( INDENT + "Tests run: " + testCount + ",  Failures: " + testFailureCount + ",  Errors: "
-                    + testErrorCount );
+            getLog().info( INDENT + "Tests run: " + testRunCount
+                    + ( testRunCount < testCount ? " (of " + testCount + ")" : "" )
+                    + ",  Failures: " + testFailureCount + ",  Errors: " + testErrorCount );
             if ( parsedCreateReport )
             {
                 NamedNodeMap testSuiteAttributes = testSuiteNode.getAttributes();
