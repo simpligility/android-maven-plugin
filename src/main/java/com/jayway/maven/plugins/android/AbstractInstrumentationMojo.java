@@ -243,6 +243,35 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      */
     protected List<String> testClasses;
 
+
+    /**
+     * <p>Whether to execute tests which are annotated with the given annotations.</p>
+     * <pre>
+     * &lt;annotations&gt;
+     *     &lt;annotation&gt;your.package.name.YourAnnotation&lt;/annotation&gt;
+     * &lt;/annotations&gt;
+     * </pre>
+     * or as e.g. -Dandroid.test.annotations=annotation1,annotation2
+     *
+     * @optional
+     * @parameter expression="${android.test.annotations}
+     */
+    protected List<String> testAnnotations;
+
+    /**
+     * <p>Whether to execute tests which are <strong>not</strong> annotated with the given annotations.</p>
+     * <pre>
+     * &lt;excludeAnnotations&gt;
+     *     &lt;excludeAnnotation&gt;your.package.name.YourAnnotation&lt;/excludeAnnotation&gt;
+     * &lt;/excludeAnnotations&gt;
+     * </pre>
+     * or as e.g. -Dandroid.test.excludeAnnotations=annotation1,annotation2
+     *
+     * @optional
+     * @parameter expression="${android.test.excludeAnnotations}
+     */
+    protected List<String> testExcludeAnnotations;
+
     private boolean classesExists;
     private boolean packagesExists;
 
@@ -252,6 +281,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
     private String parsedInstrumentationRunner;
     private List<String> parsedClasses;
     private List<String> parsedPackages;
+    private List<String> parsedAnnotations;
+    private List<String> parsedExcludeAnnotations;
     private String parsedTestSize;
     private Boolean parsedCoverage;
     private String parsedCoverageFile;
@@ -314,6 +345,23 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                     remoteAndroidTestRunner
                             .setClassNames( parsedClasses.toArray( new String[ parsedClasses.size() ] ) );
                     getLog().info( "Running tests for specified test classes/methods: " + parsedClasses );
+                }
+
+                if ( parsedAnnotations != null )
+                {
+                    for ( String annotation : parsedAnnotations )
+                    {
+                        remoteAndroidTestRunner.addInstrumentationArg( "annotation", annotation );
+                    }
+                }
+
+                if ( parsedExcludeAnnotations != null )
+                {
+                    for ( String annotation : parsedExcludeAnnotations )
+                    {
+                        remoteAndroidTestRunner.addInstrumentationArg( "notAnnotation", annotation );
+                    }
+
                 }
 
                 remoteAndroidTestRunner.setDebug( parsedDebug );
@@ -412,6 +460,22 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             {
                 parsedClasses = testClasses;
             }
+            if ( test.getAnnotations() != null && ! test.getAnnotations().isEmpty() )
+            {
+                parsedAnnotations = test.getAnnotations();
+            }
+            else
+            {
+                parsedAnnotations =  testAnnotations;
+            }
+            if ( test.getExcludeAnnotations() != null && ! test.getExcludeAnnotations().isEmpty() )
+            {
+                parsedExcludeAnnotations = test.getExcludeAnnotations();
+            }
+            else
+            {
+                parsedExcludeAnnotations = testExcludeAnnotations;
+            }
             if ( test.getPackages() != null && ! test.getPackages().isEmpty() )
             {
                 parsedPackages = test.getPackages();
@@ -476,6 +540,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             parsedInstrumentationPackage = testInstrumentationPackage;
             parsedInstrumentationRunner = testInstrumentationRunner;
             parsedClasses = testClasses;
+            parsedAnnotations = testAnnotations;
+            parsedExcludeAnnotations = testExcludeAnnotations;
             parsedPackages = testPackages;
             parsedTestSize = testTestSize;
             parsedCoverage = testCoverage;
