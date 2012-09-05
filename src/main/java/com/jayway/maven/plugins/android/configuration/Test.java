@@ -40,7 +40,7 @@ public class Test
      */
     private Boolean logOnly;
     /**
-     * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testSize}
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testTestSize}
      */
     private String testSize;
     /**
@@ -55,6 +55,14 @@ public class Test
      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testClasses}
      */
     protected List<String> classes;
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testAnnotations}
+     */
+    private List<String> annotations;
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testExcludeAnnotations}
+     */
+    private List<String> excludeAnnotations;
 
     public String getSkip()
     {
@@ -109,5 +117,15 @@ public class Test
     public List<String> getClasses()
     {
         return classes;
+    }
+
+    public List<String> getAnnotations()
+    {
+        return annotations;
+    }
+
+    public List<String> getExcludeAnnotations()
+    {
+        return excludeAnnotations;
     }
 }
