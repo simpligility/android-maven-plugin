@@ -38,8 +38,10 @@
       [WARNING]   is deprecated, please use
       [WARNING]     @parameter property="property"
       [WARNING]   instead.
+        
+        2.9 breaks the site build.. so atm we stick with 2.8
        -->
-        <maven-plugin-plugin.version>2.9</maven-plugin-plugin.version>
+        <maven-plugin-plugin.version>2.8</maven-plugin-plugin.version>
 
         <maven.api.version>3.0.3</maven.api.version>
     </properties>
