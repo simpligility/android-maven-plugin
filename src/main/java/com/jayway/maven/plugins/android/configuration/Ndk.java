@@ -108,6 +108,11 @@ public class Ndk
     /**
      *
      */
+    private Boolean maxJobs;
+
+    /**
+     *
+     */
     private String target;
     /**
      *
