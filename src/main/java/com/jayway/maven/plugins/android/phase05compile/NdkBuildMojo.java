@@ -311,6 +311,14 @@ public class NdkBuildMojo extends AbstractAndroidMojo
     private String makefile;
 
     /**
+     * Specifies the application makefile to use for the build (if other than the default Application.mk).
+     *
+     * @parameter
+     */
+    @PullParameter
+    private String applicationMakefile;
+
+    /**
      *
      * @throws MojoExecutionException
      * @throws MojoFailureException
@@ -413,6 +421,17 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 commands.add( makefile );
             }
 
+            if ( applicationMakefile != null )
+            {
+                File appMK = new File( project.getBasedir(), applicationMakefile );
+                if ( ! appMK.exists() )
+                {
+                    getLog().error( "Specified application makefile " + appMK + " does not exist" );
+                    throw new MojoExecutionException( "Specified application makefile " + appMK + " does not exist" );
+                }
+                commands.add( "NDK_APPLICATION_MK=" + applicationMakefile );
+            }
+
             // Setup the correct toolchain to use
             // FIXME: perform a validation that this toolchain exists in the NDK
             commands.add( "NDK_TOOLCHAIN=" + ndkToolchain );
@@ -434,11 +453,6 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             }
             else /*if ( "a".equals( project.getPackaging() ) )*/
             {
-                // Hack for the moment - seems .so projects will happily use .so
-                // getLog().info( "Statically linked native library being built, forcing NDK target to
-                // "+project.getArtifactId() );
-                // getLog().info( "If target is not "+project.getArtifactId()+" please investigate and use the
-                // 'target' configuration parameter!" );
                 commands.add( project.getArtifactId() );
             }
 

@@ -99,6 +99,12 @@ public class Ndk
      *
      */
     private String makefile;
+
+    /**
+     *
+     */
+    private String applicationMakefile;
+
     /**
      *
      */
