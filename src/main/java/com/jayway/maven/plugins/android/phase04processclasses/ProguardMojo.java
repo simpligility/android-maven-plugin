@@ -33,6 +33,7 @@ import java.util.List;
  * @author Jonson
  * @author Matthias Kaeppler
  * @author Manfred Moser
+ * @author Michal Harakal
  * @goal proguard
  * @phase process-classes
  * @requiresDependencyResolution compile
@@ -122,6 +123,37 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     @PullParameter( defaultValueGetterMethod = "getProguardJarPath" )
     private String parsedProguardJarPath;
+    
+    /**
+     * Path relative to the project's build directory (target) where proguard puts folowing files:
+     * <p/>
+     * <ul>
+     *   <li>dump.txt</li>
+     *   <li>seeds.txt</li>
+     *   <li>usage.txt</li>
+     *   <li>mapping.txt</li>
+     * </ul>
+     * <p/>
+     * You can define the directory like this:
+     * <pre>
+     * &lt;proguard&gt;
+     *   &lt;skip&gt;false&lt;/skip&gt;
+     *   &lt;config&gt;proguard.cfg&lt;/config&gt;
+     *   &lt;outputDirectory&gt;my_proguard&lt;/outputDirectory&gt;
+     * &lt;/proguard&gt; 
+     * </pre>
+     * <p/>
+     * Output directory is defined relatively so it could be also outside of the target directory.
+     * <p/>
+     *
+     * @parameter expression="${android.proguard.outputDirectory}"  default-value="proguard"
+     * @optional
+     */
+    private String outputDirectory;
+
+    @PullParameter( defaultValue = "proguard" )
+    private String parsedOutputDirectory;
+    
 
     /**
      * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build.
@@ -233,7 +265,8 @@ public class ProguardMojo extends AbstractAndroidMojo
     private void executeProguard() throws MojoExecutionException
     {
 
-        File proguardDir = new File( project.getBuild().getDirectory(), "proguard" );
+        final File proguardDir = new File( project.getBuild().getDirectory(), parsedOutputDirectory );
+          
         if ( ! proguardDir.exists() && ! proguardDir.mkdir() )
         {
             throw new MojoExecutionException( "Cannot create proguard output directory" );
