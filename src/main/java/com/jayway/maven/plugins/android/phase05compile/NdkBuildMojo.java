@@ -311,6 +311,22 @@ public class NdkBuildMojo extends AbstractAndroidMojo
     private String makefile;
 
     /**
+     * Specifies the application makefile to use for the build (if other than the default Application.mk).
+     *
+     * @parameter
+     */
+    @PullParameter
+    private String applicationMakefile;
+
+    /**
+     * Flag indicating whether to use the max available jobs for the host machine
+     *
+     * @parameter expression="${android.ndk.build.maxJobs}" default-value="false"
+     */
+    @PullParameter( defaultValue = "false" )
+    private Boolean maxJobs;
+
+    /**
      *
      * @throws MojoExecutionException
      * @throws MojoFailureException
@@ -413,6 +429,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 commands.add( makefile );
             }
 
+            configureApplicationMakefile( commands );
+            configureMaxJobs( commands );
+
             // Setup the correct toolchain to use
             // FIXME: perform a validation that this toolchain exists in the NDK
             commands.add( "NDK_TOOLCHAIN=" + ndkToolchain );
@@ -434,11 +453,6 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             }
             else /*if ( "a".equals( project.getPackaging() ) )*/
             {
-                // Hack for the moment - seems .so projects will happily use .so
-                // getLog().info( "Statically linked native library being built, forcing NDK target to
-                // "+project.getArtifactId() );
-                // getLog().info( "If target is not "+project.getArtifactId()+" please investigate and use the
-                // 'target' configuration parameter!" );
                 commands.add( project.getArtifactId() );
             }
 
@@ -460,6 +474,32 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             throw new MojoExecutionException( e.getMessage(), e );
         }
 
+    }
+
+    private void configureApplicationMakefile( List<String> commands )
+        throws MojoExecutionException
+    {
+        if ( applicationMakefile != null )
+        {
+            File appMK = new File( project.getBasedir(), applicationMakefile );
+            if ( ! appMK.exists() )
+            {
+                getLog().error( "Specified application makefile " + appMK + " does not exist" );
+                throw new MojoExecutionException( "Specified application makefile " + appMK + " does not exist" );
+            }
+            commands.add( "NDK_APPLICATION_MK=" + applicationMakefile );
+        }
+    }
+
+    private void configureMaxJobs( List<String> commands )
+    {
+        if ( maxJobs )
+        {
+            String jobs = String.valueOf( Runtime.getRuntime().availableProcessors() );
+            getLog().info( "executing " + jobs + " parallel jobs" );
+            commands.add( "-j" );
+            commands.add( jobs );
+        }
     }
 
     private void cleanUp( File nativeLibDirectory, boolean libsDirectoryExists, File directoryToRemove,
