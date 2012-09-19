@@ -714,8 +714,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             } );
             stripCommandExecutor.setLogger( getLog() );
 
-            stripCommandExecutor
-                    .executeCommand( resolveNdkStripper().getAbsolutePath(), Arrays.asList( file.getAbsolutePath() ) );
+            stripCommandExecutor.executeCommand( resolveNdkStripper( file ).getAbsolutePath(),
+                                                 Arrays.asList( file.getAbsolutePath() ) );
         }
         catch ( ExecutionException e )
         {
@@ -734,9 +734,16 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         return getAndroidNdk().getNdkBuildPath();
     }
 
-    private File resolveNdkStripper() throws MojoExecutionException
+    private File resolveNdkStripper( File nativeLibrary ) throws MojoExecutionException
     {
-        return getAndroidNdk().getStripper( ndkToolchain );
+        if ( ndkToolchain != null )
+        {
+            return getAndroidNdk().getStripper( ndkToolchain );
+        }
+        else
+        {
+            return getAndroidNdk().getStripper( getAndroidNdk().getToolchain( nativeLibrary ) );
+        }
     }
 
     private void processMakefileCapture( File localCIncludesFile ) throws MojoExecutionException
