@@ -288,9 +288,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo
     private Boolean skipStripping;
 
     /**
-     * @parameter expression="${android.ndk.build.ndk-toolchain}" default-value="arm-linux-androideabi-4.4.3"
+     * @parameter expression="${android.ndk.build.ndk-toolchain}"
      */
-    @PullParameter( defaultValue = "arm-linux-androideabi-4.4.3" )
+    @PullParameter
     private String ndkToolchain;
 
 
@@ -431,10 +431,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
             configureApplicationMakefile( commands );
             configureMaxJobs( commands );
+            configureNdkToolchain( commands );
 
-            // Setup the correct toolchain to use
-            // FIXME: perform a validation that this toolchain exists in the NDK
-            commands.add( "NDK_TOOLCHAIN=" + ndkToolchain );
             // Anything else on the command line the user wants to add - simply splice it up and
             // add it one by one to the command line
             if ( ndkBuildAdditionalCommandline != null )
@@ -499,6 +497,16 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             getLog().info( "executing " + jobs + " parallel jobs" );
             commands.add( "-j" );
             commands.add( jobs );
+        }
+    }
+
+    private void configureNdkToolchain( List<String> commands )
+    {
+        if ( ndkToolchain != null )
+        {
+            // Setup the correct toolchain to use
+            // FIXME: perform a validation that this toolchain exists in the NDK
+            commands.add( "NDK_TOOLCHAIN=" + ndkToolchain );
         }
     }
 
