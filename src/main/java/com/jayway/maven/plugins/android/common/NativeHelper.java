@@ -24,6 +24,7 @@ import org.sonatype.aether.util.filter.ScopeDependencyFilter;
 import org.sonatype.aether.util.graph.PreorderNodeListGenerator;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,7 +63,8 @@ public class NativeHelper
         this.log = log;
     }
 
-    public static boolean hasStaticNativeLibraryArtifact( Set<Artifact> resolveNativeLibraryArtifacts )
+    public static boolean hasStaticNativeLibraryArtifact( Set<Artifact> resolveNativeLibraryArtifacts, 
+                                                          File unpackDirectory )
     {
         for ( Artifact resolveNativeLibraryArtifact : resolveNativeLibraryArtifacts )
         {
@@ -70,11 +72,16 @@ public class NativeHelper
             {
                 return true;
             }
+            if ( APKLIB.equals( resolveNativeLibraryArtifact.getType() ) )
+            {
+                // TODO: Add dependent libs from APKLIB
+            }
         }
         return false;
     }
 
-    public static boolean hasSharedNativeLibraryArtifact( Set<Artifact> resolveNativeLibraryArtifacts )
+    public static boolean hasSharedNativeLibraryArtifact( Set<Artifact> resolveNativeLibraryArtifacts, 
+                                                          File unpackDirectory )
     {
         for ( Artifact resolveNativeLibraryArtifact : resolveNativeLibraryArtifacts )
         {
@@ -82,10 +89,31 @@ public class NativeHelper
             {
                 return true;
             }
+            if ( APKLIB.equals( resolveNativeLibraryArtifact.getType() ) )
+            {
+                File libsFolder = new File(
+                        AbstractAndroidMojo
+                            .getLibraryUnpackDirectory( unpackDirectory, resolveNativeLibraryArtifact ) 
+                        + "/libs" );
+                if ( libsFolder.exists() )
+                {
+                    String[] soFiles = libsFolder.list( new FilenameFilter()
+                    {
+                        public boolean accept( final File dir, final String name )
+                        {
+                            return name.startsWith( "lib" ) && name.endsWith( ".so" );
+                        }
+                    } );
+                    if ( soFiles != null && soFiles.length > 0 )
+                    {
+                        return true;
+                    }
+                }
+            }
         }
         return false;
     }
-
+    
     public Set<Artifact> getNativeDependenciesArtifacts( File unpackDirectory, boolean sharedLibraries )
             throws MojoExecutionException
     {
