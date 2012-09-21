@@ -19,6 +19,8 @@ package com.jayway.maven.plugins.android.phase09package;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.config.PullParameter;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -30,6 +32,7 @@ import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +52,22 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
 public class ApklibMojo extends AbstractAndroidMojo
 {
 
+    /**
+     * Build folder to place built native libraries into
+     *
+     * @parameter expression="${android.ndk.build.ndk-output-directory}"
+     * default-value="${project.build.directory}/ndk-libs"
+     */
+    private File ndkOutputDirectory;
+    
+    /**
+     * Defines the architecture for the NDK build
+     *
+     * @parameter expression="${android.ndk.build.architecture}" default-value="armeabi"
+     */
+    @PullParameter( defaultValue = "armeabi" )
+    private String ndkArchitecture;
+    
     /**
      *
      * @throws MojoExecutionException
@@ -112,6 +131,14 @@ public class ApklibMojo extends AbstractAndroidMojo
         try
         {
             addDirectory( jarArchiver, nativeLibrariesDirectory, "libs" );
+
+            // Add native libraries built in this build and dependencies
+            final File outputDirectory = new File( project.getBuild().getDirectory() );
+            String prefix = "libs"; // + ndkArchitecture; // path in archive file must have '/'
+            addSharedLibraries( jarArchiver, outputDirectory, prefix );
+            final File dependentLibs = new File( ndkOutputDirectory.getAbsolutePath(), ndkArchitecture );
+            addSharedLibraries( jarArchiver, dependentLibs, prefix );
+
         }
         catch ( ArchiverException e )
         {
@@ -194,6 +221,32 @@ public class ApklibMojo extends AbstractAndroidMojo
             fileSet.setPrefix( endWithSlash( prefix ) );
             fileSet.setDirectory( directory );
             jarArchiver.addFileSet( fileSet );
+            getLog().debug( "Added files from " + directory );
+        }
+    }
+    
+    /**
+     * Adds all shared libraries (.so) to a {@link JarArchiver} under 'libs'.
+     * 
+     * @param jarArchiver The jarArchiver to add files to
+     * @param directory   The directory to scan for .so files
+     * @param prefix      The prefix for where in the jar the .so files will go.
+     */
+    protected void addSharedLibraries( JarArchiver jarArchiver, File directory, String prefix )
+    {
+        getLog().debug( "Searching for shared libraries in " + directory );
+        File[] libFiles = directory.listFiles( new FilenameFilter()
+        {
+            public boolean accept( final File dir, final String name )
+            {
+                return name.startsWith( "lib" ) && name.endsWith( ".so" );
+            }
+        } );
+        for ( File libFile : libFiles ) 
+        {
+            String dest = prefix + "/" + libFile.getName();
+            getLog().debug( "Adding " + libFile + " as " + dest );
+            jarArchiver.addFile( libFile, dest );
         }
     }
 
