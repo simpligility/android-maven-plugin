@@ -1,13 +1,15 @@
 package com.jayway.maven.plugins.android.phase05compile;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.common.AetherHelper;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.JarHelper;
+import com.jayway.maven.plugins.android.common.NativeHelper;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.repository.RemoteRepository;
@@ -15,7 +17,6 @@ import org.sonatype.aether.repository.RemoteRepository;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -28,7 +29,6 @@ import java.util.jar.JarFile;
  */
 public class MakefileHelper
 {
-
     public static final String MAKEFILE_CAPTURE_FILE = "ANDROID_MAVEN_PLUGIN_LOCAL_C_INCLUDES_FILE";
     
     public static final boolean IS_WINDOWS = System.getProperty( "os.name" ).toLowerCase().indexOf( "windows" ) >= 0;
@@ -60,6 +60,32 @@ public class MakefileHelper
         }
     }
 
+    private Log log;
+    private final RepositorySystem repoSystem;
+    private final RepositorySystemSession repoSession;
+    private final List<RemoteRepository> projectRepos;
+    private final File unpackedApkLibsDirectory;
+    
+    /**
+     * Initialize the MakefileHelper by storing the supplied parameters to local variables.
+     * @param log
+     * @param repoSystem
+     * @param repoSession
+     * @param projectRepos
+     * @param unpackedApkLibsDirectory
+     */
+    public MakefileHelper( Log log,
+                           RepositorySystem repoSystem, RepositorySystemSession repoSession, 
+                           List<RemoteRepository> projectRepos, 
+                           File unpackedApkLibsDirectory )
+    {
+        this.log = log;
+        this.repoSystem = repoSystem;
+        this.repoSession = repoSession;
+        this.projectRepos = projectRepos;
+        this.unpackedApkLibsDirectory = unpackedApkLibsDirectory;
+    }
+    
     /**
      * Cleans up all include directories created in the temp directory during the build.
      *
@@ -99,12 +125,9 @@ public class MakefileHelper
      * @param repoSystem
      * @return The created Makefile
      */
-    public static MakefileHolder createMakefileFromArtifacts( File outputDir, Set<Artifact> artifacts,
-                                                              File unpackedApkLibsDirectory,
-                                                              boolean useHeaderArchives,
-                                                              RepositorySystemSession repoSession,
-                                                              List<RemoteRepository> projectRepos,
-                                                              RepositorySystem repoSystem )
+    public MakefileHolder createMakefileFromArtifacts( File outputDir, Set<Artifact> artifacts,
+                                                              String ndkArchitecture,
+                                                              boolean useHeaderArchives )
             throws IOException, MojoExecutionException
     {
 
@@ -130,6 +153,7 @@ public class MakefileHelper
             makeFile.append( "LOCAL_PATH := $(call my-dir)\n" );
             for ( Artifact artifact : artifacts )
             {
+                boolean apklibStatic = false;
 
                 makeFile.append( "#\n" );
                 makeFile.append( "# Group ID: " );
@@ -149,21 +173,36 @@ public class MakefileHelper
                 makeFile.append( "LOCAL_SRC_FILES := " );
                 if ( AndroidExtension.APKLIB.equals( artifact.getType() ) )
                 {
-                    File libPath = new File( 
-                            AbstractAndroidMojo.getLibraryUnpackDirectory( unpackedApkLibsDirectory, artifact ), 
-                            "libs" );
-                    System.out.println( "Calculated libPath: " + libPath.getAbsolutePath() );
-                    String[] libs = libPath.list();
-                    if ( libs == null )
+                    String classifier = artifact.getClassifier();
+                    String architecture = ( classifier != null ) ? classifier : ndkArchitecture;
+                    File[] staticLibs = NativeHelper.listNativeFiles( artifact, unpackedApkLibsDirectory, 
+                                                                      architecture, true );
+                    if ( staticLibs != null && staticLibs.length > 0 )
                     {
-                        throw new IOException( "Failed to find library file in APKLIB" );
+                        // TODO: If multiple lib prefer one including the artifact name
+                        if ( staticLibs.length != 1 )
+                        
+                        {
+                            throw new IOException( "APKLIBs with multiple library files are not supported" );
+                        }
+                        apklibStatic = true;
+                        makeFile.append( resolveRelativePath( outputDir, staticLibs[0] ) );
                     }
-                    // TODO: If multiple lib prefer one including the artifact name
-                    if ( libs.length != 1 )
+                    else
                     {
-                        throw new IOException( "APKLIBs with multiple library files are not supported" );
-                    }
-                    makeFile.append( resolveRelativePath( outputDir, new File( libPath, libs[0] ) ) );
+                        File[] sharedLibs = NativeHelper.listNativeFiles( artifact, unpackedApkLibsDirectory, 
+                                                                          architecture, false );
+                        if ( sharedLibs == null )
+                        {
+                            throw new IOException( "Failed to find library file in APKLIB" );
+                        }
+                        // TODO: If multiple lib prefer one including the artifact name
+                        if ( sharedLibs.length != 1 )
+                        {
+                            throw new IOException( "APKLIBs with multiple library files are not supported" );
+                        }
+                        makeFile.append( resolveRelativePath( outputDir, sharedLibs[0] ) );
+                    }                        
                 }
                 else
                 {
@@ -207,7 +246,7 @@ public class MakefileHelper
                                 "Error while resolving header archive file for: " + artifact.getArtifactId(), e );
                     }
                 }
-                if ( "a".equals( artifact.getType() ) )
+                if ( "a".equals( artifact.getType() ) || apklibStatic )
                 {
                     makeFile.append( "include $(PREBUILT_STATIC_LIBRARY)\n" );
                 }
@@ -215,7 +254,6 @@ public class MakefileHelper
                 {
                     makeFile.append( "include $(PREBUILT_SHARED_LIBRARY)\n" );
                 }
-                // TODO: Need to know what sort of library any APKLIB included
             }
         }
         
@@ -310,7 +348,7 @@ public class MakefileHelper
      * @param f the file to split
      * @return a new list containing the components of the path as strings
      */
-    public static List<String> splitPath( File f )
+    protected static List<String> splitPath( File f )
     {
         List<String> result;
         File parent = f.getParentFile();
@@ -343,61 +381,40 @@ public class MakefileHelper
     }
 
     /**
-     * Creates a list of artifacts suitable for use in the LOCAL_STATIC_LIBRARIES variable in an Android makefile
+     * Creates a list of artifacts suitable for use in the LOCAL_STATIC_LIBRARIES or LOCAL_SHARED_LIBRARIES 
+     * variable in an Android makefile
      *
-     * @param resolvedStaticLibraryList
+     * @param resolvedLibraryList
      * @param staticLibrary
-     * @return
+     * @return a list of Ids for artifacts that include static or shared libraries
      */
-    public static String createLibraryList( Set<Artifact> resolvedStaticLibraryList, 
-                                            File unpackDirectory, 
-                                            boolean staticLibrary )
+    public String createLibraryList( Set<Artifact> resolvedLibraryList,
+                                     String ndkArchitecture,
+                                     boolean staticLibrary )
     {
         StringBuilder sb = new StringBuilder();
 
-        for ( Iterator<Artifact> iterator = resolvedStaticLibraryList.iterator(); iterator.hasNext(); )
+        for ( Artifact a : resolvedLibraryList )
         {
-            Artifact resolvedstaticLibraryArtifact = iterator.next();
-            if ( staticLibrary && "a".equals( resolvedstaticLibraryArtifact.getType() ) )
+            if ( staticLibrary && "a".equals( a.getType() ) )
             {
-                sb.append( resolvedstaticLibraryArtifact.getArtifactId() );
+                sb.append( a.getArtifactId() );
             }
-            if ( ! staticLibrary && "so".equals( resolvedstaticLibraryArtifact.getType() ) )
+            if ( ! staticLibrary && "so".equals( a.getType() ) )
             {
-                sb.append( resolvedstaticLibraryArtifact.getArtifactId() );
+                sb.append( a.getArtifactId() );
             }
-            if ( AndroidExtension.APKLIB.equals( resolvedstaticLibraryArtifact.getType() ) )
+            if ( AndroidExtension.APKLIB.equals( a.getType() ) )
             {
-                File libsFolder = new File(
-                        AbstractAndroidMojo
-                            .getLibraryUnpackDirectory( unpackDirectory, resolvedstaticLibraryArtifact ) 
-                        + "/libs" );
-                if ( libsFolder.exists() )
+                File[] libFiles = NativeHelper.listNativeFiles( a, unpackedApkLibsDirectory, 
+                                                                ndkArchitecture, staticLibrary );
+                if ( libFiles != null && libFiles.length > 0 )
                 {
-                    String[] libFiles = libsFolder.list();
-                    if ( libFiles != null )
-                    {
-                        for ( String lib : libFiles )
-                        {
-                            if ( staticLibrary && lib.startsWith( "lib" ) && lib.endsWith( ".a" ) )
-                            {
-                                sb.append( resolvedstaticLibraryArtifact.getArtifactId() );
-                                break;
-                            }
-                            if ( ! staticLibrary && lib.startsWith( "lib" ) && lib.endsWith( ".so" ) )
-                            {
-                                sb.append( resolvedstaticLibraryArtifact.getArtifactId() );
-                                break;
-                            }
-                        }
-                    }
+                    sb.append( a.getArtifactId() );
                 }
                 
             }
-            if ( iterator.hasNext() )
-            {
-                sb.append( " " );
-            }
+            sb.append( " " );
         }
 
         return sb.toString();

@@ -51,7 +51,12 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
  */
 public class ApklibMojo extends AbstractAndroidMojo
 {
-
+    /**
+     * The name of the top level folder in the APKLIB where native libraries are found.
+     * NOTE: This is inconsistent with APK where the folder is called "lib"
+     */
+    public static final String NATIVE_LIBRARIES_FOLDER = "libs";
+    
     /**
      * Build folder to place built native libraries into
      *
@@ -130,11 +135,11 @@ public class ApklibMojo extends AbstractAndroidMojo
 
         try
         {
-            addDirectory( jarArchiver, nativeLibrariesDirectory, "libs" );
+            addDirectory( jarArchiver, nativeLibrariesDirectory, NATIVE_LIBRARIES_FOLDER );
 
             // Add native libraries built in this build and dependencies
             final File outputDirectory = new File( project.getBuild().getDirectory() );
-            String prefix = "libs"; // + ndkArchitecture; // path in archive file must have '/'
+            String prefix = NATIVE_LIBRARIES_FOLDER + "/" + ndkArchitecture; // path in archive file must have '/'
             addSharedLibraries( jarArchiver, outputDirectory, prefix );
             final File dependentLibs = new File( ndkOutputDirectory.getAbsolutePath(), ndkArchitecture );
             addSharedLibraries( jarArchiver, dependentLibs, prefix );

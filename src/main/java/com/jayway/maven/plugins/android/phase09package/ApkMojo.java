@@ -350,7 +350,7 @@ public class ApkMojo extends AbstractAndroidMojo
         // Process the native libraries, looking both in the current build directory as well as
         // at the dependencies declared in the pom.  Currently, all .so files are automatically included
         processNativeLibraries( nativeFolders );
-
+        
         if ( useInternalAPKBuilder )
         {
             doAPKWithAPKBuilder( outputFile, dexFile, zipArchive, sourceFolders, jarFiles, nativeFolders,
@@ -498,6 +498,7 @@ public class ApkMojo extends AbstractAndroidMojo
                                       ArrayList<File> jarFiles, ArrayList<File> nativeFolders,
                                       boolean signWithDebugKeyStore ) throws MojoExecutionException
     {
+        getLog().debug( "Building APK with internal APKBuilder" );
         sourceFolders.add( new File( project.getBuild().getOutputDirectory() ) );
 
         for ( Artifact artifact : getRelevantCompileArtifacts() )
@@ -712,6 +713,7 @@ public class ApkMojo extends AbstractAndroidMojo
                                    ArrayList<File> jarFiles, ArrayList<File> nativeFolders,
                                    boolean signWithDebugKeyStore ) throws MojoExecutionException
     {
+        getLog().debug( "Building APK from command line" );
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
 

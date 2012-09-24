@@ -355,10 +355,12 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                                                                    project.getBasedir() );
             androidMavenMakefile.deleteOnExit();
 
-            final MakefileHelper.MakefileHolder makefileHolder = MakefileHelper
+            final MakefileHelper makefileHelper = new MakefileHelper( getLog(), 
+                                                                      repoSystem, repoSession, projectRepos, 
+                                                                      unpackedApkLibsDirectory );
+            final MakefileHelper.MakefileHolder makefileHolder = makefileHelper
                     .createMakefileFromArtifacts( androidMavenMakefile.getParentFile(), resolveNativeLibraryArtifacts,
-                            unpackedApkLibsDirectory,
-                            useHeaderArchives, repoSession, projectRepos, repoSystem );
+                                                  ndkArchitecture, useHeaderArchives );
             if ( getLog().isDebugEnabled() )
             {
                 getLog().debug( 
@@ -372,7 +374,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             // Add the path to the generated makefile - this is picked up by the build (by an include from the user)
             executor.addEnvironment( "ANDROID_MAVEN_PLUGIN_MAKEFILE", androidMavenMakefile.getAbsolutePath() );
 
-            setupNativeLibraryEnvironment( executor, resolveNativeLibraryArtifacts );
+            setupNativeLibraryEnvironment( makefileHelper, executor, resolveNativeLibraryArtifacts );
             
             // Adds the location of the Makefile capturer file - this file will after the build include
             // things like header files, flags etc.  It is processed after the build to retrieve the headers
@@ -793,23 +795,26 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         }
     }
 
-    private void setupNativeLibraryEnvironment( CommandExecutor executor, Set<Artifact> resolveNativeLibraryArtifacts )
+    private void setupNativeLibraryEnvironment( MakefileHelper makefileHelper, CommandExecutor executor, 
+                                                Set<Artifact> resolveNativeLibraryArtifacts )
     {
         // Only add the LOCAL_STATIC_LIBRARIES
-        if ( NativeHelper.hasStaticNativeLibraryArtifact( resolveNativeLibraryArtifacts, unpackedApkLibsDirectory ) )
+        if ( NativeHelper.hasStaticNativeLibraryArtifact( resolveNativeLibraryArtifacts, unpackedApkLibsDirectory, 
+                                                          ndkArchitecture ) )
         {
-            String staticlibs = MakefileHelper.createLibraryList( resolveNativeLibraryArtifacts, 
-                                                                  unpackedApkLibsDirectory, 
+            String staticlibs = makefileHelper.createLibraryList( resolveNativeLibraryArtifacts, 
+                                                                  ndkArchitecture, 
                                                                   true ); 
             executor.addEnvironment( "ANDROID_MAVEN_PLUGIN_LOCAL_STATIC_LIBRARIES", staticlibs );
             getLog().debug( "Set ANDROID_MAVEN_PLUGIN_LOCAL_STATIC_LIBRARIES = " + staticlibs );
         }
 
         // Only add the LOCAL_SHARED_LIBRARIES
-        if ( NativeHelper.hasSharedNativeLibraryArtifact( resolveNativeLibraryArtifacts, unpackedApkLibsDirectory ) )
+        if ( NativeHelper.hasSharedNativeLibraryArtifact( resolveNativeLibraryArtifacts, unpackedApkLibsDirectory, 
+                                                          ndkArchitecture ) )
         {
-            String sharedlibs = MakefileHelper.createLibraryList( resolveNativeLibraryArtifacts, 
-                                                                  unpackedApkLibsDirectory, 
+            String sharedlibs = makefileHelper.createLibraryList( resolveNativeLibraryArtifacts, 
+                                                                  ndkArchitecture, 
                                                                   false ); 
             executor.addEnvironment( "ANDROID_MAVEN_PLUGIN_LOCAL_SHARED_LIBRARIES", sharedlibs );
             getLog().debug( "Set ANDROID_MAVEN_PLUGIN_LOCAL_SHARED_LIBRARIES = " + sharedlibs );

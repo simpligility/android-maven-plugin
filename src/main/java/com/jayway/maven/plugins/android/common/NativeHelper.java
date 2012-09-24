@@ -2,6 +2,8 @@ package com.jayway.maven.plugins.android.common;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.AndroidNdk;
+import com.jayway.maven.plugins.android.phase09package.ApklibMojo;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -64,7 +66,8 @@ public class NativeHelper
     }
 
     public static boolean hasStaticNativeLibraryArtifact( Set<Artifact> resolveNativeLibraryArtifacts, 
-                                                          File unpackDirectory )
+                                                          File unpackDirectory,
+                                                          String ndkArchitecture )
     {
         for ( Artifact resolveNativeLibraryArtifact : resolveNativeLibraryArtifacts )
         {
@@ -74,14 +77,20 @@ public class NativeHelper
             }
             if ( APKLIB.equals( resolveNativeLibraryArtifact.getType() ) )
             {
-                // TODO: Add dependent libs from APKLIB
+                File[] aFiles = listNativeFiles( resolveNativeLibraryArtifact, unpackDirectory, 
+                                                 ndkArchitecture, true );
+                if ( aFiles != null && aFiles.length > 0 )
+                {
+                    return true;
+                }
             }
         }
         return false;
     }
 
     public static boolean hasSharedNativeLibraryArtifact( Set<Artifact> resolveNativeLibraryArtifacts, 
-                                                          File unpackDirectory )
+                                                          File unpackDirectory,
+                                                          String ndkArchitecture )
     {
         for ( Artifact resolveNativeLibraryArtifact : resolveNativeLibraryArtifacts )
         {
@@ -91,27 +100,36 @@ public class NativeHelper
             }
             if ( APKLIB.equals( resolveNativeLibraryArtifact.getType() ) )
             {
-                File libsFolder = new File(
-                        AbstractAndroidMojo
-                            .getLibraryUnpackDirectory( unpackDirectory, resolveNativeLibraryArtifact ) 
-                        + "/libs" );
-                if ( libsFolder.exists() )
+                File[] soFiles = listNativeFiles( resolveNativeLibraryArtifact, unpackDirectory, 
+                                                    ndkArchitecture, false );
+                if ( soFiles != null && soFiles.length > 0 )
                 {
-                    String[] soFiles = libsFolder.list( new FilenameFilter()
-                    {
-                        public boolean accept( final File dir, final String name )
-                        {
-                            return name.startsWith( "lib" ) && name.endsWith( ".so" );
-                        }
-                    } );
-                    if ( soFiles != null && soFiles.length > 0 )
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
         }
         return false;
+    }
+
+    public static File[] listNativeFiles( Artifact a, File unpackDirectory, 
+                                          final String ndkArchitecture, final boolean staticLibrary )
+    {
+        File libsFolder = new File(
+                AbstractAndroidMojo
+                    .getLibraryUnpackDirectory( unpackDirectory, a ), 
+                File.separator + ApklibMojo.NATIVE_LIBRARIES_FOLDER + File.separator + ndkArchitecture );
+        if ( libsFolder.exists() )
+        {
+            File[] libFiles = libsFolder.listFiles( new FilenameFilter()
+            {
+                public boolean accept( final File dir, final String name )
+                {
+                    return name.startsWith( "lib" ) && name.endsWith( ( staticLibrary ? ".a" : ".so" ) );
+                }
+            } );
+            return libFiles;
+        }
+        return null;
     }
     
     public Set<Artifact> getNativeDependenciesArtifacts( File unpackDirectory, boolean sharedLibraries )
