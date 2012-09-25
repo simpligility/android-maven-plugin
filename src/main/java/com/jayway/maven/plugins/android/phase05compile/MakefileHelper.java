@@ -6,6 +6,7 @@ import com.jayway.maven.plugins.android.common.JarHelper;
 import com.jayway.maven.plugins.android.common.NativeHelper;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -17,6 +18,7 @@ import org.sonatype.aether.repository.RemoteRepository;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -239,6 +241,13 @@ public class MakefileHelper
                         final String str = includeDir.getAbsolutePath();
                         makeFile.append( str );
                         makeFile.append( '\n' );
+                        
+                        if ( log.isDebugEnabled() )
+                        {
+                            Collection<File> includes = FileUtils.listFiles( includeDir,
+                                    TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE );
+                            log.debug( "Listing LOCAL_EXPORT_C_INCLUDES for " + artifact.getId() + ": " + includes );
+                        }
                     }
                     catch ( Exception e )
                     {
