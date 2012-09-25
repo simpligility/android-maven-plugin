@@ -58,6 +58,11 @@ import java.util.regex.Pattern;
 public class NdkBuildMojo extends AbstractAndroidMojo
 {
     /**
+     * Name of the subdirectory of 'target' where we put the generated makefile
+     */
+    public static final String NATIVE_BUILD_DIRECTORY = "native-build";
+    
+    /**
      * <p>The Android NDK to use.</p>
      * <p>Looks like this:</p>
      * <pre>
@@ -347,13 +352,15 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             // If there are any static libraries the code needs to link to, include those in the make file
             final Set<Artifact> resolveNativeLibraryArtifacts = AetherHelper
                     .resolveArtifacts( nativeLibraryArtifacts, repoSystem, repoSession, projectRepos );
-            getLog().debug( "resolveArtifacts found " + resolveNativeLibraryArtifacts.size() );
-            getLog().debug( "resolveArtifacts found " + resolveNativeLibraryArtifacts.toString() );
+            if ( getLog().isDebugEnabled() )
+            {
+                getLog().debug( "resolveArtifacts found " + resolveNativeLibraryArtifacts.size()
+                        + ": " + resolveNativeLibraryArtifacts.toString() );
+            }
 
-            final File androidMavenMakefile = File.createTempFile( "android_maven_plugin_makefile", 
-                                                                   ".mk", 
-                                                                   project.getBasedir() );
-            androidMavenMakefile.deleteOnExit();
+            final File makefileDir = new File( project.getBuild().getDirectory(), NATIVE_BUILD_DIRECTORY );
+            makefileDir.mkdirs();
+            final File androidMavenMakefile = new File( makefileDir, "android_maven_plugin_makefile.mk" ); 
 
             final MakefileHelper makefileHelper = new MakefileHelper( getLog(), 
                                                                       repoSystem, repoSession, projectRepos, 
@@ -361,14 +368,6 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             final MakefileHelper.MakefileHolder makefileHolder = makefileHelper
                     .createMakefileFromArtifacts( androidMavenMakefile.getParentFile(), resolveNativeLibraryArtifacts,
                                                   ndkArchitecture, useHeaderArchives );
-            if ( getLog().isDebugEnabled() )
-            {
-                getLog().debug( 
-                        new StringBuilder()
-                        .append( "========== Begin Generated Makefile ==========\n" )
-                        .append( makefileHolder.makeFile )
-                        .append( "=========== End Generated Makefile ===========" ) );
-            }
             IOUtil.copy( makefileHolder.getMakeFile(), new FileOutputStream( androidMavenMakefile ) );
 
             // Add the path to the generated makefile - this is picked up by the build (by an include from the user)
@@ -571,6 +570,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                     {
                         destFile.delete();
                     }
+                    getLog().debug( nativeArtifactFile + " -> " + destFile );
                     FileUtils.moveFile( nativeArtifactFile, destFile );
                     fileToAttach = destFile;
                 }
@@ -834,8 +834,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
         if ( getLog().isDebugEnabled() )
         {
-            getLog().debug( "findNativeLibraryDependencies found " + mergedArtifacts.size() );
-            getLog().debug( "findNativeLibraryDependencies found " + mergedArtifacts.toString() );
+            getLog().debug( "findNativeLibraryDependencies found " + mergedArtifacts.size() 
+                    + ": " + mergedArtifacts.toString() );
         }
         
         return mergedArtifacts;
