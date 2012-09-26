@@ -6,6 +6,7 @@ import com.jayway.maven.plugins.android.common.JarHelper;
 import com.jayway.maven.plugins.android.common.NativeHelper;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
@@ -172,45 +173,7 @@ public class MakefileHelper
                 makeFile.append( "LOCAL_MODULE    := " );
                 makeFile.append( artifact.getArtifactId() );
                 makeFile.append( '\n' );
-                makeFile.append( "LOCAL_SRC_FILES := " );
-                if ( AndroidExtension.APKLIB.equals( artifact.getType() ) )
-                {
-                    String classifier = artifact.getClassifier();
-                    String architecture = ( classifier != null ) ? classifier : ndkArchitecture;
-                    File[] staticLibs = NativeHelper.listNativeFiles( artifact, unpackedApkLibsDirectory, 
-                                                                      architecture, true );
-                    if ( staticLibs != null && staticLibs.length > 0 )
-                    {
-                        // TODO: If multiple lib prefer one including the artifact name
-                        if ( staticLibs.length != 1 )
-                        
-                        {
-                            throw new IOException( "APKLIBs with multiple library files are not supported" );
-                        }
-                        apklibStatic = true;
-                        makeFile.append( resolveRelativePath( outputDir, staticLibs[0] ) );
-                    }
-                    else
-                    {
-                        File[] sharedLibs = NativeHelper.listNativeFiles( artifact, unpackedApkLibsDirectory, 
-                                                                          architecture, false );
-                        if ( sharedLibs == null )
-                        {
-                            throw new IOException( "Failed to find library file in APKLIB" );
-                        }
-                        // TODO: If multiple lib prefer one including the artifact name
-                        if ( sharedLibs.length != 1 )
-                        {
-                            throw new IOException( "APKLIBs with multiple library files are not supported" );
-                        }
-                        makeFile.append( resolveRelativePath( outputDir, sharedLibs[0] ) );
-                    }                        
-                }
-                else
-                {
-                    makeFile.append( resolveRelativePath( outputDir, artifact.getFile() ) );
-                }
-                makeFile.append( '\n' );
+                apklibStatic = addLibraryDetails( makeFile, outputDir, artifact, ndkArchitecture );
                 if ( useHeaderArchives )
                 {
                     try
@@ -269,7 +232,105 @@ public class MakefileHelper
         return new MakefileHolder( includeDirectories, makeFile.toString() );
     }
 
+    private boolean addLibraryDetails( StringBuilder makeFile, File outputDir,
+                                       Artifact artifact, String ndkArchitecture ) throws IOException
+    {
+        boolean apklibStatic = false;
+        
+        makeFile.append( "LOCAL_SRC_FILES := " );
+        if ( AndroidExtension.APKLIB.equals( artifact.getType() ) )
+        {
+            String classifier = artifact.getClassifier();
+            String architecture = ( classifier != null ) ? classifier : ndkArchitecture;
+            // 
+            // We assume that APKLIB contains a single static OR shared library
+            // that we should link against. The follow code identifies that file.
+            //
+            File[] staticLibs = NativeHelper.listNativeFiles( artifact, unpackedApkLibsDirectory, 
+                                                              architecture, true );
+            if ( staticLibs != null && staticLibs.length > 0 )
+            {
+                int libIdx = findApklibNativeLibrary( staticLibs, artifact.getArtifactId() );
+                apklibStatic = true;
+                makeFile.append( resolveRelativePath( outputDir, staticLibs[libIdx] ) );
+                makeFile.append( '\n' );
+                makeFile.append( "LOCAL_MODULE_FILENAME := " 
+                        + FilenameUtils.removeExtension( staticLibs[libIdx].getName() ) ); 
+            }
+            else
+            {
+                File[] sharedLibs = NativeHelper.listNativeFiles( artifact, unpackedApkLibsDirectory, 
+                                                                  architecture, false );
+                if ( sharedLibs == null )
+                {
+                    throw new IOException( "Failed to find any library file in APKLIB" );
+                }
+                int libIdx = findApklibNativeLibrary( sharedLibs, artifact.getArtifactId() );
+                makeFile.append( resolveRelativePath( outputDir, sharedLibs[libIdx] ) );
+                makeFile.append( '\n' );
+                makeFile.append( "LOCAL_MODULE_FILENAME := " 
+                        + FilenameUtils.removeExtension( sharedLibs[libIdx].getName() ) ); 
+            }                        
+        }
+        else
+        {
+            makeFile.append( resolveRelativePath( outputDir, artifact.getFile() ) );
+            makeFile.append( '\n' );
+            makeFile.append( "LOCAL_MODULE_FILENAME := lib" + artifact.getArtifactId() );
+        }
+        makeFile.append( '\n' );
+        makeFile.append( "TARGET_ARCH_ABI := " + artifact.getClassifier() );
+        makeFile.append( '\n' );
+        
+        return apklibStatic;
+    }
 
+    /**
+     * @param libs the array of possible library files. Must not be null.
+     * @return the index in the array of the library to use
+     * @throws IOException if a library cannot be identified
+     */
+    private int findApklibNativeLibrary( File[] libs, String artifactName ) throws IOException
+    {
+        int libIdx = -1;
+        
+        if ( libs.length == 1 )
+        
+        {
+            libIdx = 0;
+        }
+        else
+        {
+            log.info( "Found multiple library files, looking for name match with artifact" );
+            StringBuilder sb = new StringBuilder();
+            for ( int i = 0; i < libs.length; i++ )
+            {
+                if ( sb.length() != 0 )
+                {
+                    sb.append( ", " );
+                }
+                sb.append( libs[i].getName() );
+                if ( libs[i].getName().startsWith( "lib" + artifactName ) )
+                {
+                    if ( libIdx != -1 )
+                    {
+                        // We have multiple matches, tell the user we can't handle this ...
+                        throw new IOException( "Found multiple libraries matching artifact name " + artifactName
+                                + ". Please use unique artifact/library names." );
+                        
+                    }
+                    libIdx = i;
+                }
+            }
+            if ( libIdx < 0 )
+            {
+                throw new IOException( "Unable to determine main library from " + sb.toString()
+                        + " APKLIB should contain only 1 library or a library matching the artifact name" );
+            }
+        }
+        return libIdx;
+    }
+    
     /**
      * Resolves the relative path of the specified artifact
      *
