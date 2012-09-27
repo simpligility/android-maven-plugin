@@ -2,6 +2,8 @@ package com.jayway.maven.plugins.android.common;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.AndroidNdk;
+import com.jayway.maven.plugins.android.phase09package.ApklibMojo;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -24,6 +26,7 @@ import org.sonatype.aether.util.filter.ScopeDependencyFilter;
 import org.sonatype.aether.util.graph.PreorderNodeListGenerator;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,7 +65,9 @@ public class NativeHelper
         this.log = log;
     }
 
-    public static boolean hasStaticNativeLibraryArtifact( Set<Artifact> resolveNativeLibraryArtifacts )
+    public static boolean hasStaticNativeLibraryArtifact( Set<Artifact> resolveNativeLibraryArtifacts, 
+                                                          File unpackDirectory,
+                                                          String ndkArchitecture )
     {
         for ( Artifact resolveNativeLibraryArtifact : resolveNativeLibraryArtifacts )
         {
@@ -70,11 +75,22 @@ public class NativeHelper
             {
                 return true;
             }
+            if ( APKLIB.equals( resolveNativeLibraryArtifact.getType() ) )
+            {
+                File[] aFiles = listNativeFiles( resolveNativeLibraryArtifact, unpackDirectory, 
+                                                 ndkArchitecture, true );
+                if ( aFiles != null && aFiles.length > 0 )
+                {
+                    return true;
+                }
+            }
         }
         return false;
     }
 
-    public static boolean hasSharedNativeLibraryArtifact( Set<Artifact> resolveNativeLibraryArtifacts )
+    public static boolean hasSharedNativeLibraryArtifact( Set<Artifact> resolveNativeLibraryArtifacts, 
+                                                          File unpackDirectory,
+                                                          String ndkArchitecture )
     {
         for ( Artifact resolveNativeLibraryArtifact : resolveNativeLibraryArtifacts )
         {
@@ -82,10 +98,40 @@ public class NativeHelper
             {
                 return true;
             }
+            if ( APKLIB.equals( resolveNativeLibraryArtifact.getType() ) )
+            {
+                File[] soFiles = listNativeFiles( resolveNativeLibraryArtifact, unpackDirectory, 
+                                                    ndkArchitecture, false );
+                if ( soFiles != null && soFiles.length > 0 )
+                {
+                    return true;
+                }
+            }
         }
         return false;
     }
 
+    public static File[] listNativeFiles( Artifact a, File unpackDirectory, 
+                                          final String ndkArchitecture, final boolean staticLibrary )
+    {
+        File libsFolder = new File(
+                AbstractAndroidMojo
+                    .getLibraryUnpackDirectory( unpackDirectory, a ), 
+                File.separator + ApklibMojo.NATIVE_LIBRARIES_FOLDER + File.separator + ndkArchitecture );
+        if ( libsFolder.exists() )
+        {
+            File[] libFiles = libsFolder.listFiles( new FilenameFilter()
+            {
+                public boolean accept( final File dir, final String name )
+                {
+                    return name.startsWith( "lib" ) && name.endsWith( ( staticLibrary ? ".a" : ".so" ) );
+                }
+            } );
+            return libFiles;
+        }
+        return null;
+    }
+    
     public Set<Artifact> getNativeDependenciesArtifacts( File unpackDirectory, boolean sharedLibraries )
             throws MojoExecutionException
     {
