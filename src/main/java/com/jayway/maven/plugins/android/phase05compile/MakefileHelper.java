@@ -279,8 +279,6 @@ public class MakefileHelper
             makeFile.append( "LOCAL_MODULE_FILENAME := lib" + artifact.getArtifactId() );
         }
         makeFile.append( '\n' );
-        makeFile.append( "TARGET_ARCH_ABI := " + artifact.getClassifier() );
-        makeFile.append( '\n' );
         
         return apklibStatic;
     }
