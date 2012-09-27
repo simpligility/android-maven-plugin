@@ -294,9 +294,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo
     private Boolean skipStripping;
 
     /**
-     * @parameter expression="${android.ndk.build.ndk-toolchain}" default-value="arm-linux-androideabi-4.4.3"
+     * @parameter expression="${android.ndk.build.ndk-toolchain}"
      */
-    @PullParameter( defaultValue = "arm-linux-androideabi-4.4.3" )
+    @PullParameter
     private String ndkToolchain;
 
 
@@ -317,6 +317,22 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      */
     @PullParameter
     private String makefile;
+
+    /**
+     * Specifies the application makefile to use for the build (if other than the default Application.mk).
+     *
+     * @parameter
+     */
+    @PullParameter
+    private String applicationMakefile;
+
+    /**
+     * Flag indicating whether to use the max available jobs for the host machine
+     *
+     * @parameter expression="${android.ndk.build.maxJobs}" default-value="false"
+     */
+    @PullParameter( defaultValue = "false" )
+    private Boolean maxJobs;
 
     /**
      *
@@ -418,9 +434,10 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 commands.add( makefile );
             }
 
-            // Setup the correct toolchain to use
-            // FIXME: perform a validation that this toolchain exists in the NDK
-            commands.add( "NDK_TOOLCHAIN=" + ndkToolchain );
+            configureApplicationMakefile( commands );
+            configureMaxJobs( commands );
+            configureNdkToolchain( commands );
+
             // Anything else on the command line the user wants to add - simply splice it up and
             // add it one by one to the command line
             if ( ndkBuildAdditionalCommandline != null )
@@ -439,11 +456,6 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             }
             else /*if ( "a".equals( project.getPackaging() ) )*/
             {
-                // Hack for the moment - seems .so projects will happily use .so
-                // getLog().info( "Statically linked native library being built, forcing NDK target to
-                // "+project.getArtifactId() );
-                // getLog().info( "If target is not "+project.getArtifactId()+" please investigate and use the
-                // 'target' configuration parameter!" );
                 commands.add( project.getArtifactId() );
             }
 
@@ -465,6 +477,42 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             throw new MojoExecutionException( e.getMessage(), e );
         }
 
+    }
+
+    private void configureApplicationMakefile( List<String> commands )
+        throws MojoExecutionException
+    {
+        if ( applicationMakefile != null )
+        {
+            File appMK = new File( project.getBasedir(), applicationMakefile );
+            if ( ! appMK.exists() )
+            {
+                getLog().error( "Specified application makefile " + appMK + " does not exist" );
+                throw new MojoExecutionException( "Specified application makefile " + appMK + " does not exist" );
+            }
+            commands.add( "NDK_APPLICATION_MK=" + applicationMakefile );
+        }
+    }
+
+    private void configureMaxJobs( List<String> commands )
+    {
+        if ( maxJobs )
+        {
+            String jobs = String.valueOf( Runtime.getRuntime().availableProcessors() );
+            getLog().info( "executing " + jobs + " parallel jobs" );
+            commands.add( "-j" );
+            commands.add( jobs );
+        }
+    }
+
+    private void configureNdkToolchain( List<String> commands )
+    {
+        if ( ndkToolchain != null )
+        {
+            // Setup the correct toolchain to use
+            // FIXME: perform a validation that this toolchain exists in the NDK
+            commands.add( "NDK_TOOLCHAIN=" + ndkToolchain );
+        }
     }
 
     private void cleanUp( File nativeLibDirectory, boolean libsDirectoryExists, File directoryToRemove,
@@ -714,8 +762,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             } );
             stripCommandExecutor.setLogger( getLog() );
 
-            stripCommandExecutor
-                    .executeCommand( resolveNdkStripper().getAbsolutePath(), Arrays.asList( file.getAbsolutePath() ) );
+            stripCommandExecutor.executeCommand( resolveNdkStripper( file ).getAbsolutePath(),
+                                                 Arrays.asList( file.getAbsolutePath() ) );
         }
         catch ( ExecutionException e )
         {
@@ -734,9 +782,16 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         return getAndroidNdk().getNdkBuildPath();
     }
 
-    private File resolveNdkStripper() throws MojoExecutionException
+    private File resolveNdkStripper( File nativeLibrary ) throws MojoExecutionException
     {
-        return getAndroidNdk().getStripper( ndkToolchain );
+        if ( ndkToolchain != null )
+        {
+            return getAndroidNdk().getStripper( ndkToolchain );
+        }
+        else
+        {
+            return getAndroidNdk().getStripper( getAndroidNdk().getToolchain( nativeLibrary ) );
+        }
     }
 
     private void processMakefileCapture( File localCIncludesFile ) throws MojoExecutionException
