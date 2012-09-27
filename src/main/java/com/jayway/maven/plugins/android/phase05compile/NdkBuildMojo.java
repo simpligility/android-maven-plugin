@@ -60,7 +60,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
     /**
      * Name of the subdirectory of 'target' where we put the generated makefile
      */
-    public static final String NATIVE_BUILD_DIRECTORY = "native-build";
+    public static final String NDK_MAKFILE_DIRECTORY = "ndk-build";
     
     /**
      * <p>The Android NDK to use.</p>
@@ -301,7 +301,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
 
     /**
-     * Specifies the final name of the library output by the build (this allows
+     * Specifies the final name of the library output by the build (this allows 
+     * the pom to override the default artifact name). The value should not
+     * include the 'lib' prefix or filename extension (e.g. '.so').
      *
      * @parameter expression="${android.ndk.build.build.final-library.name}"
      */
@@ -358,7 +360,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                         + ": " + resolveNativeLibraryArtifacts.toString() );
             }
 
-            final File makefileDir = new File( project.getBuild().getDirectory(), NATIVE_BUILD_DIRECTORY );
+            final File makefileDir = new File( project.getBuild().getDirectory(), NDK_MAKFILE_DIRECTORY );
             makefileDir.mkdirs();
             final File androidMavenMakefile = new File( makefileDir, "android_maven_plugin_makefile.mk" ); 
 
@@ -487,70 +489,15 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 final File nativeArtifactFile;
                 if ( ndkFinalLibraryName == null )
                 {
-                    File[] files = nativeLibDirectory.listFiles( new FilenameFilter()
-                    {
-                        public boolean accept( final File dir, final String name )
-                        {
-                            if ( "a".equals( project.getPackaging() ) )
-                            {
-                                return name.startsWith(
-                                        "lib" + ( target != null ? target : project.getArtifactId() ) ) && name
-                                               .endsWith( ".a" );
-                            }
-                            else
-                            {
-                                return name.startsWith(
-                                        "lib" + ( target != null ? target : project.getArtifactId() ) ) && name
-                                               .endsWith( ".so" );
-                            }
-                        }
-                    } );
-                    // slight limitation at this stage - we only handle a single .so artifact
-                    if ( files == null || files.length != 1 )
-                    {
-                        getLog().warn( "Error while detecting native compile artifacts: "
-                                + ( files == null || files.length == 0
-                                        ? "None found"
-                                        : "Found more than 1 artifact" ) );
-
-                        if ( files != null && files.length > 1 )
-                        {
-                            getLog().debug( "List of files found: " + Arrays.asList( files ) );
-                            getLog().error(
-                                    "Currently, only a single, final native library is supported by the build" );
-                            throw new MojoExecutionException(
-                                    "Currently, only a single, final native library is supported by the build" );
-                        }
-                        else
-                        {
-                            getLog().error( "No native compiled library found, did the native compile complete "
-                                    + "successfully?" );
-                            throw new MojoExecutionException( "No native compiled library found, did the native "
-                                    + "compile complete successfully?" );
-                        }
-                    }
-                    nativeArtifactFile = files[ 0 ];
+                    nativeArtifactFile = findNativeLibrary( nativeLibDirectory );
                 }
                 else
                 {
-                    // Find the nativeArtifactFile in the nativeLibDirectory/ndkFinalLibraryName
-                    nativeArtifactFile = new File( nativeLibDirectory,
-                            ndkFinalLibraryName + "." + project.getPackaging() );
-                    if ( ! nativeArtifactFile.exists() )
-                    {
-                        getLog().error(
-                                "Could not locate final native library using the provided ndkFinalLibraryName "
-                                + ndkFinalLibraryName + " (tried " + nativeArtifactFile.getAbsolutePath()
-                                + ")" );
-                        throw new MojoExecutionException(
-                                "Could not locate final native library using the provided ndkFinalLibraryName "
-                                + ndkFinalLibraryName + " (tried " + nativeArtifactFile.getAbsolutePath()
-                                + ")" );
-                    }
+                    nativeArtifactFile = nativeLibraryFromName( nativeLibDirectory );
                 }
 
                 final String artifactType = resolveArtifactType( nativeArtifactFile );
-                if ( "so".equals( artifactType ) && ! skipStripping )
+                if ( nativeArtifactFile.getName().endsWith( ".so" ) && ! skipStripping )
                 {
                     getLog().debug( "Post processing (stripping) native compiled artifact: " + nativeArtifactFile );
                     invokeNDKStripper( nativeArtifactFile );
@@ -590,7 +537,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             if ( ! libsDirectoryExists )
             {
                 getLog().info( "Cleaning up native library output directory after build" );
-                getLog().debug( "Removing directory: " + directoryToRemove );
+                getLog().debug( "Removing directory: " + directoryToRemove ); // AJE - removes 'obj' directory
                 FileUtils.deleteDirectory( directoryToRemove );
             }
 
@@ -605,6 +552,99 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         }
     }
 
+    /**
+     * Search the specified directory for native artifacts that match the artifact Id
+     */
+    private File findNativeLibrary( File nativeLibDirectory ) throws MojoExecutionException
+    {
+        getLog().info( "Searching " + nativeLibDirectory + " for built library" );
+        File[] files = nativeLibDirectory.listFiles( new FilenameFilter()
+        {
+            public boolean accept( final File dir, final String name )
+            {
+                // FIXME: The following logic won't work for an APKLIB building a static library
+                if ( "a".equals( project.getPackaging() ) )
+                {
+                    return name.startsWith(
+                            "lib" + project.getArtifactId() ) && name.endsWith( ".a" );
+                }
+                else
+                {
+                    return name.startsWith(
+                            "lib" + project.getArtifactId() ) && name.endsWith( ".so" );
+                }
+            }
+        } );
+        // slight limitation at this stage - we only handle a single .so artifact
+        if ( files == null || files.length != 1 )
+        {
+            getLog().warn( "Error while detecting native compile artifacts: "
+                    + ( files == null || files.length == 0
+                            ? "None found"
+                            : "Found more than 1 artifact" ) );
+            if ( target != null )
+            {
+                getLog().warn( "Using the 'target' configuration option to specify the output file name "
+                        + "is no longer supported, use 'ndkFinalLibraryName' instead." );
+            }
+
+            if ( files != null && files.length > 1 )
+            {
+                getLog().debug( "List of files found: " + Arrays.asList( files ) );
+                getLog().error(
+                        "Currently, only a single, final native library is supported by the build" );
+                throw new MojoExecutionException(
+                        "Currently, only a single, final native library is supported by the build" );
+            }
+            else
+            {
+                getLog().error( "No native compiled library found, did the native compile complete "
+                        + "successfully?" );
+                throw new MojoExecutionException( "No native compiled library found, did the native "
+                        + "compile complete successfully?" );
+            }
+        }
+        return files[ 0 ];
+    }
+    
+    private File nativeLibraryFromName( File nativeLibDirectory ) throws MojoExecutionException
+    {
+        final File libraryFile;
+        // Find the nativeArtifactFile in the nativeLibDirectory/ndkFinalLibraryName
+        if ( "so".equals( project.getPackaging() ) || "a".equals( project.getPackaging() ) )
+        {
+            libraryFile = new File( nativeLibDirectory,
+                    "lib" + ndkFinalLibraryName + "." + project.getPackaging() );
+        }
+        else
+        {
+            final File staticLib = new File( nativeLibDirectory,
+                    "lib" + ndkFinalLibraryName + ".a" );
+            if ( staticLib.exists() )
+            {
+                libraryFile = staticLib;
+            }
+            else
+            {
+                libraryFile = new File( nativeLibDirectory,
+                        "lib" + ndkFinalLibraryName + ".so" );
+            }
+        }
+        if ( ! libraryFile.exists() )
+        {
+            getLog().error(
+                    "Could not locate final native library using the provided ndkFinalLibraryName "
+                    + ndkFinalLibraryName + " (tried " + libraryFile.getAbsolutePath()
+                    + ")" );
+            throw new MojoExecutionException(
+                    "Could not locate final native library using the provided ndkFinalLibraryName "
+                    + ndkFinalLibraryName + " (tried " + libraryFile.getAbsolutePath()
+                    + ")" );
+        }
+
+        return libraryFile;
+    }
+    
     private CommandExecutor.ErrorListener getNdkErrorListener()
     {
         return new CommandExecutor.ErrorListener()
