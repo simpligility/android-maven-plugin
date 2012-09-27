@@ -135,15 +135,26 @@ public class ApklibMojo extends AbstractAndroidMojo
 
         try
         {
-            addDirectory( jarArchiver, nativeLibrariesDirectory, NATIVE_LIBRARIES_FOLDER );
-
-            // Add native libraries built in this build and dependencies
-            final File outputDirectory = new File( project.getBuild().getDirectory() );
-            String prefix = NATIVE_LIBRARIES_FOLDER + "/" + ndkArchitecture; // path in archive file must have '/'
-            addSharedLibraries( jarArchiver, outputDirectory, prefix );
-            final File dependentLibs = new File( ndkOutputDirectory.getAbsolutePath(), ndkArchitecture );
-            addSharedLibraries( jarArchiver, dependentLibs, prefix );
-
+            if ( nativeLibrariesDirectory.exists() )
+            {
+                getLog().info( nativeLibrariesDirectory + " exists, adding libraries." );
+                addDirectory( jarArchiver, nativeLibrariesDirectory, NATIVE_LIBRARIES_FOLDER );
+            }
+            else
+            {
+                getLog().info( nativeLibrariesDirectory 
+                        + " does not exist, looking for libraries in target directory." );
+                // Add native libraries built and attached in this build
+                final File outputDirectory = new File( project.getBuild().getDirectory() );
+                String prefix = NATIVE_LIBRARIES_FOLDER + "/" + ndkArchitecture; // path in archive file must have '/'
+                addSharedLibraries( jarArchiver, outputDirectory, prefix );
+                
+                // Add native library dependencies
+                // FIXME: Remove as causes duplicate libraries when building final APK if this set includes
+                //        libraries from dependencies of the APKLIB
+                //final File dependentLibs = new File( ndkOutputDirectory.getAbsolutePath(), ndkArchitecture );
+                //addSharedLibraries( jarArchiver, dependentLibs, prefix );
+            }
         }
         catch ( ArchiverException e )
         {
