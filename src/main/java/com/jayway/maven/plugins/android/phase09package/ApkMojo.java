@@ -258,6 +258,13 @@ public class ApkMojo extends AbstractAndroidMojo
     private String apkNativeToolchain;
 
     /**
+     * Specifies the final name of the library output by the build (this allows
+     *
+     * @parameter expression="${android.ndk.build.build.final-library.name}"
+     */
+    private String ndkFinalLibraryName;
+
+    /**
      * Embedded configuration of this mojo.
      *
      * @parameter
@@ -854,9 +861,17 @@ public class ApkMojo extends AbstractAndroidMojo
                             try
                             {
                                 final String artifactId = resolvedArtifact.getArtifactId();
-                                final String filename = artifactId.startsWith( "lib" )
+                                String filename = artifactId.startsWith( "lib" ) 
                                         ? artifactId + ".so"
                                         : "lib" + artifactId + ".so";
+                                if ( ndkFinalLibraryName != null 
+                                        && ( resolvedArtifact.getFile().getName()
+                                                .startsWith( "lib" + ndkFinalLibraryName ) ) )
+                                {
+                                    // The artifact looks like one we built with the NDK in this module
+                                    // preserve the name from the NDK build
+                                    filename = resolvedArtifact.getFile().getName();
+                                }
 
                                 final File finalDestinationDirectory = getFinalDestinationDirectoryFor(
                                         resolvedArtifact, destinationDirectory, ndkArchitecture );
