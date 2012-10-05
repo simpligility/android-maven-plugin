@@ -265,6 +265,24 @@ public class AndroidSdk
         }
         throw new MojoExecutionException( "Can't find the 'sdklib.jar' : " + sdklib.getAbsolutePath() );
     }
+    
+    /**
+     * Resolves the manifmerger.jar from this SDK.
+     *
+     * @return a <code>File</code> pointing to the manifmerger.jar file.
+     * @throws org.apache.maven.plugin.MojoExecutionException
+     *          if the file can not be resolved.
+     */
+    public File getManifmergerJar() throws MojoExecutionException
+    {
+        // The file is sdkPath/tools/lib/manifmerger.jar
+        File jar = new File( sdkPath + "/tools/lib/manifmerger.jar" );
+        if ( jar.exists() )
+        {
+            return jar;
+        }
+        throw new MojoExecutionException( "Can't find the 'manifmerger.jar' : " + jar.getAbsolutePath() );
+    }
 
     public File getPlatform()
     {
