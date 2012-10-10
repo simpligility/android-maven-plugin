@@ -955,6 +955,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                     {
                         messageEnd = trace.indexOf( newline + "at" );
                         // match start of stack trace "\r\nat org.junit....."
+	                    if(messageStart > messageEnd)       //':' wasn't found in message but in stack trace
+		                    messageStart = 0;
                     }
                     return trace.substring( messageStart, messageEnd );
                 }
