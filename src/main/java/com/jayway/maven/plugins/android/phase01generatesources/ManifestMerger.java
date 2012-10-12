@@ -18,29 +18,20 @@ import java.net.URLClassLoader;
  */
 public class ManifestMerger
 {
-
-    /**
-     * The ManifestMerger class object
-     */
-    @SuppressWarnings( "rawtypes" )
-    private static Class manifestMergerClass;
-
-    /**
-     * The NullSdkLog class object
-     */
-    @SuppressWarnings( "rawtypes" )
-    private static Class nullSdkLogClass;
-
-    /**
-     * The MergerLog class object
-     */
-    @SuppressWarnings( "rawtypes" )
-    private static Class mergerLogClass;
-
     /**
      * The Mojo logger
      */
     private static Log log;
+
+    /**
+     * The Manifest Merger instance
+     */
+    private static Object merger;
+
+    /**
+     * The ManifestMerger.process Method
+     */
+    private static Method processMethod;
 
     /**
      * Before being able to use the ManifestMerger, an initialization is required.
@@ -50,10 +41,12 @@ public class ManifestMerger
      * @param mergerLib the File pointing on {@code manifmerger.jar}
      * @throws MojoExecutionException if the ManifestMerger class cannot be loaded
      */
-    @SuppressWarnings( "unchecked" )
-    public static void initialize( Log log, File sdkLibs, File mergerLib ) throws MojoExecutionException
+    @SuppressWarnings( {
+    "unchecked", "rawtypes"
+    } )
+    public void initialize( Log log, File sdkLibs, File mergerLib ) throws MojoExecutionException
     {
-        if ( manifestMergerClass != null )
+        if ( processMethod != null && merger != null )
         {
             // Already initialized
             return;
@@ -61,42 +54,33 @@ public class ManifestMerger
 
         ManifestMerger.log = log;
 
-        // Loads the ManifestMerger class
+        // Load the ManifestMerger and MergerLog classes
         URLClassLoader mlLoader = null;
+        Class manifestMergerClass = null;
+        Class mergerLogClass = null;
         try
         {
             mlLoader = new URLClassLoader( new URL[] {
                 mergerLib.toURI().toURL()
             }, ManifestMerger.class.getClassLoader() );
-            try
-            {
-                manifestMergerClass = mlLoader.loadClass( "com.android.manifmerger.ManifestMerger" );
-                log.debug( "ManifestMerger loaded " + manifestMergerClass );
-            }
-            catch ( ClassNotFoundException e )
-            {
-                log.error( e );
-                throw new MojoExecutionException( "Cannot load 'com.android.manifmerger.ManifestMerger'" );
-            }
-
-            try
-            {
-                mergerLogClass = mlLoader.loadClass( "com.android.manifmerger.MergerLog" );
-                log.debug( "ManifestMerger loaded " + mergerLogClass );
-            }
-            catch ( ClassNotFoundException e )
-            {
-                log.error( e );
-                throw new MojoExecutionException( "Cannot load 'com.android.manifmerger.MergerLog'" );
-            }
+            manifestMergerClass = mlLoader.loadClass( "com.android.manifmerger.ManifestMerger" );
+            log.debug( "ManifestMerger loaded " + manifestMergerClass );
+            mergerLogClass = mlLoader.loadClass( "com.android.manifmerger.MergerLog" );
+            log.debug( "ManifestMerger loaded " + mergerLogClass );
         }
         catch ( MalformedURLException e )
         {
             // This one cannot happen.
             throw new RuntimeException( "Cannot create a correct URL from file " + mergerLib.getAbsolutePath() );
         }
+        catch ( ClassNotFoundException e )
+        {
+            log.error( "Cannot find required class", e );
+            throw new MojoExecutionException( "Cannot find the required class", e );
+        }
 
         // Loads the NullSdkLog class
+        Class nullSdkLogClass = null;
         try
         {
             URLClassLoader child = new URLClassLoader( new URL[] {
@@ -112,88 +96,30 @@ public class ManifestMerger
         }
         catch ( ClassNotFoundException e )
         {
-            log.error( e );
-            throw new MojoExecutionException( "Cannot load 'com.android.sdklib.NullSdkLog'" );
+            log.error( "Cannot find required class", e );
+            throw new MojoExecutionException( "Cannot find the required class", e );
         }
 
         // In order to improve performance and to check that all methods are available we cache used methods.
         try
         {
-            manifestMergerConstructor = manifestMergerClass.getDeclaredConstructors()[0];
             processMethod = manifestMergerClass.getMethod( "process", File.class, File.class, File[].class );
-
-            getLoggerMethod = nullSdkLogClass.getMethod( "getLogger" );
-
-            wrapSdkLogMethod = mergerLogClass.getMethod( "wrapSdkLog", nullSdkLogClass.getInterfaces()[0] );
         }
         catch ( Exception e )
         {
             log.error( "Cannot find required method", e );
             throw new MojoExecutionException( "Cannot find the required method", e );
         }
-    }
-
-    /**
-     * The Manifest Merger instance
-     */
-    private Object merger;
-
-    /**
-     * The ManifestMerger Constructor
-     */
-    @SuppressWarnings( "rawtypes" )
-    private static Constructor manifestMergerConstructor;
-
-    /**
-     * The ManifestMerger.process Method
-     */
-    private static Method processMethod;
-
-    /**
-     * The IMergerLog instance
-     */
-    private Object iMergerLog;
-
-    /**
-     * The MergerLog.wrapSdkLog Method
-     */
-    private static Method wrapSdkLogMethod;
-
-    /**
-     * The NUllSdkLog instance
-     */
-    private Object sdkLog;
-
-    /**
-     * NullSdkLog.getLogger Method
-     */
-    private static Method getLoggerMethod;
-
-    /**
-     * Creates a new ManifestMerger. The class must be initialized before calling this constructor.
-     */
-    public ManifestMerger() throws MojoExecutionException
-    {
-        if ( manifestMergerClass == null || nullSdkLogClass == null )
-        {
-            throw new MojoExecutionException( "The ManifestMerger class was not initialized" );
-        }
 
         try
         {
-            sdkLog = getLoggerMethod.invoke( null );
+            Method getLoggerMethod = nullSdkLogClass.getMethod( "getLogger" );
+            Object sdkLog = getLoggerMethod.invoke( null );
 
-            if ( sdkLog == null )
-            {
-                throw new MojoExecutionException( "The NullSdkLogger class was not instantiated" );
-            }
+            Method wrapSdkLogMethod = mergerLogClass.getMethod( "wrapSdkLog", nullSdkLogClass.getInterfaces()[0] );
+            Object iMergerLog = wrapSdkLogMethod.invoke( null, sdkLog.getClass().getInterfaces()[0].cast( sdkLog ) );
 
-            iMergerLog = wrapSdkLogMethod.invoke( null, sdkLog.getClass().getInterfaces()[0].cast( sdkLog ) );
-            if ( iMergerLog == null )
-            {
-                throw new MojoExecutionException( "The IMergerLog class was not instantiated" );
-            }
-
+            Constructor manifestMergerConstructor = manifestMergerClass.getDeclaredConstructors()[0];
             merger = manifestMergerConstructor.newInstance( iMergerLog );
         }
         catch ( InvocationTargetException e )
@@ -206,6 +132,14 @@ public class ManifestMerger
             log.error( "Cannot create the ManifestMerger object", e );
             throw new MojoExecutionException( "Cannot create the ManifestMerger object", e );
         }
+    }
+
+    /**
+     * Creates a new ManifestMerger. The class must be initialized before calling this constructor.
+     */
+    public ManifestMerger( Log log, File sdkLibs, File mergerLib ) throws MojoExecutionException
+    {
+        initialize( log, sdkLibs, mergerLib );
     }
 
     /**
@@ -223,17 +157,7 @@ public class ManifestMerger
         {
             return (Boolean) processMethod.invoke( merger, paramFile1, paramFile2, paramArayOfFile );
         }
-        catch ( IllegalArgumentException e )
-        {
-            log.error( "Cannot merge the manifests", e );
-            throw new MojoExecutionException( "Cannot merge the manifests", e );
-        }
-        catch ( IllegalAccessException e )
-        {
-            log.error( "Cannot merge the manifests", e );
-            throw new MojoExecutionException( "Cannot merge the manifests", e );
-        }
-        catch ( InvocationTargetException e )
+        catch ( Exception e )
         {
             log.error( "Cannot merge the manifests", e );
             throw new MojoExecutionException( "Cannot merge the manifests", e );

@@ -455,15 +455,14 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             }
         }
 
-        if ( libManifests.size() > 0 )
+        if ( !libManifests.isEmpty() )
         {
             File mergedManifest = new File( androidManifestFile.getParent(), "AndroidManifest-merged.xml" );
 
             File sdkLibs = getAndroidSdk().getSDKLibJar();
             File mergerLib = getAndroidSdk().getManifmergerJar();
 
-            ManifestMerger.initialize( getLog(), sdkLibs, mergerLib );
-            ManifestMerger mm = new ManifestMerger();
+            ManifestMerger mm = new ManifestMerger( getLog(), sdkLibs, mergerLib );
 
             getLog().info( "Merging manifests of dependent apklibs" );
             if ( mm.process( mergedManifest, androidManifestFile,
