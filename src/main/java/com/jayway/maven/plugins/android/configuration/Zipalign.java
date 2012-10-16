@@ -6,7 +6,8 @@ package com.jayway.maven.plugins.android.configuration;
  *
  * @author Manfred Moser <manfred@simpligility.com>
  */
-public class Zipalign {
+public class Zipalign
+{
     /**
      * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ZipalignMojo#zipalignSkip}
      */
@@ -25,19 +26,23 @@ public class Zipalign {
     private String outputApk;
 
 
-    public Boolean isSkip() {
+    public Boolean isSkip()
+    {
         return skip;
     }
 
-    public Boolean isVerbose() {
+    public Boolean isVerbose()
+    {
         return verbose;
     }
 
-    public String getInputApk() {
+    public String getInputApk()
+    {
         return inputApk;
     }
 
-    public String getOutputApk() {
+    public String getOutputApk()
+    {
         return outputApk;
     }
 }

@@ -7,21 +7,24 @@ package com.jayway.maven.plugins.android.configuration;
  *
  * @author Manfred Moser <manfred@simpligility.com>
  */
-public class Push {
+public class Push
+{
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.PushMojo#source}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.PushMojo#source}
+     */
     private String source;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.PushMojo#destination}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.PushMojo#destination}
+     */
     private String destination;
 
-    public String getSource() {
+    public String getSource()
+    {
         return source;
     }
 
-    public String getDestination() {
+    public String getDestination()
+    {
         return destination;
     }
 }
