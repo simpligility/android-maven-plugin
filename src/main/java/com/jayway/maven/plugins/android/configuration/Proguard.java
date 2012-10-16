@@ -23,6 +23,7 @@ public class Proguard
     private String[] jvmArguments;
     private Boolean filterMavenDescriptor;
     private Boolean filterManifest;
+    private Boolean includeJdkLibs;
 
     public Boolean isSkip()
     {
@@ -57,5 +58,10 @@ public class Proguard
     public Boolean isFilterManifest()
     {
         return filterManifest;
+    }
+    
+    public Boolean isIncludeJdkLibs()
+    {
+        return includeJdkLibs;
     }
 }
