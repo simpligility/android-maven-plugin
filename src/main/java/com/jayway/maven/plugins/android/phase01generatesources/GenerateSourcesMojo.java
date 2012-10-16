@@ -75,12 +75,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      */
     protected File genDirectoryAidl;
     
-    /**
-     * Whether to create a release build (default is false / debug build).
-     * @parameter expression="${android.release}" default-value="false"
-     */
-    protected boolean release;
-
     public void execute() throws MojoExecutionException, MojoFailureException
     {
 
