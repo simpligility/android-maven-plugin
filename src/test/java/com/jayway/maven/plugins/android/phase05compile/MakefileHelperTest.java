@@ -202,7 +202,8 @@ public class MakefileHelperTest
             result.addAll( Arrays.asList( toSplit.toString().split( File.separator ) ) );
             // If the path start with '/' we'll have an empty entry at the start
             // remove that from the list
-            if ( result.get( 0 ).length() == 0 )
+            if ( ( result.size() > 0 ) 
+                    && ( result.get( 0 ).length() == 0 ) )
             {
                 result.remove( 0 );
             }
