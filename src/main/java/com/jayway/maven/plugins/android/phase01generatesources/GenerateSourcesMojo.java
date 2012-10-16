@@ -61,9 +61,55 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 {
     
     /**
-     * Override default merging.
-     * 
+     * <p>Override default merging. You must have SDK Tools r20+</p>
      * @parameter expression="${android.mergeManifests}" default-value="false"
+     * 
+     * <p><b>IMPORTANT:</b> The resource plugin needs to be disabled for the 
+     * <code>process-resources</code> phase,
+     * so the "default-resources" execution must be added. 
+     * Without this the non-merged manifest will get re-copied to
+     * the build directory.</p>
+     * <p>The <code>androidManifestFile</code> should also be 
+     * configured to pull from the build directory so that
+     * later phases will pull the merged manifest file.</p>
+     * <p>Example POM Setup:</p>
+     * <pre>
+     * &lt;build&gt;
+     *     ...
+     *     &lt;plugins&gt;
+     *         ...
+     *         &lt;plugin&gt;
+     *             &lt;artifactId&gt;maven-resources-plugin&lt;/artifactId&gt;
+     *             &lt;version&gt;2.6&lt;/version&gt;
+     *             &lt;executions&gt;
+     *                 &lt;execution&gt;
+     *                     &lt;phase&gt;initialize&lt;/phase&gt;
+     *                     &lt;goals&gt;
+     *                         &lt;goal&gt;resources&lt;/goal&gt;
+     *                     &lt;/goals&gt;
+     *                 &lt;/execution&gt;
+     *                 <b>&lt;execution&gt;
+     *                     &lt;id&gt;default-resources&lt;/id&gt;
+     *                     &lt;phase&gt;DISABLED&lt;/phase&gt;
+     *                 &lt;/execution&gt;</b>
+     *             &lt;/executions&gt;
+     *         &lt;/plugin&gt;
+     *         &lt;plugin&gt;
+     *             &lt;groupId&gt;com.jayway.maven.plugins.android.generation2&lt;/groupId&gt;
+     *             &lt;artifactId&gt;android-maven-plugin&lt;/artifactId&gt;
+     *             &lt;configuration&gt;
+     *                 <b>&lt;androidManifestFile&gt;
+     *                     ${project.build.directory}/AndroidManifest.xml
+     *                 &lt;/androidManifestFile&gt;
+     *                 &lt;mergeManifests&gt;true&lt;/mergeManifests&gt;</b>
+     *             &lt;/configuration&gt;
+     *             &lt;extensions&gt;true&lt;/extensions&gt;
+     *         &lt;/plugin&gt;
+     *         ...
+     *     &lt;/plugins&gt;
+     *     ...
+     * &lt;/build&gt;
+     * </pre>
      */
     protected boolean mergeManifests;
 
