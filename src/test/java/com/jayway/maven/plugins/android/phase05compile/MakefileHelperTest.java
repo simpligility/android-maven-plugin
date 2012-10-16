@@ -130,7 +130,7 @@ public class MakefileHelperTest
     }
 
     @Test
-    public void testResolveRelativePathNointersect() throws IOException
+    public void testResolveRelativePathNointersect() throws Exception
     {
         File directory = new File( File.separator + FOLDER_FREDBARNY );
         File file = new File( File.separator + FOOBARBAZ_QUXFILE );
@@ -143,8 +143,12 @@ public class MakefileHelperTest
         // NOTE: THIS TEST WILL ONLY PASS IF DRIVES C AND D CAN BE READ
         if ( MakefileHelper.IS_WINDOWS )
         {
-            directory = new File( "C:\\" + FOLDER_FREDBARNY );
-            file = new File( "D:\\" + FOOBARBAZ_QUXFILE );
+            // Attempt to make drives Y and Z point somewhere
+            boolean substY = setupWindowsDrive( "Y:" );
+            boolean substZ = setupWindowsDrive( "Z:" );
+
+            directory = new File( "Y:\\" + FOLDER_FREDBARNY );
+            file = new File( "Z:\\" + FOOBARBAZ_QUXFILE );
 
             try
             {
@@ -154,6 +158,17 @@ public class MakefileHelperTest
             catch ( IOException ioex )
             {
                 assertEquals( "Unable to resolve relative path across windows drives", ioex.getMessage() );
+            }
+            finally
+            {
+                if ( substY )
+                {
+                    clearWindowsDrive( "Y:" );
+                }
+                if ( substZ )
+                {
+                    clearWindowsDrive( "Z:" );
+                }
             }
         }
         
@@ -178,13 +193,20 @@ public class MakefileHelperTest
     private List<String> getSplit( File toSplit )
     {
         List<String> result = new ArrayList<String>();
-        if ( File.separator.equals( "\\" ) )
+        if ( File.separator.equals( "\\" ) ) // We're on Windows
         {
             result.addAll( Arrays.asList( toSplit.toString().split( "\\\\" ) ) );
         }
         else
         {
             result.addAll( Arrays.asList( toSplit.toString().split( File.separator ) ) );
+            // If the path start with '/' we'll have an empty entry at the start
+            // remove that from the list
+            if ( ( result.size() > 0 ) 
+                    && ( result.get( 0 ).length() == 0 ) )
+            {
+                result.remove( 0 );
+            }
         }
         return result;
     }
@@ -197,5 +219,21 @@ public class MakefileHelperTest
     private List<String> getCWDSplit() throws IOException
     {
         return getSplit( new File( "." ).getCanonicalFile() );
+    }
+    
+    private boolean setupWindowsDrive( String drive ) throws IOException, InterruptedException
+    {
+        boolean result = false;
+        if ( ! new File( drive ).exists() )
+        {
+            Runtime.getRuntime().exec( "subst " + drive + " C:\\" ).waitFor();
+            result = true;
+        }
+        return result;
+    }
+    
+    private void clearWindowsDrive( String drive ) throws IOException, InterruptedException
+    {
+        Runtime.getRuntime().exec( "subst " + drive + " /D" ).waitFor();
     }
 }
