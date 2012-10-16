@@ -152,6 +152,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File androidManifestFile;
 
     /**
+     * <p>A possibly new package name for the application. This value will be passed on to the aapt
+     * parameter --rename-manifest-package. Look to aapt for more help on this. </p>
+     *
+     * @parameter expression="${android.renameManifestPackage}"
+     */
+    protected String renameManifestPackage;
+
+    /**
      * @parameter expression="${project.build.directory}/generated-sources/extracted-dependencies"
      * @readonly
      */
@@ -390,6 +398,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @readonly
      */
     private File ndkPath;
+
+    /**
+     * Whether to create a release build (default is false / debug build). This affect BuildConfig generation at this
+     * stage, but should probably affect other aspects of the build.
+     * @parameter expression="${android.release}" default-value="false"
+     */
+    protected boolean release;
+
 
     /**
      *

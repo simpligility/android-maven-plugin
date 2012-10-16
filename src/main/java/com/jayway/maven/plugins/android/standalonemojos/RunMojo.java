@@ -241,7 +241,10 @@ public class RunMojo extends AbstractAndroidMojo
                 launcherInfo = new LauncherInfo();
                 launcherInfo.activity = activities.item( 0 ).getAttributes().getNamedItem( "android:name" )
                         .getNodeValue();
-                launcherInfo.packageName = document.getDocumentElement().getAttribute( "package" ).toString();
+
+                launcherInfo.packageName = renameManifestPackage != null
+                    ? renameManifestPackage
+                    : document.getDocumentElement().getAttribute( "package" ).toString();
 
                 return launcherInfo;
             }
@@ -278,7 +281,7 @@ public class RunMojo extends AbstractAndroidMojo
             {
                 try
                 {
-                    getLog().info( "Attempting to start " + info.packageName + info.activity + " on device "
+                    getLog().info( "Attempting to start " + info.packageName + "/" + info.activity + " on device "
                             + device.getSerialNumber() + " (avdName = " + device.getAvdName() + ")" );
                     device.executeShellCommand( command, new NullOutputReceiver() );
                 }
