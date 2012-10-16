@@ -74,6 +74,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * default-value="${project.build.directory}/generated-sources/aidl"
      */
     protected File genDirectoryAidl;
+    
+    /**
+     * Whether to create a release build (default is false / debug build).
+     * @parameter expression="${android.release}" default-value="false"
+     */
+    protected boolean release;
 
     public void execute() throws MojoExecutionException, MojoFailureException
     {
@@ -512,16 +518,13 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     {
         getLog().debug( "Generating BuildConfig file" );
 
-        // Determine whether or not we are in debug mode.
-        boolean debug = !Boolean.valueOf( System.getProperty( "android.release", "false" ) );
-
         // Create the BuildConfig for our package.
         String packageName = extractPackageNameFromAndroidManifest( androidManifestFile );
         if ( StringUtils.isNotBlank( customPackage ) )
         {
             packageName = customPackage;
         }
-        generateBuildConfigForPackage( packageName, debug );
+        generateBuildConfigForPackage( packageName, !release );
 
         // Generate the BuildConfig for any apklib dependencies.
         for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
@@ -530,7 +533,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             {
                 File apklibManifeset = new File( getLibraryUnpackDirectory( artifact ), "AndroidManifest.xml" );
                 String apklibPackageName = extractPackageNameFromAndroidManifest( apklibManifeset );
-                generateBuildConfigForPackage( apklibPackageName, debug );
+                generateBuildConfigForPackage( apklibPackageName, !release );
             }
         }
     }
