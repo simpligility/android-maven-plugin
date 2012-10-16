@@ -25,32 +25,38 @@ import org.apache.maven.plugin.logging.Log;
  *
  * @author Manfred Moser <manfred@simpligility.com>
  */
-public class LogSyncProgressMonitor implements SyncService.ISyncProgressMonitor {
+public class LogSyncProgressMonitor implements SyncService.ISyncProgressMonitor
+{
     private static final String INDENT = "  ";
     private Log log;
 
-    public LogSyncProgressMonitor(Log log) {
+    public LogSyncProgressMonitor( Log log )
+    {
         this.log = log;
     }
 
-    public void start(int totalWork) {
-        log.info("Starting transfer of " + totalWork
-            + ". See debug log for progress");
+    public void start( int totalWork )
+    {
+        log.info( "Starting transfer of " + totalWork + ". See debug log for progress" );
     }
 
-    public void stop() {
-        log.info("Stopped transfer");
+    public void stop()
+    {
+        log.info( "Stopped transfer" );
     }
 
-    public boolean isCanceled() {
+    public boolean isCanceled()
+    {
         return false;
     }
 
-    public void startSubTask(String name) {
-        log.info(INDENT + "Started sub task " + name);
+    public void startSubTask( String name )
+    {
+        log.info( INDENT + "Started sub task " + name );
     }
 
-    public void advance(int work) {
-        log.debug(INDENT + "Transferred " + work);
+    public void advance( int work )
+    {
+        log.debug( INDENT + "Transferred " + work );
     }
 }

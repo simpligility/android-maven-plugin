@@ -8,14 +8,14 @@ import java.lang.annotation.Target;
 /**
  * ConfigPojo is an annotation identifying a pojo as a configuration holder for ConfigHandler.
  *
- * @see ConfigHandler
- *
  * @author Adrian Stabiszewski https://github.com/grundid/
  * @author Manfred Moser <manfred@simpligility.com>
+ * @see ConfigHandler
  */
-@Target({ElementType.FIELD})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ConfigPojo {
+@Target( { ElementType.FIELD } )
+@Retention( RetentionPolicy.RUNTIME )
+public @interface ConfigPojo
+{
 
-	String prefix() default "parsed";
+    String prefix() default "parsed";
 }

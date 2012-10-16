@@ -7,21 +7,24 @@ package com.jayway.maven.plugins.android.configuration;
  *
  * @author Manfred Moser <manfred@simpligility.com>
  */
-public class Pull {
+public class Pull
+{
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.PullMojo#source}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.PullMojo#source}
+     */
     private String source;
     /**
-      * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.PullMojo#destination}
-      */
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.PullMojo#destination}
+     */
     private String destination;
 
-    public String getSource() {
+    public String getSource()
+    {
         return source;
     }
 
-    public String getDestination() {
+    public String getDestination()
+    {
         return destination;
     }
 }
