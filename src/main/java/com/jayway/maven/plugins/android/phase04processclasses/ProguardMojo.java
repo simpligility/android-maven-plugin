@@ -188,6 +188,16 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     @PullParameter( defaultValue = "true" )
     private Boolean parsedFilterManifest;
+    
+    /**
+     * If set to true JDK jars will be included as library jars and corresponding filters
+     * will be applied to android.jar.  Defaults to true.
+     * @parameter expression="${android.proguard.includeJdkLibs}"
+     */
+    private Boolean includeJdkLibs;
+    
+    @PullParameter( defaultValue = "true" )
+    private Boolean parsedIncludeJdkLibs;
 
     /**
      * The plugin dependencies.
@@ -460,34 +470,37 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     private void collectLibraryInputFiles()
     {
-        final String slash = File.separator;
-        // we have to add the Java framework classes to the library JARs, since they are not
-        // distributed with the JAR on Central, and since we'll strip them out of the android.jar
-        // that is shipped with the SDK (since that is not a complete Java distribution)
-        String javaHome = System.getProperty( "java.home" );
-        String jdkLibsPath = null;
-        if ( javaHome.startsWith( "/System/Library/Java" ) || javaHome.startsWith( "/Library/Java" ) )
+        if ( parsedIncludeJdkLibs )
         {
-            // MacOS X uses different naming conventions for JDK installations
-            jdkLibsPath = javaHome + "/../Classes";
-            addLibraryJar( jdkLibsPath + "/classes.jar" );
+            final String slash = File.separator;
+            // we have to add the Java framework classes to the library JARs, since they are not
+            // distributed with the JAR on Central, and since we'll strip them out of the android.jar
+            // that is shipped with the SDK (since that is not a complete Java distribution)
+            String javaHome = System.getProperty( "java.home" );
+            String jdkLibsPath = null;
+            if ( javaHome.startsWith( "/System/Library/Java" ) || javaHome.startsWith( "/Library/Java" ) )
+            {
+                // MacOS X uses different naming conventions for JDK installations
+                jdkLibsPath = javaHome + "/../Classes";
+                addLibraryJar( jdkLibsPath + "/classes.jar" );
+            }
+            else
+            {
+                jdkLibsPath = javaHome + slash + "lib";
+                addLibraryJar( jdkLibsPath + slash + "rt.jar" );
+            }
+            // we also need to add the JAR containing e.g. javax.servlet
+            addLibraryJar( jdkLibsPath + slash + "jsse.jar" );
+            // and the javax.crypto stuff
+            addLibraryJar( jdkLibsPath + slash + "jce.jar" );
         }
-        else
-        {
-            jdkLibsPath = javaHome + slash + "lib";
-            addLibraryJar( jdkLibsPath + slash + "rt.jar" );
-        }
-        // we also need to add the JAR containing e.g. javax.servlet
-        addLibraryJar( jdkLibsPath + slash + "jsse.jar" );
-        // and the javax.crypto stuff
-        addLibraryJar( jdkLibsPath + slash + "jce.jar" );
 
         // we treat any dependencies with provided scope as library JARs
         for ( Artifact artifact : project.getArtifacts() )
         {
             if ( artifact.getScope().equals( JavaScopes.PROVIDED ) )
             {
-                if ( artifact.getArtifactId().equals( "android" ) )
+                if ( artifact.getArtifactId().equals( "android" ) && parsedIncludeJdkLibs )
                 {
                     addLibraryJar( artifact.getFile().getAbsolutePath(), ANDROID_LIBRARY_EXCLUDED_FILTER );
                 }

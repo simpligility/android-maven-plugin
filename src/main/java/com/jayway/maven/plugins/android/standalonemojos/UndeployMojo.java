@@ -80,7 +80,11 @@ public class UndeployMojo extends AbstractAndroidMojo
                             + "-Dandroid.package=com.simpligility.android.helloflashlight" );
                     return;
                 }
-                packageToUndeploy = extractPackageNameFromAndroidManifest( androidManifestFile );
+
+                packageToUndeploy = renameManifestPackage != null
+                    ? renameManifestPackage
+                    : extractPackageNameFromAndroidManifest( androidManifestFile );
+
                 undeployApk( packageToUndeploy );
             }
         }
