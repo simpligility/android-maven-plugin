@@ -192,7 +192,7 @@ public class ProguardMojo extends AbstractAndroidMojo
     /**
      * If set to true JDK jars will be included as library jars and corresponding filters
      * will be applied to android.jar.  Defaults to true.
-     * @parameter expression="${android.proguard.includeJdkLibs}" default-value="true"
+     * @parameter expression="${android.proguard.includeJdkLibs}"
      */
     private Boolean includeJdkLibs;
     
