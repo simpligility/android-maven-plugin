@@ -111,14 +111,6 @@ public class ApkMojo extends AbstractAndroidMojo
     private String signDebug;
 
     /**
-     * <p>A possibly new package name for the application. This value will be passed on to the aapt
-     * parameter --rename-manifest-package. Look to aapt for more help on this. </p>
-     *
-     * @parameter expression="${android.renameManifestPackage}"
-     */
-    private String renameManifestPackage;
-
-    /**
      * <p>Rewrite the manifest so that all of its instrumentation components target the given package.
      * This value will be passed on to the aapt parameter --rename-instrumentation-target-package.
      * Look to aapt for more help on this. </p>
