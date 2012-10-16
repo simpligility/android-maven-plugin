@@ -368,36 +368,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( "--custom-package" );
             commands.add( customPackage );
         }
-        for ( File resOverlayDir : overlayDirectories )
-        {
-            if ( resOverlayDir != null && resOverlayDir.exists() )
-            {
-                commands.add( "-S" );
-                commands.add( resOverlayDir.getAbsolutePath() );
-            }
-        }
-        if ( combinedRes.exists() )
-        {
-            commands.add( "-S" );
-            commands.add( combinedRes.getAbsolutePath() );
-        }
-        else
-        {
-            if ( resourceDirectory.exists() )
-            {
-                commands.add( "-S" );
-                commands.add( resourceDirectory.getAbsolutePath() );
-            }
-        }
 
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
-        {
-            if ( artifact.getType().equals( APKLIB ) )
-            {
-                commands.add( "-S" );
-                commands.add( getLibraryUnpackDirectory( artifact ) + "/res" );
-            }
-        }
+        addResourcesDirectories( commands, overlayDirectories );
+
         commands.add( "--auto-add-overlay" );
         if ( assetsDirectory.exists() )
         {
@@ -427,6 +400,44 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
 
         project.addCompileSourceRoot( genDirectory.getAbsolutePath() );
+    }
+
+    private void addResourcesDirectories( List<String> commands, File[] overlayDirectories )
+    {
+        for ( File resOverlayDir : overlayDirectories )
+        {
+            if ( resOverlayDir != null && resOverlayDir.exists() )
+            {
+                commands.add( "-S" );
+                commands.add( resOverlayDir.getAbsolutePath() );
+            }
+        }
+        if ( combinedRes.exists() )
+        {
+            commands.add( "-S" );
+            commands.add( combinedRes.getAbsolutePath() );
+        }
+        else
+        {
+            if ( resourceDirectory.exists() )
+            {
+                commands.add( "-S" );
+                commands.add( resourceDirectory.getAbsolutePath() );
+            }
+        }
+
+        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+        {
+            if ( artifact.getType().equals( APKLIB ) )
+            {
+                String apklibResDirectory = getLibraryUnpackDirectory( artifact ) + "/res";
+                if ( new File( apklibResDirectory ).exists() )
+                {
+                    commands.add( "-S" );
+                    commands.add( apklibResDirectory );
+                }
+            }
+        }        
     }
     
     private void mergeManifests() throws MojoExecutionException

@@ -318,6 +318,7 @@ public class ApkBuilder
      */
     public void addNativeLibraries( File nativeFolder, String abiFilter ) throws MojoExecutionException
     {
+        log.info( "Add native libraries from " + nativeFolder );
         try
         {
             //The method changed with version 14 of the ADK.

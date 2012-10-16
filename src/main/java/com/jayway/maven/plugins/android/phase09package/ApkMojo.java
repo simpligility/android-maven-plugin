@@ -250,6 +250,13 @@ public class ApkMojo extends AbstractAndroidMojo
     private String apkNativeToolchain;
 
     /**
+     * Specifies the final name of the library output by the build (this allows
+     *
+     * @parameter expression="${android.ndk.build.build.final-library.name}"
+     */
+    private String ndkFinalLibraryName;
+
+    /**
      * Embedded configuration of this mojo.
      *
      * @parameter
@@ -342,7 +349,7 @@ public class ApkMojo extends AbstractAndroidMojo
         // Process the native libraries, looking both in the current build directory as well as
         // at the dependencies declared in the pom.  Currently, all .so files are automatically included
         processNativeLibraries( nativeFolders );
-
+        
         if ( useInternalAPKBuilder )
         {
             doAPKWithAPKBuilder( outputFile, dexFile, zipArchive, sourceFolders, jarFiles, nativeFolders,
@@ -490,6 +497,7 @@ public class ApkMojo extends AbstractAndroidMojo
                                       ArrayList<File> jarFiles, ArrayList<File> nativeFolders,
                                       boolean signWithDebugKeyStore ) throws MojoExecutionException
     {
+        getLog().debug( "Building APK with internal APKBuilder" );
         sourceFolders.add( new File( project.getBuild().getOutputDirectory() ) );
 
         for ( Artifact artifact : getRelevantCompileArtifacts() )
@@ -704,6 +712,7 @@ public class ApkMojo extends AbstractAndroidMojo
                                    ArrayList<File> jarFiles, ArrayList<File> nativeFolders,
                                    boolean signWithDebugKeyStore ) throws MojoExecutionException
     {
+        getLog().debug( "Building APK from command line" );
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
 
@@ -844,9 +853,17 @@ public class ApkMojo extends AbstractAndroidMojo
                             try
                             {
                                 final String artifactId = resolvedArtifact.getArtifactId();
-                                final String filename = artifactId.startsWith( "lib" )
+                                String filename = artifactId.startsWith( "lib" ) 
                                         ? artifactId + ".so"
                                         : "lib" + artifactId + ".so";
+                                if ( ndkFinalLibraryName != null 
+                                        && ( resolvedArtifact.getFile().getName()
+                                                .startsWith( "lib" + ndkFinalLibraryName ) ) )
+                                {
+                                    // The artifact looks like one we built with the NDK in this module
+                                    // preserve the name from the NDK build
+                                    filename = resolvedArtifact.getFile().getName();
+                                }
 
                                 final File finalDestinationDirectory = getFinalDestinationDirectoryFor(
                                         resolvedArtifact, destinationDirectory, ndkArchitecture );
