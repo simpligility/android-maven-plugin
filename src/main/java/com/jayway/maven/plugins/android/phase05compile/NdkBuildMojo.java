@@ -924,8 +924,10 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 .getNativeDependenciesArtifacts( unpackedApkLibsDirectory, false );
         final Set<Artifact> sharedLibraryArtifacts = nativeHelper
                 .getNativeDependenciesArtifacts( unpackedApkLibsDirectory, true );
-        final Set<Artifact> mergedArtifacts = new LinkedHashSet<Artifact>( staticLibraryArtifacts );
-        mergedArtifacts.addAll( sharedLibraryArtifacts );
+        
+        final Set<Artifact> mergedArtifacts = new LinkedHashSet<Artifact>();
+        filterNativeDependencies( mergedArtifacts, staticLibraryArtifacts );
+        filterNativeDependencies( mergedArtifacts, sharedLibraryArtifacts );
 
         if ( getLog().isDebugEnabled() )
         {
@@ -934,6 +936,31 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         }
         
         return mergedArtifacts;
+    }
+
+    /**
+     * Selectively add artifacts from source to target excluding any whose groupId and artifactId match
+     * the current build.
+     * Introduced to work around an issue when the ndk-build is executed twice by maven for example when
+     * invoking maven 'install site'. In this case the artifacts attached by the first invocation are
+     * found but are not valid dependencies and must be excluded.
+     * @param target artifact Set to copy in to
+     * @param source artifact Set to filter
+     */
+    private void filterNativeDependencies( Set<Artifact> target, Set<Artifact> source )
+    {
+        for ( Artifact a : source )
+        {
+            if ( project.getGroupId().equals( a.getGroupId() ) 
+                    && project.getArtifactId().equals( a.getArtifactId() ) )
+            {
+                getLog().warn( "Excluding native dependency attached by this build" );
+            }
+            else
+            {
+                target.add( a );
+            }
+        }
     }
 
     /**
