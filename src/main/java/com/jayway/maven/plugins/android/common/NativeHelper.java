@@ -136,13 +136,15 @@ public class NativeHelper
             throws MojoExecutionException
     {
         final Set<Artifact> filteredArtifacts = new LinkedHashSet<Artifact>();
-
+        final Set<Artifact> allArtifacts = new LinkedHashSet<Artifact>();
+        
         // Add all dependent artifacts declared in the pom file
-        @SuppressWarnings( "unchecked" )
-        final Set<Artifact> allArtifacts = project.getDependencyArtifacts();
+        // Note: The result of project.getDependencyArtifacts() can be an UnmodifiableSet so we 
+        //       have created our own above and add to that.
+        allArtifacts.addAll( project.getDependencyArtifacts() );
 
         // Add all attached artifacts as well - this could come from the NDK mojo for example
-        boolean result = allArtifacts.addAll( project.getAttachedArtifacts() );
+        allArtifacts.addAll( project.getAttachedArtifacts() );
 
         for ( Artifact artifact : allArtifacts )
         {
@@ -151,8 +153,8 @@ public class NativeHelper
             if ( isNativeLibrary( sharedLibraries, artifact.getType() ) && artifact.getScope() == null )
             {
                 // Including attached artifact
-                log.debug( "Including attached artifact: " + artifact.getArtifactId() + "(" + artifact.getGroupId()
-                        + ")" );
+                log.debug( "Including attached artifact: " + artifact.getArtifactId() 
+                        + "(" + artifact.getGroupId() + "). Artifact scope is not set." );
                 filteredArtifacts.add( artifact );
             }
             else
@@ -161,6 +163,8 @@ public class NativeHelper
                         Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) || Artifact.SCOPE_RUNTIME
                                 .equals( artifact.getScope() ) ) )
                 {
+                    log.debug( "Including attached artifact: " + artifact.getArtifactId() 
+                            + "(" + artifact.getGroupId() + "). Artifact scope is Compile or Runtime." );
                     filteredArtifacts.add( artifact );
                 }
                 else
@@ -172,6 +176,8 @@ public class NativeHelper
                                 AbstractAndroidMojo.getLibraryUnpackDirectory( unpackDirectory, artifact ) + "/libs" );
                         if ( libsFolder.exists() )
                         {
+                            log.debug( "Including attached artifact: " + artifact.getArtifactId() 
+                                    + "(" + artifact.getGroupId() + "). Artifact is APKLIB." );
                             filteredArtifacts.add( artifact );
                         }
                     }
