@@ -62,7 +62,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     
     /**
      * <p>Override default merging. You must have SDK Tools r20+</p>
-     * @parameter expression="${android.mergeManifests}" default-value="false"
      * 
      * <p><b>IMPORTANT:</b> The resource plugin needs to be disabled for the 
      * <code>process-resources</code> phase,
@@ -110,6 +109,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      *     ...
      * &lt;/build&gt;
      * </pre>
+     * 
+     * @parameter expression="${android.mergeManifests}" default-value="false"
      */
     protected boolean mergeManifests;
 
