@@ -1147,5 +1147,23 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         return androidHome;
     }
 
+    /**
+     * Get the resource directories if defined or the resource directory
+     * @return
+     */
+    public File[] getResourceOverlayDirectories()
+    {
+        File[] overlayDirectories;
 
+        if ( resourceOverlayDirectories == null || resourceOverlayDirectories.length == 0 )
+        {
+            overlayDirectories = new File[]{ resourceOverlayDirectory };
+        }
+        else
+        {
+            overlayDirectories = resourceOverlayDirectories;
+        }
+
+        return overlayDirectories;
+    }
 }
