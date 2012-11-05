@@ -111,6 +111,16 @@ public class ApklibMojo extends AbstractAndroidMojo
             addDirectory( jarArchiver, assetsDirectory, "assets" );
             addDirectory( jarArchiver, resourceDirectory, "res" );
             addDirectory( jarArchiver, sourceDirectory, "src" );
+
+            File[] overlayDirectories = getResourceOverlayDirectories();
+            for ( File resOverlayDir : overlayDirectories )
+            {
+                if ( resOverlayDir != null && resOverlayDir.exists() )
+                {
+                    addDirectory( jarArchiver, resOverlayDir, "res" );
+                }
+            }
+
             addJavaResources( jarArchiver, project.getBuild().getResources(), "src" );
 
             // Lastly, add any native libraries
@@ -276,16 +286,7 @@ public class ApklibMojo extends AbstractAndroidMojo
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
-        File[] overlayDirectories;
-
-        if ( resourceOverlayDirectories == null || resourceOverlayDirectories.length == 0 )
-        {
-            overlayDirectories = new File[]{ resourceOverlayDirectory };
-        }
-        else
-        {
-            overlayDirectories = resourceOverlayDirectories;
-        }
+        File[] overlayDirectories = getResourceOverlayDirectories();
 
         File androidJar = getAndroidSdk().getAndroidJar();
         File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_" );
