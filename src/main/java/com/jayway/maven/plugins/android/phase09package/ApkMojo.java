@@ -988,16 +988,7 @@ public class ApkMojo extends AbstractAndroidMojo
     {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
-        File[] overlayDirectories;
-
-        if ( resourceOverlayDirectories == null || resourceOverlayDirectories.length == 0 )
-        {
-            overlayDirectories = new File[]{ resourceOverlayDirectory };
-        }
-        else
-        {
-            overlayDirectories = resourceOverlayDirectories;
-        }
+        File[] overlayDirectories = getResourceOverlayDirectories();
 
         if ( extractedDependenciesRes.exists() )
         {
