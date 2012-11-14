@@ -336,8 +336,11 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
                 if ( packagesExists )
                 {
-                    remoteAndroidTestRunner.setTestPackageName( packagesList );
-                    getLog().info( "Running tests for specified test packages: " + packagesList );
+                    for ( String str : packagesList.split( "," ) )
+                    {
+                        remoteAndroidTestRunner.setTestPackageName( str );
+                        getLog().info( "Running tests for specified test package: " + str );
+                    }
                 }
 
                 if ( classesExists )
