@@ -20,6 +20,8 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.common.AetherHelper;
+import com.jayway.maven.plugins.android.manifmerger.ManifestMerger;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -59,19 +61,28 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APKSOURCE
  */
 public class GenerateSourcesMojo extends AbstractAndroidMojo
 {
-    
+
     /**
-     * <p>Override default merging. You must have SDK Tools r20+</p>
+     * <p>
+     * Override default merging. You must have SDK Tools r20+
+     * </p>
      * 
-     * <p><b>IMPORTANT:</b> The resource plugin needs to be disabled for the 
-     * <code>process-resources</code> phase,
-     * so the "default-resources" execution must be added. 
-     * Without this the non-merged manifest will get re-copied to
-     * the build directory.</p>
-     * <p>The <code>androidManifestFile</code> should also be 
-     * configured to pull from the build directory so that
-     * later phases will pull the merged manifest file.</p>
-     * <p>Example POM Setup:</p>
+     * <p>
+     * <b>IMPORTANT:</b> The resource plugin needs to be disabled for the
+     * <code>process-resources</code> phase, so the "default-resources"
+     * execution must be added. Without this the non-merged manifest will get
+     * re-copied to the build directory.
+     * </p>
+     * 
+     * <p>
+     * The <code>androidManifestFile</code> should also be configured to pull
+     * from the build directory so that later phases will pull the merged
+     * manifest file.
+     * </p>
+     * <p>
+     * Example POM Setup:
+     * </p>
+     * 
      * <pre>
      * &lt;build&gt;
      *     ...
@@ -108,6 +119,24 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      *     &lt;/plugins&gt;
      *     ...
      * &lt;/build&gt;
+     * </pre>
+     * <p>
+     * You can filter the pre-merged APK manifest. One important note about Eclipse, Eclipse will
+     * replace the merged manifest with a filtered pre-merged version when the project is refreshed.
+     * If you want to review the filtered merged version then you will need to open it outside Eclipse
+     * without refreshing the project in Eclipse. 
+     * </p>
+     * <pre>
+     * &lt;resources&gt;
+     *     &lt;resource&gt;
+     *         &lt;targetPath&gt;${project.build.directory}&lt;/targetPath&gt;
+     *         &lt;filtering&gt;true&lt;/filtering&gt;
+     *         &lt;directory&gt;${basedir}&lt;/directory&gt;
+     *         &lt;includes&gt;
+     *             &lt;include&gt;AndroidManifest.xml&lt;/include&gt;
+     *         &lt;/includes&gt;
+     *     &lt;/resource&gt;
+     * &lt;/resources&gt;
      * </pre>
      * 
      * @parameter expression="${android.mergeManifests}" default-value="false"
@@ -508,13 +537,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             File mergedManifest = new File( androidManifestFile.getParent(), "AndroidManifest-merged.xml" );
 
-            File sdkLibs = getAndroidSdk().getSDKLibJar();
-            File mergerLib = getAndroidSdk().getManifmergerJar();
-
-            ManifestMerger mm = new ManifestMerger( getLog(), sdkLibs, mergerLib );
+            ManifestMerger mm = new ManifestMerger( getLog(), getAndroidSdk().getSdkPath(), getAndroidSdk()
+                    .getToolsVersion() );
 
             getLog().info( "Merging manifests of dependent apklibs" );
-            if ( mm.process( mergedManifest, androidManifestFile,
+            if ( mm.process( mergedManifest, androidManifestFile, 
                     libManifests.toArray( new File[libManifests.size()] ) ) )
             {
                 // Replace the original manifest file with the merged one so that
