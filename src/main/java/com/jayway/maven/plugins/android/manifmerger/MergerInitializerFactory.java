@@ -8,7 +8,7 @@ import org.apache.maven.plugin.logging.Log;
 /**
  * Factory for building MergeStrategies
  * @author tombollwitt
- * 
+ * @author Manfred Moser <manfred@simpligility.com>
  */
 public class MergerInitializerFactory
 {
@@ -27,21 +27,24 @@ public class MergerInitializerFactory
      * Currently supports Revisions: 20, 21.
      * 
      * @param log The Mojo Log
-     * @param toolsVersion The version of the SDK Tools
+     * @param sdkMajorVersion The major version of the SDK Tools
      * @param sdkPath The path to the Android SDK
      * @return
      * @throws MojoExecutionException
      */
-    public static MergeStrategy getInitializer( Log log, int toolsVersion, File sdkPath ) throws MojoExecutionException
+    public static MergeStrategy getInitializer( Log log, int sdkMajorVersion, File sdkPath ) throws MojoExecutionException
     {
-        switch ( toolsVersion )
+        switch ( sdkMajorVersion )
         {
-        case R20:
-            return new MergeStrategyR20( log, sdkPath );
+//        case R20:
+//            return new MergeStrategyR20( log, sdkPath );
         case R21:
             return new MergeStrategyR21( log, sdkPath );
         default:
-            throw new MojoExecutionException( "Unsupported SDK Tools Revision: " + toolsVersion );
+          log.info( "ATTENTION! Your Android SDK is outdated and not supported for the AndroidManifest merge feature" );
+          log.info( "Supported major versions are " + R20 + " and " + R21 + ". You are using " + sdkMajorVersion );
+          log.info( "Execution proceeding using merge procedure from " + R20 );
+          return new MergeStrategyR20( log, sdkPath );
         }
     }
 }

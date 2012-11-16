@@ -84,7 +84,7 @@ public class AndroidSdk
 
     private final File sdkPath;
     private final Platform platform;
-    private int toolsVersion;
+    private int sdkMajorVersion;
 
 
     private Set<Platform> availablePlatforms;
@@ -94,7 +94,7 @@ public class AndroidSdk
     {
         this.sdkPath = sdkPath;
         findAvailablePlatforms();
-        loadToolsVersion();
+        loadSDKToolsMajorVersion();
 
         if ( platformOrApiLevel == null )
         {
@@ -343,7 +343,7 @@ public class AndroidSdk
     /**
      * Loads the SDK Tools version
      */
-    private void loadToolsVersion()
+    private void loadSDKToolsMajorVersion()
     {
         File propFile = new File( sdkPath, "tools/" + SOURCE_PROPERTIES_FILENAME );
         Properties properties = new Properties();
@@ -360,7 +360,17 @@ public class AndroidSdk
         {
             try
             {
-                toolsVersion = Integer.parseInt( properties.getProperty( SDK_TOOLS_REVISION_PROPERTY ) );
+                String versionString = properties.getProperty( SDK_TOOLS_REVISION_PROPERTY );
+                String majorVersion;
+                if ( versionString.contains( "." ) )
+                {
+                    majorVersion = versionString.substring( 0, versionString.indexOf( "." ) );
+                }
+                else
+                {
+                    majorVersion = versionString;
+                }
+                sdkMajorVersion = Integer.parseInt( majorVersion );
             }
             catch ( NumberFormatException e )
             {
@@ -397,9 +407,9 @@ public class AndroidSdk
      * Returns the version of the SDK Tools.
      * @return
      */
-    public int getToolsVersion()
+    public int getSdkMajorVersion()
     {
-        return toolsVersion;
+        return sdkMajorVersion;
     }
 
 }
