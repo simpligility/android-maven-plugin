@@ -1,7 +1,4 @@
-package com.jayway.maven.plugins.android.phase01generatesources;
-
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
+package com.jayway.maven.plugins.android.manifmerger;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -10,58 +7,47 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Map;
+
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 
 /**
- * This class is a front for the ManifestMerger contained in the {@code manifmerger.jar}. It is dynamically loaded and
- * reflection is used to delegate the methods
+ * MergeStrategy for SDK Tools R21
+ * @author tombollwitt
+ *
  */
-public class ManifestMerger
+public class MergeStrategyR21 implements MergeStrategy
 {
     /**
      * The Mojo logger
      */
-    private static Log log;
+    Log log;
 
     /**
-     * The Manifest Merger instance
+     * The method that does the merging.
      */
-    private static Object merger;
+    Method processMethod;
 
     /**
-     * The ManifestMerger.process Method
+     * The ManifestMerger class
      */
-    private static Method processMethod;
+    Object merger;
 
-    /**
-     * Before being able to use the ManifestMerger, an initialization is required.
-     * 
-     * @param log the Mojo Logger
-     * @param sdkLibs the File pointing on {@code sdklib.jar}
-     * @param mergerLib the File pointing on {@code manifmerger.jar}
-     * @throws MojoExecutionException if the ManifestMerger class cannot be loaded
-     */
-    @SuppressWarnings( {
-    "unchecked", "rawtypes"
-    } )
-    public void initialize( Log log, File sdkLibs, File mergerLib ) throws MojoExecutionException
+    @SuppressWarnings( { "unchecked", "rawtypes" } )
+    public MergeStrategyR21( Log log, File sdkPath ) throws MojoExecutionException
     {
-        if ( processMethod != null && merger != null )
-        {
-            // Already initialized
-            return;
-        }
 
-        ManifestMerger.log = log;
+        File mergerLib = new File( sdkPath + "/tools/lib/manifmerger.jar" );
+        File commonLib = new File( sdkPath + "/tools/lib/common.jar" );
 
-        // Load the ManifestMerger and MergerLog classes
         URLClassLoader mlLoader = null;
         Class manifestMergerClass = null;
         Class mergerLogClass = null;
         try
         {
-            mlLoader = new URLClassLoader( new URL[] {
-                mergerLib.toURI().toURL()
-            }, ManifestMerger.class.getClassLoader() );
+            mlLoader = new URLClassLoader( new URL[] { mergerLib.toURI().toURL() },
+                    ManifestMerger.class.getClassLoader() );
             manifestMergerClass = mlLoader.loadClass( "com.android.manifmerger.ManifestMerger" );
             log.debug( "ManifestMerger loaded " + manifestMergerClass );
             mergerLogClass = mlLoader.loadClass( "com.android.manifmerger.MergerLog" );
@@ -78,18 +64,21 @@ public class ManifestMerger
             throw new MojoExecutionException( "Cannot find the required class", e );
         }
 
-        // Loads the NullSdkLog class
+        // Loads the StdLogger class
         Class stdSdkLogClass = null;
+        Class logLevel = null;
         try
         {
-            URLClassLoader child = new URLClassLoader( new URL[] { sdkLibs.toURI().toURL() }, mlLoader );
-            stdSdkLogClass = child.loadClass( "com.android.sdklib.StdSdkLog" );
-            log.debug( "StdSdkLog loaded " + stdSdkLogClass );
+            URLClassLoader child = new URLClassLoader( new URL[] { commonLib.toURI().toURL() }, mlLoader );
+            stdSdkLogClass = child.loadClass( "com.android.utils.StdLogger" );
+            log.debug( "StdLogger loaded " + stdSdkLogClass );
+            logLevel = child.loadClass( "com.android.utils.StdLogger$Level" );
+            log.debug( "Level loaded " + logLevel );
         }
         catch ( MalformedURLException e )
         {
             // This one cannot happen.
-            throw new RuntimeException( "Cannot create a correct URL from file " + sdkLibs.getAbsolutePath() );
+            throw new RuntimeException( "Cannot create a correct URL from file " + commonLib.getAbsolutePath() );
         }
         catch ( ClassNotFoundException e )
         {
@@ -97,10 +86,11 @@ public class ManifestMerger
             throw new MojoExecutionException( "Cannot find the required class", e );
         }
 
-        // In order to improve performance and to check that all methods are available we cache used methods.
+        // In order to improve performance and to check that all methods are
+        // available we cache used methods.
         try
         {
-            processMethod = manifestMergerClass.getMethod( "process", File.class, File.class, File[].class );
+            processMethod = manifestMergerClass.getMethod( "process", File.class, File.class, File[].class, Map.class );
         }
         catch ( Exception e )
         {
@@ -110,12 +100,13 @@ public class ManifestMerger
 
         try
         {
+            Enum e = Enum.valueOf( logLevel, "VERBOSE" );
             Constructor stdSdkLogConstructor = stdSdkLogClass.getDeclaredConstructors()[0];
-            Object sdkLog = stdSdkLogConstructor.newInstance();
+            Object sdkLog = stdSdkLogConstructor.newInstance( e );
             Method wrapSdkLogMethod = mergerLogClass.getMethod( "wrapSdkLog", stdSdkLogClass.getInterfaces()[0] );
             Object iMergerLog = wrapSdkLogMethod.invoke( null, sdkLog.getClass().getInterfaces()[0].cast( sdkLog ) );
             Constructor manifestMergerConstructor = manifestMergerClass.getDeclaredConstructors()[0];
-            merger = manifestMergerConstructor.newInstance( iMergerLog );
+            merger = manifestMergerConstructor.newInstance( iMergerLog, null );
         }
         catch ( InvocationTargetException e )
         {
@@ -130,27 +121,14 @@ public class ManifestMerger
     }
 
     /**
-     * Creates a new ManifestMerger. The class must be initialized before calling this constructor.
+     * @see {@link MergeStrategy#process(File, File, File[])}
      */
-    public ManifestMerger( Log log, File sdkLibs, File mergerLib ) throws MojoExecutionException
-    {
-        initialize( log, sdkLibs, mergerLib );
-    }
-
-    /**
-     * Merge the AndroidManifests
-     * 
-     * @param paramFile1 The destination File for the merged content
-     * @param paramFile2 The original AndroidManifest to merge into
-     * @param paramArayOfFile The array of APKLIB manifests to merge
-     * @return
-     * @throws MojoExecutionException if there is a problem merging
-     */
-    public boolean process( File paramFile1, File paramFile2, File[] paramArayOfFile ) throws MojoExecutionException
+    @Override
+    public boolean process( File mergedFile, File apkManifest, File[] libraryManifests ) throws MojoExecutionException
     {
         try
         {
-            return (Boolean) processMethod.invoke( merger, paramFile1, paramFile2, paramArayOfFile );
+            return (Boolean) processMethod.invoke( merger, mergedFile, apkManifest, libraryManifests, null );
         }
         catch ( Exception e )
         {
@@ -158,4 +136,5 @@ public class ManifestMerger
             throw new MojoExecutionException( "Cannot merge the manifests", e );
         }
     }
+
 }
