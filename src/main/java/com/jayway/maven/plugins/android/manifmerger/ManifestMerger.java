@@ -38,7 +38,7 @@ public class ManifestMerger
             return;
         }
 
-        merger = MergerInitializerFactory.getInitializer(log, sdkMajorVersion, sdkPath);
+        merger = MergerInitializerFactory.getInitializer( log, sdkMajorVersion, sdkPath );
 
     }
 
