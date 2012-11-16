@@ -47,6 +47,10 @@ public class AndroidSdk
      * property name for api level version in sdk source.properties file.
      */
     private static final String API_LEVEL_PROPERTY = "AndroidVersion.ApiLevel";
+    /**
+     * property name for the sdk tools revision in sdk/tools/lib source.properties
+     */
+    private static final String SDK_TOOLS_REVISION_PROPERTY = "Pkg.Revision";
 
     /**
      * folder name for the sdk sub folder that contains the different platform versions.
@@ -80,6 +84,7 @@ public class AndroidSdk
 
     private final File sdkPath;
     private final Platform platform;
+    private int toolsVersion;
 
 
     private Set<Platform> availablePlatforms;
@@ -89,6 +94,7 @@ public class AndroidSdk
     {
         this.sdkPath = sdkPath;
         findAvailablePlatforms();
+        loadToolsVersion();
 
         if ( platformOrApiLevel == null )
         {
@@ -267,21 +273,19 @@ public class AndroidSdk
     }
     
     /**
-     * Resolves the manifmerger.jar from this SDK.
-     *
-     * @return a <code>File</code> pointing to the manifmerger.jar file.
+     * Resolves the path for this SDK.
+     * 
+     * @return a <code>File</code> pointing to the SDk Directory.
      * @throws org.apache.maven.plugin.MojoExecutionException
-     *          if the file can not be resolved.
+     *             if the file can not be resolved.
      */
-    public File getManifmergerJar() throws MojoExecutionException
+    public File getSdkPath() throws MojoExecutionException
     {
-        // The file is sdkPath/tools/lib/manifmerger.jar
-        File jar = new File( sdkPath + "/tools/lib/manifmerger.jar" );
-        if ( jar.exists() )
+        if ( sdkPath.exists() )
         {
-            return jar;
+            return sdkPath;
         }
-        throw new MojoExecutionException( "Can't find the 'manifmerger.jar' : " + jar.getAbsolutePath() );
+        throw new MojoExecutionException( "Can't find the SDK directory : " + sdkPath.getAbsolutePath() );
     }
 
     public File getPlatform()
@@ -335,6 +339,37 @@ public class AndroidSdk
             }
         }
     }
+    
+    /**
+     * Loads the SDK Tools version
+     */
+    private void loadToolsVersion()
+    {
+        File propFile = new File( sdkPath, "tools/" + SOURCE_PROPERTIES_FILENAME );
+        Properties properties = new Properties();
+        try
+        {
+            properties.load( new FileInputStream( propFile ) );
+        }
+        catch ( IOException e )
+        {
+            throw new InvalidSdkException( "Error reading " + propFile.getAbsoluteFile() );
+        }
+        
+        if ( properties.containsKey( SDK_TOOLS_REVISION_PROPERTY ) )
+        {
+            try
+            {
+                toolsVersion = Integer.parseInt( properties.getProperty( SDK_TOOLS_REVISION_PROPERTY ) );
+            }
+            catch ( NumberFormatException e )
+            {
+                throw new InvalidSdkException( "Error - The property '" + SDK_TOOLS_REVISION_PROPERTY
+                        + "' in the SDK source.properties file  number is not an Integer: "
+                        + properties.getProperty( SDK_TOOLS_REVISION_PROPERTY ) );
+            }
+        }
+    }
 
     /**
      * Gets the source properties files from all locally installed platforms.
@@ -356,6 +391,15 @@ public class AndroidSdk
             }
         }
         return sourcePropertyFiles;
+    }
+
+    /**
+     * Returns the version of the SDK Tools.
+     * @return
+     */
+    public int getToolsVersion()
+    {
+        return toolsVersion;
     }
 
 }
