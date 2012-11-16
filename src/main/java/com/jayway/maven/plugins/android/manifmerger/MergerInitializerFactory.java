@@ -32,12 +32,13 @@ public class MergerInitializerFactory
      * @return
      * @throws MojoExecutionException
      */
-    public static MergeStrategy getInitializer( Log log, int sdkMajorVersion, File sdkPath ) throws MojoExecutionException
+    public static MergeStrategy getInitializer( Log log, int sdkMajorVersion, File sdkPath )
+            throws MojoExecutionException
     {
         switch ( sdkMajorVersion )
         {
-//        case R20:
-//            return new MergeStrategyR20( log, sdkPath );
+        case R20:
+            return new MergeStrategyR20( log, sdkPath );
         case R21:
             return new MergeStrategyR21( log, sdkPath );
         default:
