@@ -1093,6 +1093,11 @@ public class ApkMojo extends AbstractAndroidMojo
             commands.add( aaptExtraArg );
         }
 
+        if ( !release )
+        {
+            commands.add( "--debug-mode" );
+        }
+
         getLog().info( getAndroidSdk().getPathForTool( "aapt" ) + " " + commands.toString() );
         try
         {
