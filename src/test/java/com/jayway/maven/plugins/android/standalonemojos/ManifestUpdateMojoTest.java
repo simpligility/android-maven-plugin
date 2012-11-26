@@ -134,6 +134,15 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
         assertExpectedAndroidManifest(manifestFile, dir);
     }
 
+    @Test
+    public void testProviderAuthoritiesUpdate() throws Exception {
+        ManifestUpdateMojo mojo = createMojo("manifest-tests/provider-authorities-project");
+        mojo.execute();
+        File dir = getProjectDir(mojo);
+        File manifestFile = new File(dir, "AndroidManifest.xml");
+        assertExpectedAndroidManifest(manifestFile, dir);
+    }
+
     private void assertExpectedAndroidManifest(File manifestFile, File testdir) throws IOException {
         File expectFile = new File(testdir, "AndroidManifest-expected.xml");
         // different white space causes issues when between going Windows and *nix via git and wrongly configured

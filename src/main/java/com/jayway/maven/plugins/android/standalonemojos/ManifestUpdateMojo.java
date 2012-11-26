@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Updates various version attributes present in the <code>AndroidManifest.xml</code> file.
@@ -70,7 +71,12 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private static final String ATTR_LARGEST_WIDTH_LIMIT_DP = "android:largestWidthLimitDp";
     private static final String ATTR_COMPATIBLE_WIDTH_LIMIT_DP = "android:compatibleWidthLimitDp";
 
+    // provider attributes
+    private static final String ATTR_NAME = "android:name";
+    private static final String ATTR_AUTHORITIES = "android:authorities";
+
     private static final String ELEM_APPLICATION = "application";
+    private static final String ELEM_PROVIDER = "provider";
     private static final String ELEM_SUPPORTS_SCREENS = "supports-screens";
     private static final String ELEM_COMPATIBLE_SCREENS = "compatible-screens";
     private static final String ELEM_SCREEN = "screen";
@@ -200,6 +206,14 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     protected Boolean manifestDebuggable;
 
     /**
+     * For a given provider (named by <code>android:name</code> update the <code>android:authorities</code>
+     * attribute for the provider. Exposed via the project property <code>android.manifest.providerAuthorities</code>.
+     *
+     * @parameter expression="${android.manifest.providerAuthorities}"
+     */
+    protected Properties manifestProviderAuthorities;
+
+    /**
      *
      */
     protected SupportsScreens manifestSupportsScreens;
@@ -217,6 +231,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private Boolean parsedDebuggable;
     private SupportsScreens parsedSupportsScreens;
     private List<CompatibleScreen> parsedCompatibleScreens;
+    private Properties parsedProviderAuthorities;
 
     /**
      *
@@ -244,6 +259,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         getLog().debug( "    versionCodeUpdateFromVersion=" + parsedVersionCodeUpdateFromVersion );
         getLog().debug( "    sharedUserId=" + parsedSharedUserId );
         getLog().debug( "    debuggable=" + parsedDebuggable );
+        getLog().debug( "    providerAuthorities: " + parsedProviderAuthorities );
         getLog().debug( "    supports-screens: " + ( parsedSupportsScreens == null ? "not set" : "set" ) );
         getLog().debug( "    compatible-screens: " + ( parsedCompatibleScreens == null ? "not set" : "set" ) );
 
@@ -343,6 +359,14 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             {
                 parsedCompatibleScreens = manifestCompatibleScreens;
             }
+            if ( manifest.getProviderAuthorities() != null )
+            {
+                parsedProviderAuthorities = manifest.getProviderAuthorities();
+            }
+            else
+            {
+                parsedProviderAuthorities = manifestProviderAuthorities;
+            }
         }
         else
         {
@@ -354,6 +378,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             parsedDebuggable = manifestDebuggable;
             parsedSupportsScreens = manifestSupportsScreens;
             parsedCompatibleScreens = manifestCompatibleScreens;
+            parsedProviderAuthorities = manifestProviderAuthorities;
         }
     }
 
@@ -514,6 +539,15 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             getLog().info( "Setting " + ELEM_COMPATIBLE_SCREENS );
             updateCompatibleScreens( doc, manifestElement );
             dirty = true;
+        }
+
+        if ( parsedProviderAuthorities != null )
+        {
+            boolean madeDirty = updateProviderAuthorities( manifestElement );
+            if ( madeDirty )
+            {
+                dirty = true;
+            }
         }
 
         if ( dirty )
@@ -703,4 +737,64 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             compatibleScreensElem.appendChild( screenElem );
         }
     }
+
+    private boolean updateProviderAuthorities( Element manifestElement )
+    {
+        boolean dirty = false;
+        NodeList appElems = manifestElement.getElementsByTagName( ELEM_APPLICATION );
+
+        // Update all application nodes. Not sure whether there will ever be more than one.
+        for ( int i = 0; i < appElems.getLength(); ++ i )
+        {
+            Node node = appElems.item( i );
+            if ( node.getNodeType() == Node.ELEMENT_NODE )
+            {
+                NodeList providerElems = manifestElement.getElementsByTagName( ELEM_PROVIDER );
+                for ( int j = 0; j < providerElems.getLength(); ++ j )
+                {
+                    Node providerNode = providerElems.item( j );
+                    if ( providerNode.getNodeType() == Node.ELEMENT_NODE )
+                    {
+                        Element providerElem = (Element) providerNode;
+                        Attr providerName = providerElem.getAttributeNode( ATTR_NAME );
+                        getLog().debug( "Checking provider " + providerName.getValue() );
+                        if ( shouldPerformProviderUpdate( providerName ) )
+                        {
+                            dirty = true;
+                            String name = providerName.getValue();
+                            String newAuthorities = parsedProviderAuthorities.getProperty( name );
+                            getLog().info( "Updating provider " + name + " authorities attr to " + newAuthorities );
+                            performProviderUpdate( providerElem, newAuthorities );
+                        }
+                    }
+                }
+            }
+        }
+
+        return dirty;
+    }
+
+    private boolean shouldPerformProviderUpdate( Attr providerName )
+    {
+        if ( providerName == null )
+        {
+            return false;
+        }
+
+        for ( String propName: parsedProviderAuthorities.stringPropertyNames() )
+        {
+            if ( propName.equals( providerName.getValue() ) )
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void performProviderUpdate( Element providerElem, String newAuthorities )
+    {
+        Attr providerAuthorities = providerElem.getAttributeNode( ATTR_AUTHORITIES );
+        providerAuthorities.setValue( newAuthorities );
+    }
+
 }
