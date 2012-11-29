@@ -70,6 +70,11 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private static final String ATTR_LARGEST_WIDTH_LIMIT_DP = "android:largestWidthLimitDp";
     private static final String ATTR_COMPATIBLE_WIDTH_LIMIT_DP = "android:compatibleWidthLimitDp";
 
+    // application attributes
+    private static final String ATTR_APPLICATION_ICON = "android:icon";
+    private static final String ATTR_APPLICATION_LABEL = "android:label";
+    private static final String ATTR_APPLICATION_THEME = "android:theme";
+    
     private static final String ELEM_APPLICATION = "application";
     private static final String ELEM_SUPPORTS_SCREENS = "supports-screens";
     private static final String ELEM_COMPATIBLE_SCREENS = "compatible-screens";
@@ -172,6 +177,30 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private Boolean manifestVersionCodeAutoIncrement = false;
 
     /**
+     * Update the <code>android:icon</code> attribute with the specified parameter. Exposed via
+     * the project property <code>android.manifest.appIcon</code>.
+     * 
+     * @parameter expression="${android.manifest.applicationIcon}" 
+     */
+    private String manifestApplicationIcon;
+
+    /**
+     * Update the <code>android:label</code> attribute with the specified parameter. Exposed via
+     * the project property <code>android.manifest.appLabel</code>.
+     * 
+     * @parameter expression="${android.manifest.applicationLabel}" 
+     */
+    private String manifestApplicationLabel;    
+
+    /**
+     * Update the <code>android:theme</code> attribute with the specified parameter. Exposed via
+     * the project property <code>android.manifest.applicationTheme</code>.
+     * 
+     * @parameter expression="${android.manifest.applicationTheme}" 
+     */
+    private String manifestApplicationTheme;    
+    
+    /**
      * Update the <code>android:versionCode</code> attribute automatically from the project version
      * e.g 3.0.1 will become version code 301. As described in this blog post
      * http://www.simpligility.com/2010/11/release-version-management-for-your-android-application/
@@ -212,6 +241,9 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private String parsedVersionName;
     private Integer parsedVersionCode;
     private boolean parsedVersionCodeAutoIncrement;
+    private String parsedApplicationIcon;
+    private String parsedApplicationLabel;
+    private String parsedApplicationTheme;
     private Boolean parsedVersionCodeUpdateFromVersion;
     private String parsedSharedUserId;
     private Boolean parsedDebuggable;
@@ -242,6 +274,11 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         getLog().debug( "    versionCode=" + parsedVersionCode );
         getLog().debug( "    versionCodeAutoIncrement=" + parsedVersionCodeAutoIncrement );
         getLog().debug( "    versionCodeUpdateFromVersion=" + parsedVersionCodeUpdateFromVersion );
+        
+        getLog().debug( "    applicationIcon=" + parsedApplicationIcon );
+        getLog().debug( "    applicationLabel=" + parsedApplicationLabel );
+        getLog().debug( "    applicationTheme=" + parsedApplicationTheme );
+        
         getLog().debug( "    sharedUserId=" + parsedSharedUserId );
         getLog().debug( "    debuggable=" + parsedDebuggable );
         getLog().debug( "    supports-screens: " + ( parsedSupportsScreens == null ? "not set" : "set" ) );
@@ -311,6 +348,35 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             {
                 parsedVersionCodeUpdateFromVersion = manifestVersionCodeUpdateFromVersion;
             }
+            
+            if (StringUtils.isNotEmpty(manifest.getApplicationIcon())) 
+            {
+            	parsedApplicationIcon = manifest.getApplicationIcon();
+            }
+            else 
+            {
+            	parsedApplicationIcon = manifestApplicationIcon;
+            }
+            
+            if (StringUtils.isNotEmpty(manifest.getApplicationLabel()))  
+            {
+            	parsedApplicationLabel = manifest.getApplicationLabel();
+            }
+            else 
+            {
+            	parsedApplicationLabel = manifestApplicationLabel;
+            }
+            
+            if (StringUtils.isNotEmpty(manifest.getApplicationTheme())) 
+            {
+            	parsedApplicationTheme = manifest.getApplicationTheme();
+            }
+            else 
+            {
+            	parsedApplicationTheme = manifestApplicationTheme;
+            }
+
+            
             if ( StringUtils.isNotEmpty( manifest.getSharedUserId() ) )
             {
                 parsedSharedUserId = manifest.getSharedUserId();
@@ -350,6 +416,9 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             parsedVersionCode = manifestVersionCode;
             parsedVersionCodeAutoIncrement = manifestVersionCodeAutoIncrement;
             parsedVersionCodeUpdateFromVersion = manifestVersionCodeUpdateFromVersion;
+            parsedApplicationIcon = manifestApplicationIcon;
+            parsedApplicationLabel = manifestApplicationLabel;
+            parsedApplicationTheme = manifestApplicationTheme;
             parsedSharedUserId = manifestSharedUserId;
             parsedDebuggable = manifestDebuggable;
             parsedSupportsScreens = manifestSupportsScreens;
@@ -463,6 +532,24 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             project.getProperties().setProperty( "android.manifest.versionCode", String.valueOf( parsedVersionCode ) );
         }
 
+        if (!StringUtils.isEmpty( parsedApplicationIcon)) 
+        {
+        	dirty = updateApplicationAttribute(manifestElement, ATTR_APPLICATION_ICON, parsedApplicationIcon, dirty);
+            project.getProperties().setProperty( "android.manifest.applicationIcon", String.valueOf( parsedApplicationIcon ) );
+        }
+        
+        if (!StringUtils.isEmpty( parsedApplicationLabel)) 
+        {
+        	dirty = updateApplicationAttribute(manifestElement, ATTR_APPLICATION_LABEL, parsedApplicationLabel, dirty);        	
+            project.getProperties().setProperty( "android.manifest.applicationLabel", String.valueOf( parsedApplicationLabel ) );
+        }
+        
+        if (!StringUtils.isEmpty( parsedApplicationTheme)) 
+        {
+        	dirty = updateApplicationAttribute(manifestElement, ATTR_APPLICATION_THEME, parsedApplicationTheme, dirty);
+            project.getProperties().setProperty( "android.manifest.applicationTheme", String.valueOf( parsedApplicationTheme ) );
+        }        
+        
         if ( ! StringUtils.isEmpty( parsedSharedUserId ) )
         {
             Attr sharedUserIdAttrib = manifestElement.getAttributeNode( ATTR_SHARED_USER_ID );
@@ -530,6 +617,29 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             getLog().info( "No changes found to write to manifest file" );
         }
     }
+
+	private boolean updateApplicationAttribute(Element manifestElement, String attribute, String value,
+			boolean dirty) {
+		NodeList appElements = manifestElement.getElementsByTagName( ELEM_APPLICATION );
+		// Update all application nodes. Not sure whether there will ever be more than one.
+		for ( int i = 0; i < appElements.getLength(); ++ i )
+		{
+		    Node node = appElements.item( i );
+		    getLog().info( "Testing if node " + node.getNodeName() + " is application" );
+		    if ( node.getNodeType() == Node.ELEMENT_NODE )
+		    {
+		        Element element = ( Element ) node;
+		        Attr labelAttrib = element.getAttributeNode( attribute );
+		        if ( labelAttrib == null || !value.equals( labelAttrib.getValue() ) )
+		        {
+		            getLog().info( "Setting " + attribute + " to " + value );
+		            element.setAttribute( attribute, String.valueOf( value ) );
+		            dirty = true;
+		        }
+		    }
+		}
+		return dirty;
+	}
 
     /**
      * Expose the version properties and other simple parsed manifest entries.
