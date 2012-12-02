@@ -262,6 +262,8 @@ public class ApkMojo extends AbstractAndroidMojo
      * dependencies. Matching jar files will not have their resources added to the
      * resulting APK.
      * 
+     * The patterns are standard Java regexes.
+     * 
      * @parameter
      */
     private String[] excludeJarResources;
