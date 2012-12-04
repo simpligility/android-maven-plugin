@@ -614,12 +614,12 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 if ( "a".equals( project.getPackaging() ) )
                 {
                     return name.startsWith(
-                            "lib" + project.getArtifactId() ) && name.endsWith( ".a" );
+                            "lib" + ndkFinalLibraryName ) && name.endsWith( ".a" );
                 }
                 else
                 {
                     return name.startsWith(
-                            "lib" + project.getArtifactId() ) && name.endsWith( ".so" );
+                            "lib" + ndkFinalLibraryName ) && name.endsWith( ".so" );
                 }
             }
         } );
