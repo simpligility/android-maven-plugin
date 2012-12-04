@@ -288,6 +288,13 @@ public class AndroidSdk
         throw new MojoExecutionException( "Can't find the SDK directory : " + sdkPath.getAbsolutePath() );
     }
 
+    /**
+     * This method returns the previously specified version.
+     * However, if none have been specified it returns the
+     * "latest" version.  This is actually broken as it
+     * performs a lexicographic sort rather than sorting the
+     * versions in proper order.
+     */
     public File getPlatform()
     {
         assertPathIsDirectory( sdkPath );
@@ -295,22 +302,23 @@ public class AndroidSdk
         final File platformsDirectory = new File( sdkPath, PLATFORMS_FOLDER_NAME );
         assertPathIsDirectory( platformsDirectory );
 
+        final File platformDirectory;
         if ( platform == null )
         {
             final File[] platformDirectories = platformsDirectory.listFiles();
             Arrays.sort( platformDirectories );
-            return platformDirectories[ platformDirectories.length - 1 ];
+            platformDirectory = platformDirectories[ platformDirectories.length - 1 ];
         }
         else
         {
-            final File platformDirectory = new File( platform.path );
-            assertPathIsDirectory( platformDirectory );
-            return platformDirectory;
+            platformDirectory = new File( platform.path );
         }
+        assertPathIsDirectory( platformDirectory );
+        return platformDirectory;
     }
 
     /**
-     * Initialize the maps matching platform and api levels form the source properties files.
+     * Initialize the maps matching platform and api levels from the source properties files.
      *
      * @throws InvalidSdkException
      */
