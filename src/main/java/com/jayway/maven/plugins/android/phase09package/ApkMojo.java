@@ -300,13 +300,15 @@ public class ApkMojo extends AbstractAndroidMojo
         generateIntermediateApk();
 
         // Compile resource exclusion patterns, if any
-        if ( excludeJarResources != null && excludeJarResources.length > 0 ) {
+        if ( excludeJarResources != null && excludeJarResources.length > 0 ) 
+        {
           getLog().debug( "Compiling " + excludeJarResources.length + " patterns" );
           
           excludeJarResourcesPatterns = new Pattern[excludeJarResources.length];
           
-          for ( int index = 0; index < excludeJarResources.length; ++index ) {
-            excludeJarResourcesPatterns[index] = Pattern.compile(excludeJarResources[index]);
+          for ( int index = 0; index < excludeJarResources.length; ++index ) 
+          {
+            excludeJarResourcesPatterns[index] = Pattern.compile( excludeJarResources[index] );
           }
         }
         
@@ -599,17 +601,20 @@ public class ApkMojo extends AbstractAndroidMojo
                 for ( Pattern pattern : excludeJarResourcesPatterns )
                 {
                     final Matcher matcher = pattern.matcher( name );
-                    if ( matcher.matches() ) {
-                        getLog().debug( "Jar " + name + " excluded by pattern " + pattern);
+                    if ( matcher.matches() ) 
+                    {
+                        getLog().debug( "Jar " + name + " excluded by pattern " + pattern );
                         excluded = true;
                         break;
-                    } else {
-                        getLog().debug( "Jar " + name + " not excluded by pattern " + pattern);
+                    } 
+                    else 
+                    {
+                        getLog().debug( "Jar " + name + " not excluded by pattern " + pattern );
                     }
                 }
             }
 
-            if (excluded)
+            if ( excluded )
             {
                 continue;
             }
