@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          android:versionName="1.0">
+
+    <application android:name="TestApplication">
+        <provider android:authorities="com.example.provider1.before"
+                  android:name="com.example.Provider1"/>
+        <provider android:authorities="com.example.provider2.before"
+                  android:name="com.example.Provider2"/>
+    </application>
+
+</manifest>
