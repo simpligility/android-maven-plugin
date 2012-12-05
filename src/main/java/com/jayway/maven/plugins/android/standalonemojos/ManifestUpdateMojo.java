@@ -81,6 +81,11 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private static final String ELEM_COMPATIBLE_SCREENS = "compatible-screens";
     private static final String ELEM_SCREEN = "screen";
 
+    // version encoding 
+    private static final int INCREMENTAL_VERSION_POSITION = 1;
+    private static final int MINOR_VERSION_POSITION = 100;
+    private static final int MAJOR_VERSION_POSITION = 10000;
+
     /**
      * Configuration for the manifest-update goal.
      * <p>
@@ -595,15 +600,21 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         project.getProperties().setProperty( "android.manifest.versionCode", String.valueOf( currentVersionCode ) );
     }
 
+    /**
+     * If the specified version name cannot be properly parsed then fall back to 
+     * an automatic method.
+     * If the version can be parsed then generate a version code from the
+     * version components.  In an effort to preseve uniqueness two digits
+     * are allowed for both the minor and incremental versions.
+     */
     private void performVersionCodeUpdateFromVersion( Element manifestElement )
     {
         String verString = project.getVersion();
         getLog().debug( "Generating versionCode for " + verString );
         ArtifactVersion artifactVersion = new DefaultArtifactVersion( verString );
-        // invalid version, something went wrong in parsing, do the old fall back method
         String verCode;
-        if ( artifactVersion.getMajorVersion() == 0 & artifactVersion.getMinorVersion() == 0
-             && artifactVersion.getIncrementalVersion() == 0 )
+        if ( artifactVersion.getMajorVersion() < 1 && artifactVersion.getMinorVersion() < 1
+             && artifactVersion.getIncrementalVersion() < 1 )
         {
             getLog().warn( "Problem parsing version number occurred. Using fall back to determine version code. " );
 
@@ -624,14 +635,13 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         }
         else
         {
-            verCode = Integer.toString( artifactVersion.getMajorVersion() )
-                    + Integer.toString( artifactVersion.getMinorVersion() )
-                    + Integer.toString( artifactVersion.getIncrementalVersion() );
+            verCode = Integer.toString( artifactVersion.getMajorVersion() * MAJOR_VERSION_POSITION
+                    + artifactVersion.getMinorVersion() * MINOR_VERSION_POSITION
+                    + artifactVersion.getIncrementalVersion() * INCREMENTAL_VERSION_POSITION );
         }
         getLog().info( "Setting " + ATTR_VERSION_CODE + " to " + verCode );
         manifestElement.setAttribute( ATTR_VERSION_CODE, verCode );
         project.getProperties().setProperty( "android.manifest.versionCode", String.valueOf( verCode ) );
-
     }
 
     private boolean performSupportScreenModification( Document doc, Element manifestElement )
