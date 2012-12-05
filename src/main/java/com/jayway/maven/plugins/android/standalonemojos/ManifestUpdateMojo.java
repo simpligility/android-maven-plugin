@@ -77,8 +77,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
 
     // version encoding 
     private static final int INCREMENTAL_VERSION_POSITION = 1;
-    private static final int MINOR_VERSION_POSITION = 100;
-    private static final int MAJOR_VERSION_POSITION = 10000;
+    private static final int MINOR_VERSION_POSITION = 1000;
+    private static final int MAJOR_VERSION_POSITION = 1000000;
 
     /**
      * Configuration for the manifest-update goal.
