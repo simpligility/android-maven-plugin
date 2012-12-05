@@ -400,8 +400,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     private File ndkPath;
 
     /**
-     * Whether to create a release build (default is false / debug build). This affect BuildConfig generation at this
-     * stage, but should probably affect other aspects of the build.
+     * Whether to create a release build (default is false / debug build). This affect BuildConfig generation 
+     * and apk generation at this stage, but should probably affect other aspects of the build.
      * @parameter expression="${android.release}" default-value="false"
      */
     protected boolean release;
