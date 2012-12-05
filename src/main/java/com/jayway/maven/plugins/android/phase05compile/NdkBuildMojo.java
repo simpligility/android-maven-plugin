@@ -610,16 +610,22 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         {
             public boolean accept( final File dir, final String name )
             {
+            	String libraryName = ndkFinalLibraryName;
+            	
+            	if ( libraryName == null || libraryName.isEmpty() ) {
+            		libraryName = project.getArtifactId();
+            	}
+            	
                 // FIXME: The following logic won't work for an APKLIB building a static library
                 if ( "a".equals( project.getPackaging() ) )
                 {
                     return name.startsWith(
-                            "lib" + project.getArtifactId() ) && name.endsWith( ".a" );
+                            "lib" + libraryName ) && name.endsWith( ".a" );
                 }
                 else
                 {
                     return name.startsWith(
-                            "lib" + project.getArtifactId() ) && name.endsWith( ".so" );
+                            "lib" + libraryName ) && name.endsWith( ".so" );
                 }
             }
         } );
