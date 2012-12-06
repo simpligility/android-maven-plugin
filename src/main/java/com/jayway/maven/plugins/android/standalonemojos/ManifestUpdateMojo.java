@@ -83,8 +83,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
 
     // version encoding 
     private static final int INCREMENTAL_VERSION_POSITION = 1;
-    private static final int MINOR_VERSION_POSITION = 100;
-    private static final int MAJOR_VERSION_POSITION = 10000;
+    private static final int MINOR_VERSION_POSITION = 1000;
+    private static final int MAJOR_VERSION_POSITION = 1000000;
 
     /**
      * Configuration for the manifest-update goal.
@@ -184,11 +184,15 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
 
     /**
      * Update the <code>android:versionCode</code> attribute automatically from the project version
-     * e.g 3.0.1 will become version code 301. As described in this blog post
+     * e.g 3.2.1 will become version code 3002001. As described in this blog post
      * http://www.simpligility.com/2010/11/release-version-management-for-your-android-application/
      * but done without using resource filtering. The value is exposed via the project property
      * property <code>android.manifest.versionCodeUpdateFromVersion</code> and the resulting value
      * as <code>android.manifest.versionCode</code>.
+     * For the purpose of generating the versionCode, if a version element is missing it is presumed to be 0.
+     * The maximum values for the version increment and version minor values are 999,
+     * the version major should be no larger than 2000.  Any other suffixes do not
+     * participate in the version code generation.
      *
      * @parameter expression="${android.manifest.versionCodeUpdateFromVersion}" default-value="false"
      */
