@@ -710,8 +710,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
             getLog().info( "android.device parameter set to " + device );
         }
 
-        boolean deviceFound = false;
-        for ( IDevice idevice : devices )
+        ArrayList<DoThread> doThreads = new ArrayList<DoThread>();
+        for ( final IDevice idevice : devices )
         {
             if ( shouldRunOnAllDevices )
             {
@@ -720,14 +720,54 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
             }
             if ( shouldRunOnAllDevices || shouldDoWithThisDevice( idevice ) )
             {
-                deviceFound = true;
-                deviceCallback.doWithDevice( idevice );
+                DoThread deviceDoThread = new DoThread() {
+                    public void runDo() throws MojoFailureException, MojoExecutionException
+                    {
+                        deviceCallback.doWithDevice( idevice );
+                    }
+                };
+                doThreads.add( deviceDoThread );
+                deviceDoThread.start();
             }
         }
 
-        if ( ! shouldRunOnAllDevices && ! deviceFound )
+        joinAllThreads( doThreads );
+        throwAnyDoThreadErrors( doThreads );
+
+        if ( ! shouldRunOnAllDevices && doThreads.isEmpty() )
         {
             throw new MojoExecutionException( "No device found for android.device=" + device );
+        }
+    }
+
+    private void joinAllThreads( ArrayList<DoThread> doThreads )
+    {
+        for ( Thread deviceDoThread : doThreads )
+        {
+            try
+            {
+                deviceDoThread.join();
+            }
+            catch ( InterruptedException e )
+            {
+                new MojoExecutionException( "Thread#join error for device: " + device );
+            }
+        }
+    }
+
+    private void throwAnyDoThreadErrors( ArrayList<DoThread> doThreads ) throws MojoExecutionException,
+            MojoFailureException
+    {
+        for ( DoThread deviceDoThread : doThreads )
+        {
+            if ( deviceDoThread.failure != null )
+            {
+                throw deviceDoThread.failure;
+            }
+            if ( deviceDoThread.execution != null )
+            {
+                throw deviceDoThread.execution;
+            }
         }
     }
 
@@ -1177,5 +1217,29 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         }
 
         return overlayDirectories;
+    }
+
+    private abstract class DoThread extends Thread
+    {
+        private MojoFailureException failure;
+        private MojoExecutionException execution;
+
+        public final void run()
+        {
+            try
+            {
+                runDo();
+            }
+            catch ( MojoFailureException e )
+            {
+                failure = e;
+            }
+            catch ( MojoExecutionException e )
+            {
+                execution = e;
+            }
+        }
+
+        protected abstract void runDo() throws MojoFailureException, MojoExecutionException;
     }
 }
