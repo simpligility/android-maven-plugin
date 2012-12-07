@@ -1148,7 +1148,12 @@ public class ApkMojo extends AbstractAndroidMojo
 
         if ( !release )
         {
+            getLog().info( "Enabling debug build for apk." );
             commands.add( "--debug-mode" );
+        }
+        else 
+        {
+            getLog().info( "Enabling release build for apk." );
         }
 
         getLog().info( getAndroidSdk().getPathForTool( "aapt" ) + " " + commands.toString() );
