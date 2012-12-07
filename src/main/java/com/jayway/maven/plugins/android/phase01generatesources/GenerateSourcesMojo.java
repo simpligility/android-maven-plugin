@@ -70,16 +70,16 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * </p>
      * 
      * <p>
-     * <b>IMPORTANT:</b> The resource plugin needs to be disabled for the
+     * <b>IMPORTANT:</b> You need to use resource filtering to copy the
+     * manifest file to the build directory before merging, and configure 
+     * <code>androidManifestFile</code> to use the manifest in the build 
+     * directory. Otherwise it will override your original manifest file.
+     * </p>
+     * <p>
+     * It is also important that the resource plugin is disabled for the
      * <code>process-resources</code> phase, so the "default-resources"
      * execution must be added. Without this the non-merged manifest will get
      * re-copied to the build directory.
-     * </p>
-     * 
-     * <p>
-     * The <code>androidManifestFile</code> should also be configured to pull
-     * from the build directory so that later phases will pull the merged
-     * manifest file.
      * </p>
      * <p>
      * Example POM Setup:
@@ -120,25 +120,31 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      *         ...
      *     &lt;/plugins&gt;
      *     ...
+     *     &lt;resources&gt;
+     *         &lt;resource&gt;
+     *             &lt;targetPath&gt;${project.build.directory}&lt;/targetPath&gt;
+     *             &lt;filtering&gt;true&lt;/filtering&gt;
+     *             &lt;directory&gt;${basedir}&lt;/directory&gt;
+     *             &lt;includes&gt;
+     *                 &lt;include&gt;AndroidManifest.xml&lt;/include&gt;
+     *             &lt;/includes&gt;
+     *         &lt;/resource&gt;
+     *     &lt;/resources&gt;
+     *     ...
      * &lt;/build&gt;
      * </pre>
      * <p>
-     * You can filter the pre-merged APK manifest. One important note about Eclipse, Eclipse will
+     * One important note about Eclipse, Eclipse will
      * replace the merged manifest with a filtered pre-merged version when the project is refreshed.
      * If you want to review the filtered merged version then you will need to open it outside Eclipse
      * without refreshing the project in Eclipse. 
      * </p>
+     * <p>
+     * For the same reason in IntelliJ IDEA, you need to configure the Android Facet with R.java to
+     * "Generate by IDE" instead of "Run 'process-sources' Maven task before Make". You also need
+     * to configure it to use AndroidManifest.xml from the build (target) directory.
+     * </p>
      * <pre>
-     * &lt;resources&gt;
-     *     &lt;resource&gt;
-     *         &lt;targetPath&gt;${project.build.directory}&lt;/targetPath&gt;
-     *         &lt;filtering&gt;true&lt;/filtering&gt;
-     *         &lt;directory&gt;${basedir}&lt;/directory&gt;
-     *         &lt;includes&gt;
-     *             &lt;include&gt;AndroidManifest.xml&lt;/include&gt;
-     *         &lt;/includes&gt;
-     *     &lt;/resource&gt;
-     * &lt;/resources&gt;
      * </pre>
      * 
      * @parameter expression="${android.mergeManifests}" default-value="false"
