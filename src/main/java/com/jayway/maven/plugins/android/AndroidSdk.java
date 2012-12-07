@@ -370,12 +370,10 @@ public class AndroidSdk
             {
                 String versionString = properties.getProperty( SDK_TOOLS_REVISION_PROPERTY );
                 String majorVersion;
-                if ( versionString.contains( "." ) )
-                {
-                    majorVersion = versionString.substring( 0, versionString.indexOf( "." ) );
-                }
-                else
-                {
+                if ( versionString.matches( ".*[\\.| ].*" ) ) {
+                    String[] versions = versionString.split( "[\\.| ]" );
+                    majorVersion = versions[ 0 ];
+                } else {
                     majorVersion = versionString;
                 }
                 sdkMajorVersion = Integer.parseInt( majorVersion );
