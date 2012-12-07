@@ -37,6 +37,21 @@ public class Manifest
     protected Boolean versionCodeUpdateFromVersion;
 
     /**
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestApplicationIcon}.
+     */
+    protected String applicationIcon;
+
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestApplicationLabel}.
+     */
+    protected String applicationLabel;    
+    
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestApplicationTheme}.
+     */
+    protected String applicationTheme;    
+    
+    /**
      * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestSharedUserId}.
      */
     protected String sharedUserId;
@@ -85,6 +100,21 @@ public class Manifest
     public Boolean getVersionCodeUpdateFromVersion()
     {
         return versionCodeUpdateFromVersion;
+    }
+
+    public String getApplicationIcon() 
+    {
+    return applicationIcon; 
+    }
+    
+    public String getApplicationLabel() 
+    {
+        return applicationLabel;
+    }
+
+    public String getApplicationTheme() 
+    {
+        return applicationTheme;
     }
 
     public String getSharedUserId()

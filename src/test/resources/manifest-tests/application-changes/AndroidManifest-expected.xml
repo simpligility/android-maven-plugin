@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="42.1-SNAPSHOT" package="com.jayway.maven.plugins.android.tests">
+  <application android:icon="@drawable/really_cool_icon" android:label="@string/testLabel" android:name="TestApplication" android:theme="@style/Theme.GDCapitec">
+    <activity android:label="@string/basic_label" android:name=".BasicActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity>
+  </application>
+</manifest>

@@ -1,14 +1,14 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojoTestCase;
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Assert;
-import org.junit.Test;
 
-import java.io.File;
-import java.io.IOException;
+import com.jayway.maven.plugins.android.AbstractAndroidMojoTestCase;
 
 public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<ManifestUpdateMojo> {
     @Override
@@ -16,6 +16,14 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
         return "manifest-update";
     }
 
+    public void testAndroidApplicationChanges() throws Exception {
+        ManifestUpdateMojo mojo = createMojo("manifest-tests/application-changes");
+        mojo.execute();
+        File dir = getProjectDir(mojo);
+        File manifestFile = new File(dir, "AndroidManifest.xml");
+        assertExpectedAndroidManifest(manifestFile, dir);
+    }    
+    
     public void testBasicAndroidProjectVersion() throws Exception {
         ManifestUpdateMojo mojo = createMojo("manifest-tests/basic-android-project");
         mojo.execute();
@@ -120,7 +128,6 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
         assertExpectedAndroidManifest(manifestFile, dir);
     }
 
-    // @Test
     public void DISABLED_testCompatibleScreensUpdate() throws Exception {
         ManifestUpdateMojo mojo = createMojo("manifest-tests/compatible-screens-android-project");
         mojo.execute();
@@ -134,7 +141,6 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
         assertExpectedAndroidManifest(manifestFile, dir);
     }
 
-    @Test
     public void testProviderAuthoritiesUpdate() throws Exception {
         ManifestUpdateMojo mojo = createMojo("manifest-tests/provider-authorities-project");
         mojo.execute();
