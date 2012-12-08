@@ -239,8 +239,22 @@ public class RunMojo extends AbstractAndroidMojo
                 LauncherInfo launcherInfo;
 
                 launcherInfo = new LauncherInfo();
-                launcherInfo.activity = activities.item( 0 ).getAttributes().getNamedItem( "android:name" )
+                String activityName = activities.item( 0 ).getAttributes().getNamedItem( "android:name" )
                         .getNodeValue();
+
+                if ( ! activityName.contains( "." ) )
+                {
+                    activityName = "." + activityName;
+                }
+
+                if ( activityName.startsWith( "." ) )
+                {
+                    String packageName = document.getElementsByTagName( "manifest" ).item( 0 ).getAttributes()
+                            .getNamedItem( "package" ).getNodeValue();
+                    activityName = packageName + activityName;
+                }
+
+                launcherInfo.activity = activityName;
 
                 launcherInfo.packageName = renameManifestPackage != null
                     ? renameManifestPackage
