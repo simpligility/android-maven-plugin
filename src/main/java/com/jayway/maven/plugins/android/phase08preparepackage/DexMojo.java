@@ -234,7 +234,7 @@ public class DexMojo extends AbstractAndroidMojo
       {
         List<String> commands = dexDefaultCommands();
 
-        File predexJar = new File( inputFile.getAbsolutePath() + ".dex" );
+        File predexJar = new File( inputFile.getAbsolutePath().replaceFirst( "jar$", "dex.jar" ) );
         commands.add( "--output=" + predexJar.getAbsolutePath() );
         commands.add( inputFile.getAbsolutePath() );
         filtered.add( predexJar );
