@@ -344,7 +344,7 @@
                                 <linkXRef>true</linkXRef>
                                 <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
                                 <minimumTokens>100</minimumTokens>
-                                <targetJdk>1.5</targetJdk>
+                                <targetJdk>1.6</targetJdk>
                             </configuration>
                         </plugin>
                         <plugin>
