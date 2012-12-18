@@ -320,6 +320,19 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <!--  managed down to 1.2 since 1.3 is not yet in central and that breaks CI server -->
+                <version>1.2</version>
+                <extensions>true</extensions>
+                <inherited>false</inherited>
+                <configuration>
+                    <serverId>oss.sonatype.org-jayway-staging</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <stagingProfileId>26a4c760b261ca</stagingProfileId>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
