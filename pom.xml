@@ -261,12 +261,6 @@
                     <artifactId>maven-plugin-plugin</artifactId>
                     <version>${maven-plugin-plugin.version}</version>
                 </plugin>
-                <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <!--  managed down to 1.2 since 1.3 is not yet in central and that breaks CI server -->
-                    <version>1.2</version>
-                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
