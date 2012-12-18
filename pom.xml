@@ -53,6 +53,7 @@
         <maven.api.version>3.0.3</maven.api.version>
         <easymock.version>3.1</easymock.version>
         <powermock.version>1.5</powermock.version>
+        <aether.version>1.13.1</aether.version>
     </properties>
     <scm>
         <url>http://github.com/jayway/maven-android-plugin/tree/${scm.branch}</url>
@@ -145,13 +146,13 @@
         <dependency>
           <groupId>org.codehaus.plexus</groupId>
           <artifactId>plexus-archiver</artifactId>
-          <version>2.0.1</version>
+          <version>2.2</version>
         </dependency>
 
         <dependency>
           <artifactId>plexus-utils</artifactId>
           <groupId>org.codehaus.plexus</groupId>
-          <version>3.0</version>
+          <version>3.0.10</version>
         </dependency>
 
         <dependency>
@@ -224,14 +225,14 @@
             <!-- required in all cases -->
             <groupId>org.sonatype.aether</groupId>
             <artifactId>aether-api</artifactId>
-            <version>1.12</version>
+            <version>${aether.version}</version>
         </dependency>
 
         <dependency>
             <!-- might be superfluous depending on your use case -->
             <groupId>org.sonatype.aether</groupId>
             <artifactId>aether-util</artifactId>
-            <version>1.12</version>
+            <version>${aether.version}</version>
         </dependency>
 
         <dependency>
