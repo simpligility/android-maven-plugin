@@ -22,6 +22,8 @@ import com.android.ddmlib.InstallException;
 import com.jayway.maven.plugins.android.common.AetherHelper;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.DeviceHelper;
+import com.jayway.maven.plugins.android.config.ConfigPojo;
+import com.jayway.maven.plugins.android.configuration.Ndk;
 import com.jayway.maven.plugins.android.configuration.Sdk;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.JXPathNotFoundException;
@@ -78,6 +80,30 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * The <code>ANDROID_NDK_HOME</code> environment variable name.
      */
     public static final String ENV_ANDROID_NDK_HOME = "ANDROID_NDK_HOME";
+    
+    /**
+     * <p>The Android NDK to use.</p>
+     * <p>Looks like this:</p>
+     * <pre>
+     * &lt;ndk&gt;
+     *     &lt;path&gt;/opt/android-ndk-r4&lt;/path&gt;
+     * &lt;/ndk&gt;
+     * </pre>
+     * <p>The <code>&lt;path&gt;</code> parameter is optional. The default is the setting of the ANDROID_NDK_HOME
+     * environment variable. The parameter can be used to override this setting with a different environment variable
+     * like this:</p>
+     * <pre>
+     * &lt;ndk&gt;
+     *     &lt;path&gt;${env.ANDROID_NDK_HOME}&lt;/path&gt;
+     * &lt;/ndk&gt;
+     * </pre>
+     * <p>or just with a hardcoded absolute path. The parameters can also be configured from command-line with parameter
+     * <code>-Dandroid.ndk.path</code>.</p>
+     *
+     * @parameter
+     */
+    @ConfigPojo( prefix = "ndk" )
+    private Ndk ndk;
 
     /**
      * The maven project.
@@ -989,8 +1015,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * <p>Returns the Android SDK to use.</p>
      * <p/>
-     * <p>Current implementation looks for <code>&lt;sdk&gt;&lt;path&gt;</code> configuration in pom, then System
-     * property <code>android.sdk.path</code>, then environment variable <code>ANDROID_HOME</code>.
+     * <p>Current implementation looks for System property <code>android.sdk.path</code>, then
+     * <code>&lt;sdk&gt;&lt;path&gt;</code> configuration in pom, then environment variable <code>ANDROID_HOME</code>.
      * <p/>
      * <p>This is where we collect all logic for how to lookup where it is, and which one to choose. The lookup is
      * based on available parameters. This method should be the only one you should need to look at to understand how
@@ -1119,12 +1145,16 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected AndroidNdk getAndroidNdk() throws MojoExecutionException
     {
-        File chosenNdkPath;
+        File chosenNdkPath = null;
         // There is no <ndk> tag in the pom.
         if ( ndkPath != null )
         {
             // -Dandroid.ndk.path is set on command line, or via <properties><ndk.path>...
             chosenNdkPath = ndkPath;
+        }
+        else if ( ndk != null && ndk.getPath() != null )
+        {
+            chosenNdkPath = ndk.getPath();
         }
         else
         {

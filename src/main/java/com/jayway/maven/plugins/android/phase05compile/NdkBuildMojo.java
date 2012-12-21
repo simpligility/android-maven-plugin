@@ -19,10 +19,8 @@ import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.common.AetherHelper;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.NativeHelper;
-import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.HeaderFilesDirective;
-import com.jayway.maven.plugins.android.configuration.Ndk;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.archiver.MavenArchiver;
@@ -61,30 +59,6 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      * Name of the subdirectory of 'target' where we put the generated makefile
      */
     public static final String NDK_MAKFILE_DIRECTORY = "ndk-build";
-    
-    /**
-     * <p>The Android NDK to use.</p>
-     * <p>Looks like this:</p>
-     * <pre>
-     * &lt;ndk&gt;
-     *     &lt;path&gt;/opt/android-ndk-r4&lt;/path&gt;
-     * &lt;/ndk&gt;
-     * </pre>
-     * <p>The <code>&lt;path&gt;</code> parameter is optional. The default is the setting of the ANDROID_NDK_HOME
-     * environment variable. The parameter can be used to override this setting with a different environment variable
-     * like this:</p>
-     * <pre>
-     * &lt;ndk&gt;
-     *     &lt;path&gt;${env.ANDROID_NDK_HOME}&lt;/path&gt;
-     * &lt;/ndk&gt;
-     * </pre>
-     * <p>or just with a hardcoded absolute path. The parameters can also be configured from command-line with parameter
-     * <code>-Dandroid.ndk.path</code>.</p>
-     *
-     * @parameter
-     */
-    @ConfigPojo( prefix = "ndk" )
-    private Ndk ndk;
 
     /**
      * Allows for overriding the default ndk-build executable.
