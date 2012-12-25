@@ -51,6 +51,9 @@ public class ProguardMojo extends AbstractAndroidMojo
      * &lt;proguard&gt;
      *    &lt;skip&gt;true|false&lt;/skip&gt;
      *    &lt;config&gt;proguard.cfg&lt;/config&gt;
+     *    &lt;configs&gt;
+     *      &lt;config&gt;${env.ANDROID_HOME}/tools/proguard/proguard-android.txt&lt;/config&gt;
+     *    &lt;/configs&gt;
      *    &lt;proguardJarPath&gt;someAbsolutePathToProguardJar&lt;/proguardJarPath&gt;
      *    &lt;filterMavenDescriptor&gt;true|false&lt;/filterMavenDescriptor&gt;
      *    &lt;filterManifest&gt;true|false&lt;/filterManifest&gt;
@@ -94,6 +97,17 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     @PullParameter( defaultValue = "proguard.cfg" )
     private String parsedConfig;
+
+    /**
+     * Additional ProGuard configuration files (relative to project root).
+     *
+     * @parameter expression="${android.proguard.configs}"
+     * @optional
+     */
+    private String[] proguardConfigs;
+
+    @PullParameter( defaultValueGetterMethod = "getDefaultProguardConfigs" )
+    private String[] parsedConfigs;
 
     /**
      * Path to the proguard jar and therefore version of proguard to be used. By default this will load the jar from
@@ -299,6 +313,11 @@ public class ProguardMojo extends AbstractAndroidMojo
         commands.add( parsedProguardJarPath );
 
         commands.add( "@" + parsedConfig );
+
+        for ( String config : parsedConfigs )
+        {
+            commands.add( "@" + config );
+        }
 
         collectInputFiles( commands );
 
@@ -585,6 +604,17 @@ public class ProguardMojo extends AbstractAndroidMojo
     private String[] getDefaultJvmArguments()
     {
         return new String[]{ "-Xmx512M" };
+    }
+
+    /**
+     * Get the default ProGuard config files.
+     *
+     * @return
+     * @see #parsedConfigs
+     */
+    private String[] getDefaultProguardConfigs()
+    {
+        return new String[0];
     }
 
 }
