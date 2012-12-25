@@ -18,6 +18,7 @@ public class Proguard
      * Path to the ProGuard configuration file (relative to project root).
      */
     private String config;
+    private String[] configs;
     private String proguardJarPath;
     private String outputDirectory;
     private String[] jvmArguments;
@@ -33,6 +34,11 @@ public class Proguard
     public String getConfig()
     {
         return config;
+    }
+
+    public String[] getConfigs()
+    {
+        return configs;
     }
 
     public String getProguardJarPath()
