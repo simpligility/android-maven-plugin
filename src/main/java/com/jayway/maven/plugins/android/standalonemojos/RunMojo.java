@@ -16,8 +16,8 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
 import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
-import com.android.ddmlib.NullOutputReceiver;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
@@ -239,8 +239,22 @@ public class RunMojo extends AbstractAndroidMojo
                 LauncherInfo launcherInfo;
 
                 launcherInfo = new LauncherInfo();
-                launcherInfo.activity = activities.item( 0 ).getAttributes().getNamedItem( "android:name" )
+                String activityName = activities.item( 0 ).getAttributes().getNamedItem( "android:name" )
                         .getNodeValue();
+
+                if ( ! activityName.contains( "." ) )
+                {
+                    activityName = "." + activityName;
+                }
+
+                if ( activityName.startsWith( "." ) )
+                {
+                    String packageName = document.getElementsByTagName( "manifest" ).item( 0 ).getAttributes()
+                            .getNamedItem( "package" ).getNodeValue();
+                    activityName = packageName + activityName;
+                }
+
+                launcherInfo.activity = activityName;
 
                 launcherInfo.packageName = renameManifestPackage != null
                     ? renameManifestPackage
@@ -283,7 +297,13 @@ public class RunMojo extends AbstractAndroidMojo
                 {
                     getLog().info( "Attempting to start " + info.packageName + "/" + info.activity + " on device "
                             + device.getSerialNumber() + " (avdName = " + device.getAvdName() + ")" );
-                    device.executeShellCommand( command, new NullOutputReceiver() );
+
+                    CollectingOutputReceiver shellOutput = new CollectingOutputReceiver();
+                    device.executeShellCommand( command, shellOutput );
+                    if ( shellOutput.getOutput().contains( "Error" ) )
+                    {
+                        throw new MojoFailureException( shellOutput.getOutput() );
+                    }
                 }
                 catch ( IOException ex )
                 {

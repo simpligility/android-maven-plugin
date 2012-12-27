@@ -84,7 +84,7 @@ public class AndroidSdk
 
     private final File sdkPath;
     private final Platform platform;
-    private int toolsVersion;
+    private int sdkMajorVersion;
 
 
     private Set<Platform> availablePlatforms;
@@ -94,7 +94,7 @@ public class AndroidSdk
     {
         this.sdkPath = sdkPath;
         findAvailablePlatforms();
-        loadToolsVersion();
+        loadSDKToolsMajorVersion();
 
         if ( platformOrApiLevel == null )
         {
@@ -288,6 +288,13 @@ public class AndroidSdk
         throw new MojoExecutionException( "Can't find the SDK directory : " + sdkPath.getAbsolutePath() );
     }
 
+    /**
+     * This method returns the previously specified version.
+     * However, if none have been specified it returns the
+     * "latest" version.  This is actually broken as it
+     * performs a lexicographic sort rather than sorting the
+     * versions in proper order.
+     */
     public File getPlatform()
     {
         assertPathIsDirectory( sdkPath );
@@ -295,22 +302,23 @@ public class AndroidSdk
         final File platformsDirectory = new File( sdkPath, PLATFORMS_FOLDER_NAME );
         assertPathIsDirectory( platformsDirectory );
 
+        final File platformDirectory;
         if ( platform == null )
         {
             final File[] platformDirectories = platformsDirectory.listFiles();
             Arrays.sort( platformDirectories );
-            return platformDirectories[ platformDirectories.length - 1 ];
+            platformDirectory = platformDirectories[ platformDirectories.length - 1 ];
         }
         else
         {
-            final File platformDirectory = new File( platform.path );
-            assertPathIsDirectory( platformDirectory );
-            return platformDirectory;
+            platformDirectory = new File( platform.path );
         }
+        assertPathIsDirectory( platformDirectory );
+        return platformDirectory;
     }
 
     /**
-     * Initialize the maps matching platform and api levels form the source properties files.
+     * Initialize the maps matching platform and api levels from the source properties files.
      *
      * @throws InvalidSdkException
      */
@@ -343,7 +351,7 @@ public class AndroidSdk
     /**
      * Loads the SDK Tools version
      */
-    private void loadToolsVersion()
+    private void loadSDKToolsMajorVersion()
     {
         File propFile = new File( sdkPath, "tools/" + SOURCE_PROPERTIES_FILENAME );
         Properties properties = new Properties();
@@ -360,7 +368,18 @@ public class AndroidSdk
         {
             try
             {
-                toolsVersion = Integer.parseInt( properties.getProperty( SDK_TOOLS_REVISION_PROPERTY ) );
+                String versionString = properties.getProperty( SDK_TOOLS_REVISION_PROPERTY );
+                String majorVersion;
+                if ( versionString.matches( ".*[\\.| ].*" ) ) 
+                {
+                    String[] versions = versionString.split( "[\\.| ]" );
+                    majorVersion = versions[ 0 ];
+                } 
+                else 
+                {
+                    majorVersion = versionString;
+                }
+                sdkMajorVersion = Integer.parseInt( majorVersion );
             }
             catch ( NumberFormatException e )
             {
@@ -397,9 +416,9 @@ public class AndroidSdk
      * Returns the version of the SDK Tools.
      * @return
      */
-    public int getToolsVersion()
+    public int getSdkMajorVersion()
     {
-        return toolsVersion;
+        return sdkMajorVersion;
     }
 
 }

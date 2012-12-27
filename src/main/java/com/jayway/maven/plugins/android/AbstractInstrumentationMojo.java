@@ -336,8 +336,11 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
                 if ( packagesExists )
                 {
-                    remoteAndroidTestRunner.setTestPackageName( packagesList );
-                    getLog().info( "Running tests for specified test packages: " + packagesList );
+                    for ( String str : packagesList.split( "," ) )
+                    {
+                        remoteAndroidTestRunner.setTestPackageName( str );
+                        getLog().info( "Running tests for specified test package: " + str );
+                    }
                 }
 
                 if ( classesExists )
@@ -795,8 +798,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
         public void testStarted( TestIdentifier testIdentifier )
         {
-            getLog().info( INDENT + INDENT + "Start: " + testIdentifier.toString() );
             testRunCount++;
+            getLog().info( String.format( "%1$s%1$sStart [%2$d/%3$d]: %4$s", INDENT, testRunCount, testCount,
+                    testIdentifier.toString() ) );
 
             if ( parsedCreateReport )
             {
@@ -860,7 +864,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
         public void testEnded( TestIdentifier testIdentifier, Map<String, String> testMetrics )
         {
-            getLog().info( INDENT + INDENT + "End: " + testIdentifier.toString() );
+            getLog().info( String.format( "%1$s%1$sEnd [%2$d/%3$d]: %4$s", INDENT, testRunCount, testCount,
+                    testIdentifier.toString() ) );
             logMetrics( testMetrics );
 
             if ( parsedCreateReport )
