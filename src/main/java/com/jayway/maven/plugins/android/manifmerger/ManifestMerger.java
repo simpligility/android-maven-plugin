@@ -11,6 +11,7 @@ import org.apache.maven.plugin.logging.Log;
  * delegate the methods
  * 
  * @author tombollwitt
+ * @author Manfred Moser <manfred@simpligility.com>
  */
 public class ManifestMerger
 {
@@ -24,12 +25,12 @@ public class ManifestMerger
      * required.
      * 
      * @param log the Mojo Logger
-     * @param sdkLibs the File pointing on {@code sdklib.jar}
-     * @param mergerLib the File pointing on {@code manifmerger.jar}
+     * @param sdkPath the path to the Android SDK
+     * @param sdkMajorVersion the major mergerLib the File pointing on {@code manifmerger.jar}
      * @throws MojoExecutionException if the ManifestMerger class cannot be
      *         loaded
      */
-    public void initialize( Log log, File sdkPath, int toolsVersion ) throws MojoExecutionException
+    public void initialize( Log log, File sdkPath, int sdkMajorVersion ) throws MojoExecutionException
     {
         if ( merger != null )
         {
@@ -37,7 +38,7 @@ public class ManifestMerger
             return;
         }
 
-        merger = MergerInitializerFactory.getInitializer( log, toolsVersion, sdkPath );
+        merger = MergerInitializerFactory.getInitializer( log, sdkMajorVersion, sdkPath );
 
     }
 
@@ -45,9 +46,9 @@ public class ManifestMerger
      * Creates a new ManifestMerger. The class must be initialized before
      * calling this constructor.
      */
-    public ManifestMerger( Log log, File sdkPath, int toolsVersion ) throws MojoExecutionException
+    public ManifestMerger( Log log, File sdkPath, int sdkMajorVersion ) throws MojoExecutionException
     {
-        initialize( log, sdkPath, toolsVersion );
+        initialize( log, sdkPath, sdkMajorVersion );
     }
 
     /**

@@ -55,6 +55,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -257,6 +258,18 @@ public class ApkMojo extends AbstractAndroidMojo
     private String ndkFinalLibraryName;
 
     /**
+     * Specify a list of patterns that are matched against the names of jar file
+     * dependencies. Matching jar files will not have their resources added to the
+     * resulting APK.
+     * 
+     * The patterns are standard Java regexes.
+     * 
+     * @parameter
+     */
+    private String[] excludeJarResources;
+    private Pattern[] excludeJarResourcesPatterns;
+    
+    /**
      * Embedded configuration of this mojo.
      *
      * @parameter
@@ -286,6 +299,19 @@ public class ApkMojo extends AbstractAndroidMojo
 
         generateIntermediateApk();
 
+        // Compile resource exclusion patterns, if any
+        if ( excludeJarResources != null && excludeJarResources.length > 0 ) 
+        {
+          getLog().debug( "Compiling " + excludeJarResources.length + " patterns" );
+          
+          excludeJarResourcesPatterns = new Pattern[excludeJarResources.length];
+          
+          for ( int index = 0; index < excludeJarResources.length; ++index ) 
+          {
+            excludeJarResourcesPatterns[index] = Pattern.compile( excludeJarResources[index] );
+          }
+        }
+        
         // Initialize apk build configuration
         File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + "." + APK );
         final boolean signWithDebugKeyStore = getAndroidSigner().isSignWithDebugKeyStore();
@@ -566,6 +592,33 @@ public class ApkMojo extends AbstractAndroidMojo
 
         for ( File jarFile : jarFiles )
         {
+            boolean excluded = false;
+          
+            if ( excludeJarResourcesPatterns != null )
+            {
+                final String name = jarFile.getName();
+                getLog().debug( "Checking " + name + " against patterns" );
+                for ( Pattern pattern : excludeJarResourcesPatterns )
+                {
+                    final Matcher matcher = pattern.matcher( name );
+                    if ( matcher.matches() ) 
+                    {
+                        getLog().debug( "Jar " + name + " excluded by pattern " + pattern );
+                        excluded = true;
+                        break;
+                    } 
+                    else 
+                    {
+                        getLog().debug( "Jar " + name + " not excluded by pattern " + pattern );
+                    }
+                }
+            }
+
+            if ( excluded )
+            {
+                continue;
+            }
+            
             if ( jarFile.isDirectory() )
             {
                 String[] filenames = jarFile.list( new FilenameFilter()
@@ -1091,6 +1144,16 @@ public class ApkMojo extends AbstractAndroidMojo
         for ( String aaptExtraArg : aaptExtraArgs )
         {
             commands.add( aaptExtraArg );
+        }
+
+        if ( !release )
+        {
+            getLog().info( "Enabling debug build for apk." );
+            commands.add( "--debug-mode" );
+        }
+        else 
+        {
+            getLog().info( "Enabling release build for apk." );
         }
 
         getLog().info( getAndroidSdk().getPathForTool( "aapt" ) + " " + commands.toString() );

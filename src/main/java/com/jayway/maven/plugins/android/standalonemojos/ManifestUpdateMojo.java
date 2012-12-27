@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Updates various version attributes present in the <code>AndroidManifest.xml</code> file.
@@ -70,10 +71,24 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private static final String ATTR_LARGEST_WIDTH_LIMIT_DP = "android:largestWidthLimitDp";
     private static final String ATTR_COMPATIBLE_WIDTH_LIMIT_DP = "android:compatibleWidthLimitDp";
 
+    // provider attributes
+    private static final String ATTR_NAME = "android:name";
+    private static final String ATTR_AUTHORITIES = "android:authorities";
+    // application attributes
+    private static final String ATTR_APPLICATION_ICON = "android:icon";
+    private static final String ATTR_APPLICATION_LABEL = "android:label";
+    private static final String ATTR_APPLICATION_THEME = "android:theme";
+    
     private static final String ELEM_APPLICATION = "application";
+    private static final String ELEM_PROVIDER = "provider";
     private static final String ELEM_SUPPORTS_SCREENS = "supports-screens";
     private static final String ELEM_COMPATIBLE_SCREENS = "compatible-screens";
     private static final String ELEM_SCREEN = "screen";
+
+    // version encoding 
+    private static final int INCREMENTAL_VERSION_POSITION = 1;
+    private static final int MINOR_VERSION_POSITION = 1000;
+    private static final int MAJOR_VERSION_POSITION = 1000000;
 
     /**
      * Configuration for the manifest-update goal.
@@ -172,12 +187,40 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private Boolean manifestVersionCodeAutoIncrement = false;
 
     /**
+     * Update the <code>android:icon</code> attribute with the specified parameter. Exposed via
+     * the project property <code>android.manifest.appIcon</code>.
+     * 
+     * @parameter expression="${android.manifest.applicationIcon}" 
+     */
+    private String manifestApplicationIcon;
+
+    /**
+     * Update the <code>android:label</code> attribute with the specified parameter. Exposed via
+     * the project property <code>android.manifest.appLabel</code>.
+     * 
+     * @parameter expression="${android.manifest.applicationLabel}" 
+     */
+    private String manifestApplicationLabel;    
+
+    /**
+     * Update the <code>android:theme</code> attribute with the specified parameter. Exposed via
+     * the project property <code>android.manifest.applicationTheme</code>.
+     * 
+     * @parameter expression="${android.manifest.applicationTheme}" 
+     */
+    private String manifestApplicationTheme;    
+    
+    /**
      * Update the <code>android:versionCode</code> attribute automatically from the project version
-     * e.g 3.0.1 will become version code 301. As described in this blog post
+     * e.g 3.2.1 will become version code 3002001. As described in this blog post
      * http://www.simpligility.com/2010/11/release-version-management-for-your-android-application/
      * but done without using resource filtering. The value is exposed via the project property
      * property <code>android.manifest.versionCodeUpdateFromVersion</code> and the resulting value
      * as <code>android.manifest.versionCode</code>.
+     * For the purpose of generating the versionCode, if a version element is missing it is presumed to be 0.
+     * The maximum values for the version increment and version minor values are 999,
+     * the version major should be no larger than 2000.  Any other suffixes do not
+     * participate in the version code generation.
      *
      * @parameter expression="${android.manifest.versionCodeUpdateFromVersion}" default-value="false"
      */
@@ -200,6 +243,14 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     protected Boolean manifestDebuggable;
 
     /**
+     * For a given provider (named by <code>android:name</code> update the <code>android:authorities</code>
+     * attribute for the provider. Exposed via the project property <code>android.manifest.providerAuthorities</code>.
+     *
+     * @parameter expression="${android.manifest.providerAuthorities}"
+     */
+    protected Properties manifestProviderAuthorities;
+
+    /**
      *
      */
     protected SupportsScreens manifestSupportsScreens;
@@ -212,11 +263,15 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private String parsedVersionName;
     private Integer parsedVersionCode;
     private boolean parsedVersionCodeAutoIncrement;
+    private String parsedApplicationIcon;
+    private String parsedApplicationLabel;
+    private String parsedApplicationTheme;
     private Boolean parsedVersionCodeUpdateFromVersion;
     private String parsedSharedUserId;
     private Boolean parsedDebuggable;
     private SupportsScreens parsedSupportsScreens;
     private List<CompatibleScreen> parsedCompatibleScreens;
+    private Properties parsedProviderAuthorities;
 
     /**
      *
@@ -242,8 +297,14 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         getLog().debug( "    versionCode=" + parsedVersionCode );
         getLog().debug( "    versionCodeAutoIncrement=" + parsedVersionCodeAutoIncrement );
         getLog().debug( "    versionCodeUpdateFromVersion=" + parsedVersionCodeUpdateFromVersion );
+        
+        getLog().debug( "    applicationIcon=" + parsedApplicationIcon );
+        getLog().debug( "    applicationLabel=" + parsedApplicationLabel );
+        getLog().debug( "    applicationTheme=" + parsedApplicationTheme );
+        
         getLog().debug( "    sharedUserId=" + parsedSharedUserId );
         getLog().debug( "    debuggable=" + parsedDebuggable );
+        getLog().debug( "    providerAuthorities: " + parsedProviderAuthorities );
         getLog().debug( "    supports-screens: " + ( parsedSupportsScreens == null ? "not set" : "set" ) );
         getLog().debug( "    compatible-screens: " + ( parsedCompatibleScreens == null ? "not set" : "set" ) );
 
@@ -311,6 +372,35 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             {
                 parsedVersionCodeUpdateFromVersion = manifestVersionCodeUpdateFromVersion;
             }
+            
+            if ( StringUtils.isNotEmpty( manifest.getApplicationIcon() ) ) 
+            {
+                parsedApplicationIcon = manifest.getApplicationIcon();
+            }
+            else 
+            {
+                parsedApplicationIcon = manifestApplicationIcon;
+            }
+            
+            if ( StringUtils.isNotEmpty( manifest.getApplicationLabel() ) )  
+            {
+                parsedApplicationLabel = manifest.getApplicationLabel();
+            }
+            else 
+            {
+                parsedApplicationLabel = manifestApplicationLabel;
+            }
+            
+            if ( StringUtils.isNotEmpty( manifest.getApplicationTheme() ) )
+            {
+                parsedApplicationTheme = manifest.getApplicationTheme();
+            }
+            else 
+            {
+                parsedApplicationTheme = manifestApplicationTheme;
+            }
+
+            
             if ( StringUtils.isNotEmpty( manifest.getSharedUserId() ) )
             {
                 parsedSharedUserId = manifest.getSharedUserId();
@@ -343,6 +433,14 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             {
                 parsedCompatibleScreens = manifestCompatibleScreens;
             }
+            if ( manifest.getProviderAuthorities() != null )
+            {
+                parsedProviderAuthorities = manifest.getProviderAuthorities();
+            }
+            else
+            {
+                parsedProviderAuthorities = manifestProviderAuthorities;
+            }
         }
         else
         {
@@ -350,10 +448,14 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             parsedVersionCode = manifestVersionCode;
             parsedVersionCodeAutoIncrement = manifestVersionCodeAutoIncrement;
             parsedVersionCodeUpdateFromVersion = manifestVersionCodeUpdateFromVersion;
+            parsedApplicationIcon = manifestApplicationIcon;
+            parsedApplicationLabel = manifestApplicationLabel;
+            parsedApplicationTheme = manifestApplicationTheme;
             parsedSharedUserId = manifestSharedUserId;
             parsedDebuggable = manifestDebuggable;
             parsedSupportsScreens = manifestSupportsScreens;
             parsedCompatibleScreens = manifestCompatibleScreens;
+            parsedProviderAuthorities = manifestProviderAuthorities;
         }
     }
 
@@ -405,7 +507,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      * @throws MojoFailureException
      */
     public void updateManifest( File manifestFile )
-            throws IOException, ParserConfigurationException, SAXException, TransformerException, MojoFailureException
+       throws IOException, ParserConfigurationException, SAXException, TransformerException, MojoFailureException
     {
         Document doc = readManifest( manifestFile );
         Element manifestElement = doc.getDocumentElement();
@@ -415,7 +517,6 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         {  // default to ${project.version}
             parsedVersionName = project.getVersion();
         }
-
         Attr versionNameAttrib = manifestElement.getAttributeNode( ATTR_VERSION_NAME );
         if ( versionNameAttrib == null || ! StringUtils.equals( parsedVersionName, versionNameAttrib.getValue() ) )
         {
@@ -423,7 +524,6 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             manifestElement.setAttribute( ATTR_VERSION_NAME, parsedVersionName );
             dirty = true;
         }
-
         if ( ( parsedVersionCodeAutoIncrement && parsedVersionCode != null )
                 || ( parsedVersionCodeUpdateFromVersion && parsedVersionCode != null )
                 || ( parsedVersionCodeAutoIncrement && parsedVersionCodeUpdateFromVersion ) )
@@ -432,20 +532,17 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
                     + "are mutual exclusive. They cannot be specified at the same time. Please specify either "
                     + "versionCodeAutoIncrement, versionCodeUpdateFromVersion or versionCode!" );
         }
-
         exportProperties();
         if ( parsedVersionCodeAutoIncrement )
         {
             performVersioCodeAutoIncrement( manifestElement );
             dirty = true;
         }
-
         if ( parsedVersionCodeUpdateFromVersion )
         {
             performVersionCodeUpdateFromVersion( manifestElement );
             dirty = true;
         }
-
         if ( parsedVersionCode != null )
         {
             Attr versionCodeAttr = manifestElement.getAttributeNode( ATTR_VERSION_CODE );
@@ -462,7 +559,29 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             }
             project.getProperties().setProperty( "android.manifest.versionCode", String.valueOf( parsedVersionCode ) );
         }
-
+        if ( !StringUtils.isEmpty( parsedApplicationIcon ) ) 
+        {
+            dirty = updateApplicationAttribute( manifestElement, ATTR_APPLICATION_ICON, parsedApplicationIcon, dirty );
+            project.getProperties()
+                .setProperty( "android.manifest.applicationIcon", String.valueOf( parsedApplicationIcon ) );
+        }
+        
+        if ( ! StringUtils.isEmpty( parsedApplicationLabel ) )
+        {
+            dirty = 
+                updateApplicationAttribute( manifestElement, ATTR_APPLICATION_LABEL, parsedApplicationLabel, dirty );
+            project.getProperties()
+                .setProperty( "android.manifest.applicationLabel", String.valueOf( parsedApplicationLabel ) );
+        }
+        
+        if ( ! StringUtils.isEmpty( parsedApplicationTheme ) )
+        {
+            dirty = 
+                updateApplicationAttribute( manifestElement, ATTR_APPLICATION_THEME, parsedApplicationTheme, dirty );
+            project.getProperties()
+                .setProperty( "android.manifest.applicationTheme", String.valueOf( parsedApplicationTheme ) );
+        }
+        
         if ( ! StringUtils.isEmpty( parsedSharedUserId ) )
         {
             Attr sharedUserIdAttrib = manifestElement.getAttributeNode( ATTR_SHARED_USER_ID );
@@ -516,6 +635,15 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             dirty = true;
         }
 
+        if ( parsedProviderAuthorities != null )
+        {
+            boolean madeDirty = updateProviderAuthorities( manifestElement );
+            if ( madeDirty )
+            {
+                dirty = true;
+            }
+        }
+
         if ( dirty )
         {
             if ( ! manifestFile.delete() )
@@ -529,6 +657,34 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         {
             getLog().info( "No changes found to write to manifest file" );
         }
+    }
+
+    private boolean updateApplicationAttribute( Element manifestElement, 
+            String attribute, String value, boolean dirty )
+    {
+        NodeList appElements = 
+                manifestElement.getElementsByTagName( ELEM_APPLICATION );
+        // Update all application nodes. Not sure whether there will ever be
+        // more than one.
+        for ( int i = 0; i < appElements.getLength(); ++i )
+        {
+            Node node = appElements.item( i );
+            getLog().info( "Testing if node " + node.getNodeName() 
+                    + " is application" );
+            if ( node.getNodeType() == Node.ELEMENT_NODE )
+            {
+                Element element = (Element) node;
+                Attr labelAttrib = element.getAttributeNode( attribute );
+                if ( labelAttrib == null 
+                        || !value.equals( labelAttrib.getValue() ) )
+                {
+                    getLog().info( "Setting " + attribute + " to " + value );
+                    element.setAttribute( attribute, String.valueOf( value ) );
+                    dirty = true;
+                }
+            }
+        }
+        return dirty;
     }
 
     /**
@@ -561,15 +717,21 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         project.getProperties().setProperty( "android.manifest.versionCode", String.valueOf( currentVersionCode ) );
     }
 
+    /**
+     * If the specified version name cannot be properly parsed then fall back to 
+     * an automatic method.
+     * If the version can be parsed then generate a version code from the
+     * version components.  In an effort to preseve uniqueness two digits
+     * are allowed for both the minor and incremental versions.
+     */
     private void performVersionCodeUpdateFromVersion( Element manifestElement )
     {
         String verString = project.getVersion();
         getLog().debug( "Generating versionCode for " + verString );
         ArtifactVersion artifactVersion = new DefaultArtifactVersion( verString );
-        // invalid version, something went wrong in parsing, do the old fall back method
         String verCode;
-        if ( artifactVersion.getMajorVersion() == 0 & artifactVersion.getMinorVersion() == 0
-             && artifactVersion.getIncrementalVersion() == 0 )
+        if ( artifactVersion.getMajorVersion() < 1 && artifactVersion.getMinorVersion() < 1
+             && artifactVersion.getIncrementalVersion() < 1 )
         {
             getLog().warn( "Problem parsing version number occurred. Using fall back to determine version code. " );
 
@@ -590,14 +752,13 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         }
         else
         {
-            verCode = Integer.toString( artifactVersion.getMajorVersion() )
-                    + Integer.toString( artifactVersion.getMinorVersion() )
-                    + Integer.toString( artifactVersion.getIncrementalVersion() );
+            verCode = Integer.toString( artifactVersion.getMajorVersion() * MAJOR_VERSION_POSITION
+                    + artifactVersion.getMinorVersion() * MINOR_VERSION_POSITION
+                    + artifactVersion.getIncrementalVersion() * INCREMENTAL_VERSION_POSITION );
         }
         getLog().info( "Setting " + ATTR_VERSION_CODE + " to " + verCode );
         manifestElement.setAttribute( ATTR_VERSION_CODE, verCode );
         project.getProperties().setProperty( "android.manifest.versionCode", String.valueOf( verCode ) );
-
     }
 
     private boolean performSupportScreenModification( Document doc, Element manifestElement )
@@ -703,4 +864,64 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             compatibleScreensElem.appendChild( screenElem );
         }
     }
+
+    private boolean updateProviderAuthorities( Element manifestElement )
+    {
+        boolean dirty = false;
+        NodeList appElems = manifestElement.getElementsByTagName( ELEM_APPLICATION );
+
+        // Update all application nodes. Not sure whether there will ever be more than one.
+        for ( int i = 0; i < appElems.getLength(); ++ i )
+        {
+            Node node = appElems.item( i );
+            if ( node.getNodeType() == Node.ELEMENT_NODE )
+            {
+                NodeList providerElems = manifestElement.getElementsByTagName( ELEM_PROVIDER );
+                for ( int j = 0; j < providerElems.getLength(); ++ j )
+                {
+                    Node providerNode = providerElems.item( j );
+                    if ( providerNode.getNodeType() == Node.ELEMENT_NODE )
+                    {
+                        Element providerElem = (Element) providerNode;
+                        Attr providerName = providerElem.getAttributeNode( ATTR_NAME );
+                        getLog().debug( "Checking provider " + providerName.getValue() );
+                        if ( shouldPerformProviderUpdate( providerName ) )
+                        {
+                            dirty = true;
+                            String name = providerName.getValue();
+                            String newAuthorities = parsedProviderAuthorities.getProperty( name );
+                            getLog().info( "Updating provider " + name + " authorities attr to " + newAuthorities );
+                            performProviderUpdate( providerElem, newAuthorities );
+                        }
+                    }
+                }
+            }
+        }
+
+        return dirty;
+    }
+
+    private boolean shouldPerformProviderUpdate( Attr providerName )
+    {
+        if ( providerName == null )
+        {
+            return false;
+        }
+
+        for ( String propName: parsedProviderAuthorities.stringPropertyNames() )
+        {
+            if ( propName.equals( providerName.getValue() ) )
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void performProviderUpdate( Element providerElem, String newAuthorities )
+    {
+        Attr providerAuthorities = providerElem.getAttributeNode( ATTR_AUTHORITIES );
+        providerAuthorities.setValue( newAuthorities );
+    }
+
 }

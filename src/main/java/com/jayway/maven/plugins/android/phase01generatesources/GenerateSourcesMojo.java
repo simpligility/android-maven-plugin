@@ -54,6 +54,8 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APKSOURCE
  * Generates java files based on aidl files.
  *
  * @author hugo.josefson@jayway.com
+ * @author Manfred Moser <manfred@simpligility.com>
+ *
  * @goal generate-sources
  * @phase generate-sources
  * @requiresProject true
@@ -538,7 +540,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             File mergedManifest = new File( androidManifestFile.getParent(), "AndroidManifest-merged.xml" );
 
             ManifestMerger mm = new ManifestMerger( getLog(), getAndroidSdk().getSdkPath(), getAndroidSdk()
-                    .getToolsVersion() );
+                    .getSdkMajorVersion() );
 
             getLog().info( "Merging manifests of dependent apklibs" );
             if ( mm.process( mergedManifest, androidManifestFile, 
