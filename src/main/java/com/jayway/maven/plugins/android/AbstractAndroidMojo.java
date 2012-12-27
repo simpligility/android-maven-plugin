@@ -267,6 +267,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected String[] aaptExtraArgs;
 
     /**
+     * Automatically create a ProGuard configuration file that will guard Activity classes and the like that are 
+     * defined in the AndroidManifest.xml. This files is then automatically used in the proguard phase
+     *
+     * @parameter expression="${android.proguardFile}"
+     */
+    protected File proguardFile;
+
+    /**
      * Decides whether the Apk should be generated or not. If set to false, dx and apkBuilder will not run. This is
      * probably most useful for a project used to generate apk sources to be inherited into another application
      * project.
