@@ -484,9 +484,12 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         try
         {
             writer = new FileWriter( manifestFile, false );
-            String xmldecl = String
+            if ( doc.getXmlEncoding() != null && doc.getXmlVersion() != null )
+            {
+                String xmldecl = String
                     .format( "<?xml version=\"%s\" encoding=\"%s\"?>%n", doc.getXmlVersion(), doc.getXmlEncoding() );
-            writer.write( xmldecl );
+                writer.write( xmldecl );                
+            }
             Result result = new StreamResult( writer );
 
             xformer.transform( source, result );
