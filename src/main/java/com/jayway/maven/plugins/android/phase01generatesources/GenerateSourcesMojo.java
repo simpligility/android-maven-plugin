@@ -458,6 +458,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( "-c" );
             commands.add( configurations );
         }
+        if ( proguardFile != null )
+        {
+            commands.add( "-G" );
+            commands.add( proguardFile.getAbsolutePath() );
+        }
         getLog().info( getAndroidSdk().getPathForTool( "aapt" ) + " " + commands.toString() );
         try
         {
