@@ -25,6 +25,10 @@ public class Dex
      * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#dexOptimize}
      */
     private Boolean optimize;
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#dexPreDex}
+     */
+    private Boolean preDex;
 
     public String[] getJvmArguments()
     {
@@ -44,5 +48,10 @@ public class Dex
     public Boolean isOptimize()
     {
         return optimize;
+    }
+
+    public Boolean isPreDex()
+    {
+        return preDex;
     }
 }

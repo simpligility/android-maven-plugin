@@ -97,10 +97,18 @@ public class DexMojo extends AbstractAndroidMojo
      */
     private boolean dexOptimize;
 
+    /**
+     * Decides whether to predex the jars.
+     *
+     * @parameter expression="${android.dex.predex}" default-value="false"
+     */
+    private boolean dexPreDex;
+
     private String[] parsedJvmArguments;
     private boolean parsedCoreLibrary;
     private boolean parsedNoLocals;
     private boolean parsedOptimize;
+    private boolean parsedPreDex;
 
     /**
      *
@@ -213,6 +221,14 @@ public class DexMojo extends AbstractAndroidMojo
             {
                 parsedOptimize = dex.isOptimize();
             }
+            if ( dex.isPreDex() == null )
+            {
+                parsedPreDex = dexPreDex;
+            }
+            else
+            {
+                parsedPreDex = dex.isPreDex();
+            }
         }
         else
         {
@@ -220,60 +236,127 @@ public class DexMojo extends AbstractAndroidMojo
             parsedCoreLibrary = dexCoreLibrary;
             parsedNoLocals = dexNoLocals;
             parsedOptimize = dexOptimize;
+            parsedPreDex = dexPreDex;
         }
     }
 
-    private void runDex( CommandExecutor executor, File outputFile, Set<File> inputFiles ) throws MojoExecutionException
+  private Set<File> preDex( CommandExecutor executor, Set<File> inputFiles ) throws MojoExecutionException
+  {
+    Set<File> filtered = new HashSet();
+    getLog().info( "Pre dex-ing libraries for faster dex-ing of the final application." );
+
+    for ( File inputFile : inputFiles )
     {
-        List<String> commands = new ArrayList<String>();
-        if ( parsedJvmArguments != null )
-        {
-            for ( String jvmArgument : parsedJvmArguments )
-            {
-                // preserve backward compatibility allowing argument with or without dash (e.g. Xmx512m as well as
-                // -Xmx512m should work) (see http://code.google.com/p/maven-android-plugin/issues/detail?id=153)
-                if ( ! jvmArgument.startsWith( "-" ) )
-                {
-                    jvmArgument = "-" + jvmArgument;
-                }
-                getLog().debug( "Adding jvm argument " + jvmArgument );
-                commands.add( jvmArgument );
-            }
-        }
-        commands.add( "-jar" );
-        commands.add( getAndroidSdk().getPathForTool( "dx.jar" ) );
-        commands.add( "--dex" );
-        if ( ! parsedOptimize )
-        {
-            commands.add( "--no-optimize" );
-        }
-        if ( parsedCoreLibrary )
-        {
-            commands.add( "--core-library" );
-        }
-        commands.add( "--output=" + outputFile.getAbsolutePath() );
-        if ( parsedNoLocals )
-        {
-            commands.add( "--no-locals" );
-        }
+      if ( inputFile.getName().matches( ".*\\.jar$" ) )
+      {
+        List<String> commands = dexDefaultCommands();
 
-        for ( File inputFile : inputFiles )
-        {
-            getLog().debug( "Adding dex input: " + inputFile.getAbsolutePath() );
-            commands.add( inputFile.getAbsolutePath() );
-        }
+        File predexJar = predexJarPath( inputFile );
+        commands.add( "--output=" + predexJar.getAbsolutePath() );
+        commands.add( inputFile.getAbsolutePath() );
+        filtered.add( predexJar );
 
-        final String javaExecutable = getJavaExecutable().getAbsolutePath();
-        getLog().info( javaExecutable + " " + commands.toString() );
-        try
+        if ( !predexJar.isFile() || predexJar.lastModified() < inputFile.lastModified() )
         {
+          getLog().info( "Pre-dex ing jar: " + inputFile.getAbsolutePath() );
+
+          final String javaExecutable = getJavaExecutable().getAbsolutePath();
+          getLog().info( javaExecutable + " " + commands.toString() );
+          try
+          {
             executor.executeCommand( javaExecutable, commands, project.getBasedir(), false );
-        }
-        catch ( ExecutionException e )
-        {
+          }
+          catch ( ExecutionException e )
+          {
             throw new MojoExecutionException( "", e );
+          }
         }
+
+      }
+      else
+      {
+        filtered.add( inputFile );
+      }
     }
+
+    return filtered;
+  }
+
+  private File predexJarPath( File inputFile )
+  {
+    final String slash = File.separator;
+    final File predexLibsDirectory = new File( project.getBuild().getDirectory() + slash + "dexedLibs" );
+    predexLibsDirectory.mkdirs();
+    return new File( predexLibsDirectory.getAbsolutePath() + slash + inputFile.getName() );
+  }
+
+  private List<String> dexDefaultCommands() throws MojoExecutionException
+  {
+
+    List<String> commands = new ArrayList<String>();
+    if ( parsedJvmArguments != null )
+    {
+      for ( String jvmArgument : parsedJvmArguments )
+      {
+        // preserve backward compatibility allowing argument with or without dash (e.g. Xmx512m as well as
+        // -Xmx512m should work) (see http://code.google.com/p/maven-android-plugin/issues/detail?id=153)
+        if ( !jvmArgument.startsWith( "-" ) )
+        {
+          jvmArgument = "-" + jvmArgument;
+        }
+        getLog().debug( "Adding jvm argument " + jvmArgument );
+        commands.add( jvmArgument );
+      }
+    }
+    commands.add( "-jar" );
+    commands.add( getAndroidSdk().getPathForTool( "dx.jar" ) );
+    commands.add( "--dex" );
+
+
+    return commands;
+
+  }
+
+  private void runDex( CommandExecutor executor, File outputFile, Set<File> inputFiles ) throws MojoExecutionException
+  {
+    List<String> commands = dexDefaultCommands();
+    Set<File> filteredFiles = inputFiles;
+
+    if ( parsedPreDex )
+    {
+      filteredFiles = preDex( executor, inputFiles );
+    }
+    if ( !parsedOptimize )
+    {
+      commands.add( "--no-optimize" );
+    }
+    if ( parsedCoreLibrary )
+    {
+      commands.add( "--core-library" );
+    }
+    commands.add( "--output=" + outputFile.getAbsolutePath() );
+    if ( parsedNoLocals )
+    {
+      commands.add( "--no-locals" );
+    }
+
+    for ( File inputFile : filteredFiles )
+    {
+      getLog().debug( "Adding dex input: " + inputFile.getAbsolutePath() );
+      commands.add( inputFile.getAbsolutePath() );
+    }
+
+    final String javaExecutable = getJavaExecutable().getAbsolutePath();
+    getLog().info( javaExecutable + " " + commands.toString() );
+    try
+    {
+      executor.executeCommand( javaExecutable, commands, project.getBasedir(), false );
+    }
+    catch ( ExecutionException e )
+    {
+      throw new MojoExecutionException( "", e );
+    }
+  }
 
     /**
      * Figure out the full path to the current java executable.
