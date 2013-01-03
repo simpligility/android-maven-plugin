@@ -29,11 +29,11 @@ public class Lint
     private Boolean disableSourceLines;
     private Boolean url;
 
-    private Boolean html;
+    private Boolean enableHtml;
     private String htmlOutputPath;
-    private Boolean enableSimpleHtmlOutput;
+    private Boolean enableSimpleHtml;
     private String simpleHtmlOutputPath;
-    private Boolean enableXmlOutput;
+    private Boolean enableXml;
     private String xmlOutputPath;
 
     // ---------------
@@ -97,9 +97,9 @@ public class Lint
         return url;
     }
     
-    public final Boolean isHtml()
+    public final Boolean isEnableHtml()
     {
-        return html;
+        return enableHtml;
     }
 
     public final String getHtmlOutputPath()
@@ -107,9 +107,9 @@ public class Lint
         return htmlOutputPath;
     }
 
-    public final Boolean isEnableSimpleHtmlOutput()
+    public final Boolean isEnableSimpleHtml()
     {
-        return enableSimpleHtmlOutput;
+        return enableSimpleHtml;
     }
 
     public final String getSimpleHtmlOutputPath()
@@ -117,9 +117,9 @@ public class Lint
         return simpleHtmlOutputPath;
     }
 
-    public final Boolean isEnableXmlOutput()
+    public final Boolean isEnableXml()
     {
-        return enableXmlOutput;
+        return enableXml;
     }
 
     public final String getXmlOutputPath()
