@@ -16,21 +16,25 @@ public class Lint
     // ---------------
     // Enabled Checks
     // ---------------
-    private Boolean nowarn;
-    private Boolean wall;
-    private Boolean werror;
+    private Boolean ignoreWarnings;
+    private Boolean warnAll;
+    private Boolean warningsAsErrors;
     private String config;
 
     // ---------------
     // Output Options
     // ---------------
-    private Boolean fullpath;
-    private Boolean showall;
-    private Boolean nolines;
+    private Boolean fullPath;
+    private Boolean showAll;
+    private Boolean disableSourceLines;
     private Boolean url;
-    private String html;
-    private String simplehtml;
-    private String xml;
+
+    private Boolean html;
+    private String htmlOutputPath;
+    private Boolean enableSimpleHtmlOutput;
+    private String simpleHtmlOutputPath;
+    private Boolean enableXmlOutput;
+    private String xmlOutputPath;
 
     // ---------------
     // Project Options
@@ -43,24 +47,29 @@ public class Lint
     // Getters
     // ---------------
 
+    public final Boolean isFailOnError() 
+    {
+        return failOnError;
+    }
+    
     public final Boolean isSkip()
     {
         return skip;
     }
 
-    public final Boolean getNowarn()
+    public final Boolean isIgnoreWarnings()
     {
-        return nowarn;
+        return ignoreWarnings;
     }
 
-    public final Boolean getWall()
+    public final Boolean isWarnAll()
     {
-        return wall;
+        return warnAll;
     }
 
-    public final Boolean getWerror()
+    public final Boolean isWarningsAsErrors()
     {
-        return werror;
+        return warningsAsErrors;
     }
 
     public final String getConfig()
@@ -68,34 +77,54 @@ public class Lint
         return config;
     }
 
-    public final Boolean getFullpath()
+    public final Boolean isFullPath()
     {
-        return fullpath;
+        return fullPath;
     }
 
-    public final Boolean getShowall()
+    public final Boolean getShowAll()
     {
-        return showall;
+        return showAll;
     }
 
-    public final Boolean getNolines()
+    public final Boolean isDisableSourceLines()
     {
-        return nolines;
+        return disableSourceLines;
     }
-
-    public final String getHtml()
+    
+    public final Boolean isUrl() 
+    {
+        return url;
+    }
+    
+    public final Boolean isHtml()
     {
         return html;
     }
 
-    public final String getSimplehtml()
+    public final String getHtmlOutputPath()
     {
-        return simplehtml;
+        return htmlOutputPath;
     }
 
-    public final String getXml()
+    public final Boolean isEnableSimpleHtmlOutput()
     {
-        return xml;
+        return enableSimpleHtmlOutput;
+    }
+
+    public final String getSimpleHtmlOutputPath()
+    {
+        return simpleHtmlOutputPath;
+    }
+
+    public final Boolean isEnableXmlOutput()
+    {
+        return enableXmlOutput;
+    }
+
+    public final String getXmlOutputPath()
+    {
+        return xmlOutputPath;
     }
 
     public final String getSources()

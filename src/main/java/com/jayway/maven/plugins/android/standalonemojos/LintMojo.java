@@ -20,6 +20,7 @@ import com.jayway.maven.plugins.android.configuration.Lint;
  * arguments and sets useful defaults as well.
  * 
  * @author Stéphane Nicolas <snicolas@octo.com>
+ * @author Manfred Moser <manfred@simpligility.com>
  * @goal lint
  * @requiresProject false
  */
@@ -28,16 +29,24 @@ public class LintMojo extends AbstractAndroidMojo
 
     /**
      * The configuration for the lint goal. As soon as a lint goal is invoked the command will be executed unless the
-     * skip parameter is set.
+     * skip parameter is set. A minimal configuration is
      * 
      * <pre>
      * &lt;lint&gt;
-     *     &lt;failOnError&gt;false&lt;/failOnError&gt;
      *     &lt;skip&gt;true&lt;/skip&gt;
-     *     &lt;showall&gt;true&lt;/showall&gt;
-     *     &lt;classpath&gt;${project.build.directory}/&lt;/classpath&gt;
      * &lt;/lint&gt;
      * </pre>
+     * 
+     * Full configuration can look can use these parameters.
+     * 
+     * <pre>
+     * &lt;lint&gt;
+     *     &lt;failOnError&gt;true|false&lt;/failOnError&gt;
+     *     &lt;skip&gt;true|false&lt;/skip&gt;
+     *     &lt;showall&gt;true|false&lt;/showall&gt;
+     * &lt;/lint&gt;
+     * </pre>
+
      * 
      * Values can also be configured as properties on the command line as android.lint.* or in pom or settings file as
      * properties like lint.*.
@@ -74,37 +83,37 @@ public class LintMojo extends AbstractAndroidMojo
     // ---------------
 
     /**
-     * Only check for errors (ignore warnings). Defaults to "false".
+     * Only check for errors and ignore warnings. Defaults to "false".
      * 
-     * @parameter expression="${android.lint.nowarn}"
-     * @see com.jayway.maven.plugins.android.configuration.Lint#nowarn
+     * @parameter expression="${android.lint.ignoreWarning}"
+     * @see com.jayway.maven.plugins.android.configuration.Lint#ignoreWarnings
      */
-    private Boolean lintNoWarn;
+    private Boolean lintIgnoreWarnings;
 
     @PullParameter( defaultValue = "false" )
-    private Boolean parsedNowarn;
+    private Boolean parsedIgnoreWarnings;
 
     /**
      * Check all warnings, including those off by default. Defaults to "false".
      * 
-     * @parameter expression="${android.lint.wall}"
-     * @see com.jayway.maven.plugins.android.configuration.Lint#wall
+     * @parameter expression="${android.lint.warnAll}"
+     * @see com.jayway.maven.plugins.android.configuration.Lint#warnAll
      */
-    private Boolean lintWall;
+    private Boolean lintWarnAll;
 
     @PullParameter( defaultValue = "false" )
-    private Boolean parsedWall;
+    private Boolean parsedWarnAll;
 
     /**
-     * Treat all warnings as errors. Defaults to "false".
+     * Report all warnings as errors. Defaults to "false".
      * 
-     * @parameter expression="${android.lint.werror}"
-     * @see com.jayway.maven.plugins.android.configuration.Lint#werror
+     * @parameter expression="${android.lint.warningsAsErrors}"
+     * @see com.jayway.maven.plugins.android.configuration.Lint#warningsAsErrors
      */
-    private Boolean lintWerror;
+    private Boolean lintWarningsAsErrors;
 
     @PullParameter( defaultValue = "false" )
-    private Boolean parsedWerror;
+    private Boolean parsedWarningsAsErrors;
 
     /**
      * Use the given configuration file to determine whether issues are enabled or disabled. Defaults to "lint.xml".
@@ -114,7 +123,7 @@ public class LintMojo extends AbstractAndroidMojo
      */
     private String lintConfig;
 
-    @PullParameter( defaultValueGetterMethod = "getConfig" )
+    @PullParameter( defaultValue = "null" )
     private String parsedConfig;
 
     // ---------------
@@ -124,36 +133,36 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * Use full paths in the error output. Defaults to "false".
      * 
-     * @parameter expression="${android.lint.fullpath}"
-     * @see com.jayway.maven.plugins.android.configuration.Lint#fullpath
+     * @parameter expression="${android.lint.fullPath}"
+     * @see com.jayway.maven.plugins.android.configuration.Lint#fullPath
      */
-    private Boolean lintFullpath;
+    private Boolean lintFullPath;
 
     @PullParameter( defaultValue = "false" )
-    private Boolean parsedFullpath;
+    private Boolean parsedFullPath;
 
     /**
      * Do not truncate long messages, lists of alternate locations, etc. Defaults to "true".
      * 
-     * @parameter expression="${android.lint.showall}"
-     * @see com.jayway.maven.plugins.android.configuration.Lint#showall
+     * @parameter expression="${android.lint.showAll}"
+     * @see com.jayway.maven.plugins.android.configuration.Lint#showAll
      */
     private Boolean lintShowAll;
 
     @PullParameter( defaultValue = "true" )
-    private Boolean parsedShowall;
+    private Boolean parsedShowAll;
 
     /**
      * Do not include the source file lines with errors in the output. By default, the error output includes snippets of
      * source code on the line containing the error, but this flag turns it off. Defaults to "false".
      * 
-     * @parameter expression="${android.lint.nolines}"
-     * @see com.jayway.maven.plugins.android.configuration.Lint#nolines
+     * @parameter expression="${android.lint.disableSourceLines}"
+     * @see com.jayway.maven.plugins.android.configuration.Lint#disableSourceLines
      */
-    private Boolean lintNolines;
+    private Boolean lintDisableSourceLines;
 
     @PullParameter( defaultValue = "false" )
-    private Boolean parsedNolines;
+    private Boolean parsedDisableSourceLines;
 
     /**
      * Add links to HTML report, replacing local path prefixes with url prefix. The mapping can be a comma-separated
@@ -169,47 +178,93 @@ public class LintMojo extends AbstractAndroidMojo
     private String parsedUrl;
 
     /**
-     * Create an HTML report instead. If the filename is a directory (or a new filename without an extension), lint will
-     * create a separate report for each scanned project. No defaults.
+     * Skip the lint goal execution. Defaults to "true".
      * 
      * @parameter expression="${android.lint.html}"
      * @see com.jayway.maven.plugins.android.configuration.Lint#html
      */
-    private String lintHtml;
+    private Boolean lintHtml;
 
-    @PullParameter( defaultValue = "null" )
-    private String parsedHtml;
+    @PullParameter( defaultValue = "true" )
+    private Boolean parsedHtml;
+
+//    
+//    
+//    
+//    /**
+//     * Enable the creation of a HTML report.
+//     * @parameter expression="${android.lint.htmlOutput}:
+//     * @see com.jayway.maven.plugins.android.configuration.Lint#htmlOutput
+//     */
+//    private Boolean lintHtmlOutput;
+//    
+//    @PullParameter( defaultValue = "true" )
+//    private Boolean parsedHtmlOutput;
+//    
+    /**
+     * Path for the HTML report. If the filename is a directory (or a new filename without an extension), lint will
+     * create a separate report for each scanned project. No defaults.
+     * 
+     * @parameter expression="${android.lint.htmlOutputPath}"
+     * @see com.jayway.maven.plugins.android.configuration.Lint#htmlOutputPath
+     */
+    private String lintHtmlOutputPath;
+
+    @PullParameter( defaultValueGetterMethod = "getHtmlOutputPath" )
+    private String parsedHtmlOutputPath;
+
 
     /**
-     * Create a simple HTML report instead. If the filename is a directory (or a new filename without an extension),
+     * Enable the creation of a simple HTML report.
+     * @parameter expression="${android.lint.enableSimpleHtmlOutput}:
+     * @see com.jayway.maven.plugins.android.configuration.Lint#enableSimpleHtmlOutput
+     */
+    private Boolean lintEnableSimpleHtmlOutput;
+    
+    @PullParameter( defaultValue = "false" )
+    private Boolean parsedEnableSimpleHtmlOutput;
+
+    
+    /**
+     * Create a simple HTML report. If the filename is a directory (or a new filename without an extension),
      * lint will create a separate report for each scanned project. No defaults.
      * 
-     * @parameter expression="${android.lint.simplehtml}"
-     * @see com.jayway.maven.plugins.android.configuration.Lint#simplehtml
+     * @parameter expression="${android.lint.simpleHtml}"
+     * @see com.jayway.maven.plugins.android.configuration.Lint#simpleHtml
      */
-    private String lintSimplehtml;
+    private String lintSimpleHtmlOutputPath;
 
-    @PullParameter( defaultValue = "null" )
-    private String parsedSimplehtml;
+    @PullParameter( defaultValueGetterMethod = "getSimpleHtmlOutputPath" )
+    private String parsedSimpleHtmlOutputPath;
 
     /**
-     * Create an XML report instead. If the filename is a directory (or a new filename without an extension), lint will
+     * Enable the creation of a XML report. Defaults to false.
+     * @parameter expression="${android.lint.enableHtmlOutput}:
+     * @see com.jayway.maven.plugins.android.configuration.Lint#enableHtmlOutput
+     */
+    private Boolean lintEnableXmlOutput;
+    
+    @PullParameter( defaultValue = "false" )
+    private Boolean parsedEnableXmlOutput;
+
+    /**
+     * Create an XML report. If the filename is a directory (or a new filename without an extension), lint will
      * create a separate report for each scanned project. No defaults.
      * 
      * @parameter expression="${android.lint.xml}"
      * @see com.jayway.maven.plugins.android.configuration.Lint#xml
      */
-    private String lintXml;
+    private String lintXmlOutputPath;
 
-    @PullParameter( defaultValue = "null" )
-    private String parsedXml;
+    @PullParameter( defaultValueGetterMethod = "getXmlOutputPath"  )
+    private String parsedXmlOutputPath;
 
     // ---------------
     // Project Options
     // ---------------
 
     /**
-     * Add the given folder (or path) as a source directory for the project. Only valid when running lint on asingle
+     * Add the given folder (or path) as a source directory for the project. Only valid when running lint on a single
      * project. No defaults.
      * 
      * @parameter expression="${android.lint.sources}"
@@ -244,10 +299,9 @@ public class LintMojo extends AbstractAndroidMojo
     @PullParameter( defaultValue = "null" )
     private String parsedLibraries;
 
-    /**
-     * the config file for lint.
-     */
-    private File configFile;
+    private File htmlPath;
+    private File simpleHtmlPath;
+    private File xmlPath;
 
     /**
      * Execute the mojo by parsing the config and actually doing the lint.
@@ -263,17 +317,23 @@ public class LintMojo extends AbstractAndroidMojo
 
         getLog().debug( "failOnError:" + parsedFailOnError );
         getLog().debug( "skip:" + parsedSkip );
-        getLog().debug( "nowarn:" + parsedNowarn );
-        getLog().debug( "wall:" + parsedWall );
-        getLog().debug( "werror:" + parsedWerror );
+        getLog().debug( "ignoreWarnings:" + parsedIgnoreWarnings );
+        getLog().debug( "warnAll:" + parsedWarnAll );
+        getLog().debug( "warningsAsErrors:" + parsedWarningsAsErrors );
         getLog().debug( "config:" + parsedConfig );
 
-        getLog().debug( "fullPath:" + parsedFullpath );
-        getLog().debug( "showall:" + parsedShowall );
-        getLog().debug( "nolines:" + parsedNolines );
-        getLog().debug( "html:" + parsedHtml );
-        getLog().debug( "simplehtml:" + parsedSimplehtml );
-        getLog().debug( "xml:" + parsedXml );
+        getLog().debug( "fullPath:" + parsedFullPath );
+        getLog().debug( "showAll:" + parsedShowAll );
+        getLog().debug( "disableSourceLines:" + parsedDisableSourceLines );
+        
+        getLog().debug( "html: " + parsedHtml );
+        getLog().debug( "htmlOutputPath:" + parsedHtmlOutputPath );
+        
+        getLog().debug( "enableSimpleHtmlOutput: " + parsedEnableSimpleHtmlOutput );
+        getLog().debug( "simpleHtmlOutputPath:" + parsedSimpleHtmlOutputPath );
+        
+        getLog().debug( "enableXmlOutput: " + parsedEnableXmlOutput );
+        getLog().debug( "xmlOutputPath:" + parsedXmlOutputPath );
 
         getLog().debug( "sources:" + parsedSources );
         getLog().debug( "classpath:" + parsedClasspath );
@@ -292,57 +352,59 @@ public class LintMojo extends AbstractAndroidMojo
             String command = getAndroidSdk().getLintPath();
 
             List< String > parameters = new ArrayList< String >();
-            if ( parsedNowarn )
+            if ( parsedIgnoreWarnings )
             {
                 parameters.add( "-w" );
             }
-            if ( parsedWall )
+            if ( parsedWarnAll )
             {
                 parameters.add( "-Wall" );
             }
-            if ( parsedWerror )
+            if ( parsedWarningsAsErrors )
             {
                 parameters.add( "-Werror" );
             }
 
-            if ( parsedConfig != null )
+            if ( !"null".equals( parsedConfig ) )
             {
                 parameters.add( "--config" );
                 parameters.add( parsedConfig );
             }
 
-            if ( parsedFullpath )
+            if ( parsedFullPath )
             {
                 parameters.add( "--fullpath" );
             }
-            if ( parsedShowall )
+            if ( parsedShowAll )
             {
                 parameters.add( "--showall" );
             }
-            if ( parsedNolines )
+            if ( parsedDisableSourceLines )
             {
                 parameters.add( "--nolines" );
             }
-
-            if ( !"null".equals( parsedHtml ) )
+            if ( parsedHtml )
             {
                 parameters.add( "--html" );
-                parameters.add( parsedHtml );
+                parameters.add( parsedHtmlOutputPath );
+                getLog().info( "Writing Lint HTML report in " + parsedHtmlOutputPath );
             }
             if ( !"none".equals( parsedUrl ) )
             {
                 parameters.add( "--url" );
                 parameters.add( parsedUrl );
             }
-            if ( !"null".equals( parsedSimplehtml ) )
+            if ( parsedEnableSimpleHtmlOutput )
             {
                 parameters.add( "--simplehtml" );
-                parameters.add( parsedSimplehtml );
+                parameters.add( parsedSimpleHtmlOutputPath );
+                getLog().info( "Writing Lint simple HTML report in " + parsedSimpleHtmlOutputPath );
             }
-            if ( !"null".equals( parsedXml ) )
+            if ( parsedEnableXmlOutput )
             {
                 parameters.add( "--xml" );
-                parameters.add( parsedXml );
+                parameters.add( parsedXmlOutputPath );
+                getLog().info( "Writing Lint XML report in " + parsedXmlOutputPath );
             }
 
             if ( !"null".equals( parsedSources ) )
@@ -379,25 +441,43 @@ public class LintMojo extends AbstractAndroidMojo
             {
                 if ( parsedFailOnError )
                 {
-                    throw new MojoExecutionException( "", e );
+                    getLog().info( "Lint analysis produced errors and project is configured to fail on error." );
+                    getLog().info( "Inspect lint reports or re-run with -X to see lint errors in log" );
+                    getLog().info( "Failing build as configured. Ignore following error message." );
+                    throw new MojoExecutionException( "" , e );
                 }
             }
+            getLog().info( "Lint analysis completed successfully." );
         }
     }
-
-    /**
-     * Gets the apk file location from basedir/lint.xml
-     * 
-     * @return absolute path.
-     */
+    
     // used via PullParameter annotation - do not remove
-    private String getConfig()
+    private String getHtmlOutputPath()
     {
-        if ( configFile == null )
+        if ( parsedHtmlOutputPath == null )
         {
-            configFile = new File( project.getBasedir(), "lint.xml" );
+            htmlPath = new File( project.getBuild().getDirectory(), "lint-html" );
         }
-        return configFile.getAbsolutePath();
+        return htmlPath.getAbsolutePath();
+    }
+    
+    // used via PullParameter annotation - do not remove
+    private String getSimpleHtmlOutputPath()
+    {
+        if ( parsedSimpleHtmlOutputPath == null )
+        {
+            simpleHtmlPath = new File( project.getBuild().getDirectory(), "lint-simple-html" );
+        }
+        return simpleHtmlPath.getAbsolutePath();
     }
 
+    // used via PullParameter annotation - do not remove
+    private String getXmlOutputPath()
+    {
+        if ( parsedXmlOutputPath == null )
+        {
+            xmlPath = new File( project.getBuild().getDirectory(), "lint-xml" );
+        }
+        return xmlPath.getAbsolutePath();
+    }
 }
