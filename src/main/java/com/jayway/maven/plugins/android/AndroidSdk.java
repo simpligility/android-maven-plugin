@@ -217,6 +217,15 @@ public class AndroidSdk
     }
 
     /**
+     * Get the android lint path.
+     *
+     * @return
+     */
+    public String getLintPath() {
+        return getPathForTool( "lint" );
+    }
+    
+    /**
      * Returns the complete path for <code>framework.aidl</code>, based on this SDK.
      *
      * @return the complete path as a <code>String</code>, including the filename.
