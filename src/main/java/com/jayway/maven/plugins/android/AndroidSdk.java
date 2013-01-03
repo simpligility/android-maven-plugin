@@ -221,7 +221,8 @@ public class AndroidSdk
      *
      * @return
      */
-    public String getLintPath() {
+    public String getLintPath() 
+    {
         return getPathForTool( "lint" );
     }
     
