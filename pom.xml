@@ -264,6 +264,7 @@
             </plugins>
         </pluginManagement>
         <plugins>
+<!--
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <executions>
@@ -275,6 +276,7 @@
                     </execution>
                 </executions>
             </plugin>
+-->
             <plugin>
                 <artifactId>maven-scm-plugin</artifactId>
                 <configuration>
