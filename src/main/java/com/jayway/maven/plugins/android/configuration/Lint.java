@@ -6,7 +6,13 @@ package com.jayway.maven.plugins.android.configuration;
  * 
  * @author Stéphane Nicolas <snicolas@octo.com>
  */
-public class Lint {
+public class Lint
+{
+
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.LintMojo#lintFailOnError}
+     */
+    private Boolean failOnError;
 
     /**
      * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.LintMojo#lintSkip}
@@ -54,6 +60,11 @@ public class Lint {
     private Boolean nolines;
 
     /**
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.LintMojo#lintUrl}
+     */
+    private Boolean url;
+
+    /**
      * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.LintMojo#lintHtml}
      */
     private String html;
@@ -91,59 +102,73 @@ public class Lint {
     // Getters
     // ---------------
 
-    public Boolean isSkip() {
+    public final Boolean isSkip()
+    {
         return skip;
     }
 
-    public Boolean getNowarn() {
+    public final Boolean getNowarn()
+    {
         return nowarn;
     }
 
-    public Boolean getWall() {
+    public final Boolean getWall()
+    {
         return wall;
     }
 
-    public Boolean getWerror() {
+    public final Boolean getWerror()
+    {
         return werror;
     }
 
-    public String getConfig() {
+    public final String getConfig()
+    {
         return config;
     }
 
-    public Boolean getFullpath() {
+    public final Boolean getFullpath()
+    {
         return fullpath;
     }
 
-    public Boolean getShowall() {
+    public final Boolean getShowall()
+    {
         return showall;
     }
 
-    public Boolean getNolines() {
+    public final Boolean getNolines()
+    {
         return nolines;
     }
 
-    public String getHtml() {
+    public final String getHtml()
+    {
         return html;
     }
 
-    public String getSimplehtml() {
+    public final String getSimplehtml()
+    {
         return simplehtml;
     }
 
-    public String getXml() {
+    public final String getXml()
+    {
         return xml;
     }
 
-    public String getSources() {
+    public final String getSources()
+    {
         return sources;
     }
 
-    public String getClasspath() {
+    public final String getClasspath()
+    {
         return classpath;
     }
 
-    public String getLibraries() {
+    public final String getLibraries()
+    {
         return libraries;
     }
 

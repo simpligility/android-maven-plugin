@@ -16,27 +16,27 @@ import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.Lint;
 
 /**
- * ZipalignMojo can run the zipalign command against the apk. Implements parsing parameters from pom or command line
+ * LintMojo can run the lint command against the project. Implements parsing parameters from pom or command line
  * arguments and sets useful defaults as well.
  * 
  * @author Stéphane Nicolas <snicolas@octo.com>
  * @goal lint
  * @requiresProject false
  */
-public class LintMojo extends AbstractAndroidMojo {
+public class LintMojo extends AbstractAndroidMojo
+{
 
     /**
      * The configuration for the lint goal. As soon as a lint goal is invoked the command will be executed unless the
-     * skip parameter is set. TODO
+     * skip parameter is set.
      * 
      * <pre>
-     * TODO
-     * &lt;zipalign&gt;
-     *     &lt;skip&gt;false&lt;/skip&gt;
-     *     &lt;verbose&gt;true&lt;/verbose&gt;
-     *     &lt;inputApk&gt;${project.build.directory}/${project.artifactId}.apk&lt;/inputApk&gt;
-     *     &lt;outputApk&gt;${project.build.directory}/${project.artifactId}-aligned.apk&lt;/outputApk&gt;
-     * &lt;/zipalign&gt;
+     * &lt;lint&gt;
+     *     &lt;failOnError&gt;false&lt;/failOnError&gt;
+     *     &lt;skip&gt;true&lt;/skip&gt;
+     *     &lt;showall&gt;true&lt;/showall&gt;
+     *     &lt;classpath&gt;${project.build.directory}/&lt;/classpath&gt;
+     * &lt;/lint&gt;
      * </pre>
      * 
      * Values can also be configured as properties on the command line as android.lint.* or in pom or settings file as
@@ -48,6 +48,17 @@ public class LintMojo extends AbstractAndroidMojo {
     private Lint lint;
 
     /**
+     * Fails build on lint errors. Defaults to "false".
+     * 
+     * @parameter expression="${android.lint.failOnError}"
+     * @see com.jayway.maven.plugins.android.configuration.Lint#failOnError
+     */
+    private Boolean lintFailOnError;
+
+    @PullParameter( defaultValue = "false" )
+    private Boolean parsedFailOnError;
+
+    /**
      * Skip the lint goal execution. Defaults to "true".
      * 
      * @parameter expression="${android.lint.skip}"
@@ -55,7 +66,7 @@ public class LintMojo extends AbstractAndroidMojo {
      */
     private Boolean lintSkip;
 
-    @PullParameter(defaultValue = "true")
+    @PullParameter( defaultValue = "true" )
     private Boolean parsedSkip;
 
     // ---------------
@@ -70,7 +81,7 @@ public class LintMojo extends AbstractAndroidMojo {
      */
     private Boolean lintNoWarn;
 
-    @PullParameter(defaultValue = "false")
+    @PullParameter( defaultValue = "false" )
     private Boolean parsedNowarn;
 
     /**
@@ -81,7 +92,7 @@ public class LintMojo extends AbstractAndroidMojo {
      */
     private Boolean lintWall;
 
-    @PullParameter(defaultValue = "false")
+    @PullParameter( defaultValue = "false" )
     private Boolean parsedWall;
 
     /**
@@ -92,7 +103,7 @@ public class LintMojo extends AbstractAndroidMojo {
      */
     private Boolean lintWerror;
 
-    @PullParameter(defaultValue = "false")
+    @PullParameter( defaultValue = "false" )
     private Boolean parsedWerror;
 
     /**
@@ -103,7 +114,7 @@ public class LintMojo extends AbstractAndroidMojo {
      */
     private String lintConfig;
 
-    @PullParameter(defaultValueGetterMethod = "getConfig")
+    @PullParameter( defaultValueGetterMethod = "getConfig" )
     private String parsedConfig;
 
     // ---------------
@@ -118,7 +129,7 @@ public class LintMojo extends AbstractAndroidMojo {
      */
     private Boolean lintFullpath;
 
-    @PullParameter(defaultValue = "false")
+    @PullParameter( defaultValue = "false" )
     private Boolean parsedFullpath;
 
     /**
@@ -129,7 +140,7 @@ public class LintMojo extends AbstractAndroidMojo {
      */
     private Boolean lintShowAll;
 
-    @PullParameter(defaultValue = "true")
+    @PullParameter( defaultValue = "true" )
     private Boolean parsedShowall;
 
     /**
@@ -141,8 +152,21 @@ public class LintMojo extends AbstractAndroidMojo {
      */
     private Boolean lintNolines;
 
-    @PullParameter(defaultValue = "false")
+    @PullParameter( defaultValue = "false" )
     private Boolean parsedNolines;
+
+    /**
+     * Add links to HTML report, replacing local path prefixes with url prefix. The mapping can be a comma-separated
+     * list of path prefixes to corresponding URL prefixes, such as C:\temp\Proj1=http://buildserver/sources/temp/Proj1.
+     * To turn off linking to files, use --url none. Defaults to "none".
+     * 
+     * @parameter expression="${android.lint.url}"
+     * @see com.jayway.maven.plugins.android.configuration.Lint#url
+     */
+    private String lintUrl;
+
+    @PullParameter( defaultValue = "none" )
+    private String parsedUrl;
 
     /**
      * Create an HTML report instead. If the filename is a directory (or a new filename without an extension), lint will
@@ -153,7 +177,7 @@ public class LintMojo extends AbstractAndroidMojo {
      */
     private String lintHtml;
 
-    @PullParameter(defaultValue = "null")
+    @PullParameter( defaultValue = "null" )
     private String parsedHtml;
 
     /**
@@ -165,7 +189,7 @@ public class LintMojo extends AbstractAndroidMojo {
      */
     private String lintSimplehtml;
 
-    @PullParameter(defaultValue = "null")
+    @PullParameter( defaultValue = "null" )
     private String parsedSimplehtml;
 
     /**
@@ -177,7 +201,7 @@ public class LintMojo extends AbstractAndroidMojo {
      */
     private String lintXml;
 
-    @PullParameter(defaultValue = "null")
+    @PullParameter( defaultValue = "null" )
     private String parsedXml;
 
     // ---------------
@@ -193,7 +217,7 @@ public class LintMojo extends AbstractAndroidMojo {
      */
     private String lintSources;
 
-    @PullParameter(defaultValue = "null")
+    @PullParameter( defaultValue = "null" )
     private String parsedSources;
 
     /**
@@ -205,7 +229,7 @@ public class LintMojo extends AbstractAndroidMojo {
      */
     private String lintClasspath;
 
-    @PullParameter(defaultValue = "null")
+    @PullParameter( defaultValue = "null" )
     private String parsedClasspath;
 
     /**
@@ -217,7 +241,7 @@ public class LintMojo extends AbstractAndroidMojo {
      */
     private String lintLibraries;
 
-    @PullParameter(defaultValue = "null")
+    @PullParameter( defaultValue = "null" )
     private String parsedLibraries;
 
     /**
@@ -226,22 +250,18 @@ public class LintMojo extends AbstractAndroidMojo {
     private File configFile;
 
     /**
-     * Execute the mojo by parsing the confign and actually doing the zipalign.
+     * Execute the mojo by parsing the config and actually doing the lint.
      * 
      * @throws MojoExecutionException
      */
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
-
-        /*
-         * // If we're not on a supported packaging with just skip (Issue 87) //
-         * http://code.google.com/p/maven-android-plugin/issues/detail?id=87 if ( !SUPPORTED_PACKAGING_TYPES.contains(
-         * project.getPackaging() ) ) { getLog().info( "Skipping lint on " + project.getPackaging() ); return; }
-         */
+    public void execute() throws MojoExecutionException, MojoFailureException
+    {
 
         ConfigHandler configHandler = new ConfigHandler( this );
         configHandler.parseConfiguration();
 
+        getLog().debug( "failOnError:" + parsedFailOnError );
         getLog().debug( "skip:" + parsedSkip );
         getLog().debug( "nowarn:" + parsedNowarn );
         getLog().debug( "wall:" + parsedWall );
@@ -259,66 +279,84 @@ public class LintMojo extends AbstractAndroidMojo {
         getLog().debug( "classpath:" + parsedClasspath );
         getLog().debug( "libraries:" + parsedLibraries );
 
-        if ( parsedSkip ) {
+        if ( parsedSkip )
+        {
             getLog().info( "Skipping lint" );
-        } else {
+        }
+        else
+        {
+
             CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
             executor.setLogger( this.getLog() );
 
             String command = getAndroidSdk().getLintPath();
 
             List< String > parameters = new ArrayList< String >();
-            if ( parsedNowarn ) {
+            if ( parsedNowarn )
+            {
                 parameters.add( "-w" );
             }
-            if ( parsedWall ) {
+            if ( parsedWall )
+            {
                 parameters.add( "-Wall" );
             }
-            if ( parsedWerror ) {
+            if ( parsedWerror )
+            {
                 parameters.add( "-Werror" );
             }
 
-            if ( parsedConfig != null ) {
+            if ( parsedConfig != null )
+            {
                 parameters.add( "--config" );
                 parameters.add( parsedConfig );
             }
 
-            if ( parsedFullpath ) {
+            if ( parsedFullpath )
+            {
                 parameters.add( "--fullpath" );
             }
-            if ( parsedShowall ) {
+            if ( parsedShowall )
+            {
                 parameters.add( "--showall" );
             }
-            if ( parsedNolines ) {
+            if ( parsedNolines )
+            {
                 parameters.add( "--nolines" );
             }
 
-            if ( "null".equals( parsedHtml ) && "null".equals( parsedSimplehtml ) && "null".equals( parsedXml ) ) {
-                throw new MojoExecutionException( "You must define one of xml, html or simplehtml." );
-            }
-
-            if ( !"null".equals( parsedHtml ) ) {
+            if ( !"null".equals( parsedHtml ) )
+            {
                 parameters.add( "--html" );
                 parameters.add( parsedHtml );
             }
-            if ( !"null".equals( parsedSimplehtml ) ) {
+            if ( !"none".equals( parsedUrl ) )
+            {
+                parameters.add( "--url" );
+                parameters.add( parsedUrl );
+            }
+            if ( !"null".equals( parsedSimplehtml ) )
+            {
                 parameters.add( "--simplehtml" );
                 parameters.add( parsedSimplehtml );
             }
-            if ( !"null".equals( parsedXml ) ) {
+            if ( !"null".equals( parsedXml ) )
+            {
                 parameters.add( "--xml" );
                 parameters.add( parsedXml );
             }
 
-            if ( !"null".equals( parsedSources ) ) {
+            if ( !"null".equals( parsedSources ) )
+            {
                 parameters.add( "--sources" );
                 parameters.add( parsedSources );
             }
-            if ( !"null".equals( parsedClasspath ) ) {
+            if ( !"null".equals( parsedClasspath ) )
+            {
                 parameters.add( "--classpath" );
                 parameters.add( parsedClasspath );
             }
-            if ( !"null".equals( parsedLibraries ) ) {
+            if ( !"null".equals( parsedLibraries ) )
+            {
                 parameters.add( "--libraries" );
                 parameters.add( parsedLibraries );
             }
@@ -327,26 +365,22 @@ public class LintMojo extends AbstractAndroidMojo {
             parameters.add( project.getBuild().getDirectory() );
             parameters.add( project.getBasedir().getAbsolutePath() );
 
-            try {
+            // change return code if errors
+            // see http://developer.android.com/tools/help/lint.html
+            // option not provided by lint --help
+            parameters.add( "--exitcode" );
+            try
+            {
                 getLog().info( "Running command: " + command );
                 getLog().info( "with parameters: " + parameters );
                 executor.executeCommand( command, parameters, false );
-
-                String parsedOutput = parsedHtml;
-                // TODO check return code
-                if ( "null".equals( parsedHtml ) ) {
-                    if ( "null".equals( parsedSimplehtml ) ) {
-                        parsedOutput = parsedXml;
-                    } else {
-                        parsedOutput = parsedSimplehtml;
-                    }
+            }
+            catch ( ExecutionException e )
+            {
+                if ( parsedFailOnError )
+                {
+                    throw new MojoExecutionException( "", e );
                 }
-
-                if ( !new File( parsedOutput ).exists() ) {
-                    throw new MojoExecutionException( "No output file was created by lint." );
-                }
-            } catch ( ExecutionException e ) {
-                throw new MojoExecutionException( "", e );
             }
         }
     }
@@ -357,8 +391,10 @@ public class LintMojo extends AbstractAndroidMojo {
      * @return absolute path.
      */
     // used via PullParameter annotation - do not remove
-    private String getConfig() {
-        if ( configFile == null ) {
+    private String getConfig()
+    {
+        if ( configFile == null )
+        {
             configFile = new File( project.getBasedir(), "lint.xml" );
         }
         return configFile.getAbsolutePath();
