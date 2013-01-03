@@ -72,7 +72,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     }
 
     /**
-     * Android Debug Bridge initialisation timeout in milliseconds.
+     * Android Debug Bridge initialization timeout in milliseconds.
      */
     private static final long ADB_TIMEOUT_MS = 60L * 1000;
 
@@ -148,7 +148,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
 
     /**
-     * The android resources overlay directory. This will be overriden
+     * The android resources overlay directory. This will be overridden
      * by resourceOverlayDirectories if present.
      *
      * @parameter default-value="${project.basedir}/res-overlay"
@@ -268,7 +268,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     /**
      * Automatically create a ProGuard configuration file that will guard Activity classes and the like that are 
-     * defined in the AndroidManifest.xml. This files is then automatically used in the proguard phase
+     * defined in the AndroidManifest.xml. This files is then automatically used in the proguard mojo execution, 
+     * if enabled.
      *
      * @parameter expression="${android.proguardFile}"
      */
@@ -334,8 +335,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * <code>platforms/android-*</code> directories in the Android SDK directory. Default is the latest available
      * version, so you only need to set it if you for example want to use platform 1.5 but also have e.g. 2.2 installed.
      * Has no effect when used on an Android SDK 1.1. The parameter can also be coded as the API level. Therefore valid
-     * values are 1.1, 1.5, 1.6, 2.0, 2.01, 2.1, 2,2 as well as 3, 4, 5, 6, 7, 8. If a platform/api level is not
-     * installed on the machine an error message will be produced. </p>
+     * values are 1.1, 1.5, 1.6, 2.0, 2.01, 2.1, 2.2 and so as well as 3, 4, 5, 6, 7, 8... 16. If a platform/api level 
+     * is not installed on the machine an error message will be produced. </p>
      * <p>The <code>&lt;path&gt;</code> parameter is optional. The default is the setting of the ANDROID_HOME
      * environment variable. The parameter can be used to override this setting with a different environment variable
      * like this:</p>
@@ -344,7 +345,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      *     &lt;path&gt;${env.ANDROID_SDK}&lt;/path&gt;
      * &lt;/sdk&gt;
      * </pre>
-     * <p>or just with a hardcoded absolute path. The parameters can also be configured from command-line with
+     * <p>or just with a hard-coded absolute path. The parameters can also be configured from command-line with
      * parameters <code>-Dandroid.sdk.path</code> and <code>-Dandroid.sdk.platform</code>.</p>
      *
      * @parameter
