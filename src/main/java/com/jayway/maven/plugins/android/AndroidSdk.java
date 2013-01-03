@@ -207,7 +207,7 @@ public class AndroidSdk
     }
 
     /**
-     * Get the android debug tool path (adb).
+     * Get the android zipalign path.
      *
      * @return
      */
