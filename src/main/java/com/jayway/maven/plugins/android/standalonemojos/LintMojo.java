@@ -34,7 +34,7 @@ public class LintMojo extends AbstractAndroidMojo
      * 
      * <pre>
      * &lt;lint&gt;
-     *     &lt;skip&gt;true&lt;/skip&gt;
+     *     &lt;skip&gt;false&lt;/skip&gt;
      * &lt;/lint&gt;
      * </pre>
      * 
