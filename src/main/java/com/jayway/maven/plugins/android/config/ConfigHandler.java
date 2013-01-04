@@ -152,19 +152,20 @@ public class ConfigHandler
 
     private Object getValueFromObject( Object object, String fieldBaseName )
     {
+        Object value = null; 
         try
         {
             Field pojoField = findFieldByName( object, fieldBaseName );
             if ( pojoField != null )
             {
-                return pojoField.get( object );
+                value = pojoField.get( object );
             }
         }
         catch ( Exception e )
         {
             //swallow
         }
-        return null;
+        return value;
     }
 
     private Field findFieldByName( Object object, String name )
