@@ -27,7 +27,7 @@ public class Lint
     private Boolean fullPath;
     private Boolean showAll;
     private Boolean disableSourceLines;
-    private Boolean url;
+    private String url;
 
     private Boolean enableHtml;
     private String htmlOutputPath;
@@ -47,11 +47,11 @@ public class Lint
     // Getters
     // ---------------
 
-    public final Boolean isFailOnError() 
+    public final Boolean isFailOnError()
     {
         return failOnError;
     }
-    
+
     public final Boolean isSkip()
     {
         return skip;
@@ -91,12 +91,12 @@ public class Lint
     {
         return disableSourceLines;
     }
-    
-    public final Boolean isUrl() 
+
+    public final String getUrl()
     {
         return url;
     }
-    
+
     public final Boolean isEnableHtml()
     {
         return enableHtml;
