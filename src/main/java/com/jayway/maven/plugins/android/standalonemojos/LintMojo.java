@@ -26,6 +26,7 @@ import com.jayway.maven.plugins.android.configuration.Lint;
  * @goal lint
  * @requiresProject false
  */
+@SuppressWarnings( "unused" )
 public class LintMojo extends AbstractAndroidMojo
 {
 
@@ -142,7 +143,7 @@ public class LintMojo extends AbstractAndroidMojo
      */
     private String lintConfig;
 
-    @PullParameter( defaultValue = "null" )
+    @PullParameter( defaultValueGetterMethod = "getConfig" )
     private String parsedConfig;
 
     // ---------------
@@ -234,7 +235,7 @@ public class LintMojo extends AbstractAndroidMojo
      * Create a simple HTML report. If the filename is a directory (or a new filename without an extension), lint will
      * create a separate report for each scanned project. Defaults to ${project.build.directory}/lint-simple-html/.
      * 
-     * @parameter expression="${android.lint.simpleHtml}"
+     * @parameter expression="${android.lint.simpleHtmlOutputPath}"
      * @see com.jayway.maven.plugins.android.configuration.Lint#simpleHtml
      */
     private String lintSimpleHtmlOutputPath;
@@ -250,15 +251,15 @@ public class LintMojo extends AbstractAndroidMojo
      */
     private Boolean lintEnableXml;
 
-    @PullParameter( defaultValue = "false" )
+    @PullParameter( defaultValue = "true" )
     private Boolean parsedEnableXml;
 
     /**
      * Create an XML report. If the filename is a directory (or a new filename without an extension), lint will create a
      * separate report for each scanned project. Defaults to ${project.build.directory}/lint.xml.
      * 
-     * @parameter expression="${android.lint.xml}"
-     * @see com.jayway.maven.plugins.android.configuration.Lint#xml
+     * @parameter expression="${android.lint.xmlOutputPath}"
+     * @see com.jayway.maven.plugins.android.configuration.Lint#xmlOutputPath
      */
     private String lintXmlOutputPath;
 
@@ -307,10 +308,6 @@ public class LintMojo extends AbstractAndroidMojo
 
     @PullParameter( defaultValueGetterMethod = "getLibraries" )
     private String parsedLibraries;
-
-    private File htmlPath;
-    private File simpleHtmlPath;
-    private File xmlPath;
 
     /**
      * Execute the mojo by parsing the config and actually doing the lint.
@@ -460,13 +457,23 @@ public class LintMojo extends AbstractAndroidMojo
     }
 
     // used via PullParameter annotation - do not remove
+    private String getConfig()
+    {
+        if ( parsedConfig == null )
+        {
+            return new File( project.getBuild().getDirectory(), "lint.xml" ).getAbsolutePath();
+        }
+        return parsedConfig;
+    }
+
+    // used via PullParameter annotation - do not remove
     private String getHtmlOutputPath()
     {
         if ( parsedHtmlOutputPath == null )
         {
-            htmlPath = new File( project.getBuild().getDirectory(), "lint-html" );
+            return new File( project.getBuild().getDirectory(), "lint-html" ).getAbsolutePath();
         }
-        return htmlPath.getAbsolutePath();
+        return parsedHtmlOutputPath;
     }
 
     // used via PullParameter annotation - do not remove
@@ -474,19 +481,21 @@ public class LintMojo extends AbstractAndroidMojo
     {
         if ( parsedSimpleHtmlOutputPath == null )
         {
-            simpleHtmlPath = new File( project.getBuild().getDirectory(), "lint-simple-html" );
+            return new File( project.getBuild().getDirectory(), "lint-simple-html" ).getAbsolutePath();
         }
-        return simpleHtmlPath.getAbsolutePath();
+        return parsedSimpleHtmlOutputPath;
     }
 
     // used via PullParameter annotation - do not remove
     private String getXmlOutputPath()
     {
+        getLog().debug( "get parsed xml output path:" + parsedXmlOutputPath );
+
         if ( parsedXmlOutputPath == null )
         {
-            xmlPath = new File( project.getBuild().getDirectory(), "lint.xml" );
+            return new File( project.getBuild().getDirectory(), "lint.xml" ).getAbsolutePath();
         }
-        return xmlPath.getAbsolutePath();
+        return parsedXmlOutputPath;
     }
 
     // used via PullParameter annotation - do not remove
@@ -515,18 +524,21 @@ public class LintMojo extends AbstractAndroidMojo
         {
             StringBuilder defaultClasspathBuilder = new StringBuilder();
             Set< Artifact > artifacts = project.getDependencyArtifacts();
-            for ( Artifact artifact : artifacts )
+            if ( artifacts != null )
             {
-                if ( !Artifact.SCOPE_PROVIDED.equals( artifact.getScope() ) && artifact.isResolved() )
+                for ( Artifact artifact : artifacts )
                 {
-                    defaultClasspathBuilder.append( artifact.getFile().getPath() );
-                    defaultClasspathBuilder.append( File.pathSeparator );
+                    if ( !Artifact.SCOPE_PROVIDED.equals( artifact.getScope() ) && artifact.isResolved() )
+                    {
+                        defaultClasspathBuilder.append( artifact.getFile().getPath() );
+                        defaultClasspathBuilder.append( File.pathSeparator );
+                    }
                 }
-            }
-            if ( defaultClasspathBuilder.length() > 0 )
-            {
-                defaultClasspathBuilder.deleteCharAt( defaultClasspathBuilder.length() - 1 );
-                parsedLibraries = defaultClasspathBuilder.toString();
+                if ( defaultClasspathBuilder.length() > 0 )
+                {
+                    defaultClasspathBuilder.deleteCharAt( defaultClasspathBuilder.length() - 1 );
+                    parsedLibraries = defaultClasspathBuilder.toString();
+                }
             }
         }
         return parsedLibraries;
