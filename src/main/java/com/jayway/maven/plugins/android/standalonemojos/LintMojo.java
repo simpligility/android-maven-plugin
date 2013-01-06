@@ -19,7 +19,9 @@ import com.jayway.maven.plugins.android.configuration.Lint;
 
 /**
  * LintMojo can run the lint command against the project. Implements parsing parameters from pom or command line
- * arguments and sets useful defaults as well.
+ * arguments and sets useful defaults as well. Warning, if you use android.lint.enableClasspath and/or
+ * android.lint.enableLibraries the behavior of this goal will vary depending on the phase where this goal is executed.
+ * See android.lint.classpath and android.lint.libraries for more details.
  * 
  * @author Stéphane Nicolas <snicolas@octo.com>
  * @author Manfred Moser <manfred@simpligility.com>
