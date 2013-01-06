@@ -29,8 +29,11 @@
 						<enableSimpleHtml>true</enableSimpleHtml>
 						<simpleHtmlOutputPath>simple</simpleHtmlOutputPath>
 
+						<enableSources>false</enableSources>
 						<sources>src2</sources>
+						<enableClasspath>true</enableClasspath>
 						<classpath>cla2</classpath>
+						<enableLibraries>true</enableLibraries>
 						<libraries>lib2</libraries>
 					</lint>
 				</configuration>

@@ -9,12 +9,8 @@
 		<plugins>
 			<plugin>
 				<artifactId>android-maven-plugin</artifactId>
-				<!-- unskipped default lint config -->
-				<configuration>
-				    <lint>
-				        <skip>false</skip>
-				    </lint>
-				</configuration>
+				<!-- no lint config -->
+				<configuration/>
 			</plugin>
 		</plugins>
 	</build>
