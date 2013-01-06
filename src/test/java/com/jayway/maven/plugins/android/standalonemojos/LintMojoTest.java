@@ -45,6 +45,23 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
      */
     public void testDefaultLintConfig() throws Exception
     {
+        LintMojo mojo = createMojo( "lint-config-project0" );
+        final ConfigHandler cfh = new ConfigHandler( mojo );
+        cfh.parseConfiguration();
+        MavenProject project = Whitebox.getInternalState( mojo, "project" );
+
+        Boolean lintSkip = Whitebox.getInternalState( mojo, "parsedSkip" );
+
+        assertTrue( "lint skip parameter should be true", lintSkip );
+    }
+
+    /**
+     * Tests all options, checks if their default values are correct.
+     * 
+     * @throws Exception
+     */
+    public void testDefaultUnskippedLintConfig() throws Exception
+    {
         LintMojo mojo = createMojo( "lint-config-project1" );
         final ConfigHandler cfh = new ConfigHandler( mojo );
         cfh.parseConfiguration();
@@ -69,18 +86,19 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         Boolean lintEnableSimpleHtml = Whitebox.getInternalState( mojo, "parsedEnableSimpleHtml" );
         String lintSimpleHtmlOutputPath = Whitebox.getInternalState( mojo, "parsedSimpleHtmlOutputPath" );
 
+        Boolean lintEnableSources = Whitebox.getInternalState( mojo, "parsedEnableSources" );
         String lintSources = Whitebox.getInternalState( mojo, "parsedSources" );
+        Boolean lintEnableClasspath = Whitebox.getInternalState( mojo, "parsedEnableClasspath" );
         String lintClasspath = Whitebox.getInternalState( mojo, "parsedClasspath" );
+        Boolean lintEnableLibraries = Whitebox.getInternalState( mojo, "parsedEnableLibraries" );
         String lintLibraries = Whitebox.getInternalState( mojo, "parsedLibraries" );
 
-        assertTrue( "lint skip parameter should be true", lintSkip );
+        assertFalse( "lint skip parameter should be false", lintSkip );
         assertFalse( "lint failOnError parameter should be false", lintFailOnError );
         assertFalse( "lint ignoreWarning parameter should be false", lintIgnoreWarnings );
         assertFalse( "lint warnAll parameter should be false", lintWarnAll );
         assertFalse( "lint warningsAsErrors parameter should be false", lintWarningsAsErrors );
-        assertNotNull( "lint config parameter should be non null", lintConfig );
-        File lintConfigFile = new File( project.getBuild().getDirectory(), "lint.xml" );
-        assertEquals( "lint config parameter should point to lint.xml", lintConfigFile.getAbsolutePath(), lintConfig );
+        assertEquals( "lint config parameter should be  null", "null", lintConfig );
 
         assertFalse( "lint fullPath parameter should be false", lintFullPath );
         assertTrue( "lint showAll parameter should be true", lintShowAll );
@@ -88,22 +106,25 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         assertEquals( "lint url parameter should be none", "none", lintUrl );
 
         assertTrue( "lint enableXml parameter should be true", lintEnableXml );
-        File lintXmlOutputFile = new File( project.getBuild().getDirectory(), "lint.xml" );
+        File lintXmlOutputFile = new File( project.getBuild().getDirectory(), "lint/lint.xml" );
         assertEquals( "lint xmlOutputPath parameter should point to lint.xml", lintXmlOutputFile.getAbsolutePath(),
                 lintXmlOutputPath );
         assertFalse( "lint enableHtml parameter should be false", lintEnableHtml );
-        File lintHtmlOutputFile = new File( project.getBuild().getDirectory(), "lint-html" );
+        File lintHtmlOutputFile = new File( project.getBuild().getDirectory(), "lint/lint-html" );
         assertEquals( "lint htmlOutputPath parameter should point to lint-html", lintHtmlOutputFile.getAbsolutePath(),
                 lintHtmlOutputPath );
         assertFalse( "lint enableSimplHtml parameter should be false", lintEnableSimpleHtml );
-        File lintSimpleHtmlOutputFile = new File( project.getBuild().getDirectory(), "lint-simple-html" );
+        File lintSimpleHtmlOutputFile = new File( project.getBuild().getDirectory(), "lint/lint-simple-html" );
         assertEquals( "lint simpleHtmlOutputPath parameter should point to lint-simple-html",
                 lintSimpleHtmlOutputFile.getAbsolutePath(), lintSimpleHtmlOutputPath );
 
+        assertTrue( "lint enableSources parameter should be true", lintEnableSources );
         assertEquals( "lint sources parameter should point to src/", project.getBuild().getSourceDirectory(),
                 lintSources );
+        assertFalse( "lint enableClasspath parameter should be false", lintEnableClasspath );
         assertEquals( "lint classpath parameter should point to target/classes", project.getBuild()
                 .getOutputDirectory(), lintClasspath );
+        assertFalse( "lint enableLibraries parameter should be false", lintEnableLibraries );
         assertNull( "lint libraries parameter should point not contain dependencies", lintLibraries );
     }
 
@@ -137,8 +158,11 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         Boolean lintEnableSimpleHtml = Whitebox.getInternalState( mojo, "parsedEnableSimpleHtml" );
         String lintSimpleHtmlOutputPath = Whitebox.getInternalState( mojo, "parsedSimpleHtmlOutputPath" );
 
+        Boolean lintEnableSources = Whitebox.getInternalState( mojo, "parsedEnableSources" );
         String lintSources = Whitebox.getInternalState( mojo, "parsedSources" );
+        Boolean lintEnableClasspath = Whitebox.getInternalState( mojo, "parsedEnableClasspath" );
         String lintClasspath = Whitebox.getInternalState( mojo, "parsedClasspath" );
+        Boolean lintEnableLibraries = Whitebox.getInternalState( mojo, "parsedEnableLibraries" );
         String lintLibraries = Whitebox.getInternalState( mojo, "parsedLibraries" );
 
         assertFalse( "lint skip parameter should be false", lintSkip );
@@ -161,13 +185,66 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         assertTrue( "lint enableSimplHtml parameter should be true", lintEnableSimpleHtml );
         assertEquals( "lint simpleHtmlOutputPath parameter should point to simple", "simple", lintSimpleHtmlOutputPath );
 
+        assertFalse( "lint enableSources parameter should be false", lintEnableSources );
+        assertTrue( "lint enableClasspath parameter should be true", lintEnableClasspath );
+        assertTrue( "lint enableLibraries parameter should be true", lintEnableLibraries );
+
         assertEquals( "lint sources parameter should point to src2", "src2", lintSources );
         assertEquals( "lint classpath parameter should point to cla2", "cla2", lintClasspath );
         assertEquals( "lint libraries parameter should point to lib2", "lib2", lintLibraries );
 
     }
 
-    public void testAllLintCommandParameters() throws Exception
+    public void testAllLintCommandParametersWithDefaultUnskippedConfig() throws Exception
+    {
+        LintMojo mojo = createMojo( "lint-config-project1" );
+
+        MavenProject project = EasyMock.createNiceMock( MavenProject.class );
+        Whitebox.setInternalState( mojo, "project", project );
+        File projectBaseDir = new File( getBasedir() );
+        Build projectBuild = new Build();
+        projectBuild.setDirectory( "target/" );
+        projectBuild.setSourceDirectory( "src/" );
+        projectBuild.setOutputDirectory( "classes/" );
+        EasyMock.expect( project.getBasedir() ).andReturn( projectBaseDir ).anyTimes();
+        EasyMock.expect( project.getBuild() ).andReturn( projectBuild ).anyTimes();
+        final CommandExecutor mockExecutor = PowerMock.createMock( CommandExecutor.class );
+        PowerMock.replace( CommandExecutor.Factory.class.getDeclaredMethod( "createDefaultCommmandExecutor" ) ).with(
+                new InvocationHandler()
+                {
+
+                    @Override
+                    public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+                    {
+                        return mockExecutor;
+                    }
+                } );
+
+        PowerMock.expectNew( ConfigHandler.class, mojo ).andReturn( EasyMock.createNiceMock( ConfigHandler.class ) );
+        Capture< List< String > > capturedArgument = new Capture< List< String > >();
+
+        mockExecutor.setLogger( EasyMock.anyObject( Log.class ) );
+        mockExecutor.executeCommand( EasyMock.anyObject( String.class ), EasyMock.capture( capturedArgument ),
+                EasyMock.eq( false ) );
+        PowerMock.replay( project );
+        PowerMock.replay( mockExecutor );
+
+        mojo.execute();
+
+        PowerMock.verify( mockExecutor );
+        List< String > parameters = capturedArgument.getValue();
+        List< String > parametersExpected = new ArrayList< String >();
+        parametersExpected.add( "--showall" );
+        parametersExpected.add( "--xml" );
+        parametersExpected.add( projectBaseDir.getAbsolutePath() + "/target/lint/lint.xml" );
+        parametersExpected.add( "--sources" );
+        parametersExpected.add( projectBaseDir.getAbsolutePath() + "/src" );
+        parametersExpected.add( projectBaseDir.getAbsolutePath() );
+        parametersExpected.add( "--exitcode" );
+        assertEquals( parametersExpected, parameters );
+    }
+
+    public void testAllLintCommandParametersWithCustomConfig() throws Exception
     {
         LintMojo mojo = createMojo( "lint-config-project2" );
 
@@ -215,8 +292,6 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         parametersExpected.add( "url" );
         parametersExpected.add( "--simplehtml" );
         parametersExpected.add( "simple" );
-        parametersExpected.add( "--sources" );
-        parametersExpected.add( "src2" );
         parametersExpected.add( "--classpath" );
         parametersExpected.add( "cla2" );
         parametersExpected.add( "--libraries" );
@@ -226,18 +301,14 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         assertTrue( org.apache.commons.collections.CollectionUtils.isEqualCollection( parametersExpected, parameters ) );
     }
 
-    public void testOutputParametersOffConfig() throws Exception
+    public void testAllParametersOffConfig() throws Exception
     {
-        LintMojo mojo = createMojo( "lint-config-project3" );
-
+        LintMojo mojo = new LintMojo();
         MavenProject project = EasyMock.createNiceMock( MavenProject.class );
         Whitebox.setInternalState( mojo, "project", project );
         File projectBaseDir = new File( "project/" );
         EasyMock.expect( project.getBasedir() ).andReturn( projectBaseDir );
-        Build projectBuild = new Build();
-        File projectBuildDir = new File( "target/" );
-        projectBuild.setDirectory( projectBuildDir.getAbsolutePath() );
-        EasyMock.expect( project.getBuild() ).andReturn( projectBuild );
+
         final CommandExecutor mockExecutor = PowerMock.createMock( CommandExecutor.class );
         PowerMock.replace( CommandExecutor.Factory.class.getDeclaredMethod( "createDefaultCommmandExecutor" ) ).with(
                 new InvocationHandler()
@@ -255,23 +326,18 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         mockExecutor.setLogger( EasyMock.anyObject( Log.class ) );
         mockExecutor.executeCommand( EasyMock.anyObject( String.class ), EasyMock.capture( capturedArgument ),
                 EasyMock.eq( false ) );
-        PowerMock.replay( project );
         PowerMock.replay( mockExecutor );
+        PowerMock.replay( project );
+        Whitebox.setInternalState( mojo, "parsedConfig", "null" );
+        Whitebox.setInternalState( mojo, "parsedClasspath", "null" );
+        Whitebox.setInternalState( mojo, "parsedLibraries", "null" );
 
-        mojo.execute();
+        Whitebox.invokeMethod( mojo, "executeWhenConfigured" );
 
         PowerMock.verify( mockExecutor );
+        PowerMock.verify( project );
         List< String > parameters = capturedArgument.getValue();
         List< String > parametersExpected = new ArrayList< String >();
-        parametersExpected.add( "--config" );
-        parametersExpected.add( projectBuildDir.getAbsolutePath() + File.separatorChar + "lint.xml" );
-        parametersExpected.add( "--showall" );
-        parametersExpected.add( "--sources" );
-        parametersExpected.add( "src" );
-        parametersExpected.add( "--classpath" );
-        parametersExpected.add( "cla" );
-        parametersExpected.add( "--libraries" );
-        parametersExpected.add( "lib" );
         parametersExpected.add( projectBaseDir.getAbsolutePath() );
         parametersExpected.add( "--exitcode" );
         assertTrue( org.apache.commons.collections.CollectionUtils.isEqualCollection( parametersExpected, parameters ) );

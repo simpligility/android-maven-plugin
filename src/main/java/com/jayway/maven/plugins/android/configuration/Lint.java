@@ -39,8 +39,11 @@ public class Lint
     // ---------------
     // Project Options
     // ---------------
+    private Boolean enableSources;
     private String sources;
+    private Boolean enableClasspath;
     private String classpath;
+    private Boolean enableLibraries;
     private String libraries;
 
     // ---------------
@@ -127,14 +130,29 @@ public class Lint
         return xmlOutputPath;
     }
 
+    public Boolean getEnableSources()
+    {
+        return enableSources;
+    }
+
     public final String getSources()
     {
         return sources;
     }
 
+    public Boolean getEnableClasspath()
+    {
+        return enableClasspath;
+    }
+
     public final String getClasspath()
     {
         return classpath;
+    }
+
+    public Boolean getEnableLibraries()
+    {
+        return enableLibraries;
     }
 
     public final String getLibraries()
