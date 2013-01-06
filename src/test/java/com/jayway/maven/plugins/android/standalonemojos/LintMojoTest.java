@@ -1,13 +1,34 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
 import java.io.File;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import org.easymock.Capture;
+import org.easymock.EasyMock;
+import org.junit.runner.RunWith;
+import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojoTestCase;
+import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.config.ConfigHandler;
 
+/**
+ * Test the lint mojo. Tests options' default values and parsing. TODO test parameter logic
+ * 
+ * @author Stéphane Nicolas <snicolas@octo.com>
+ * 
+ */
+@RunWith( PowerMockRunner.class )
+@PrepareForTest(
+{ CommandExecutor.Factory.class } )
 public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
 {
     @Override
@@ -16,6 +37,11 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         return "lint";
     }
 
+    /**
+     * Tests all options, checks if their default values are correct.
+     * 
+     * @throws Exception
+     */
     public void testDefaultLintConfig() throws Exception
     {
         LintMojo mojo = createMojo( "lint-config-project1" );
@@ -47,17 +73,17 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         String lintClasspath = Whitebox.getInternalState( mojo, "parsedClasspath" );
         String lintLibraries = Whitebox.getInternalState( mojo, "parsedLibraries" );
 
-        assertTrue( "lint skip parameter should be false", lintSkip );
+        assertTrue( "lint skip parameter should be true", lintSkip );
         assertFalse( "lint failOnError parameter should be false", lintFailOnError );
         assertFalse( "lint ignoreWarning parameter should be false", lintIgnoreWarnings );
         assertFalse( "lint warnAll parameter should be false", lintWarnAll );
         assertFalse( "lint warningsAsErrors parameter should be false", lintWarningsAsErrors );
-        assertNotNull( "lint config parameter should be false", lintConfig );
+        assertNotNull( "lint config parameter should be non null", lintConfig );
         File lintConfigFile = new File( project.getBuild().getDirectory(), "lint.xml" );
-        assertEquals( "lint config parameter should point to lint.xml", lintConfig, lintConfigFile.getAbsolutePath() );
+        assertEquals( "lint config parameter should point to lint.xml", lintConfigFile.getAbsolutePath(), lintConfig );
 
         assertFalse( "lint fullPath parameter should be false", lintFullPath );
-        assertTrue( "lint showAll parameter should be false", lintShowAll );
+        assertTrue( "lint showAll parameter should be true", lintShowAll );
         assertFalse( "lint disableSourceLines parameter should be false", lintDisableSourceLines );
         assertEquals( "lint url parameter should be none", "none", lintUrl );
 
@@ -79,9 +105,13 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         assertEquals( "lint classpath parameter should point to target/classes", project.getBuild()
                 .getOutputDirectory(), lintClasspath );
         assertNull( "lint libraries parameter should point not contain dependencies", lintLibraries );
-
     }
 
+    /**
+     * Tests all options, checks if they are parsed correctly.
+     * 
+     * @throws Exception
+     */
     public void testCustomLintConfig() throws Exception
     {
         LintMojo mojo = createMojo( "lint-config-project2" );
@@ -136,6 +166,114 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         assertEquals( "lint libraries parameter should point to lib2", "lib2", lintLibraries );
 
     }
+
     // TODO test the mojo logic with a mock executor and check parameters
 
+    public void testAllLintCommandParameters() throws Exception
+    {
+        LintMojo mojo = createMojo( "lint-config-project2" );
+
+        MavenProject project = EasyMock.createNiceMock( MavenProject.class );
+        Whitebox.setInternalState( mojo, "project", project );
+        File projectBaseDir = new File( "project/" );
+        EasyMock.expect( project.getBasedir() ).andReturn( projectBaseDir );
+        final CommandExecutor mockExecutor = PowerMock.createMock( CommandExecutor.class );
+        PowerMock.replace( CommandExecutor.Factory.class.getDeclaredMethod( "createDefaultCommmandExecutor" ) ).with(
+                new InvocationHandler()
+                {
+
+                    @Override
+                    public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+                    {
+                        return mockExecutor;
+                    }
+                } );
+
+        PowerMock.expectNew( ConfigHandler.class, mojo ).andReturn( EasyMock.createNiceMock( ConfigHandler.class ) );
+        Whitebox.setInternalState( mojo, "parsedSkip", Boolean.FALSE );
+        Capture< List< String > > capturedArgument = new Capture< List< String > >();
+
+        mockExecutor.setLogger( EasyMock.anyObject( Log.class ) );
+        mockExecutor.executeCommand( EasyMock.anyObject( String.class ), EasyMock.capture( capturedArgument ),
+                EasyMock.eq( false ) );
+        PowerMock.replay( project );
+        PowerMock.replay( mockExecutor );
+
+        mojo.execute();
+
+        PowerMock.verify( mockExecutor );
+        List< String > parameters = capturedArgument.getValue();
+        List< String > parametersExpected = new ArrayList< String >();
+        parametersExpected.add( "-w" );
+        parametersExpected.add( "-Wall" );
+        parametersExpected.add( "-Werror" );
+        parametersExpected.add( "--config" );
+        parametersExpected.add( "lint" );
+        parametersExpected.add( "--fullpath" );
+        parametersExpected.add( "--nolines" );
+        parametersExpected.add( "--html" );
+        parametersExpected.add( "html" );
+        parametersExpected.add( "--url" );
+        parametersExpected.add( "url" );
+        parametersExpected.add( "--simplehtml" );
+        parametersExpected.add( "simple" );
+        parametersExpected.add( "--sources" );
+        parametersExpected.add( "src2" );
+        parametersExpected.add( "--classpath" );
+        parametersExpected.add( "cla2" );
+        parametersExpected.add( "--libraries" );
+        parametersExpected.add( "lib2" );
+        parametersExpected.add( projectBaseDir.getAbsolutePath() );
+        parametersExpected.add( "--exitcode" );
+        assertTrue( org.apache.commons.collections.CollectionUtils.isEqualCollection( parametersExpected, parameters ) );
+    }
+
+    public void testOutputParametersOffConfig() throws Exception
+    {
+        LintMojo mojo = createMojo( "lint-config-project3" );
+
+        MavenProject project = EasyMock.createNiceMock( MavenProject.class );
+        Whitebox.setInternalState( mojo, "project", project );
+        File projectBaseDir = new File( "project/" );
+        EasyMock.expect( project.getBasedir() ).andReturn( projectBaseDir );
+        final CommandExecutor mockExecutor = PowerMock.createMock( CommandExecutor.class );
+        PowerMock.replace( CommandExecutor.Factory.class.getDeclaredMethod( "createDefaultCommmandExecutor" ) ).with(
+                new InvocationHandler()
+                {
+
+                    @Override
+                    public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+                    {
+                        return mockExecutor;
+                    }
+                } );
+
+        PowerMock.expectNew( ConfigHandler.class, mojo ).andReturn( EasyMock.createNiceMock( ConfigHandler.class ) );
+        Whitebox.setInternalState( mojo, "parsedSkip", Boolean.FALSE );
+        Capture< List< String > > capturedArgument = new Capture< List< String > >();
+
+        mockExecutor.setLogger( EasyMock.anyObject( Log.class ) );
+        mockExecutor.executeCommand( EasyMock.anyObject( String.class ), EasyMock.capture( capturedArgument ),
+                EasyMock.eq( false ) );
+        PowerMock.replay( project );
+        PowerMock.replay( mockExecutor );
+
+        mojo.execute();
+
+        PowerMock.verify( mockExecutor );
+        List< String > parameters = capturedArgument.getValue();
+        List< String > parametersExpected = new ArrayList< String >();
+        parametersExpected.add( "--config" );
+        parametersExpected.add( "config" );
+        parametersExpected.add( "--showall" );
+        parametersExpected.add( "--sources" );
+        parametersExpected.add( "src" );
+        parametersExpected.add( "--classpath" );
+        parametersExpected.add( "cla" );
+        parametersExpected.add( "--libraries" );
+        parametersExpected.add( "lib" );
+        parametersExpected.add( projectBaseDir.getAbsolutePath() );
+        parametersExpected.add( "--exitcode" );
+        assertTrue( org.apache.commons.collections.CollectionUtils.isEqualCollection( parametersExpected, parameters ) );
+    }
 }
