@@ -12,14 +12,12 @@
 				<configuration>
 					<lint>
 						<skip>false</skip>
-						<config>config</config>
 						<enableHtml>false</enableHtml>
 						<htmlOutputPath>html</htmlOutputPath>
 						<enableXml>false</enableXml>
 						<xmlOutputPath>xml</xmlOutputPath>
 						<enableSimpleHtml>false</enableSimpleHtml>
 						<simpleHtmlOutputPath>simple</simpleHtmlOutputPath>
-						<config>config</config>
 						<sources>src</sources>
 						<classpath>cla</classpath>
 						<libraries>lib</libraries>
