@@ -48,7 +48,6 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         LintMojo mojo = createMojo( "lint-config-project0" );
         final ConfigHandler cfh = new ConfigHandler( mojo );
         cfh.parseConfiguration();
-        MavenProject project = Whitebox.getInternalState( mojo, "project" );
 
         Boolean lintSkip = Whitebox.getInternalState( mojo, "parsedSkip" );
 
@@ -298,7 +297,7 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         parametersExpected.add( "lib2" );
         parametersExpected.add( projectBaseDir.getAbsolutePath() );
         parametersExpected.add( "--exitcode" );
-        assertTrue( org.apache.commons.collections.CollectionUtils.isEqualCollection( parametersExpected, parameters ) );
+        assertEquals( parametersExpected, parameters );
     }
 
     public void testAllParametersOffConfig() throws Exception
@@ -340,6 +339,6 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         List< String > parametersExpected = new ArrayList< String >();
         parametersExpected.add( projectBaseDir.getAbsolutePath() );
         parametersExpected.add( "--exitcode" );
-        assertTrue( org.apache.commons.collections.CollectionUtils.isEqualCollection( parametersExpected, parameters ) );
+        assertEquals( parametersExpected, parameters );
     }
 }
