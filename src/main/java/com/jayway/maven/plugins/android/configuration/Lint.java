@@ -27,7 +27,7 @@ public class Lint
     private Boolean fullPath;
     private Boolean showAll;
     private Boolean disableSourceLines;
-    private Boolean url;
+    private String url;
 
     private Boolean enableHtml;
     private String htmlOutputPath;
@@ -39,19 +39,22 @@ public class Lint
     // ---------------
     // Project Options
     // ---------------
+    private Boolean enableSources;
     private String sources;
+    private Boolean enableClasspath;
     private String classpath;
+    private Boolean enableLibraries;
     private String libraries;
 
     // ---------------
     // Getters
     // ---------------
 
-    public final Boolean isFailOnError() 
+    public final Boolean isFailOnError()
     {
         return failOnError;
     }
-    
+
     public final Boolean isSkip()
     {
         return skip;
@@ -91,12 +94,12 @@ public class Lint
     {
         return disableSourceLines;
     }
-    
-    public final Boolean isUrl() 
+
+    public final String getUrl()
     {
         return url;
     }
-    
+
     public final Boolean isEnableHtml()
     {
         return enableHtml;
@@ -127,14 +130,29 @@ public class Lint
         return xmlOutputPath;
     }
 
+    public Boolean getEnableSources()
+    {
+        return enableSources;
+    }
+
     public final String getSources()
     {
         return sources;
     }
 
+    public Boolean getEnableClasspath()
+    {
+        return enableClasspath;
+    }
+
     public final String getClasspath()
     {
         return classpath;
+    }
+
+    public Boolean getEnableLibraries()
+    {
+        return enableLibraries;
     }
 
     public final String getLibraries()
