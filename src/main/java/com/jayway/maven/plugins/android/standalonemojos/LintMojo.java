@@ -21,7 +21,7 @@ import com.jayway.maven.plugins.android.configuration.Lint;
  * LintMojo can run the lint command against the project. Implements parsing parameters from pom or command line
  * arguments and sets useful defaults as well. Warning, if you use android.lint.enableClasspath and/or
  * android.lint.enableLibraries the behavior of this goal will vary depending on the phase where this goal is executed.
- * See android.lint.classpath and android.lint.libraries for more details.
+ * See android.lint.classpath/lintClassPath and android.lint.libraries/lintLibraries for more details.
  * 
  * @author Stéphane Nicolas <snicolas@octo.com>
  * @author Manfred Moser <manfred@simpligility.com>
@@ -35,7 +35,7 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * The configuration for the lint goal. As soon as a lint goal is invoked the command will be executed unless the
      * skip parameter is set. A minimal configuration that will run lint and produce a XML report in
-     * ${project.build.directory}/lint-html is
+     * ${project.build.directory}/lint/lint.xml is
      * 
      * <pre>
      * &lt;lint&gt;
@@ -72,8 +72,8 @@ public class LintMojo extends AbstractAndroidMojo
      * </pre>
      * 
      * 
-     * Values can also be configured as properties on the command line as android.lint.* or in pom or settings file as
-     * properties like lint*.
+     * Alternatively to the plugin configuraton values can also be configured as properties on the command line as 
+     * android.lint.* or in pom or settings file as properties like lint*.
      * 
      * @parameter
      */
@@ -81,7 +81,7 @@ public class LintMojo extends AbstractAndroidMojo
     private Lint lint;
 
     /**
-     * Fails build on lint errors. Defaults to "false".
+     * Fail build on lint errors. Defaults to "false".
      * 
      * @parameter expression="${android.lint.failOnError}"
      * @see com.jayway.maven.plugins.android.configuration.Lint#failOnError
@@ -140,8 +140,9 @@ public class LintMojo extends AbstractAndroidMojo
     private Boolean parsedWarningsAsErrors;
 
     /**
-     * Use the given configuration file to determine whether issues are enabled or disabled. Defaults is empty : the
-     * file ${project.basedir}/lint.xml will be used as fallback.
+     * Use the given configuration file to determine whether issues are enabled or disabled. Defaults is "null" so no 
+     * config file will be used. To use the commonly used lint.xml in the project root set the parameter to 
+     * "${project.basedir}/lint.xml".
      * 
      * @parameter expression="${android.lint.config}"
      * @see com.jayway.maven.plugins.android.configuration.Lint#config
@@ -288,7 +289,7 @@ public class LintMojo extends AbstractAndroidMojo
 
     /**
      * Add the given folder (or path) as a source directory for the project. Only valid when running lint on a single
-     * project. Defaults to ${project.src.dir}.
+     * project. Defaults to ${project.build.sourceDirectory}.
      * 
      * @parameter expression="${android.lint.sources}"
      * @see com.jayway.maven.plugins.android.configuration.Lint#sources
@@ -352,7 +353,7 @@ public class LintMojo extends AbstractAndroidMojo
     private String parsedLibraries;
 
     /**
-     * Execute the mojo by parsing the config and actually doing the lint.
+     * Execute the mojo by parsing the config and actually invoking the lint command from the Android SDK.
      * 
      * @throws MojoExecutionException
      */
@@ -388,11 +389,11 @@ public class LintMojo extends AbstractAndroidMojo
 
         if ( parsedSkip )
         {
-            getLog().info( "Skipping lint" );
+            getLog().info( "Skipping lint analysis." );
         }
         else
         {
-
+            getLog().info( "Performing lint analysis." );
             executeWhenConfigured();
         }
     }
@@ -460,7 +461,6 @@ public class LintMojo extends AbstractAndroidMojo
             parameters.add( parsedXmlOutputPath );
             getLog().info( "Writing Lint XML report in " + parsedXmlOutputPath );
         }
-
         if ( isNotNullAndTrue( parsedEnableSources ) )
         {
             parameters.add( "--sources" );
