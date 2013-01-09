@@ -34,7 +34,7 @@ public class MakefileHelper
 {
     public static final String MAKEFILE_CAPTURE_FILE = "ANDROID_MAVEN_PLUGIN_LOCAL_C_INCLUDES_FILE";
     
-    public static final boolean IS_WINDOWS = System.getProperty( "os.name" ).toLowerCase().indexOf( "windows" ) >= 0;
+    public static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().contains("windows");
     public static final String WINDOWS_DRIVE_ROOT_REGEX = "[a-zA-Z]:\\\\";
 
     /**
@@ -93,8 +93,8 @@ public class MakefileHelper
      * Cleans up all include directories created in the temp directory during the build.
      *
      * @param makefileHolder The holder produced by the
-     * {@link MakefileHelper#createMakefileFromArtifacts(java.io.File, java.util.Set,
-     * boolean, org.sonatype.aether.RepositorySystemSession, java.util.List, org.sonatype.aether.RepositorySystem)}
+     * {@link MakefileHelper#createMakefileFromArtifacts(java.io.File, java.util.Set, java.lang.String,
+     * boolean)}
      */
     public static void cleanupAfterBuild( MakefileHolder makefileHolder )
     {
@@ -123,9 +123,6 @@ public class MakefileHelper
      * @param artifacts         The list of (static library) dependency artifacts to create the Makefile from
      * @param useHeaderArchives If true, the Makefile should include a LOCAL_EXPORT_C_INCLUDES statement, pointing to
      *                          the location where the header archive was expanded
-     * @param repoSession
-     * @param projectRepos
-     * @param repoSystem
      * @return The created Makefile
      */
     public MakefileHolder createMakefileFromArtifacts( File outputDir, Set<Artifact> artifacts,
@@ -254,8 +251,8 @@ public class MakefileHelper
                 apklibStatic = true;
                 makeFile.append( resolveRelativePath( outputDir, staticLibs[libIdx] ) );
                 makeFile.append( '\n' );
-                makeFile.append( "LOCAL_MODULE_FILENAME := " 
-                        + FilenameUtils.removeExtension( staticLibs[libIdx].getName() ) ); 
+                makeFile.append( "LOCAL_MODULE_FILENAME := " );
+                makeFile.append( FilenameUtils.removeExtension( staticLibs[libIdx].getName() ) );
             }
             else
             {
@@ -268,15 +265,16 @@ public class MakefileHelper
                 int libIdx = findApklibNativeLibrary( sharedLibs, artifact.getArtifactId() );
                 makeFile.append( resolveRelativePath( outputDir, sharedLibs[libIdx] ) );
                 makeFile.append( '\n' );
-                makeFile.append( "LOCAL_MODULE_FILENAME := " 
-                        + FilenameUtils.removeExtension( sharedLibs[libIdx].getName() ) ); 
+                makeFile.append( "LOCAL_MODULE_FILENAME := " );
+                makeFile.append(  FilenameUtils.removeExtension( sharedLibs[libIdx].getName() ) );
             }                        
         }
         else
         {
             makeFile.append( resolveRelativePath( outputDir, artifact.getFile() ) );
             makeFile.append( '\n' );
-            makeFile.append( "LOCAL_MODULE_FILENAME := lib" + artifact.getArtifactId() );
+            makeFile.append( "LOCAL_MODULE_FILENAME := lib" );
+            makeFile.append(  artifact.getArtifactId() );
         }
         makeFile.append( '\n' );
         
@@ -436,7 +434,7 @@ public class MakefileHelper
                 {
                     // We're on windows and the path is <Drive>:\ so we
                     // add the <Drive>: to the list
-                    result.add( strF.substring( 0, strF.length() - 1 ) );
+                    result.add( strF.substring( 0, strF.length() - 1 ).toLowerCase() );
                 }
             }
         }

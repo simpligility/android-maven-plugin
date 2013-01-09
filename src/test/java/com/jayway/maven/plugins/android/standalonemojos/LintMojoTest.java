@@ -235,9 +235,10 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         List< String > parametersExpected = new ArrayList< String >();
         parametersExpected.add( "--showall" );
         parametersExpected.add( "--xml" );
-        parametersExpected.add( projectBaseDir.getAbsolutePath() + "/target/lint/lint.xml" );
+        parametersExpected.add( projectBaseDir.getAbsolutePath() + File.separator + "target" + File.separator
+                + "lint" + File.separator + "lint.xml" );
         parametersExpected.add( "--sources" );
-        parametersExpected.add( projectBaseDir.getAbsolutePath() + "/src" );
+        parametersExpected.add( projectBaseDir.getAbsolutePath() + File.separator + "src" );
         parametersExpected.add( projectBaseDir.getAbsolutePath() );
         parametersExpected.add( "--exitcode" );
         assertEquals( parametersExpected, parameters );
