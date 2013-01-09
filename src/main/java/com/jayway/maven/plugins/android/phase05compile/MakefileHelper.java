@@ -34,7 +34,7 @@ public class MakefileHelper
 {
     public static final String MAKEFILE_CAPTURE_FILE = "ANDROID_MAVEN_PLUGIN_LOCAL_C_INCLUDES_FILE";
     
-    public static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().contains("windows");
+    public static final boolean IS_WINDOWS = System.getProperty( "os.name" ).toLowerCase().contains( "windows" );
     public static final String WINDOWS_DRIVE_ROOT_REGEX = "[a-zA-Z]:\\\\";
 
     /**
