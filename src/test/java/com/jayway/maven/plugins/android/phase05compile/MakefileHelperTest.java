@@ -47,7 +47,7 @@ public class MakefileHelperTest
         expected.add( "foo" );
         expected.add( "bar" );
         expected.add( "baz" );
-        assertEquals( expected, 
+        assertEquals( expected,
                       MakefileHelper.splitPath( new File( File.separator, FOLDER_FOOBARBAZ ).getAbsoluteFile() ) );
     }
     
@@ -83,7 +83,7 @@ public class MakefileHelperTest
         List<String> expected = getCWDSplit();
         expected.add( "foo" );
         expected.add( "bar" );
-        assertEquals( expected, 
+        assertEquals( expected,
                       MakefileHelper.splitPath( new File( FOLDER_FOOBAR ).getAbsoluteFile() ) );
     }
     
@@ -195,7 +195,17 @@ public class MakefileHelperTest
         List<String> result = new ArrayList<String>();
         if ( File.separator.equals( "\\" ) ) // We're on Windows
         {
-            result.addAll( Arrays.asList( toSplit.toString().split( "\\\\" ) ) );
+            for ( String s : toSplit.toString().split( "\\\\" ) )
+            {
+                if ( s.matches( "[a-zA-Z]:" ) )
+                {
+                    result.add( s.toLowerCase() );
+                }
+                else
+                {
+                    result.add( s );
+                }
+            }
         }
         else
         {

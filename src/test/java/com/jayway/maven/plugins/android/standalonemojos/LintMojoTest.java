@@ -1,11 +1,9 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import java.io.File;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.jayway.maven.plugins.android.AbstractAndroidMojoTestCase;
+import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.config.ConfigHandler;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.model.Build;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -17,9 +15,11 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojoTestCase;
-import com.jayway.maven.plugins.android.CommandExecutor;
-import com.jayway.maven.plugins.android.config.ConfigHandler;
+import java.io.File;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Test the lint mojo. Tests options' default values and parsing. Tests the parameters passed to lint.
@@ -235,9 +235,10 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         List< String > parametersExpected = new ArrayList< String >();
         parametersExpected.add( "--showall" );
         parametersExpected.add( "--xml" );
-        parametersExpected.add( projectBaseDir.getAbsolutePath() + "/target/lint-results/lint-results.xml" );
+        parametersExpected.add( projectBaseDir.getAbsolutePath() +
+                                        FilenameUtils.separatorsToSystem(  "/target/lint-results/lint-results.xml" ) );
         parametersExpected.add( "--sources" );
-        parametersExpected.add( projectBaseDir.getAbsolutePath() + "/src" );
+        parametersExpected.add( projectBaseDir.getAbsolutePath() + File.separator + "src" );
         parametersExpected.add( projectBaseDir.getAbsolutePath() );
         parametersExpected.add( "--exitcode" );
         assertEquals( parametersExpected, parameters );
