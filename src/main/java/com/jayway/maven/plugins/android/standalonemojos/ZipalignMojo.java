@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @author Manfred Moser <manfred@simpligility.com>
  * @goal zipalign
- * @requiresProject false
+ * @requiresProject true
  */
 public class ZipalignMojo extends AbstractAndroidMojo 
 {
@@ -130,6 +130,8 @@ public class ZipalignMojo extends AbstractAndroidMojo
         }
         else
         {
+            boolean outputToSameFile = parsedInputApk.equalsIgnoreCase( parsedOutputApk );
+
             CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
             executor.setLogger( this.getLog() );
 
@@ -143,7 +145,8 @@ public class ZipalignMojo extends AbstractAndroidMojo
             parameters.add( "-f" ); // force overwriting existing output file
             parameters.add( "4" ); // byte alignment has to be 4!
             parameters.add( parsedInputApk );
-            parameters.add( parsedOutputApk );
+            String correctOutputApk = outputToSameFile ? getTemporaryAlignedFilename() : parsedOutputApk;
+            parameters.add( correctOutputApk );
 
             try
             {
@@ -151,13 +154,24 @@ public class ZipalignMojo extends AbstractAndroidMojo
                 getLog().info( "with parameters: " + parameters );
                 executor.executeCommand( command, parameters );
 
-                // Attach the resulting artifact (Issue 88)
-                // http://code.google.com/p/maven-android-plugin/issues/detail?id=88
-                File aligned = new File( parsedOutputApk );
+                File aligned = new File( correctOutputApk );
                 if ( aligned.exists() )
                 {
-                    projectHelper.attachArtifact( project, APK, "aligned", aligned );
-                    getLog().info( "Attach " + aligned.getAbsolutePath() + " to the project" );
+                    if ( outputToSameFile )
+                    {
+                        // No needs to attach zipaligned apk to artifacts
+                        if ( !aligned.renameTo( new File( parsedInputApk ) ) )
+                        {
+                            getLog().info( "Failed to replace original apk with aligned " + aligned.getAbsolutePath() );
+                        }
+                    }
+                    else
+                    {
+                        // Attach the resulting artifact (Issue 88)
+                        // http://code.google.com/p/maven-android-plugin/issues/detail?id=88
+                        projectHelper.attachArtifact( project, APK, "aligned", aligned );
+                        getLog().info( "Attach " + aligned.getAbsolutePath() + " to the project" );
+                    }
                 }
                 else
                 {
@@ -170,6 +184,11 @@ public class ZipalignMojo extends AbstractAndroidMojo
                 throw new MojoExecutionException( "", e );
             }
         }
+    }
+
+    private String getTemporaryAlignedFilename()
+    {
+        return  project.getBuild().getOutputDirectory() + project.getBuild().getFinalName() + "-aligned-temp.apk";
     }
 
     /**
