@@ -1,7 +1,5 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
-
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
@@ -15,6 +13,8 @@ import org.apache.maven.plugin.MojoFailureException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
 
 /**
  * ZipalignMojo can run the zipalign command against the apk. Implements parsing parameters from pom or command line
@@ -36,8 +36,8 @@ public class ZipalignMojo extends AbstractAndroidMojo
      * &lt;zipalign&gt;
      *     &lt;skip&gt;false&lt;/skip&gt;
      *     &lt;verbose&gt;true&lt;/verbose&gt;
-     *     &lt;inputApk&gt;${project.build.directory}/${project.artifactId}.apk&lt;/inputApk&gt;
-     *     &lt;outputApk&gt;${project.build.directory}/${project.artifactId}-aligned.apk&lt;/outputApk&gt;
+     *     &lt;inputApk&gt;${project.build.directory}/${project.finalName}.apk&lt;/inputApk&gt;
+     *     &lt;outputApk&gt;${project.build.directory}/${project.finalName}-aligned.apk&lt;/outputApk&gt;
      * &lt;/zipalign&gt;
      * </pre>
      *
@@ -186,9 +186,10 @@ public class ZipalignMojo extends AbstractAndroidMojo
         }
     }
 
+    // zipalign doesn't allow output file to be same as input
     private String getTemporaryAlignedFilename()
     {
-        return  project.getBuild().getOutputDirectory() + project.getBuild().getFinalName() + "-aligned-temp.apk";
+        return parsedOutputApk.substring( 0, parsedOutputApk.lastIndexOf( '.' ) ) + "-aligned-temp.apk";
     }
 
     /**

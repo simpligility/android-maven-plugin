@@ -13,8 +13,8 @@
 					<zipalign>
 						<skip>false</skip>
 						<verbose>true</verbose>
-						<inputApk>app.apk</inputApk>
-						<outputApk>app-updated.apk</outputApk>
+						<inputApk>${basedir}/app.apk</inputApk>
+						<outputApk>${basedir}/app.apk</outputApk>
 					</zipalign>
 				</configuration>
 			</plugin>
