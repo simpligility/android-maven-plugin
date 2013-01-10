@@ -180,6 +180,7 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
 
         File alignedFile = new File( project.getBasedir(), "app-aligned-temp.apk" );
         File originalFile = new File( project.getBasedir(), "app.apk" );
+
         PowerMock.verify( mockExecutor );
         List< String > parameters = capturedFile.getValue();
         List< String > parametersExpected = new ArrayList< String >();
@@ -192,10 +193,9 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
 
         PowerMock.verify(projectHelper);
 
-        assertTrue("File should be replaced (created in test) after aligning", originalFile.exists());
-
-        // remove created file
-        originalFile.delete();
+        // in tests resources aligned and original files has different size (2 bytes and 0)
+        //TODO: think about more elegant solution
+        assertEquals( "File should be replaced (created in test) after aligning", 2, originalFile.length() );
     }
 }
 
