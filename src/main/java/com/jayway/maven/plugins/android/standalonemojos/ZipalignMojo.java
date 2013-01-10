@@ -10,8 +10,10 @@ import com.jayway.maven.plugins.android.configuration.Zipalign;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -134,7 +136,7 @@ public class ZipalignMojo extends AbstractAndroidMojo
         }
         else
         {
-            boolean outputToSameFile = parsedInputApk.equalsIgnoreCase( parsedOutputApk );
+            boolean outputToSameFile = sameOutputAsInput();
 
             CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
             executor.setLogger( this.getLog() );
@@ -164,9 +166,14 @@ public class ZipalignMojo extends AbstractAndroidMojo
                     if ( outputToSameFile )
                     {
                         // No needs to attach zipaligned apk to artifacts
-                        if ( !aligned.renameTo( new File( parsedInputApk ) ) )
+                        try
                         {
-                            getLog().info( "Failed to replace original apk with aligned " + aligned.getAbsolutePath() );
+                            FileUtils.rename( aligned,  new File( parsedInputApk ) );
+                        }
+                        catch ( IOException e )
+                        {
+                            getLog().error( "Failed to replace original apk with aligned "
+                                    + aligned.getAbsolutePath(), e );
                         }
                     }
                     else
@@ -188,6 +195,11 @@ public class ZipalignMojo extends AbstractAndroidMojo
                 throw new MojoExecutionException( "", e );
             }
         }
+    }
+
+    private boolean sameOutputAsInput()
+    {
+        return new File( parsedInputApk ).equals( new File( parsedOutputApk ) );
     }
 
     // zipalign doesn't allow output file to be same as input
