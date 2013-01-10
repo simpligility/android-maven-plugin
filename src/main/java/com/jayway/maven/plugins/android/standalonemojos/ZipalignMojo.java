@@ -7,6 +7,7 @@ import com.jayway.maven.plugins.android.config.ConfigHandler;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.Zipalign;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -118,6 +119,9 @@ public class ZipalignMojo extends AbstractAndroidMojo
 
         ConfigHandler configHandler = new ConfigHandler( this );
         configHandler.parseConfiguration();
+
+        parsedInputApk = FilenameUtils.separatorsToSystem( parsedInputApk );
+        parsedOutputApk = FilenameUtils.separatorsToSystem( parsedOutputApk );
 
         getLog().debug( "skip:" + parsedSkip );
         getLog().debug( "verbose:" + parsedVerbose );
