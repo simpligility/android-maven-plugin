@@ -7,6 +7,7 @@ import com.jayway.maven.plugins.android.config.ConfigHandler;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.codehaus.plexus.util.FileUtils;
 import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.junit.runner.RunWith;
@@ -26,7 +27,7 @@ import java.util.List;
  */
 @RunWith( PowerMockRunner.class )
 @PrepareForTest(
-{ CommandExecutor.Factory.class, File.class, ZipalignMojo.class } )
+{ CommandExecutor.Factory.class, FileUtils.class, ZipalignMojo.class } )
 public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
 {
     @Override
@@ -123,6 +124,16 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
         mockExecutor.setLogger( EasyMock.anyObject( Log.class ) );
         mockExecutor.executeCommand( EasyMock.anyObject( String.class ), EasyMock.capture( capturedFile ) );
 
+        PowerMock.replace( PowerMock.method( FileUtils.class, "fileExists" ) ).with(
+                new InvocationHandler()
+                {
+                    @Override
+                    public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+                    {
+                        return true;
+                    }
+                } );
+
         EasyMock.replay( projectHelper );
         PowerMock.replay( mockExecutor );
 
@@ -135,12 +146,11 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
         parametersExpected.add( "-f" );
         parametersExpected.add( "4" );
         parametersExpected.add( "app.apk" );
-        File etalonFile = new File( project.getBasedir(), "app-updated.apk" );
-        parametersExpected.add( etalonFile.getAbsolutePath() );
+        parametersExpected.add( "app-updated.apk" );
         assertEquals( "Zipalign arguments aren't as expected", parametersExpected, parameters );
 
         PowerMock.verify( projectHelper );
-        assertEquals( "File should be same as expected", etalonFile, capturedParameter.getValue() );
+        assertEquals( "File should be same as expected", new File( "app-updated.apk" ), capturedParameter.getValue() );
     }
 
     /**
@@ -173,13 +183,31 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
         mockExecutor.setLogger( EasyMock.anyObject( Log.class ) );
         mockExecutor.executeCommand( EasyMock.anyObject( String.class ), EasyMock.capture( capturedFile ) );
 
+        PowerMock.replace( PowerMock.method( FileUtils.class, "fileExists" ) ).with(
+                new InvocationHandler()
+                {
+                    @Override
+                    public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+                    {
+                        return true;
+                    }
+                } );
+
+        PowerMock.replace( PowerMock.method( FileUtils.class, "rename" ) ).with(
+                new InvocationHandler()
+                {
+                    @Override
+                    public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+                    {
+                        return null;
+                    }
+                } );
+
         EasyMock.replay( projectHelper );
         PowerMock.replay( mockExecutor );
+        PowerMock.replay( FileUtils.class );
 
         mojo.execute();
-
-        File alignedFile = new File( project.getBasedir(), "app-aligned-temp.apk" );
-        File originalFile = new File( project.getBasedir(), "app.apk" );
 
         PowerMock.verify( mockExecutor );
         List< String > parameters = capturedFile.getValue();
@@ -187,15 +215,15 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
         parametersExpected.add( "-v" );
         parametersExpected.add( "-f" );
         parametersExpected.add( "4" );
-        parametersExpected.add( originalFile.getAbsolutePath() );
-        parametersExpected.add( alignedFile.getAbsolutePath() );
+        parametersExpected.add( "app.apk" );
+        parametersExpected.add( "app-aligned-temp.apk" );
         assertEquals( "Zipalign arguments aren't as expected", parametersExpected, parameters );
 
+        // no invocations to attach artifact
         PowerMock.verify(projectHelper);
 
-        // in tests resources aligned and original files has different size (2 bytes and 0)
-        //TODO: think about more elegant solution
-        assertEquals( "File should be replaced (created in test) after aligning", 2, originalFile.length() );
+        // verify that all method were invoked
+        PowerMock.verify( FileUtils.class );
     }
 }
 
