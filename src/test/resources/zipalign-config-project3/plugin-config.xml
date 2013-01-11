@@ -14,7 +14,7 @@
 						<skip>false</skip>
 						<verbose>true</verbose>
 						<inputApk>app.apk</inputApk>
-						<outputApk>${basedir}/app-updated.apk</outputApk>
+						<outputApk>app-updated.apk</outputApk>
 					</zipalign>
 				</configuration>
 			</plugin>
