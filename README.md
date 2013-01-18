@@ -1,5 +1,5 @@
 # ANDROID MAVEN PLUGIN
-## A plugin for Android application development with [Apache Maven 3.0.3+](http://maven.apache.org) and 
+### A plugin for Android application development with [Apache Maven 3.0.3+](http://maven.apache.org) and 
 the [Android SDK](http://tools.android.com).
 
 ## Links
@@ -11,6 +11,6 @@ the [Android SDK](http://tools.android.com).
  * [Changelog](http://code.google.com/p/maven-android-plugin/wiki/Changelog)
  * [Continuous Integration Server Builds](http://jenkins.josefson.org/)
 
-### Contributions
+## Contributions
 
 We welcome your feature enhancements and bug fixes in pull requests!
