@@ -25,13 +25,13 @@ import java.util.List;
 /**
  * User: Eugen
  */
-@RunWith( PowerMockRunner.class )
-@PrepareForTest(
-{ CommandExecutor.Factory.class, FileUtils.class, ZipalignMojo.class } )
+@RunWith ( PowerMockRunner.class )
+@PrepareForTest (
+        { CommandExecutor.Factory.class, FileUtils.class, ZipalignMojo.class } )
 public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
 {
     @Override
-    public String getPluginGoalName()
+    public String getPluginGoalName ()
     {
         return "zipalign";
     }
@@ -41,14 +41,14 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
      *
      * @throws Exception
      */
-    public void testDefaultConfig() throws Exception
+    public void testDefaultConfig () throws Exception
     {
         ZipalignMojo mojo = createMojo( "zipalign-config-project0" );
         final ConfigHandler cfh = new ConfigHandler( mojo );
         cfh.parseConfiguration();
 
         Boolean skip = Whitebox.getInternalState( mojo, "parsedSkip" );
-        assertTrue("zipalign 'skip' parameter should be true", skip);
+        assertTrue( "zipalign 'skip' parameter should be true", skip );
 
         Boolean verbose = Whitebox.getInternalState( mojo, "parsedVerbose" );
         assertFalse( "zipalign 'verbose' parameter should be false", verbose );
@@ -67,22 +67,22 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
 
     /**
      * Tests all parameters parsing
-     *
+     * <p/>
      * Probably not needed since it is like testing maven itself
      *
      * @throws Exception
      */
-    public void testConfigParse() throws Exception
+    public void testConfigParse () throws Exception
     {
         ZipalignMojo mojo = createMojo( "zipalign-config-project1" );
         final ConfigHandler cfh = new ConfigHandler( mojo );
         cfh.parseConfiguration();
 
         Boolean skip = Whitebox.getInternalState( mojo, "parsedSkip" );
-        assertFalse("zipalign 'skip' parameter should be false", skip);
+        assertFalse( "zipalign 'skip' parameter should be false", skip );
 
         Boolean verbose = Whitebox.getInternalState( mojo, "parsedVerbose" );
-        assertTrue("zipalign 'verbose' parameter should be true", verbose);
+        assertTrue( "zipalign 'verbose' parameter should be true", verbose );
 
         String inputApk = Whitebox.getInternalState( mojo, "parsedInputApk" );
         assertEquals( "zipalign 'inputApk' parameter should be equal", "app.apk", inputApk );
@@ -96,31 +96,31 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
      *
      * @throws Exception
      */
-    public void testDefaultRun() throws Exception
+    public void testDefaultRun () throws Exception
     {
         ZipalignMojo mojo = createMojo( "zipalign-config-project3" );
 
-        MavenProject project = Whitebox.getInternalState(mojo, "project");
-        project.setPackaging(AndroidExtension.APK);
+        MavenProject project = Whitebox.getInternalState( mojo, "project" );
+        project.setPackaging( AndroidExtension.APK );
 
         MavenProjectHelper projectHelper = EasyMock.createNiceMock( MavenProjectHelper.class );
-        Capture< File > capturedParameter = new Capture< File >();
+        Capture<File> capturedParameter = new Capture<File>();
         projectHelper.attachArtifact( EasyMock.eq( project ), EasyMock.eq( AndroidExtension.APK ),
-                                            EasyMock.eq("aligned"), EasyMock.capture( capturedParameter ) );
+                EasyMock.eq( "aligned" ), EasyMock.capture( capturedParameter ) );
         Whitebox.setInternalState( mojo, "projectHelper", projectHelper );
 
-        final CommandExecutor mockExecutor = PowerMock.createMock(CommandExecutor.class);
+        final CommandExecutor mockExecutor = PowerMock.createMock( CommandExecutor.class );
         PowerMock.replace( CommandExecutor.Factory.class.getDeclaredMethod( "createDefaultCommmandExecutor" ) ).with(
                 new InvocationHandler()
                 {
                     @Override
-                    public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+                    public Object invoke ( Object proxy, Method method, Object[] args ) throws Throwable
                     {
                         return mockExecutor;
                     }
                 } );
 
-        Capture< List< String > > capturedFile = new Capture< List< String > >();
+        Capture<List<String>> capturedFile = new Capture<List<String>>();
         mockExecutor.setLogger( EasyMock.anyObject( Log.class ) );
         mockExecutor.executeCommand( EasyMock.anyObject( String.class ), EasyMock.capture( capturedFile ) );
 
@@ -128,7 +128,7 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
                 new InvocationHandler()
                 {
                     @Override
-                    public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+                    public Object invoke ( Object proxy, Method method, Object[] args ) throws Throwable
                     {
                         return true;
                     }
@@ -140,8 +140,8 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
         mojo.execute();
 
         PowerMock.verify( mockExecutor );
-        List< String > parameters = capturedFile.getValue();
-        List< String > parametersExpected = new ArrayList< String >();
+        List<String> parameters = capturedFile.getValue();
+        List<String> parametersExpected = new ArrayList<String>();
         parametersExpected.add( "-v" );
         parametersExpected.add( "-f" );
         parametersExpected.add( "4" );
@@ -158,28 +158,28 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
      *
      * @throws Exception
      */
-    public void testRunWhenInputApkIsSameAsOutput() throws Exception
+    public void testRunWhenInputApkIsSameAsOutput () throws Exception
     {
         ZipalignMojo mojo = createMojo( "zipalign-config-project2" );
 
-        MavenProject project = Whitebox.getInternalState(mojo, "project");
-        project.setPackaging(AndroidExtension.APK);
+        MavenProject project = Whitebox.getInternalState( mojo, "project" );
+        project.setPackaging( AndroidExtension.APK );
 
         MavenProjectHelper projectHelper = EasyMock.createNiceMock( MavenProjectHelper.class );
         Whitebox.setInternalState( mojo, "projectHelper", projectHelper );
 
-        final CommandExecutor mockExecutor = PowerMock.createMock(CommandExecutor.class);
+        final CommandExecutor mockExecutor = PowerMock.createMock( CommandExecutor.class );
         PowerMock.replace( CommandExecutor.Factory.class.getDeclaredMethod( "createDefaultCommmandExecutor" ) ).with(
                 new InvocationHandler()
                 {
                     @Override
-                    public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+                    public Object invoke ( Object proxy, Method method, Object[] args ) throws Throwable
                     {
                         return mockExecutor;
                     }
                 } );
 
-        Capture< List< String > > capturedFile = new Capture< List< String > >();
+        Capture<List<String>> capturedFile = new Capture<List<String>>();
         mockExecutor.setLogger( EasyMock.anyObject( Log.class ) );
         mockExecutor.executeCommand( EasyMock.anyObject( String.class ), EasyMock.capture( capturedFile ) );
 
@@ -187,7 +187,7 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
                 new InvocationHandler()
                 {
                     @Override
-                    public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+                    public Object invoke ( Object proxy, Method method, Object[] args ) throws Throwable
                     {
                         return true;
                     }
@@ -197,7 +197,7 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
                 new InvocationHandler()
                 {
                     @Override
-                    public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+                    public Object invoke ( Object proxy, Method method, Object[] args ) throws Throwable
                     {
                         return null;
                     }
@@ -210,8 +210,8 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
         mojo.execute();
 
         PowerMock.verify( mockExecutor );
-        List< String > parameters = capturedFile.getValue();
-        List< String > parametersExpected = new ArrayList< String >();
+        List<String> parameters = capturedFile.getValue();
+        List<String> parametersExpected = new ArrayList<String>();
         parametersExpected.add( "-v" );
         parametersExpected.add( "-f" );
         parametersExpected.add( "4" );
@@ -220,7 +220,7 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
         assertEquals( "Zipalign arguments aren't as expected", parametersExpected, parameters );
 
         // no invocations to attach artifact
-        PowerMock.verify(projectHelper);
+        PowerMock.verify( projectHelper );
 
         // verify that all method were invoked
         PowerMock.verify( FileUtils.class );
