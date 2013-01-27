@@ -1,23 +1,30 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.jayway.maven.plugins.android.tests</groupId>
-	<artifactId>lint-config-project1</artifactId>
-	<version>15.4.3.1011</version>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>android-maven-plugin</artifactId>
-				<configuration>
-					<zipalign>
-						<skip>false</skip>
-						<verbose>true</verbose>
-						<inputApk>app.apk</inputApk>
-						<outputApk>app.apk</outputApk>
-					</zipalign>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.jayway.maven.plugins.android.tests</groupId>
+    <artifactId>zipalign-config-project1</artifactId>
+    <version>15.4.3.1011</version>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>android-maven-plugin</artifactId>
+                <configuration>
+                    <zipalign>
+                        <skip>false</skip>
+                        <verbose>true</verbose>
+                        <inputApk>app.apk</inputApk>
+                        <outputApk>app.apk</outputApk>
+                    </zipalign>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>zipalign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
