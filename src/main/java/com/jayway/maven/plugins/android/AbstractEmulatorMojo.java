@@ -56,6 +56,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      * operating system name.
      */
     public static final String OS_NAME = System.getProperty( "os.name" ).toLowerCase( Locale.US );
+    private static final int MILLIS_TO_SLEEP_BETWEEN_DEVICE_ONLINE_CHECKS = 200;
 
     /**
      * Configuration for the emulator goals. Either use the plugin configuration like this
@@ -190,20 +191,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                 int numberOfDevices = devices.size();
                 getLog().info( "Found " + numberOfDevices + " devices connected with the Android Debug Bridge" );
 
-                IDevice existingEmulator = null;
-
-                for ( IDevice device : devices )
-                {
-                    if ( device.isEmulator() )
-                    {
-                        if ( isExistingEmulator( device ) )
-                        {
-                            existingEmulator = device;
-                            break;
-                        }
-                    }
-                }
-
+                IDevice existingEmulator = findExistingEmulator( devices );
                 if ( existingEmulator == null )
                 {
                     getLog().info( START_EMULATOR_MSG + filename );
@@ -211,7 +199,16 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
 
                     getLog().info( START_EMULATOR_WAIT_MSG + parsedWait );
                     // wait for the emulator to start up
-                    Thread.sleep( new Long( parsedWait ) );
+                    boolean connected = waitUntilDeviceIsConnectedOrTimeout( androidDebugBridge );
+                    if ( connected )
+                    {
+                        getLog().info( "Emulator is up and running." );
+                    }
+                    else
+                    {
+                        throw new MojoExecutionException( "Timeout while waiting for emulator to startup." );
+                    }
+
                 }
                 else
                 {
@@ -227,6 +224,48 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
         }
     }
 
+    boolean waitUntilDeviceIsConnectedOrTimeout( AndroidDebugBridge androidDebugBridge )
+            throws MojoExecutionException
+    {
+        long timeout = System.currentTimeMillis() + new Long( parsedWait );
+        while ( System.currentTimeMillis() < timeout )
+        {
+            IDevice myEmulator = findExistingEmulator( Arrays.asList( androidDebugBridge.getDevices() ) );
+            if ( ( myEmulator != null ) && ( myEmulator.isOnline() ) )
+            {
+                return true;
+            }
+
+            try
+            {
+                Thread.sleep( MILLIS_TO_SLEEP_BETWEEN_DEVICE_ONLINE_CHECKS );
+            }
+            catch ( InterruptedException e )
+            {
+                throw new MojoExecutionException( "Interrupted waiting for device to become ready" );
+            }
+        }
+        return false;
+    }
+
+    private IDevice findExistingEmulator( List<IDevice> devices )
+    {
+        IDevice existingEmulator = null;
+
+        for ( IDevice device : devices )
+        {
+            if ( device.isEmulator() )
+            {
+                if ( isExistingEmulator( device ) )
+                {
+                    existingEmulator = device;
+                    break;
+                }
+            }
+        }
+        return existingEmulator;
+    }
+
     /**
      * Checks whether the given device has the same AVD name as the device which the current command
      * is related to. <code>true</code> returned if the device AVD names are identical (independent of case)
@@ -237,7 +276,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      */
     private boolean isExistingEmulator( IDevice device )
     {
-        return ( device.getAvdName().equalsIgnoreCase( parsedAvd ) );
+        return ( ( device.getAvdName() != null ) && ( device.getAvdName().equalsIgnoreCase( parsedAvd ) ) );
     }
 
     /**
@@ -302,11 +341,11 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
 
         File sh;
         sh = new File( "/bin/bash" );
-        if ( ! sh.exists() )
+        if ( !sh.exists() )
         {
             sh = new File( "/usr/bin/bash" );
         }
-        if ( ! sh.exists() )
+        if ( !sh.exists() )
         {
             sh = new File( "/bin/sh" );
         }
@@ -407,7 +446,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     private void stopEmulator( IDevice device )
     {
         int devicePort = extractPortFromDevice( device );
-        if ( devicePort == - 1 )
+        if ( devicePort == -1 )
         {
             getLog().info( "Unable to retrieve port to stop emulator " + DeviceHelper.getDescriptiveName( device ) );
         }
@@ -417,7 +456,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
 
             sendEmulatorCommand( devicePort, "avd stop" );
             boolean killed = sendEmulatorCommand( devicePort, "kill" );
-            if ( ! killed )
+            if ( !killed )
             {
                 getLog().info( "Emulator failed to stop " + DeviceHelper.getDescriptiveName( device ) );
             }
@@ -445,7 +484,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
         }
 
         //If the port is not available then return -1
-        return - 1;
+        return -1;
     }
 
     /**
@@ -526,10 +565,10 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      */
     private String assembleStartCommandLine() throws MojoExecutionException
     {
-      String emulatorPath = getAndroidSdk().getPathForTool( parsedExecutable );
-      StringBuilder startCommandline = new StringBuilder( "\"\"" ).append( emulatorPath ).append( "\"\"" )
+        String emulatorPath = getAndroidSdk().getPathForTool( parsedExecutable );
+        StringBuilder startCommandline = new StringBuilder( "\"\"" ).append( emulatorPath ).append( "\"\"" )
                 .append( " -avd " ).append( parsedAvd ).append( " " );
-        if ( ! StringUtils.isEmpty( parsedOptions ) )
+        if ( !StringUtils.isEmpty( parsedOptions ) )
         {
             startCommandline.append( parsedOptions );
         }
@@ -591,6 +630,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
 
     /**
      * Get executable value for emulator from command line options or default to "emulator".
+     *
      * @return
      */
     private String determineExecutable()
@@ -612,7 +652,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      *
      * @return if available return command line value otherwise return default value (5000).
      */
-    private String determineWait()
+    String determineWait()
     {
         String wait;
         if ( emulatorWait != null )
@@ -650,7 +690,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      *
      * @return if available return command line value otherwise return default value ("Default").
      */
-    private String determineAvd()
+    String determineAvd()
     {
         String avd;
         if ( emulatorAvd != null )
