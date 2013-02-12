@@ -173,12 +173,15 @@ public class AndroidNdk
         }
     }
 
-
-    public File getGdbServer( String toolchain ) throws MojoExecutionException
+    public File getGdbServer( String ndkArchitecture ) throws MojoExecutionException
     {
         final File gdbServerFile;
-
-        gdbServerFile = new File( ndkPath, "toolchains/" + toolchain + "/prebuilt/gdbserver" );
+        String toolchain = "";
+        if ( "armeabi".equals( ndkArchitecture ) || "armeabi-v7a".equals( ndkArchitecture ) )
+        {
+            ndkArchitecture = "arm";
+        }
+        gdbServerFile = new File( ndkPath, "prebuilt/android-" + ndkArchitecture + "/gdbserver/gdbserver" );
 
         // Some basic validation
         if ( ! gdbServerFile.exists() )
