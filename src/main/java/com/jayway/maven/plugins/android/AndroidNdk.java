@@ -35,17 +35,25 @@ public class AndroidNdk
     /**
      * Arm toolchain implementations.
      */
-    private static final String[] ARM_TOOLCHAIN = { "arm-linux-androideabi-4.4.3" };
+    private static final String[] ARM_TOOLCHAIN = {  "arm-linux-androideabi-4.4.3", "arm-linux-androideabi-4.6",
+                                                     "arm-linux-androideabi-4.7" };
 
     /**
      * x86 toolchain implementations.
      */
-    private static final String[] X86_TOOLCHAIN = { "x86-4.4.3" };
+    private static final String[] X86_TOOLCHAIN = { "x86-4.4.3", "x86-4.6", "x86-4.7" };
 
     /**
      * Mips toolchain implementations.
      */
-    private static final String[] MIPS_TOOLCHAIN = { "mipsel-linux-android-4.4.3" };
+    private static final String[] MIPS_TOOLCHAIN = { "mipsel-linux-android-4.4.3", "mipsel-linux-android-4.6",
+                                                     "mipsel-linux-android-4.7" };
+
+    /**
+     * Possible locations for the gdbserver file.
+     */
+    private static final String[] GDB_SERVER_LOCATIONS = { "toolchains/%s/prebuilt/gdbserver",
+                                                           "prebuilt/android-%s/gdbserver/gdbserver" };
 
     private final File ndkPath;
 
@@ -173,21 +181,20 @@ public class AndroidNdk
         }
     }
 
-
     public File getGdbServer( String toolchain ) throws MojoExecutionException
     {
-        final File gdbServerFile;
-
-        gdbServerFile = new File( ndkPath, "toolchains/" + toolchain + "/prebuilt/gdbserver" );
-
-        // Some basic validation
-        if ( ! gdbServerFile.exists() )
+        // check for the gdb server
+        for ( String location : GDB_SERVER_LOCATIONS )
         {
-            throw new MojoExecutionException( "gdbserver binary " + gdbServerFile.getAbsolutePath()
-                    + " does not exist, please double check the toolchain and OS used" );
+            File gdbServerFile = new File( ndkPath, String.format( location, toolchain ) );
+            if ( gdbServerFile.exists() )
+            {
+                return gdbServerFile;
+            }
         }
 
-        // We should be good to go
-        return gdbServerFile;
+        //  if we got here, throw an error
+        throw new MojoExecutionException( "gdbserver binary for toolchain " + toolchain
+            + " does not exist, please double check the toolchain and OS used" );
     }
 }
