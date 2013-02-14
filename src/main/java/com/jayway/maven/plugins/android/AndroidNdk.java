@@ -183,13 +183,24 @@ public class AndroidNdk
 
     public File getGdbServer( String toolchain ) throws MojoExecutionException
     {
+        // right now there is two possible locations for the architecture
+        String architecture = toolchain.split( "-" )[0];
+        if ( "mipsel".equals( architecture ) )
+        {
+            architecture = "mips";
+        }
+        String[] ndkArchitectures = { toolchain, architecture };
+
         // check for the gdb server
         for ( String location : GDB_SERVER_LOCATIONS )
         {
-            File gdbServerFile = new File( ndkPath, String.format( location, toolchain ) );
-            if ( gdbServerFile.exists() )
+            for ( String ndkArchitecture : ndkArchitectures )
             {
-                return gdbServerFile;
+                File gdbServerFile = new File( ndkPath, String.format( location, ndkArchitecture ) );
+                if ( gdbServerFile.exists() )
+                {
+                    return gdbServerFile;
+                }
             }
         }
 
