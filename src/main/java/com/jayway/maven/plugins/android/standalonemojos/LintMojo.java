@@ -35,7 +35,7 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * The configuration for the lint goal. As soon as a lint goal is invoked the command will be executed unless the
      * skip parameter is set. A minimal configuration that will run lint and produce a XML report in
-     * ${project.build.directory}/lint/lint.xml is
+     * ${project.build.directory}/lint/lint-results.xml is
      * 
      * <pre>
      * &lt;lint&gt;
@@ -62,7 +62,7 @@ public class LintMojo extends AbstractAndroidMojo
      *     &lt;enableSimpleHtml&gt;true|false&lt;/enableSimpleHtml&gt;
      *     &lt;simpleHtmlOutputPath&gt;${project.build.directory}/lint/lint-simple-html&lt;/simpleHtmlOutputPath&gt;
      *     &lt;enableXml&gt;true|false&lt;/enableXml&gt;
-     *     &lt;xmlOutputPath&gt;${project.build.directory}/lint/lint.xml&lt;/xmlOutputPath&gt;
+     *     &lt;xmlOutputPath&gt;${project.build.directory}/lint/lint-results.xml&lt;/xmlOutputPath&gt;
      *     &lt;enableSources&gt;true|false&lt;/enableSources&gt;
      *     &lt;sources&gt;${project.build.sourceDirecory}}&lt;/sources&gt;
      *     &lt;enableClasspath&gt;true|false&lt;/enableClasspath&gt;
@@ -263,7 +263,7 @@ public class LintMojo extends AbstractAndroidMojo
 
     /**
      * Create an XML report. If the filename is a directory (or a new filename without an extension), lint will create a
-     * separate report for each scanned project. Defaults to ${project.build.directory}/lint/lint.xml.
+     * separate report for each scanned project. Defaults to ${project.build.directory}/lint/lint-results.xml.
      * 
      * @parameter expression="${android.lint.xmlOutputPath}"
      * @see com.jayway.maven.plugins.android.configuration.Lint#xmlOutputPath
@@ -544,7 +544,7 @@ public class LintMojo extends AbstractAndroidMojo
 
         if ( parsedXmlOutputPath == null )
         {
-            File reportPath = new File( project.getBuild().getDirectory(), "lint/lint.xml" );
+            File reportPath = new File( project.getBuild().getDirectory(), "lint/lint-results.xml" );
             createReportDirIfNeeded( reportPath );
             return reportPath.getAbsolutePath();
         }
