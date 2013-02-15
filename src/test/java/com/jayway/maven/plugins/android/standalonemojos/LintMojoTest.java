@@ -105,8 +105,8 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         assertEquals( "lint url parameter should be none", "none", lintUrl );
 
         assertTrue( "lint enableXml parameter should be true", lintEnableXml );
-        File lintXmlOutputFile = new File( project.getBuild().getDirectory(), "lint/lint.xml" );
-        assertEquals( "lint xmlOutputPath parameter should point to lint.xml", lintXmlOutputFile.getAbsolutePath(),
+        File lintXmlOutputFile = new File( project.getBuild().getDirectory(), "lint/lint-results.xml" );
+        assertEquals( "lint xmlOutputPath parameter should point to lint-results.xml", lintXmlOutputFile.getAbsolutePath(),
                 lintXmlOutputPath );
         assertFalse( "lint enableHtml parameter should be false", lintEnableHtml );
         File lintHtmlOutputFile = new File( project.getBuild().getDirectory(), "lint/lint-html" );
@@ -235,7 +235,7 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         List< String > parametersExpected = new ArrayList< String >();
         parametersExpected.add( "--showall" );
         parametersExpected.add( "--xml" );
-        parametersExpected.add( projectBaseDir.getAbsolutePath() + "/target/lint/lint.xml" );
+        parametersExpected.add( projectBaseDir.getAbsolutePath() + "/target/lint/lint-results.xml" );
         parametersExpected.add( "--sources" );
         parametersExpected.add( projectBaseDir.getAbsolutePath() + "/src" );
         parametersExpected.add( projectBaseDir.getAbsolutePath() );
