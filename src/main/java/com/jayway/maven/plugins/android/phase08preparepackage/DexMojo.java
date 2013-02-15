@@ -60,6 +60,7 @@ public class DexMojo extends AbstractAndroidMojo
      *   &lt;coreLibrary&gt;true|false&lt;/coreLibrary&gt;
      *   &lt;noLocals&gt;true|false&lt;/noLocals&gt;
      *   &lt;optimize&gt;true|false&lt;/optimize&gt;
+     *   &lt;predex&gt;path to predexed libraries, defaults to target/dexedLibs&lt;/predex&gt;
      * &lt;/dex&gt;
      * </pre>
      * <p/>
