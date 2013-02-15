@@ -18,6 +18,9 @@ import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Represents an Android NDK.
@@ -53,7 +56,7 @@ public class AndroidNdk
      * Possible locations for the gdbserver file.
      */
     private static final String[] GDB_SERVER_LOCATIONS = { "toolchains/%s/prebuilt/gdbserver",
-                                                           "prebuilt/android-%s/gdbserver/gdbserver" };
+                                                           "prebuilt/%s/gdbserver/gdbserver" };
 
     private final File ndkPath;
 
@@ -181,15 +184,25 @@ public class AndroidNdk
         }
     }
 
-    public File getGdbServer( String toolchain ) throws MojoExecutionException
+    public File getGdbServer( String architecture ) throws MojoExecutionException
     {
-        // right now there is two possible locations for the architecture
-        String architecture = toolchain.split( "-" )[0];
-        if ( "mipsel".equals( architecture ) )
+        // create a list of possible gdb server parent folder locations
+        List<String> ndkArchitectures = new ArrayList<String>();
+        if ( architecture.startsWith( "arm" ) )
         {
-            architecture = "mips";
+            ndkArchitectures.add( "android-arm" );
+            ndkArchitectures.addAll( Arrays.asList( ARM_TOOLCHAIN ) );
         }
-        String[] ndkArchitectures = { toolchain, architecture };
+        else if ( architecture.startsWith( "x86" ) )
+        {
+            ndkArchitectures.add( "android-x86" );
+            ndkArchitectures.addAll( Arrays.asList( X86_TOOLCHAIN ) );
+        }
+        else if ( architecture.startsWith( "mips" ) )
+        {
+            ndkArchitectures.add( "android-mips" );
+            ndkArchitectures.addAll( Arrays.asList( MIPS_TOOLCHAIN ) );
+        }
 
         // check for the gdb server
         for ( String location : GDB_SERVER_LOCATIONS )
@@ -205,7 +218,7 @@ public class AndroidNdk
         }
 
         //  if we got here, throw an error
-        throw new MojoExecutionException( "gdbserver binary for toolchain " + toolchain
+        throw new MojoExecutionException( "gdbserver binary for architecture " + architecture
             + " does not exist, please double check the toolchain and OS used" );
     }
 }

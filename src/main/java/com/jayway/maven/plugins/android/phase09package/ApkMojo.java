@@ -958,7 +958,7 @@ public class ApkMojo extends AbstractAndroidMojo
             if ( apkDebug )
             {
                 // Copy the gdbserver binary to libs/<architecture>/
-                final File gdbServerFile = getAndroidNdk().getGdbServer( apkNativeToolchain );
+                final File gdbServerFile = getAndroidNdk().getGdbServer( architecture );
                 final File destDir = new File( destinationDirectory, architecture );
                 final File destFile = new File( destDir, "gdbserver" );
                 if ( ! destFile.exists() )
