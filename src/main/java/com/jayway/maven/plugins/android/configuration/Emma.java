@@ -26,6 +26,13 @@ public class Emma
      */
     private String outputMetaFile;
 
+    private String filters;
+
+    public String getFilters()
+    {
+        return filters;
+    }
+
     public Boolean isEnable()
     {
         return enable;
