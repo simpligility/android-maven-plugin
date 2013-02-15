@@ -29,6 +29,10 @@ public class Dex
      * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#dexPreDex}
      */
     private Boolean preDex;
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#dexPreDexLibLocation}
+     */
+    private String preDexLibLocation;
 
     public String[] getJvmArguments()
     {
@@ -53,5 +57,10 @@ public class Dex
     public Boolean isPreDex()
     {
         return preDex;
+    }
+
+    public String getPreDexLibLocation()
+    {
+      return preDexLibLocation;
     }
 }
