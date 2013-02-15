@@ -105,15 +105,15 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         assertEquals( "lint url parameter should be none", "none", lintUrl );
 
         assertTrue( "lint enableXml parameter should be true", lintEnableXml );
-        File lintXmlOutputFile = new File( project.getBuild().getDirectory(), "lint/lint-results.xml" );
+        File lintXmlOutputFile = new File( project.getBuild().getDirectory(), "lint-results/lint-results.xml" );
         assertEquals( "lint xmlOutputPath parameter should point to lint-results.xml", lintXmlOutputFile.getAbsolutePath(),
                 lintXmlOutputPath );
         assertFalse( "lint enableHtml parameter should be false", lintEnableHtml );
-        File lintHtmlOutputFile = new File( project.getBuild().getDirectory(), "lint/lint-html" );
+        File lintHtmlOutputFile = new File( project.getBuild().getDirectory(), "lint-results/lint-results-html" );
         assertEquals( "lint htmlOutputPath parameter should point to lint-html", lintHtmlOutputFile.getAbsolutePath(),
                 lintHtmlOutputPath );
         assertFalse( "lint enableSimplHtml parameter should be false", lintEnableSimpleHtml );
-        File lintSimpleHtmlOutputFile = new File( project.getBuild().getDirectory(), "lint/lint-simple-html" );
+        File lintSimpleHtmlOutputFile = new File( project.getBuild().getDirectory(), "lint-results/lint-results-simple-html" );
         assertEquals( "lint simpleHtmlOutputPath parameter should point to lint-simple-html",
                 lintSimpleHtmlOutputFile.getAbsolutePath(), lintSimpleHtmlOutputPath );
 
@@ -235,7 +235,7 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         List< String > parametersExpected = new ArrayList< String >();
         parametersExpected.add( "--showall" );
         parametersExpected.add( "--xml" );
-        parametersExpected.add( projectBaseDir.getAbsolutePath() + "/target/lint/lint-results.xml" );
+        parametersExpected.add( projectBaseDir.getAbsolutePath() + "/target/lint-results/lint-results.xml" );
         parametersExpected.add( "--sources" );
         parametersExpected.add( projectBaseDir.getAbsolutePath() + "/src" );
         parametersExpected.add( projectBaseDir.getAbsolutePath() );
