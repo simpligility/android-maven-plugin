@@ -104,11 +104,20 @@ public class DexMojo extends AbstractAndroidMojo
      */
     private boolean dexPreDex;
 
+    /**
+     * Decides whether to predex the jars.
+     *
+     * @parameter expression="${android.dex.dexPreDexLibLocation}"
+     *            default-value="${project.build.directory}${file.separator}dexedLibs"
+     */
+    private String dexPreDexLibLocation;
+
     private String[] parsedJvmArguments;
     private boolean parsedCoreLibrary;
     private boolean parsedNoLocals;
     private boolean parsedOptimize;
     private boolean parsedPreDex;
+    private String parsedPreDexLibLocation;
 
     /**
      *
@@ -229,6 +238,14 @@ public class DexMojo extends AbstractAndroidMojo
             {
                 parsedPreDex = dex.isPreDex();
             }
+            if ( dex.getPreDexLibLocation() == null )
+            {
+                parsedPreDexLibLocation = dexPreDexLibLocation;
+            }
+            else
+            {
+                parsedPreDexLibLocation = dex.getPreDexLibLocation();
+            }
         }
         else
         {
@@ -237,6 +254,7 @@ public class DexMojo extends AbstractAndroidMojo
             parsedNoLocals = dexNoLocals;
             parsedOptimize = dexOptimize;
             parsedPreDex = dexPreDex;
+            parsedPreDexLibLocation = dexPreDexLibLocation;
         }
     }
 
@@ -285,7 +303,7 @@ public class DexMojo extends AbstractAndroidMojo
   private File predexJarPath( File inputFile )
   {
     final String slash = File.separator;
-    final File predexLibsDirectory = new File( project.getBuild().getDirectory() + slash + "dexedLibs" );
+    final File predexLibsDirectory = new File( parsedPreDexLibLocation.trim() );
     predexLibsDirectory.mkdirs();
     return new File( predexLibsDirectory.getAbsolutePath() + slash + inputFile.getName() );
   }
