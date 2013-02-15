@@ -58,11 +58,12 @@ public class LintMojo extends AbstractAndroidMojo
      *     &lt;disableSourceLines&gt;true|false&lt;/disableSourceLines&gt;
      *     &lt;url&gt;none|a=b&lt;/url&gt;
      *     &lt;enableHtml&gt;true|false&lt;/enableHtml&gt;
-     *     &lt;htmlOutputPath&gt;${project.build.directory}/lint/lint-html/&lt;/htmlOutputPath&gt;
+     *     &lt;htmlOutputPath&gt;${project.build.directory}/lint-results/lint-results-html/&lt;/htmlOutputPath&gt;
      *     &lt;enableSimpleHtml&gt;true|false&lt;/enableSimpleHtml&gt;
-     *     &lt;simpleHtmlOutputPath&gt;${project.build.directory}/lint/lint-simple-html&lt;/simpleHtmlOutputPath&gt;
+     *     &lt;simpleHtmlOutputPath&gt;${project.build.directory}/lint-results/lint-results-simple-html
+     *     &lt;/simpleHtmlOutputPath&gt;
      *     &lt;enableXml&gt;true|false&lt;/enableXml&gt;
-     *     &lt;xmlOutputPath&gt;${project.build.directory}/lint/lint-results.xml&lt;/xmlOutputPath&gt;
+     *     &lt;xmlOutputPath&gt;${project.build.directory}/lint-results/lint-results.xml&lt;/xmlOutputPath&gt;
      *     &lt;enableSources&gt;true|false&lt;/enableSources&gt;
      *     &lt;sources&gt;${project.build.sourceDirecory}}&lt;/sources&gt;
      *     &lt;enableClasspath&gt;true|false&lt;/enableClasspath&gt;
@@ -73,7 +74,7 @@ public class LintMojo extends AbstractAndroidMojo
      * </pre>
      * 
      * 
-     * Alternatively to the plugin configuraton values can also be configured as properties on the command line as 
+     * Alternatively to the plugin configuration values can also be configured as properties on the command line as 
      * android.lint.* or in pom or settings file as properties like lint*.
      * 
      * @parameter
@@ -518,7 +519,7 @@ public class LintMojo extends AbstractAndroidMojo
     {
         if ( parsedHtmlOutputPath == null )
         {
-            File reportPath = new File( project.getBuild().getDirectory(), "lint/lint-html" );
+            File reportPath = new File( project.getBuild().getDirectory(), "lint-results/lint-results-html" );
             createReportDirIfNeeded( reportPath );
             return reportPath.getAbsolutePath();
         }
@@ -530,7 +531,7 @@ public class LintMojo extends AbstractAndroidMojo
     {
         if ( parsedSimpleHtmlOutputPath == null )
         {
-            File reportPath = new File( project.getBuild().getDirectory(), "lint/lint-simple-html" );
+            File reportPath = new File( project.getBuild().getDirectory(), "lint-results/lint-results-simple-html" );
             createReportDirIfNeeded( reportPath );
             return reportPath.getAbsolutePath();
         }
@@ -544,7 +545,7 @@ public class LintMojo extends AbstractAndroidMojo
 
         if ( parsedXmlOutputPath == null )
         {
-            File reportPath = new File( project.getBuild().getDirectory(), "lint/lint-results.xml" );
+            File reportPath = new File( project.getBuild().getDirectory(), "lint-results/lint-results.xml" );
             createReportDirIfNeeded( reportPath );
             return reportPath.getAbsolutePath();
         }
