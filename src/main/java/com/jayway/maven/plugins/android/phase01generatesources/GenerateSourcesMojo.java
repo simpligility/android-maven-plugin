@@ -460,6 +460,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
         if ( proguardFile != null )
         {
+            File parentFolder = proguardFile.getParentFile();
+            if ( parentFolder != null )
+            {
+                parentFolder.mkdirs();
+            }
             commands.add( "-G" );
             commands.add( proguardFile.getAbsolutePath() );
         }
