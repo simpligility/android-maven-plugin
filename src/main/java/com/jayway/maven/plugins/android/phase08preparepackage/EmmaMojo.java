@@ -6,6 +6,7 @@ import com.vladium.emma.instr.InstrProcessor;
 import com.vladium.emma.instr.InstrProcessor.OutMode;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ public class EmmaMojo extends AbstractAndroidMojo
      *   &lt;enable&gt;true|false&lt;/enable&gt;
      *   &lt;classFolders&gt;${project}/target/classes&lt;/classFolders&gt;
      *   &lt;outputMetaFile&gt;${project}/target/emma/coverage.em&lt;/outputMetaFile&gt;
+     *   &lt;filters&gt;${project}classpaths,comma separatedlt;/filters&gt;
      * &lt;/emma&gt;
      * </pre>
      * <p/>
@@ -61,10 +63,18 @@ public class EmmaMojo extends AbstractAndroidMojo
      */
     private File emmaOutputMetaFile;
 
+    /**
+     * Decides whether to enable or not enable emma.
+     *
+     * @parameter expression="${android.emma.filters}"
+     */
+    private String emmaFilters;
+
     private boolean parsedEnable;
     private String[] parsedEmmaClassFolders;
     private String parsedOutputMetadataFile;
-
+    private String parsedFilters;
+    
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         getLog().debug( "Emma start working. Before parse configuration" );
@@ -77,9 +87,9 @@ public class EmmaMojo extends AbstractAndroidMojo
                     + parsedEmmaClassFolders );
             getLog().debug( "configuration:  parsedOutputMetadataFile " + parsedOutputMetadataFile );
             InstrProcessor processor = InstrProcessor.create();
-            if ( emma.getFilters() != null )
+            if ( StringUtils.isNotEmpty( parsedFilters ) )
             {
-                processor.setInclExclFilter( emma.getFilters().split( "," ) );
+                processor.setInclExclFilter( parsedFilters.split( "," ) );
             }
             processor.setInstrPath( parsedEmmaClassFolders, true );
             processor.setInstrOutDir( parsedEmmaClassFolders[ 0 ] ); //always to first define folder
@@ -120,12 +130,17 @@ public class EmmaMojo extends AbstractAndroidMojo
             {
                 parsedOutputMetadataFile = getDefaultMetaDataFile();
             }
+            if ( StringUtils.isNotEmpty( emma.getFilters() ) ) 
+            {    
+                parsedFilters = emma.getFilters();
+            }
         }
         else
         {
             parsedEnable = emmaEnable;
             parsedEmmaClassFolders = new String[]{ emmaClassFolders };
             parsedOutputMetadataFile = emmaOutputMetaFile.getAbsolutePath();
+            parsedFilters = emmaFilters;
         }
     }
 
