@@ -77,6 +77,10 @@ public class EmmaMojo extends AbstractAndroidMojo
                     + parsedEmmaClassFolders );
             getLog().debug( "configuration:  parsedOutputMetadataFile " + parsedOutputMetadataFile );
             InstrProcessor processor = InstrProcessor.create();
+            if ( emma.getFilters() != null )
+            {
+                processor.setInclExclFilter( emma.getFilters().split( "," ) );
+            }
             processor.setInstrPath( parsedEmmaClassFolders, true );
             processor.setInstrOutDir( parsedEmmaClassFolders[ 0 ] ); //always to first define folder
             processor.setMetaOutFile( parsedOutputMetadataFile );
