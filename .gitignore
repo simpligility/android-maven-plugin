@@ -7,3 +7,4 @@ target
 .project
 .classpath
 bin
+atlassian-ide-plugin.xml
