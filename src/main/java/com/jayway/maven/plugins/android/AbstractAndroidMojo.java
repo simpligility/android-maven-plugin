@@ -638,21 +638,24 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         {
             public void doWithDevice( final IDevice device ) throws MojoExecutionException
             {
+                String deviceLogLinePrefix = DeviceHelper.getDeviceLogLinePrefix( device );
                 try
                 {
                     String result = device.installPackage( apkFile.getAbsolutePath(), true );
                     // according to the docs for installPackage, not null response is error
                     if ( result != null )
                     {
-                        throw new MojoExecutionException( "Install of " + apkFile.getAbsolutePath()
+                        throw new MojoExecutionException( deviceLogLinePrefix 
+                                + "Install of " + apkFile.getAbsolutePath()
                                 + " failed - [" + result + "]" );
                     }
-                    getLog().info( "Successfully installed " + apkFile.getAbsolutePath() + " to "
+                    getLog().info( deviceLogLinePrefix + "Successfully installed " + apkFile.getAbsolutePath() + " to "
                             + DeviceHelper.getDescriptiveName( device ) );
                 }
                 catch ( InstallException e )
                 {
-                    throw new MojoExecutionException( "Install of " + apkFile.getAbsolutePath() + " failed.", e );
+                    throw new MojoExecutionException( deviceLogLinePrefix + "Install of " + apkFile.getAbsolutePath() 
+                            + " failed.", e );
                 }
             }
         } );
@@ -874,17 +877,19 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         {
             public void doWithDevice( final IDevice device ) throws MojoExecutionException
             {
+                String deviceLogLinePrefix = DeviceHelper.getDeviceLogLinePrefix( device );
                 try
                 {
                     device.uninstallPackage( packageName );
-                    getLog().info( "Successfully uninstalled " + packageName + " from "
+                    getLog().info( deviceLogLinePrefix + "Successfully uninstalled " + packageName + " from "
                             + DeviceHelper.getDescriptiveName( device ) );
                     result.set( true );
                 }
                 catch ( InstallException e )
                 {
                     result.set( false );
-                    throw new MojoExecutionException( "Uninstall of " + packageName + " failed.", e );
+                    throw new MojoExecutionException( deviceLogLinePrefix + "Uninstall of " + packageName 
+                            + " failed.", e );
                 }
             }
         } );

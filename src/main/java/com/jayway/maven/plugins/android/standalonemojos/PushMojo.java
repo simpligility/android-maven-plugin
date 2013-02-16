@@ -112,6 +112,8 @@ public class PushMojo extends AbstractAndroidMojo
         {
             public void doWithDevice( final IDevice device ) throws MojoExecutionException
             {
+                String deviceLogLinePrefix = DeviceHelper.getDeviceLogLinePrefix( device );
+
                 // message will be set in for each loop according to the processed files
                 String message = "";
 
@@ -124,7 +126,7 @@ public class PushMojo extends AbstractAndroidMojo
                         String sourcePath = pushFileEntry.getKey();
                         String destinationPath = pushFileEntry.getValue();
 
-                        message = "Push of " + sourcePath + " to " + destinationPath + " on "
+                        message = deviceLogLinePrefix + "Push of " + sourcePath + " to " + destinationPath + " on "
                                 + DeviceHelper.getDescriptiveName( device );
 
                         syncService.pushFile( sourcePath, destinationPath, new LogSyncProgressMonitor( getLog() ) );
