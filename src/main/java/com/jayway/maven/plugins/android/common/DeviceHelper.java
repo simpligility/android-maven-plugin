@@ -43,6 +43,11 @@ public class DeviceHelper
 
         return FileNameHelper.fixFileName( identfier.toString() );
     }
+    
+    public static String getDeviceLogLinePrefix( IDevice device ) 
+    {
+        return getDescriptiveName( device ) + " :   ";
+    }
 
     /**
      * @return the manufacturer of the device as set in #MANUFACTURER_PROPERTY, typically "unknown" for emulators

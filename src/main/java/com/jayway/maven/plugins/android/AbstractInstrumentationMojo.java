@@ -331,6 +331,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         {
             public void doWithDevice( final IDevice device ) throws MojoExecutionException, MojoFailureException
             {
+                String deviceLogLinePrefix = DeviceHelper.getDeviceLogLinePrefix( device );
+
                 RemoteAndroidTestRunner remoteAndroidTestRunner = new RemoteAndroidTestRunner(
                         parsedInstrumentationPackage, parsedInstrumentationRunner, device );
 
@@ -339,7 +341,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                     for ( String str : packagesList.split( "," ) )
                     {
                         remoteAndroidTestRunner.setTestPackageName( str );
-                        getLog().info( "Running tests for specified test package: " + str );
+                        getLog().info( deviceLogLinePrefix + "Running tests for specified test package: " + str );
                     }
                 }
 
@@ -347,7 +349,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                 {
                     remoteAndroidTestRunner
                             .setClassNames( parsedClasses.toArray( new String[ parsedClasses.size() ] ) );
-                    getLog().info( "Running tests for specified test classes/methods: " + parsedClasses );
+                    getLog().info( deviceLogLinePrefix + "Running tests for specified test classes/methods: " 
+                            + parsedClasses );
                 }
 
                 if ( parsedAnnotations != null )
@@ -382,41 +385,41 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                     remoteAndroidTestRunner.setTestSize( validSize );
                 }
 
-                getLog().info( "Running instrumentation tests in " + parsedInstrumentationPackage + " on "
-                        + device.getSerialNumber() + " (avdName=" + device.getAvdName() + ")" );
+                getLog().info( deviceLogLinePrefix +  "Running instrumentation tests in " 
+                        + parsedInstrumentationPackage );
                 try
                 {
                     AndroidTestRunListener testRunListener = new AndroidTestRunListener( project, device );
                     remoteAndroidTestRunner.run( testRunListener );
                     if ( testRunListener.hasFailuresOrErrors() )
                     {
-                        throw new MojoFailureException( "Tests failed on device." );
+                        throw new MojoFailureException( deviceLogLinePrefix +  "Tests failed on device." );
                     }
                     if ( testRunListener.testRunFailed() )
                     {
-                        throw new MojoFailureException(
-                                "Test run failed to complete: " + testRunListener.getTestRunFailureCause() );
+                        throw new MojoFailureException( deviceLogLinePrefix + "Test run failed to complete: " 
+                                + testRunListener.getTestRunFailureCause() );
                     }
                     if ( testRunListener.threwException() )
                     {
-                        throw new MojoFailureException( testRunListener.getExceptionMessages() );
+                        throw new MojoFailureException( deviceLogLinePrefix +  testRunListener.getExceptionMessages() );
                     }
                 }
                 catch ( TimeoutException e )
                 {
-                    throw new MojoExecutionException( "timeout", e );
+                    throw new MojoExecutionException( deviceLogLinePrefix + "timeout", e );
                 }
                 catch ( AdbCommandRejectedException e )
                 {
-                    throw new MojoExecutionException( "adb command rejected", e );
+                    throw new MojoExecutionException( deviceLogLinePrefix + "adb command rejected", e );
                 }
                 catch ( ShellCommandUnresponsiveException e )
                 {
-                    throw new MojoExecutionException( "shell command " + "unresponsive", e );
+                    throw new MojoExecutionException( deviceLogLinePrefix + "shell command " + "unresponsive", e );
                 }
                 catch ( IOException e )
                 {
-                    throw new MojoExecutionException( "IO problem", e );
+                    throw new MojoExecutionException( deviceLogLinePrefix + "IO problem", e );
                 }
             }
         };
@@ -692,6 +695,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
          */
         private final IDevice device;
 
+        private final String deviceLogLinePrefix;
 
         // junit xml report related fields
         private Document junitReport;
@@ -714,12 +718,13 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         {
             this.project = project;
             this.device = device;
+            this.deviceLogLinePrefix = DeviceHelper.getDeviceLogLinePrefix( device );
         }
 
         public void testRunStarted( String runName, int testCount )
         {
             this.testCount = testCount;
-            getLog().info( INDENT + "Run started: " + runName + ", " + testCount + " tests:" );
+            getLog().info( deviceLogLinePrefix + INDENT + "Run started: " + runName + ", " + testCount + " tests:" );
 
             if ( parsedCreateReport )
             {
@@ -799,7 +804,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         public void testStarted( TestIdentifier testIdentifier )
         {
             testRunCount++;
-            getLog().info( String.format( "%1$s%1$sStart [%2$d/%3$d]: %4$s", INDENT, testRunCount, testCount,
+            getLog().info( deviceLogLinePrefix 
+                    + String.format( "%1$s%1$sStart [%2$d/%3$d]: %4$s", INDENT, testRunCount, testCount,
                     testIdentifier.toString() ) );
 
             if ( parsedCreateReport )
@@ -830,8 +836,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             {
                 ++ testFailureCount;
             }
-            getLog().info( INDENT + INDENT + status.name() + ":" + testIdentifier.toString() );
-            getLog().info( INDENT + INDENT + trace );
+            getLog().info( deviceLogLinePrefix + INDENT + INDENT + status.name() + ":" + testIdentifier.toString() );
+            getLog().info( deviceLogLinePrefix + INDENT + INDENT + trace );
 
             if ( parsedCreateReport )
             {
@@ -864,7 +870,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
         public void testEnded( TestIdentifier testIdentifier, Map<String, String> testMetrics )
         {
-            getLog().info( String.format( "%1$s%1$sEnd [%2$d/%3$d]: %4$s", INDENT, testRunCount, testCount,
+            getLog().info( deviceLogLinePrefix 
+                    + String.format( "%1$s%1$sEnd [%2$d/%3$d]: %4$s", INDENT, testRunCount, testCount,
                     testIdentifier.toString() ) );
             logMetrics( testMetrics );
 
@@ -884,10 +891,10 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
         public void testRunEnded( long elapsedTime, Map<String, String> runMetrics )
         {
-            getLog().info( INDENT + "Run ended: " + elapsedTime + " ms" );
+            getLog().info( deviceLogLinePrefix + INDENT + "Run ended: " + elapsedTime + " ms" );
             if ( hasFailuresOrErrors() )
             {
-                getLog().error( INDENT + "FAILURES!!!" );
+                getLog().error( deviceLogLinePrefix + INDENT + "FAILURES!!!" );
             }
             getLog().info( INDENT + "Tests run: " + testRunCount
                     + ( testRunCount < testCount ? " (of " + testCount + ")" : "" )
@@ -928,12 +935,12 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         public void testRunFailed( String errorMessage )
         {
             testRunFailureCause = errorMessage;
-            getLog().info( INDENT + "Run failed: " + errorMessage );
+            getLog().info( deviceLogLinePrefix + INDENT + "Run failed: " + errorMessage );
         }
 
         public void testRunStopped( long elapsedTime )
         {
-            getLog().info( INDENT + "Run stopped:" + elapsedTime );
+            getLog().info( deviceLogLinePrefix + INDENT + "Run stopped:" + elapsedTime );
         }
 
 
@@ -1030,7 +1037,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                 Result result = new StreamResult( writer );
 
                 xformer.transform( source, result );
-                getLog().info( "Report file written to " + reportFile.getAbsolutePath() );
+                getLog().info( deviceLogLinePrefix + "Report file written to " + reportFile.getAbsolutePath() );
             }
             catch ( IOException e )
             {
@@ -1059,7 +1066,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         {
             for ( Map.Entry<String, String> entry : metrics.entrySet() )
             {
-                getLog().info( INDENT + INDENT + entry.getKey() + ": " + entry.getValue() );
+                getLog().info( deviceLogLinePrefix + INDENT + INDENT + entry.getKey() + ": " + entry.getValue() );
             }
         }
 

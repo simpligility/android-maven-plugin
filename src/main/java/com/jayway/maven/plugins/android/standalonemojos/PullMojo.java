@@ -113,6 +113,8 @@ public class PullMojo extends AbstractAndroidMojo
         {
             public void doWithDevice( final IDevice device ) throws MojoExecutionException
             {
+                String deviceLogLinePrefix = DeviceHelper.getDeviceLogLinePrefix( device );
+
                 // message will be set later according to the processed files
                 String message = "";
                 try
@@ -146,7 +148,8 @@ public class PullMojo extends AbstractAndroidMojo
                             fileEntries = fileListingService.getChildren( sourceFileEntry, true, null );
                         }
 
-                        message = "Pull of " + parsedSource + " to " + destinationDirPath + " from ";
+                        message = deviceLogLinePrefix + "Pull of " + parsedSource + " to " + destinationDirPath 
+                                + " from ";
 
                         syncService.pull( fileEntries, destinationDirPath, new LogSyncProgressMonitor( getLog() ) );
                     }
@@ -156,7 +159,7 @@ public class PullMojo extends AbstractAndroidMojo
                         File parentDir = new File( FilenameUtils.getFullPath( parsedDestination ) );
                         if ( ! parentDir.exists() )
                         {
-                            getLog().info( "Creating destination directory " + parentDir );
+                            getLog().info( deviceLogLinePrefix + "Creating destination directory " + parentDir );
                             parentDir.mkdirs();
                         }
 
@@ -174,8 +177,8 @@ public class PullMojo extends AbstractAndroidMojo
 
                         File destinationFile = new File( parentDir, destinationFileName );
                         String destinationFilePath = destinationFile.getAbsolutePath();
-                        message = "Pull of " + parsedSource + " to " + destinationFilePath + " from "
-                                + DeviceHelper.getDescriptiveName( device );
+                        message = deviceLogLinePrefix + "Pull of " + parsedSource + " to " + destinationFilePath 
+                                + " from " + DeviceHelper.getDescriptiveName( device );
 
                         syncService.pullFile( sourceFileEntry, destinationFilePath,
                                 new LogSyncProgressMonitor( getLog() ) );
