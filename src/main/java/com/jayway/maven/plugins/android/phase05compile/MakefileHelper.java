@@ -436,7 +436,7 @@ public class MakefileHelper
                 {
                     // We're on windows and the path is <Drive>:\ so we
                     // add the <Drive>: to the list
-                    result.add( strF.substring( 0, strF.length() - 1 ) );
+                    result.add( strF.substring( 0, strF.length() - 1 ).toUpperCase() );
                 }
             }
         }
