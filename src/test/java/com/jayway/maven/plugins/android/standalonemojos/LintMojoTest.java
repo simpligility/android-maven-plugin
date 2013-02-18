@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.model.Build;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -235,9 +236,10 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         List< String > parametersExpected = new ArrayList< String >();
         parametersExpected.add( "--showall" );
         parametersExpected.add( "--xml" );
-        parametersExpected.add( projectBaseDir.getAbsolutePath() + "/target/lint-results/lint-results.xml" );
+        parametersExpected.add( projectBaseDir.getAbsolutePath()
+                + FilenameUtils.separatorsToSystem( "/target/lint-results/lint-results.xml" ) );
         parametersExpected.add( "--sources" );
-        parametersExpected.add( projectBaseDir.getAbsolutePath() + "/src" );
+        parametersExpected.add( projectBaseDir.getAbsolutePath() + File.separator + "src" );
         parametersExpected.add( projectBaseDir.getAbsolutePath() );
         parametersExpected.add( "--exitcode" );
         assertEquals( parametersExpected, parameters );
