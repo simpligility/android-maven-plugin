@@ -91,16 +91,16 @@ public class AbstractAndroidMojoTest {
     }
 
     @Test
-    public void givenApidemosApkThenPackageIsFound() throws IOException, MojoExecutionException {
+    public void givenApidemosApkThenPackageIsFound() throws IOException, MojoExecutionException, URISyntaxException {
         final URL    resource     = this.getClass().getResource("apidemos-0.1.0-SNAPSHOT.apk");
-        final String foundPackage = androidMojo.extractPackageNameFromApk(new File(resource.getFile()));
+        final String foundPackage = androidMojo.extractPackageNameFromApk(new File(new URI(resource.toString())));
         Assert.assertEquals("com.example.android.apis", foundPackage);
     }
 
     @Test
-    public void givenApidemosPlatformtestsApkThenPackageIsFound() throws IOException, MojoExecutionException {
+    public void givenApidemosPlatformtestsApkThenPackageIsFound() throws IOException, MojoExecutionException, URISyntaxException {
         final URL    resource     = this.getClass().getResource("apidemos-platformtests-0.1.0-SNAPSHOT.apk");
-        final String foundPackage = androidMojo.extractPackageNameFromApk(new File(resource.getFile()));
+        final String foundPackage = androidMojo.extractPackageNameFromApk(new File(new URI(resource.toString())));
         Assert.assertEquals("com.example.android.apis.tests", foundPackage);
     }
 
