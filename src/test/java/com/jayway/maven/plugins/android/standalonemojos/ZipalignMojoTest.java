@@ -124,18 +124,12 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
         mockExecutor.setLogger( EasyMock.anyObject( Log.class ) );
         mockExecutor.executeCommand( EasyMock.anyObject( String.class ), EasyMock.capture( capturedFile ) );
 
-        PowerMock.replace( PowerMock.method( FileUtils.class, "fileExists" ) ).with(
-                new InvocationHandler()
-                {
-                    @Override
-                    public Object invoke ( Object proxy, Method method, Object[] args ) throws Throwable
-                    {
-                        return true;
-                    }
-                } );
+        PowerMock.mockStatic( FileUtils.class );
+        EasyMock.expect( FileUtils.fileExists( "app-updated.apk" ) ).andReturn( true );
 
         EasyMock.replay( projectHelper );
         PowerMock.replay( mockExecutor );
+        PowerMock.replay( FileUtils.class );
 
         mojo.execute();
 
@@ -151,6 +145,9 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
 
         PowerMock.verify( projectHelper );
         assertEquals( "File should be same as expected", new File( "app-updated.apk" ), capturedParameter.getValue() );
+
+        // verify that all method were invoked
+        PowerMock.verify( FileUtils.class );
     }
 
     /**
@@ -183,27 +180,12 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
         mockExecutor.setLogger( EasyMock.anyObject( Log.class ) );
         mockExecutor.executeCommand( EasyMock.anyObject( String.class ), EasyMock.capture( capturedFile ) );
 
-        PowerMock.replace( PowerMock.method( FileUtils.class, "fileExists" ) ).with(
-                new InvocationHandler()
-                {
-                    @Override
-                    public Object invoke ( Object proxy, Method method, Object[] args ) throws Throwable
-                    {
-                        return true;
-                    }
-                } );
+        PowerMock.mockStatic( FileUtils.class );
+        EasyMock.expect( FileUtils.fileExists( "app-aligned-temp.apk" ) ).andReturn( true );
+        FileUtils.rename( new File( "app-aligned-temp.apk" ) , new File( "app.apk" ) );
+        EasyMock.expectLastCall();
 
-        PowerMock.replace( PowerMock.method( FileUtils.class, "rename" ) ).with(
-                new InvocationHandler()
-                {
-                    @Override
-                    public Object invoke ( Object proxy, Method method, Object[] args ) throws Throwable
-                    {
-                        return null;
-                    }
-                } );
-
-        EasyMock.replay( projectHelper );
+        PowerMock.replay( projectHelper );
         PowerMock.replay( mockExecutor );
         PowerMock.replay( FileUtils.class );
 
