@@ -1,7 +1,5 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
-
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
@@ -9,12 +7,17 @@ import com.jayway.maven.plugins.android.config.ConfigHandler;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.Zipalign;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
 
 /**
  * ZipalignMojo can run the zipalign command against the apk. Implements parsing parameters from pom or command line
@@ -22,7 +25,7 @@ import java.util.List;
  *
  * @author Manfred Moser <manfred@simpligility.com>
  * @goal zipalign
- * @requiresProject false
+ * @requiresProject true
  */
 public class ZipalignMojo extends AbstractAndroidMojo 
 {
@@ -36,8 +39,8 @@ public class ZipalignMojo extends AbstractAndroidMojo
      * &lt;zipalign&gt;
      *     &lt;skip&gt;false&lt;/skip&gt;
      *     &lt;verbose&gt;true&lt;/verbose&gt;
-     *     &lt;inputApk&gt;${project.build.directory}/${project.artifactId}.apk&lt;/inputApk&gt;
-     *     &lt;outputApk&gt;${project.build.directory}/${project.artifactId}-aligned.apk&lt;/outputApk&gt;
+     *     &lt;inputApk&gt;${project.build.directory}/${project.finalName}.apk&lt;/inputApk&gt;
+     *     &lt;outputApk&gt;${project.build.directory}/${project.finalName}-aligned.apk&lt;/outputApk&gt;
      * &lt;/zipalign&gt;
      * </pre>
      *
@@ -119,6 +122,9 @@ public class ZipalignMojo extends AbstractAndroidMojo
         ConfigHandler configHandler = new ConfigHandler( this );
         configHandler.parseConfiguration();
 
+        parsedInputApk = FilenameUtils.separatorsToSystem( parsedInputApk );
+        parsedOutputApk = FilenameUtils.separatorsToSystem( parsedOutputApk );
+
         getLog().debug( "skip:" + parsedSkip );
         getLog().debug( "verbose:" + parsedVerbose );
         getLog().debug( "inputApk:" + parsedInputApk );
@@ -130,6 +136,8 @@ public class ZipalignMojo extends AbstractAndroidMojo
         }
         else
         {
+            boolean outputToSameFile = sameOutputAsInput();
+
             CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
             executor.setLogger( this.getLog() );
 
@@ -143,7 +151,8 @@ public class ZipalignMojo extends AbstractAndroidMojo
             parameters.add( "-f" ); // force overwriting existing output file
             parameters.add( "4" ); // byte alignment has to be 4!
             parameters.add( parsedInputApk );
-            parameters.add( parsedOutputApk );
+            String outputApk = outputToSameFile ? getTemporaryOutputApkFilename() : parsedOutputApk;
+            parameters.add( outputApk );
 
             try
             {
@@ -151,17 +160,32 @@ public class ZipalignMojo extends AbstractAndroidMojo
                 getLog().info( "with parameters: " + parameters );
                 executor.executeCommand( command, parameters );
 
-                // Attach the resulting artifact (Issue 88)
-                // http://code.google.com/p/maven-android-plugin/issues/detail?id=88
-                File aligned = new File( parsedOutputApk );
-                if ( aligned.exists() )
+                if ( FileUtils.fileExists( outputApk ) )
                 {
-                    projectHelper.attachArtifact( project, APK, "aligned", aligned );
-                    getLog().info( "Attach " + aligned.getAbsolutePath() + " to the project" );
+                    if ( outputToSameFile )
+                    {
+                        // No needs to attach zipaligned apk to artifacts
+                        try
+                        {
+                            FileUtils.rename( new File( outputApk ),  new File( parsedInputApk ) );
+                        }
+                        catch ( IOException e )
+                        {
+                            getLog().error( "Failed to replace original apk with aligned "
+                                    + getFullPathWithName( outputApk ), e );
+                        }
+                    }
+                    else
+                    {
+                        // Attach the resulting artifact (Issue 88)
+                        // http://code.google.com/p/maven-android-plugin/issues/detail?id=88
+                        projectHelper.attachArtifact( project, APK, "aligned", new File( outputApk ) );
+                        getLog().info( "Attach " + getFullPathWithName( outputApk ) + " to the project" );
+                    }
                 }
                 else
                 {
-                    getLog().error( "Cannot attach " + aligned.getAbsolutePath() + " to the project"
+                    getLog().error( "Cannot attach " + getFullPathWithName( outputApk ) + " to the project"
                             + " - The file does not exist" );
                 }
             }
@@ -170,6 +194,22 @@ public class ZipalignMojo extends AbstractAndroidMojo
                 throw new MojoExecutionException( "", e );
             }
         }
+    }
+
+    private String getFullPathWithName( String filename )
+    {
+        return FilenameUtils.getFullPath( filename ) + FilenameUtils.getName( filename );
+    }
+
+    private boolean sameOutputAsInput()
+    {
+        return getFullPathWithName( parsedInputApk ).equals( getFullPathWithName( parsedOutputApk ) );
+    }
+
+    // zipalign doesn't allow output file to be same as input
+    private String getTemporaryOutputApkFilename()
+    {
+        return parsedOutputApk.substring( 0, parsedOutputApk.lastIndexOf( '.' ) ) + "-aligned-temp.apk";
     }
 
     /**
