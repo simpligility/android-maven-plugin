@@ -22,7 +22,7 @@
     <parent>
         <groupId>com.simpligility.maven</groupId>
         <artifactId>progressive-company-super-pom</artifactId>
-        <version>0.2.0</version>
+        <version>0.3.1</version>
     </parent>
     <groupId>com.jayway.maven.plugins.android.generation2</groupId>
     <artifactId>android-maven-plugin</artifactId>
@@ -35,7 +35,7 @@
     <properties>
         <scm.branch>master</scm.branch>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
+                                                                                                                                                                                                               f
         <!-- Don't upgrade maven-plugin-plugin until MPLUGIN-187 is fixed:
         http://jira.codehaus.org/browse/MPLUGIN-187 -->
         <!-- 3.1 is available but causes build failure like
