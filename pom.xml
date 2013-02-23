@@ -35,7 +35,6 @@
     <properties>
         <scm.branch>master</scm.branch>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-                                                                                                                                                                                                               f
         <!-- Don't upgrade maven-plugin-plugin until MPLUGIN-187 is fixed:
         http://jira.codehaus.org/browse/MPLUGIN-187 -->
         <!-- 3.1 is available but causes build failure like
@@ -95,6 +94,17 @@
     <prerequisites>
         <maven>[3.0.3,)</maven>
     </prerequisites>
+    <dependencyManagement>
+        <dependencies>
+            <!-- managing archiver explicitly to 2.3 since 2.2 as found in maven-archiver causes issues
+            with excessive logging -->
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-archiver</artifactId>
+                <version>2.3</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -151,9 +161,7 @@
         <dependency>
           <groupId>org.codehaus.plexus</groupId>
           <artifactId>plexus-archiver</artifactId>
-          <version>2.3</version>
         </dependency>
-
         <dependency>
           <artifactId>plexus-utils</artifactId>
           <groupId>org.codehaus.plexus</groupId>
