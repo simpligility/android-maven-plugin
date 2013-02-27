@@ -195,7 +195,7 @@ public class PushMojo extends AbstractAndroidMojo
                     // make the file's path relative - this is kind of a hack but it
                     // works just fine in this controlled environment
                     String filePath = file.getAbsolutePath().substring( sourceFile.getAbsolutePath().length() );
-                    filePath = filePath.replace(System.getProperty("file.separator"),"/");
+                    filePath = filePath.replace( System.getProperty( "file.separator" ), "/" );
                     result.put( file.getAbsolutePath(), destinationPath + filePath );
                 }
             }
