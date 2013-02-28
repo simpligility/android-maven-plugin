@@ -170,7 +170,7 @@ public class ApklibMojo extends AbstractAndroidMojo
                 {
                     if ( apkLibraryArtifact.getType().equals( APKLIB ) )
                     {
-                        final File apklibLibsDirectory = new File( getLibraryUnpackDirectory( apkLibraryArtifact )
+                        final File apklibLibsDirectory = new File( getLibraryUnpackDirectory( apkLibraryArtifact ) + "/"
                                 + NATIVE_LIBRARIES_FOLDER + "/" + ndkArchitecture );
 
                         if ( apklibLibsDirectory.exists() )
