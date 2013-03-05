@@ -164,6 +164,21 @@ public class ApklibMojo extends AbstractAndroidMojo
                 //        libraries from dependencies of the APKLIB
                 //final File dependentLibs = new File( ndkOutputDirectory.getAbsolutePath(), ndkArchitecture );
                 //addSharedLibraries( jarArchiver, dependentLibs, prefix );
+
+                // get native libs from other apklibs
+                for ( Artifact apkLibraryArtifact : getAllRelevantDependencyArtifacts() )
+                {
+                    if ( apkLibraryArtifact.getType().equals( APKLIB ) )
+                    {
+                        final File apklibLibsDirectory = new File( getLibraryUnpackDirectory( apkLibraryArtifact ) + "/"
+                                + NATIVE_LIBRARIES_FOLDER + "/" + ndkArchitecture );
+
+                        if ( apklibLibsDirectory.exists() )
+                        {
+                            addSharedLibraries( jarArchiver, apklibLibsDirectory, prefix );
+                        }
+                    }
+                }
             }
         }
         catch ( ArchiverException e )
@@ -268,11 +283,15 @@ public class ApklibMojo extends AbstractAndroidMojo
                 return name.startsWith( "lib" ) && name.endsWith( ".so" );
             }
         } );
-        for ( File libFile : libFiles ) 
+
+        if ( libFiles != null )
         {
-            String dest = prefix + "/" + libFile.getName();
-            getLog().debug( "Adding " + libFile + " as " + dest );
-            jarArchiver.addFile( libFile, dest );
+            for ( File libFile : libFiles )
+            {
+                String dest = prefix + "/" + libFile.getName();
+                getLog().debug( "Adding " + libFile + " as " + dest );
+                jarArchiver.addFile( libFile, dest );
+            }
         }
     }
 
