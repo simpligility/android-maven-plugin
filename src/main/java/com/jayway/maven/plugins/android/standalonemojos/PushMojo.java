@@ -46,6 +46,7 @@ import java.util.Map;
  * @goal push
  * @requiresProject false
  */
+@SuppressWarnings( "unused" )
 public class PushMojo extends AbstractAndroidMojo
 {
 
