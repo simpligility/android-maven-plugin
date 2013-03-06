@@ -51,8 +51,8 @@ import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
 import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
 import com.android.ddmlib.testrunner.ITestRunListener;
+import com.android.ddmlib.testrunner.RemoteAndroidTestRunner;
 import com.android.ddmlib.testrunner.TestIdentifier;
-import com.android.ddmlib.testrunner.UIAutomatorRemoteAndroidTestRunner;
 import com.jayway.maven.plugins.android.asm.AndroidTestFinder;
 import com.jayway.maven.plugins.android.common.DeviceHelper;
 import com.jayway.maven.plugins.android.configuration.Test;
@@ -334,9 +334,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             {
                 String deviceLogLinePrefix = DeviceHelper.getDeviceLogLinePrefix( device );
 
-                UIAutomatorRemoteAndroidTestRunner uIAutomatorRemoteAndroidTestRunner = //
-                new UIAutomatorRemoteAndroidTestRunner( parsedInstrumentationPackage, parsedInstrumentationRunner,
-                        device );
+                RemoteAndroidTestRunner uIAutomatorRemoteAndroidTestRunner = new RemoteAndroidTestRunner(
+                        parsedInstrumentationPackage, parsedInstrumentationRunner, device );
 
                 if ( packagesExists )
                 {
