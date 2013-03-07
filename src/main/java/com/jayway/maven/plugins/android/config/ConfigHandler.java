@@ -6,11 +6,13 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.maven.plugin.logging.SystemStreamLog;
+
 /**
- * ConfigHandler is able to parse the configuration of a Mojo based on the Maven injected parameters as well as
- * a config pojo and annontations for default values on properties named parsed*. See the ProguardMojo for a working
+ * ConfigHandler is able to parse the configuration of a Mojo based on the Maven injected parameters as well as a config
+ * pojo and annontations for default values on properties named parsed*. See the ProguardMojo for a working
  * implementation.
- *
+ * 
  * @author Adrian Stabiszewski https://github.com/grundid/
  * @author Manfred Moser <manfred@simpligility.com>
  * @see ConfigPojo
@@ -30,9 +32,9 @@ public class ConfigHandler
         initConfigPojo();
     }
 
-    private Collection<Field> findPropertiesByAnnotation( Class<? extends Annotation> annotation )
+    private Collection< Field > findPropertiesByAnnotation( Class< ? extends Annotation > annotation )
     {
-        Collection<Field> result = new ArrayList<Field>();
+        Collection< Field > result = new ArrayList< Field >();
         for ( Field field : mojo.getClass().getDeclaredFields() )
         {
             if ( field.isAnnotationPresent( annotation ) )
@@ -46,7 +48,7 @@ public class ConfigHandler
 
     public void parseConfiguration()
     {
-        Collection<Field> parsedFields = findPropertiesByAnnotation( PullParameter.class );
+        Collection< Field > parsedFields = findPropertiesByAnnotation( PullParameter.class );
 
         for ( Field field : parsedFields )
         {
@@ -60,8 +62,9 @@ public class ConfigHandler
             // then override with value from properties supplied in pom, settings or command line
             // unless it is null or an empty array
             Object propertyValue = getValueFromMojo( fieldBaseName );
-            if ( propertyValue == null || ( propertyValue instanceof Object[]
-                                            && ( ( Object[] ) propertyValue ).length == 0 ) )
+            if ( propertyValue == null //
+                    || propertyValue instanceof Object[]//
+                    && ( (Object[]) propertyValue ).length == 0 )
             {
                 // no useful value
             }
@@ -93,9 +96,9 @@ public class ConfigHandler
         boolean required = annotation.required();
         String currentParameterName = "android." + configPojoName + "." + getFieldNameWithoutParsedPrefix( field );
 
-        if ( ! defaultValue.isEmpty() )
+        if ( !defaultValue.isEmpty() )
         { // TODO find a better way to define an empty default value
-            Class<?> fieldType = field.getType();
+            Class< ? > fieldType = field.getType();
             if ( fieldType.isAssignableFrom( String.class ) )
             {
                 return defaultValue;
@@ -110,12 +113,12 @@ public class ConfigHandler
 
             // TODO add more handler types as required, for example integer, long, ... we will do that when we encounter
             // them in other mojos..
-            throw new RuntimeException(
-                    "No handler for type " + fieldType + " on " + currentParameterName + " found." );
+            throw new RuntimeException( "No handler for type " + fieldType //
+                    + " on " + currentParameterName + " found." );
         }
         else
         {
-            if ( ! required )
+            if ( !required )
             {
                 try
                 {
@@ -126,9 +129,8 @@ public class ConfigHandler
                 }
                 catch ( Exception e )
                 {
-                    throw new RuntimeException(
-                            "Problem encountered accessing default value for " + currentParameterName + " parameter",
-                            e );
+                    throw new RuntimeException( "Problem encountered accessing default value for "
+                            + currentParameterName + " parameter", e );
                 }
             }
             else
@@ -152,7 +154,7 @@ public class ConfigHandler
 
     private Object getValueFromObject( Object object, String fieldBaseName )
     {
-        Object value = null; 
+        Object value = null;
         try
         {
             Field pojoField = findFieldByName( object, fieldBaseName );
@@ -163,7 +165,7 @@ public class ConfigHandler
         }
         catch ( Exception e )
         {
-            //swallow
+            // swallow
         }
         return value;
     }
@@ -212,6 +214,10 @@ public class ConfigHandler
             configPojoName = configPojo.getName();
             configPojoInstance = configPojo.get( mojo );
             configPojoPrefix = configPojo.getAnnotation( ConfigPojo.class ).prefix();
+            new SystemStreamLog().debug( "configPojoName:" + configPojoName );
+            new SystemStreamLog().debug( "configPojoInstance:" + configPojoInstance );
+            new SystemStreamLog().debug( "configPojoPrefix:" + configPojoPrefix );
+
         }
         catch ( Exception e )
         {
