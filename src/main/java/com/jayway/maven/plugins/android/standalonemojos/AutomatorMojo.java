@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Jayway AB
+ * Copyright (C) 2009 Jayway AB
  * Copyright (C) 2007-2008 JVending Masa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jayway.maven.plugins.android;
+package com.jayway.maven.plugins.android.standalonemojos;
 
 import static com.android.ddmlib.testrunner.ITestRunListener.TestFailure.ERROR;
 
@@ -23,9 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -55,283 +53,147 @@ import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
-import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
 import com.android.ddmlib.testrunner.ITestRunListener;
-import com.android.ddmlib.testrunner.RemoteAndroidTestRunner;
 import com.android.ddmlib.testrunner.TestIdentifier;
-import com.jayway.maven.plugins.android.asm.AndroidTestFinder;
+import com.android.ddmlib.testrunner.UIAutomatorRemoteAndroidTestRunner;
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.DeviceCallback;
+import com.jayway.maven.plugins.android.ScreenshotServiceWrapper;
 import com.jayway.maven.plugins.android.common.DeviceHelper;
-import com.jayway.maven.plugins.android.configuration.Test;
+import com.jayway.maven.plugins.android.config.ConfigHandler;
+import com.jayway.maven.plugins.android.config.ConfigPojo;
+import com.jayway.maven.plugins.android.config.PullParameter;
+import com.jayway.maven.plugins.android.configuration.Automator;
 
 /**
- * AbstractInstrumentationMojo implements running the instrumentation tests.
+ * Can execute tests using ui automator.<br/>
+ * Called automatically when the lifecycle reaches phase <code>install</code>.
  * 
- * @author hugo.josefson@jayway.com
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Stéphane Nicolas <snicolas@octo.com>
+ * @goal automator
+ * @requiresProject false
  */
-public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
+@SuppressWarnings( "unused" )
+public class AutomatorMojo extends AbstractAndroidMojo
 {
 
     /**
-     * -Dmaven.test.skip is commonly used with Maven to skip tests. We honor it too.
-     * 
-     * @parameter expression="${maven.test.skip}" default-value=false
-     * @readonly
-     */
-    private boolean mavenTestSkip;
-
-    /**
-     * -DskipTests is commonly used with Maven to skip tests. We honor it too.
-     * 
-     * @parameter expression="${skipTests}" default-value=false
-     * @readonly
-     */
-    private boolean mavenSkipTests;
-
-    /**
-     * The configuration to use for running instrumentation tests. Complete configuration is possible in the plugin
-     * configuration:
-     * 
-     * <pre>
-     * &lt;test&gt;
-     *   &lt;skip&gt;true|false|auto&lt;/skip&gt;
-     *   &lt;instrumentationPackage&gt;packageName&lt;/instrumentationPackage&gt;
-     *   &lt;instrumentationRunner&gt;className&lt;/instrumentationRunner&gt;
-     *   &lt;debug&gt;true|false&lt;/debug&gt;
-     *   &lt;coverage&gt;true|false&lt;/coverage&gt;
-     *   &lt;coverageFile&gt;&lt;/coverageFile&gt;
-     *   &lt;logOnly&gt;true|false&lt;/logOnly&gt;  avd
-     *   &lt;testSize&gt;small|medium|large&lt;/testSize&gt;
-     *   &lt;createReport&gt;true|false&lt;/createReport&gt;
-     *   &lt;classes&gt;
-     *     &lt;class&gt;your.package.name.YourTestClass&lt;/class&gt;
-     *   &lt;/classes&gt;
-     *   &lt;packages&gt;
-     *     &lt;package&gt;your.package.name&lt;/package&gt;
-     *   &lt;/packages&gt;
-     * &lt;/test&gt;
-     * </pre>
-     * 
      * @parameter
      */
-    private Test test;
+    @ConfigPojo
+    private Automator automator;
 
     /**
-     * Enables or disables integration test related goals. If <code>true</code> they will be skipped; if
-     * <code>false</code>, they will be run. If <code>auto</code>, they will run if any of the classes inherit from any
-     * class in <code>junit.framework.**</code> or <code>android.test.**</code>.
+     * Enables or disables ui automator test goal. If <code>true</code> it will be skipped; if <code>false</code>, it
+     * will be run.
      * 
-     * @parameter expression="${android.test.skip}" default-value="auto"
+     * @parameter expression="${android.automator.skip}"
      */
-    private String testSkip;
+    private Boolean automatorSkip;
+
+    @PullParameter( defaultValue = "true" )
+    private Boolean parsedSkip;
 
     /**
-     * Package name of the apk we wish to instrument. If not specified, it is inferred from
-     * <code>AndroidManifest.xml</code>.
+     * Jar file that will be run during ui automator tests.
      * 
-     * @optional
-     * @parameter expression="${android.test.instrumentationPackage}
+     * @parameter expression="${android.automator.jarFile}"
      */
-    private String testInstrumentationPackage;
+    private String automatorJarFile;
+
+    @PullParameter( defaultValueGetterMethod = "getJarFile" )
+    private String parsedJarFile;
 
     /**
-     * Class name of test runner. If not specified, it is inferred from <code>AndroidManifest.xml</code>.
+     * Test class or methods to execute during ui automator tests. Each class or method must be fully qualified with the
+     * package name, in one of these formats:
+     * <ul>
+     * <li>package_name.class_name
+     * <li>package_name.class_name#method_name
+     * </ul>
      * 
-     * @optional
-     * @parameter expression="${android.test.instrumentationRunner}"
+     * @parameter expression="${android.automator.testClassOrMethod}"
+     * 
      */
-    private String testInstrumentationRunner;
+    private String automatorTestClassOrMethods;
+
+    @PullParameter( required = false, defaultValue = "getTestClassOrMethods" )
+    private String[] parsedTestClassOrMethods;
 
     /**
-     * Enable debug causing the test runner to wait until debugger is connected with the Android debug bridge (adb).
+     * Decides whether to run the test to completion on the device even if its parent process is terminated (for
+     * example, if the device is disconnected).
      * 
-     * @optional
-     * @parameter default-value=false expression="${android.test.debug}"
+     * @parameter expression="${android.automator.noHup}"
+     * 
      */
-    private Boolean testDebug;
+    private Boolean automatorNoHup;
+
+    @PullParameter( defaultValue = "false" )
+    private Boolean parsedNoHup;
 
     /**
-     * Enable or disable code coverage for this instrumentation test run.
+     * Decides whether to wait for debugger to connect before starting.
      * 
-     * @optional
-     * @parameter default-value=false expression="${android.test.coverage}"
+     * @parameter expression="${android.automator.debug}"
+     * 
      */
-    private Boolean testCoverage;
+    private Boolean automatorDebug = false;
 
-    /**
-     * Location on device into which coverage should be stored (blank for Android default
-     * /data/data/your.package.here/files/coverage.ec).
-     * 
-     * @optional
-     * @parameter default-value= expression="${android.test.coverageFile}"
-     */
-    private String testCoverageFile;
-
-    /**
-     * Enable this flag to run a log only and not execute the tests.
-     * 
-     * @optional
-     * @parameter default-value=false expression="${android.test.logonly}"
-     */
-    private Boolean testLogOnly;
-
-    /**
-     * If specified only execute tests of certain size as defined by the Android instrumentation testing SmallTest,
-     * MediumTest and LargeTest annotations. Use "small", "medium" or "large" as values.
-     * 
-     * @optional
-     * @parameter expression="${android.test.testsize}"
-     * @see com.android.ddmlib.testrunner.IRemoteAndroidTestRunner
-     */
-    private String testTestSize;
-
-    /**
-     * Create a junit xml format compatible output file containing the test results for each device the instrumentation
-     * tests run on. <br />
-     * <br />
-     * The files are stored in target/surefire-reports and named TEST-deviceid.xml. The deviceid for an emulator is
-     * deviceSerialNumber_avdName_manufacturer_model. The serial number is commonly emulator-5554 for the first emulator
-     * started with numbers increasing. avdName is as defined in the SDK tool. The manufacturer is typically "unknown"
-     * and the model is typically "sdk". The deviceid for a device is deviceSerialNumber_manufacturer_model.<br />
-     * <br />
-     * The file contains system properties from the system running the Android Maven Plugin (JVM) and device properties
-     * from the device/emulator the tests are running on. <br />
-     * <br />
-     * The file contains a single TestSuite for all tests and a TestCase for each test method. Errors and failures are
-     * logged in the file and the system log with full stack traces and other details available.
-     * 
-     * @optional
-     * @parameter default-value=true expression="${android.test.createreport}"
-     */
-    private Boolean testCreateReport;
-
-    /**
-     * <p>
-     * Whether to execute tests only in given packages as part of the instrumentation tests.
-     * </p>
-     * 
-     * <pre>
-     * &lt;packages&gt;
-     *     &lt;package&gt;your.package.name&lt;/package&gt;
-     * &lt;/packages&gt;
-     * </pre>
-     * 
-     * or as e.g. -Dandroid.test.packages=package1,package2
-     * 
-     * @optional
-     * @parameter expression="${android.test.packages}
-     */
-    protected List< String > testPackages;
-
-    /**
-     * <p>
-     * Whether to execute test classes which are specified as part of the instrumentation tests.
-     * </p>
-     * 
-     * <pre>
-     * &lt;classes&gt;
-     *     &lt;class&gt;your.package.name.YourTestClass&lt;/class&gt;
-     * &lt;/classes&gt;
-     * </pre>
-     * 
-     * or as e.g. -Dandroid.test.classes=class1,class2
-     * 
-     * @optional
-     * @parameter expression="${android.test.classes}
-     */
-    protected List< String > testClasses;
-
-    /**
-     * <p>
-     * Whether to execute tests which are annotated with the given annotations.
-     * </p>
-     * 
-     * <pre>
-     * &lt;annotations&gt;
-     *     &lt;annotation&gt;your.package.name.YourAnnotation&lt;/annotation&gt;
-     * &lt;/annotations&gt;
-     * </pre>
-     * 
-     * or as e.g. -Dandroid.test.annotations=annotation1,annotation2
-     * 
-     * @optional
-     * @parameter expression="${android.test.annotations}
-     */
-    protected List< String > testAnnotations;
-
-    /**
-     * <p>
-     * Whether to execute tests which are <strong>not</strong> annotated with the given annotations.
-     * </p>
-     * 
-     * <pre>
-     * &lt;excludeAnnotations&gt;
-     *     &lt;excludeAnnotation&gt;your.package.name.YourAnnotation&lt;/excludeAnnotation&gt;
-     * &lt;/excludeAnnotations&gt;
-     * </pre>
-     * 
-     * or as e.g. -Dandroid.test.excludeAnnotations=annotation1,annotation2
-     * 
-     * @optional
-     * @parameter expression="${android.test.excludeAnnotations}
-     */
-    protected List< String > testExcludeAnnotations;
-
-    private boolean classesExists;
-    private boolean packagesExists;
-
-    // the parsed parameters from the plugin config or properties from command
-    // line or pom or settings
-    private String parsedSkip;
-    private String parsedInstrumentationPackage;
-    private String parsedInstrumentationRunner;
-    private List< String > parsedClasses;
-    private List< String > parsedPackages;
-    private List< String > parsedAnnotations;
-    private List< String > parsedExcludeAnnotations;
-    private String parsedTestSize;
-    private Boolean parsedCoverage;
-    private String parsedCoverageFile;
+    @PullParameter( defaultValue = "false" )
     private Boolean parsedDebug;
-    private Boolean parsedLogOnly;
+
+    /**
+     * Decides whether to use a dump file or not.
+     * 
+     * @parameter expression="${android.automator.useDump}"
+     * 
+     */
+    private Boolean automatorUseDump;
+
+    @PullParameter( defaultValue = "false" )
+    private Boolean parsedUseDump;
+
+    /**
+     * Generate an XML file with a dump of the current UI hierarchy. If a filepath is not specified, by default, the
+     * generated dump file is stored on the device in this location /storage/sdcard0/window_dump.xml.
+     * 
+     * @parameter expression="${android.automator.dumpFilePath}"
+     * 
+     */
+    private String automatorDumpFilePath;
+
+    @PullParameter( required = false, defaultValue = "/storage/sdcard0/window_dump.xml" )
+    private String parsedDumpFilePath;
+
+    /**
+     * 
+     * @parameter expression="${android.automator.createReport}"
+     * 
+     */
+    private Boolean automatorCreateReport;
+
+    @PullParameter( defaultValue = "false" )
     private Boolean parsedCreateReport;
 
-    private String packagesList;
+    @Override
+    public void execute() throws MojoExecutionException, MojoFailureException
+    {
+        ConfigHandler configHandler = new ConfigHandler( this );
+        configHandler.parseConfiguration();
+
+        instrument();
+    }
 
     protected void instrument() throws MojoExecutionException, MojoFailureException
     {
-        parseConfiguration();
 
-        if ( parsedInstrumentationPackage == null )
-        {
-            parsedInstrumentationPackage = extractPackageNameFromAndroidManifest( androidManifestFile );
-        }
-
-        if ( parsedInstrumentationRunner == null )
-        {
-            parsedInstrumentationRunner = extractInstrumentationRunnerFromAndroidManifest( androidManifestFile );
-        }
-
-        // only run Tests in specific package
-        packagesList = buildCommaSeparatedString( parsedPackages );
-        packagesExists = StringUtils.isNotBlank( packagesList );
-
-        if ( parsedClasses != null )
-        {
-            classesExists = parsedClasses.size() > 0;
-        }
-        else
-        {
-            classesExists = false;
-        }
-
-        if ( classesExists && packagesExists )
-        {
-            // if both packages and classes are specified --> ERROR
-            throw new MojoFailureException( "packages and classes are mutually exclusive. They cannot be specified at"
-                    + " the same time. Please specify either packages or classes. For details, see "
-                    + "http://developer.android.com/guide/developing/testing/testing_otheride.html" );
-        }
+        getLog().debug( "Parsed values for Android UI Automator invocation: " );
+        getLog().debug( "automator:" + automator );
+        getLog().debug( "jarFile:" + parsedJarFile );
+        String testClassOrMethodString = buildSpaceSeparatedString( parsedTestClassOrMethods );
+        getLog().debug( "testClassOrMethod:" + testClassOrMethodString );
+        getLog().debug( "createReport:" + parsedCreateReport );
 
         DeviceCallback instrumentationTestExecutor = new DeviceCallback()
         {
@@ -340,64 +202,25 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             {
                 String deviceLogLinePrefix = DeviceHelper.getDeviceLogLinePrefix( device );
 
-                RemoteAndroidTestRunner uIAutomatorRemoteAndroidTestRunner = new RemoteAndroidTestRunner(
-                        parsedInstrumentationPackage, parsedInstrumentationRunner, device );
+                UIAutomatorRemoteAndroidTestRunner automatorRemoteAndroidTestRunner //
+                = new UIAutomatorRemoteAndroidTestRunner( parsedJarFile, device );
 
-                if ( packagesExists )
+                automatorRemoteAndroidTestRunner.setRunName( "ui automator tests" );
+                automatorRemoteAndroidTestRunner.setDebug( automatorDebug );
+                automatorRemoteAndroidTestRunner
+                        .setTestClassOrMethodsSpaceSeparated( buildSpaceSeparatedString( parsedTestClassOrMethods ) );
+                automatorRemoteAndroidTestRunner.setNoHup( parsedNoHup );
+
+                if ( parsedUseDump )
                 {
-                    for ( String str : packagesList.split( "," ) )
-                    {
-                        uIAutomatorRemoteAndroidTestRunner.setTestPackageName( str );
-                        getLog().info( deviceLogLinePrefix + "Running tests for specified test package: " + str );
-                    }
+                    automatorRemoteAndroidTestRunner.setDumpFilePath( parsedDumpFilePath );
                 }
 
-                if ( classesExists )
-                {
-                    uIAutomatorRemoteAndroidTestRunner.setClassNames( parsedClasses.toArray( new String[ parsedClasses
-                            .size() ] ) );
-                    getLog().info( deviceLogLinePrefix //
-                            + "Running tests for specified test classes/methods: " + parsedClasses );
-                }
-
-                if ( parsedAnnotations != null )
-                {
-                    for ( String annotation : parsedAnnotations )
-                    {
-                        uIAutomatorRemoteAndroidTestRunner.addInstrumentationArg( "annotation", annotation );
-                    }
-                }
-
-                if ( parsedExcludeAnnotations != null )
-                {
-                    for ( String annotation : parsedExcludeAnnotations )
-                    {
-                        uIAutomatorRemoteAndroidTestRunner.addInstrumentationArg( "notAnnotation", annotation );
-                    }
-
-                }
-
-                uIAutomatorRemoteAndroidTestRunner.setDebug( parsedDebug );
-                uIAutomatorRemoteAndroidTestRunner.setCoverage( parsedCoverage );
-                if ( !"".equals( parsedCoverageFile ) )
-                {
-                    uIAutomatorRemoteAndroidTestRunner.addInstrumentationArg( "coverageFile", parsedCoverageFile );
-                }
-                uIAutomatorRemoteAndroidTestRunner.setLogOnly( parsedLogOnly );
-
-                if ( StringUtils.isNotBlank( parsedTestSize ) )
-                {
-                    IRemoteAndroidTestRunner.TestSize validSize = IRemoteAndroidTestRunner.TestSize
-                            .getTestSize( parsedTestSize );
-                    uIAutomatorRemoteAndroidTestRunner.setTestSize( validSize );
-                }
-
-                getLog().info( deviceLogLinePrefix + "Running instrumentation tests in "//
-                        + parsedInstrumentationPackage );
+                getLog().info( deviceLogLinePrefix + "Running ui automator tests in" + parsedJarFile );
                 try
                 {
                     AndroidTestRunListener testRunListener = new AndroidTestRunListener( project, device );
-                    uIAutomatorRemoteAndroidTestRunner.run( testRunListener );
+                    automatorRemoteAndroidTestRunner.run( testRunListener );
                     if ( testRunListener.hasFailuresOrErrors() )
                     {
                         throw new MojoFailureException( deviceLogLinePrefix + "Tests failed on device." );
@@ -439,176 +262,62 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
     private void parseConfiguration()
     {
         // we got config in pom ... lets use it,
-        if ( test != null )
+        if ( automator != null )
         {
-            if ( StringUtils.isNotEmpty( test.getSkip() ) )
+            if ( automator.isSkip() != null )
             {
-                parsedSkip = test.getSkip();
+                parsedSkip = automator.isSkip();
             }
             else
             {
-                parsedSkip = testSkip;
+                parsedSkip = automatorSkip;
             }
-            if ( StringUtils.isNotEmpty( test.getInstrumentationPackage() ) )
+            if ( !StringUtils.isEmpty( automator.getJarFile() ) )
             {
-                parsedInstrumentationPackage = test.getInstrumentationPackage();
+                parsedJarFile = automator.getJarFile();
             }
             else
             {
-                parsedInstrumentationPackage = testInstrumentationPackage;
+                parsedJarFile = automatorJarFile;
             }
-            if ( StringUtils.isNotEmpty( test.getInstrumentationRunner() ) )
+            if ( automator.getTestClassOrMethods() != null && automator.getTestClassOrMethods().length != 0 )
             {
-                parsedInstrumentationRunner = test.getInstrumentationRunner();
+                parsedTestClassOrMethods = automator.getTestClassOrMethods();
             }
             else
             {
-                parsedInstrumentationRunner = testInstrumentationRunner;
+                parsedTestClassOrMethods = automatorTestClassOrMethods.split( " " );
             }
-            if ( test.getClasses() != null && !test.getClasses().isEmpty() )
-            {
-                parsedClasses = test.getClasses();
-            }
-            else
-            {
-                parsedClasses = testClasses;
-            }
-            if ( test.getAnnotations() != null && !test.getAnnotations().isEmpty() )
-            {
-                parsedAnnotations = test.getAnnotations();
-            }
-            else
-            {
-                parsedAnnotations = testAnnotations;
-            }
-            if ( test.getExcludeAnnotations() != null && !test.getExcludeAnnotations().isEmpty() )
-            {
-                parsedExcludeAnnotations = test.getExcludeAnnotations();
-            }
-            else
-            {
-                parsedExcludeAnnotations = testExcludeAnnotations;
-            }
-            if ( test.getPackages() != null && !test.getPackages().isEmpty() )
-            {
-                parsedPackages = test.getPackages();
-            }
-            else
-            {
-                parsedPackages = testPackages;
-            }
-            if ( StringUtils.isNotEmpty( test.getTestSize() ) )
-            {
-                parsedTestSize = test.getTestSize();
-            }
-            else
-            {
-                parsedTestSize = testTestSize;
-            }
-            if ( test.isCoverage() != null )
-            {
-                parsedCoverage = test.isCoverage();
-            }
-            else
-            {
-                parsedCoverage = testCoverage;
-            }
-            if ( test.getCoverageFile() != null )
-            {
-                parsedCoverageFile = test.getCoverageFile();
-            }
-            else
-            {
-                parsedCoverageFile = "";
-            }
-            if ( test.isDebug() != null )
-            {
-                parsedDebug = test.isDebug();
-            }
-            else
-            {
-                parsedDebug = testDebug;
-            }
-            if ( test.isLogOnly() != null )
-            {
-                parsedLogOnly = test.isLogOnly();
-            }
-            else
-            {
-                parsedLogOnly = testLogOnly;
-            }
-            if ( test.isCreateReport() != null )
-            {
-                parsedCreateReport = test.isCreateReport();
-            }
-            else
-            {
-                parsedCreateReport = testCreateReport;
-            }
+
         }
         // no pom, we take properties
         else
         {
-            parsedSkip = testSkip;
-            parsedInstrumentationPackage = testInstrumentationPackage;
-            parsedInstrumentationRunner = testInstrumentationRunner;
-            parsedClasses = testClasses;
-            parsedAnnotations = testAnnotations;
-            parsedExcludeAnnotations = testExcludeAnnotations;
-            parsedPackages = testPackages;
-            parsedTestSize = testTestSize;
-            parsedCoverage = testCoverage;
-            parsedCoverageFile = testCoverageFile;
-            parsedDebug = testDebug;
-            parsedLogOnly = testLogOnly;
-            parsedCreateReport = testCreateReport;
+            parsedSkip = automatorSkip;
+            parsedJarFile = automatorJarFile;
+            parsedTestClassOrMethods = automatorTestClassOrMethods.split( " " );
+            parsedNoHup = automatorNoHup;
+            parsedDebug = automatorDebug;
+            parsedUseDump = automatorUseDump;
+            parsedDumpFilePath = automatorDumpFilePath;
         }
     }
 
-    /**
-     * Whether or not to execute integration test related goals. Reads from configuration parameter
-     * <code>enableIntegrationTest</code>, but can be overridden with <code>-Dmaven.test.skip</code>.
-     * 
-     * @return <code>true</code> if integration test goals should be executed, <code>false</code> otherwise.
-     */
-    protected boolean isEnableIntegrationTest() throws MojoFailureException, MojoExecutionException
+    private String getJarFile()
     {
-        parseConfiguration();
-        if ( mavenTestSkip )
+        if ( parsedJarFile == null )
         {
-            getLog().info( "maven.test.skip set - skipping tests" );
-            return false;
+            File jarFilePath = new File( project.getBuild().getDirectory() + File.separator
+                    + project.getBuild().getFinalName() + ".jar" );
+            return jarFilePath.getName();
         }
+        return parsedJarFile;
+    }
 
-        if ( mavenSkipTests )
-        {
-            getLog().info( "maven.skip.tests set - skipping tests" );
-            return false;
-        }
-
-        if ( "true".equalsIgnoreCase( parsedSkip ) )
-        {
-            getLog().info( "android.test.skip set - skipping tests" );
-            return false;
-        }
-
-        if ( "false".equalsIgnoreCase( parsedSkip ) )
-        {
-            return true;
-        }
-
-        if ( parsedSkip == null || "auto".equalsIgnoreCase( parsedSkip ) )
-        {
-            if ( extractInstrumentationRunnerFromAndroidManifest( androidManifestFile ) == null )
-            {
-                getLog().info( "No InstrumentationRunner found - skipping tests" );
-                return false;
-            }
-            return AndroidTestFinder.containsAndroidTests( new File( project.getBuild().getOutputDirectory() ) );
-        }
-
-        throw new MojoFailureException( "android.test.skip must be configured as 'true', 'false' or 'auto'." );
-
+    private String[] getTestClassOrMethods()
+    {
+        // null if not overriden by configuration
+        return parsedTestClassOrMethods;
     }
 
     /**
@@ -618,23 +327,14 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      *            A list of strings
      * @return Comma separated String from given list
      */
-    protected static String buildCommaSeparatedString( List< String > lines )
+    protected static String buildSpaceSeparatedString( String[] lines )
     {
-        if ( lines == null || lines.size() == 0 )
+        if ( lines == null || lines.length == 0 )
         {
             return null;
         }
 
-        List< String > strings = new ArrayList< String >( lines.size() );
-        for ( String str : lines )
-        { // filter out blank strings
-            if ( StringUtils.isNotBlank( str ) )
-            {
-                strings.add( StringUtils.trimToEmpty( str ) );
-            }
-        }
-
-        return StringUtils.join( strings, "," );
+        return StringUtils.join( lines, " " );
     }
 
     /**
@@ -733,6 +433,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             this.testCount = testCount;
             getLog().info( deviceLogLinePrefix + INDENT + "Run started: " + runName + ", " + testCount + " tests:" );
 
+            // steff
+            // TODO
+
             if ( parsedCreateReport )
             {
                 try
@@ -803,6 +506,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                             + String.format( "%1$s%1$sStart [%2$d/%3$d]: %4$s", INDENT, testRunCount, testCount,
                                     testIdentifier.toString() ) );
 
+            // steff
+            // TODO
             if ( parsedCreateReport )
             { // reset start time for each test run
                 currentTestCaseStartTime = new Date().getTime();
@@ -831,6 +536,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             getLog().info( deviceLogLinePrefix + INDENT + INDENT + status.name() + ":" + testIdentifier.toString() );
             getLog().info( deviceLogLinePrefix + INDENT + INDENT + trace );
 
+            // steff
+            // TODO
             if ( parsedCreateReport )
             {
                 Node errorFailureNode;
@@ -865,6 +572,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                                     testIdentifier.toString() ) );
             logMetrics( testMetrics );
 
+            // steff
+            // TODO
             if ( parsedCreateReport )
             {
                 testSuiteNode.appendChild( currentTestCaseNode );
@@ -891,28 +600,33 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                             + testFailureCount + ",  Errors: " + testErrorCount );
 
             // steff
-            /*
-             * if (parsedCreateReport) { NamedNodeMap testSuiteAttributes = testSuiteNode.getAttributes(); Attr
-             * testCountAttr = junitReport.createAttribute(ATTR_TESTSUITE_TESTS);
-             * testCountAttr.setValue(Integer.toString(testCount)); testSuiteAttributes.setNamedItem(testCountAttr);
-             * Attr testFailuresAttr = junitReport.createAttribute(ATTR_TESTSUITE_FAILURES);
-             * testFailuresAttr.setValue(Integer.toString(testFailureCount));
-             * testSuiteAttributes.setNamedItem(testFailuresAttr); Attr testErrorsAttr =
-             * junitReport.createAttribute(ATTR_TESTSUITE_ERRORS);
-             * testErrorsAttr.setValue(Integer.toString(testErrorCount));
-             * testSuiteAttributes.setNamedItem(testErrorsAttr); Attr timeAttr =
-             * junitReport.createAttribute(ATTR_TESTSUITE_TIME); timeAttr.setValue(timeFormatter.format(elapsedTime /
-             * 1000.0)); testSuiteAttributes.setNamedItem(timeAttr); Attr timeStampAttr =
-             * junitReport.createAttribute(ATTR_TESTSUITE_TIMESTAMP); timeStampAttr.setValue(new Date().toString());
-             * testSuiteAttributes.setNamedItem(timeStampAttr); }
-             */
+            if ( parsedCreateReport )
+            {
+                NamedNodeMap testSuiteAttributes = testSuiteNode.getAttributes();
+                Attr testCountAttr = junitReport.createAttribute( ATTR_TESTSUITE_TESTS );
+                testCountAttr.setValue( Integer.toString( testCount ) );
+                testSuiteAttributes.setNamedItem( testCountAttr );
+                Attr testFailuresAttr = junitReport.createAttribute( ATTR_TESTSUITE_FAILURES );
+                testFailuresAttr.setValue( Integer.toString( testFailureCount ) );
+                testSuiteAttributes.setNamedItem( testFailuresAttr );
+                Attr testErrorsAttr = junitReport.createAttribute( ATTR_TESTSUITE_ERRORS );
+                testErrorsAttr.setValue( Integer.toString( testErrorCount ) );
+                testSuiteAttributes.setNamedItem( testErrorsAttr );
+                Attr timeAttr = junitReport.createAttribute( ATTR_TESTSUITE_TIME );
+                timeAttr.setValue( timeFormatter.format( elapsedTime / 1000.0 ) );
+                testSuiteAttributes.setNamedItem( timeAttr );
+                Attr timeStampAttr = junitReport.createAttribute( ATTR_TESTSUITE_TIMESTAMP );
+                timeStampAttr.setValue( new Date().toString() );
+                testSuiteAttributes.setNamedItem( timeStampAttr );
+            }
 
             logMetrics( runMetrics );
 
             // steff
-            /*
-             * if (parsedCreateReport) { writeJunitReportToFile(); }
-             */
+            if ( parsedCreateReport )
+            {
+                writeJunitReportToFile();
+            }
         }
 
         @Override
