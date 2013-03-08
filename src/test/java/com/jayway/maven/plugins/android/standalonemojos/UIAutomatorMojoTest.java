@@ -41,12 +41,15 @@ public class UIAutomatorMojoTest extends AbstractAndroidMojoTestCase< UIAutomato
      */
     public void testDefaultUIAutomatorConfig() throws Exception
     {
+        // given
         UIAutomatorMojo mojo = createMojo( "ui-automator-config-project0" );
         final ConfigHandler cfh = new ConfigHandler( mojo );
         cfh.parseConfiguration();
 
+        // when
         Boolean automatorSkip = Whitebox.getInternalState( mojo, "parsedSkip" );
 
+        // then
         assertTrue( "UIAutomator skip parameter should be true", automatorSkip );
     }
 

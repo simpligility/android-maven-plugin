@@ -67,7 +67,22 @@ import com.jayway.maven.plugins.android.configuration.UIAutomator;
 
 /**
  * Can execute tests using ui uiautomator.<br/>
+ * Implements parsing parameters from pom or command line arguments and sets useful defaults as well. This goal is meant
+ * to execute a special <i>java project</i> dedicated to UI testing via UIAutomator. It will build the jar of the
+ * project, dex it and send it to dalvik cache of a rooted device or to an emulator. If you use a rooted device, refer
+ * to <a href="http://stackoverflow.com/a/13805869/693752">this thread on stack over flow</a>.
  * 
+ * The tests are executed via ui automator. A surefire compatible test report can be generated and its location will be
+ * logged during build.
+ * 
+ * To use this goal, you will need to place the uiautomator.jar file (part of the Android SDK > 16) on a nexus
+ * repository.
+ * 
+ * A typical usage of this goal can be found at <a
+ * href="https://github.com/stephanenicolas/Quality-Tools-for-Android">Quality tools for Android project</a>.
+ * 
+ * @see <a href="http://developer.android.com/tools/testing/testing_ui.html">Android UI testing doc</a>
+ * @see <a href="http://developer.android.com/tools/help/uiautomator/index.html">UI Automator manual page</a>
  * @author Stéphane Nicolas <snicolas@octo.com>
  * @goal uiautomator
  * @requiresProject false
@@ -77,6 +92,33 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
 {
 
     /**
+     * The configuration for the ui automator goal. As soon as a lint goal is invoked the command will be executed
+     * unless the skip parameter is set. A minimal configuration that will run lint and produce a XML report in
+     * ${project.build.directory}/lint/lint-results.xml is
+     * 
+     * <pre>
+     * &lt;uiautomator&gt;
+     *   &lt;skip&gt;false&lt;/skip&gt;
+     * &lt;/uiautomator&gt;
+     * </pre>
+     * 
+     * Full configuration can use these parameters.
+     * 
+     * <pre>
+     * &lt;uiautomator&gt;
+     *   &lt;skip&gt;false&lt;/skip&gt;
+     *   &lt;testClassOrMethods&gt;
+     *     &lt;testClassOrMethod&gt;com.foo.SampleTest&lt;/testClassOrMethod&gt;
+     *     &lt;testClassOrMethod&gt;com.bar.CalculatorTest#testCalculatorApp&lt;/testClassOrMethod&gt;
+     *   &lt;/testClassOrMethods&gt;
+     *   &lt;createReport&gt;true&lt;/createReport&gt;
+     * &lt;/uiautomator&gt;
+     * </pre>
+     * 
+     * 
+     * Alternatively to the plugin configuration values can also be configured as properties on the command line as
+     * android.lint.* or in pom or settings file as properties like lint*.
+     * 
      * @parameter
      */
     @ConfigPojo
@@ -166,7 +208,24 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
     private String parsedDumpFilePath;
 
     /**
+     * Create a junit xml format compatible output file containing the test results for each device the instrumentation
+     * tests run on. <br />
+     * <br />
+     * The files are stored in target/surefire-reports and named TEST-deviceid.xml. The deviceid for an emulator is
+     * deviceSerialNumber_avdName_manufacturer_model. The serial number is commonly emulator-5554 for the first emulator
+     * started with numbers increasing. avdName is as defined in the SDK tool. The manufacturer is typically "unknown"
+     * and the model is typically "sdk".<br />
+     * The deviceid for an actual devices is deviceSerialNumber_manufacturer_model. <br />
+     * <br />
+     * The file contains system properties from the system running the Android Maven Plugin (JVM) and device properties
+     * from the device/emulator the tests are running on. <br />
+     * <br />
+     * The file contains a single TestSuite for all tests and a TestCase for each test method. Errors and failures are
+     * logged in the file and the system log with full stack traces and other details available.
      * 
+     * Defaults to false.
+     * 
+     * @optional
      * @parameter expression="${android.uiautomator.createReport}"
      * 
      */
@@ -191,7 +250,6 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
     {
 
         getLog().debug( "Parsed values for Android UI UIAutomator invocation: " );
-        getLog().debug( "uiautomator:" + uiautomator );
         getLog().debug( "jarFile:" + parsedJarFile );
         String testClassOrMethodString = buildSpaceSeparatedString( parsedTestClassOrMethods );
         getLog().debug( "testClassOrMethod:" + testClassOrMethodString );
@@ -260,51 +318,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
         doWithDevices( instrumentationTestExecutor );
     }
 
-    private void parseConfiguration()
-    {
-        // we got config in pom ... lets use it,
-        if ( uiautomator != null )
-        {
-            if ( uiautomator.isSkip() != null )
-            {
-                parsedSkip = uiautomator.isSkip();
-            }
-            else
-            {
-                parsedSkip = uiautomatorSkip;
-            }
-            if ( !StringUtils.isEmpty( uiautomator.getJarFile() ) )
-            {
-                parsedJarFile = uiautomator.getJarFile();
-            }
-            else
-            {
-                parsedJarFile = uiautomatorJarFile;
-            }
-            if ( uiautomator.getTestClassOrMethods() != null && uiautomator.getTestClassOrMethods().length != 0 )
-            {
-                parsedTestClassOrMethods = uiautomator.getTestClassOrMethods();
-            }
-            else
-            {
-                parsedTestClassOrMethods = uiautomatorTestClassOrMethods;
-            }
-
-        }
-        // no pom, we take properties
-        else
-        {
-            parsedSkip = uiautomatorSkip;
-            parsedJarFile = uiautomatorJarFile;
-            parsedTestClassOrMethods = uiautomatorTestClassOrMethods;
-            parsedNoHup = uiautomatorNoHup;
-            parsedDebug = uiautomatorDebug;
-            parsedUseDump = uiautomatorUseDump;
-            parsedDumpFilePath = uiautomatorDumpFilePath;
-        }
-    }
-
-    String getJarFile()
+    private String getJarFile()
     {
         if ( parsedJarFile == null )
         {
