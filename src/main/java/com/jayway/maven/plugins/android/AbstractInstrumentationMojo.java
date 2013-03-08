@@ -16,17 +16,27 @@
  */
 package com.jayway.maven.plugins.android;
 
-import static com.android.ddmlib.testrunner.ITestRunListener.TestFailure.ERROR;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.IDevice;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.TimeoutException;
+import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
+import com.android.ddmlib.testrunner.ITestRunListener;
+import com.android.ddmlib.testrunner.RemoteAndroidTestRunner;
+import com.android.ddmlib.testrunner.TestIdentifier;
+import com.jayway.maven.plugins.android.asm.AndroidTestFinder;
+import com.jayway.maven.plugins.android.common.DeviceHelper;
+import com.jayway.maven.plugins.android.configuration.Test;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -39,33 +49,22 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-
-import com.android.ddmlib.AdbCommandRejectedException;
-import com.android.ddmlib.IDevice;
-import com.android.ddmlib.ShellCommandUnresponsiveException;
-import com.android.ddmlib.TimeoutException;
-import com.android.ddmlib.testrunner.IRemoteAndroidTestRunner;
-import com.android.ddmlib.testrunner.ITestRunListener;
-import com.android.ddmlib.testrunner.RemoteAndroidTestRunner;
-import com.android.ddmlib.testrunner.TestIdentifier;
-import com.jayway.maven.plugins.android.asm.AndroidTestFinder;
-import com.jayway.maven.plugins.android.common.DeviceHelper;
-import com.jayway.maven.plugins.android.configuration.Test;
+import static com.android.ddmlib.testrunner.ITestRunListener.TestFailure.ERROR;
 
 /**
- * AbstractInstrumentationMojo implements running the instrumentation tests.
- * 
+ * AbstractInstrumentationMojo implements running the instrumentation
+ * tests.
+ *
  * @author hugo.josefson@jayway.com
  * @author Manfred Moser <manfred@simpligility.com>
  */
@@ -74,7 +73,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
     /**
      * -Dmaven.test.skip is commonly used with Maven to skip tests. We honor it too.
-     * 
+     *
      * @parameter expression="${maven.test.skip}" default-value=false
      * @readonly
      */
@@ -82,16 +81,15 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
     /**
      * -DskipTests is commonly used with Maven to skip tests. We honor it too.
-     * 
+     *
      * @parameter expression="${skipTests}" default-value=false
      * @readonly
      */
     private boolean mavenSkipTests;
 
     /**
-     * The configuration to use for running instrumentation tests. Complete configuration is possible in the plugin
-     * configuration:
-     * 
+     * The configuration to use for running instrumentation tests. Complete configuration
+     * is possible in the plugin configuration:
      * <pre>
      * &lt;test&gt;
      *   &lt;skip&gt;true|false|auto&lt;/skip&gt;
@@ -111,16 +109,17 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      *   &lt;/packages&gt;
      * &lt;/test&gt;
      * </pre>
-     * 
+     *
      * @parameter
      */
     private Test test;
+
 
     /**
      * Enables or disables integration test related goals. If <code>true</code> they will be skipped; if
      * <code>false</code>, they will be run. If <code>auto</code>, they will run if any of the classes inherit from any
      * class in <code>junit.framework.**</code> or <code>android.test.**</code>.
-     * 
+     *
      * @parameter expression="${android.test.skip}" default-value="auto"
      */
     private String testSkip;
@@ -128,7 +127,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
     /**
      * Package name of the apk we wish to instrument. If not specified, it is inferred from
      * <code>AndroidManifest.xml</code>.
-     * 
+     *
      * @optional
      * @parameter expression="${android.test.instrumentationPackage}
      */
@@ -136,32 +135,35 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
     /**
      * Class name of test runner. If not specified, it is inferred from <code>AndroidManifest.xml</code>.
-     * 
+     *
      * @optional
      * @parameter expression="${android.test.instrumentationRunner}"
      */
     private String testInstrumentationRunner;
 
     /**
-     * Enable debug causing the test runner to wait until debugger is connected with the Android debug bridge (adb).
-     * 
+     * Enable debug causing the test runner to wait until debugger is
+     * connected with the Android debug bridge (adb).
+     *
      * @optional
      * @parameter default-value=false expression="${android.test.debug}"
      */
     private Boolean testDebug;
 
+
     /**
-     * Enable or disable code coverage for this instrumentation test run.
-     * 
+     * Enable or disable code coverage for this instrumentation test
+     * run.
+     *
      * @optional
      * @parameter default-value=false expression="${android.test.coverage}"
      */
     private Boolean testCoverage;
 
     /**
-     * Location on device into which coverage should be stored (blank for Android default
-     * /data/data/your.package.here/files/coverage.ec).
-     * 
+     * Location on device into which coverage should be stored (blank for
+     * Android default /data/data/your.package.here/files/coverage.ec).
+     *
      * @optional
      * @parameter default-value= expression="${android.test.coverageFile}"
      */
@@ -169,16 +171,17 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
     /**
      * Enable this flag to run a log only and not execute the tests.
-     * 
+     *
      * @optional
      * @parameter default-value=false expression="${android.test.logonly}"
      */
     private Boolean testLogOnly;
 
     /**
-     * If specified only execute tests of certain size as defined by the Android instrumentation testing SmallTest,
-     * MediumTest and LargeTest annotations. Use "small", "medium" or "large" as values.
-     * 
+     * If specified only execute tests of certain size as defined by
+     * the Android instrumentation testing SmallTest, MediumTest and
+     * LargeTest annotations. Use "small", "medium" or "large" as values.
+     *
      * @optional
      * @parameter expression="${android.test.testsize}"
      * @see com.android.ddmlib.testrunner.IRemoteAndroidTestRunner
@@ -186,109 +189,100 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
     private String testTestSize;
 
     /**
-     * Create a junit xml format compatible output file containing the test results for each device the instrumentation
-     * tests run on. <br />
-     * <br />
-     * The files are stored in target/surefire-reports and named TEST-deviceid.xml. The deviceid for an emulator is
-     * deviceSerialNumber_avdName_manufacturer_model. The serial number is commonly emulator-5554 for the first emulator
-     * started with numbers increasing. avdName is as defined in the SDK tool. The manufacturer is typically "unknown"
-     * and the model is typically "sdk". The deviceid for a device is deviceSerialNumber_manufacturer_model.<br />
-     * <br />
-     * The file contains system properties from the system running the Android Maven Plugin (JVM) and device properties
-     * from the device/emulator the tests are running on. <br />
-     * <br />
-     * The file contains a single TestSuite for all tests and a TestCase for each test method. Errors and failures are
-     * logged in the file and the system log with full stack traces and other details available.
-     * 
+     * Create a junit xml format compatible output file containing
+     * the test results for each device the instrumentation tests run
+     * on.
+     * <br /><br />
+     * The files are stored in target/surefire-reports and named TEST-deviceid.xml.
+     * The deviceid for an emulator is deviceSerialNumber_avdName_manufacturer_model.
+     * The serial number is commonly emulator-5554 for the first emulator started
+     * with numbers increasing. avdName is as defined in the SDK tool. The
+     * manufacturer is typically "unknown" and the model is typically "sdk".
+     * The deviceid for an actual devices is
+     * deviceSerialNumber_manufacturer_model.
+     * <br /><br />
+     * The file contains system properties from the system running
+     * the Android Maven Plugin (JVM) and device properties from the
+     * device/emulator the tests are running on.
+     * <br /><br />
+     * The file contains a single TestSuite for all tests and a
+     * TestCase for each test method. Errors and failures are logged
+     * in the file and the system log with full stack traces and other
+     * details available.
+     *
      * @optional
      * @parameter default-value=true expression="${android.test.createreport}"
      */
     private Boolean testCreateReport;
 
     /**
-     * <p>
-     * Whether to execute tests only in given packages as part of the instrumentation tests.
-     * </p>
-     * 
+     * <p>Whether to execute tests only in given packages as part of the instrumentation tests.</p>
      * <pre>
      * &lt;packages&gt;
      *     &lt;package&gt;your.package.name&lt;/package&gt;
      * &lt;/packages&gt;
      * </pre>
-     * 
      * or as e.g. -Dandroid.test.packages=package1,package2
-     * 
+     *
      * @optional
      * @parameter expression="${android.test.packages}
      */
-    protected List< String > testPackages;
+    protected List<String> testPackages;
 
     /**
-     * <p>
-     * Whether to execute test classes which are specified as part of the instrumentation tests.
-     * </p>
-     * 
+     * <p>Whether to execute test classes which are specified as part of the instrumentation tests.</p>
      * <pre>
      * &lt;classes&gt;
      *     &lt;class&gt;your.package.name.YourTestClass&lt;/class&gt;
      * &lt;/classes&gt;
      * </pre>
-     * 
      * or as e.g. -Dandroid.test.classes=class1,class2
-     * 
+     *
      * @optional
      * @parameter expression="${android.test.classes}
      */
-    protected List< String > testClasses;
+    protected List<String> testClasses;
+
 
     /**
-     * <p>
-     * Whether to execute tests which are annotated with the given annotations.
-     * </p>
-     * 
+     * <p>Whether to execute tests which are annotated with the given annotations.</p>
      * <pre>
      * &lt;annotations&gt;
      *     &lt;annotation&gt;your.package.name.YourAnnotation&lt;/annotation&gt;
      * &lt;/annotations&gt;
      * </pre>
-     * 
      * or as e.g. -Dandroid.test.annotations=annotation1,annotation2
-     * 
+     *
      * @optional
      * @parameter expression="${android.test.annotations}
      */
-    protected List< String > testAnnotations;
+    protected List<String> testAnnotations;
 
     /**
-     * <p>
-     * Whether to execute tests which are <strong>not</strong> annotated with the given annotations.
-     * </p>
-     * 
+     * <p>Whether to execute tests which are <strong>not</strong> annotated with the given annotations.</p>
      * <pre>
      * &lt;excludeAnnotations&gt;
      *     &lt;excludeAnnotation&gt;your.package.name.YourAnnotation&lt;/excludeAnnotation&gt;
      * &lt;/excludeAnnotations&gt;
      * </pre>
-     * 
      * or as e.g. -Dandroid.test.excludeAnnotations=annotation1,annotation2
-     * 
+     *
      * @optional
      * @parameter expression="${android.test.excludeAnnotations}
      */
-    protected List< String > testExcludeAnnotations;
+    protected List<String> testExcludeAnnotations;
 
     private boolean classesExists;
     private boolean packagesExists;
 
-    // the parsed parameters from the plugin config or properties from command
-    // line or pom or settings
+    // the parsed parameters from the plugin config or properties from command line or pom or settings
     private String parsedSkip;
     private String parsedInstrumentationPackage;
     private String parsedInstrumentationRunner;
-    private List< String > parsedClasses;
-    private List< String > parsedPackages;
-    private List< String > parsedAnnotations;
-    private List< String > parsedExcludeAnnotations;
+    private List<String> parsedClasses;
+    private List<String> parsedPackages;
+    private List<String> parsedAnnotations;
+    private List<String> parsedExcludeAnnotations;
     private String parsedTestSize;
     private Boolean parsedCoverage;
     private String parsedCoverageFile;
@@ -328,43 +322,42 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         if ( classesExists && packagesExists )
         {
             // if both packages and classes are specified --> ERROR
-            throw new MojoFailureException( "packages and classes are mutually exclusive. They cannot be specified at"
+            throw new  MojoFailureException( "packages and classes are mutually exclusive. They cannot be specified at"
                     + " the same time. Please specify either packages or classes. For details, see "
                     + "http://developer.android.com/guide/developing/testing/testing_otheride.html" );
         }
 
         DeviceCallback instrumentationTestExecutor = new DeviceCallback()
         {
-            @Override
             public void doWithDevice( final IDevice device ) throws MojoExecutionException, MojoFailureException
             {
                 String deviceLogLinePrefix = DeviceHelper.getDeviceLogLinePrefix( device );
 
-                RemoteAndroidTestRunner uIAutomatorRemoteAndroidTestRunner = new RemoteAndroidTestRunner(
+                RemoteAndroidTestRunner remoteAndroidTestRunner = new RemoteAndroidTestRunner(
                         parsedInstrumentationPackage, parsedInstrumentationRunner, device );
 
                 if ( packagesExists )
                 {
                     for ( String str : packagesList.split( "," ) )
                     {
-                        uIAutomatorRemoteAndroidTestRunner.setTestPackageName( str );
+                        remoteAndroidTestRunner.setTestPackageName( str );
                         getLog().info( deviceLogLinePrefix + "Running tests for specified test package: " + str );
                     }
                 }
 
                 if ( classesExists )
                 {
-                    uIAutomatorRemoteAndroidTestRunner.setClassNames( parsedClasses.toArray( new String[ parsedClasses
-                            .size() ] ) );
-                    getLog().info( deviceLogLinePrefix //
-                            + "Running tests for specified test classes/methods: " + parsedClasses );
+                    remoteAndroidTestRunner
+                            .setClassNames( parsedClasses.toArray( new String[ parsedClasses.size() ] ) );
+                    getLog().info( deviceLogLinePrefix + "Running tests for specified test classes/methods: " 
+                            + parsedClasses );
                 }
 
                 if ( parsedAnnotations != null )
                 {
                     for ( String annotation : parsedAnnotations )
                     {
-                        uIAutomatorRemoteAndroidTestRunner.addInstrumentationArg( "annotation", annotation );
+                        remoteAndroidTestRunner.addInstrumentationArg( "annotation", annotation );
                     }
                 }
 
@@ -372,44 +365,44 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                 {
                     for ( String annotation : parsedExcludeAnnotations )
                     {
-                        uIAutomatorRemoteAndroidTestRunner.addInstrumentationArg( "notAnnotation", annotation );
+                        remoteAndroidTestRunner.addInstrumentationArg( "notAnnotation", annotation );
                     }
 
                 }
 
-                uIAutomatorRemoteAndroidTestRunner.setDebug( parsedDebug );
-                uIAutomatorRemoteAndroidTestRunner.setCoverage( parsedCoverage );
-                if ( !"".equals( parsedCoverageFile ) )
+                remoteAndroidTestRunner.setDebug( parsedDebug );
+                remoteAndroidTestRunner.setCoverage( parsedCoverage );
+                if ( ! "".equals( parsedCoverageFile ) )
                 {
-                    uIAutomatorRemoteAndroidTestRunner.addInstrumentationArg( "coverageFile", parsedCoverageFile );
+                    remoteAndroidTestRunner.addInstrumentationArg( "coverageFile", parsedCoverageFile );
                 }
-                uIAutomatorRemoteAndroidTestRunner.setLogOnly( parsedLogOnly );
+                remoteAndroidTestRunner.setLogOnly( parsedLogOnly );
 
                 if ( StringUtils.isNotBlank( parsedTestSize ) )
                 {
                     IRemoteAndroidTestRunner.TestSize validSize = IRemoteAndroidTestRunner.TestSize
                             .getTestSize( parsedTestSize );
-                    uIAutomatorRemoteAndroidTestRunner.setTestSize( validSize );
+                    remoteAndroidTestRunner.setTestSize( validSize );
                 }
 
-                getLog().info( deviceLogLinePrefix + "Running instrumentation tests in "//
+                getLog().info( deviceLogLinePrefix +  "Running instrumentation tests in " 
                         + parsedInstrumentationPackage );
                 try
                 {
                     AndroidTestRunListener testRunListener = new AndroidTestRunListener( project, device );
-                    uIAutomatorRemoteAndroidTestRunner.run( testRunListener );
+                    remoteAndroidTestRunner.run( testRunListener );
                     if ( testRunListener.hasFailuresOrErrors() )
                     {
-                        throw new MojoFailureException( deviceLogLinePrefix + "Tests failed on device." );
+                        throw new MojoFailureException( deviceLogLinePrefix +  "Tests failed on device." );
                     }
                     if ( testRunListener.testRunFailed() )
                     {
-                        throw new MojoFailureException( deviceLogLinePrefix + "Test run failed to complete: "
+                        throw new MojoFailureException( deviceLogLinePrefix + "Test run failed to complete: " 
                                 + testRunListener.getTestRunFailureCause() );
                     }
                     if ( testRunListener.threwException() )
                     {
-                        throw new MojoFailureException( deviceLogLinePrefix + testRunListener.getExceptionMessages() );
+                        throw new MojoFailureException( deviceLogLinePrefix +  testRunListener.getExceptionMessages() );
                     }
                 }
                 catch ( TimeoutException e )
@@ -465,7 +458,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             {
                 parsedInstrumentationRunner = testInstrumentationRunner;
             }
-            if ( test.getClasses() != null && !test.getClasses().isEmpty() )
+            if ( test.getClasses() != null && ! test.getClasses().isEmpty() )
             {
                 parsedClasses = test.getClasses();
             }
@@ -473,15 +466,15 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             {
                 parsedClasses = testClasses;
             }
-            if ( test.getAnnotations() != null && !test.getAnnotations().isEmpty() )
+            if ( test.getAnnotations() != null && ! test.getAnnotations().isEmpty() )
             {
                 parsedAnnotations = test.getAnnotations();
             }
             else
             {
-                parsedAnnotations = testAnnotations;
+                parsedAnnotations =  testAnnotations;
             }
-            if ( test.getExcludeAnnotations() != null && !test.getExcludeAnnotations().isEmpty() )
+            if ( test.getExcludeAnnotations() != null && ! test.getExcludeAnnotations().isEmpty() )
             {
                 parsedExcludeAnnotations = test.getExcludeAnnotations();
             }
@@ -489,7 +482,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             {
                 parsedExcludeAnnotations = testExcludeAnnotations;
             }
-            if ( test.getPackages() != null && !test.getPackages().isEmpty() )
+            if ( test.getPackages() != null && ! test.getPackages().isEmpty() )
             {
                 parsedPackages = test.getPackages();
             }
@@ -568,7 +561,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
     /**
      * Whether or not to execute integration test related goals. Reads from configuration parameter
      * <code>enableIntegrationTest</code>, but can be overridden with <code>-Dmaven.test.skip</code>.
-     * 
+     *
      * @return <code>true</code> if integration test goals should be executed, <code>false</code> otherwise.
      */
     protected boolean isEnableIntegrationTest() throws MojoFailureException, MojoExecutionException
@@ -612,20 +605,20 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
     }
 
     /**
-     * Helper method to build a comma separated string from a list. Blank strings are filtered out
-     * 
-     * @param lines
-     *            A list of strings
+     * Helper method to build a comma separated string from a list.
+     * Blank strings are filtered out
+     *
+     * @param lines A list of strings
      * @return Comma separated String from given list
      */
-    protected static String buildCommaSeparatedString( List< String > lines )
+    protected static String buildCommaSeparatedString( List<String> lines )
     {
         if ( lines == null || lines.size() == 0 )
         {
             return null;
         }
 
-        List< String > strings = new ArrayList< String >( lines.size() );
+        List<String> strings = new ArrayList<String>( lines.size() );
         for ( String str : lines )
         { // filter out blank strings
             if ( StringUtils.isNotBlank( str ) )
@@ -638,12 +631,13 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
     }
 
     /**
-     * AndroidTestRunListener produces a nice output for the log for the test run as well as an xml file compatible with
-     * the junit xml report file format understood by many tools.
+     * AndroidTestRunListener produces a nice output for the log for the test
+     * run as well as an xml file compatible with the junit xml report file
+     * format understood by many tools.
      * <p/>
      * It will do so for each device/emulator the tests run on.
      */
-    public class AndroidTestRunListener implements ITestRunListener
+    private class AndroidTestRunListener implements ITestRunListener
     {
         /**
          * the indent used in the log to group items that belong together visually *
@@ -652,10 +646,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
         /**
          * Junit report schema documentation is sparse. Here are some hints
-         * 
-         * @see "http://mail-archives.apache.org/mod_mbox/ ant-dev/200902.mbox/%3
-         *      Cdffc72020902241548l4316d645w2e98caf5f0aac770
-         * @mail.gmail.com%3E"
+         *
+         * @see "http://mail-archives.apache.org/mod_mbox/
+         *      ant-dev/200902.mbox/%3Cdffc72020902241548l4316d645w2e98caf5f0aac770@mail.gmail.com%3E"
          * @see "http://junitpdfreport.sourceforge.net/managedcontent/PdfTranslation"
          */
         private static final String TAG_TESTSUITES = "testsuites";
@@ -683,6 +676,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         private static final String TAG_FAILURE = "failure";
         private static final String ATTR_MESSAGE = "message";
         private static final String ATTR_TYPE = "type";
+
 
         /**
          * time format for the output of milliseconds in seconds in the xml file *
@@ -727,7 +721,6 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             this.deviceLogLinePrefix = DeviceHelper.getDeviceLogLinePrefix( device );
         }
 
-        @Override
         public void testRunStarted( String runName, int testCount )
         {
             this.testCount = testCount;
@@ -741,48 +734,63 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                     DocumentBuilder parser = null;
                     parser = fact.newDocumentBuilder();
                     junitReport = parser.newDocument();
+
                     Node testSuitesNode = junitReport.createElement( TAG_TESTSUITES );
                     junitReport.appendChild( testSuitesNode );
+
                     testSuiteNode = junitReport.createElement( TAG_TESTSUITE );
                     NamedNodeMap testSuiteAttributes = testSuiteNode.getAttributes();
+
                     Attr nameAttr = junitReport.createAttribute( ATTR_TESTSUITE_NAME );
                     nameAttr.setValue( runName );
                     testSuiteAttributes.setNamedItem( nameAttr );
+
                     Attr hostnameAttr = junitReport.createAttribute( ATTR_TESTSUITE_HOSTNAME );
                     hostnameAttr.setValue( DeviceHelper.getDescriptiveName( device ) );
                     testSuiteAttributes.setNamedItem( hostnameAttr );
+
                     Node propertiesNode = junitReport.createElement( TAG_PROPERTIES );
                     Node propertyNode;
                     NamedNodeMap propertyAttributes;
                     Attr propNameAttr;
                     Attr propValueAttr;
-                    for ( Map.Entry< Object, Object > systemProperty : System.getProperties().entrySet() )
+                    for ( Map.Entry<Object, Object> systemProperty : System.getProperties().entrySet() )
                     {
                         propertyNode = junitReport.createElement( TAG_PROPERTY );
                         propertyAttributes = propertyNode.getAttributes();
+
                         propNameAttr = junitReport.createAttribute( ATTR_PROPERTY_NAME );
                         propNameAttr.setValue( systemProperty.getKey().toString() );
                         propertyAttributes.setNamedItem( propNameAttr );
+
                         propValueAttr = junitReport.createAttribute( ATTR_PROPERTY_VALUE );
                         propValueAttr.setValue( systemProperty.getValue().toString() );
                         propertyAttributes.setNamedItem( propValueAttr );
+
                         propertiesNode.appendChild( propertyNode );
+
                     }
-                    Map< String, String > deviceProperties = device.getProperties();
-                    for ( Map.Entry< String, String > deviceProperty : deviceProperties.entrySet() )
+                    Map<String, String> deviceProperties = device.getProperties();
+                    for ( Map.Entry<String, String> deviceProperty : deviceProperties.entrySet() )
                     {
                         propertyNode = junitReport.createElement( TAG_PROPERTY );
                         propertyAttributes = propertyNode.getAttributes();
+
                         propNameAttr = junitReport.createAttribute( ATTR_PROPERTY_NAME );
                         propNameAttr.setValue( deviceProperty.getKey() );
                         propertyAttributes.setNamedItem( propNameAttr );
+
                         propValueAttr = junitReport.createAttribute( ATTR_PROPERTY_VALUE );
                         propValueAttr.setValue( deviceProperty.getValue() );
                         propertyAttributes.setNamedItem( propValueAttr );
+
                         propertiesNode.appendChild( propertyNode );
                     }
+
                     testSuiteNode.appendChild( propertiesNode );
+
                     testSuitesNode.appendChild( testSuiteNode );
+
                 }
                 catch ( ParserConfigurationException e )
                 {
@@ -791,42 +799,42 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                     exceptionMessages.append( e.getMessage() );
                 }
             }
-
         }
 
-        @Override
         public void testStarted( TestIdentifier testIdentifier )
         {
             testRunCount++;
-            getLog().info(
-                    deviceLogLinePrefix
-                            + String.format( "%1$s%1$sStart [%2$d/%3$d]: %4$s", INDENT, testRunCount, testCount,
-                                    testIdentifier.toString() ) );
+            getLog().info( deviceLogLinePrefix 
+                    + String.format( "%1$s%1$sStart [%2$d/%3$d]: %4$s", INDENT, testRunCount, testCount,
+                    testIdentifier.toString() ) );
 
             if ( parsedCreateReport )
-            { // reset start time for each test run
+            {
+                // reset start time for each test run
                 currentTestCaseStartTime = new Date().getTime();
+
                 currentTestCaseNode = junitReport.createElement( TAG_TESTCASE );
                 NamedNodeMap testCaseAttributes = currentTestCaseNode.getAttributes();
+
                 Attr classAttr = junitReport.createAttribute( ATTR_TESTCASE_CLASSNAME );
                 classAttr.setValue( testIdentifier.getClassName() );
                 testCaseAttributes.setNamedItem( classAttr );
+
                 Attr methodAttr = junitReport.createAttribute( ATTR_TESTCASE_NAME );
                 methodAttr.setValue( testIdentifier.getTestName() );
                 testCaseAttributes.setNamedItem( methodAttr );
             }
         }
 
-        @Override
         public void testFailed( TestFailure status, TestIdentifier testIdentifier, String trace )
         {
             if ( status == ERROR )
             {
-                ++testErrorCount;
+                ++ testErrorCount;
             }
             else
             {
-                ++testFailureCount;
+                ++ testFailureCount;
             }
             getLog().info( deviceLogLinePrefix + INDENT + INDENT + status.name() + ":" + testIdentifier.toString() );
             getLog().info( deviceLogLinePrefix + INDENT + INDENT + trace );
@@ -845,31 +853,35 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                     errorFailureNode = junitReport.createElement( TAG_FAILURE );
                     errorfailureAttributes = errorFailureNode.getAttributes();
                 }
+
                 errorFailureNode.setTextContent( trace );
+
                 Attr msgAttr = junitReport.createAttribute( ATTR_MESSAGE );
                 msgAttr.setValue( parseForMessage( trace ) );
                 errorfailureAttributes.setNamedItem( msgAttr );
+
                 Attr typeAttr = junitReport.createAttribute( ATTR_TYPE );
                 typeAttr.setValue( parseForException( trace ) );
                 errorfailureAttributes.setNamedItem( typeAttr );
+
                 currentTestCaseNode.appendChild( errorFailureNode );
             }
         }
 
-        @Override
-        public void testEnded( TestIdentifier testIdentifier, Map< String, String > testMetrics )
+        public void testEnded( TestIdentifier testIdentifier, Map<String, String> testMetrics )
         {
-            getLog().info(
-                    deviceLogLinePrefix
-                            + String.format( "%1$s%1$sEnd [%2$d/%3$d]: %4$s", INDENT, testRunCount, testCount,
-                                    testIdentifier.toString() ) );
+            getLog().info( deviceLogLinePrefix 
+                    + String.format( "%1$s%1$sEnd [%2$d/%3$d]: %4$s", INDENT, testRunCount, testCount,
+                    testIdentifier.toString() ) );
             logMetrics( testMetrics );
 
             if ( parsedCreateReport )
             {
                 testSuiteNode.appendChild( currentTestCaseNode );
                 NamedNodeMap testCaseAttributes = currentTestCaseNode.getAttributes();
+
                 Attr timeAttr = junitReport.createAttribute( ATTR_TESTCASE_TIME );
+
                 long now = new Date().getTime();
                 double seconds = ( now - currentTestCaseStartTime ) / 1000.0;
                 timeAttr.setValue( timeFormatter.format( seconds ) );
@@ -877,60 +889,65 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             }
         }
 
-        @Override
-        public void testRunEnded( long elapsedTime, Map< String, String > runMetrics )
+        public void testRunEnded( long elapsedTime, Map<String, String> runMetrics )
         {
             getLog().info( deviceLogLinePrefix + INDENT + "Run ended: " + elapsedTime + " ms" );
             if ( hasFailuresOrErrors() )
             {
                 getLog().error( deviceLogLinePrefix + INDENT + "FAILURES!!!" );
             }
-            getLog().info(
-                    INDENT + "Tests run: " + testRunCount
-                            + ( testRunCount < testCount ? " (of " + testCount + ")" : "" ) + ",  Failures: "
-                            + testFailureCount + ",  Errors: " + testErrorCount );
+            getLog().info( INDENT + "Tests run: " + testRunCount
+                    + ( testRunCount < testCount ? " (of " + testCount + ")" : "" )
+                    + ",  Failures: " + testFailureCount + ",  Errors: " + testErrorCount );
+            if ( parsedCreateReport )
+            {
+                NamedNodeMap testSuiteAttributes = testSuiteNode.getAttributes();
 
-            // steff
-            /*
-             * if (parsedCreateReport) { NamedNodeMap testSuiteAttributes = testSuiteNode.getAttributes(); Attr
-             * testCountAttr = junitReport.createAttribute(ATTR_TESTSUITE_TESTS);
-             * testCountAttr.setValue(Integer.toString(testCount)); testSuiteAttributes.setNamedItem(testCountAttr);
-             * Attr testFailuresAttr = junitReport.createAttribute(ATTR_TESTSUITE_FAILURES);
-             * testFailuresAttr.setValue(Integer.toString(testFailureCount));
-             * testSuiteAttributes.setNamedItem(testFailuresAttr); Attr testErrorsAttr =
-             * junitReport.createAttribute(ATTR_TESTSUITE_ERRORS);
-             * testErrorsAttr.setValue(Integer.toString(testErrorCount));
-             * testSuiteAttributes.setNamedItem(testErrorsAttr); Attr timeAttr =
-             * junitReport.createAttribute(ATTR_TESTSUITE_TIME); timeAttr.setValue(timeFormatter.format(elapsedTime /
-             * 1000.0)); testSuiteAttributes.setNamedItem(timeAttr); Attr timeStampAttr =
-             * junitReport.createAttribute(ATTR_TESTSUITE_TIMESTAMP); timeStampAttr.setValue(new Date().toString());
-             * testSuiteAttributes.setNamedItem(timeStampAttr); }
-             */
+                Attr testCountAttr = junitReport.createAttribute( ATTR_TESTSUITE_TESTS );
+                testCountAttr.setValue( Integer.toString( testCount ) );
+                testSuiteAttributes.setNamedItem( testCountAttr );
+
+                Attr testFailuresAttr = junitReport.createAttribute( ATTR_TESTSUITE_FAILURES );
+                testFailuresAttr.setValue( Integer.toString( testFailureCount ) );
+                testSuiteAttributes.setNamedItem( testFailuresAttr );
+
+                Attr testErrorsAttr = junitReport.createAttribute( ATTR_TESTSUITE_ERRORS );
+                testErrorsAttr.setValue( Integer.toString( testErrorCount ) );
+                testSuiteAttributes.setNamedItem( testErrorsAttr );
+
+                Attr timeAttr = junitReport.createAttribute( ATTR_TESTSUITE_TIME );
+                timeAttr.setValue( timeFormatter.format( elapsedTime / 1000.0 ) );
+                testSuiteAttributes.setNamedItem( timeAttr );
+
+                Attr timeStampAttr = junitReport.createAttribute( ATTR_TESTSUITE_TIMESTAMP );
+                timeStampAttr.setValue( new Date().toString() );
+                testSuiteAttributes.setNamedItem( timeStampAttr );
+            }
 
             logMetrics( runMetrics );
 
-            // steff
-            /*
-             * if (parsedCreateReport) { writeJunitReportToFile(); }
-             */
+            if ( parsedCreateReport )
+            {
+                writeJunitReportToFile();
+            }
         }
 
-        @Override
         public void testRunFailed( String errorMessage )
         {
             testRunFailureCause = errorMessage;
             getLog().info( deviceLogLinePrefix + INDENT + "Run failed: " + errorMessage );
         }
 
-        @Override
         public void testRunStopped( long elapsedTime )
         {
             getLog().info( deviceLogLinePrefix + INDENT + "Run stopped:" + elapsedTime );
         }
 
+
         /**
-         * Parse a trace string for the message in it. Assumes that the message is located after ":" and before "\r\n".
-         * 
+         * Parse a trace string for the message in it. Assumes that the message is located after ":" and before
+         * "\r\n".
+         *
          * @param trace
          * @return message or empty string
          */
@@ -940,10 +957,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             {
                 String newline = "\r\n";
                 // if there is message like
-                // junit.junit.framework.AssertionFailedError ... there is no
-                // message
+                // junit.junit.framework.AssertionFailedError ... there is no message
                 int messageEnd = trace.indexOf( newline );
-                boolean hasMessage = !trace.startsWith( "junit." ) && messageEnd > 0;
+                boolean hasMessage = ! trace.startsWith( "junit." ) && messageEnd > 0;
                 if ( hasMessage )
                 {
                     int messageStart = trace.indexOf( ":" ) + 2;
@@ -953,7 +969,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                         // match start of stack trace "\r\nat org.junit....."
                         if ( messageStart > messageEnd )
                         {
-                            // ':' wasn't found in message but in stack trace
+                            //':' wasn't found in message but in stack trace
                             messageStart = 0;
                         }
                     }
@@ -973,7 +989,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         /**
          * Parse a trace string for the exception class. Assumes that it is the start of the trace and ends at the first
          * ":".
-         * 
+         *
          * @param trace
          * @return Exception class as string or empty string
          */
@@ -1043,12 +1059,12 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
         /**
          * Log all the metrics out in to key: value lines.
-         * 
+         *
          * @param metrics
          */
-        private void logMetrics( Map< String, String > metrics )
+        private void logMetrics( Map<String, String> metrics )
         {
-            for ( Map.Entry< String, String > entry : metrics.entrySet() )
+            for ( Map.Entry<String, String> entry : metrics.entrySet() )
             {
                 getLog().info( deviceLogLinePrefix + INDENT + INDENT + entry.getKey() + ": " + entry.getValue() );
             }
@@ -1076,8 +1092,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         }
 
         /**
-         * @return if any exception was thrown during the test run on the build system (not the Android device or
-         *         emulator)
+         * @return if any exception was thrown during the test run
+         *         on the build system (not the Android device or emulator)
          */
         public boolean threwException()
         {
@@ -1085,8 +1101,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         }
 
         /**
-         * @return all exception messages thrown during test execution on the test run time (not the Android device or
-         *         emulator)
+         * @return all exception messages thrown during test execution
+         *         on the test run time (not the Android device or emulator)
          */
         public String getExceptionMessages()
         {
