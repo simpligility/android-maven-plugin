@@ -6,8 +6,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.maven.plugin.logging.SystemStreamLog;
-
 /**
  * ConfigHandler is able to parse the configuration of a Mojo based on the Maven injected parameters as well as a config
  * pojo and annontations for default values on properties named parsed*. See the ProguardMojo for a working
@@ -214,10 +212,6 @@ public class ConfigHandler
             configPojoName = configPojo.getName();
             configPojoInstance = configPojo.get( mojo );
             configPojoPrefix = configPojo.getAnnotation( ConfigPojo.class ).prefix();
-            new SystemStreamLog().debug( "configPojoName:" + configPojoName );
-            new SystemStreamLog().debug( "configPojoInstance:" + configPojoInstance );
-            new SystemStreamLog().debug( "configPojoPrefix:" + configPojoPrefix );
-
         }
         catch ( Exception e )
         {

@@ -1,10 +1,11 @@
 package com.android.ddmlib.testrunner;
 
 import java.io.IOException;
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.List;
 import java.util.Map.Entry;
 
 import com.android.ddmlib.AdbCommandRejectedException;
@@ -14,7 +15,7 @@ import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
 
 /**
- * Runs a Android test command remotely and reports results.
+ * Runs a UI Automator test command remotely and reports results.
  */
 public class UIAutomatorRemoteAndroidTestRunner
 {
@@ -25,10 +26,9 @@ public class UIAutomatorRemoteAndroidTestRunner
     private String mRunName = null;
 
     /** map of name-value instrumentation argument pairs */
-    private Map< String, String > mArgMap;
+    private List< Entry< String, String >> mArgList;
     private InstrumentationResultParser mParser;
     private final String jarFile;
-    private boolean debug;
     private boolean noHup;
     private Object dumpFilePath;
 
@@ -36,49 +36,37 @@ public class UIAutomatorRemoteAndroidTestRunner
 
     // defined instrumentation argument names
     private static final String CLASS_ARG_NAME = "class";
-    private static final String LOG_ARG_NAME = "log";
     private static final String DEBUG_ARG_NAME = "debug";
 
     public UIAutomatorRemoteAndroidTestRunner( String jarFile, IDevice remoteDevice )
     {
         this.jarFile = jarFile;
         mRemoteDevice = remoteDevice;
-        mArgMap = new Hashtable< String, String >();
+        mArgList = new ArrayList< Entry< String, String >>();
     }
 
     /**
      * {@inheritDoc}
      */
 
-    public void setTestClassOrMethodsSpaceSeparated( String testClassOrMethodsSpaceSeparated )
+    public void setTestClassOrMethods( String[] testClassOrMethods )
     {
-        addInstrumentationArg( CLASS_ARG_NAME, testClassOrMethodsSpaceSeparated );
+        for ( String testClassOrMethod : testClassOrMethods )
+        {
+            addInstrumentationArg( CLASS_ARG_NAME, testClassOrMethod );
+        }
     }
 
     /**
      * {@inheritDoc}
      */
-
     public void addInstrumentationArg( String name, String value )
     {
         if ( name == null || value == null )
         {
             throw new IllegalArgumentException( "name or value arguments cannot be null" );
         }
-        mArgMap.put( name, value );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-
-    public void removeInstrumentationArg( String name )
-    {
-        if ( name == null )
-        {
-            throw new IllegalArgumentException( "name argument cannot be null" );
-        }
-        mArgMap.remove( name );
+        mArgList.add( new AbstractMap.SimpleImmutableEntry< String, String >( name, value ) );
     }
 
     /**
@@ -94,11 +82,6 @@ public class UIAutomatorRemoteAndroidTestRunner
      * {@inheritDoc}
      */
 
-    public void setLogOnly( boolean logOnly )
-    {
-        addBooleanArg( LOG_ARG_NAME, logOnly );
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -106,6 +89,16 @@ public class UIAutomatorRemoteAndroidTestRunner
     public void setDebug( boolean debug )
     {
         addBooleanArg( DEBUG_ARG_NAME, debug );
+    }
+
+    public void setNoHup( boolean noHup )
+    {
+        this.noHup = noHup;
+    }
+
+    public void setDumpFilePath( String dumpFilePath )
+    {
+        this.dumpFilePath = dumpFilePath;
     }
 
     /**
@@ -139,12 +132,10 @@ public class UIAutomatorRemoteAndroidTestRunner
     /**
      * {@inheritDoc}
      */
-
     public void run( Collection< ITestRunListener > listeners ) throws TimeoutException, AdbCommandRejectedException,
             ShellCommandUnresponsiveException, IOException
     {
-        final String runCaseCommandStr = String
-                .format( "uiautomator runtest %1$s %2$s", getJarFile(), getArgsCommand() );
+        final String runCaseCommandStr = String.format( "uiautomator runtest %1$s %2$s", jarFile, buildArgsCommand() );
         Log.i( LOG_TAG, String.format( "Running %1$s on %2$s", runCaseCommandStr, mRemoteDevice.getSerialNumber() ) );
         mParser = new InstrumentationResultParser( mRunName, listeners );
 
@@ -154,8 +145,8 @@ public class UIAutomatorRemoteAndroidTestRunner
         }
         catch ( IOException e )
         {
-            Log.w( LOG_TAG, String.format( "IOException %1$s when running tests %2$s on %3$s", e.toString(),
-                    getJarFile(), mRemoteDevice.getSerialNumber() ) );
+            Log.w( LOG_TAG, String.format( "IOException %1$s when running tests %2$s on %3$s", e.toString(), jarFile,
+                    mRemoteDevice.getSerialNumber() ) );
             // rely on parser to communicate results to listeners
             mParser.handleTestRunFailed( e.toString() );
             throw e;
@@ -164,7 +155,7 @@ public class UIAutomatorRemoteAndroidTestRunner
         {
             Log.w( LOG_TAG,
                     String.format( "ShellCommandUnresponsiveException %1$s when running tests %2$s on %3$s",
-                            e.toString(), getJarFile(), mRemoteDevice.getSerialNumber() ) );
+                            e.toString(), jarFile, mRemoteDevice.getSerialNumber() ) );
             mParser.handleTestRunFailed( String.format( "Failed to receive adb shell test output within %1$d ms. "
                     + "Test may have timed out, or adb connection to device became unresponsive",
                     mMaxTimeToOutputResponse ) );
@@ -173,7 +164,7 @@ public class UIAutomatorRemoteAndroidTestRunner
         catch ( TimeoutException e )
         {
             Log.w( LOG_TAG,
-                    String.format( "TimeoutException when running tests %1$s on %2$s", getJarFile(),
+                    String.format( "TimeoutException when running tests %1$s on %2$s", jarFile,
                             mRemoteDevice.getSerialNumber() ) );
             mParser.handleTestRunFailed( e.toString() );
             throw e;
@@ -181,26 +172,15 @@ public class UIAutomatorRemoteAndroidTestRunner
         catch ( AdbCommandRejectedException e )
         {
             Log.w( LOG_TAG, String.format( "AdbCommandRejectedException %1$s when running tests %2$s on %3$s",
-                    e.toString(), getJarFile(), mRemoteDevice.getSerialNumber() ) );
+                    e.toString(), jarFile, mRemoteDevice.getSerialNumber() ) );
             mParser.handleTestRunFailed( e.toString() );
             throw e;
         }
     }
 
-    private String getJarFile()
-    {
-        return jarFile;
-    }
-
-    private boolean isDebug()
-    {
-        return debug;
-    }
-
     /**
      * {@inheritDoc}
      */
-
     public void cancel()
     {
         if ( mParser != null )
@@ -213,10 +193,10 @@ public class UIAutomatorRemoteAndroidTestRunner
      * Returns the full instrumentation command line syntax for the provided instrumentation arguments. Returns an empty
      * string if no arguments were specified.
      */
-    private String getArgsCommand()
+    private String buildArgsCommand()
     {
         StringBuilder commandBuilder = new StringBuilder();
-        for ( Entry< String, String > argPair : mArgMap.entrySet() )
+        for ( Entry< String, String > argPair : mArgList )
         {
             final String argCmd = String.format( " -e %1$s %2$s", argPair.getKey(), argPair.getValue() );
             commandBuilder.append( argCmd );
@@ -232,15 +212,5 @@ public class UIAutomatorRemoteAndroidTestRunner
             commandBuilder.append( " dump " + dumpFilePath );
         }
         return commandBuilder.toString();
-    }
-
-    public void setNoHup( boolean noHup )
-    {
-        this.noHup = noHup;
-    }
-
-    public void setDumpFilePath( String dumpFilePath )
-    {
-        this.dumpFilePath = dumpFilePath;
     }
 }
