@@ -67,7 +67,6 @@ import com.jayway.maven.plugins.android.configuration.UIAutomator;
 
 /**
  * Can execute tests using ui uiautomator.<br/>
- * Called automatically when the lifecycle reaches phase <code>install</code>.
  * 
  * @author Stéphane Nicolas <snicolas@octo.com>
  * @goal uiautomator
@@ -115,9 +114,9 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      * @parameter expression="${android.uiautomator.testClassOrMethod}"
      * 
      */
-    private String uiautomatorTestClassOrMethods;
+    private String[] uiautomatorTestClassOrMethods;
 
-    @PullParameter( required = false, defaultValue = "getTestClassOrMethods" )
+    @PullParameter( required = false, defaultValueGetterMethod = "getTestClassOrMethods" )
     private String[] parsedTestClassOrMethods;
 
     /**
@@ -288,7 +287,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
             }
             else
             {
-                parsedTestClassOrMethods = uiautomatorTestClassOrMethods.split( " " );
+                parsedTestClassOrMethods = uiautomatorTestClassOrMethods;
             }
 
         }
@@ -297,7 +296,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
         {
             parsedSkip = uiautomatorSkip;
             parsedJarFile = uiautomatorJarFile;
-            parsedTestClassOrMethods = uiautomatorTestClassOrMethods.split( " " );
+            parsedTestClassOrMethods = uiautomatorTestClassOrMethods;
             parsedNoHup = uiautomatorNoHup;
             parsedDebug = uiautomatorDebug;
             parsedUseDump = uiautomatorUseDump;
@@ -305,7 +304,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
         }
     }
 
-    private String getJarFile()
+    String getJarFile()
     {
         if ( parsedJarFile == null )
         {
