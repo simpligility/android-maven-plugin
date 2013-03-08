@@ -42,7 +42,7 @@ import com.android.ddmlib.SyncException;
 import com.android.ddmlib.SyncService;
 import com.android.ddmlib.TimeoutException;
 import com.android.ddmlib.log.LogReceiver;
-import com.android.ddmlib.testrunner.UIAutomatorRemoteAndroidTestRunner;
+import com.android.ddmlib.testrunner.RemoteAndroidTestRunner;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.AbstractAndroidMojoTestCase;
 import com.jayway.maven.plugins.android.DeviceCallback;
@@ -56,7 +56,7 @@ import com.jayway.maven.plugins.android.phase12integrationtest.InternalIntegrati
  * 
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ UIAutomatorRemoteAndroidTestRunner.class, AbstractAndroidMojo.class })
+@PrepareForTest({ RemoteAndroidTestRunner.class, AbstractAndroidMojo.class })
 public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase<InternalIntegrationTestMojo> {
 
     @Override
@@ -69,7 +69,7 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
 
         // We need to do some fiddling to make sure we run as far into the Mojo as possible without
         // actually sending stuff to a device.
-        PowerMock.suppress(MemberMatcher.methodsDeclaredIn(UIAutomatorRemoteAndroidTestRunner.class));
+        PowerMock.suppress(MemberMatcher.methodsDeclaredIn(RemoteAndroidTestRunner.class));
         PowerMock.replace(AbstractAndroidMojo.class.getDeclaredMethod("doWithDevices", DeviceCallback.class)).with(new InvocationHandler() {
 
             @Override
