@@ -70,14 +70,14 @@ import com.jayway.maven.plugins.android.configuration.UIAutomator;
  * Implements parsing parameters from pom or command line arguments and sets useful defaults as well. This goal is meant
  * to execute a special <i>java project</i> dedicated to UI testing via UIAutomator. It will build the jar of the
  * project, dex it and send it to dalvik cache of a rooted device or to an emulator. If you use a rooted device, refer
- * to <a href="http://stackoverflow.com/a/13805869/693752">this thread on stack over flow</a>.
- * 
+ * to <a href="http://stackoverflow.com/a/13805869/693752">this thread on stack over flow</a>. <br />
+ * <br />
  * The tests are executed via ui automator. A surefire compatible test report can be generated and its location will be
- * logged during build.
- * 
+ * logged during build. <br />
+ * <br />
  * To use this goal, you will need to place the uiautomator.jar file (part of the Android SDK > 16) on a nexus
- * repository.
- * 
+ * repository. <br />
+ * <br />
  * A typical usage of this goal can be found at <a
  * href="https://github.com/stephanenicolas/Quality-Tools-for-Android">Quality tools for Android project</a>.
  * 
