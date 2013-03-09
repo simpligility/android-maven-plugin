@@ -13,10 +13,10 @@ import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -38,13 +38,13 @@ public class AbstractEmulatorMojoTest
     @Before
     public void setUp() throws Exception
     {
-        mockExecutor = EasyMock.createNiceMock( CommandExecutor.class );
+        mockExecutor = PowerMock.createNiceMock( CommandExecutor.class );
         mockExecutor.executeCommand( anyObject( String.class ), isNull( List.class ) );
-        EasyMock.replay( mockExecutor );
+        PowerMock.replay( mockExecutor );
 
         mockStatic( CommandExecutor.Factory.class );
         expect( CommandExecutor.Factory.createDefaultCommmandExecutor() ).andReturn( mockExecutor );
-        EasyMock.replay( CommandExecutor.Factory.class );
+        PowerMock.replay( CommandExecutor.Factory.class );
 
         mockAndroidDebugBridge = createMock( AndroidDebugBridge.class );
 
