@@ -119,9 +119,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.android.ddmlib</groupId>
-            <artifactId>ddmlib</artifactId>
-            <version>r16</version>
+            <groupId>com.android.tools.build</groupId>
+            <artifactId>builder</artifactId>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
