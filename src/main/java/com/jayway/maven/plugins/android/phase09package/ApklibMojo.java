@@ -66,6 +66,13 @@ public class ApklibMojo extends AbstractAndroidMojo
     private File ndkOutputDirectory;
     
     /**
+     * <p>Classifier to add to the artifact generated. If given, the artifact will be an attachment instead.</p>
+     *
+     * @parameter
+     */
+    private String classifier;
+    
+    /**
      * Defines the architecture for the NDK build
      *
      * @parameter expression="${android.ndk.build.architecture}" default-value="armeabi"
@@ -87,8 +94,16 @@ public class ApklibMojo extends AbstractAndroidMojo
 
         File outputFile = createApkLibraryFile();
 
-        // Set the generated .apklib file as the main artifact (because the pom states <packaging>apklib</packaging>)
-        project.getArtifact().setFile( outputFile );
+        if ( classifier == null )
+        {
+            // Set the generated file as the main artifact (because the pom states <packaging>apklib</packaging>)
+            project.getArtifact().setFile( outputFile );
+        }
+        else
+        {
+            // If there is a classifier specified, attach the artifact using that
+            projectHelper.attachArtifact( project, outputFile, classifier );
+        }
     }
 
     /**
