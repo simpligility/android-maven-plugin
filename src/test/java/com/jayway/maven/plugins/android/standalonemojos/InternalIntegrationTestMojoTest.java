@@ -237,7 +237,6 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
 
                     @Override
                     public String uninstallPackage(String packageName) throws InstallException {
-
                         return null;
                     }
 
@@ -289,6 +288,24 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
                     @Override
                     public Integer getBatteryLevel(long l) throws TimeoutException, AdbCommandRejectedException, IOException, ShellCommandUnresponsiveException {
                         return null;
+                    }
+
+                    @Override
+                    public void createForward(int arg0, String arg1, DeviceUnixSocketNamespace arg2)
+                            throws TimeoutException, AdbCommandRejectedException, IOException
+                    {
+                    }
+
+                    @Override
+                    public String getName()
+                    {
+                        return null;
+                    }
+
+                    @Override
+                    public void removeForward(int arg0, String arg1, DeviceUnixSocketNamespace arg2)
+                            throws TimeoutException, AdbCommandRejectedException, IOException
+                    {
                     }
                 });
                 return null;
