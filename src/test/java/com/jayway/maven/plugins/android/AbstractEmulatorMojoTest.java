@@ -1,27 +1,31 @@
 package com.jayway.maven.plugins.android;
 
-import com.android.ddmlib.AndroidDebugBridge;
-import com.android.ddmlib.IDevice;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.isNull;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.fail;
+import static org.powermock.api.easymock.PowerMock.createMock;
+import static org.powermock.api.easymock.PowerMock.mockStatic;
+
+import java.util.List;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.util.List;
+import com.android.ddmlib.AndroidDebugBridge;
+import com.android.ddmlib.IDevice;
 
-import static org.easymock.EasyMock.*;
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.fail;
-import static org.powermock.api.easymock.PowerMock.createMock;
-import static org.powermock.api.easymock.PowerMock.*;
-import static org.powermock.api.easymock.PowerMock.replay;
-
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ AndroidDebugBridge.class, CommandExecutor.Factory.class })
+@RunWith( PowerMockRunner.class )
+@PrepareForTest(
+{ AndroidDebugBridge.class, CommandExecutor.Factory.class } )
 public class AbstractEmulatorMojoTest
 {
 
@@ -34,13 +38,13 @@ public class AbstractEmulatorMojoTest
     @Before
     public void setUp() throws Exception
     {
-        mockExecutor = createNiceMock( CommandExecutor.class );
+        mockExecutor = PowerMock.createNiceMock( CommandExecutor.class );
         mockExecutor.executeCommand( anyObject( String.class ), isNull( List.class ) );
-        replay( mockExecutor );
+        PowerMock.replay( mockExecutor );
 
         mockStatic( CommandExecutor.Factory.class );
         expect( CommandExecutor.Factory.createDefaultCommmandExecutor() ).andReturn( mockExecutor );
-        replay( CommandExecutor.Factory.class );
+        PowerMock.replay( CommandExecutor.Factory.class );
 
         mockAndroidDebugBridge = createMock( AndroidDebugBridge.class );
 
@@ -99,11 +103,10 @@ public class AbstractEmulatorMojoTest
     {
         expect( mockAndroidDebugBridge.isConnected() ).andReturn( true );
         expect( mockAndroidDebugBridge.hasInitialDeviceList() ).andReturn( true );
-        expect( mockAndroidDebugBridge.getDevices() ).andReturn( new IDevice[ 0 ] ).andReturn( new
-                IDevice[]{ emulatorDevice } ).atLeastOnce();
+        expect( mockAndroidDebugBridge.getDevices() ).andReturn( new IDevice[ 0 ] ).andReturn( new IDevice[]
+        { emulatorDevice } ).atLeastOnce();
         replay( mockAndroidDebugBridge );
     }
-
 
     private class AbstractEmulatorMojoToTest extends AbstractEmulatorMojo
     {
