@@ -37,6 +37,8 @@ public class AndroidNdk
             + "alternative, you may add the parameter to commandline: -Dandroid.ndk.path=... or set environment "
             + "variable " + NdkBuildMojo.ENV_ANDROID_NDK_HOME + ".";
 
+    public static final String[] NDK_ARCHITECTURES = { "armeabi", "armeabi-v7a", "mips", "x86" };
+
     /**
      * Arm toolchain implementations.
      */
