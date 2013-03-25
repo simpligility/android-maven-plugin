@@ -17,6 +17,7 @@
 package com.jayway.maven.plugins.android.phase09package;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.AndroidNdk;
 import com.jayway.maven.plugins.android.AndroidSigner;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
@@ -139,42 +140,11 @@ public class ApkMojo extends AbstractAndroidMojo
     private File nativeLibrariesOutputDirectory;
 
     /**
-     * <p>Default hardware architecture for native library dependencies (with {@code &lt;type>so&lt;/type>}).</p>
-     * <p>This value is used for dependencies without classifier, if
-     * {@code nativeLibrariesDependenciesHardwareArchitectureOverride} is not set.</p>
-     * <p>Valid values currently include {@code armeabi} and {@code armeabi-v7a}.</p>
-     *
-     * @parameter expression="${android.nativeLibrariesDependenciesHardwareArchitectureDefault}" default-value="armeabi"
-     */
-    private String nativeLibrariesDependenciesHardwareArchitectureDefault;
-
-    /**
      * <p>Classifier to add to the artifact generated. If given, the artifact will be an attachment instead.</p>
      *
      * @parameter
      */
     private String classifier;
-
-    /**
-     * <p>Override hardware architecture for native library dependencies (with {@code &lt;type>so&lt;/type>}).</p>
-     * <p>This overrides any classifier on native library dependencies, and
-     * any {@code nativeLibrariesDependenciesHardwareArchitectureDefault}.</p>
-     * <p>Valid values currently include {@code armeabi} and {@code armeabi-v7a}.</p>
-     * <pre>
-     * &lt;configuration&gt;
-     *   ...
-     *    &lt;nativeLibrariesDependenciesHardwareArchitectureOverrides&gt;
-     *      &lt;nativeLibrariesDependenciesHardwareArchitectureOverride&gt;
-     *        armeabi
-     *      &lt;/nativeLibrariesDependenciesHardwareArchitectureOverride&gt;
-     *   &lt;/nativeLibrariesDependenciesHardwareArchitectureOverrides&gt;
-     *   ...
-     * &lt;/configuration&gt;
-     * </pre>
-     *
-     * @parameter expression="${android.nativeLibrariesDependenciesHardwareArchitectureOverrides}" default-value=""
-     */
-    private List<String> nativeLibrariesDependenciesHardwareArchitectureOverrides;
 
     /**
      * <p>Additional source directories that contain resources to be packaged into the apk.</p>
@@ -822,16 +792,9 @@ public class ApkMojo extends AbstractAndroidMojo
 
     private void processNativeLibraries( final List<File> natives ) throws MojoExecutionException
     {
-        if ( nativeLibrariesDependenciesHardwareArchitectureOverrides.isEmpty() )
+        for ( String ndkArchitecture : AndroidNdk.NDK_ARCHITECTURES )
         {
-            processNativeLibraries( natives, nativeLibrariesDependenciesHardwareArchitectureDefault );
-        }
-        else
-        {
-            for ( String ndkArchitecture : nativeLibrariesDependenciesHardwareArchitectureOverrides )
-            {
-                processNativeLibraries( natives, ndkArchitecture );
-            }
+            processNativeLibraries( natives, ndkArchitecture );
         }
     }
 
@@ -900,7 +863,8 @@ public class ApkMojo extends AbstractAndroidMojo
                 {
                     for ( Artifact resolvedArtifact : artifacts )
                     {
-                        if ( "so".equals( resolvedArtifact.getType() ) )
+                        if ( "so".equals( resolvedArtifact.getType() ) && ndkArchitecture.equals(
+                             resolvedArtifact.getClassifier() ) )
                         {
                             final File artifactFile = resolvedArtifact.getFile();
                             try
@@ -945,7 +909,6 @@ public class ApkMojo extends AbstractAndroidMojo
 
                 // Finally, think about copying the gdbserver binary into the APK output as well
                 optionallyCopyGdbServer( destinationDirectory, ndkArchitecture );
-
             }
         }
     }
@@ -955,11 +918,11 @@ public class ApkMojo extends AbstractAndroidMojo
 
         try
         {
-            if ( apkDebug )
+            final File destDir = new File( destinationDirectory, architecture );
+            if ( apkDebug && destDir.exists() )
             {
                 // Copy the gdbserver binary to libs/<architecture>/
                 final File gdbServerFile = getAndroidNdk().getGdbServer( architecture );
-                final File destDir = new File( destinationDirectory, architecture );
                 final File destFile = new File( destDir, "gdbserver" );
                 if ( ! destFile.exists() )
                 {
@@ -982,28 +945,9 @@ public class ApkMojo extends AbstractAndroidMojo
     private File getFinalDestinationDirectoryFor( Artifact resolvedArtifact, File destinationDirectory,
                                                   String ndkArchitecture )
     {
-        final String hardwareArchitecture = getHardwareArchitectureFor( resolvedArtifact, ndkArchitecture );
-
-        File finalDestinationDirectory = new File( destinationDirectory, hardwareArchitecture + "/" );
-
+        File finalDestinationDirectory = new File( destinationDirectory, ndkArchitecture + "/" );
         finalDestinationDirectory.mkdirs();
         return finalDestinationDirectory;
-    }
-
-    private String getHardwareArchitectureFor( Artifact resolvedArtifact, String ndkArchitecture )
-    {
-        if ( !nativeLibrariesDependenciesHardwareArchitectureOverrides.isEmpty() )
-        {
-            return ndkArchitecture;
-        }
-
-        final String classifier = resolvedArtifact.getClassifier();
-        if ( StringUtils.isNotBlank( classifier ) )
-        {
-            return classifier;
-        }
-
-        return nativeLibrariesDependenciesHardwareArchitectureDefault;
     }
 
     private void copyLocalNativeLibraries( final File localNativeLibrariesDirectory, final File destinationDirectory )
