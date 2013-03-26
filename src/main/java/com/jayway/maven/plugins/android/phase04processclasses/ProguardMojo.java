@@ -3,7 +3,6 @@ package com.jayway.maven.plugins.android.phase04processclasses;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
-import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.config.ConfigHandler;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.config.PullParameter;
@@ -13,7 +12,6 @@ import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.codehaus.plexus.util.FileUtils;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.aether.util.artifact.JavaScopes;
 
@@ -230,6 +228,11 @@ public class ProguardMojo extends AbstractAndroidMojo
     private static final Collection<String> MAVEN_DESCRIPTOR = Arrays.asList( "META-INF/maven/**" );
     private static final Collection<String> META_INF_MANIFEST = Arrays.asList( "META-INF/MANIFEST.MF" );
 
+    /**
+     * For Proguard is required only jar type dependencies, all other like .so or .apklib can be skipped.
+     */
+    private static final String USED_DEPENDENCY_TYPE = "jar";
+
     private Collection<String> globalInJarExcludes = new HashSet<String>();
 
     private List<Artifact> artifactBlacklist = new LinkedList<Artifact>();
@@ -383,12 +386,8 @@ public class ProguardMojo extends AbstractAndroidMojo
         collectProgramInputFiles();
         for ( ProGuardInput injar : inJars )
         {
-            // don't add android packaging files, these are not input to proguard
-            if ( ! AndroidExtension.isAndroidPackaging( FileUtils.extension( injar.path ) ) )
-            {
-                commands.add( "-injars" );
-                commands.add( injar.toCommandLine() );
-            }
+            commands.add( "-injars" );
+            commands.add( injar.toCommandLine() );
         }
 
         collectLibraryInputFiles();
@@ -464,7 +463,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         // we then add all its dependencies (incl. transitive ones), unless they're blacklisted
         for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
         {
-            if ( isBlacklistedArtifact( artifact ) )
+            if ( isBlacklistedArtifact( artifact ) || !USED_DEPENDENCY_TYPE.equals( artifact.getType() ) )
             {
                 continue;
             }
