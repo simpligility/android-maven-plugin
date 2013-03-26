@@ -115,6 +115,15 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
     private boolean mavenTestFailureIgnore;
 
     /**
+     * -Dmaven.test.failure.ignore is commonly used with Maven to prevent failure of build when (some) tests fail. We
+     * honor it too. Builds will still fail if tests can't complete or throw an exception.
+     * 
+     * @parameter expression="${testFailureIgnore}" default-value=false
+     * @readonly
+     */
+    private boolean mavenIgnoreTestFailure;
+
+    /**
      * The configuration for the ui automator goal. As soon as a lint goal is invoked the command will be executed
      * unless the skip parameter is set. A minimal configuration that will run lint and produce a XML report in
      * ${project.build.directory}/lint/lint-results.xml is
@@ -263,22 +272,20 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
         ConfigHandler configHandler = new ConfigHandler( this );
         configHandler.parseConfiguration();
 
-        if ( mavenTestSkip )
-        {
-            getLog().info( "maven.test.skip set - skipping tests" );
-            return;
-        }
-
-        if ( mavenSkipTests )
-        {
-            getLog().info( "maven.skip.tests set - skipping tests" );
-            return;
-        }
-
-        if ( !parsedSkip )
+        if ( isEnableIntegrationTest() )
         {
             playTests();
         }
+    }
+
+    protected boolean isEnableIntegrationTest()
+    {
+        return !parsedSkip && !mavenTestSkip && !mavenSkipTests;
+    }
+
+    protected boolean isIgnoreTestFailures()
+    {
+        return mavenIgnoreTestFailure || mavenTestFailureIgnore;
     }
 
     protected void playTests() throws MojoExecutionException, MojoFailureException
@@ -315,7 +322,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
                 {
                     AndroidTestRunListener testRunListener = new AndroidTestRunListener( project, device );
                     automatorRemoteAndroidTestRunner.run( testRunListener );
-                    if ( testRunListener.hasFailuresOrErrors() && !mavenTestFailureIgnore )
+                    if ( testRunListener.hasFailuresOrErrors() && !isIgnoreTestFailures() )
                     {
                         throw new MojoFailureException( deviceLogLinePrefix + "Tests failed on device." );
                     }
@@ -324,7 +331,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
                         throw new MojoFailureException( deviceLogLinePrefix + "Test run failed to complete: "
                                 + testRunListener.getTestRunFailureCause() );
                     }
-                    if ( testRunListener.threwException() && !mavenTestFailureIgnore )
+                    if ( testRunListener.threwException() )
                     {
                         throw new MojoFailureException( deviceLogLinePrefix + testRunListener.getExceptionMessages() );
                     }
