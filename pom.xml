@@ -256,15 +256,15 @@
     <build>
         <pluginManagement>
             <plugins>
-                <plugin>
+                <!--<plugin>
                     <artifactId>maven-checkstyle-plugin</artifactId>
                     <configuration>
-                        <!-- we are using the Maven code style from the Maven Checkstyle Plugin
-                            but with header check disabled, using the license plugin for that instead -->
+                        &lt;!&ndash; we are using the Maven code style from the Maven Checkstyle Plugin
+                            but with header check disabled, using the license plugin for that instead &ndash;&gt;
                         <configLocation>src/conf/maven_checks.xml</configLocation>
                         <enableRulesSummary>false</enableRulesSummary>
                     </configuration>
-                </plugin>
+                </plugin>-->
                 <plugin>
                     <artifactId>maven-plugin-plugin</artifactId>
                     <version>${maven-plugin-plugin.version}</version>
@@ -272,7 +272,7 @@
             </plugins>
         </pluginManagement>
         <plugins>
-            <plugin>
+            <!--<plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <executions>
                     <execution>
@@ -282,7 +282,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <artifactId>maven-scm-plugin</artifactId>
                 <configuration>
