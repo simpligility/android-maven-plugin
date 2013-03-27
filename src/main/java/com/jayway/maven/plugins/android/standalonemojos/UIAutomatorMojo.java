@@ -18,6 +18,7 @@ package com.jayway.maven.plugins.android.standalonemojos;
 
 import static com.android.ddmlib.testrunner.ITestRunListener.TestFailure.ERROR;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -51,6 +53,7 @@ import org.w3c.dom.Node;
 
 import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.RawImage;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
 import com.android.ddmlib.testrunner.ITestRunListener;
@@ -278,16 +281,34 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
         }
     }
 
+    /**
+     * Whether or not tests are enabled.
+     * 
+     * @return a boolean indicating whether or not tests are enabled.
+     */
     protected boolean isEnableIntegrationTest()
     {
         return !parsedSkip && !mavenTestSkip && !mavenSkipTests;
     }
 
+    /**
+     * Whether or not test failures should be ignored.
+     * 
+     * @return a boolean indicating whether or not test failures should be ignored.
+     */
     protected boolean isIgnoreTestFailures()
     {
         return mavenIgnoreTestFailure || mavenTestFailureIgnore;
     }
 
+    /**
+     * Actually plays tests.
+     * 
+     * @throws MojoExecutionException
+     *             if at least a test threw an exception and isIgnoreTestFailures is false..
+     * @throws MojoFailureException
+     *             if at least a test failed and isIgnoreTestFailures is false.
+     */
     protected void playTests() throws MojoExecutionException, MojoFailureException
     {
 
@@ -331,7 +352,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
                         throw new MojoFailureException( deviceLogLinePrefix + "Test run failed to complete: "
                                 + testRunListener.getTestRunFailureCause() );
                     }
-                    if ( testRunListener.threwException() )
+                    if ( testRunListener.threwException() && !isIgnoreTestFailures() )
                     {
                         throw new MojoFailureException( deviceLogLinePrefix + testRunListener.getExceptionMessages() );
                     }
@@ -477,6 +498,14 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
         private boolean threwException = false;
         private final StringBuilder exceptionMessages = new StringBuilder();
 
+        /**
+         * Create a new test run listener.
+         * 
+         * @param project
+         *            the test project.
+         * @param device
+         *            the device on which test is executed.
+         */
         public AndroidTestRunListener( MavenProject project, IDevice device )
         {
             this.project = project;
@@ -485,9 +514,9 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
         }
 
         @Override
-        public void testRunStarted( String runName, int testCount )
+        public void testRunStarted( String runName, int tCount )
         {
-            this.testCount = testCount;
+            this.testCount = tCount;
             getLog().info( deviceLogLinePrefix + INDENT + "Run started: " + runName + ", " + testCount + " tests:" );
 
             if ( parsedCreateReport )
@@ -548,7 +577,6 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
                     exceptionMessages.append( e.getMessage() );
                 }
             }
-
         }
 
         @Override
@@ -577,6 +605,47 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
         @Override
         public void testFailed( TestFailure status, TestIdentifier testIdentifier, String trace )
         {
+            RawImage rawImage = null;
+            // get screen shot
+            try
+            {
+                rawImage = device.getScreenshot();
+                // convert raw data to an Image
+                BufferedImage image = new BufferedImage( rawImage.width, rawImage.height, BufferedImage.TYPE_INT_ARGB );
+
+                int index = 0;
+                int indexInc = rawImage.bpp >> 3;
+                for ( int y = 0; y < rawImage.height; y++ )
+                {
+                    for ( int x = 0; x < rawImage.width; x++ )
+                    {
+                        int value = rawImage.getARGB( index );
+                        index += indexInc;
+                        image.setRGB( x, y, value );
+                    }
+                }
+
+                File screenShotFile = new File( project.getBuild().getDirectory(), testIdentifier.getTestName()
+                        + "_failure_screenshot.png" );
+                String filepath = screenShotFile.getAbsolutePath();
+                if ( !ImageIO.write( image, "png", screenShotFile ) )
+                {
+                    getLog().error( filepath + " could not be saved." );
+                }
+            }
+            catch ( AdbCommandRejectedException e )
+            {
+                getLog().error( e );
+            }
+            catch ( IOException e )
+            {
+                getLog().error( e );
+            }
+            catch ( TimeoutException e )
+            {
+                getLog().error( e );
+            }
+
             if ( status == ERROR )
             {
                 ++testErrorCount;
@@ -830,6 +899,9 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
             return testRunFailureCause != null;
         }
 
+        /**
+         * @return the cause of test failure if any.
+         */
         public String getTestRunFailureCause()
         {
             return testRunFailureCause;
