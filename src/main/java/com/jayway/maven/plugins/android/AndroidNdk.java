@@ -281,4 +281,42 @@ public class AndroidNdk
         throw new MojoExecutionException( "gdbserver binary for architecture " + ndkArchitecture
             + " does not exist, please double check the toolchain and OS used" );
     }
+
+    public String[] getNdkArchitectures( final String ndkClassifier, final String ndkArchitecture,
+                                         final String applicationMakefile, final File basedir )
+        throws MojoExecutionException
+    {
+        // if there is a classifier, return it
+        if ( ndkClassifier != null )
+        {
+            return new String[] { ndkClassifier };
+        }
+
+        // if there is a specified ndk architecture, return it
+        if ( ndkArchitecture != null )
+        {
+            return new String[] { ndkArchitecture };
+        }
+
+        // if there is no application makefile specified, let's use the default one
+        String applicationMakefileToUse = applicationMakefile;
+        if ( applicationMakefileToUse == null )
+        {
+            applicationMakefileToUse = "jni/Application.mk";
+        }
+
+        // now let's see if the application file exists
+        File appMK = new File( basedir, applicationMakefileToUse );
+        if ( appMK.exists() )
+        {
+            String[] foundNdkArchitectures = getAppAbi( appMK );
+            if ( foundNdkArchitectures != null )
+            {
+                return foundNdkArchitectures;
+            }
+        }
+
+        // return a default ndk architecture
+        return new String[] { "armeabi" };
+    }
 }
