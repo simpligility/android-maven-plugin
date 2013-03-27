@@ -74,7 +74,6 @@ public class UIAutomatorMojoTest extends AbstractAndroidMojoTestCase< UIAutomato
         projectBuild.setOutputDirectory( "classes/" );
         EasyMock.expect( project.getBasedir() ).andReturn( projectBaseDir ).anyTimes();
         EasyMock.expect( project.getBuild() ).andReturn( projectBuild ).anyTimes();
-
         PowerMock.replay( project );
 
         // when
