@@ -145,6 +145,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      *     &lt;testClassOrMethod&gt;com.bar.CalculatorTest#testCalculatorApp&lt;/testClassOrMethod&gt;
      *   &lt;/testClassOrMethods&gt;
      *   &lt;createReport&gt;true&lt;/createReport&gt;
+     *   &lt;takeScreenshotOnFailure&gt;true&lt;/takeScreenshotOnFailure&gt;
      * &lt;/uiautomator&gt;
      * </pre>
      * 
@@ -273,7 +274,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      * @parameter expression="${android.uiautomator.takeScreenshotOnFailure}"
      * 
      */
-    private Boolean uiautomatorTakeScreenshotOnFailure = false;
+    private Boolean uiautomatorTakeScreenshotOnFailure;
 
     @PullParameter( defaultValue = "false" )
     private Boolean parsedTakeScreenshotOnFailure;
