@@ -18,7 +18,6 @@ package com.jayway.maven.plugins.android.standalonemojos;
 
 import static com.android.ddmlib.testrunner.ITestRunListener.TestFailure.ERROR;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -27,7 +26,6 @@ import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -53,12 +51,12 @@ import org.w3c.dom.Node;
 
 import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.IDevice;
-import com.android.ddmlib.RawImage;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
 import com.android.ddmlib.testrunner.ITestRunListener;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.android.ddmlib.testrunner.UIAutomatorRemoteAndroidTestRunner;
+import com.github.rtyley.android.screenshot.celebrity.Screenshots;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.DeviceCallback;
 import com.jayway.maven.plugins.android.ScreenshotServiceWrapper;
@@ -268,6 +266,17 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
 
     @PullParameter( defaultValue = "false" )
     private Boolean parsedCreateReport;
+
+    /**
+     * Decides whether or not to take screenshots when tests execution results in failure or error.
+     * 
+     * @parameter expression="${android.uiautomator.takeScreenshotOnFailure}"
+     * 
+     */
+    private Boolean uiautomatorTakeScreenshotOnFailure = false;
+
+    @PullParameter( defaultValue = "false" )
+    private Boolean parsedTakeScreenshotOnFailure;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
@@ -605,45 +614,11 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
         @Override
         public void testFailed( TestFailure status, TestIdentifier testIdentifier, String trace )
         {
-            RawImage rawImage = null;
-            // get screen shot
-            try
+            if ( parsedTakeScreenshotOnFailure )
             {
-                rawImage = device.getScreenshot();
-                // convert raw data to an Image
-                BufferedImage image = new BufferedImage( rawImage.width, rawImage.height, BufferedImage.TYPE_INT_ARGB );
-
-                int index = 0;
-                int indexInc = rawImage.bpp >> 3;
-                for ( int y = 0; y < rawImage.height; y++ )
-                {
-                    for ( int x = 0; x < rawImage.width; x++ )
-                    {
-                        int value = rawImage.getARGB( index );
-                        index += indexInc;
-                        image.setRGB( x, y, value );
-                    }
-                }
-
-                File screenShotFile = new File( project.getBuild().getDirectory(), testIdentifier.getTestName()
-                        + "_failure_screenshot.png" );
-                String filepath = screenShotFile.getAbsolutePath();
-                if ( !ImageIO.write( image, "png", screenShotFile ) )
-                {
-                    getLog().error( filepath + " could not be saved." );
-                }
-            }
-            catch ( AdbCommandRejectedException e )
-            {
-                getLog().error( e );
-            }
-            catch ( IOException e )
-            {
-                getLog().error( e );
-            }
-            catch ( TimeoutException e )
-            {
-                getLog().error( e );
+                String suffix = status == ERROR ? "error" : "failure";
+                String filepath = testIdentifier.getTestName() + "_" + suffix + "_screenshot";
+                Screenshots.poseForScreenshotNamed( filepath );
             }
 
             if ( status == ERROR )
