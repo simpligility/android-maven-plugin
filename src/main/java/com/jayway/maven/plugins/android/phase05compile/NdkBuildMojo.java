@@ -136,9 +136,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo
     /**
      * Defines the architecture for the NDK build
      *
-     * @parameter expression="${android.ndk.build.architecture}" default-value="armeabi"
+     * @parameter expression="${android.ndk.build.architecture}"
      */
-    @PullParameter( defaultValue = "armeabi" )
+    @PullParameter
     private String ndkArchitecture;
 
     /**
@@ -327,118 +327,125 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             // dependencies on .a files (or shared files for that matter) the makefile should include
             // the include of our Android Maven plugin generated makefile.
             validateMakefile( project, makefile );
-            Preparation preparation = new Preparation().invoke();
-            File nativeLibDirectory = preparation.getNativeLibDirectory();
-            boolean libsDirectoryExists = preparation.isLibsDirectoryExists();
-            File directoryToRemove = preparation.getDirectoryToRemove();
 
-            // Start setting up the command line to be executed
-            final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-            // Add an error listener to the build - this allows the build to conditionally fail
-            // depending on a) the output of the build b) whether or not build errors (output on stderr) should be
-            // ignored and c) whether the pattern matches or not
-            executor.setErrorListener( getNdkErrorListener() );
-
-            final Set<Artifact> nativeLibraryArtifacts = findNativeLibraryDependencies();
-
-            // If there are any static libraries the code needs to link to, include those in the make file
-            final Set<Artifact> resolveNativeLibraryArtifacts = AetherHelper
-                    .resolveArtifacts( nativeLibraryArtifacts, repoSystem, repoSession, projectRepos );
-            if ( getLog().isDebugEnabled() )
+            for ( String ndkArchitecture : getNdkArchitectures() )
             {
-                getLog().debug( "resolveArtifacts found " + resolveNativeLibraryArtifacts.size()
-                        + ": " + resolveNativeLibraryArtifacts.toString() );
-            }
+                Preparation preparation = new Preparation().invoke( ndkArchitecture );
+                boolean libsDirectoryExists = preparation.isLibsDirectoryExists();
+                File directoryToRemove = preparation.getDirectoryToRemove();
 
-            final File makefileDir = new File( project.getBuild().getDirectory(), NDK_MAKFILE_DIRECTORY );
-            makefileDir.mkdirs();
-            final File androidMavenMakefile = new File( makefileDir, "android_maven_plugin_makefile.mk" ); 
+                // Start setting up the command line to be executed
+                final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+                // Add an error listener to the build - this allows the build to conditionally fail
+                // depending on a) the output of the build b) whether or not build errors (output on stderr) should be
+                // ignored and c) whether the pattern matches or not
+                executor.setErrorListener( getNdkErrorListener() );
 
-            final MakefileHelper makefileHelper = new MakefileHelper( getLog(), 
-                                                                      repoSystem, repoSession, projectRepos, 
-                                                                      unpackedApkLibsDirectory );
-            final MakefileHelper.MakefileHolder makefileHolder = makefileHelper
-                    .createMakefileFromArtifacts( androidMavenMakefile.getParentFile(), resolveNativeLibraryArtifacts,
-                                                  ndkArchitecture, useHeaderArchives );
-            IOUtil.copy( makefileHolder.getMakeFile(), new FileOutputStream( androidMavenMakefile ) );
+                final Set<Artifact> nativeLibraryArtifacts = findNativeLibraryDependencies();
 
-            // Add the path to the generated makefile - this is picked up by the build (by an include from the user)
-            executor.addEnvironment( "ANDROID_MAVEN_PLUGIN_MAKEFILE", androidMavenMakefile.getAbsolutePath() );
+                // If there are any static libraries the code needs to link to, include those in the make file
+                final Set<Artifact> resolveNativeLibraryArtifacts = AetherHelper
+                        .resolveArtifacts( nativeLibraryArtifacts, repoSystem, repoSession, projectRepos );
+                if ( getLog().isDebugEnabled() )
+                {
+                    getLog().debug( "resolveArtifacts found " + resolveNativeLibraryArtifacts.size()
+                            + ": " + resolveNativeLibraryArtifacts.toString() );
+                }
 
-            setupNativeLibraryEnvironment( makefileHelper, executor, resolveNativeLibraryArtifacts );
+                final File makefileDir = new File( project.getBuild().getDirectory(), NDK_MAKFILE_DIRECTORY );
+                makefileDir.mkdirs();
+                final File androidMavenMakefile = new File( makefileDir, "android_maven_plugin_makefile.mk" );
+
+                final MakefileHelper makefileHelper = new MakefileHelper( getLog(),
+                                                                          repoSystem, repoSession, projectRepos,
+                                                                          unpackedApkLibsDirectory );
+                final MakefileHelper.MakefileHolder makefileHolder = makefileHelper
+                        .createMakefileFromArtifacts( androidMavenMakefile.getParentFile(),
+                                                      resolveNativeLibraryArtifacts, ndkArchitecture,
+                                                      useHeaderArchives );
+                IOUtil.copy( makefileHolder.getMakeFile(), new FileOutputStream( androidMavenMakefile ) );
+
+                // Add the path to the generated makefile - this is picked up by the build (by an include from the user)
+                executor.addEnvironment( "ANDROID_MAVEN_PLUGIN_MAKEFILE", androidMavenMakefile.getAbsolutePath() );
+
+                setupNativeLibraryEnvironment( makefileHelper, executor, resolveNativeLibraryArtifacts,
+                                               ndkArchitecture );
             
-            // Adds the location of the Makefile capturer file - this file will after the build include
-            // things like header files, flags etc.  It is processed after the build to retrieve the headers
-            // and also capture flags etc ...
-            final File makefileCaptureFile = File.createTempFile( "android_maven_plugin_makefile_captures", ".tmp" );
-            makefileCaptureFile.deleteOnExit();
-            executor.addEnvironment( MakefileHelper.MAKEFILE_CAPTURE_FILE, makefileCaptureFile.getAbsolutePath() );
+                // Adds the location of the Makefile capturer file - this file will after the build include
+                // things like header files, flags etc.  It is processed after the build to retrieve the headers
+                // and also capture flags etc ...
+                final File makefileCaptureFile = File.createTempFile( "android_maven_plugin_makefile_captures",
+                                                                      ".tmp" );
+                makefileCaptureFile.deleteOnExit();
+                executor.addEnvironment( MakefileHelper.MAKEFILE_CAPTURE_FILE, makefileCaptureFile.getAbsolutePath() );
 
-            // Add any defined system properties
-            if ( systemProperties != null && ! systemProperties.isEmpty() )
-            {
-                for ( Map.Entry<String, String> entry : systemProperties.entrySet() )
+                // Add any defined system properties
+                if ( systemProperties != null && ! systemProperties.isEmpty() )
                 {
-                    executor.addEnvironment( entry.getKey(), entry.getValue() );
+                    for ( Map.Entry<String, String> entry : systemProperties.entrySet() )
+                    {
+                        executor.addEnvironment( entry.getKey(), entry.getValue() );
+                    }
                 }
-            }
-            executor.setLogger( this.getLog() );
-            // Setup the command line for the make
-            final List<String> commands = new ArrayList<String>();
-            // Setup the build directory (defaults to the current directory) but may be different depending
-            // on user configuration
-            commands.add( "-C" );
-            if ( ndkBuildDirectory == null )
-            {
-                ndkBuildDirectory = project.getBasedir().getAbsolutePath();
-            }
-            commands.add( ndkBuildDirectory );
-
-            // If the build should use a custom makefile or not - some validation is done to ensure
-            // this exists and all
-            if ( makefile != null )
-            {
-                File makeFile = new File( project.getBasedir(), makefile );
-                if ( ! makeFile.exists() )
+                executor.setLogger( this.getLog() );
+                // Setup the command line for the make
+                final List<String> commands = new ArrayList<String>();
+                // Setup the build directory (defaults to the current directory) but may be different depending
+                // on user configuration
+                commands.add( "-C" );
+                if ( ndkBuildDirectory == null )
                 {
-                    getLog().error( "Specified makefile " + makeFile + " does not exist" );
-                    throw new MojoExecutionException( "Specified makefile " + makeFile + " does not exist" );
+                    ndkBuildDirectory = project.getBasedir().getAbsolutePath();
                 }
-                commands.add( "-f" );
-                commands.add( makefile );
-            }
+                commands.add( ndkBuildDirectory );
 
-            configureApplicationMakefile( commands );
-            configureMaxJobs( commands );
-            configureNdkToolchain( commands );
-
-            // Anything else on the command line the user wants to add - simply splice it up and
-            // add it one by one to the command line
-            if ( ndkBuildAdditionalCommandline != null )
-            {
-                String[] additionalCommands = ndkBuildAdditionalCommandline.split( " " );
-                for ( final String command : additionalCommands )
+                // If the build should use a custom makefile or not - some validation is done to ensure
+                // this exists and all
+                if ( makefile != null )
                 {
-                    commands.add( command );
+                    File makeFile = new File( project.getBasedir(), makefile );
+                    if ( ! makeFile.exists() )
+                    {
+                        getLog().error( "Specified makefile " + makeFile + " does not exist" );
+                        throw new MojoExecutionException( "Specified makefile " + makeFile + " does not exist" );
+                    }
+                    commands.add( "-f" );
+                    commands.add( makefile );
                 }
-            }
-            // If a build target is specified, tag that onto the command line as the
-            // very last of the parameters
-            if ( target != null )
-            {
-                commands.add( target );
-            }
-            else /*if ( "a".equals( project.getPackaging() ) )*/
-            {
-                commands.add( project.getArtifactId() );
-            }
 
-            final String ndkBuildPath = resolveNdkBuildExecutable();
-            getLog().info( ndkBuildPath + " " + commands.toString() );
+                configureApplicationMakefile( commands );
+                configureMaxJobs( commands );
+                configureNdkToolchain( commands );
 
-            executor.executeCommand( ndkBuildPath, commands, project.getBasedir(), true );
+                // Anything else on the command line the user wants to add - simply splice it up and
+                // add it one by one to the command line
+                if ( ndkBuildAdditionalCommandline != null )
+                {
+                    String[] additionalCommands = ndkBuildAdditionalCommandline.split( " " );
+                    for ( final String command : additionalCommands )
+                    {
+                        commands.add( command );
+                    }
+                }
+                // If a build target is specified, tag that onto the command line as the
+                // very last of the parameters
+                if ( target != null )
+                {
+                    commands.add( target );
+                }
+                else /*if ( "a".equals( project.getPackaging() ) )*/
+                {
+                    commands.add( project.getArtifactId() );
+                }
 
-            cleanUp( nativeLibDirectory, libsDirectoryExists, directoryToRemove, makefileHolder, makefileCaptureFile );
+                final String ndkBuildPath = resolveNdkBuildExecutable();
+                getLog().info( ndkBuildPath + " " + commands.toString() );
+
+                executor.executeCommand( ndkBuildPath, commands, project.getBasedir(), true );
+
+                cleanUp( preparation.getNativeLibDirectory(), ndkArchitecture, libsDirectoryExists, directoryToRemove,
+                         makefileHolder, makefileCaptureFile );
+            }
         }
         catch ( MojoExecutionException e )
         {
@@ -489,8 +496,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         }
     }
 
-    private void cleanUp( File nativeLibDirectory, boolean libsDirectoryExists, File directoryToRemove,
-                          MakefileHelper.MakefileHolder makefileHolder, File makefileCaptureFile )
+    private void cleanUp( File nativeLibDirectory, String ndkArchitecture, boolean libsDirectoryExists,
+                          File directoryToRemove, MakefileHelper.MakefileHolder makefileHolder,
+                          File makefileCaptureFile )
             throws IOException, MojoExecutionException
     {
         try
@@ -498,7 +506,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             // Cleanup libs/armeabi directory if needed - this implies moving any native artifacts into target/libs
             if ( clearNativeArtifacts )
             {
-                nativeLibDirectory = cleanUpNativeArtifacts( nativeLibDirectory, libsDirectoryExists );
+                nativeLibDirectory = cleanUpNativeArtifacts( nativeLibDirectory, ndkArchitecture, libsDirectoryExists );
             }
 
             // Attempt to attach the native library if the project is defined as a "pure" native Android library
@@ -533,8 +541,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                     getLog().debug( "Moving native compiled artifact to target directory for preservation" );
                     // This indicates the output directory was created by the build (us) and that we should really
                     // move it to the target (needed to preserve the attached artifact once install is invoked)
-                    final File destFile = new File( project.getBuild().getDirectory(),
-                            nativeArtifactFile.getName() );
+                    final File destFile = new File( project.getBuild().getDirectory(), ndkArchitecture + File.separator
+                                                    + nativeArtifactFile.getName() );
                     if ( destFile.exists() )
                     {
                         destFile.delete();
@@ -543,14 +551,11 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                     FileUtils.moveFile( nativeArtifactFile, destFile );
                     fileToAttach = destFile;
                 }
-
-                projectHelper.attachArtifact( this.project, artifactType,
-                        ( ndkClassifier != null ? ndkClassifier : ndkArchitecture ), fileToAttach );
-
+                projectHelper.attachArtifact( this.project, artifactType, ndkArchitecture, fileToAttach );
             }
 
             // Process conditionally any of the headers to include into the header archive file
-            processMakefileCapture( makefileCaptureFile );
+            processMakefileCapture( makefileCaptureFile, ndkArchitecture );
 
         }
         finally
@@ -704,10 +709,10 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         };
     }
 
-    private File cleanUpNativeArtifacts( File nativeLibDirectory, boolean libsDirectoryExists ) throws IOException
+    private File cleanUpNativeArtifacts( File nativeLibDirectory, String ndkArchitecture, boolean libsDirectoryExists )
+        throws IOException
     {
-        final File destinationDirectory = new File( ndkOutputDirectory.getAbsolutePath(),
-                "/" + ndkArchitecture );
+        final File destinationDirectory = new File( ndkOutputDirectory.getAbsolutePath(), "/" + ndkArchitecture );
         if ( ! libsDirectoryExists && ! destinationDirectory.exists() )
         {
             FileUtils.moveDirectory( nativeLibDirectory, destinationDirectory );
@@ -775,7 +780,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         }
     }
 
-    private void processMakefileCapture( File localCIncludesFile ) throws MojoExecutionException
+    private void processMakefileCapture( File localCIncludesFile, String ndkArchitecture ) throws MojoExecutionException
     {
 
         try
@@ -818,7 +823,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                     e.setIncludes( new String[]{ "**/*.h" } );
                     finalHeaderFilesDirectives.add( e );
                 }
-                createHeaderArchive( finalHeaderFilesDirectives );
+                createHeaderArchive( finalHeaderFilesDirectives, ndkArchitecture );
             }
         }
         catch ( Exception e )
@@ -828,7 +833,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
     }
 
-    private void createHeaderArchive( List<HeaderFilesDirective> finalHeaderFilesDirectives )
+    private void createHeaderArchive( List<HeaderFilesDirective> finalHeaderFilesDirectives, String ndkArchitecture )
             throws MojoExecutionException
     {
         try
@@ -859,9 +864,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             }
             else
             {
-                projectHelper.attachArtifact( project, "har", 
-                        ( ndkClassifier != null ? ndkClassifier : ndkArchitecture ),
-                        jarFile );
+                projectHelper.attachArtifact( project, "har", ndkArchitecture, jarFile );
             }
 
         }
@@ -871,8 +874,44 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         }
     }
 
+    private String[] getNdkArchitectures() throws MojoExecutionException
+    {
+        // if there is a classifier, return it
+        if ( ndkClassifier != null )
+        {
+            return new String[] { ndkClassifier };
+        }
+
+        // if there is a specified ndk architecture, return it
+        if ( ndkArchitecture != null )
+        {
+            return new String[] { ndkArchitecture };
+        }
+
+        // if there is no application makefile specified, let's use the default one
+        String applicationMakefileToUse = applicationMakefile;
+        if ( applicationMakefileToUse == null )
+        {
+            applicationMakefileToUse = "jni/Application.mk";
+        }
+
+        // now let's see if the application file exists
+        File appMK = new File( project.getBasedir(), applicationMakefileToUse );
+        if ( appMK.exists() )
+        {
+            String[] foundNdkArchitectures = getAndroidNdk().getAppAbi( appMK );
+            if ( foundNdkArchitectures != null )
+            {
+                return foundNdkArchitectures;
+            }
+        }
+
+        // return a default ndk architecture
+        return new String[] { "armeabi" };
+    }
+
     private void setupNativeLibraryEnvironment( MakefileHelper makefileHelper, CommandExecutor executor, 
-                                                Set<Artifact> resolveNativeLibraryArtifacts )
+                                                Set<Artifact> resolveNativeLibraryArtifacts, String ndkArchitecture )
     {
         // Only add the LOCAL_STATIC_LIBRARIES
         if ( NativeHelper.hasStaticNativeLibraryArtifact( resolveNativeLibraryArtifacts, unpackedApkLibsDirectory, 
@@ -985,7 +1024,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             return directoryToRemove;
         }
 
-        public Preparation invoke()
+        public Preparation invoke( String ndkArchitecture )
         {
             // This usually points to ${basedir}/obj/local
             nativeLibDirectory = new File( nativeLibrariesOutputDirectory, ndkArchitecture );
