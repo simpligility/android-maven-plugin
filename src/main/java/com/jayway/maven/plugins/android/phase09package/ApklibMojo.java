@@ -71,15 +71,31 @@ public class ApklibMojo extends AbstractAndroidMojo
      * @parameter
      */
     private String classifier;
-    
+
+    /**
+     * Specifies the application makefile to use for the build (if other than the default Application.mk).
+     *
+     * @parameter
+     */
+    @PullParameter
+    private String applicationMakefile;
+
     /**
      * Defines the architecture for the NDK build
      *
-     * @parameter expression="${android.ndk.build.architecture}" default-value="armeabi"
+     * @parameter expression="${android.ndk.build.architecture}"
      */
-    @PullParameter( defaultValue = "armeabi" )
+    @PullParameter
     private String ndkArchitecture;
-    
+
+    /**
+     * Specifies the classifier with which the artifact should be stored in the repository
+     *
+     * @parameter expression="${android.ndk.build.native-classifier}"
+     */
+    @PullParameter
+    private String ndkClassifier;
+
     /**
      *
      * @throws MojoExecutionException
@@ -170,27 +186,33 @@ public class ApklibMojo extends AbstractAndroidMojo
                 getLog().info( nativeLibrariesDirectory 
                         + " does not exist, looking for libraries in target directory." );
                 // Add native libraries built and attached in this build
-                final File outputDirectory = new File( project.getBuild().getDirectory() );
-                String prefix = NATIVE_LIBRARIES_FOLDER + "/" + ndkArchitecture; // path in archive file must have '/'
-                addSharedLibraries( jarArchiver, outputDirectory, prefix );
-                
-                // Add native library dependencies
-                // FIXME: Remove as causes duplicate libraries when building final APK if this set includes
-                //        libraries from dependencies of the APKLIB
-                //final File dependentLibs = new File( ndkOutputDirectory.getAbsolutePath(), ndkArchitecture );
-                //addSharedLibraries( jarArchiver, dependentLibs, prefix );
-
-                // get native libs from other apklibs
-                for ( Artifact apkLibraryArtifact : getAllRelevantDependencyArtifacts() )
+                String[] ndkArchitectures = getAndroidNdk().getNdkArchitectures( ndkClassifier,
+                                                                                 ndkArchitecture,
+                                                                                 applicationMakefile,
+                                                                                 project.getBasedir() );
+                for ( String ndkArchitecture : ndkArchitectures )
                 {
-                    if ( apkLibraryArtifact.getType().equals( APKLIB ) )
-                    {
-                        final File apklibLibsDirectory = new File( getLibraryUnpackDirectory( apkLibraryArtifact ) + "/"
-                                + NATIVE_LIBRARIES_FOLDER + "/" + ndkArchitecture );
+                    final File ndkLibsDirectory = new File( ndkOutputDirectory, ndkArchitecture );
+                    addSharedLibraries( jarArchiver, ndkLibsDirectory, ndkArchitecture );
+                
+                    // Add native library dependencies
+                    // FIXME: Remove as causes duplicate libraries when building final APK if this set includes
+                    //        libraries from dependencies of the APKLIB
+                    //final File dependentLibs = new File( ndkOutputDirectory.getAbsolutePath(), ndkArchitecture );
+                    //addSharedLibraries( jarArchiver, dependentLibs, prefix );
 
-                        if ( apklibLibsDirectory.exists() )
+                    // get native libs from other apklibs
+                    for ( Artifact apkLibraryArtifact : getAllRelevantDependencyArtifacts() )
+                    {
+                        if ( apkLibraryArtifact.getType().equals( APKLIB ) )
                         {
-                            addSharedLibraries( jarArchiver, apklibLibsDirectory, prefix );
+                            final File apklibLibsDirectory = new File( getLibraryUnpackDirectory( apkLibraryArtifact )
+                                                                       + "/" + NATIVE_LIBRARIES_FOLDER + "/"
+                                                                       + ndkArchitecture );
+                            if ( apklibLibsDirectory.exists() )
+                            {
+                                addSharedLibraries( jarArchiver, apklibLibsDirectory, ndkArchitecture );
+                            }
                         }
                     }
                 }
@@ -286,9 +308,9 @@ public class ApklibMojo extends AbstractAndroidMojo
      * 
      * @param jarArchiver The jarArchiver to add files to
      * @param directory   The directory to scan for .so files
-     * @param prefix      The prefix for where in the jar the .so files will go.
+     * @param ndkArchitecture      The prefix for where in the jar the .so files will go.
      */
-    protected void addSharedLibraries( JarArchiver jarArchiver, File directory, String prefix )
+    protected void addSharedLibraries( JarArchiver jarArchiver, File directory, String ndkArchitecture )
     {
         getLog().debug( "Searching for shared libraries in " + directory );
         File[] libFiles = directory.listFiles( new FilenameFilter()
@@ -303,7 +325,7 @@ public class ApklibMojo extends AbstractAndroidMojo
         {
             for ( File libFile : libFiles )
             {
-                String dest = prefix + "/" + libFile.getName();
+                String dest = "libs/" + ndkArchitecture + "/" + libFile.getName();
                 getLog().debug( "Adding " + libFile + " as " + dest );
                 jarArchiver.addFile( libFile, dest );
             }
