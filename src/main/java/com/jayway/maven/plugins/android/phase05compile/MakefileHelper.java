@@ -153,7 +153,6 @@ public class MakefileHelper
 
         if ( ! artifacts.isEmpty() )
         {
-            makeFile.append( "LOCAL_PATH := $(call my-dir)\n" );
             for ( Artifact artifact : artifacts )
             {
                 boolean apklibStatic = false;
@@ -164,6 +163,9 @@ public class MakefileHelper
                 makeFile.append( '\n' );
                 makeFile.append( "# Artifact ID: " );
                 makeFile.append( artifact.getArtifactId() );
+                makeFile.append( '\n' );
+                makeFile.append( "# Artifact Type: " );
+                makeFile.append( artifact.getType() );
                 makeFile.append( '\n' );
                 makeFile.append( "# Version: " );
                 makeFile.append( artifact.getVersion() );
@@ -236,8 +238,6 @@ public class MakefileHelper
                                        Artifact artifact, String ndkArchitecture ) throws IOException
     {
         boolean apklibStatic = false;
-        
-        makeFile.append( "LOCAL_SRC_FILES := " );
         if ( AndroidExtension.APKLIB.equals( artifact.getType() ) )
         {
             String classifier = artifact.getClassifier();
@@ -252,10 +252,7 @@ public class MakefileHelper
             {
                 int libIdx = findApklibNativeLibrary( staticLibs, artifact.getArtifactId() );
                 apklibStatic = true;
-                makeFile.append( resolveRelativePath( outputDir, staticLibs[libIdx] ) );
-                makeFile.append( '\n' );
-                makeFile.append( "LOCAL_MODULE_FILENAME := " 
-                        + FilenameUtils.removeExtension( staticLibs[libIdx].getName() ) ); 
+                addLibraryDetails( makeFile, outputDir, staticLibs[libIdx] );
             }
             else
             {
@@ -266,21 +263,32 @@ public class MakefileHelper
                     throw new IOException( "Failed to find any library file in APKLIB" );
                 }
                 int libIdx = findApklibNativeLibrary( sharedLibs, artifact.getArtifactId() );
-                makeFile.append( resolveRelativePath( outputDir, sharedLibs[libIdx] ) );
-                makeFile.append( '\n' );
-                makeFile.append( "LOCAL_MODULE_FILENAME := " 
-                        + FilenameUtils.removeExtension( sharedLibs[libIdx].getName() ) ); 
-            }                        
+                addLibraryDetails( makeFile, outputDir, sharedLibs[libIdx] );
+            }
         }
         else
         {
-            makeFile.append( resolveRelativePath( outputDir, artifact.getFile() ) );
-            makeFile.append( '\n' );
-            makeFile.append( "LOCAL_MODULE_FILENAME := lib" + artifact.getArtifactId() );
+            addLibraryDetails( makeFile, outputDir, artifact.getFile() );
         }
-        makeFile.append( '\n' );
-        
+
         return apklibStatic;
+    }
+
+    private void addLibraryDetails( StringBuilder makeFile, File outputDir, File libFile )
+        throws IOException
+    {
+        String localPath = resolveRelativePath( outputDir, libFile );
+        localPath = localPath.substring( 0, localPath.indexOf( libFile.getName() ) - 1 );
+
+        makeFile.append( "LOCAL_PATH := " );
+        makeFile.append( localPath );
+        makeFile.append( '\n' );
+        makeFile.append( "LOCAL_SRC_FILES := " );
+        makeFile.append( libFile.getName() );
+        makeFile.append( '\n' );
+        makeFile.append( "LOCAL_MODULE_FILENAME := " );
+        makeFile.append( FilenameUtils.removeExtension( libFile.getName() ) );
+        makeFile.append( '\n' );
     }
 
     /**
