@@ -166,8 +166,7 @@ public class DexMojo extends AbstractAndroidMojo
 
     private Set< File > filterProguardObfuscatedJars( Set< File > inputFiles )
     {
-
-        // in order to not include files twice - obfuscated and not obfuscated
+        // in order to not include files twice - obfuscated and not obfuscated ones
         Map< String, List< File > > files = new HashMap< String, List< File > >( );
         for ( File eachFile : inputFiles )
         {
@@ -186,14 +185,14 @@ public class DexMojo extends AbstractAndroidMojo
         
         File obfuscatedJarsFolder = new File( project.getBuild().getDirectory(), "classes" );
 
-        getLog().debug( "Check obfuscated jars in " + obfuscatedJarsFolder.getAbsolutePath() );
+        getLog().debug( "Searching for obfuscated jars in " + obfuscatedJarsFolder.getAbsolutePath() );
 
         String[] jarFiles = findFilesInDirectory( obfuscatedJarsFolder, "*.jar" );
         for ( String eachJarFilename : jarFiles )
         {
             File eachJarFile = new File( obfuscatedJarsFolder, eachJarFilename );
 
-            getLog().debug( "Exclude obfuscated jar  " + eachJarFile.getAbsolutePath() );
+            getLog().debug( "Exclude original jar for obfuscated jar " + eachJarFile.getAbsolutePath() );
 
             files.remove( eachJarFile.getName( ) );
         }
