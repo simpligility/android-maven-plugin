@@ -17,9 +17,14 @@
 package com.jayway.maven.plugins.android.phase08preparepackage;
 
 import java.io.File;
-import java.io.FilenameFilter;
+
 import java.io.IOException;
-import java.util.*;
+import java.util.Set;
+import java.util.Map;
+import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -69,7 +74,7 @@ public class DexMojo extends AbstractAndroidMojo
      * 
      * @parameter
      */
-    private Dex dex;
+    private Dex dex;                
     /**
      * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build.
      * 
@@ -135,8 +140,7 @@ public class DexMojo extends AbstractAndroidMojo
         File outputFile = new File( project.getBuild().getDirectory() + File.separator + "classes.dex" );
 
         Set< File > inputFiles = getDexInputFiles();
-        
-        Set< File > filteredInputFiles = filterProguardObfuscatedJars(inputFiles);
+        Set< File > filteredInputFiles = filterProguardObfuscatedJars( inputFiles );
 
         parseConfiguration();
 
@@ -160,43 +164,48 @@ public class DexMojo extends AbstractAndroidMojo
         }
     }
 
-    private FilenameFilter jarFilter = new FilenameFilter() {
-        @Override
-        public boolean accept(File dir, String name) {
-            return name.toLowerCase().endsWith("jar");
-        }
-    };
-    
-    private Set<File> filterProguardObfuscatedJars(Set<File> inputFiles) {
-        Map<String, List<File>> files = new HashMap<String, List<File>>();
-        for (File eachFile : inputFiles) {
-            String shortFilename = eachFile.getName();
+    private Set< File > filterProguardObfuscatedJars( Set< File > inputFiles )
+    {
+
+        // in order to not include files twice - obfuscated and not obfuscated
+        Map< String, List< File > > files = new HashMap< String, List< File > >( );
+        for ( File eachFile : inputFiles )
+        {
+            String shortFilename = eachFile.getName( );
             // all files list with the same name
-            List<File> allFiles = files.get(shortFilename);
+            List< File > allFiles = files.get( shortFilename );
 
-            if (allFiles == null)
-                allFiles = new ArrayList<File>();
-            allFiles.add(eachFile);
+            if ( allFiles == null )
+            {
+                allFiles = new ArrayList< File >( );
+            }
+            allFiles.add( eachFile );
 
-            files.put(shortFilename, allFiles);
+            files.put( shortFilename, allFiles );
         }
         
-        File obfuscatedJarsFolder = new File(project.getBuild().getDirectory(), "classes");
+        File obfuscatedJarsFolder = new File( project.getBuild().getDirectory(), "classes" );
 
         getLog().debug( "Check obfuscated jars in " + obfuscatedJarsFolder.getAbsolutePath() );
 
-        for (String eachJarFilename : obfuscatedJarsFolder.list(jarFilter)) {
-            File eachJarFile = new File(obfuscatedJarsFolder, eachJarFilename);
+        String[] jarFiles = findFilesInDirectory( obfuscatedJarsFolder, "*.jar" );
+        for ( String eachJarFilename : jarFiles )
+        {
+            File eachJarFile = new File( obfuscatedJarsFolder, eachJarFilename );
 
             getLog().debug( "Exclude obfuscated jar  " + eachJarFile.getAbsolutePath() );
 
-            files.remove(eachJarFile.getName());
+            files.remove( eachJarFile.getName( ) );
         }
 
-        Set<File> outputFiles = new HashSet<File>();
-        for (Map.Entry<String, List<File>> eachEntry : files.entrySet())
-            for (File eachFile : eachEntry.getValue())
-                outputFiles.add(eachFile);
+        Set< File > outputFiles = new HashSet < File >( );
+        for ( Map.Entry< String, List< File > > eachEntry : files.entrySet() )
+        {
+            for ( File eachFile : eachEntry.getValue() )
+            {
+                outputFiles.add( eachFile );
+            }
+        }
 
         return outputFiles;
     }
