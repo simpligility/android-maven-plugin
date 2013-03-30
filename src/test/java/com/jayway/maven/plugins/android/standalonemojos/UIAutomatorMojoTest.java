@@ -86,6 +86,7 @@ public class UIAutomatorMojoTest extends AbstractAndroidMojoTestCase< UIAutomato
         String automatorJarFile = Whitebox.getInternalState( mojo, "parsedJarFile" );
         String[] automatorTestClassOrMethods = Whitebox.getInternalState( mojo, "parsedTestClassOrMethods" );
         Boolean automatorTakeScreenshotOnFailure = Whitebox.getInternalState( mojo, "parsedTakeScreenshotOnFailure" );
+        String automatorScreenshotsPathOnDevice = Whitebox.getInternalState( mojo, "parsedScreenshotsPathOnDevice" );
 
         assertFalse( "UIAutomator skip parameter should be false", automatorSkip );
         assertFalse( "UIAutomator debug parameter should be false", automatorDebug );
@@ -96,6 +97,8 @@ public class UIAutomatorMojoTest extends AbstractAndroidMojoTestCase< UIAutomato
         assertNull( "UIAutomator testClassOrMethods parameter should be null", automatorTestClassOrMethods );
         assertFalse( "UIAutomator takeScreenshotOnFailure parameter should be equal false",
                 automatorTakeScreenshotOnFailure );
+        assertEquals( "UIAutomator screenshotsPath on device be equal /sdcard/uiautomator-screenshots/",
+                "/sdcard/uiautomator-screenshots/", automatorScreenshotsPathOnDevice );
     }
 
     /**
@@ -131,6 +134,7 @@ public class UIAutomatorMojoTest extends AbstractAndroidMojoTestCase< UIAutomato
         String automatorJarFile = Whitebox.getInternalState( mojo, "parsedJarFile" );
         String[] automatorTestClassOrMethods = Whitebox.getInternalState( mojo, "parsedTestClassOrMethods" );
         Boolean automatorTakeScreenshotOnFailure = Whitebox.getInternalState( mojo, "parsedTakeScreenshotOnFailure" );
+        String automatorScreenshotsPathOnDevice = Whitebox.getInternalState( mojo, "parsedScreenshotsPathOnDevice" );
 
         assertFalse( "UIAutomator skip parameter should be false", automatorSkip );
         assertFalse( "UIAutomator debug parameter should be false", automatorDebug );
@@ -146,6 +150,8 @@ public class UIAutomatorMojoTest extends AbstractAndroidMojoTestCase< UIAutomato
                 Arrays.equals( expectedTestClassOrMethods, automatorTestClassOrMethods ) );
         assertTrue( "UIAutomator takeScreenshotOnFailure parameter should be equal true",
                 automatorTakeScreenshotOnFailure );
+        assertEquals( "UIAutomator screenshotsPath on device be equal /mnt/sdcard/screenshots/",
+                "/mnt/sdcard/screenshots/", automatorScreenshotsPathOnDevice );
     }
 
 }
