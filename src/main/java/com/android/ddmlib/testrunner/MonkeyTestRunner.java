@@ -296,6 +296,7 @@ public class MonkeyTestRunner
             final String argCmd = String.format( " %1$s %2$s", argPair.getKey(), argPair.getValue() );
             commandBuilder.append( argCmd );
         }
+
         if ( debugNoEvents )
         {
             commandBuilder.append( " --dbg-no-events" );
@@ -345,10 +346,9 @@ public class MonkeyTestRunner
 
         private String runName;
         private boolean canceled;
-        private long mTestRunned = 0;
-        private long mTestFailed = 0;
         private TestIdentifier mCurrentTestIndentifier;
         private long elapsedTime;
+        private HashMap< String, String > runMetrics = new HashMap< String, String >();
 
         private MonkeyResultParser( String runName, Collection< ITestRunListener > listeners )
         {
@@ -373,8 +373,6 @@ public class MonkeyTestRunner
             handleTestEnd();
             handleTestRunEnded();
             super.done();
-            System.out.println( "Number of tests started :" + mTestRunned );
-            System.out.println( "Number of tests failed :" + mTestFailed );
         }
 
         @Override
@@ -383,12 +381,31 @@ public class MonkeyTestRunner
             for ( int indexLine = 0; indexLine < lines.length; indexLine++ )
             {
                 String line = lines[ indexLine ];
-                System.out.println( "monkey received -->" + line );
-                Log.i( "monkey receiver:" + runName, line );
+                Log.v( "monkey receiver:" + runName, line );
 
                 if ( line.startsWith( MONKEY_KEY ) )
                 {
                     handleTestRunStarted();
+                }
+                if ( line.startsWith( SHORT_MESSAGE_KEY ) )
+                {
+                    runMetrics.put( "ShortMsg", line.substring( SHORT_MESSAGE_KEY.length() - 1 ) );
+                }
+                if ( line.startsWith( LONG_MESSAGE_KEY ) )
+                {
+                    runMetrics.put( "LongMsg", line.substring( LONG_MESSAGE_KEY.length() - 1 ) );
+                }
+                if ( line.startsWith( BUILD_LABEL_KEY ) )
+                {
+                    runMetrics.put( "BuildLabel", line.substring( BUILD_LABEL_KEY.length() - 1 ) );
+                }
+                if ( line.startsWith( BUILD_CHANGELIST_KEY ) )
+                {
+                    runMetrics.put( "BuildChangeList", line.substring( BUILD_CHANGELIST_KEY.length() - 1 ) );
+                }
+                if ( line.startsWith( BUILD_TIME_KEY ) )
+                {
+                    runMetrics.put( "BuildTime", line.substring( BUILD_TIME_KEY.length() - 1 ) );
                 }
 
                 if ( line.startsWith( SENDING_KEY ) || line.startsWith( SWITCHING_KEY ) )
@@ -399,8 +416,7 @@ public class MonkeyTestRunner
 
                 if ( line.startsWith( CRASH_KEY ) )
                 {
-                    System.out.println( "monkey crashed -->" + line );
-                    Log.i( "monkey received crash:", line );
+                    Log.d( "monkey received crash:", line );
                     indexLine = handleCrash( lines, indexLine );
                     handleTestEnd();
                 }
@@ -427,9 +443,10 @@ public class MonkeyTestRunner
         private void handleTestRunEnded()
         {
             elapsedTime = System.currentTimeMillis() - elapsedTime;
+
             for ( ITestRunListener listener : mTestListeners )
             {
-                listener.testRunEnded( elapsedTime, new HashMap< String, String >() );
+                listener.testRunEnded( elapsedTime, runMetrics );
             }
         }
 
@@ -440,7 +457,6 @@ public class MonkeyTestRunner
             {
                 listener.testStarted( mCurrentTestIndentifier );
             }
-            mTestRunned++;
         }
 
         private void handleTestEnd()
@@ -457,7 +473,6 @@ public class MonkeyTestRunner
 
         private int handleCrash( String[] lines, int indexLine )
         {
-            mTestFailed++;
             StringBuilder errorBuilder = new StringBuilder();
             boolean errorEnd = false;
             boolean errorStart = false;
@@ -491,7 +506,6 @@ public class MonkeyTestRunner
             } while ( !errorEnd );
 
             String trace = errorBuilder.toString();
-            System.out.println( "Stack trace is : " + trace );
 
             for ( ITestRunListener listener : mTestListeners )
             {
