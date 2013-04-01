@@ -14,6 +14,32 @@
                     <monkey>
                         <skip>false</skip>
                         <eventCount>5000</eventCount>
+                        <seed>123456</seed>
+                        <throttle>10</throttle>
+                        <percentTouch>10</percentTouch>
+                        <percentMotion>10</percentMotion>
+                        <percentTrackball>10</percentTrackball>
+                        <percentNav>10</percentNav>
+                        <percentMajorNav>10</percentMajorNav>
+                        <percentSyskeys>10</percentSyskeys>
+                        <percentAppswitch>10</percentAppswitch>
+                        <percentAnyevent>10</percentAnyevent>
+                        <packages>
+                            <package>com.foo</package>
+                            <package>com.bar</package>
+                        </packages>
+                        <categories>
+                            <category>foo</category>
+                            <category>bar</category>
+                        </categories>
+                        <debugNoEvents>true</debugNoEvents>
+                        <hprof>true</hprof>
+                        <ignoreCrashes>true</ignoreCrashes>
+                        <ignoreTimeouts>true</ignoreTimeouts>
+                        <ignoreSecurityExceptions>true</ignoreSecurityExceptions>
+                        <killProcessAfterError>true</killProcessAfterError>
+                        <monitorNativeCrashes>true</monitorNativeCrashes>
+                        <createReport>true</createReport>
                     </monkey>
                 </configuration>
             </plugin>

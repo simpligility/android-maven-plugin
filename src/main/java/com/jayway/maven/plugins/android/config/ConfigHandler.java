@@ -110,6 +110,10 @@ public class ConfigHandler
                 {
                     return Long.valueOf( defaultValue );
                 }
+                if ( fieldType.isAssignableFrom( Integer.class ) )
+                {
+                    return Integer.valueOf( defaultValue );
+                }
             }
 
             // TODO add more handler types as required, for example integer, long, ... we will do that when we encounter
