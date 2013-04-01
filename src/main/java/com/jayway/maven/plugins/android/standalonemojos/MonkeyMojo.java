@@ -59,7 +59,6 @@ import com.android.ddmlib.testrunner.MonkeyTestRunner;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.DeviceCallback;
-import com.jayway.maven.plugins.android.ScreenshotServiceWrapper;
 import com.jayway.maven.plugins.android.common.DeviceHelper;
 import com.jayway.maven.plugins.android.config.ConfigHandler;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
@@ -99,7 +98,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
     private boolean mavenSkipTests;
     /**
      * -Dmaven.test.failure.ignore is commonly used with Maven to prevent failure of build when (some) tests fail. We
-     * honor it too. Builds will still fail if tests can't complete or throw an exception.
+     * honor it too.
      * 
      * @parameter expression="${maven.test.failure.ignore}" default-value=false
      * @readonly
@@ -108,7 +107,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
 
     /**
      * -Dmaven.test.failure.ignore is commonly used with Maven to prevent failure of build when (some) tests fail. We
-     * honor it too. Builds will still fail if tests can't complete or throw an exception.
+     * honor it too.
      * 
      * @parameter expression="${testFailureIgnore}" default-value=false
      * @readonly
@@ -505,7 +504,6 @@ public class MonkeyMojo extends AbstractAndroidMojo
 
         getLog().debug( "Parsed values for Android Monkey invocation: " );
         getLog().debug( "seed:" + parsedSeed );
-        getLog().debug( "ignoreCrashes:" + parsedIgnoreCrashes );
 
         DeviceCallback instrumentationTestExecutor = new DeviceCallback()
         {
@@ -606,8 +604,6 @@ public class MonkeyMojo extends AbstractAndroidMojo
                 }
             }
         };
-
-        instrumentationTestExecutor = new ScreenshotServiceWrapper( instrumentationTestExecutor, project, getLog() );
 
         doWithDevices( instrumentationTestExecutor );
     }
