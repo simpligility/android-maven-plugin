@@ -157,7 +157,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
 
     /**
      * Enables or disables monkey test goal. If <code>true</code> it will be skipped; if <code>false</code>, it will be
-     * run.
+     * run. Defaults to true.
      * 
      * @parameter expression="${android.monkey.skip}"
      */
@@ -171,14 +171,16 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * @parameter expression="${android.monkey.eventCount}"
      */
-    private Long monkeyEventCount;
+    private Integer monkeyEventCount;
 
     @PullParameter( required = true, defaultValue = "1000" )
-    private Long parsedEventCount;
+    private Integer parsedEventCount;
 
     /**
      * Seed value for pseudo-random number generator. If you re-run the Monkey with the same seed value, it will
      * generate the same sequence of events.
+     * 
+     * Defaults to null.
      * 
      * @parameter expression="${android.monkey.seed}"
      */
@@ -186,7 +188,237 @@ public class MonkeyMojo extends AbstractAndroidMojo
 
     @PullParameter( required = false, defaultValueGetterMethod = "getSeed" )
     private Long parsedSeed;
+    /**
+     * Inserts a fixed delay between events. You can use this option to slow down the Monkey. If not specified, there is
+     * no delay and the events are generated as rapidly as possible.
+     * 
+     * Defaults to null.
+     * 
+     * @parameter expression="${android.monkey.throttle}"
+     */
+    private Long monkeyThrottle;
 
+    @PullParameter( required = false, defaultValueGetterMethod = "getThrottle" )
+    private Long parsedThrottle;
+    /**
+     * Adjust percentage of touch events. (Touch events are a down-up event in a single place on the screen.)
+     * 
+     * Defaults to null.
+     * 
+     * @parameter expression="${android.monkey.percentTouch}"
+     */
+    private Integer monkeyPercentTouch;
+
+    @PullParameter( required = false, defaultValueGetterMethod = "getPercentTouch" )
+    private Integer parsedPercentTouch;
+    /**
+     * Adjust percentage of motion events. (Motion events consist of a down event somewhere on the screen, a series of
+     * pseudo-random movements, and an up event.)
+     * 
+     * Defaults to null.
+     * 
+     * @parameter expression="${android.monkey.percentMotion}"
+     */
+    private Integer monkeyPercentMotion;
+
+    @PullParameter( required = false, defaultValueGetterMethod = "getPercentMotion" )
+    private Integer parsedPercentMotion;
+    /**
+     * Adjust percentage of trackball events. (Trackball events consist of one or more random movements, sometimes
+     * followed by a click.)
+     * 
+     * Defaults to null.
+     * 
+     * @parameter expression="${android.monkey.percentTrackball}"
+     */
+    private Integer monkeyPercentTrackball;
+
+    @PullParameter( required = false, defaultValueGetterMethod = "getPercentTrackball" )
+    private Integer parsedPercentTrackball;
+    /**
+     * Adjust percentage of "basic" navigation events. (Navigation events consist of up/down/left/right, as input from a
+     * directional input device.)
+     * 
+     * Defaults to null.
+     * 
+     * @parameter expression="${android.monkey.percentNav}"
+     */
+    private Integer monkeyPercentNav;
+
+    @PullParameter( required = false, defaultValueGetterMethod = "getPercentNav" )
+    private Integer parsedPercentNav;
+    /**
+     * Adjust percentage of "major" navigation events. (These are navigation events that will typically cause actions
+     * within your UI, such as the center button in a 5-way pad, the back key, or the menu key.)
+     * 
+     * Defaults to null.
+     * 
+     * @parameter expression="${android.monkey.percentMajorNav}"
+     */
+    private Integer monkeyPercentMajorNav;
+
+    @PullParameter( required = false, defaultValueGetterMethod = "getPercentMajorNav" )
+    private Integer parsedPercentMajorNav;
+    /**
+     * Adjust percentage of "system" key events. (These are keys that are generally reserved for use by the system, such
+     * as Home, Back, Start Call, End Call, or Volume controls.) Defaults to null.
+     * 
+     * Defaults to null.
+     * 
+     * @parameter expression="${android.monkey.percentSyskeys}"
+     */
+    private Integer monkeyPercentSyskeys;
+
+    @PullParameter( required = false, defaultValueGetterMethod = "getPercentSyskeys" )
+    private Integer parsedPercentSyskeys;
+    /**
+     * Adjust percentage of activity launches. At random intervals, the Monkey will issue a startActivity() call, as a
+     * way of maximizing coverage of all activities within your package.
+     * 
+     * Defaults to null.
+     * 
+     * @parameter expression="${android.monkey.percentAppswitch}"
+     */
+    private Integer monkeyPercentAppswitch;
+
+    @PullParameter( required = false, defaultValueGetterMethod = "getPercentAppswitch" )
+    private Integer parsedPercentAppswitch;
+    /**
+     * Adjust percentage of other types of events. This is a catch-all for all other types of events such as keypresses,
+     * other less-used buttons on the device, and so forth.
+     * 
+     * Defaults to null.
+     * 
+     * @parameter expression="${android.monkey.percentAnyevent}"
+     */
+    private Integer monkeyPercentAnyEvent;
+
+    @PullParameter( required = false, defaultValueGetterMethod = "getPercentAnyevent" )
+    private Integer parsedPercentAnyevent;
+
+    /**
+     * If you specify one or more packages this way, the Monkey will only allow the system to visit activities within
+     * those packages. If your application requires access to activities in other packages (e.g. to select a contact)
+     * you'll need to specify those packages as well. If you don't specify any packages, the Monkey will allow the
+     * system to launch activities in all packages.
+     * 
+     * Defaults to Null.
+     * 
+     * @parameter expression="${android.monkey.packages}"
+     */
+    private String[] monkeyPackages;
+
+    @PullParameter( required = false, defaultValueGetterMethod = "getPackages" )
+    private String[] parsedPackages;
+
+    /**
+     * If you specify one or more categories this way, the Monkey will only allow the system to visit activities that
+     * are listed with one of the specified categories. If you don't specify any categories, the Monkey will select
+     * activities listed with the category Intent.CATEGORY_LAUNCHER or Intent.CATEGORY_MONKEY.
+     * 
+     * Defaults to null.
+     * 
+     * @parameter expression="${android.monkey.categories}"
+     */
+    private String[] monkeyCategories;
+
+    @PullParameter( required = false, defaultValueGetterMethod = "getCategories" )
+    private String[] parsedCategories;
+    /**
+     * When specified, the Monkey will perform the initial launch into a test activity, but will not generate any
+     * further events. For best results, combine with -v, one or more package constraints, and a non-zero throttle to
+     * keep the Monkey running for 30 seconds or more. This provides an environment in which you can monitor package
+     * transitions invoked by your application.
+     * 
+     * Defaults to false.
+     * 
+     * @parameter expression="${android.monkey.debugNoEvents}"
+     */
+    private Boolean monkeyDebugNoEvents;
+
+    @PullParameter( defaultValue = "false" )
+    private Boolean parsedDebugNoEvents;
+
+    /**
+     * If set, this option will generate profiling reports immediately before and after the Monkey event sequence. This
+     * will generate large (~5Mb) files in data/misc, so use with care. See Traceview for more information on trace
+     * files.
+     * 
+     * Defaults to false.
+     * 
+     * @parameter expression="${android.monkey.Hprof}"
+     */
+    private Boolean monkeyHprof;
+
+    @PullParameter( defaultValue = "false" )
+    private Boolean parsedHprof;
+
+    /**
+     * Normally, the Monkey will stop when the application crashes or experiences any type of unhandled exception. If
+     * you specify this option, the Monkey will continue to send events to the system, until the count is completed.
+     * Settings this option is different to setting testFailureIgnore or maven.test.failure.ignore to true, it will
+     * impact monkey run but not the result of the maven build.
+     * 
+     * Defaults to false.
+     * 
+     * @parameter expression="${android.monkey.ignoreCrashes}"
+     */
+    private Boolean monkeyIgnoreCrashes;
+
+    @PullParameter( defaultValue = "false" )
+    private Boolean parsedIgnoreCrashes;
+    /**
+     * Normally, the Monkey will stop when the application experiences any type of timeout error such as a
+     * "Application Not Responding" dialog. If you specify this option, the Monkey will continue to send events to the
+     * system, until the count is completed.
+     * 
+     * Defaults to false.
+     * 
+     * @parameter expression="${android.monkey.IgnoreTimeouts}"
+     */
+    private Boolean monkeyIgnoreTimeouts;
+
+    @PullParameter( defaultValue = "false" )
+    private Boolean parsedIgnoreTimeouts;
+    /**
+     * Normally, the Monkey will stop when the application experiences any type of permissions error, for example if it
+     * attempts to launch an activity that requires certain permissions. If you specify this option, the Monkey will
+     * continue to send events to the system, until the count is completed. *
+     * 
+     * Defaults to false.
+     * 
+     * @parameter expression="${android.monkey.IgnoreSecurityExceptions}"
+     */
+    private Boolean monkeyIgnoreSecurityExceptions;
+
+    @PullParameter( defaultValue = "false" )
+    private Boolean parsedIgnoreSecurityExceptions;
+    /**
+     * Normally, when the Monkey stops due to an error, the application that failed will be left running. When this
+     * option is set, it will signal the system to stop the process in which the error occurred. Note, under a normal
+     * (successful) completion, the launched process(es) are not stopped, and the device is simply left in the last
+     * state after the final event.
+     * 
+     * Defaults to false.
+     * 
+     * @parameter expression="${android.monkey.KillProcessAfterError}"
+     */
+    private Boolean monkeyKillProcessAfterError;
+
+    @PullParameter( defaultValue = "false" )
+    private Boolean parsedKillProcessAfterError;
+    /**
+     * Watches for and reports crashes occurring in the Android system native code. If --kill-process-after-error is
+     * set, the system will stop.
+     * 
+     * Defaults to false.
+     * 
+     * @parameter expression="${android.monkey.MonitorNativeCrashes}"
+     */
+    private Boolean monkeyMonitorNativeCrashes;
+
+    @PullParameter( defaultValue = "false" )
+    private Boolean parsedMonitorNativeCrashes;
     /**
      * Create a junit xml format compatible output file containing the test results for each device the instrumentation
      * tests run on. <br />
@@ -206,10 +438,10 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * Defaults to false.
      * 
      * @optional
-     * @parameter expression="${android.uiautomator.createReport}"
+     * @parameter expression="${android.monkey.createReport}"
      * 
      */
-    private Boolean uiautomatorCreateReport;
+    private Boolean monkeyCreateReport;
 
     @PullParameter( defaultValue = "false" )
     private Boolean parsedCreateReport;
@@ -259,6 +491,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
 
         getLog().debug( "Parsed values for Android Monkey invocation: " );
         getLog().debug( "seed:" + parsedSeed );
+        getLog().debug( "ignoreCrashes:" + parsedIgnoreCrashes );
 
         DeviceCallback instrumentationTestExecutor = new DeviceCallback()
         {
@@ -267,14 +500,60 @@ public class MonkeyMojo extends AbstractAndroidMojo
             {
                 String deviceLogLinePrefix = DeviceHelper.getDeviceLogLinePrefix( device );
 
-                MonkeyTestRunner monkeyTestRunner //
-                = new MonkeyTestRunner( parsedEventCount, device );
+                MonkeyTestRunner monkeyTestRunner = new MonkeyTestRunner( parsedEventCount, device );
 
                 monkeyTestRunner.setRunName( "ui monkey tests" );
                 if ( parsedSeed != null )
                 {
                     monkeyTestRunner.setSeed( parsedSeed );
                 }
+                if ( parsedPercentTouch != null )
+                {
+                    monkeyTestRunner.setPercentTouch( parsedPercentTouch );
+                }
+                if ( parsedPercentMotion != null )
+                {
+                    monkeyTestRunner.setPercentTouch( parsedPercentMotion );
+                }
+                if ( parsedPercentTrackball != null )
+                {
+                    monkeyTestRunner.setPercentTrackball( parsedPercentTrackball );
+                }
+                if ( parsedPercentNav != null )
+                {
+                    monkeyTestRunner.setPercentNav( parsedPercentNav );
+                }
+                if ( parsedPercentMajorNav != null )
+                {
+                    monkeyTestRunner.setPercentMajorNav( parsedPercentMajorNav );
+                }
+                if ( parsedPercentSyskeys != null )
+                {
+                    monkeyTestRunner.setPercentSyskeys( parsedPercentSyskeys );
+                }
+                if ( parsedPercentAppswitch != null )
+                {
+                    monkeyTestRunner.setPercentAppswitch( parsedPercentAppswitch );
+                }
+                if ( parsedPercentAnyevent != null )
+                {
+                    monkeyTestRunner.setPercentAnyEvent( parsedPercentAnyevent );
+                }
+                if ( parsedPackages != null )
+                {
+                    monkeyTestRunner.setPackages( parsedPackages );
+                }
+                if ( parsedCategories != null )
+                {
+                    monkeyTestRunner.setCategories( parsedCategories );
+                }
+                monkeyTestRunner.setDebugNoEvents( parsedDebugNoEvents );
+                monkeyTestRunner.setHprof( parsedHprof );
+                monkeyTestRunner.setIgnoreCrashes( parsedIgnoreCrashes );
+                monkeyTestRunner.setIgnoreTimeouts( parsedIgnoreTimeouts );
+                monkeyTestRunner.setIgnoreSecurityExceptions( parsedIgnoreSecurityExceptions );
+                monkeyTestRunner.setKillProcessAfterError( parsedKillProcessAfterError );
+                monkeyTestRunner.setMonitorNativeCrash( parsedMonitorNativeCrashes );
 
                 getLog().info( deviceLogLinePrefix + "Running ui monkey tests" );
                 try
@@ -840,5 +1119,102 @@ public class MonkeyMojo extends AbstractAndroidMojo
     private Long getSeed()
     {
         return parsedSeed;
+    }
+
+    /**
+     * @return default throttle.
+     */
+    // used via PullParameter annotation - do not remove
+    private Long getThrottle()
+    {
+        return parsedThrottle;
+    }
+
+    /**
+     * @return default percentTouch.
+     */
+    // used via PullParameter annotation - do not remove
+    private Integer getPercentTouch()
+    {
+        return parsedPercentTouch;
+    }
+
+    /**
+     * @return default percentMotion.
+     */
+    // used via PullParameter annotation - do not remove
+    private Integer getPercentMotion()
+    {
+        return parsedPercentMotion;
+    }
+
+    /**
+     * @return default percentTrackball.
+     */
+    // used via PullParameter annotation - do not remove
+    private Integer getPercentTrackball()
+    {
+        return parsedPercentTrackball;
+    }
+
+    /**
+     * @return default percentNav.
+     */
+    // used via PullParameter annotation - do not remove
+    private Integer getPercentNav()
+    {
+        return parsedPercentNav;
+    }
+
+    /**
+     * @return default percentMajorNav.
+     */
+    // used via PullParameter annotation - do not remove
+    private Integer getPercentMajorNav()
+    {
+        return parsedPercentMajorNav;
+    }
+
+    /**
+     * @return default percentSyskeys.
+     */
+    // used via PullParameter annotation - do not remove
+    private Integer getPercentSyskeys()
+    {
+        return parsedPercentSyskeys;
+    }
+
+    /**
+     * @return default percentAppSwitch.
+     */
+    // used via PullParameter annotation - do not remove
+    private Integer getPercentAppswitch()
+    {
+        return parsedPercentAppswitch;
+    }
+
+    /**
+     * @return default percentAnyEvent.
+     */
+    // used via PullParameter annotation - do not remove
+    private Integer getPercentAnyevent()
+    {
+        return parsedPercentAnyevent;
+    }
+
+    /**
+     * @return default packages.
+     */
+    public String[] getPackages()
+    {
+        return parsedPackages;
+    }
+
+    /**
+     * @return default categories.
+     */
+    public String[] getCategories()
+    {
+        return parsedCategories;
     }
 }
