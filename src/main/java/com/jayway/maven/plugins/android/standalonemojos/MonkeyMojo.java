@@ -129,23 +129,37 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * Full configuration can use these parameters.
      * 
      * <pre>
-     * &lt;monkey&gt;
-     *   &lt;skip&gt;false&lt;/skip&gt;
-     *   &lt;event-count&gt;10000&lt;/event-count&gt;
-     *   &lt;createReport&gt;true&lt;/createReport&gt;
-     *   &lt;seed&gt;12345&lt;/seed&gt;
-     *   &lt;throttle&gt;50&lt;/throttle&gt;
-     *   &lt;pct-touch&gt;40&lt;/pct-touch &gt;
-     *   &lt;pct-motion&gt;40&lt;/pct-motion &gt;
-     *   &lt;pct-trackball&gt;40&lt;/pct-trackball&gt;
-     *   &lt;pct-nav &gt;40&lt;/pct-nav &gt;
-     *   &lt;pct-major-nav&gt;40&lt;/pct-major-nav&gt;
-     *   &lt;pct-syskeys &gt;40&lt;/pct-sys-keys&gt;
-     *   &lt;pct-appswitch&gt;40&lt;/pct-appswitch&gt;
-     *   &lt;pct-anyevent&gt;40&lt;/pct-anyevent&gt;
-     * &lt;/monkey&gt;
+     *  &lt;monkey&gt;
+     *    &lt;skip&gt;false&lt;/skip&gt;
+     *    &lt;eventCount&gt;5000&lt;/eventCount&gt;
+     *    &lt;seed&gt;123456&lt;/seed&gt;
+     *    &lt;throttle&gt;10&lt;/throttle&gt;
+     *    &lt;percentTouch&gt;10&lt;/percentTouch&gt;
+     *    &lt;percentMotion&gt;10&lt;/percentMotion&gt;
+     *    &lt;percentTrackball&gt;10&lt;/percentTrackball&gt;
+     *    &lt;percentNav&gt;10&lt;/percentNav&gt;
+     *    &lt;percentMajorNav&gt;10&lt;/percentMajorNav&gt;
+     *    &lt;percentSyskeys&gt;10&lt;/percentSyskeys&gt;
+     *    &lt;percentAppswitch&gt;10&lt;/percentAppswitch&gt;
+     *    &lt;percentAnyevent&gt;10&lt;/percentAnyevent&gt;
+     *    &lt;packages&gt;
+     *        &lt;package&gt;com.foo&lt;/package&gt;
+     *        &lt;package&gt;com.bar&lt;/package&gt;
+     *    &lt;/packages&gt;
+     *    &lt;categories&gt;
+     *        &lt;category&gt;foo&lt;/category&gt;
+     *        &lt;category&gt;bar&lt;/category&gt;
+     *    &lt;/categories&gt;
+     *    &lt;debugNoEvents&gt;true&lt;/debugNoEvents&gt;
+     *    &lt;hprof&gt;true&lt;/hprof&gt;
+     *    &lt;ignoreCrashes&gt;true&lt;/ignoreCrashes&gt;
+     *    &lt;ignoreTimeouts&gt;true&lt;/ignoreTimeouts&gt;
+     *    &lt;ignoreSecurityExceptions&gt;true&lt;/ignoreSecurityExceptions&gt;
+     *    &lt;killProcessAfterError&gt;true&lt;/killProcessAfterError&gt;
+     *    &lt;monitorNativeCrashes&gt;true&lt;/monitorNativeCrashes&gt;
+     *    &lt;createReport&gt;true&lt;/createReport&gt;
+     *  &lt;/monkey&gt;
      * </pre>
-     * 
      * 
      * Alternatively to the plugin configuration values can also be configured as properties on the command line as
      * android.lint.* or in pom or settings file as properties like lint*.
