@@ -51,6 +51,7 @@ import org.w3c.dom.Node;
 
 import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.IShellOutputReceiver;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
 import com.android.ddmlib.testrunner.ITestRunListener;
@@ -75,7 +76,7 @@ import com.jayway.maven.plugins.android.configuration.UIAutomator;
  * The tests are executed via ui automator. A surefire compatible test report can be generated and its location will be
  * logged during build. <br />
  * <br />
- * To use this goal, you will need to place the uiautomator.jar file (part of the Android SDK > 16) on a nexus
+ * To use this goal, you will need to place the uiautomator.jar file (part of the Android SDK >= 16) on a nexus
  * repository. <br />
  * <br />
  * A typical usage of this goal can be found at <a
@@ -144,6 +145,8 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      *     &lt;testClassOrMethod&gt;com.bar.CalculatorTest#testCalculatorApp&lt;/testClassOrMethod&gt;
      *   &lt;/testClassOrMethods&gt;
      *   &lt;createReport&gt;true&lt;/createReport&gt;
+     *   &lt;takeScreenshotOnFailure&gt;true&lt;/takeScreenshotOnFailure&gt;
+     *   &lt;screenshotsPathOnDevice&gt;/sdcard/uiautomator-screenshots/&lt;/screenshotsPathOnDevice&gt;
      * &lt;/uiautomator&gt;
      * </pre>
      * 
@@ -266,6 +269,30 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
     @PullParameter( defaultValue = "false" )
     private Boolean parsedCreateReport;
 
+    /**
+     * Decides whether or not to take screenshots when tests execution results in failure or error. Screenshots use the
+     * utiliy screencap that is usually available within emulator/devices with SDK >= 16.
+     * 
+     * @parameter expression="${android.uiautomator.takeScreenshotOnFailure}"
+     * 
+     */
+    private Boolean uiautomatorTakeScreenshotOnFailure;
+
+    @PullParameter( defaultValue = "false" )
+    private Boolean parsedTakeScreenshotOnFailure;
+
+    /**
+     * Location of the screenshots on device. This value is only taken into account if takeScreenshotOnFailure = true.
+     * If a filepath is not specified, by default, the screenshots will be located at /sdcard/uiautomator-screenshots/.
+     * 
+     * @parameter expression="${android.uiautomator.screenshotsPathOnDevice}"
+     * 
+     */
+    private String uiautomatorScreenshotsPathOnDevice;
+
+    @PullParameter( required = false, defaultValue = "/sdcard/uiautomator-screenshots/" )
+    private String parsedScreenshotsPathOnDevice;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
@@ -278,16 +305,34 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
         }
     }
 
+    /**
+     * Whether or not tests are enabled.
+     * 
+     * @return a boolean indicating whether or not tests are enabled.
+     */
     protected boolean isEnableIntegrationTest()
     {
         return !parsedSkip && !mavenTestSkip && !mavenSkipTests;
     }
 
+    /**
+     * Whether or not test failures should be ignored.
+     * 
+     * @return a boolean indicating whether or not test failures should be ignored.
+     */
     protected boolean isIgnoreTestFailures()
     {
         return mavenIgnoreTestFailure || mavenTestFailureIgnore;
     }
 
+    /**
+     * Actually plays tests.
+     * 
+     * @throws MojoExecutionException
+     *             if at least a test threw an exception and isIgnoreTestFailures is false..
+     * @throws MojoFailureException
+     *             if at least a test failed and isIgnoreTestFailures is false.
+     */
     protected void playTests() throws MojoExecutionException, MojoFailureException
     {
 
@@ -331,7 +376,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
                         throw new MojoFailureException( deviceLogLinePrefix + "Test run failed to complete: "
                                 + testRunListener.getTestRunFailureCause() );
                     }
-                    if ( testRunListener.threwException() )
+                    if ( testRunListener.threwException() && !isIgnoreTestFailures() )
                     {
                         throw new MojoFailureException( deviceLogLinePrefix + testRunListener.getExceptionMessages() );
                     }
@@ -402,6 +447,8 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      */
     public class AndroidTestRunListener implements ITestRunListener
     {
+        private static final String SCREENSHOT_SUFFIX = "_screenshot.png";
+
         /**
          * the indent used in the log to group items that belong together visually *
          */
@@ -477,6 +524,14 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
         private boolean threwException = false;
         private final StringBuilder exceptionMessages = new StringBuilder();
 
+        /**
+         * Create a new test run listener.
+         * 
+         * @param project
+         *            the test project.
+         * @param device
+         *            the device on which test is executed.
+         */
         public AndroidTestRunListener( MavenProject project, IDevice device )
         {
             this.project = project;
@@ -485,9 +540,15 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
         }
 
         @Override
-        public void testRunStarted( String runName, int testCount )
+        public void testRunStarted( String runName, int tCount )
         {
-            this.testCount = testCount;
+            if ( parsedTakeScreenshotOnFailure )
+            {
+                executeOnAdbShell( "rm -f " + parsedScreenshotsPathOnDevice + "/*screenshot.png" );
+                executeOnAdbShell( "mkdir " + parsedScreenshotsPathOnDevice );
+            }
+
+            this.testCount = tCount;
             getLog().info( deviceLogLinePrefix + INDENT + "Run started: " + runName + ", " + testCount + " tests:" );
 
             if ( parsedCreateReport )
@@ -548,7 +609,6 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
                     exceptionMessages.append( e.getMessage() );
                 }
             }
-
         }
 
         @Override
@@ -577,6 +637,15 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
         @Override
         public void testFailed( TestFailure status, TestIdentifier testIdentifier, String trace )
         {
+            if ( parsedTakeScreenshotOnFailure )
+            {
+                String suffix = status == ERROR ? "_error" : "_failure";
+                String filepath = testIdentifier.getTestName() + suffix + SCREENSHOT_SUFFIX;
+
+                executeOnAdbShell( "screencap -p " + parsedScreenshotsPathOnDevice + "/" + filepath );
+                getLog().info( deviceLogLinePrefix + INDENT + INDENT + filepath + " saved." );
+            }
+
             if ( status == ERROR )
             {
                 ++testErrorCount;
@@ -610,6 +679,47 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
                 typeAttr.setValue( parseForException( trace ) );
                 errorfailureAttributes.setNamedItem( typeAttr );
                 currentTestCaseNode.appendChild( errorFailureNode );
+            }
+        }
+
+        private void executeOnAdbShell( String command )
+        {
+            try
+            {
+                device.executeShellCommand( command, new IShellOutputReceiver()
+                {
+                    @Override
+                    public boolean isCancelled()
+                    {
+                        return false;
+                    }
+
+                    @Override
+                    public void flush()
+                    {
+                    }
+
+                    @Override
+                    public void addOutput( byte[] data, int offset, int length )
+                    {
+                    }
+                } );
+            }
+            catch ( TimeoutException e )
+            {
+                getLog().error( e );
+            }
+            catch ( AdbCommandRejectedException e )
+            {
+                getLog().error( e );
+            }
+            catch ( ShellCommandUnresponsiveException e )
+            {
+                getLog().error( e );
+            }
+            catch ( IOException e )
+            {
+                getLog().error( e );
             }
         }
 
@@ -830,6 +940,9 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
             return testRunFailureCause != null;
         }
 
+        /**
+         * @return the cause of test failure if any.
+         */
         public String getTestRunFailureCause()
         {
             return testRunFailureCause;

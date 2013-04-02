@@ -18,6 +18,8 @@
                             <testClassOrMethod>b#c</testClassOrMethod>
                         </testClassOrMethods>
                         <createReport>true</createReport>
+                        <takeScreenshotOnFailure>true</takeScreenshotOnFailure>
+                        <screenshotsPathOnDevice>/mnt/sdcard/screenshots/</screenshotsPathOnDevice>
                     </uiautomator>
                 </configuration>
             </plugin>

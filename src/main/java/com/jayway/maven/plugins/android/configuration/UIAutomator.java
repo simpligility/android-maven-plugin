@@ -40,6 +40,14 @@ public class UIAutomator
      * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.UIAutomatorMojo#createReport}
      */
     private Boolean createReport;
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.UIAutomatorMojo#takeScreenshotOnFailure}
+     */
+    private Boolean takeScreenshotOnFailure;
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.UIAutomatorMojo#screenshotsPathOnDevice}
+     */
+    private String screenshotsPathOnDevice;
 
     public Boolean isSkip()
     {
@@ -81,4 +89,13 @@ public class UIAutomator
         return createReport;
     }
 
+    public Boolean isTakeScreenshotOnFailure()
+    {
+        return takeScreenshotOnFailure;
+    }
+
+    public String getScreenshotsPathOnDevice()
+    {
+        return screenshotsPathOnDevice;
+    }
 }
