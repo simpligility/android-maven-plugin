@@ -85,21 +85,24 @@ public class AndroidNdk
 
     private File findStripper( String toolchain )
     {
-        String os = "";
+        List<String> osDirectories = new ArrayList<String>();
         String extension = "";
 
         if ( SystemUtils.IS_OS_LINUX )
         {
-            os = "linux-x86";
+            osDirectories.add( "linux-x86" );
+            osDirectories.add( "linux-x86_64" );
         }
         else if ( SystemUtils.IS_OS_WINDOWS )
         {
-            os = "windows";
+            osDirectories.add( "windows" );
+            osDirectories.add( "windows-x86_64" );
             extension = ".exe";
         }
         else if ( SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX )
         {
-            os = "darwin-x86";
+            osDirectories.add( "darwin-x86" );
+            osDirectories.add( "darwin-x86_64" );
         }
 
         String fileName = "";
@@ -116,16 +119,17 @@ public class AndroidNdk
             fileName = "mipsel-linux-android-strip" + extension;
         }
 
-        String stripperLocation = String.format( "toolchains/%s/prebuilt/%s/bin/%s", toolchain, os, fileName );
-        final File stripper = new File( ndkPath, stripperLocation );
-        if ( stripper.exists() )
+        for ( String osDirectory : osDirectories )
         {
-            return stripper;
+            String stripperLocation =
+                String.format( "toolchains/%s/prebuilt/%s/bin/%s", toolchain, osDirectory, fileName );
+            final File stripper = new File( ndkPath, stripperLocation );
+            if ( stripper.exists() )
+            {
+                return stripper;
+            }
         }
-        else
-        {
-            return null;
-        }
+        return null;
     }
 
     public String[] getAppAbi( File applicationMakefile )
