@@ -326,10 +326,10 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             // the include of our Android Maven plugin generated makefile.
             validateMakefile( project, makefile );
 
-            String[] ndkArchitectures = getAndroidNdk().getNdkArchitectures( ndkClassifier,
-                                                                             ndkArchitecture,
-                                                                             applicationMakefile,
-                                                                             project.getBasedir() );
+            String[] ndkArchitectures = NativeHelper.getNdkArchitectures( ndkClassifier,
+                                                                          ndkArchitecture,
+                                                                          applicationMakefile,
+                                                                          project.getBasedir() );
             for ( String ndkArchitecture : ndkArchitectures )
             {
                 Preparation preparation = new Preparation().invoke( ndkArchitecture );

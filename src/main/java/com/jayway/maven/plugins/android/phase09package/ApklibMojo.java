@@ -19,6 +19,7 @@ package com.jayway.maven.plugins.android.phase09package;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.common.NativeHelper;
 import com.jayway.maven.plugins.android.config.PullParameter;
 
 import org.apache.commons.io.FileUtils;
@@ -186,10 +187,10 @@ public class ApklibMojo extends AbstractAndroidMojo
                 getLog().info( nativeLibrariesDirectory 
                         + " does not exist, looking for libraries in target directory." );
                 // Add native libraries built and attached in this build
-                String[] ndkArchitectures = getAndroidNdk().getNdkArchitectures( ndkClassifier,
-                                                                                 ndkArchitecture,
-                                                                                 applicationMakefile,
-                                                                                 project.getBasedir() );
+                String[] ndkArchitectures = NativeHelper.getNdkArchitectures( ndkClassifier,
+                                                                              ndkArchitecture,
+                                                                              applicationMakefile,
+                                                                              project.getBasedir() );
                 for ( String ndkArchitecture : ndkArchitectures )
                 {
                     final File ndkLibsDirectory = new File( ndkOutputDirectory, ndkArchitecture );
