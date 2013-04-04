@@ -26,12 +26,14 @@ import org.sonatype.aether.util.filter.ScopeDependencyFilter;
 import org.sonatype.aether.util.graph.PreorderNodeListGenerator;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -333,5 +335,73 @@ public class NativeHelper
         }
     }
 
+    public static String[] getAppAbi( File applicationMakefile )
+    {
+        Scanner scanner = null;
+        try
+        {
+            if ( applicationMakefile != null && applicationMakefile.exists() )
+            {
+                scanner = new Scanner( applicationMakefile );
+                while ( scanner.hasNextLine( ) )
+                {
+                    String line = scanner.nextLine().trim();
+                    if ( line.startsWith( "APP_ABI" ) )
+                    {
+                        return line.substring( line.indexOf( ":=" ) + 2 ).trim().split( " " );
+                    }
+                }
+            }
+        }
+        catch ( FileNotFoundException e )
+        {
+            // do nothing
+        }
+        finally
+        {
+            if ( scanner != null )
+            {
+                scanner.close();
+            }
+        }
+        return null;
+    }
 
+    public static String[] getNdkArchitectures( final String ndkClassifier, final String ndkArchitecture,
+                                                final String applicationMakefile, final File basedir )
+        throws MojoExecutionException
+    {
+        // if there is a classifier, return it
+        if ( ndkClassifier != null )
+        {
+            return new String[] { ndkClassifier };
+        }
+
+        // if there is a specified ndk architecture, return it
+        if ( ndkArchitecture != null )
+        {
+            return new String[] { ndkArchitecture };
+        }
+
+        // if there is no application makefile specified, let's use the default one
+        String applicationMakefileToUse = applicationMakefile;
+        if ( applicationMakefileToUse == null )
+        {
+            applicationMakefileToUse = "jni/Application.mk";
+        }
+
+        // now let's see if the application file exists
+        File appMK = new File( basedir, applicationMakefileToUse );
+        if ( appMK.exists() )
+        {
+            String[] foundNdkArchitectures = getAppAbi( appMK );
+            if ( foundNdkArchitectures != null )
+            {
+                return foundNdkArchitectures;
+            }
+        }
+
+        // return a default ndk architecture
+        return new String[] { "armeabi" };
+    }
 }
