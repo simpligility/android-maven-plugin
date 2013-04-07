@@ -502,10 +502,10 @@ public class ProguardMojo extends AbstractAndroidMojo
             // that is shipped with the SDK (since that is not a complete Java distribution)
             String javaHome = System.getProperty( "java.home" );
             String jdkLibsPath = null;
-            if ( javaHome.startsWith( "/System/Library/Java" ) || javaHome.startsWith( "/Library/Java" ) )
+            if ( isMacOSXJDKbyApple( javaHome ) )
             {
                 // MacOS X uses different naming conventions for JDK installations
-                jdkLibsPath = javaHome + "/../Classes";
+                jdkLibsPath = appleJDKLibsPath( javaHome );
                 addLibraryJar( jdkLibsPath + "/classes.jar" );
             }
             else
@@ -544,6 +544,16 @@ public class ProguardMojo extends AbstractAndroidMojo
         }
     }
 
+    private boolean isMacOSXJDKbyApple( String javaHome )
+    {
+        return ( javaHome.startsWith( "/System/Library/Java" ) || javaHome.startsWith( "/Library/Java" ) )
+                && new File( appleJDKLibsPath( javaHome ) ).exists();
+    }
+
+    private String appleJDKLibsPath( String javaHome )
+    {
+        return javaHome + "/../Classes";
+    }
 
     /**
      * Get the path to the proguard jar.
