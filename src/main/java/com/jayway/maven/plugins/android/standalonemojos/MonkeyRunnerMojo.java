@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -78,7 +80,7 @@ import com.jayway.maven.plugins.android.configuration.Program;
  * @see <a href="http://developer.android.com/tools/help/monkey.html">Monkey docs by Google</a>
  * @see <a href="http://stackoverflow.com/q/3968064/693752">Stack Over Flow thread for parsing monkey output.</a>
  * @author Stéphane Nicolas <snicolas@octo.com>
- * @goal monkey-runner
+ * @goal monkeyrunner
  * @requiresProject true
  */
 @SuppressWarnings( "unused" )
@@ -169,18 +171,21 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
     private String[] parsedPlugins;
 
     /**
-     * A program is composed of :
-     * <ul>
-     * <li>filename : If you provide this argument, the monkeyrunner command runs the contents of the file as a Python
-     * program. If the argument is not provided, the command starts an interactive session.
-     * <li>option : (Optional) Flags and arguments for the program in <program_file>.
-     * </ul>
+     * *
      * 
-     * @parameter expression="${android.monkeyrunner.plugins}"
+     * <pre>
+     * &lt;programs&gt;
+     *   &lt;program&gt;
+     *     &lt;filename&gt;src/test/monkeyrunner/example-test.py&lt;/filename&gt;
+     *     &lt;options/&gt;
+     *   &lt;program&gt;
+     *   [..]
+     * &lt;/programs&gt;
+     * </pre>
+     * 
+     * @parameter
      */
-    private List< Program > monkeyPrograms;
-
-    @PullParameter( defaultValueGetterMethod = "getPrograms" )
+    @PullParameter( required = true )
     private List< Program > parsedPrograms;
 
     /**
@@ -257,6 +262,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
+        executor.setErrorListener( getMonkeyRunnerErrorListener() );
 
         String command = getAndroidSdk().getMonkeyRunnerPath();
 
@@ -278,7 +284,10 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
                 String programFileName = new File( project.getBasedir(), program.getFilename() ).getAbsolutePath();
                 String programOptions = program.getOptions();
                 parameters.add( " " + programFileName );
-                parameters.add( " " + programOptions );
+                if ( programOptions != null && !StringUtils.isEmpty( programOptions ) )
+                {
+                    parameters.add( " " + programOptions );
+                }
             }
         }
 
@@ -822,4 +831,35 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
     {
         return parsedPlugins;
     }
+
+    private CommandExecutor.ErrorListener getMonkeyRunnerErrorListener()
+    {
+        return new CommandExecutor.ErrorListener()
+        {
+            @Override
+            public boolean isError( String error )
+            {
+
+                // Unconditionally ignore *All* build warning if configured to
+                if ( isIgnoreTestFailures() )
+                {
+                    return false;
+                }
+
+                final Pattern pattern = Pattern.compile( ".*error.*" );
+                final Matcher matcher = pattern.matcher( error );
+
+                // If the the reg.exp actually matches, we can safely say this is not an error
+                // since in theory the user told us so
+                if ( matcher.matches() )
+                {
+                    return false;
+                }
+
+                // Otherwise, it is just another error
+                return true;
+            }
+        };
+    }
+
 }
