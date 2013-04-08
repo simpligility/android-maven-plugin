@@ -171,13 +171,16 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
     private String[] parsedPlugins;
 
     /**
-     * *
+     * Runs the contents of the file as a Python program.
      * 
      * <pre>
      * &lt;programs&gt;
      *   &lt;program&gt;
-     *     &lt;filename&gt;src/test/monkeyrunner/example-test.py&lt;/filename&gt;
-     *     &lt;options/&gt;
+     *     &lt;filename&gt;foo.py&lt;/filename&gt;
+     *     &lt;options&gt;bar&lt;/options&gt;
+     *   &lt;program&gt;
+     *   &lt;program&gt;
+     *     &lt;filename&gt;foo2.py&lt;/filename&gt;
      *   &lt;program&gt;
      *   [..]
      * &lt;/programs&gt;
@@ -261,6 +264,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
         getLog().debug( "Parsed values for Android Monkey Runner invocation: " );
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        executor.setRemoveShellArguments( true );
         executor.setLogger( this.getLog() );
         executor.setErrorListener( getMonkeyRunnerErrorListener() );
 
@@ -277,13 +281,14 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
             }
         }
 
+        // TODO multiple programs correspond to multiple invocations of monkey runner (with same plugins)
         if ( parsedPrograms != null && !parsedPrograms.isEmpty() )
         {
             for ( Program program : parsedPrograms )
             {
                 String programFileName = new File( project.getBasedir(), program.getFilename() ).getAbsolutePath();
                 String programOptions = program.getOptions();
-                parameters.add( " " + programFileName );
+                parameters.add( programFileName );
                 if ( programOptions != null && !StringUtils.isEmpty( programOptions ) )
                 {
                     parameters.add( " " + programOptions );
@@ -299,15 +304,16 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
         }
         catch ( ExecutionException e )
         {
-            getLog().info( "Lint analysis produced errors and project is configured to fail on error." );
-            getLog().info( "Inspect lint reports or re-run with -X to see lint errors in log" );
-            getLog().info( "Failing build as configured. Ignore following error message." );
+            getLog().info( "Monkey runner produced errors" );
             if ( !isIgnoreTestFailures() )
             {
+                getLog().info( "Project is configured to fail on error." );
+                getLog().info( "Inspect monkey runner reports or re-run with -X to see monkey runner errors in log" );
+                getLog().info( "Failing build as configured. Ignore following error message." );
                 throw new MojoExecutionException( "", e );
             }
         }
-        getLog().info( "Lint analysis completed successfully." );
+        getLog().info( "Monkey runner test runs completed successfully." );
     }
 
     /**
