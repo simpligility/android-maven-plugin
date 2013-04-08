@@ -295,7 +295,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
         {
             getLog().info( "Running command: " + command );
             getLog().info( "with parameters: " + parameters );
-            executor.executeCommand( command, parameters, false );
+            executor.executeCommand( command, parameters, true );
         }
         catch ( ExecutionException e )
         {
@@ -853,11 +853,11 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
                 // since in theory the user told us so
                 if ( matcher.matches() )
                 {
-                    return false;
+                    return true;
                 }
 
                 // Otherwise, it is just another error
-                return true;
+                return false;
             }
         };
     }
