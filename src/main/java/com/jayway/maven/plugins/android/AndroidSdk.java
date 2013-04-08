@@ -15,8 +15,6 @@
  */
 package com.jayway.maven.plugins.android;
 
-import org.apache.maven.plugin.MojoExecutionException;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -26,9 +24,11 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.maven.plugin.MojoExecutionException;
+
 /**
  * Represents an Android SDK.
- *
+ * 
  * @author hugo.josefson@jayway.com
  * @author Manfred Moser <manfred@simpligility.com>
  */
@@ -86,9 +86,7 @@ public class AndroidSdk
     private final Platform platform;
     private int sdkMajorVersion;
 
-
-    private Set<Platform> availablePlatforms;
-
+    private Set< Platform > availablePlatforms;
 
     public AndroidSdk( File sdkPath, String platformOrApiLevel )
     {
@@ -126,8 +124,8 @@ public class AndroidSdk
     }
 
     /**
-     * The file system layout of the SDK. Should probably be removed since the 15 layout is very old
-     * and probably wont work completely. No urgency though..
+     * The file system layout of the SDK. Should probably be removed since the 15 layout is very old and probably wont
+     * work completely. No urgency though..
      */
     public enum Layout
     {
@@ -151,8 +149,8 @@ public class AndroidSdk
             return Layout.LAYOUT_1_5;
         }
 
-        throw new InvalidSdkException(
-                "Android SDK could not be identified from path \"" + sdkPath + "\". " + PARAMETER_MESSAGE );
+        throw new InvalidSdkException( "Android SDK could not be identified from path \"" + sdkPath + "\". "
+                + PARAMETER_MESSAGE );
     }
 
     private void assertPathIsDirectory( final File path )
@@ -161,7 +159,7 @@ public class AndroidSdk
         {
             throw new InvalidSdkException( PARAMETER_MESSAGE );
         }
-        if ( ! path.isDirectory() )
+        if ( !path.isDirectory() )
         {
             throw new InvalidSdkException( "Path \"" + path + "\" is not a directory. " + PARAMETER_MESSAGE );
         }
@@ -169,14 +167,16 @@ public class AndroidSdk
 
     /**
      * Returns the complete path for a tool, based on this SDK.
-     *
-     * @param tool which tool, for example <code>adb</code> or <code>dx.jar</code>.
+     * 
+     * @param tool
+     *            which tool, for example <code>adb</code> or <code>dx.jar</code>.
      * @return the complete path as a <code>String</code>, including the tool's filename.
      */
     public String getPathForTool( String tool )
     {
 
-        String[] possiblePaths = { sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool,
+        String[] possiblePaths =
+        { sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool,
                 sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool + ".exe",
                 sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/" + tool + ".bat",
                 sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/lib/" + tool, getPlatform() + "/tools/" + tool,
@@ -187,7 +187,7 @@ public class AndroidSdk
         for ( String possiblePath : possiblePaths )
         {
             File file = new File( possiblePath );
-            if ( file.exists() && ! file.isDirectory() )
+            if ( file.exists() && !file.isDirectory() )
             {
                 return file.getAbsolutePath();
             }
@@ -198,7 +198,7 @@ public class AndroidSdk
 
     /**
      * Get the android debug tool path (adb).
-     *
+     * 
      * @return
      */
     public String getAdbPath()
@@ -208,7 +208,7 @@ public class AndroidSdk
 
     /**
      * Get the android zipalign path.
-     *
+     * 
      * @return
      */
     public String getZipalignPath()
@@ -218,17 +218,27 @@ public class AndroidSdk
 
     /**
      * Get the android lint path.
-     *
+     * 
      * @return
      */
-    public String getLintPath() 
+    public String getLintPath()
     {
         return getPathForTool( "lint" );
     }
-    
+
+    /**
+     * Get the android monkey runner path.
+     * 
+     * @return
+     */
+    public String getMonkeyRunnerPath()
+    {
+        return getPathForTool( "monkeyrunner" );
+    }
+
     /**
      * Returns the complete path for <code>framework.aidl</code>, based on this SDK.
-     *
+     * 
      * @return the complete path as a <code>String</code>, including the filename.
      */
     public String getPathForFrameworkAidl()
@@ -236,7 +246,7 @@ public class AndroidSdk
         final Layout layout = getLayout();
         switch ( layout )
         {
-            case LAYOUT_1_5: //intentional fall-through
+            case LAYOUT_1_5: // intentional fall-through
             case LAYOUT_2_3:
                 return getPlatform() + "/framework.aidl";
             default:
@@ -246,17 +256,17 @@ public class AndroidSdk
 
     /**
      * Resolves the android.jar from this SDK.
-     *
+     * 
      * @return a <code>File</code> pointing to the android.jar file.
      * @throws org.apache.maven.plugin.MojoExecutionException
-     *          if the file can not be resolved.
+     *             if the file can not be resolved.
      */
     public File getAndroidJar() throws MojoExecutionException
     {
         final Layout layout = getLayout();
         switch ( layout )
         {
-            case LAYOUT_1_5: //intentional fall-through
+            case LAYOUT_1_5: // intentional fall-through
             case LAYOUT_2_3:
                 return new File( getPlatform() + "/android.jar" );
             default:
@@ -266,10 +276,10 @@ public class AndroidSdk
 
     /**
      * Resolves the sdklib.jar from this SDK.
-     *
+     * 
      * @return a <code>File</code> pointing to the sdklib.jar file.
      * @throws org.apache.maven.plugin.MojoExecutionException
-     *          if the file can not be resolved.
+     *             if the file can not be resolved.
      */
     public File getSDKLibJar() throws MojoExecutionException
     {
@@ -281,7 +291,7 @@ public class AndroidSdk
         }
         throw new MojoExecutionException( "Can't find the 'sdklib.jar' : " + sdklib.getAbsolutePath() );
     }
-    
+
     /**
      * Resolves the path for this SDK.
      * 
@@ -299,11 +309,9 @@ public class AndroidSdk
     }
 
     /**
-     * This method returns the previously specified version.
-     * However, if none have been specified it returns the
-     * "latest" version.  This is actually broken as it
-     * performs a lexicographic sort rather than sorting the
-     * versions in proper order.
+     * This method returns the previously specified version. However, if none have been specified it returns the
+     * "latest" version. This is actually broken as it performs a lexicographic sort rather than sorting the versions in
+     * proper order.
      */
     public File getPlatform()
     {
@@ -329,14 +337,14 @@ public class AndroidSdk
 
     /**
      * Initialize the maps matching platform and api levels from the source properties files.
-     *
+     * 
      * @throws InvalidSdkException
      */
     private void findAvailablePlatforms()
     {
-        availablePlatforms = new HashSet<Platform>();
+        availablePlatforms = new HashSet< Platform >();
 
-        ArrayList<File> platformDirectories = getPlatformDirectories();
+        ArrayList< File > platformDirectories = getPlatformDirectories();
         for ( File pDir : platformDirectories )
         {
             File propFile = new File( pDir, SOURCE_PROPERTIES_FILENAME );
@@ -357,7 +365,7 @@ public class AndroidSdk
             }
         }
     }
-    
+
     /**
      * Loads the SDK Tools version
      */
@@ -373,19 +381,19 @@ public class AndroidSdk
         {
             throw new InvalidSdkException( "Error reading " + propFile.getAbsoluteFile() );
         }
-        
+
         if ( properties.containsKey( SDK_TOOLS_REVISION_PROPERTY ) )
         {
             try
             {
                 String versionString = properties.getProperty( SDK_TOOLS_REVISION_PROPERTY );
                 String majorVersion;
-                if ( versionString.matches( ".*[\\.| ].*" ) ) 
+                if ( versionString.matches( ".*[\\.| ].*" ) )
                 {
                     String[] versions = versionString.split( "[\\.| ]" );
                     majorVersion = versions[ 0 ];
-                } 
-                else 
+                }
+                else
                 {
                     majorVersion = versionString;
                 }
@@ -402,12 +410,12 @@ public class AndroidSdk
 
     /**
      * Gets the source properties files from all locally installed platforms.
-     *
+     * 
      * @return
      */
-    private ArrayList<File> getPlatformDirectories()
+    private ArrayList< File > getPlatformDirectories()
     {
-        ArrayList<File> sourcePropertyFiles = new ArrayList<File>();
+        ArrayList< File > sourcePropertyFiles = new ArrayList< File >();
         final File platformsDirectory = new File( sdkPath, PLATFORMS_FOLDER_NAME );
         assertPathIsDirectory( platformsDirectory );
         final File[] platformDirectories = platformsDirectory.listFiles();
@@ -424,6 +432,7 @@ public class AndroidSdk
 
     /**
      * Returns the version of the SDK Tools.
+     * 
      * @return
      */
     public int getSdkMajorVersion()
