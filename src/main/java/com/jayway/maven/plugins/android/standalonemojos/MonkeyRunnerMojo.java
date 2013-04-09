@@ -48,6 +48,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.interpolation.os.Os;
+import org.codehaus.plexus.util.cli.shell.BourneShell;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -264,9 +266,13 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
         getLog().debug( "Parsed values for Android Monkey Runner invocation: " );
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setRemoveShellArguments( true );
+        if ( !Os.isFamily( Os.FAMILY_WINDOWS ) )
+        {
+            executor.setCustomShell( new CustomBourneShell() );
+        }
         executor.setLogger( this.getLog() );
-        executor.setErrorListener( getMonkeyRunnerErrorListener() );
+        MonkeyRunnerErrorListener errorListener = new MonkeyRunnerErrorListener();
+        executor.setErrorListener( errorListener );
 
         String command = getAndroidSdk().getMonkeyRunnerPath();
 
@@ -310,10 +316,64 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
                 getLog().info( "Project is configured to fail on error." );
                 getLog().info( "Inspect monkey runner reports or re-run with -X to see monkey runner errors in log" );
                 getLog().info( "Failing build as configured. Ignore following error message." );
+                if ( errorListener.hasError )
+                {
+                    getLog().info( "Stack trace is:" );
+                    getLog().info( errorListener.getStackTrace() );
+                }
                 throw new MojoExecutionException( "", e );
             }
         }
         getLog().info( "Monkey runner test runs completed successfully." );
+    }
+
+    private final class MonkeyRunnerErrorListener implements CommandExecutor.ErrorListener
+    {
+        private StringBuilder stackTraceBuilder = new StringBuilder();
+        private boolean hasError = false;
+
+        @Override
+        public boolean isError( String error )
+        {
+
+            // Unconditionally ignore *All* build warning if configured to
+            if ( isIgnoreTestFailures() )
+            {
+                return false;
+            }
+
+            if ( hasError )
+            {
+                stackTraceBuilder.append( error ).append( '\n' );
+            }
+
+            final Pattern pattern = Pattern.compile( ".*error.*|.*exception.*", Pattern.CASE_INSENSITIVE );
+            final Matcher matcher = pattern.matcher( error );
+
+            // If the the reg.exp actually matches, we can safely say this is not an error
+            // since in theory the user told us so
+            if ( matcher.matches() )
+            {
+                hasError = true;
+                stackTraceBuilder.append( error ).append( '\n' );
+                return true;
+            }
+
+            // Otherwise, it is just another error
+            return false;
+        }
+
+        public String getStackTrace()
+        {
+            if ( hasError )
+            {
+                return stackTraceBuilder.toString();
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 
     /**
@@ -838,34 +898,34 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
         return parsedPlugins;
     }
 
-    private CommandExecutor.ErrorListener getMonkeyRunnerErrorListener()
+    private static final class CustomBourneShell extends BourneShell
     {
-        return new CommandExecutor.ErrorListener()
+        @Override
+        public List< String > getShellArgsList()
         {
-            @Override
-            public boolean isError( String error )
+            List< String > shellArgs = new ArrayList< String >();
+            List< String > existingShellArgs = super.getShellArgsList();
+
+            if ( existingShellArgs != null && !existingShellArgs.isEmpty() )
             {
-
-                // Unconditionally ignore *All* build warning if configured to
-                if ( isIgnoreTestFailures() )
-                {
-                    return false;
-                }
-
-                final Pattern pattern = Pattern.compile( ".*error.*" );
-                final Matcher matcher = pattern.matcher( error );
-
-                // If the the reg.exp actually matches, we can safely say this is not an error
-                // since in theory the user told us so
-                if ( matcher.matches() )
-                {
-                    return true;
-                }
-
-                // Otherwise, it is just another error
-                return false;
+                shellArgs.addAll( existingShellArgs );
             }
-        };
+
+            return shellArgs;
+        }
+
+        @Override
+        public String[] getShellArgs()
+        {
+            String[] shellArgs = super.getShellArgs();
+            if ( shellArgs == null )
+            {
+                shellArgs = new String[ 0 ];
+            }
+
+            return shellArgs;
+        }
+
     }
 
 }

@@ -27,7 +27,7 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamConsumer;
-import org.codehaus.plexus.util.cli.shell.BourneShell;
+import org.codehaus.plexus.util.cli.shell.Shell;
 
 /**
  *
@@ -129,7 +129,7 @@ public interface CommandExecutor
 
     void setErrorListener( ErrorListener errorListener );
 
-    void setRemoveShellArguments( boolean b );
+    void setCustomShell( Shell s );
 
     /**
      *
@@ -176,7 +176,7 @@ public interface CommandExecutor
             private ErrorListener errorListener;
             long pid;
             private Commandline commandline;
-            private boolean isRemoveshellArgs;
+            private Shell customShell;
 
             @Override
             public void setLogger( Log logger )
@@ -208,9 +208,9 @@ public interface CommandExecutor
                 stdOut = new StreamConsumerImpl( logger );
                 stdErr = new ErrorStreamConsumer( logger, errorListener );
                 commandline = new Commandline();
-                if ( isRemoveshellArgs )
+                if ( customShell != null )
                 {
-                    commandline.setShell( new CustomBourneShell() );
+                    commandline.setShell( customShell );
                 }
                 commandline.setExecutable( executable );
 
@@ -301,40 +301,10 @@ public interface CommandExecutor
             }
 
             @Override
-            public void setRemoveShellArguments( boolean b )
+            public void setCustomShell( Shell shell )
             {
-                this.isRemoveshellArgs = b;
+                this.customShell = shell;
             }
-        }
-
-        private static final class CustomBourneShell extends BourneShell
-        {
-            @Override
-            public List< String > getShellArgsList()
-            {
-                List< String > shellArgs = new ArrayList< String >();
-                List< String > existingShellArgs = super.getShellArgsList();
-
-                if ( existingShellArgs != null && !existingShellArgs.isEmpty() )
-                {
-                    shellArgs.addAll( existingShellArgs );
-                }
-
-                return shellArgs;
-            }
-
-            @Override
-            public String[] getShellArgs()
-            {
-                String[] shellArgs = super.getShellArgs();
-                if ( shellArgs == null )
-                {
-                    shellArgs = new String[ 0 ];
-                }
-
-                return shellArgs;
-            }
-
         }
 
         /**
