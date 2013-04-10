@@ -25,6 +25,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -61,9 +62,11 @@ import com.android.ddmlib.IShellOutputReceiver;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
 import com.android.ddmlib.testrunner.ITestRunListener;
+import com.android.ddmlib.testrunner.ITestRunListener.TestFailure;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.DeviceCallback;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.common.DeviceHelper;
 import com.jayway.maven.plugins.android.config.ConfigHandler;
@@ -220,16 +223,38 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
     @PullParameter( defaultValue = "false" )
     private Boolean parsedCreateReport;
 
+    private long elapsedTime;
+
+    private ITestRunListener[] mTestListeners;
+
+    private Map< String, String > runMetrics;
+
+    private String mRunName;
+
+    private int eventCount;
+
+    private TestIdentifier mCurrentTestIndentifier;
+
+    private MonkeyRunnerErrorListener errorListener;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         ConfigHandler configHandler = new ConfigHandler( this );
         configHandler.parseConfiguration();
 
-        if ( isEnableIntegrationTest() )
+        doWithDevices( new DeviceCallback()
         {
-            exerciseApp();
-        }
+            @Override
+            public void doWithDevice( IDevice device ) throws MojoExecutionException, MojoFailureException
+            {
+                AndroidTestRunListener testRunListener = new AndroidTestRunListener( project, device );
+                if ( isEnableIntegrationTest() )
+                {
+                    run( device, testRunListener );
+                }
+            }
+        } );
     }
 
     /**
@@ -260,8 +285,11 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
      * @throws MojoFailureException
      *             if exercising app failed and isIgnoreTestFailures is false.
      */
-    protected void exerciseApp() throws MojoExecutionException, MojoFailureException
+    protected void run( IDevice device, ITestRunListener... iTestRunListeners ) throws MojoExecutionException,
+            MojoFailureException
     {
+
+        this.mTestListeners = iTestRunListeners;
 
         getLog().debug( "Parsed values for Android Monkey Runner invocation: " );
 
@@ -271,7 +299,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
             executor.setCustomShell( new CustomBourneShell() );
         }
         executor.setLogger( this.getLog() );
-        MonkeyRunnerErrorListener errorListener = new MonkeyRunnerErrorListener();
+        errorListener = new MonkeyRunnerErrorListener();
         executor.setErrorListener( errorListener );
 
         String command = getAndroidSdk().getMonkeyRunnerPath();
@@ -293,8 +321,10 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
             for ( Program program : parsedPrograms )
             {
                 String programFileName = new File( project.getBasedir(), program.getFilename() ).getAbsolutePath();
-                String programOptions = program.getOptions();
                 parameters.add( programFileName );
+                String programOptions = program.getOptions();
+                // TODO add parameter 'injectDeviceName or supportMultipleDevices'
+                parameters.add( device.getSerialNumber() );
                 if ( programOptions != null && !StringUtils.isEmpty( programOptions ) )
                 {
                     parameters.add( " " + programOptions );
@@ -325,6 +355,68 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
             }
         }
         getLog().info( "Monkey runner test runs completed successfully." );
+    }
+
+    private void handleTestRunStarted()
+    {
+        elapsedTime = System.currentTimeMillis();
+        for ( ITestRunListener listener : mTestListeners )
+        {
+            listener.testRunStarted( mRunName, eventCount );
+        }
+    }
+
+    public void handleTestRunFailed( String error )
+    {
+        for ( ITestRunListener listener : mTestListeners )
+        {
+            listener.testRunFailed( error );
+        }
+    }
+
+    private void handleTestRunEnded()
+    {
+        elapsedTime = System.currentTimeMillis() - elapsedTime;
+
+        for ( ITestRunListener listener : mTestListeners )
+        {
+            listener.testRunEnded( elapsedTime, runMetrics );
+        }
+    }
+
+    private void handleTestStarted( String line )
+    {
+        mCurrentTestIndentifier = new TestIdentifier( "MonkeyTest", line );
+        for ( ITestRunListener listener : mTestListeners )
+        {
+            listener.testStarted( mCurrentTestIndentifier );
+        }
+    }
+
+    private void handleTestEnd()
+    {
+        if ( mCurrentTestIndentifier != null )
+        {
+            for ( ITestRunListener listener : mTestListeners )
+            {
+                listener.testEnded( mCurrentTestIndentifier, new HashMap< String, String >() );
+            }
+            mCurrentTestIndentifier = null;
+        }
+    }
+
+    private int handleCrash( String[] lines, int indexLine )
+    {
+
+        String trace = errorListener.getStackTrace();
+
+        for ( ITestRunListener listener : mTestListeners )
+        {
+            listener.testFailed( TestFailure.ERROR, mCurrentTestIndentifier, trace );
+        }
+        mCurrentTestIndentifier = null;
+
+        return indexLine;
     }
 
     private final class MonkeyRunnerErrorListener implements CommandExecutor.ErrorListener
