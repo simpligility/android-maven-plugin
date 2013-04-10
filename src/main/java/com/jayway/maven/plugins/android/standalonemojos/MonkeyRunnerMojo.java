@@ -223,6 +223,23 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
     @PullParameter( defaultValue = "false" )
     private Boolean parsedCreateReport;
 
+    /**
+     * Decides whether or not to inject device serial number as a parameter to each monkey runner script. The parameter
+     * will be the first parameter passed to the script. This parameter allows to support monkey runner tests on
+     * multiple devices. In that case, monkey runner scripts have to be modified to take the new parameter into account.
+     * Follow that <a href="http://stackoverflow.com/a/13460438/693752">thread on stack over flow to learn more about
+     * it</a>.
+     * 
+     * Defaults to false.
+     * 
+     * @parameter expression="${android.monkeyrunner.injectDeviceSerialNumberIntoScript}"
+     * 
+     */
+    private Boolean monkeyInjectDeviceSerialNumberIntoScript;
+
+    @PullParameter( defaultValue = "false" )
+    private Boolean parsedInjectDeviceSerialNumberIntoScript;
+
     private long elapsedTime;
 
     private ITestRunListener[] mTestListeners;
@@ -323,11 +340,13 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
                 String programFileName = new File( project.getBasedir(), program.getFilename() ).getAbsolutePath();
                 parameters.add( programFileName );
                 String programOptions = program.getOptions();
-                // TODO add parameter 'injectDeviceName or supportMultipleDevices'
-                parameters.add( device.getSerialNumber() );
+                if ( parsedInjectDeviceSerialNumberIntoScript != null && parsedInjectDeviceSerialNumberIntoScript )
+                {
+                    parameters.add( device.getSerialNumber() );
+                }
                 if ( programOptions != null && !StringUtils.isEmpty( programOptions ) )
                 {
-                    parameters.add( " " + programOptions );
+                    parameters.add( programOptions );
                 }
             }
         }
