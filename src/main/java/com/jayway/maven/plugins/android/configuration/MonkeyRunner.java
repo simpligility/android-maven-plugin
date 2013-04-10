@@ -23,9 +23,14 @@ public class MonkeyRunner
      */
     private String[] plugins;
     /**
-     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.Monkey#createReport}
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.MonkeyRunner#createReport}
      */
     private Boolean createReport;
+    /**
+     * Mirror of
+     * {@link com.jayway.maven.plugins.android.standalonemojos.MonkeyRunner#injectDeviceSerialNumberIntoScript}
+     */
+    private Boolean injectDeviceSerialNumberIntoScript;
 
     public boolean isSkip()
     {
@@ -45,5 +50,10 @@ public class MonkeyRunner
     public Boolean isCreateReport()
     {
         return createReport;
+    }
+
+    public Boolean isInjectDeviceSerialNumberIntoScript()
+    {
+        return injectDeviceSerialNumberIntoScript;
     }
 }
