@@ -238,6 +238,10 @@ public class ProguardMojo extends AbstractAndroidMojo
     private List<ProGuardInput> inJars = new LinkedList<ProguardMojo.ProGuardInput>();
     private List<ProGuardInput> libraryJars = new LinkedList<ProguardMojo.ProGuardInput>();
 
+    private File javaHomeDir;
+    private File javaLibDir;
+    private File altJavaLibDir;
+
     private static class ProGuardInput
     {
 
@@ -496,27 +500,32 @@ public class ProguardMojo extends AbstractAndroidMojo
     {
         if ( parsedIncludeJdkLibs )
         {
-            final String slash = File.separator;
             // we have to add the Java framework classes to the library JARs, since they are not
             // distributed with the JAR on Central, and since we'll strip them out of the android.jar
             // that is shipped with the SDK (since that is not a complete Java distribution)
-            String javaHome = System.getProperty( "java.home" );
-            String jdkLibsPath = null;
-            if ( isMacOSXJDKbyApple( javaHome ) )
+            File rtJar = getJVMLibrary( "rt.jar" );
+            if ( rtJar == null )
             {
-                // MacOS X uses different naming conventions for JDK installations
-                jdkLibsPath = appleJDKLibsPath( javaHome );
-                addLibraryJar( jdkLibsPath + "/classes.jar" );
+                rtJar = getJVMLibrary( "classes.jar" );
             }
-            else
+            if ( rtJar != null )
             {
-                jdkLibsPath = javaHome + slash + "lib";
-                addLibraryJar( jdkLibsPath + slash + "rt.jar" );
+                addLibraryJar( rtJar.getPath() );
             }
+
             // we also need to add the JAR containing e.g. javax.servlet
-            addLibraryJar( jdkLibsPath + slash + "jsse.jar" );
+            File jsseJar = getJVMLibrary( "jsse.jar" );
+            if ( jsseJar != null )
+            {
+                addLibraryJar( jsseJar.getPath() );
+            }
+
             // and the javax.crypto stuff
-            addLibraryJar( jdkLibsPath + slash + "jce.jar" );
+            File jceJar = getJVMLibrary( "jce.jar" );
+            if ( jceJar != null )
+            {
+                addLibraryJar( jceJar.getPath() );
+            }
         }
 
         // we treat any dependencies with provided scope as library JARs
@@ -544,16 +553,6 @@ public class ProguardMojo extends AbstractAndroidMojo
         }
     }
 
-    private boolean isMacOSXJDKbyApple( String javaHome )
-    {
-        return ( javaHome.startsWith( "/System/Library/Java" ) || javaHome.startsWith( "/Library/Java" ) )
-                && new File( appleJDKLibsPath( javaHome ) ).exists();
-    }
-
-    private String appleJDKLibsPath( String javaHome )
-    {
-        return javaHome + "/../Classes";
-    }
 
     /**
      * Get the path to the proguard jar.
@@ -632,4 +631,62 @@ public class ProguardMojo extends AbstractAndroidMojo
         return new String[0];
     }
 
+    /**
+     * Finds a library file in either the primary or alternate lib directory.
+     * @param fileName The base name of the file.
+     * @return Either a canonical filename, or {@code null} if not found.
+     */
+    private File getJVMLibrary( String fileName )
+    {
+        File libFile = new File( getJavaLibDir(), fileName );
+        if ( !libFile.exists() )
+        {
+            libFile = new File( getAltJavaLibDir(), fileName );
+            if ( !libFile.exists() )
+            {
+                libFile = null;
+            }
+        }
+        return libFile;
+    }
+
+    /**
+     * Determines the java.home directory.
+     * @return The java.home directory, as a File.
+     */
+    private File getJavaHomeDir()
+    {
+        if ( javaHomeDir == null )
+        {
+            javaHomeDir = new File( System.getProperty( "java.home" ) );
+        }
+        return javaHomeDir;
+    }
+
+    /**
+     * Determines the primary JVM library location.
+     * @return The primary library directory, as a File.
+     */
+    private File getJavaLibDir()
+    {
+        if ( javaLibDir == null )
+        {
+            javaLibDir = new File( getJavaHomeDir(), "lib" );
+        }
+        return javaLibDir;
+    }
+
+    /**
+     * Determines the alternate JVM library location (applies with older
+     * MacOSX JVMs).
+     * @return The alternate JVM library location, as a File.
+     */
+    private File getAltJavaLibDir()
+    {
+        if ( altJavaLibDir == null )
+        {
+            altJavaLibDir = new File( getJavaHomeDir().getParent(), "Classes" );
+        }
+        return altJavaLibDir;
+    }
 }
