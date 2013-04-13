@@ -193,7 +193,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
      * 
      * @parameter
      */
-    @PullParameter( required = true )
+    @PullParameter( required = false, defaultValueGetterMethod = "getPrograms" )
     private List< Program > parsedPrograms;
 
     /**
@@ -1070,4 +1070,9 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
 
     }
 
+    public List< Program > getPrograms()
+    {
+        // return null if not set
+        return parsedPrograms;
+    }
 }

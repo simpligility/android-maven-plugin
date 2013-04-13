@@ -15,6 +15,9 @@
                         <skip>false</skip>
                         <injectDeviceSerialNumberIntoScript>true</injectDeviceSerialNumberIntoScript>
                         <createReport>true</createReport>
+                        <plugins>
+                            <plugin>foo</plugin>
+                        </plugins>
                         <programs>
                             <program>
                                 <filename>foo</filename>
