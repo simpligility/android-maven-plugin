@@ -297,6 +297,10 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
     /**
      * Actually plays tests.
      * 
+     * @param device
+     *            the device on which tests are going to be executed.
+     * @param iTestRunListeners
+     *            test run listeners.
      * @throws MojoExecutionException
      *             if exercising app threw an exception and isIgnoreTestFailures is false..
      * @throws MojoFailureException
@@ -316,29 +320,39 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
             executor.setCustomShell( new CustomBourneShell() );
         }
         executor.setLogger( this.getLog() );
-        errorListener = new MonkeyRunnerErrorListener();
-        executor.setErrorListener( errorListener );
 
         String command = getAndroidSdk().getMonkeyRunnerPath();
 
-        List< String > parameters = new ArrayList< String >();
+        List< String > pluginParameters = new ArrayList< String >();
 
         if ( parsedPlugins != null && parsedPlugins.length != 0 )
         {
             for ( String plugin : parsedPlugins )
             {
                 String pluginFilePath = new File( project.getBasedir(), plugin ).getAbsolutePath();
-                parameters.add( "-plugin " + pluginFilePath );
+                pluginParameters.add( "-plugin " + pluginFilePath );
             }
         }
 
-        // TODO multiple programs correspond to multiple invocations of monkey runner (with same plugins)
         if ( parsedPrograms != null && !parsedPrograms.isEmpty() )
         {
+            handleTestRunStarted();
+            errorListener = new MonkeyRunnerErrorListener();
+            executor.setErrorListener( errorListener );
+
             for ( Program program : parsedPrograms )
             {
+                List< String > parameters = new ArrayList< String >( pluginParameters );
+
                 String programFileName = new File( project.getBasedir(), program.getFilename() ).getAbsolutePath();
                 parameters.add( programFileName );
+                String testName = programFileName;
+                if ( testName.contains( "/" ) )
+                {
+                    testName.substring( testName.indexOf( '/' ) + 1 );
+                }
+                mCurrentTestIndentifier = new TestIdentifier( "MonkeyTest ", testName );
+
                 String programOptions = program.getOptions();
                 if ( parsedInjectDeviceSerialNumberIntoScript != null && parsedInjectDeviceSerialNumberIntoScript )
                 {
@@ -348,36 +362,49 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
                 {
                     parameters.add( programOptions );
                 }
+
+                try
+                {
+                    getLog().info( "Running command: " + command );
+                    getLog().info( "with parameters: " + parameters );
+                    handleTestStarted();
+                    executor.executeCommand( command, parameters, true );
+                    handleTestEnded();
+                }
+                catch ( ExecutionException e )
+                {
+                    getLog().info( "Monkey runner produced errors" );
+                    handleTestRunFailed( e.getMessage() );
+
+                    if ( !isIgnoreTestFailures() )
+                    {
+                        getLog().info( "Project is configured to fail on error." );
+                        getLog().info(
+                                "Inspect monkey runner reports or re-run with -X to see monkey runner errors in log" );
+                        getLog().info( "Failing build as configured. Ignore following error message." );
+                        if ( errorListener.hasError )
+                        {
+                            getLog().info( "Stack trace is:" );
+                            getLog().info( errorListener.getStackTrace() );
+                        }
+                        throw new MojoExecutionException( "", e );
+                    }
+                }
+
+                if ( errorListener.hasError() )
+                {
+                    handleCrash();
+                }
             }
+            handleTestRunEnded();
         }
 
-        try
-        {
-            getLog().info( "Running command: " + command );
-            getLog().info( "with parameters: " + parameters );
-            executor.executeCommand( command, parameters, true );
-        }
-        catch ( ExecutionException e )
-        {
-            getLog().info( "Monkey runner produced errors" );
-            if ( !isIgnoreTestFailures() )
-            {
-                getLog().info( "Project is configured to fail on error." );
-                getLog().info( "Inspect monkey runner reports or re-run with -X to see monkey runner errors in log" );
-                getLog().info( "Failing build as configured. Ignore following error message." );
-                if ( errorListener.hasError )
-                {
-                    getLog().info( "Stack trace is:" );
-                    getLog().info( errorListener.getStackTrace() );
-                }
-                throw new MojoExecutionException( "", e );
-            }
-        }
         getLog().info( "Monkey runner test runs completed successfully." );
     }
 
     private void handleTestRunStarted()
     {
+        runMetrics = new HashMap< String, String >();
         elapsedTime = System.currentTimeMillis();
         for ( ITestRunListener listener : mTestListeners )
         {
@@ -385,7 +412,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
         }
     }
 
-    public void handleTestRunFailed( String error )
+    private void handleTestRunFailed( String error )
     {
         for ( ITestRunListener listener : mTestListeners )
         {
@@ -403,16 +430,16 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
         }
     }
 
-    private void handleTestStarted( String line )
+    private void handleTestStarted()
     {
-        mCurrentTestIndentifier = new TestIdentifier( "MonkeyTest", line );
+        System.out.println( "TEST START " + mTestListeners.length );
         for ( ITestRunListener listener : mTestListeners )
         {
             listener.testStarted( mCurrentTestIndentifier );
         }
     }
 
-    private void handleTestEnd()
+    private void handleTestEnded()
     {
         if ( mCurrentTestIndentifier != null )
         {
@@ -424,7 +451,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
         }
     }
 
-    private int handleCrash( String[] lines, int indexLine )
+    private void handleCrash()
     {
 
         String trace = errorListener.getStackTrace();
@@ -435,7 +462,6 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
         }
         mCurrentTestIndentifier = null;
 
-        return indexLine;
     }
 
     private final class MonkeyRunnerErrorListener implements CommandExecutor.ErrorListener
@@ -484,6 +510,11 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
             {
                 return null;
             }
+        }
+
+        public boolean hasError()
+        {
+            return hasError;
         }
     }
 
