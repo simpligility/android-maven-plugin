@@ -41,21 +41,14 @@ public class AndroidSdkTest {
 
     @Test
     public void givenToolAdbThenPathIsPlatformTools() {
-        final String pathForTool =sdkTestSupport.getSdk_with_platform_1_5().getPathForTool("adb");
+        final String pathForTool =sdkTestSupport.getSdk_with_platform_default().getPathForTool("adb");
         Assert.assertEquals(new File(sdkTestSupport.getEnv_ANDROID_HOME() + "/platform-tools").getAbsolutePath(), new File(pathForTool).getParentFile().getAbsolutePath());
     }
 
     @Test
     public void givenToolAndroidThenPathIsCommon() {
-        final String pathForTool =sdkTestSupport.getSdk_with_platform_1_5().getPathForTool("android");
+        final String pathForTool =sdkTestSupport.getSdk_with_platform_default().getPathForTool("android");
         Assert.assertEquals(new File(sdkTestSupport.getEnv_ANDROID_HOME() + "/tools").getAbsolutePath(), new File(pathForTool).getParentFile().getAbsolutePath());
-    }
-
-    @Test
-    public void givenToolAaptAndPlatform1dot5ThenPathIsPlatformTools() {
-        final AndroidSdk sdk = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "3");
-        final String pathForTool = sdk.getPathForTool("aapt");
-        Assert.assertEquals(new File(sdkTestSupport.getEnv_ANDROID_HOME() + "/platform-tools"), new File(pathForTool).getParentFile());
     }
 
     @Test(expected = InvalidSdkException.class)
@@ -71,12 +64,6 @@ public class AndroidSdkTest {
     @Test
     public void givenDefaultSdkThenLayoutIs23(){
         Assert.assertEquals(sdkTestSupport.getSdk_with_platform_default().getLayout(), AndroidSdk.Layout.LAYOUT_2_3);
-    }
-
-    @Test
-    public void givenPlatform1dot5ThenPlatformis1dot5() throws IllegalAccessException {
-        final File path = (File) ReflectionUtils.getValueIncludingSuperclasses("sdkPath",sdkTestSupport.getSdk_with_platform_1_5());
-        Assert.assertEquals(new File(path, "/platforms/android-3"),sdkTestSupport.getSdk_with_platform_1_5().getPlatform());
     }
 
     @Test
@@ -96,25 +83,8 @@ public class AndroidSdkTest {
      */
     @Test
     public void validPlatformsAndApiLevels() {
-        final AndroidSdk sdk3 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "3");
-        final AndroidSdk sdk4 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "4");
-        final AndroidSdk sdk7 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "7");
-        final AndroidSdk sdk8 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "8");
-        final AndroidSdk sdk10 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "10");
-        final AndroidSdk sdk11 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "11");
-        final AndroidSdk sdk12 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "12");
-        final AndroidSdk sdk13 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "13");
-        final AndroidSdk sdk14 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "14");
-
-        final AndroidSdk sdk1_5 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "1.5");
-        final AndroidSdk sdk1_6 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "1.6");
-        final AndroidSdk sdk2_1 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "2.1");
-        final AndroidSdk sdk2_2 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "2.2");
-        final AndroidSdk sdk2_3 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "2.3.3");
-        final AndroidSdk sdk3_0 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "3.0");
-        final AndroidSdk sdk3_1 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "3.1");
-        final AndroidSdk sdk3_2 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "3.2");
-        final AndroidSdk sdk4_0 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "4.0");
+        final AndroidSdk sdk16 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "16");
+        final AndroidSdk sdk4_1 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "4.1.2");
     }
 
     @Test(expected = InvalidSdkException.class)
