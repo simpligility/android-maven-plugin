@@ -269,6 +269,21 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
     @PullParameter( defaultValue = "false" )
     private Boolean parsedCreateReport;
 
+	/**
+	 * Adds a suffix to the report name. For example if parameter reportSuffix is "-mySpecialReport",
+	 * the name of the report will be TEST-deviceid-mySpecialReport.xml
+	 *
+	 * Defaults to null. Hence, in the default case, the name of the report will be TEST-deviceid.xml.
+	 *
+	 * @optional
+	 * @parameter expression="${android.uiautomator.reportSuffix}"
+	 *
+	 */
+	private String uiautomatorReportSuffix;
+
+	@PullParameter( required = false, defaultValueGetterMethod = "getReportSuffix" )
+	private String parsedReportSuffix;
+
     /**
      * Decides whether or not to take screenshots when tests execution results in failure or error. Screenshots use the
      * utiliy screencap that is usually available within emulator/devices with SDK >= 16.
@@ -421,6 +436,11 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
         // null if not overriden by configuration
         return parsedTestClassOrMethods;
     }
+
+	private String getReportSuffix()
+	{
+		return parsedReportSuffix;
+	}
 
     /**
      * Helper method to build a comma separated string from a list. Blank strings are filtered out
@@ -884,8 +904,19 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
 
                 FileUtils.forceMkdir( new File( directory ) );
 
-                String fileName = new StringBuilder().append( directory ).append( "/TEST-" )
-                        .append( DeviceHelper.getDescriptiveName( device ) ).append( ".xml" ).toString();
+				StringBuilder sb = new StringBuilder();
+
+				sb.append( directory ).append( "/TEST-" )
+						.append( DeviceHelper.getDescriptiveName( device ) );
+
+				if ( parsedReportSuffix != null && !"".equals(parsedReportSuffix) )
+				{
+					//Safety first
+					sb.append(parsedReportSuffix.replace("/", "").replace("\\", ""));
+				}
+
+				String fileName = sb.append( ".xml" ).toString();
+
                 File reportFile = new File( fileName );
                 writer = new FileWriter( reportFile );
                 Result result = new StreamResult( writer );
