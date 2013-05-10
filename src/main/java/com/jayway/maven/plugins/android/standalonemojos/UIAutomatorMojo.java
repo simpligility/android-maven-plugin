@@ -269,20 +269,19 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
     @PullParameter( defaultValue = "false" )
     private Boolean parsedCreateReport;
 
-	/**
-	 * Adds a suffix to the report name. For example if parameter reportSuffix is "-mySpecialReport",
-	 * the name of the report will be TEST-deviceid-mySpecialReport.xml
-	 *
-	 * Defaults to null. Hence, in the default case, the name of the report will be TEST-deviceid.xml.
-	 *
-	 * @optional
-	 * @parameter expression="${android.uiautomator.reportSuffix}"
-	 *
-	 */
-	private String uiautomatorReportSuffix;
+    /**
+     * Adds a suffix to the report name. For example if parameter reportSuffix is "-mySpecialReport",
+     * the name of the report will be TEST-deviceid-mySpecialReport.xml
+     *
+     * Defaults to null. Hence, in the default case, the name of the report will be TEST-deviceid.xml.
+     *
+     * @optional
+     * @parameter expression="${android.uiautomator.reportSuffix}"
+     */
+    private String uiautomatorReportSuffix;
 
-	@PullParameter( required = false, defaultValueGetterMethod = "getReportSuffix" )
-	private String parsedReportSuffix;
+    @PullParameter( required = false, defaultValueGetterMethod = "getReportSuffix" )
+    private String parsedReportSuffix;
 
     /**
      * Decides whether or not to take screenshots when tests execution results in failure or error. Screenshots use the
@@ -437,10 +436,10 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
         return parsedTestClassOrMethods;
     }
 
-	private String getReportSuffix()
-	{
-		return parsedReportSuffix;
-	}
+    private String getReportSuffix()
+    {
+        return parsedReportSuffix;
+    }
 
     /**
      * Helper method to build a comma separated string from a list. Blank strings are filtered out
@@ -904,18 +903,18 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
 
                 FileUtils.forceMkdir( new File( directory ) );
 
-				StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new StringBuilder();
 
-				sb.append( directory ).append( "/TEST-" )
-						.append( DeviceHelper.getDescriptiveName( device ) );
+                sb.append( directory ).append( "/TEST-" )
+                    .append( DeviceHelper.getDescriptiveName( device ) );
 
-				if ( parsedReportSuffix != null && !"".equals(parsedReportSuffix) )
-				{
-					//Safety first
-					sb.append(parsedReportSuffix.replace("/", "").replace("\\", ""));
-				}
+                if ( StringUtils.isNotBlank( parsedReportSuffix ) )
+                {
+                    //Safety first
+                    sb.append( parsedReportSuffix.replace( "/", "" ).replace( "\\", "" ) );
+                } 
 
-				String fileName = sb.append( ".xml" ).toString();
+                String fileName = sb.append( ".xml" ).toString();
 
                 File reportFile = new File( fileName );
                 writer = new FileWriter( reportFile );
