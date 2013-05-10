@@ -28,3 +28,16 @@ before_script:
   - ./wait_for_emulator
 
 script: mvn install -Dandroid.device=test
+
+after_script:
+  # Install Android NDK
+  - NDK_ARCH=""
+  - if [ `uname -m` = x86_64 ]; then NDK_ARCH=_64; fi
+  - wget http://dl.google.com/android/ndk/android-ndk-r8e-linux-x86${NDK_ARCH}.tar.bz2
+  - tar xjf android-ndk-r8e-linux-x86${NDK_ARCH}.tar.bz2
+  - export ANDROID_NDK_HOME=$PWD/android-ndk-r8e
+
+  # Run the samples.
+  - mkdir target
+  - git clone git://github.com/hugojosefson/maven-android-plugin-samples.git target/maven-android-plugin-samples
+  - mvn install -B -f target/maven-android-plugin-samples/pom.xml -Dandroid.device=test
