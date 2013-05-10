@@ -40,10 +40,10 @@ public class UIAutomator
      * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.UIAutomatorMojo#createReport}
      */
     private Boolean createReport;
-	/**
-	 * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.UIAutomatorMojo#reportSuffix}
-	 */
-	private String reportSuffix;
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.UIAutomatorMojo#reportSuffix}
+     */
+    private String reportSuffix;
     /**
      * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.UIAutomatorMojo#takeScreenshotOnFailure}
      */
@@ -93,10 +93,10 @@ public class UIAutomator
         return createReport;
     }
 
-	public String getReportSuffix()
-	{
-		return reportSuffix;
-	}
+    public String getReportSuffix()
+    {
+        return reportSuffix;
+    }
 
     public Boolean isTakeScreenshotOnFailure()
     {
