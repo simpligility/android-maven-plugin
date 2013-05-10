@@ -84,6 +84,12 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      */
     private String emulatorAvd;
 
+    /**
+     * Unlock the emulator after it is started.
+     * 
+     * @parameter expression="${android.emulatorUnlock}" default-value=false
+     */
+    private boolean emulatorUnlock;
 
     /**
      * Wait time for the emulator start up.
@@ -203,6 +209,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                     if ( connected )
                     {
                         getLog().info( "Emulator is up and running." );
+                        unlockEmulator( androidDebugBridge );
                     }
                     else
                     {
@@ -221,6 +228,38 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
         catch ( Exception e )
         {
             throw new MojoExecutionException( "", e );
+        }
+    }
+    
+    /**
+     * Unlocks the emulator.
+     * @param androidDebugBridge
+     */
+    void unlockEmulator( AndroidDebugBridge androidDebugBridge )
+    {
+        if ( emulatorUnlock )
+        {
+            IDevice myEmulator = findExistingEmulator( Arrays.asList( androidDebugBridge.getDevices() ) );
+            int devicePort = extractPortFromDevice( myEmulator );
+            if ( devicePort == -1 )
+            {
+                getLog().info( "Unable to retrieve port to unlock emulator "
+                        + DeviceHelper.getDescriptiveName( myEmulator ) );
+            }
+            else
+            {
+                getLog().info( "Unlocking emulator "
+                        + DeviceHelper.getDescriptiveName( myEmulator ) );
+
+                sendEmulatorCommand( devicePort,
+                        "event send EV_KEY:KEY_SOFT1:1" );
+                sendEmulatorCommand( devicePort,
+                        "event send EV_KEY:KEY_SOFT1:0" );
+                sendEmulatorCommand( devicePort,
+                        "event send EV_KEY:KEY_SOFT1:1" );
+                sendEmulatorCommand( devicePort,
+                        "event send EV_KEY:KEY_SOFT1:0" );
+            }
         }
     }
 
