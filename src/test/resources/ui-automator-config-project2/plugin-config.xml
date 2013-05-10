@@ -18,6 +18,7 @@
                             <testClassOrMethod>b#c</testClassOrMethod>
                         </testClassOrMethods>
                         <createReport>true</createReport>
+						<reportSuffix>-mySpecialReport</reportSuffix>
                         <takeScreenshotOnFailure>true</takeScreenshotOnFailure>
                         <screenshotsPathOnDevice>/mnt/sdcard/screenshots/</screenshotsPathOnDevice>
                     </uiautomator>
