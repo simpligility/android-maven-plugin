@@ -25,22 +25,16 @@ import java.io.File;
 public class SdkTestSupport {
     private final String env_ANDROID_HOME = System.getenv("ANDROID_HOME");
 
-    private final AndroidSdk sdk_with_platform_1_5;
     private final AndroidSdk sdk_with_platform_default;
 
     public SdkTestSupport() {
         Assert.assertNotNull("For running the tests, you must have environment variable ANDROID_HOME set to a valid Android SDK 1.5+ directory.", env_ANDROID_HOME);
 
-        sdk_with_platform_1_5     = new AndroidSdk(new File(env_ANDROID_HOME), "3");
         sdk_with_platform_default = new AndroidSdk(new File(env_ANDROID_HOME), null);
     }
 
     public String getEnv_ANDROID_HOME() {
         return env_ANDROID_HOME;
-    }
-
-    public AndroidSdk getSdk_with_platform_1_5() {
-        return sdk_with_platform_1_5;
     }
 
     public AndroidSdk getSdk_with_platform_default() {
