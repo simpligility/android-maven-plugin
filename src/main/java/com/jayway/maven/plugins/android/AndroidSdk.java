@@ -182,7 +182,10 @@ public class AndroidSdk
                 sdkPath + "/" + PLATFORM_TOOLS_FOLDER_NAME + "/lib/" + tool, getPlatform() + "/tools/" + tool,
                 getPlatform() + "/tools/" + tool + ".exe", getPlatform() + "/tools/" + tool + ".bat",
                 getPlatform() + "/tools/lib/" + tool, sdkPath + "/tools/" + tool, sdkPath + "/tools/" + tool + ".exe",
-                sdkPath + "/tools/" + tool + ".bat", sdkPath + "/tools/lib/" + tool };
+                sdkPath + "/tools/" + tool + ".bat", sdkPath + "/tools/lib/" + tool,
+                sdkPath + "/build-tools/17.0.0/" + tool, 
+                sdkPath + "/build-tools/17.0.0/" + tool + ".bat",
+                sdkPath + "/build-tools/17.0.0/" + tool + ".exe"};
 
         for ( String possiblePath : possiblePaths )
         {
