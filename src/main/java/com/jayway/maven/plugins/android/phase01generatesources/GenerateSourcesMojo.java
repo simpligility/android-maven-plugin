@@ -427,6 +427,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         List<String> commands = new ArrayList<String>();
         commands.add( "package" );
+        if ( APKLIB.equals( project.getArtifact().getType() ) )
+        {
+            commands.add( "--non-constant-id" );
+        }
         commands.add( "-m" );
         commands.add( "-J" );
         commands.add( genDirectory.getAbsolutePath() );
