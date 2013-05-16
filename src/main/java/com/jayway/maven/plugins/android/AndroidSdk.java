@@ -62,6 +62,11 @@ public class AndroidSdk
      */
     private static final String PLATFORM_TOOLS_FOLDER_NAME = "platform-tools";
 
+    /**
+     * folder name for the sdk sub folder that contains the build tools.
+     */
+    private static final String BUILD_TOOLS_FOLDER_NAME = "build-tools";
+
     private static final String PARAMETER_MESSAGE = "Please provide a proper Android SDK directory path as "
             + "configuration parameter <sdk><path>...</path></sdk> in the plugin <configuration/>. As an alternative,"
             + " you may add the parameter to commandline: -Dandroid.sdk.path=... or set environment variable "
@@ -183,9 +188,10 @@ public class AndroidSdk
                 getPlatform() + "/tools/" + tool + ".exe", getPlatform() + "/tools/" + tool + ".bat",
                 getPlatform() + "/tools/lib/" + tool, sdkPath + "/tools/" + tool, sdkPath + "/tools/" + tool + ".exe",
                 sdkPath + "/tools/" + tool + ".bat", sdkPath + "/tools/lib/" + tool,
-                sdkPath + "/build-tools/17.0.0/" + tool, 
-                sdkPath + "/build-tools/17.0.0/" + tool + ".bat",
-                sdkPath + "/build-tools/17.0.0/" + tool + ".exe"};
+                sdkPath + "/" + BUILD_TOOLS_FOLDER_NAME + "/17.0.0/" + tool, 
+                sdkPath + "/" + BUILD_TOOLS_FOLDER_NAME + "/17.0.0/" + tool + ".bat",
+                sdkPath + "/" + BUILD_TOOLS_FOLDER_NAME + "/17.0.0/" + tool + ".exe",
+                sdkPath + "/" + BUILD_TOOLS_FOLDER_NAME + "/17.0.0/lib/" + tool };
 
         for ( String possiblePath : possiblePaths )
         {
