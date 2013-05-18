@@ -2,7 +2,6 @@ package com.jayway.maven.plugins.android.configuration;
 
 import com.jayway.maven.plugins.android.standalonemojos.CompatibleScreen;
 import com.jayway.maven.plugins.android.standalonemojos.SupportsScreens;
-import com.jayway.maven.plugins.android.standalonemojos.UsesSdk;
 
 import java.util.List;
 import java.util.Properties;

@@ -1,4 +1,4 @@
-package com.jayway.maven.plugins.android.standalonemojos;
+package com.jayway.maven.plugins.android.configuration;
 
 /**
  * Abstraction for uses-sdk tag in the Android manifest.
@@ -25,21 +25,6 @@ public class UsesSdk
     public String getTargetSdkVersion()
     {
         return targetSdkVersion;
-    }
-
-    public void setMinSdkVersion( String minSdkVersion )
-    {
-        this.minSdkVersion = minSdkVersion;
-    }
-
-    public void setMaxSdkVersion( String maxSdkVersion )
-    {
-        this.maxSdkVersion = maxSdkVersion;
-    }
-
-    public void setTargetSdkVersion( String targetSdkVersion )
-    {
-        this.targetSdkVersion = targetSdkVersion;
     }
 
     @Override
