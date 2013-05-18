@@ -268,7 +268,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     protected List<CompatibleScreen> manifestCompatibleScreens;
 
     /**
-     *
+     *  Update the uses-sdk tag. It can be configured to change: <code>android:minSdkVersion</code>,
+     *  <code>android:maxSdkVersion</code> and <code>android:targetSdkVersion</code>
      */
     protected UsesSdk manifestUsesSdk;
 
