@@ -150,7 +150,7 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
     }
 
     public void testUsesSdkMinVersionUpdate() throws Exception {
-        ManifestUpdateMojo mojo = createMojo("manifest-tests/min-sdk-project1");
+        ManifestUpdateMojo mojo = createMojo("manifest-tests/uses-sdk-project1");
         mojo.execute();
         File dir = getProjectDir(mojo);
         File manifestFile = new File(dir, "AndroidManifest.xml");
@@ -158,7 +158,7 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
     }
 
     public void testUsesSdkMaxVersionUpdate() throws Exception {
-        ManifestUpdateMojo mojo = createMojo("manifest-tests/min-sdk-project2");
+        ManifestUpdateMojo mojo = createMojo("manifest-tests/uses-sdk-project2");
         mojo.execute();
         File dir = getProjectDir(mojo);
         File manifestFile = new File(dir, "AndroidManifest.xml");
@@ -166,7 +166,7 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
     }
 
     public void testUsesTargetSdkVersionUpdate() throws Exception {
-        ManifestUpdateMojo mojo = createMojo("manifest-tests/min-sdk-project3");
+        ManifestUpdateMojo mojo = createMojo("manifest-tests/uses-sdk-project3");
         mojo.execute();
         File dir = getProjectDir(mojo);
         File manifestFile = new File(dir, "AndroidManifest.xml");
@@ -174,7 +174,7 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
     }
 
     public void testUsesSdkVersionFullUpdate() throws Exception {
-        ManifestUpdateMojo mojo = createMojo("manifest-tests/min-sdk-project4");
+        ManifestUpdateMojo mojo = createMojo("manifest-tests/uses-sdk-project4");
         mojo.execute();
         File dir = getProjectDir(mojo);
         File manifestFile = new File(dir, "AndroidManifest.xml");
