@@ -4,6 +4,7 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.XmlHelper;
 import com.jayway.maven.plugins.android.configuration.Manifest;
+import com.jayway.maven.plugins.android.configuration.UsesSdk;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
