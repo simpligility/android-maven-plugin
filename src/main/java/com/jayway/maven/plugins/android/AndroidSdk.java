@@ -67,8 +67,6 @@ public class AndroidSdk
     {
         this.sdkPath = sdkPath;
 
-        System.out.println( "AndroidSdk " + sdkPath + "," + platformOrApiLevel );
-
         if ( sdkPath != null )
         {
             sdkManager = SdkManager.createManager( sdkPath.getPath(), new NullLogger() );
@@ -113,14 +111,10 @@ public class AndroidSdk
         {
             return target;
         }
-        System.out.println( "Failed to find target by hash: "
-                + IAndroidTarget.PLATFORM_HASH_PREFIX + platformOrApiLevel );
-
 
         // fallback to searching for platform on standard Android platforms (isPlatform() is true)
         for ( IAndroidTarget t: sdkManager.getTargets() )
         {
-            System.out.println( "Checking " + t.getVersionName() + " against " + platformOrApiLevel );
             if ( t.isPlatform() && t.getVersionName().equals( platformOrApiLevel ) )
             {
                 return t;
