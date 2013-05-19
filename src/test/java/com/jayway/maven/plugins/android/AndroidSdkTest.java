@@ -41,13 +41,13 @@ public class AndroidSdkTest {
 
     @Test
     public void givenToolAdbThenPathIsPlatformTools() {
-        final String pathForTool =sdkTestSupport.getSdk_with_platform_default().getPathForTool("adb");
+        final String pathForTool =sdkTestSupport.getSdk_with_platform_default().getAdbPath();
         Assert.assertEquals(new File(sdkTestSupport.getEnv_ANDROID_HOME() + "/platform-tools").getAbsolutePath(), new File(pathForTool).getParentFile().getAbsolutePath());
     }
 
     @Test
     public void givenToolAndroidThenPathIsCommon() {
-        final String pathForTool =sdkTestSupport.getSdk_with_platform_default().getPathForTool("android");
+        final String pathForTool = sdkTestSupport.getSdk_with_platform_default().getAndroidPath();
         Assert.assertEquals(new File(sdkTestSupport.getEnv_ANDROID_HOME() + "/tools").getAbsolutePath(), new File(pathForTool).getParentFile().getAbsolutePath());
     }
 
