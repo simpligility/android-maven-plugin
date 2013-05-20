@@ -698,7 +698,6 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     {
         if ( parsedUsesSdk != null )
         {
-            getLog().info( "UsesSdk " + ELEM_USES_SDK );
             boolean madeDirty = performUsesSdkModification( doc, manifestElement );
             if ( madeDirty )
             {
@@ -874,8 +873,6 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         boolean dirty = false;
         Element usesSdkElem = XmlHelper.getOrCreateElement( doc, manifestElement,
                 ELEM_USES_SDK );
-
-        getLog().info( "Uses-sdk " + ELEM_USES_SDK );
 
         if ( parsedUsesSdk.getMinSdkVersion() != null )
         {
