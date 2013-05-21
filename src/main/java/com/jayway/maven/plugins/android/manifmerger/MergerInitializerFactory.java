@@ -21,6 +21,10 @@ public class MergerInitializerFactory
      * Constant for SDK Tools R21
      */
     private static final int R21 = 21;
+    /**
+     * Constant for SDK Tools R22
+     */
+    private static final int R22 = 22;
 
     /**
      * Returns the MergeStrategy for the specified version of the SDK Tools.
@@ -41,9 +45,13 @@ public class MergerInitializerFactory
             return new MergeStrategyR20( log, sdkPath );
         case R21:
             return new MergeStrategyR21( log, sdkPath );
+        case R22:
+            // same as R21... 
+            return new MergeStrategyR21( log, sdkPath );
         default:
           log.info( "ATTENTION! Your Android SDK is outdated and not supported for the AndroidManifest merge feature" );
-          log.info( "Supported major versions are " + R20 + " and " + R21 + ". You are using " + sdkMajorVersion );
+          log.info( "Supported major versions are " + R20 + ", " + R21 + " and " + R22 + "." );
+          log.info( "You are using " + sdkMajorVersion );
           log.info( "Execution proceeding using merge procedure from " + R20 );
           return new MergeStrategyR20( log, sdkPath );
         }
