@@ -912,10 +912,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         commands.add( "xmltree" );
         commands.add( apkFile.getAbsolutePath() );
         commands.add( "AndroidManifest.xml" );
-        getLog().info( getAndroidSdk().getPathForTool( "aapt" ) + " " + commands.toString() );
+        getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
         try
         {
-            executor.executeCommand( getAndroidSdk().getPathForTool( "aapt" ), commands, false );
+            executor.executeCommand( getAndroidSdk().getAaptPath(), commands, false );
             final String xmlTree = executor.getStandardOut();
             return extractPackageNameFromAndroidManifestXmlTree( xmlTree );
         }
