@@ -472,10 +472,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( "-G" );
             commands.add( proguardFile.getAbsolutePath() );
         }
-        getLog().info( getAndroidSdk().getPathForTool( "aapt" ) + " " + commands.toString() );
+        getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
         try
         {
-            executor.executeCommand( getAndroidSdk().getPathForTool( "aapt" ), commands, project.getBasedir(), false );
+            executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
         {
@@ -655,10 +655,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( "-c" );
             commands.add( configurations );
         }
-        getLog().info( getAndroidSdk().getPathForTool( "aapt" ) + " " + commands.toString() );
+        getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
         try
         {
-            executor.executeCommand( getAndroidSdk().getPathForTool( "aapt" ), commands, project.getBasedir(), false );
+            executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
         {
@@ -753,7 +753,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                     CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
                     executor.setLogger( this.getLog() );
 
-                    executor.executeCommand( getAndroidSdk().getPathForTool( "aidl" ), commands, project.getBasedir(),
+                    executor.executeCommand( getAndroidSdk().getAidlPath(), commands, project.getBasedir(),
                             false );
                 }
                 catch ( ExecutionException e )
