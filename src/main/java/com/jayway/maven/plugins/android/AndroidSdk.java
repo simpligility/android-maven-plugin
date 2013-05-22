@@ -211,7 +211,7 @@ public class AndroidSdk
      */
     public String getZipalignPath()
     {
-        return getPathForPlatformTool( SdkConstants.FN_ZIPALIGN );
+        return getPathForTool( SdkConstants.FN_ZIPALIGN );
     }
 
     /**
