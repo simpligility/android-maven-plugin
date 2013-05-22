@@ -9,8 +9,12 @@
         <plugins>
             <plugin>
                 <artifactId>android-maven-plugin</artifactId>
-                <!-- no lint config -->
-                <configuration/>
+                <configuration>
+                    <sdk>
+                        <platform>17</platform>
+                    </sdk>
+                    <!-- no lint config -->
+                </configuration>
             </plugin>
         </plugins>
     </build>

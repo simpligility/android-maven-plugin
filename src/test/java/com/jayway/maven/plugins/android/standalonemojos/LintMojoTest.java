@@ -19,7 +19,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojoTestCase;
+import com.jayway.maven.plugins.android.AndroidSdk;
 import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.SdkTestSupport;
 import com.jayway.maven.plugins.android.config.ConfigHandler;
 
 /**
@@ -304,7 +306,12 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
 
     public void testAllParametersOffConfig() throws Exception
     {
-        LintMojo mojo = new LintMojo();
+        LintMojo mojo = new LintMojo() {
+            @Override
+            protected AndroidSdk getAndroidSdk() {
+                return new SdkTestSupport().getSdk_with_platform_default();
+            }
+        };
         MavenProject project = EasyMock.createNiceMock( MavenProject.class );
         Whitebox.setInternalState( mojo, "project", project );
         File projectBaseDir = new File( "project/" );
@@ -332,7 +339,6 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         Whitebox.setInternalState( mojo, "parsedConfig", "null" );
         Whitebox.setInternalState( mojo, "parsedClasspath", "null" );
         Whitebox.setInternalState( mojo, "parsedLibraries", "null" );
-
         Whitebox.invokeMethod( mojo, "executeWhenConfigured" );
 
         PowerMock.verify( mockExecutor );

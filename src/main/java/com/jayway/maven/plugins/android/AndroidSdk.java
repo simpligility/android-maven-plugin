@@ -82,8 +82,8 @@ public class AndroidSdk
 
         if ( platformOrApiLevel == null )
         {
-            androidTarget = null;
-            // letting this through to preserve compatibility for now
+            throw new InvalidConfigurationException( " No Android Platform Version/API Level has been configured. " 
+                    + " Add e.g. <sdk><platform>17</platform></sdk> to the plugin configuration." );
         }
         else
         {
