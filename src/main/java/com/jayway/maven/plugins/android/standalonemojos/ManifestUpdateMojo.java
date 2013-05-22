@@ -4,6 +4,7 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.XmlHelper;
 import com.jayway.maven.plugins.android.configuration.Manifest;
+import com.jayway.maven.plugins.android.configuration.UsesSdk;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -71,6 +72,11 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private static final String ATTR_LARGEST_WIDTH_LIMIT_DP = "android:largestWidthLimitDp";
     private static final String ATTR_COMPATIBLE_WIDTH_LIMIT_DP = "android:compatibleWidthLimitDp";
 
+    // uses-sdk attributes
+    private static final String ATTR_MIN_SDK_VERSION = "android:minSdkVersion";
+    private static final String ATTR_MAX_SDK_VERSION = "android:maxSdkVersion";
+    private static final String ATTR_TARGET_SDK_VERSION = "android:targetSdkVersion";
+
     // provider attributes
     private static final String ATTR_NAME = "android:name";
     private static final String ATTR_AUTHORITIES = "android:authorities";
@@ -84,6 +90,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private static final String ELEM_SUPPORTS_SCREENS = "supports-screens";
     private static final String ELEM_COMPATIBLE_SCREENS = "compatible-screens";
     private static final String ELEM_SCREEN = "screen";
+    private static final String ELEM_USES_SDK = "uses-sdk";
 
     // version encoding 
     private static final int INCREMENTAL_VERSION_POSITION = 1;
@@ -260,6 +267,12 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      */
     protected List<CompatibleScreen> manifestCompatibleScreens;
 
+    /**
+     *  Update the uses-sdk tag. It can be configured to change: <code>android:minSdkVersion</code>,
+     *  <code>android:maxSdkVersion</code> and <code>android:targetSdkVersion</code>
+     */
+    protected UsesSdk manifestUsesSdk;
+
     private String parsedVersionName;
     private Integer parsedVersionCode;
     private boolean parsedVersionCodeAutoIncrement;
@@ -272,6 +285,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private SupportsScreens parsedSupportsScreens;
     private List<CompatibleScreen> parsedCompatibleScreens;
     private Properties parsedProviderAuthorities;
+    private UsesSdk parsedUsesSdk;
 
     /**
      *
@@ -293,6 +307,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         parseConfiguration();
 
         getLog().info( "Attempting to update manifest " + androidManifestFile );
+        getLog().debug( "    usesSdk=" + parsedUsesSdk );
         getLog().debug( "    versionName=" + parsedVersionName );
         getLog().debug( "    versionCode=" + parsedVersionCode );
         getLog().debug( "    versionCodeAutoIncrement=" + parsedVersionCodeAutoIncrement );
@@ -441,6 +456,14 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             {
                 parsedProviderAuthorities = manifestProviderAuthorities;
             }
+            if ( manifest.getUsesSdk() != null )
+            {
+                parsedUsesSdk = manifest.getUsesSdk();
+            }
+            else
+            {
+                parsedUsesSdk = manifestUsesSdk;
+            }
         }
         else
         {
@@ -456,6 +479,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             parsedSupportsScreens = manifestSupportsScreens;
             parsedCompatibleScreens = manifestCompatibleScreens;
             parsedProviderAuthorities = manifestProviderAuthorities;
+            parsedUsesSdk = manifestUsesSdk;
         }
     }
 
@@ -638,14 +662,9 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             dirty = true;
         }
 
-        if ( parsedProviderAuthorities != null )
-        {
-            boolean madeDirty = updateProviderAuthorities( manifestElement );
-            if ( madeDirty )
-            {
-                dirty = true;
-            }
-        }
+        dirty = processProviderAuthorities( manifestElement, dirty );
+
+        dirty = processUsesSdk( doc, manifestElement, dirty );
 
         if ( dirty )
         {
@@ -660,6 +679,32 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         {
             getLog().info( "No changes found to write to manifest file" );
         }
+    }
+
+    private boolean processProviderAuthorities( Element manifestElement, boolean dirty )
+    {
+        if ( parsedProviderAuthorities != null )
+        {
+            boolean madeDirty = updateProviderAuthorities( manifestElement );
+            if ( madeDirty )
+            {
+                dirty = true;
+            }
+        }
+        return dirty;
+    }
+
+    private boolean processUsesSdk( Document doc, Element manifestElement, boolean dirty )
+    {
+        if ( parsedUsesSdk != null )
+        {
+            boolean madeDirty = performUsesSdkModification( doc, manifestElement );
+            if ( madeDirty )
+            {
+                dirty = true;
+            }
+        }
+        return dirty;
     }
 
     private boolean updateApplicationAttribute( Element manifestElement, 
@@ -820,6 +865,31 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             supportsScreensElem.setAttribute( ATTR_RESIZEABLE, parsedSupportsScreens.getResizeable() );
             dirty = true;
         }
+        return dirty;
+    }
+
+    private boolean performUsesSdkModification ( Document doc, Element manifestElement )
+    {
+        boolean dirty = false;
+        Element usesSdkElem = XmlHelper.getOrCreateElement( doc, manifestElement,
+                ELEM_USES_SDK );
+
+        if ( parsedUsesSdk.getMinSdkVersion() != null )
+        {
+            usesSdkElem.setAttribute( ATTR_MIN_SDK_VERSION, parsedUsesSdk.getMinSdkVersion() );
+            dirty = true;
+        }
+        if ( parsedUsesSdk.getMaxSdkVersion() != null )
+        {
+            usesSdkElem.setAttribute( ATTR_MAX_SDK_VERSION, parsedUsesSdk.getMaxSdkVersion() );
+            dirty = true;
+        }
+        if ( parsedUsesSdk.getTargetSdkVersion() != null )
+        {
+            usesSdkElem.setAttribute( ATTR_TARGET_SDK_VERSION, parsedUsesSdk.getTargetSdkVersion() );
+            dirty = true;
+        }
+
         return dirty;
     }
 

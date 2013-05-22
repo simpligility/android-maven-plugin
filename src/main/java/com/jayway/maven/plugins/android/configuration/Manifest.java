@@ -82,6 +82,12 @@ public class Manifest
      */
     protected Properties providerAuthorities;
 
+    /**
+     * Mirror of
+     * {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo#manifestUsesSdk}
+     */
+    protected UsesSdk usesSdk;
+
     public String getVersionName()
     {
         return versionName;
@@ -140,5 +146,10 @@ public class Manifest
     public Properties getProviderAuthorities()
     {
         return providerAuthorities;
+    }
+
+    public UsesSdk getUsesSdk()
+    {
+        return usesSdk;
     }
 }

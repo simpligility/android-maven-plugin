@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+        xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-sdk android:targetSdkVersion="8" android:minSdkVersion="9" android:maxSdkVersion="10"/>
+</manifest>
