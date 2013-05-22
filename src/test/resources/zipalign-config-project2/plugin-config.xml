@@ -11,7 +11,7 @@
                 <artifactId>android-maven-plugin</artifactId>
                 <configuration>
                     <sdk>
-                        <platform>17</platform>
+                        <platform>16</platform>
                     </sdk>
                     <zipalign>
                         <skip>false</skip>

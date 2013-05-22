@@ -12,7 +12,7 @@
         <!-- unskipped default lint config -->
         <configuration>
           <sdk>
-            <platform>17</platform>
+            <platform>16</platform>
           </sdk>
           <lint>
             <skip>false</skip>
