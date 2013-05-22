@@ -25,6 +25,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -147,6 +148,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      *   &lt;createReport&gt;true&lt;/createReport&gt;
      *   &lt;takeScreenshotOnFailure&gt;true&lt;/takeScreenshotOnFailure&gt;
      *   &lt;screenshotsPathOnDevice&gt;/sdcard/uiautomator-screenshots/&lt;/screenshotsPathOnDevice&gt;
+     *   &lt;propertiesKeyPrefix&gt;UIA&lt;/propertiesKeyPrefix&gt;
      * &lt;/uiautomator&gt;
      * </pre>
      * 
@@ -306,6 +308,22 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
 
     @PullParameter( required = false, defaultValue = "/sdcard/uiautomator-screenshots/" )
     private String parsedScreenshotsPathOnDevice;
+    
+    /**
+     * The prefix for user properties to send through to UIAutomator with the "-e" parameter.
+     * 
+     * <p>Example:</p>
+     * <p><code>"-DUIAkey=value" with xml</code></p>
+     * <p><code>&lt;parameterPrefix&gt;UIA&lt;/parameterPrefix&gt;</code></p>
+     * <p>becomes "-e key value"</p>
+     * 
+     * @parameter expression="${android.uiautomator.parameterPrefix}"
+     * 
+     */
+    private String uiautomatorPropertiesKeyPrefix;
+
+    @PullParameter( required = false, defaultValueGetterMethod = "getPropertiesKeyPrefix" )
+    private String parsedPropertiesKeyPrefix;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
@@ -370,7 +388,9 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
                 automatorRemoteAndroidTestRunner.setDebug( uiautomatorDebug );
                 automatorRemoteAndroidTestRunner.setTestClassOrMethods( parsedTestClassOrMethods );
                 automatorRemoteAndroidTestRunner.setNoHup( parsedNoHup );
-
+                automatorRemoteAndroidTestRunner.setUserProperties( session.getUserProperties(), 
+                        parsedPropertiesKeyPrefix );
+                
                 if ( parsedUseDump )
                 {
                     automatorRemoteAndroidTestRunner.setDumpFilePath( parsedDumpFilePath );
@@ -439,6 +459,11 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
     private String getReportSuffix()
     {
         return parsedReportSuffix;
+    }
+    
+    private String getPropertiesKeyPrefix()
+    {
+        return parsedPropertiesKeyPrefix;
     }
 
     /**
