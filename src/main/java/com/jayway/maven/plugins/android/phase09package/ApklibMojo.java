@@ -107,8 +107,12 @@ public class ApklibMojo extends AbstractAndroidMojo
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         String out = project.getBuild().getDirectory();
-        for(String src : project.getCompileSourceRoots()) {
-            if(!src.startsWith(out)) sourceFolders.add(src);
+        for ( String src : project.getCompileSourceRoots() )
+        {
+            if ( !src.startsWith( out ) ) 
+            {
+                sourceFolders.add( src );
+            }
         }
         
         generateIntermediateApk();
@@ -150,9 +154,11 @@ public class ApklibMojo extends AbstractAndroidMojo
             addDirectory( jarArchiver, assetsDirectory, "assets" );
             addDirectory( jarArchiver, resourceDirectory, "res" );
             
-            for(String src : sourceFolders) 
-                addDirectory( jarArchiver, new File(src), "src" );
-
+            for ( String src : sourceFolders ) 
+            { 
+                addDirectory( jarArchiver, new File( src ), "src" );
+            }
+            
             File[] overlayDirectories = getResourceOverlayDirectories();
             for ( File resOverlayDir : overlayDirectories )
             {
