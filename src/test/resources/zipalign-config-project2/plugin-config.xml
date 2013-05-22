@@ -10,6 +10,9 @@
             <plugin>
                 <artifactId>android-maven-plugin</artifactId>
                 <configuration>
+                    <sdk>
+                        <platform>17</platform>
+                    </sdk>
                     <zipalign>
                         <skip>false</skip>
                         <verbose>true</verbose>

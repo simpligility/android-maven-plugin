@@ -112,6 +112,11 @@ public class AbstractEmulatorMojoTest
     {
 
         @Override
+        protected AndroidSdk getAndroidSdk() {
+            return new SdkTestSupport().getSdk_with_platform_default();
+        }
+
+        @Override
         public void execute() throws MojoExecutionException, MojoFailureException
         {
         }
