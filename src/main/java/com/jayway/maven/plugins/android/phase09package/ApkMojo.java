@@ -1093,8 +1093,6 @@ public class ApkMojo extends AbstractAndroidMojo
         if ( !release )
         {
             getLog().info( "Enabling debug build for apk." );
-// @mosabua : this no longer works with R22 of the SDK so we are removing it going forward. Just commented out for now 
-// in case there is some replacement, at first glance I could not see anything            
             commands.add( "--debug-mode" );
         }
         else 
