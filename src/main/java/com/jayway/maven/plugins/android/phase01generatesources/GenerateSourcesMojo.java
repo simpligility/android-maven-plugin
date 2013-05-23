@@ -16,11 +16,13 @@
  */
 package com.jayway.maven.plugins.android.phase01generatesources;
 
+import com.android.manifmerger.ManifestMerger;
+import com.android.manifmerger.MergerLog;
+import com.android.utils.StdLogger;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.common.AetherHelper;
-import com.jayway.maven.plugins.android.manifmerger.ManifestMerger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -551,14 +553,16 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         if ( !libManifests.isEmpty() )
         {
-            File mergedManifest = new File( androidManifestFile.getParent(), "AndroidManifest-merged.xml" );
-
-            ManifestMerger mm = new ManifestMerger( getLog(), getAndroidSdk().getSdkPath(), getAndroidSdk()
-                    .getSdkMajorVersion() );
+            final File mergedManifest = new File( androidManifestFile.getParent(), "AndroidManifest-merged.xml" );
+            final StdLogger stdLogger = new StdLogger( StdLogger.Level.VERBOSE );
+            final ManifestMerger merger = new ManifestMerger( MergerLog.wrapSdkLog( stdLogger ), null );
 
             getLog().info( "Merging manifests of dependent apklibs" );
-            if ( mm.process( mergedManifest, androidManifestFile, 
-                    libManifests.toArray( new File[libManifests.size()] ) ) )
+
+            final boolean mergeSuccess = merger.process( mergedManifest, androidManifestFile,
+                libManifests.toArray( new File[libManifests.size()] ),  null, null );
+
+            if ( mergeSuccess )
             {
                 // Replace the original manifest file with the merged one so that
                 // the rest of the build will pick it up.
