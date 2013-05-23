@@ -310,14 +310,21 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
     private String parsedScreenshotsPathOnDevice;
     
     /**
-     * The prefix for user properties to send through to UIAutomator with the "-e" parameter.
+     * <p>Specifies a prefix for custom user properties that will be sent 
+     * through to UIAutomator with the <code>"-e key value"</code> parameter.</p>
      * 
-     * <p>Example:</p>
-     * <p><code>"-DUIAkey=value" with xml</code></p>
-     * <p><code>&lt;parameterPrefix&gt;UIA&lt;/parameterPrefix&gt;</code></p>
-     * <p>becomes "-e key value"</p>
+     * <p>If any user property is needed in a test case, this is the way to send it through.
+     * User credentials for example.</p>
      * 
-     * @parameter expression="${android.uiautomator.parameterPrefix}"
+     * <p>If no prefix value is specified no user property will be sent.</p>
+     * 
+     * <p>Usage example:</p>
+     * <p><code>&lt;propertiesKeyPrefix&gt;UIA&lt;/propertiesKeyPrefix&gt;</code></p>
+     * <p>And run it with:</p>
+     * <p><code>&gt; mvn &lt;goal&gt; "-DUIAkey=value"</code></p>
+     * <p>would become <code>"-e key value"</code> as it would be runned from adb</p>
+     * 
+     * @parameter expression="${android.uiautomator.propertiesKeyPrefix}"
      * 
      */
     private String uiautomatorPropertiesKeyPrefix;
