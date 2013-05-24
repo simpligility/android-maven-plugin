@@ -70,14 +70,14 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * <p>
      * Override default merging. You must have SDK Tools r20+
      * </p>
-     * 
+     *
      * <p>
      * <b>IMPORTANT:</b> The resource plugin needs to be disabled for the
      * <code>process-resources</code> phase, so the "default-resources"
      * execution must be added. Without this the non-merged manifest will get
      * re-copied to the build directory.
      * </p>
-     * 
+     *
      * <p>
      * The <code>androidManifestFile</code> should also be configured to pull
      * from the build directory so that later phases will pull the merged
@@ -86,7 +86,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * <p>
      * Example POM Setup:
      * </p>
-     * 
+     *
      * <pre>
      * &lt;build&gt;
      *     ...
@@ -128,7 +128,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * You can filter the pre-merged APK manifest. One important note about Eclipse, Eclipse will
      * replace the merged manifest with a filtered pre-merged version when the project is refreshed.
      * If you want to review the filtered merged version then you will need to open it outside Eclipse
-     * without refreshing the project in Eclipse. 
+     * without refreshing the project in Eclipse.
      * </p>
      * <pre>
      * &lt;resources&gt;
@@ -142,7 +142,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      *     &lt;/resource&gt;
      * &lt;/resources&gt;
      * </pre>
-     * 
+     *
      * @parameter expression="${android.mergeManifests}" default-value="false"
      */
     protected boolean mergeManifests;
@@ -161,7 +161,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * default-value="${project.build.directory}/generated-sources/aidl"
      */
     protected File genDirectoryAidl;
-    
+
     public void execute() throws MojoExecutionException, MojoFailureException
     {
 
@@ -429,10 +429,13 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         List<String> commands = new ArrayList<String>();
         commands.add( "package" );
-        if ( APKLIB.equals( project.getArtifact().getType() ) )
-        {
-            commands.add( "--non-constant-id" );
-        }
+        // When use AndroidAnnotation on apklib is necessary which the value of annotation
+        // is a constant
+        //
+        //if ( APKLIB.equals( project.getArtifact().getType() ) )
+        //{
+        //    commands.add( "--non-constant-id" );
+        //}
         commands.add( "-m" );
         commands.add( "-J" );
         commands.add( genDirectory.getAbsolutePath() );
@@ -522,9 +525,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                     commands.add( apklibResDirectory );
                 }
             }
-        }        
+        }
     }
-    
+
     private void mergeManifests() throws MojoExecutionException
     {
         getLog().debug( "mergeManifests: " + mergeManifests );
@@ -609,7 +612,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         List<String> commands = new ArrayList<String>();
         commands.add( "package" );
-        commands.add( "--non-constant-id" );
+        // When use AndroidAnnotation on apklib is necessary which the value of annotation
+        // is a constant
+        //
+        //commands.add( "--non-constant-id" );
         commands.add( "-m" );
         commands.add( "-J" );
         commands.add( genDirectory.getAbsolutePath() );
