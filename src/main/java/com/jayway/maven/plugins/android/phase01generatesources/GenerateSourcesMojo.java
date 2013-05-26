@@ -187,7 +187,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 {
                     apklibAidlFiles = findRelativeAidlFileNames(
                             new File( getLibraryUnpackDirectory( artifact ) + "/src" ) );
-                    relativeApklibAidlFileNames.put( artifact.getArtifactId(), apklibAidlFiles );
+                    relativeApklibAidlFileNames.put( artifact.getId(), apklibAidlFiles );
                 }
             }
 
@@ -208,7 +208,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 if ( artifact.getType().equals( APKLIB ) )
                 {
                     files.put( new File( getLibraryUnpackDirectory( artifact ) + "/src" ),
-                            relativeApklibAidlFileNames.get( artifact.getArtifactId() ) );
+                            relativeApklibAidlFileNames.get( artifact.getId() ) );
                 }
             }
             generateAidlFiles( files );
