@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 import java.util.Map.Entry;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.IDevice;
@@ -212,5 +215,48 @@ public class UIAutomatorRemoteAndroidTestRunner
             commandBuilder.append( " dump " + dumpFilePath );
         }
         return commandBuilder.toString();
+    }
+    
+    /**
+     * Adds instrumentation arguments from userProperties from keys with the propertiesKeyPrefix prefix.
+     * 
+     * @param userProperties
+     * @param propertiesKeyPrefix
+     */
+    public void setUserProperties( Properties userProperties, String propertiesKeyPrefix )
+    {
+        if ( userProperties == null )
+        {
+            throw new IllegalArgumentException( "userProperties  cannot be null" );
+        }
+        
+        if ( StringUtils.isBlank( propertiesKeyPrefix ) )
+        {
+            //propertiesPrefix is blank, ignore all properties
+            return;
+        }
+        
+        for ( Entry< Object, Object > property : userProperties.entrySet() )
+        {
+            String name = (String) property.getKey();
+            
+            //Check if the key starts with the parameterPrefix
+            if ( StringUtils.startsWith( name, propertiesKeyPrefix ) )
+            {
+                String value = (String) property.getValue();
+                
+                //Remove the prefix
+                name = StringUtils.substring( name,
+                        StringUtils.length( propertiesKeyPrefix ),
+                        StringUtils.length( name ) );
+                
+                // Verify so the key isn't blank after substring
+                if ( StringUtils.isNotBlank( name ) )
+                {
+                    //Now its safe to add the parameter
+                    addInstrumentationArg( name, value );
+                }
+            }
+        }
     }
 }
