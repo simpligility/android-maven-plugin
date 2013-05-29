@@ -49,10 +49,10 @@
        -->
         <maven-plugin-plugin.version>2.8</maven-plugin-plugin.version>
 
-        <maven.api.version>3.0.3</maven.api.version>
+        <maven.api.version>3.1.0-alpha-1</maven.api.version>
         <easymock.version>3.1</easymock.version>
         <powermock.version>1.5</powermock.version>
-        <aether.version>1.13.1</aether.version>
+        <aether.version>0.9.0.M2</aether.version>
     </properties>
     <scm>
         <url>http://github.com/jayway/maven-android-plugin/tree/${scm.branch}</url>
@@ -137,6 +137,13 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
             <version>${maven.api.version}</version>
+            <!-- we use a new version of asm and there are conflict, the older 3.x version comes in via sisu -->
+            <exclusions>
+              <exclusion>
+                <artifactId>asm</artifactId>
+                <groupId>asm</groupId>
+              </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -232,21 +239,34 @@
             <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
-        
-        <dependency>
-            <!-- required in all cases -->
-            <groupId>org.sonatype.aether</groupId>
-            <artifactId>aether-api</artifactId>
-            <version>${aether.version}</version>
-        </dependency>
 
-        <dependency>
-            <!-- might be superfluous depending on your use case -->
-            <groupId>org.sonatype.aether</groupId>
-            <artifactId>aether-util</artifactId>
-            <version>${aether.version}</version>
-        </dependency>
-
+      <!--  Repository -->
+      <dependency>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-api</artifactId>
+        <version>${aether.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-util</artifactId>
+        <version>${aether.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-spi</artifactId>
+        <version>${aether.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-impl</artifactId>
+        <version>${aether.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-connector-wagon</artifactId>
+        <version>${aether.version}</version>
+      </dependency>
+ 
         <dependency>
             <groupId>com.github.rtyley</groupId>
             <artifactId>android-screenshot-paparazzo</artifactId>
