@@ -52,6 +52,10 @@ public class UIAutomator
      * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.UIAutomatorMojo#screenshotsPathOnDevice}
      */
     private String screenshotsPathOnDevice;
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.UIAutomatorMojo#parameterPrefix}
+     */
+    private String propertiesKeyPrefix;
 
     public Boolean isSkip()
     {
@@ -106,5 +110,10 @@ public class UIAutomator
     public String getScreenshotsPathOnDevice()
     {
         return screenshotsPathOnDevice;
+    }
+    
+    public String getPropertiesKeyPrefix()
+    {
+        return propertiesKeyPrefix;
     }
 }

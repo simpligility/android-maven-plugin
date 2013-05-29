@@ -21,6 +21,7 @@
 						<reportSuffix>-mySpecialReport</reportSuffix>
                         <takeScreenshotOnFailure>true</takeScreenshotOnFailure>
                         <screenshotsPathOnDevice>/mnt/sdcard/screenshots/</screenshotsPathOnDevice>
+                        <propertiesKeyPrefix>UIA</propertiesKeyPrefix>
                     </uiautomator>
                 </configuration>
             </plugin>
