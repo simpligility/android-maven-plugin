@@ -2,13 +2,13 @@ package com.jayway.maven.plugins.android.common;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.resolution.ArtifactRequest;
-import org.sonatype.aether.resolution.ArtifactResolutionException;
-import org.sonatype.aether.resolution.ArtifactResult;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.artifact.DefaultArtifact;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -29,7 +29,7 @@ public class AetherHelper
      * @param artifact The Maven artifact to convert
      * @return The resulting Aether artifact
      */
-    public static org.sonatype.aether.artifact.Artifact createAetherArtifact( Artifact artifact )
+    public static org.eclipse.aether.artifact.Artifact createAetherArtifact( Artifact artifact )
     {
         DefaultArtifact defaultArtifact;
         if ( artifact.getClassifier() != null )
@@ -76,7 +76,7 @@ public class AetherHelper
         try
         {
             final ArtifactRequest artifactRequest = new ArtifactRequest();
-            org.sonatype.aether.artifact.Artifact aetherArtifact = AetherHelper.createAetherArtifact( artifact );
+            org.eclipse.aether.artifact.Artifact aetherArtifact = AetherHelper.createAetherArtifact( artifact );
             artifactRequest.setArtifact( aetherArtifact );
             artifactRequest.setRepositories( repositories );
             final ArtifactResult artifactResult = repositorySystem
