@@ -218,7 +218,7 @@
           <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
           <package>
             org.apache.maven.plugins:maven-jar-plugin:jar,
-            com.jayway.maven.plugins.android.generation2:android-maven-plugin:apklib
+            com.jayway.maven.plugins.android.generation2:android-maven-plugin:aar
           </package>
           <install>
             org.apache.maven.plugins:maven-install-plugin:install
