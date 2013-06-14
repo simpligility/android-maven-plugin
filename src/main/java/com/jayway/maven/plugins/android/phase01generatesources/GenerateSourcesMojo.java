@@ -680,7 +680,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             packageName = customPackage;
         }
-        generateBuildConfigForPackage( packageName, !release );
+        generateBuildConfigForPackage( packageName );
 
         // Generate the BuildConfig for any apklib dependencies.
         for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
@@ -689,19 +689,19 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             {
                 File apklibManifeset = new File( getLibraryUnpackDirectory( artifact ), "AndroidManifest.xml" );
                 String apklibPackageName = extractPackageNameFromAndroidManifest( apklibManifeset );
-                generateBuildConfigForPackage( apklibPackageName, !release );
+                generateBuildConfigForPackage( apklibPackageName );
             }
         }
     }
 
-    private void generateBuildConfigForPackage( String packageName, boolean debug ) throws MojoExecutionException
+    private void generateBuildConfigForPackage( String packageName ) throws MojoExecutionException
     {
         File outputFolder = new File( genDirectory, packageName.replace( ".", File.separator ) );
         outputFolder.mkdirs();
         String buildConfig = ""
                 + "package " + packageName + ";\n\n"
                 + "public final class BuildConfig {\n"
-                + "  public static final boolean DEBUG = " + Boolean.toString( debug ) + ";\n"
+                + "  public static final boolean DEBUG = " + Boolean.toString( !release ) + ";\n"
                 + "}\n"
         ;
         File outputFile = new File( outputFolder, "BuildConfig.java" );
