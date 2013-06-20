@@ -24,6 +24,7 @@ import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.common.AetherHelper;
 
+import com.jayway.maven.plugins.android.configuration.BuildConfigConstant;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -161,7 +162,15 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * default-value="${project.build.directory}/generated-sources/aidl"
      */
     protected File genDirectoryAidl;
-    
+
+    /**
+     * <p>Parameter designed to generate custom BuildConfig constants
+     *
+     * @parameter expression="${android.buildConfigConstants}"
+     * @readonly
+     */
+    protected BuildConfigConstant[] buildConfigConstants;
+
     public void execute() throws MojoExecutionException, MojoFailureException
     {
 
@@ -680,7 +689,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             packageName = customPackage;
         }
-        generateBuildConfigForPackage( packageName, !release );
+        generateBuildConfigForPackage( packageName );
 
         // Generate the BuildConfig for any apklib dependencies.
         for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
@@ -689,25 +698,43 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             {
                 File apklibManifeset = new File( getLibraryUnpackDirectory( artifact ), "AndroidManifest.xml" );
                 String apklibPackageName = extractPackageNameFromAndroidManifest( apklibManifeset );
-                generateBuildConfigForPackage( apklibPackageName, !release );
+                generateBuildConfigForPackage( apklibPackageName );
             }
         }
     }
 
-    private void generateBuildConfigForPackage( String packageName, boolean debug ) throws MojoExecutionException
+    private void generateBuildConfigForPackage( String packageName ) throws MojoExecutionException
     {
         File outputFolder = new File( genDirectory, packageName.replace( ".", File.separator ) );
         outputFolder.mkdirs();
-        String buildConfig = ""
-                + "package " + packageName + ";\n\n"
-                + "public final class BuildConfig {\n"
-                + "  public static final boolean DEBUG = " + Boolean.toString( debug ) + ";\n"
-                + "}\n"
-        ;
+
+        StringBuilder buildConfig = new StringBuilder();
+        buildConfig.append( "package " ).append( packageName ).append( ";\n\n" );
+        buildConfig.append( "public final class BuildConfig {\n" );
+        buildConfig.append( "  public static final boolean DEBUG = " ).append( !release ).append( ";\n" );
+        for ( BuildConfigConstant constant : buildConfigConstants )
+        {
+            String value = constant.getValue();
+            if ( "String".equals( constant.getType() ) )
+            {
+                value = "\"" + value + "\"";
+            }
+
+            buildConfig.append( "  public static final " )
+                       .append( constant.getType() )
+                       .append( " " )
+                       .append( constant.getName() )
+                       .append( " = " )
+                       .append( value )
+                       .append( ";\n" );
+        }
+        buildConfig.append( "}\n" );
+
+
         File outputFile = new File( outputFolder, "BuildConfig.java" );
         try
         {
-            FileUtils.writeStringToFile( outputFile, buildConfig );
+            FileUtils.writeStringToFile( outputFile, buildConfig.toString() );
         }
         catch ( IOException e )
         {
