@@ -39,6 +39,14 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
     private boolean mavenTestSkip;
 
     /**
+     * -DskipTests is commonly used with Maven to skip tests. We honor it too.
+     *
+     * @parameter expression="${skipTests}" default-value=false
+     * @readonly
+     */
+    private boolean mavenSkipTests;
+
+    /**
      * Enables or disables integration test related goals. If <code>true</code> they will be run; if <code>false</code>,
      * they will be skipped. If <code>auto</code>, they will run if any of the classes inherit from any class in
      * <code>junit.framework.**</code> or <code>android.test.**</code>.
@@ -55,6 +63,10 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
      */
     protected boolean isEnableIntegrationTest() throws MojoFailureException, MojoExecutionException {
         if (mavenTestSkip) {
+            return false;
+        }
+
+        if (mavenSkipTests) {
             return false;
         }
 
@@ -77,7 +89,7 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
 
     }
 
-    protected void deployDependencies() throws MojoExecutionException {
+    protected void deployDependencies() throws MojoExecutionException, MojoFailureException {
         Set<Artifact> directDependentArtifacts = project.getDependencyArtifacts();
         if (directDependentArtifacts != null) {
             for (Artifact artifact : directDependentArtifacts) {
@@ -96,7 +108,7 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
         }
     }
 
-    protected void deployBuiltApk() throws MojoExecutionException {
+    protected void deployBuiltApk() throws MojoExecutionException, MojoFailureException {
         // If we're not on a supported packaging with just skip (Issue 112)
         // http://code.google.com/p/maven-android-plugin/issues/detail?id=112
         if (! SUPPORTED_PACKAGING_TYPES.contains(project.getPackaging())) {
@@ -113,7 +125,7 @@ public abstract class AbstractIntegrationtestMojo extends AbstractAndroidMojo {
      * @param apkFile the apk file to deploy
      * @throws MojoExecutionException
      */
-    protected void deployFile(File apkFile) throws MojoExecutionException {
+    protected void deployFile(File apkFile) throws MojoExecutionException, MojoFailureException {
         if (undeployBeforeDeploy) {
             undeployApk(apkFile);
         }

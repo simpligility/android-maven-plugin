@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009, 2010 Jayway AB
+ * Copyright (C) 2009-2011 Jayway AB
  * Copyright (C) 2007-2008 JVending Masa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,9 @@
  */
 package com.jayway.maven.plugins.android;
 
+import com.android.ddmlib.AndroidDebugBridge;
+import com.android.ddmlib.IDevice;
+import com.android.ddmlib.InstallException;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.JXPathNotFoundException;
@@ -29,6 +32,7 @@ import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.DirectoryScanner;
@@ -37,6 +41,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -44,6 +49,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  * Contains common fields and methods for android mojos.
  *
  * @author hugo.josefson@jayway.com
+ * @author Manfred Moser <manfred@simpligility.com>>
  */
 public abstract class AbstractAndroidMojo extends AbstractMojo {
 
@@ -70,6 +76,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @readonly
      */
     protected MavenSession session;
+
 
     /**
      * The java sources directory.
@@ -370,7 +377,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * @parameter
      */
     protected List testClasses;
-    
+
+    private static final Object adbLock = new Object();
+    private static boolean adbInitialized = false;
+
     /**
      * @return Given test classes as a comma separated string
      */
@@ -434,7 +444,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
         return results;
     }
 
-   /**
+    /**
      * @return a {@code Set} of direct project dependencies. Never {@code null}. This excludes artifacts of the {@code
      *         EXCLUDED_DEPENDENCY_SCOPES} scopes.
      */
@@ -466,13 +476,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
                 continue;
             }
 
-            // TODO: this statement must be retired in version 3.0, but we can't do that yet because we promised to not break backwards compatibility within the 2.x series.
-            if (artifact.getGroupId().equals("android")) {
-                getLog().warn("Excluding the android.jar from being unpacked into your apk file, based on its <groupId>android</groupId>. Please set <scope>provided</scope> in that dependency, because that is the correct way, and the only which will work in the future.");
-                continue;
-            }
-
-            results.add(artifact);
+           results.add(artifact);
         }
         return results;
     }
@@ -501,51 +505,113 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     }
 
     /**
+     * Initialize the Android Debug Bridge and wait for it to start. Does not reinitialize it if it has
+     * already been initialized (that would through and IllegalStateException...). Synchronized sine
+     * the init call in the library is also synchronized .. just in case.
+     * @return
+     */
+    private AndroidDebugBridge initAndroidDebugBridge() {
+        synchronized (adbLock) {
+            if (!adbInitialized) {
+                AndroidDebugBridge.init(false);
+                adbInitialized = true;
+            }
+            AndroidDebugBridge androidDebugBridge = AndroidDebugBridge.createBridge();
+            waitUntilConnected(androidDebugBridge);
+            return androidDebugBridge;
+        }
+    }
+
+    /**
+     * Run a wait loop until adb is connected or trials run out. This method seems to work more reliably then using a
+     * listener.
+     * @param adb
+     */
+    private void waitUntilConnected(AndroidDebugBridge adb) {
+        int trials = 10;
+        while (trials > 0) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (adb.isConnected()) {
+                break;
+            }
+            trials--;
+        }
+    }
+
+    /**
      * Deploys an apk file to a connected emulator or usb device.
      *
      * @param apkFile the file to deploy
      * @throws MojoExecutionException If there is a problem deploying the apk file.
      */
-    protected void deployApk(File apkFile) throws MojoExecutionException {
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
-        List<String> commands = new ArrayList<String>();
+    protected void deployApk(final File apkFile) throws MojoExecutionException, MojoFailureException {
 
-        addDeviceParameter(commands);
-
-        commands.add("install");
-        commands.add("-r");
-        commands.add(apkFile.getAbsolutePath());
-        getLog().info(getAndroidSdk().getPathForTool("adb") + " " + commands.toString());
-        try {
-            executor.executeCommand(getAndroidSdk().getPathForTool("adb"), commands, false);
-            final String standardOut = executor.getStandardOut();
-            if (standardOut != null && standardOut.contains("Failure")) {
-                throw new MojoExecutionException("Error deploying " + apkFile + " to device. You might want to add command line parameter -Dandroid.undeployBeforeDeploy=true or add plugin configuration tag <undeployBeforeDeploy>true</undeployBeforeDeploy>\n" + standardOut);
+        doWithDevices(new DeviceCallback(){
+            public void doWithDevice(final IDevice device) throws MojoExecutionException {
+                try {
+                    device.installPackage(apkFile.getAbsolutePath(), undeployBeforeDeploy);
+                    getLog().info("Successfully installed to " + device.getSerialNumber()  + " (avdName="
+                            + device.getAvdName() + ")");
+                } catch (InstallException e) {
+                    throw new MojoExecutionException("Install failed.", e);
+                }
             }
-        } catch (ExecutionException e) {
-            getLog().error(executor.getStandardOut());
-            getLog().error(executor.getStandardError());
-            throw new MojoExecutionException("Error deploying " + apkFile + " to device.", e);
+        });
+
+    }
+
+    /**
+     * Determines which {@link IDevice}(s) to use, and performs the callback action on it/them.
+     *
+     * @param deviceCallback the action to perform on each device
+     * @throws org.apache.maven.plugin.MojoExecutionException in case there is a problem
+     * @throws org.apache.maven.plugin.MojoFailureException in case there is a problem
+     */
+    protected void doWithDevices(final DeviceCallback deviceCallback) throws MojoExecutionException, MojoFailureException {
+        final AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
+
+        if (androidDebugBridge.isConnected()) {
+            List<IDevice> devices = Arrays.asList(androidDebugBridge.getDevices());
+            int numberOfDevices = devices.size();
+            getLog().info("Found " + numberOfDevices + " devices connected with the Android Debug Bridge");
+            if (devices.size() > 0) {
+                if (StringUtils.isNotBlank(device)) {
+                    getLog().info("android.device parameter set to " + device);
+                    for (IDevice idevice : devices) {
+                        // use specified device or all emulators or all devices
+                        if (("emulator".equals(device) && idevice.isEmulator())
+                                || ("usb".equals(device) && !idevice.isEmulator())
+                                || (idevice.getAvdName() != null && idevice.getAvdName().equals(device))) {
+                            deviceCallback.doWithDevice(idevice);
+                        }
+                    }
+                } else {
+                    getLog().info("android.device parameter not set, using all attached devices");
+                    for (IDevice idevice : devices) {
+                        deviceCallback.doWithDevice(idevice);
+                    }
+                }
+            } else {
+                throw new MojoExecutionException("No online devices attached.");
+            }
+        } else {
+            throw new MojoExecutionException("Android Debug Bridge is not connected.");
         }
     }
 
     /**
-     * Checks if a specific device should be used, and adds any relevant parameter(s) to the parameters list.
+     * Adds relevant parameter to the parameters list for chosen device.
      *
      * @param commands the parameters to be used with the {@code adb} command
+     * @param device the device to be used
      */
-    protected void addDeviceParameter(List<String> commands) {
-        if (StringUtils.isNotBlank(device)) {
-            if ("usb".equals(device)) {
-                commands.add("-d");
-            } else if ("emulator".equals(device)) {
-                commands.add("-e");
-            } else {
-                commands.add("-s");
-                commands.add(device);
-            }
-        }
+    protected void addDeviceParameter(List<String> commands, IDevice device) {
+        commands.add("-s");
+        commands.add(device.getSerialNumber());
     }
 
     /**
@@ -553,69 +619,42 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
      * directories on the device.
      *
      * @param apkFile the file to undeploy
-     * @return <code>true</code> if successfully uninstalled, <code>false</code> otherwise.
-     */
-    protected boolean undeployApk(File apkFile) throws MojoExecutionException {
-        return undeployApk(apkFile, true);
-    }
-
-    /**
-     * Undeploys an apk from a connected emulator or usb device. Also deletes the application's data and cache
-     * directories on the device.
-     *
-     * @param apkFile the file to undeploy
-     * @param deleteDataAndCacheDirectoriesOnDevice
-     *                <code>true</code> to delete the application's data and cache
-     *                directories on the device, <code>false</code> to keep them.
      * @return <code>true</code> if successfully undeployed, <code>false</code> otherwise.
      */
-    protected boolean undeployApk(File apkFile, boolean deleteDataAndCacheDirectoriesOnDevice) throws MojoExecutionException {
+    protected boolean undeployApk(File apkFile) throws MojoExecutionException, MojoFailureException {
         final String packageName;
         packageName = extractPackageNameFromApk(apkFile);
-        return undeployApk(packageName, deleteDataAndCacheDirectoriesOnDevice);
+        return undeployApk(packageName);
     }
 
-    /**
-     * Undeploys an apk, specified by package name, from a connected emulator or usb device. Also deletes the
-     * application's data and cache directories on the device.
+   /**
+     * Undeploys an apk, specified by package name, from a connected emulator
+     * or usb device. Also deletes the application's data and cache
+     * directories on the device.
      *
      * @param packageName the package name to undeploy.
      * @return <code>true</code> if successfully undeployed, <code>false</code> otherwise.
      */
-    protected boolean undeployApk(String packageName) throws MojoExecutionException {
-        return undeployApk(packageName, true);
-    }
+    protected boolean undeployApk(final String packageName)
+            throws MojoExecutionException, MojoFailureException {
 
-    /**
-     * Undeploys an apk, specified by package name, from a connected emulator or usb device.
-     *
-     * @param packageName the package name to undeploy.
-     * @param deleteDataAndCacheDirectoriesOnDevice
-     *                    <code>true</code> to delete the application's data and cache
-     *                    directories on the device, <code>false</code> to keep them.
-     * @return <code>true</code> if successfully undeployed, <code>false</code> otherwise.
-     */
-    protected boolean undeployApk(String packageName, boolean deleteDataAndCacheDirectoriesOnDevice) throws MojoExecutionException {
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger(this.getLog());
-        List<String> commands = new ArrayList<String>();
-        addDeviceParameter(commands);
-        commands.add("uninstall");
-        if (!deleteDataAndCacheDirectoriesOnDevice) {
-            commands.add("-k");  // ('-k' means keep the data and cache directories)
-        }
-        commands.add(packageName);
-        getLog().info(getAndroidSdk().getAdbPath() + " " + commands.toString());
-        try {
-            executor.executeCommand(getAndroidSdk().getAdbPath(), commands, false);
-            getLog().debug(executor.getStandardOut());
-            getLog().debug(executor.getStandardError());
-            return true;
-        } catch (ExecutionException e) {
-            getLog().error(executor.getStandardOut());
-            getLog().error(executor.getStandardError());
-            return false;
-        }
+        final AtomicBoolean result = new AtomicBoolean(true); // if no devices are present, it counts as successful
+
+        doWithDevices(new DeviceCallback() {
+            public void doWithDevice(final IDevice device) throws MojoExecutionException {
+                try {
+                    device.uninstallPackage(packageName);
+                    getLog().info("Successfully uninstalled from " + device.getSerialNumber() + " (avdName="
+                            + device.getAvdName() + ")");
+                    result.set(true);
+                } catch (InstallException e) {
+                    result.set(false);
+                    throw new MojoExecutionException("Uninstall failed.", e);
+                }
+            }
+        });
+
+        return result.get();
     }
 
     /**
