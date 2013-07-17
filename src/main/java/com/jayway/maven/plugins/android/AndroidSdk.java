@@ -16,6 +16,8 @@
 package com.jayway.maven.plugins.android;
 
 import com.android.SdkConstants;
+import com.android.sdklib.AndroidTargetHash;
+import com.android.sdklib.AndroidVersion;
 import com.android.sdklib.BuildToolInfo;
 import com.android.sdklib.IAndroidTarget;
 import com.android.sdklib.SdkManager;
@@ -105,11 +107,21 @@ public class AndroidSdk
     private IAndroidTarget findPlatformByNameOrApiLevel( String platformOrApiLevel )
     {
         // try find by api level first
-        IAndroidTarget target = sdkManager.getTargetFromHashString(
-                IAndroidTarget.PLATFORM_HASH_PREFIX + platformOrApiLevel );
-        if ( target != null )
+        AndroidVersion version = null;
+        try
         {
-            return target;
+            version = new AndroidVersion( platformOrApiLevel );
+            String hashString = AndroidTargetHash.getPlatformHashString( version );
+            IAndroidTarget target = sdkManager.getTargetFromHashString( hashString );
+
+            if ( target != null )
+            {
+                return target;
+            }
+        }
+        catch ( AndroidVersion.AndroidVersionException ignore )
+        {
+            throw new InvalidSdkException( "Error AndroidVersion: " + ignore.getMessage() );
         }
 
         // fallback to searching for platform on standard Android platforms (isPlatform() is true)
