@@ -94,7 +94,7 @@ public class MakefileHelper
      *
      * @param makefileHolder The holder produced by the
      * {@link MakefileHelper#createMakefileFromArtifacts(java.io.File, java.util.Set,
-     * boolean, org.sonatype.aether.RepositorySystemSession, java.util.List, org.sonatype.aether.RepositorySystem)}
+     * boolean, org.eclipse.aether.RepositorySystemSession, java.util.List, org.eclipse.aether.RepositorySystem)}
      */
     public static void cleanupAfterBuild( MakefileHolder makefileHolder )
     {
