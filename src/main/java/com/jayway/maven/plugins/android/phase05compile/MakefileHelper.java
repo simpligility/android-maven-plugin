@@ -93,8 +93,7 @@ public class MakefileHelper
      * Cleans up all include directories created in the temp directory during the build.
      *
      * @param makefileHolder The holder produced by the
-     * {@link MakefileHelper#createMakefileFromArtifacts(java.io.File, java.util.Set,
-     * boolean, org.sonatype.aether.RepositorySystemSession, java.util.List, org.sonatype.aether.RepositorySystem)}
+     * {@link MakefileHelper#createMakefileFromArtifacts(File, Set, String, boolean)}
      */
     public static void cleanupAfterBuild( MakefileHolder makefileHolder )
     {
