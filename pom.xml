@@ -50,8 +50,8 @@
         <maven-plugin-plugin.version>2.8</maven-plugin-plugin.version>
 
         <maven.api.version>3.0.3</maven.api.version>
-        <easymock.version>3.1</easymock.version>
-        <powermock.version>1.5</powermock.version>
+        <easymock.version>3.2</easymock.version>
+        <powermock.version>1.5.1</powermock.version>
         <aether.version>1.13.1</aether.version>
     </properties>
     <scm>
@@ -115,7 +115,7 @@
         <dependency>
             <groupId>org.easytesting</groupId>
             <artifactId>fest-reflect</artifactId>
-            <version>1.2</version>
+            <version>1.4.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -255,7 +255,7 @@
         <dependency>
             <groupId>com.github.rtyley</groupId>
             <artifactId>android-screenshot-celebrity</artifactId>
-            <version>1.8</version>
+            <version>1.9</version>
         </dependency>
     </dependencies>
     <build>
