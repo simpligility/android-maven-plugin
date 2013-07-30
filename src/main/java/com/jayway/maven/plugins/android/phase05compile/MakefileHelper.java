@@ -252,7 +252,7 @@ public class MakefileHelper
             {
                 int libIdx = findApklibNativeLibrary( staticLibs, artifact.getArtifactId() );
                 apklibStatic = true;
-                addLibraryDetails( makeFile, outputDir, staticLibs[libIdx] );
+                addLibraryDetails( makeFile, outputDir, staticLibs[libIdx], "" );
             }
             else
             {
@@ -263,18 +263,18 @@ public class MakefileHelper
                     throw new IOException( "Failed to find any library file in APKLIB" );
                 }
                 int libIdx = findApklibNativeLibrary( sharedLibs, artifact.getArtifactId() );
-                addLibraryDetails( makeFile, outputDir, sharedLibs[libIdx] );
+                addLibraryDetails( makeFile, outputDir, sharedLibs[libIdx], "" );
             }
         }
         else
         {
-            addLibraryDetails( makeFile, outputDir, artifact.getFile() );
+            addLibraryDetails( makeFile, outputDir, artifact.getFile(), artifact.getArtifactId() );
         }
 
         return apklibStatic;
     }
 
-    private void addLibraryDetails( StringBuilder makeFile, File outputDir, File libFile )
+    private void addLibraryDetails( StringBuilder makeFile, File outputDir, File libFile, String outputName )
         throws IOException
     {
         String localPath = resolveRelativePath( outputDir, libFile );
@@ -287,7 +287,14 @@ public class MakefileHelper
         makeFile.append( libFile.getName() );
         makeFile.append( '\n' );
         makeFile.append( "LOCAL_MODULE_FILENAME := " );
-        makeFile.append( FilenameUtils.removeExtension( libFile.getName() ) );
+        if ( "".equals( outputName ) )
+        {
+            makeFile.append( FilenameUtils.removeExtension( libFile.getName() ) );
+        }
+        else
+        {
+            makeFile.append( outputName );
+        }
         makeFile.append( '\n' );
     }
 
