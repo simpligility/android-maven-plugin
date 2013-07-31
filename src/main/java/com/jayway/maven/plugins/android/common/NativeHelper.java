@@ -1,5 +1,6 @@
 package com.jayway.maven.plugins.android.common;
 
+import com.google.common.io.PatternFilenameFilter;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.AndroidNdk;
 import com.jayway.maven.plugins.android.phase09package.ApklibMojo;
@@ -176,7 +177,9 @@ public class NativeHelper
                         // Check if the artifact contains a libs folder - if so, include it in the list
                         File libsFolder = new File(
                                 AbstractAndroidMojo.getLibraryUnpackDirectory( unpackDirectory, artifact ) + "/libs" );
-                        if ( libsFolder.exists() )
+                        // make sure we ignore libs folders that only contain JARs
+                        if ( libsFolder.exists()
+                                && libsFolder.list( new PatternFilenameFilter( ".+[^.jar]$" ) ).length > 0 )
                         {
                             log.debug( "Including attached artifact: " + artifact.getArtifactId() 
                                     + "(" + artifact.getGroupId() + "). Artifact is APKLIB." );
