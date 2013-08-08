@@ -1097,7 +1097,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
         {
             if ( mavenIgnoreTestFailure && mavenIgnoreTestError )
             {
-                return true;
+                return false;
             }
 
             if ( mavenIgnoreTestFailure )
