@@ -97,6 +97,15 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      */
     private boolean mavenIgnoreTestFailure;
 
+    /**
+     * -Dmaven.test.error.ignore is commonly used with Maven to ignore test errors. We honor it too.
+     * Ignore or not tests errors. If <code>true</code> they will be ignored; if
+     * <code>false</code>, they will not. Default value is <code>false</code>.
+     *
+     * @parameter expression="${maven.test.error.ignore}" default-value=false required=false
+     * @readonly
+     */
+    private boolean mavenIgnoreTestError;
 
     /**
      * The configuration to use for running instrumentation tests. Complete configuration
@@ -1086,10 +1095,21 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
          */
         public boolean hasFailuresOrErrors()
         {
+            if ( mavenIgnoreTestFailure && mavenIgnoreTestError )
+            {
+                return true;
+            }
+
             if ( mavenIgnoreTestFailure )
             {
                 return testErrorCount > 0;
             }
+
+            if ( mavenIgnoreTestError )
+            {
+                return testFailureCount > 0;
+            }
+
             return testErrorCount > 0 || testFailureCount > 0;
         }
 
