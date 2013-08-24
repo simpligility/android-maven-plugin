@@ -50,6 +50,7 @@ import java.util.Set;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKSOURCES;
 
 /**
@@ -810,7 +811,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         Set<String> androidArtifacts = new HashSet<String>()
         {
             {
-                addAll( Arrays.asList( APK, APKLIB, APKSOURCES ) );
+                addAll( Arrays.asList( APK, APKLIB, APKSOURCES, AAR ) );
             }
         };
         return androidArtifacts.contains( project.getArtifact().getType() );

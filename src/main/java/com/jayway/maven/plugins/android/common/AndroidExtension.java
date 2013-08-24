@@ -11,10 +11,17 @@ public final class AndroidExtension
     public static final String APK = "apk";
 
     /**
-     * Android library project.
+     * Android library project as created by Android Maven Plugin.
      */
     public static final String APKLIB = "apklib";
 
+    /**
+     * Android archive as introduced by the Gradle Android build system (modelled after apklib with extensions and some
+     * differences(.
+     */
+    public static final String AAR = "aar";
+
+    
     /**
      * @deprecated Use {@link APKLIB} instead.
      */
@@ -36,6 +43,7 @@ public final class AndroidExtension
      */
     public static boolean isAndroidPackaging( String packaging )
     {
-        return APK.equals( packaging ) || APKLIB.equals( packaging ) || APKSOURCES.equals( packaging );
+        return APK.equals( packaging ) || APKLIB.equals( packaging ) || APKSOURCES.equals( packaging ) 
+                || AAR.equalsIgnoreCase( packaging );
     }
 }
