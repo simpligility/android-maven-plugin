@@ -167,6 +167,8 @@ public class AarMojo extends AbstractAndroidMojo
 
             addJavaResources( jarArchiver, project.getBuild().getResources(), "src" );
 
+            addRClass( jarArchiver );
+
             // Lastly, add any native libraries
             addNativeLibraries( jarArchiver );
 
@@ -182,6 +184,15 @@ public class AarMojo extends AbstractAndroidMojo
         }
 
         return apklibrary;
+    }
+
+    private void addRClass( JarArchiver jarArchiver ) throws MojoExecutionException
+    {
+        //TODO: convert R.java into R.txt
+        File rFile = new File( project.getBuild().getDirectory() + "/generated-sources/r/"
+                + extractPackageNameFromAndroidManifest( androidManifestFile )
+                .replace( ".", File.separator ) + "/R.java" );
+        jarArchiver.addFile( rFile, "R.txt" );
     }
 
     private void addNativeLibraries( final JarArchiver jarArchiver ) throws MojoExecutionException
