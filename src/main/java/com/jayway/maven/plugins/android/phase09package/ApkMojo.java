@@ -63,6 +63,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
 
 
@@ -1043,7 +1044,7 @@ public class ApkMojo extends AbstractAndroidMojo
         }
         for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
         {
-            if ( artifact.getType().equals( APKLIB ) )
+            if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
             {
                 final String apkLibResDir = getLibraryUnpackDirectory( artifact ) + "/res";
                 if ( new File( apkLibResDir ).exists() )
@@ -1246,7 +1247,7 @@ public class ApkMojo extends AbstractAndroidMojo
         List<Artifact> artifactList = new ArrayList<Artifact>( getAllRelevantDependencyArtifacts() );
         for ( Artifact artifact : artifactList )
         {
-            if ( artifact.getType().equals( APKLIB ) )
+            if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
             {
                 File apklibAsssetsDirectory = new File( getLibraryUnpackDirectory( artifact ) + "/assets" );
                 if ( apklibAsssetsDirectory.exists() )
