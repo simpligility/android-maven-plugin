@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -475,17 +476,17 @@ public class MakefileHelper
                                      String ndkArchitecture,
                                      boolean staticLibrary )
     {
-        StringBuilder sb = new StringBuilder();
+        Set<String> libraryNames = new LinkedHashSet<String>();
 
         for ( Artifact a : resolvedLibraryList )
         {
             if ( staticLibrary && "a".equals( a.getType() ) )
             {
-                sb.append( a.getArtifactId() );
+                libraryNames.add( a.getArtifactId() );
             }
             if ( ! staticLibrary && "so".equals( a.getType() ) )
             {
-                sb.append( a.getArtifactId() );
+                libraryNames.add( a.getArtifactId() );
             }
             if ( AndroidExtension.APKLIB.equals( a.getType() ) )
             {
@@ -493,11 +494,24 @@ public class MakefileHelper
                                                                 ndkArchitecture, staticLibrary );
                 if ( libFiles != null && libFiles.length > 0 )
                 {
-                    sb.append( a.getArtifactId() );
+                    libraryNames.add( a.getArtifactId() );
                 }
                 
             }
-            sb.append( " " );
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        Iterator<String> iter = libraryNames.iterator();
+
+        while ( iter.hasNext() )
+        {
+            sb.append( iter.next() );
+
+            if ( iter.hasNext() )
+            {
+                sb.append( " " );
+            }
         }
 
         return sb.toString();
