@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -158,6 +159,12 @@ public class MakefileHelper
             {
                 boolean apklibStatic = false;
 
+                if ( artifact.hasClassifier() )
+                {
+                    makeFile.append( '\n' );
+                    makeFile.append( "ifeq ($(TARGET_ARCH_ABI)," ).append( artifact.getClassifier() ).append( ")\n" );
+                }
+
                 makeFile.append( "#\n" );
                 makeFile.append( "# Group ID: " );
                 makeFile.append( artifact.getGroupId() );
@@ -228,6 +235,12 @@ public class MakefileHelper
                 else
                 {
                     makeFile.append( "include $(PREBUILT_SHARED_LIBRARY)\n" );
+                }
+
+                if ( artifact.hasClassifier() )
+                {
+                    makeFile.append( "endif #" ).append( artifact.getClassifier() ).append( '\n' );
+                    makeFile.append( '\n' );
                 }
             }
         }
