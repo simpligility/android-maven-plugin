@@ -17,6 +17,7 @@
 package com.jayway.maven.plugins.android.phase09package;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -167,7 +168,7 @@ public class AarMojo extends AbstractAndroidMojo
 
             addJavaResources( jarArchiver, project.getBuild().getResources(), "src" );
 
-            addRClass( jarArchiver );
+            addR( jarArchiver );
 
             // Lastly, add any native libraries
             addNativeLibraries( jarArchiver );
@@ -186,12 +187,9 @@ public class AarMojo extends AbstractAndroidMojo
         return apklibrary;
     }
 
-    private void addRClass( JarArchiver jarArchiver ) throws MojoExecutionException
+    private void addR( JarArchiver jarArchiver ) throws MojoExecutionException
     {
-        //TODO: convert R.java into R.txt
-        File rFile = new File( project.getBuild().getDirectory() + "/generated-sources/r/"
-                + extractPackageNameFromAndroidManifest( androidManifestFile )
-                .replace( ".", File.separator ) + "/R.java" );
+        File rFile = new File( project.getBuild().getDirectory() + "/R.txt" );
         jarArchiver.addFile( rFile, "R.txt" );
     }
 
@@ -399,7 +397,7 @@ public class AarMojo extends AbstractAndroidMojo
         }
         for ( Artifact apkLibraryArtifact : getAllRelevantDependencyArtifacts() )
         {
-            if ( apkLibraryArtifact.getType().equals( AAR ) )
+            if ( apkLibraryArtifact.getType().equals( AAR ) || apkLibraryArtifact.getType().equals( APKLIB ) )
             {
                 String apklibResDirectory = getLibraryUnpackDirectory( apkLibraryArtifact ) + "/res";
                 if ( new File( apklibResDirectory ).exists() )
@@ -429,6 +427,23 @@ public class AarMojo extends AbstractAndroidMojo
             commands.add( "-c" );
             commands.add( configurations );
         }
+
+        commands.add( "-m" );
+
+        commands.add( "-J" );
+
+        String rDir = project.getBuild().getDirectory() + File.separator + "generated-sources"
+            + File.separator + "r";
+
+        commands.add( rDir );
+
+        commands.add( "--non-constant-id" );
+
+
+        commands.add( "--output-text-symbols" );
+
+        commands.add( project.getBuild().getDirectory() );
+
         getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
         try
         {
