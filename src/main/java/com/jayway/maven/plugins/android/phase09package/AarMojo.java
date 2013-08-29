@@ -226,7 +226,8 @@ public class AarMojo extends AbstractAndroidMojo
                     // get native libs from other aars
                     for ( Artifact apkLibraryArtifact : getAllRelevantDependencyArtifacts() )
                     {
-                        if ( apkLibraryArtifact.getType().equals( AAR ) || apkLibraryArtifact.getType().equals( APKLIB ) )
+                        if ( apkLibraryArtifact.getType().equals( AAR )
+                            || apkLibraryArtifact.getType().equals( APKLIB ) )
                         {
                             final File apklibLibsDirectory = new File( getLibraryUnpackDirectory( apkLibraryArtifact )
                                                                        + "/" + NATIVE_LIBRARIES_FOLDER + "/"
