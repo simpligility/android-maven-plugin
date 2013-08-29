@@ -695,7 +695,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
         for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
         {
-            if ( artifact.getType().equals( APKLIB ) )
+            if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
             {
                 final String apkLibResDir = getLibraryUnpackDirectory( artifact ) + "/res";
                 if ( new File( apkLibResDir ).exists() )
