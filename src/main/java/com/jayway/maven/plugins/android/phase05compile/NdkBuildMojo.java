@@ -326,8 +326,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             // the include of our Android Maven plugin generated makefile.
             validateMakefile( project, makefile );
 
-            String[] ndkArchitectures = NativeHelper.getNdkArchitectures( ndkClassifier,
-                                                                          ndkArchitecture,
+            String[] ndkArchitectures = NativeHelper.getNdkArchitectures( ndkArchitecture,
                                                                           applicationMakefile,
                                                                           project.getBasedir() );
             for ( String ndkArchitecture : ndkArchitectures )
@@ -540,7 +539,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 getLog().debug( "Adding native compiled artifact: " + nativeArtifactFile );
 
                 File fileToAttach = nativeArtifactFile;
-                if ( ! libsDirectoryExists )
+                if ( ! libsDirectoryExists && !clearNativeArtifacts )
                 {
                     getLog().debug( "Moving native compiled artifact to target directory for preservation" );
                     // This indicates the output directory was created by the build (us) and that we should really
@@ -555,7 +554,14 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                     FileUtils.moveFile( nativeArtifactFile, destFile );
                     fileToAttach = destFile;
                 }
-                projectHelper.attachArtifact( this.project, artifactType, ndkArchitecture, fileToAttach );
+
+                String classifier = ndkArchitecture;
+                if ( ndkClassifier != null )
+                {
+                    classifier += "-" + ndkClassifier;
+                }
+
+                projectHelper.attachArtifact( this.project, artifactType, classifier, fileToAttach );
             }
 
             // Process conditionally any of the headers to include into the header archive file
@@ -847,6 +853,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
             final File jarFile = new File( new File( project.getBuild().getDirectory() ),
                     project.getBuild().getFinalName() + ".har" );
+
             mavenArchiver.setOutputFile( jarFile );
 
             for ( HeaderFilesDirective headerFilesDirective : finalHeaderFilesDirectives )
@@ -859,16 +866,22 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             mavenArchiveConfiguration.setAddMavenDescriptor( false );
 
             mavenArchiver.createArchive( project, mavenArchiveConfiguration );
-            
+
+            String classifier = ndkArchitecture;
+            if ( ndkClassifier != null )
+            {
+                classifier += "-" + ndkClassifier;
+            }
+
             if ( AndroidExtension.APKLIB.equals( project.getPackaging() ) )
             {
                 projectHelper.attachArtifact( project, "har", 
-                        ndkClassifier, 
+                        classifier,
                         jarFile );
             }
             else
             {
-                projectHelper.attachArtifact( project, "har", ndkArchitecture, jarFile );
+                projectHelper.attachArtifact( project, "har", classifier, jarFile );
             }
 
         }

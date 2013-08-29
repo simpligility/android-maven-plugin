@@ -370,16 +370,10 @@ public class NativeHelper
         return null;
     }
 
-    public static String[] getNdkArchitectures( final String ndkClassifier, final String ndkArchitecture,
-                                                final String applicationMakefile, final File basedir )
+    public static String[] getNdkArchitectures( final String ndkArchitecture, final String applicationMakefile,
+                                                final File basedir )
         throws MojoExecutionException
     {
-        // if there is a classifier, return it
-        if ( ndkClassifier != null )
-        {
-            return new String[] { ndkClassifier };
-        }
-
         // if there is a specified ndk architecture, return it
         if ( ndkArchitecture != null )
         {

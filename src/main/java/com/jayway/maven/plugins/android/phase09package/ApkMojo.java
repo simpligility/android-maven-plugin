@@ -863,8 +863,10 @@ public class ApkMojo extends AbstractAndroidMojo
                 {
                     for ( Artifact resolvedArtifact : artifacts )
                     {
+                        String architectureFromClassifier = extractArchitectureFromClassfier(
+                                resolvedArtifact.getClassifier() );
                         if ( "so".equals( resolvedArtifact.getType() ) && ndkArchitecture.equals(
-                             resolvedArtifact.getClassifier() ) )
+                                architectureFromClassifier ) )
                         {
                             final File artifactFile = resolvedArtifact.getFile();
                             try
@@ -911,6 +913,18 @@ public class ApkMojo extends AbstractAndroidMojo
                 optionallyCopyGdbServer( destinationDirectory, ndkArchitecture );
             }
         }
+    }
+
+    private String extractArchitectureFromClassfier( String classifier )
+    {
+        for ( String ndkArchitecture : AndroidNdk.NDK_ARCHITECTURES )
+        {
+            if ( classifier.startsWith( ndkArchitecture ) )
+            {
+                return ndkArchitecture;
+            }
+        }
+        return "armeabi";
     }
 
     private void optionallyCopyGdbServer( File destinationDirectory, String architecture ) throws MojoExecutionException
