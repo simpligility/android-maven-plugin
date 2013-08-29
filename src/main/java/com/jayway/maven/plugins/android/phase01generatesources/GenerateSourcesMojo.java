@@ -584,7 +584,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
         {
-            if ( artifact.getType().equals( APKLIB ) )
+            if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
             {
                 String apklibResDirectory = getLibraryUnpackDirectory( artifact ) + "/res";
                 if ( new File( apklibResDirectory ).exists() )
@@ -610,7 +610,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         List<File> libManifests = new ArrayList<File>();
         for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
         {
-            if ( artifact.getType().equals( APKLIB ) )
+            if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
             {
                 File apklibManifeset = new File( getLibraryUnpackDirectory( artifact ), "AndroidManifest.xml" );
                 if ( !apklibManifeset.exists() )
