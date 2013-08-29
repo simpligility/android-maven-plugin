@@ -899,7 +899,8 @@ public class ApkMojo extends AbstractAndroidMojo
                         }
                         else
                         {
-                            if ( APKLIB.equals( resolvedArtifact.getType() ) )
+                            if ( APKLIB.equals( resolvedArtifact.getType() )
+                                || AAR.equals( resolvedArtifact.getType() ) )
                             {
                                 addNativeDirectory( natives, new File( getLibraryUnpackDirectory( resolvedArtifact )
                                                                            + "/libs" ) );
