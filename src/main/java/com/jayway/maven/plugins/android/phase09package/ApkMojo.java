@@ -140,6 +140,15 @@ public class ApkMojo extends AbstractAndroidMojo
     private File nativeLibrariesOutputDirectory;
 
     /**
+     * <p>Default hardware architecture for native library dependencies (with {@code &lt;type>so&lt;/type>})
+     * without a classifier.</p>
+     * <p>Valid values currently include {@code armeabi}, {@code armeabi-v7a}, {@code mips} and {@code x86}.</p>
+     *
+     * @parameter expression="${android.nativeLibrariesDependenciesHardwareArchitectureDefault}" default-value="armeabi"
+     */
+    private String nativeLibrariesDependenciesHardwareArchitectureDefault;
+
+    /**
      * <p>Classifier to add to the artifact generated. If given, the artifact will be an attachment instead.</p>
      *
      * @parameter
@@ -847,8 +856,7 @@ public class ApkMojo extends AbstractAndroidMojo
                 {
                     for ( Artifact resolvedArtifact : artifacts )
                     {
-                        if ( "so".equals( resolvedArtifact.getType() ) && ndkArchitecture.equals(
-                             resolvedArtifact.getClassifier() ) )
+                        if ( artifactHasHardwareArchitecture( resolvedArtifact, ndkArchitecture ) )
                         {
                             copyNativeLibraryArtifactFileToDirectory(
                                     resolvedArtifact, destinationDirectory, ndkArchitecture );
@@ -878,14 +886,14 @@ public class ApkMojo extends AbstractAndroidMojo
     {
         return nativeLibrariesDirectory != null
                 && nativeLibrariesDirectory.exists()
-                && (nativeLibrariesDirectory.listFiles() != null && nativeLibrariesDirectory.listFiles().length > 0);
+                && ( nativeLibrariesDirectory.listFiles() != null && nativeLibrariesDirectory.listFiles().length > 0 );
     }
 
     private boolean hasValidBuildNativeLibrariesDirectory()
     {
         return nativeLibrariesOutputDirectory.exists() && (
                 nativeLibrariesOutputDirectory.listFiles() != null
-                        && nativeLibrariesOutputDirectory.listFiles().length > 0);
+                        && nativeLibrariesOutputDirectory.listFiles().length > 0 );
     }
 
     /**
@@ -911,6 +919,24 @@ public class ApkMojo extends AbstractAndroidMojo
         return destinationDirectory;
     }
 
+    private boolean artifactHasHardwareArchitecture( Artifact artifact, String ndkArchitecture )
+    {
+        return "so".equals( artifact.getType() )
+                && ndkArchitecture.equals( getHardwareArchitectureForArtifact( artifact ) );
+    }
+
+    private String getHardwareArchitectureForArtifact( Artifact artifact )
+    {
+        String artifactClassifier = artifact.getClassifier();
+
+        if ( StringUtils.isBlank( artifactClassifier ) )
+        {
+            return nativeLibrariesDependenciesHardwareArchitectureDefault;
+        }
+
+        return artifactClassifier;
+    }
+
     private void copyNativeLibraryArtifactFileToDirectory( Artifact artifact, File destinationDirectory,
                                                            String ndkArchitecture ) throws MojoExecutionException
     {
@@ -922,8 +948,8 @@ public class ApkMojo extends AbstractAndroidMojo
                     ? artifactId + ".so"
                     : "lib" + artifactId + ".so";
             if ( ndkFinalLibraryName != null
-                    && (artifact.getFile().getName()
-                    .startsWith( "lib" + ndkFinalLibraryName )) )
+                    && ( artifact.getFile().getName()
+                    .startsWith( "lib" + ndkFinalLibraryName ) ) )
             {
                 // The artifact looks like one we built with the NDK in this module
                 // preserve the name from the NDK build
