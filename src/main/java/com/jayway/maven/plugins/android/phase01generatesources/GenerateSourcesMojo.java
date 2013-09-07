@@ -765,7 +765,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         // Generate the BuildConfig for any apklib dependencies.
         for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
         {
-            if ( artifact.getType().equals( "apklib" ) )
+            if ( artifact.getType().equals( APKLIB ) )
             {
                 File apklibManifeset = new File( getLibraryUnpackDirectory( artifact ), "AndroidManifest.xml" );
                 String apklibPackageName = extractPackageNameFromAndroidManifest( apklibManifeset );
