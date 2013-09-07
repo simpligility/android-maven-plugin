@@ -21,6 +21,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -300,6 +301,12 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
                     public String getName()
                     {
                         return null;
+                    }
+
+                    @Override
+                    public void executeShellCommand(String s, IShellOutputReceiver iShellOutputReceiver, long l, TimeUnit timeUnit)
+                        throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException
+                    {
                     }
 
                     @Override
