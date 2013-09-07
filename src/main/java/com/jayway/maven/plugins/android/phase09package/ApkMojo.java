@@ -330,33 +330,12 @@ public class ApkMojo extends AbstractAndroidMojo
         ArrayList<File> jarFiles = new ArrayList<File>();
         ArrayList<File> nativeFolders = new ArrayList<File>();
 
-        boolean useInternalAPKBuilder = true;
-        try
-        {
-            initializeAPKBuilder();
-            // Ok...
-            // So we can try to use the internal ApkBuilder
-        }
-        catch ( Throwable e )
-        {
-            // Not supported platform try to old way.
-            useInternalAPKBuilder = false;
-        }
-
         // Process the native libraries, looking both in the current build directory as well as
         // at the dependencies declared in the pom.  Currently, all .so files are automatically included
         processNativeLibraries( nativeFolders );
         
-        if ( useInternalAPKBuilder )
-        {
-            doAPKWithAPKBuilder( outputFile, dexFile, zipArchive, sourceFolders, jarFiles, nativeFolders,
+        doAPKWithAPKBuilder( outputFile, dexFile, zipArchive, sourceFolders, jarFiles, nativeFolders,
                     signWithDebugKeyStore );
-        }
-        else
-        {
-            doAPKWithCommand( outputFile, dexFile, zipArchive, sourceFolders, jarFiles, nativeFolders,
-                    signWithDebugKeyStore );
-        }
 
         if ( this.apkMetaIncludes != null && this.apkMetaIncludes.length > 0 )
         {
@@ -718,77 +697,6 @@ public class ApkMojo extends AbstractAndroidMojo
         {
             out.write( b, 0, n );
         }
-    }
-
-
-    /**
-     * Creates the APK file using the command line.
-     *
-     * @param outputFile            the output file
-     * @param dexFile               the dex file
-     * @param zipArchive            the classes folder
-     * @param sourceFolders         the resources
-     * @param jarFiles              the embedded java files
-     * @param nativeFolders         the native folders
-     * @param signWithDebugKeyStore enables the signature of the APK using the debug key
-     * @throws MojoExecutionException if the APK cannot be created.
-     */
-    private void doAPKWithCommand( File outputFile, File dexFile, File zipArchive, ArrayList<File> sourceFolders,
-                                   ArrayList<File> jarFiles, ArrayList<File> nativeFolders,
-                                   boolean signWithDebugKeyStore ) throws MojoExecutionException
-    {
-        getLog().debug( "Building APK from command line" );
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger( this.getLog() );
-
-        List<String> commands = new ArrayList<String>();
-        commands.add( outputFile.getAbsolutePath() );
-
-        if ( ! signWithDebugKeyStore )
-        {
-            commands.add( "-u" );
-        }
-
-        commands.add( "-z" );
-        commands.add( new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_" )
-                .getAbsolutePath() );
-        commands.add( "-f" );
-        commands.add( new File( project.getBuild().getDirectory(), "classes.dex" ).getAbsolutePath() );
-        commands.add( "-rf" );
-        commands.add( new File( project.getBuild().getOutputDirectory() ).getAbsolutePath() );
-
-        if ( nativeFolders != null && ! nativeFolders.isEmpty() )
-        {
-            for ( File lib : nativeFolders )
-            {
-                commands.add( "-nf" );
-                commands.add( lib.getAbsolutePath() );
-            }
-        }
-
-        for ( Artifact artifact : getRelevantCompileArtifacts() )
-        {
-            commands.add( "-rj" );
-            commands.add( artifact.getFile().getAbsolutePath() );
-        }
-
-
-        getLog().info( getAndroidSdk().getApkBuilderPath() + " " + commands.toString() );
-        try
-        {
-            executor.executeCommand( getAndroidSdk().getApkBuilderPath(), commands, project.getBasedir(),
-                    false );
-        }
-        catch ( ExecutionException e )
-        {
-            throw new MojoExecutionException( "", e );
-        }
-    }
-
-
-    private void initializeAPKBuilder() throws MojoExecutionException
-    {
-//        ApkBuilderWrapper.initialize( getLog() );
     }
 
     private void processNativeLibraries( final List<File> natives ) throws MojoExecutionException

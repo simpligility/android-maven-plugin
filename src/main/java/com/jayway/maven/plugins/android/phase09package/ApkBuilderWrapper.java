@@ -40,8 +40,7 @@ public class ApkBuilderWrapper
     private ApkBuilder apkBuilder;
 
     /**
-     * Creates a new APKBuilder. The class must be initialized before calling
-     * this constructor. This creates a new builder that will create the
+     * Creates a new APKBuilder. This creates a new builder that will create the
      * specified output file, using the two mandatory given input files. An
      * optional debug keystore can be provided. If set, it is expected that the
      * store password is 'android' and the key alias and password are
