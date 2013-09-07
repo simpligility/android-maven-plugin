@@ -16,6 +16,10 @@
  */
 package com.jayway.maven.plugins.android.phase09package;
 
+import com.android.sdklib.build.ApkBuilder;
+import com.android.sdklib.build.ApkCreationException;
+import com.android.sdklib.build.DuplicateFileException;
+import com.android.sdklib.build.SealedApkException;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.AndroidNdk;
 import com.jayway.maven.plugins.android.AndroidSigner;
@@ -27,6 +31,7 @@ import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.Apk;
 import com.jayway.maven.plugins.android.configuration.Sign;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.FileFileFilter;
@@ -527,76 +532,93 @@ public class ApkMojo extends AbstractAndroidMojo
 
             }
         }
-
-        ApkBuilderWrapper builder = 
-           new ApkBuilderWrapper( outputFile, zipArchive, dexFile, signWithDebugKeyStore, null );
-
-        if ( apkDebug )
+        
+        String debugKeyStore;
+        ApkBuilder apkBuilder; 
+        try 
         {
-            builder.setDebugMode( apkDebug );
-        }
-
-        for ( File sourceFolder : sourceFolders )
-        {
-            builder.addSourceFolder( sourceFolder );
-        }
-
-        for ( File jarFile : jarFiles )
-        {
-            boolean excluded = false;
-          
-            if ( excludeJarResourcesPatterns != null )
+            debugKeyStore = ApkBuilder.getDebugKeystore();
+            apkBuilder = 
+                    new ApkBuilder( outputFile, zipArchive, dexFile, 
+                            ( signWithDebugKeyStore ) ? debugKeyStore : null, null );
+            if ( apkDebug )
             {
-                final String name = jarFile.getName();
-                getLog().debug( "Checking " + name + " against patterns" );
-                for ( Pattern pattern : excludeJarResourcesPatterns )
+                apkBuilder.setDebugMode( apkDebug );
+            }
+
+            for ( File sourceFolder : sourceFolders )
+            {
+                apkBuilder.addSourceFolder( sourceFolder );
+            }
+     
+            for ( File jarFile : jarFiles )
+            {
+                boolean excluded = false;
+              
+                if ( excludeJarResourcesPatterns != null )
                 {
-                    final Matcher matcher = pattern.matcher( name );
-                    if ( matcher.matches() ) 
+                    final String name = jarFile.getName();
+                    getLog().debug( "Checking " + name + " against patterns" );
+                    for ( Pattern pattern : excludeJarResourcesPatterns )
                     {
-                        getLog().debug( "Jar " + name + " excluded by pattern " + pattern );
-                        excluded = true;
-                        break;
-                    } 
-                    else 
-                    {
-                        getLog().debug( "Jar " + name + " not excluded by pattern " + pattern );
+                        final Matcher matcher = pattern.matcher( name );
+                        if ( matcher.matches() ) 
+                        {
+                            getLog().debug( "Jar " + name + " excluded by pattern " + pattern );
+                            excluded = true;
+                            break;
+                        } 
+                        else 
+                        {
+                            getLog().debug( "Jar " + name + " not excluded by pattern " + pattern );
+                        }
                     }
+                }
+    
+                if ( excluded )
+                {
+                    continue;
+                }
+                
+                if ( jarFile.isDirectory() )
+                {
+                    String[] filenames = jarFile.list( new FilenameFilter()
+                    {
+                        public boolean accept( File dir, String name )
+                        {
+                            return PATTERN_JAR_EXT.matcher( name ).matches();
+                        }
+                    } );
+    
+                    for ( String filename : filenames )
+                    {
+                        apkBuilder.addResourcesFromJar( new File( jarFile, filename ) );
+                    }
+                }
+                else
+                {
+                    apkBuilder.addResourcesFromJar( jarFile );
                 }
             }
 
-            if ( excluded )
+            for ( File nativeFolder : nativeFolders )
             {
-                continue;
+                apkBuilder.addNativeLibraries( nativeFolder );
             }
-            
-            if ( jarFile.isDirectory() )
-            {
-                String[] filenames = jarFile.list( new FilenameFilter()
-                {
-                    public boolean accept( File dir, String name )
-                    {
-                        return PATTERN_JAR_EXT.matcher( name ).matches();
-                    }
-                } );
-
-                for ( String filename : filenames )
-                {
-                    builder.addResourcesFromJar( new File( jarFile, filename ) );
-                }
-            }
-            else
-            {
-                builder.addResourcesFromJar( jarFile );
-            }
-        }
-
-        for ( File nativeFolder : nativeFolders )
+            apkBuilder.sealApk();
+        } 
+        catch ( ApkCreationException e )
         {
-            builder.addNativeLibraries( nativeFolder, null );
+            throw new MojoExecutionException( e.getMessage() );
+        } 
+        catch ( DuplicateFileException e )
+        {
+            throw new MojoExecutionException( e.getMessage() );
+        } 
+        catch ( SealedApkException e )
+        {
+            throw new MojoExecutionException( e.getMessage() );
         }
-
-        builder.sealApk();
     }
 
     private File removeDuplicatesFromJar( File in, List<String> duplicates )
