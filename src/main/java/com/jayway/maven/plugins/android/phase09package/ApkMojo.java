@@ -788,7 +788,7 @@ public class ApkMojo extends AbstractAndroidMojo
 
     private void initializeAPKBuilder() throws MojoExecutionException
     {
-        ApkBuilderWrapper.initialize( getLog() );
+//        ApkBuilderWrapper.initialize( getLog() );
     }
 
     private void processNativeLibraries( final List<File> natives ) throws MojoExecutionException
