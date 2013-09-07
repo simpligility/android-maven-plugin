@@ -297,25 +297,7 @@ public class AndroidSdk
     {
         return new File( androidTarget.getPath( IAndroidTarget.ANDROID_JAR ) );
     }
-
-    /**
-     * Resolves the sdklib.jar from this SDK.
-     * 
-     * @return a <code>File</code> pointing to the sdklib.jar file.
-     * @throws org.apache.maven.plugin.MojoExecutionException
-     *             if the file can not be resolved.
-     */
-    public File getSDKLibJar() throws MojoExecutionException
-    {
-        // The file is sdkPath/tools/lib/sdklib.jar
-        File sdklib = new File( sdkPath + "/tools/lib/sdklib.jar" );
-        if ( sdklib.exists() )
-        {
-            return sdklib;
-        }
-        throw new MojoExecutionException( "Can't find the 'sdklib.jar' : " + sdklib.getAbsolutePath() );
-    }
-
+  
     /**
      * Resolves the path for this SDK.
      * 
