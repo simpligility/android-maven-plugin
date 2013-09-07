@@ -65,7 +65,7 @@ public class AndroidSdk
     private SdkManager sdkManager;
     private int sdkMajorVersion;
 
-    public AndroidSdk( File sdkPath, String platformOrApiLevel )
+    public AndroidSdk( File sdkPath, String apiLevel )
     {
         this.sdkPath = sdkPath;
 
@@ -77,22 +77,22 @@ public class AndroidSdk
 
             if ( sdkManager == null )
             {
-                throw invalidSdkException( sdkPath, platformOrApiLevel );
+                throw invalidSdkException( sdkPath, apiLevel );
             }
         }
         loadSDKToolsMajorVersion();
 
-        if ( platformOrApiLevel == null )
+        if ( apiLevel == null )
         {
-            throw new InvalidConfigurationException( " No Android Platform Version/API Level has been configured. " 
+            throw new InvalidConfigurationException( " No Android API Level has been configured. " 
                     + " Add e.g. <sdk><platform>17</platform></sdk> to the plugin configuration." );
         }
         else
         {
-            androidTarget = findPlatformByNameOrApiLevel( platformOrApiLevel );
+            androidTarget = findPlatformByApiLevel( apiLevel );
             if ( androidTarget == null )
             {
-                throw invalidSdkException( sdkPath, platformOrApiLevel );
+                throw invalidSdkException( sdkPath, apiLevel );
             }
         }
     }
@@ -104,13 +104,13 @@ public class AndroidSdk
                 + File.separator + "tools" + File.separator + "android update sdk --no-ui --obsolete --force" );
     }
 
-    private IAndroidTarget findPlatformByNameOrApiLevel( String platformOrApiLevel )
+    private IAndroidTarget findPlatformByApiLevel( String apiLevel )
     {
         // try find by api level first
         AndroidVersion version = null;
         try
         {
-            version = new AndroidVersion( platformOrApiLevel );
+            version = new AndroidVersion( apiLevel );
             String hashString = AndroidTargetHash.getPlatformHashString( version );
             IAndroidTarget target = sdkManager.getTargetFromHashString( hashString );
 
@@ -127,7 +127,7 @@ public class AndroidSdk
         // fallback to searching for platform on standard Android platforms (isPlatform() is true)
         for ( IAndroidTarget t: sdkManager.getTargets() )
         {
-            if ( t.isPlatform() && t.getVersionName().equals( platformOrApiLevel ) )
+            if ( t.isPlatform() && t.getVersionName().equals( apiLevel ) )
             {
                 return t;
             }
@@ -143,23 +143,15 @@ public class AndroidSdk
      */
     public enum Layout
     {
-        LAYOUT_1_5, LAYOUT_2_3;
+        LAYOUT_2_3;
     }
     public Layout getLayout()
     {
-
         assertPathIsDirectory( sdkPath );
-
 
         if ( platformToolsPath.exists() && platformToolsPath.isDirectory() )
         {
             return Layout.LAYOUT_2_3;
-        }
-
-        final File platforms = new File( sdkPath, PLATFORMS_FOLDER_NAME );
-        if ( platforms.exists() && platforms.isDirectory() )
-        {
-            return Layout.LAYOUT_1_5;
         }
 
         throw new InvalidSdkException( "Android SDK could not be identified from path \"" + sdkPath + "\". "
