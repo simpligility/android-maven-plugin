@@ -16,6 +16,7 @@
  */
 package com.jayway.maven.plugins.android.phase09package;
 
+import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
 
 import java.io.File;
@@ -122,7 +123,7 @@ public class AarMojo extends AbstractAndroidMojo
 
         if ( classifier == null )
         {
-            // Set the generated file as the main artifact (because the pom states <packaging>apklib</packaging>)
+            // Set the generated file as the main artifact (because the pom states <packaging>aar</packaging>)
             project.getArtifact().setFile( outputFile );
         }
         else
@@ -140,7 +141,7 @@ public class AarMojo extends AbstractAndroidMojo
     protected File createApkLibraryFile() throws MojoExecutionException
     {
         final File apklibrary = new File( project.getBuild().getDirectory(),
-                project.getBuild().getFinalName() + "." + APKLIB );
+                project.getBuild().getFinalName() + "." + AAR );
         FileUtils.deleteQuietly( apklibrary );
 
         try
@@ -152,10 +153,9 @@ public class AarMojo extends AbstractAndroidMojo
             addDirectory( jarArchiver, assetsDirectory, "assets" );
             addDirectory( jarArchiver, resourceDirectory, "res" );
             
-            for ( String src : sourceFolders ) 
-            { 
-                addDirectory( jarArchiver, new File( src ), "src" );
-            }
+            File jarFile = new File( project.getBuild().getDirectory() 
+                + File.separator + project.getBuild().getFinalName() + ".jar" );
+            jarArchiver.addFile( jarFile, "classes.jar" );
             
             File[] overlayDirectories = getResourceOverlayDirectories();
             for ( File resOverlayDir : overlayDirectories )
@@ -168,6 +168,8 @@ public class AarMojo extends AbstractAndroidMojo
 
             addJavaResources( jarArchiver, project.getBuild().getResources(), "src" );
 
+            addR( jarArchiver );
+
             // Lastly, add any native libraries
             addNativeLibraries( jarArchiver );
 
@@ -175,14 +177,20 @@ public class AarMojo extends AbstractAndroidMojo
         }
         catch ( ArchiverException e )
         {
-            throw new MojoExecutionException( "ArchiverException while creating ." + APKLIB + " file.", e );
+            throw new MojoExecutionException( "ArchiverException while creating ." + AAR + " file.", e );
         }
         catch ( IOException e )
         {
-            throw new MojoExecutionException( "IOException while creating ." + APKLIB + " file.", e );
+            throw new MojoExecutionException( "IOException while creating ." + AAR + " file.", e );
         }
 
         return apklibrary;
+    }
+
+    private void addR( JarArchiver jarArchiver ) throws MojoExecutionException
+    {
+        File rFile = new File( project.getBuild().getDirectory() + "/R.txt" );
+        jarArchiver.addFile( rFile, "R.txt" );
     }
 
     private void addNativeLibraries( final JarArchiver jarArchiver ) throws MojoExecutionException
@@ -211,14 +219,15 @@ public class AarMojo extends AbstractAndroidMojo
                 
                     // Add native library dependencies
                     // FIXME: Remove as causes duplicate libraries when building final APK if this set includes
-                    //        libraries from dependencies of the APKLIB
+                    //        libraries from dependencies of the AAR
                     //final File dependentLibs = new File( ndkOutputDirectory.getAbsolutePath(), ndkArchitecture );
                     //addSharedLibraries( jarArchiver, dependentLibs, prefix );
 
-                    // get native libs from other apklibs
+                    // get native libs from other aars
                     for ( Artifact apkLibraryArtifact : getAllRelevantDependencyArtifacts() )
                     {
-                        if ( apkLibraryArtifact.getType().equals( APKLIB ) )
+                        if ( apkLibraryArtifact.getType().equals( AAR )
+                            || apkLibraryArtifact.getType().equals( APKLIB ) )
                         {
                             final File apklibLibsDirectory = new File( getLibraryUnpackDirectory( apkLibraryArtifact )
                                                                        + "/" + NATIVE_LIBRARIES_FOLDER + "/"
@@ -234,7 +243,7 @@ public class AarMojo extends AbstractAndroidMojo
         }
         catch ( ArchiverException e )
         {
-            throw new MojoExecutionException( "IOException while creating ." + APKLIB + " file.", e );
+            throw new MojoExecutionException( "IOException while creating ." + AAR + " file.", e );
         }
         // TODO: Next is to check for any:
         // TODO: - compiled in (as part of this build) libs
@@ -389,7 +398,7 @@ public class AarMojo extends AbstractAndroidMojo
         }
         for ( Artifact apkLibraryArtifact : getAllRelevantDependencyArtifacts() )
         {
-            if ( apkLibraryArtifact.getType().equals( APKLIB ) )
+            if ( apkLibraryArtifact.getType().equals( AAR ) || apkLibraryArtifact.getType().equals( APKLIB ) )
             {
                 String apklibResDirectory = getLibraryUnpackDirectory( apkLibraryArtifact ) + "/res";
                 if ( new File( apklibResDirectory ).exists() )
@@ -419,6 +428,23 @@ public class AarMojo extends AbstractAndroidMojo
             commands.add( "-c" );
             commands.add( configurations );
         }
+
+        commands.add( "-m" );
+
+        commands.add( "-J" );
+
+        String rDir = project.getBuild().getDirectory() + File.separator + "generated-sources"
+            + File.separator + "r";
+
+        commands.add( rDir );
+
+        commands.add( "--non-constant-id" );
+
+
+        commands.add( "--output-text-symbols" );
+
+        commands.add( project.getBuild().getDirectory() );
+
         getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
         try
         {
