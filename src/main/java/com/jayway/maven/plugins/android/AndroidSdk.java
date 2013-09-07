@@ -135,29 +135,6 @@ public class AndroidSdk
         return null;
     }
 
-
-
-    /**
-     * The file system layout of the SDK. Should probably be removed since the 15 layout is very old and probably wont
-     * work completely. No urgency though..
-     */
-    public enum Layout
-    {
-        LAYOUT_2_3;
-    }
-    public Layout getLayout()
-    {
-        assertPathIsDirectory( sdkPath );
-
-        if ( platformToolsPath.exists() && platformToolsPath.isDirectory() )
-        {
-            return Layout.LAYOUT_2_3;
-        }
-
-        throw new InvalidSdkException( "Android SDK could not be identified from path \"" + sdkPath + "\". "
-                + PARAMETER_MESSAGE );
-    }
-
     private void assertPathIsDirectory( final File path )
     {
         if ( path == null )
