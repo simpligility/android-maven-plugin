@@ -18,7 +18,6 @@
 package com.jayway.maven.plugins.android.phase09package;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
 
 import com.android.sdklib.build.ApkBuilder;
 import com.android.sdklib.build.ApkCreationException;
@@ -35,50 +34,6 @@ import java.io.PrintStream;
  */
 public class ApkBuilderWrapper
 {
-
-    /**
-     * The ApkBuilder class object.
-     */
-    @SuppressWarnings( "rawtypes" )
-    private static Class apkBuilderClass;
-
-    /**
-     * The Mojo logger.
-     */
-    private static Log log;
-
-    /**
-     * Before being able to use the ApkBuilder, an initialization is required.
-     *
-     * @param log     the Mojo Logger
-     * @param sdkLibs the File pointing on {@code sdklib.jar}
-     * @throws MojoExecutionException if the ApkBuilder class cannot be loaded
-     */
-    @SuppressWarnings( "unchecked" )
-    public static void initialize( Log log ) throws MojoExecutionException
-    {
-        if ( apkBuilderClass != null )
-        {
-            // Already initialized
-            return;
-        }
-
-        ApkBuilderWrapper.log = log;
-
-        // Loads the ApkBuilder class
-        try
-        {
-            ClassLoader classloader = ApkBuilderWrapper.class.getClassLoader(); 
-            apkBuilderClass = classloader.loadClass( "com.android.sdklib.build.ApkBuilder" );
-        }
-        catch ( ClassNotFoundException e )
-        {
-            log.error( e );
-            throw new MojoExecutionException( "Cannot load 'com.android.sdklib.build.ApkBuilder'" );
-        }
-        log.debug( "ApkBuilder loaded " + apkBuilderClass );
-    }
-
     /**
      * The APK Builder.
      */
@@ -108,22 +63,18 @@ public class ApkBuilderWrapper
     public ApkBuilderWrapper( File apkFile, File resFile, File dexFile, boolean signed, PrintStream verboseStream )
             throws MojoExecutionException
     {
-        if ( apkBuilderClass == null )
-        {
-            throw new MojoExecutionException( "The APKBuilder class was not initialized" );
-        }
-
-        try
-        {
             // We need to first get the debug key store
-            String debugKeyStore = ApkBuilder.getDebugKeystore();
-            apkBuilder = new ApkBuilder( apkFile, resFile, dexFile, ( signed ) ? debugKeyStore : null, verboseStream );
-        }
-        catch ( Exception e )
-        {
-            log.error( "Cannot create the APKBuilder object", e );
-            throw new MojoExecutionException( "Cannot create the APKBuilder object", e );
-        }
+            String debugKeyStore;
+            try 
+            {
+                debugKeyStore = ApkBuilder.getDebugKeystore();
+                apkBuilder = 
+                    new ApkBuilder( apkFile, resFile, dexFile, ( signed ) ? debugKeyStore : null, verboseStream );
+            } 
+            catch ( ApkCreationException e ) 
+            {
+                throw new MojoExecutionException( e.getMessage() );
+            }
     }
 
     /**
