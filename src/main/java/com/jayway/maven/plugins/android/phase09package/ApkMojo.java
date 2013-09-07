@@ -549,7 +549,8 @@ public class ApkMojo extends AbstractAndroidMojo
             }
         }
 
-        ApkBuilder builder = new ApkBuilder( outputFile, zipArchive, dexFile, signWithDebugKeyStore, null );
+        ApkBuilderWrapper builder = 
+           new ApkBuilderWrapper( outputFile, zipArchive, dexFile, signWithDebugKeyStore, null );
 
         if ( apkDebug )
         {
@@ -787,8 +788,7 @@ public class ApkMojo extends AbstractAndroidMojo
 
     private void initializeAPKBuilder() throws MojoExecutionException
     {
-        File file = getAndroidSdk().getSDKLibJar();
-        ApkBuilder.initialize( getLog(), file );
+        ApkBuilderWrapper.initialize( getLog() );
     }
 
     private void processNativeLibraries( final List<File> natives ) throws MojoExecutionException
