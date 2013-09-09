@@ -593,18 +593,27 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 File fileToAttach = nativeArtifactFile;
                 if ( ! libsDirectoryExists && !clearNativeArtifacts )
                 {
-                    getLog().debug( "Moving native compiled artifact to target directory for preservation" );
-                    // This indicates the output directory was created by the build (us) and that we should really
-                    // move it to the target (needed to preserve the attached artifact once install is invoked)
                     final String destFileName = ndkArchitecture + File.separator + nativeArtifactFile.getName();
                     final File destFile = new File( ndkOutputDirectory, destFileName );
-                    if ( destFile.exists() )
+                    if ( !destFile.equals( nativeArtifactFile ) )
                     {
-                        destFile.delete();
+                        getLog().debug( "Moving native compiled artifact to target directory for preservation" );
+                        // This indicates the output directory was created by the build (us) and that we should really
+                        // move it to the target (needed to preserve the attached artifact once install is invoked)
+                        if ( destFile.exists() )
+                        {
+                            destFile.delete();
+                        }
+                        getLog().debug( nativeArtifactFile + " -> " + destFile );
+                        FileUtils.moveFile( nativeArtifactFile, destFile );
+                        fileToAttach = destFile;
                     }
-                    getLog().debug( nativeArtifactFile + " -> " + destFile );
-                    FileUtils.moveFile( nativeArtifactFile, destFile );
-                    fileToAttach = destFile;
+                    else
+                    {
+                        getLog().debug( "Not moving native compiled artifact "
+                            + nativeArtifactFile + " to target as they point to the same file" );
+                        fileToAttach = nativeArtifactFile;
+                    }
                 }
 
                 String classifier = ndkArchitecture;
