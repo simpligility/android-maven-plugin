@@ -51,19 +51,10 @@ public class AndroidSdkTest {
         Assert.assertEquals(new File(sdkTestSupport.getEnv_ANDROID_HOME() + "/tools").getAbsolutePath(), new File(pathForTool).getParentFile().getAbsolutePath());
     }
 
-    @Test(expected = InvalidSdkException.class)
-    public void givenInvalidSdkPathThenException() throws IOException {
-        new AndroidSdk(File.createTempFile("android-maven-plugin", "test"), null).getLayout();
-    }
 
     @Test(expected = InvalidSdkException.class)
     public void givenInvalidPlatformStringThenException() throws IOException {
         final AndroidSdk sdk = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "invalidplatform");
-    }
-
-    @Test
-    public void givenDefaultSdkThenLayoutIs23(){
-        Assert.assertEquals(sdkTestSupport.getSdk_with_platform_default().getLayout(), AndroidSdk.Layout.LAYOUT_2_3);
     }
 
     @Test
@@ -83,8 +74,8 @@ public class AndroidSdkTest {
      */
     @Test
     public void validPlatformsAndApiLevels() {
-        final AndroidSdk sdk16 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "16");
-        final AndroidSdk sdk4_1 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "4.1.2");
+        final AndroidSdk sdk16 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "16"); 
+        final AndroidSdk sdk18 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "18");
     }
 
     @Test(expected = InvalidSdkException.class)

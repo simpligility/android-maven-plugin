@@ -499,7 +499,7 @@ public class MakefileHelper
                     sb.append( a.getArtifactId() );
                 }
             }
-            if ( AndroidExtension.APKLIB.equals( a.getType() ) )
+            if ( AndroidExtension.APKLIB.equals( a.getType() ) || AndroidExtension.AAR.equals( a.getType() ) )
             {
                 File[] libFiles = NativeHelper.listNativeFiles( a, unpackedApkLibsDirectory, 
                                                                 ndkArchitecture, staticLibrary );
