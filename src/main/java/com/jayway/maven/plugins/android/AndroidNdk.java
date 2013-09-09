@@ -13,6 +13,7 @@
  */
 package com.jayway.maven.plugins.android;
 
+import com.jayway.maven.plugins.android.configuration.NDKArchitectureToolchainMappings;
 import com.jayway.maven.plugins.android.phase05compile.NdkBuildMojo;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -40,18 +41,18 @@ public class AndroidNdk
     /**
      * Arm toolchain implementations.
      */
-    private static final String[] ARM_TOOLCHAIN = {  "arm-linux-androideabi-4.7", "arm-linux-androideabi-4.6",
+    public static final String[] ARM_TOOLCHAIN = {  "arm-linux-androideabi-4.7", "arm-linux-androideabi-4.6",
                                                      "arm-linux-androideabi-4.4.3" };
 
     /**
      * x86 toolchain implementations.
      */
-    private static final String[] X86_TOOLCHAIN = { "x86-4.7", "x86-4.6", "x86-4.4.3" };
+    public static final String[] X86_TOOLCHAIN = { "x86-4.7", "x86-4.6", "x86-4.4.3" };
 
     /**
      * Mips toolchain implementations.
      */
-    private static final String[] MIPS_TOOLCHAIN = { "mipsel-linux-android-4.7", "mipsel-linux-android-4.6",
+    public static final String[] MIPS_TOOLCHAIN = { "mipsel-linux-android-4.7", "mipsel-linux-android-4.6",
                                                      "mipsel-linux-android-4.4.3" };
 
     /**
@@ -250,5 +251,51 @@ public class AndroidNdk
         //  if we got here, throw an error
         throw new MojoExecutionException( "gdbserver binary for architecture " + ndkArchitecture
             + " does not exist, please double check the toolchain and OS used" );
+    }
+
+    /** Retrieves, based on the architecture and possibly toolchain mappings, the toolchain for the architecture.
+     * <br/>
+     * <strong>Note:</strong> This method will return the <strong>default</strong> toolchain as defined by the NDK if
+     * not specified in the <code>NDKArchitectureToolchainMappings</code>.
+     *
+     * @param ndkArchitecture Architecture to resolve toolchain for
+     * @param ndkArchitectureToolchainMappings User mappings of architecture to toolchain
+     *
+     * @return Toolchain to be used for the architecture
+     *
+     * @throws MojoExecutionException If a toolchain can not be resolved
+     */
+    public String getToolchainFromArchitecture( final String ndkArchitecture,
+                                                final NDKArchitectureToolchainMappings ndkArchitectureToolchainMappings
+    ) throws MojoExecutionException
+    {
+        if ( ndkArchitecture.startsWith( "arm" ) )
+        {
+            if ( ndkArchitectureToolchainMappings != null )
+            {
+                return ndkArchitectureToolchainMappings.getArmeabi();
+            }
+            return AndroidNdk.ARM_TOOLCHAIN[1];
+        }
+        else if ( ndkArchitecture.startsWith( "x86" ) )
+        {
+            if ( ndkArchitectureToolchainMappings != null )
+            {
+                return ndkArchitectureToolchainMappings.getX86();
+            }
+            return AndroidNdk.X86_TOOLCHAIN[1];
+        }
+        else if ( ndkArchitecture.startsWith( "mips" ) )
+        {
+            if ( ndkArchitectureToolchainMappings != null )
+            {
+                return ndkArchitectureToolchainMappings.getMips();
+            }
+            return AndroidNdk.MIPS_TOOLCHAIN[1];
+        }
+
+        //  if we got here, throw an error
+        throw new MojoExecutionException( "Toolchain for architecture " + ndkArchitecture
+                + "does not exist, please double check the setup" );
     }
 }

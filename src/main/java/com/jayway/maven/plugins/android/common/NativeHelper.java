@@ -370,14 +370,57 @@ public class NativeHelper
         return null;
     }
 
-    public static String[] getNdkArchitectures( final String ndkArchitecture, final String applicationMakefile,
+
+    /** Extracts, if embedded correctly, the artifacts architecture from its classifier.  The format of the
+     * classifier, if including the architecture is &lt;architecture&gt;-&lt;classifier&gt;.  If no
+     * architecture is embedded in the classifier, 'armeabi' will be returned.
+     *
+     * @param artifact The artifact to retrieve the classifier from.
+     * @return The retrieved architecture, or 'armeabi' if not resolveable
+     */
+    public static String extractArchitectureFromArtifact( Artifact artifact )
+    {
+        String classifier = artifact.getClassifier();
+        if ( classifier != null )
+        {
+            for ( String ndkArchitecture : AndroidNdk.NDK_ARCHITECTURES )
+            {
+                if ( classifier.startsWith( ndkArchitecture ) )
+                {
+                    return ndkArchitecture;
+                }
+            }
+        }
+        return "armeabi";
+    }
+
+    /** Attempts to extract, from various sources, the applicable list of NDK architectures to support
+     * as part of the build.
+     * <br/>
+     * <br/>
+     * It retrieves the list from the following places:
+     * <ul>
+     *     <li>ndkArchitecture parameter</li>
+     *     <li>projects Application.mk - currently only a single architecture is supported by this method</li>
+     * </ul>
+     *
+     *
+     * @param ndkArchitectures Space separated list of architectures.  This may be from configuration or otherwise
+     * @param applicationMakefile The makefile (Application.mk) to retrieve the list from.
+     * @param basedir Directory the build is running from (to resolve files)
+     *
+     * @return List of architectures to be supported by build.
+     *
+     * @throws MojoExecutionException
+     */
+    public static String[] getNdkArchitectures( final String ndkArchitectures, final String applicationMakefile,
                                                 final File basedir )
         throws MojoExecutionException
     {
         // if there is a specified ndk architecture, return it
-        if ( ndkArchitecture != null )
+        if ( ndkArchitectures != null )
         {
-            return new String[] { ndkArchitecture };
+            return ndkArchitectures.split( " " );
         }
 
         // if there is no application makefile specified, let's use the default one
@@ -394,11 +437,32 @@ public class NativeHelper
             String[] foundNdkArchitectures = getAppAbi( appMK );
             if ( foundNdkArchitectures != null )
             {
+                if ( foundNdkArchitectures.length > 1 )
+                {
+                    throw new MojoExecutionException( "Currently, only a single architecture"
+                            + " is supported in the Application.mk" );
+                }
                 return foundNdkArchitectures;
             }
         }
 
         // return a default ndk architecture
         return new String[] { "armeabi" };
+    }
+
+    /** Helper method for determining whether the specified architecture is a match for the
+     * artifact using the classifier.  When used for architecture matching, the classifier must be
+     * formed by &lt;architecture&gt;-&lt;classifier&gt;.
+     * If the artifact is legacy and defines no valid architecture, the artifact architecture will
+     * default to <strong>armeabi</strong>.
+     *
+     * @param ndkArchitecture Architecture to check for match
+     * @param artifact Artifact to check the classifier match for
+     * @return True if the architecture matches, otherwise false
+     */
+    public static boolean isMatchinArchitecture( final String ndkArchitecture, final Artifact artifact )
+    {
+        String classifier = extractArchitectureFromArtifact( artifact );
+        return classifier != null && classifier.equals( ndkArchitecture );
     }
 }

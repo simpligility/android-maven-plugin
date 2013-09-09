@@ -155,7 +155,10 @@ public class MakefileHelper
         {
             for ( Artifact artifact : artifacts )
             {
-                boolean apklibStatic = false;
+                if ( !NativeHelper.isMatchinArchitecture( ndkArchitecture, artifact ) )
+                {
+                    continue;
+                }
 
                 makeFile.append( "#\n" );
                 makeFile.append( "# Group ID: " );
@@ -175,7 +178,9 @@ public class MakefileHelper
                 makeFile.append( "LOCAL_MODULE    := " );
                 makeFile.append( artifact.getArtifactId() );
                 makeFile.append( '\n' );
-                apklibStatic = addLibraryDetails( makeFile, outputDir, artifact, ndkArchitecture );
+
+                final boolean apklibStatic = addLibraryDetails( makeFile, outputDir, artifact, ndkArchitecture );
+
                 if ( useHeaderArchives )
                 {
                     try
@@ -246,8 +251,7 @@ public class MakefileHelper
             // We assume that APKLIB contains a single static OR shared library
             // that we should link against. The follow code identifies that file.
             //
-            File[] staticLibs = NativeHelper.listNativeFiles( artifact, unpackedApkLibsDirectory, 
-                                                              architecture, true );
+            File[] staticLibs = NativeHelper.listNativeFiles( artifact, unpackedApkLibsDirectory, architecture, true );
             if ( staticLibs != null && staticLibs.length > 0 )
             {
                 int libIdx = findApklibNativeLibrary( staticLibs, artifact.getArtifactId() );
@@ -481,11 +485,19 @@ public class MakefileHelper
         {
             if ( staticLibrary && "a".equals( a.getType() ) )
             {
-                sb.append( a.getArtifactId() );
+                // Only add the library if the architecture is matching
+                if ( NativeHelper.isMatchinArchitecture( ndkArchitecture, a ) )
+                {
+                    sb.append( a.getArtifactId() );
+                }
             }
             if ( ! staticLibrary && "so".equals( a.getType() ) )
             {
-                sb.append( a.getArtifactId() );
+                // Only add the library if the architecture is matching
+                if ( NativeHelper.isMatchinArchitecture( ndkArchitecture, a ) )
+                {
+                    sb.append( a.getArtifactId() );
+                }
             }
             if ( AndroidExtension.APKLIB.equals( a.getType() ) )
             {
