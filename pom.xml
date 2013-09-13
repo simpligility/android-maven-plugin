@@ -53,6 +53,10 @@
         <easymock.version>3.2</easymock.version>
         <powermock.version>1.5.1</powermock.version>
         <aether.version>1.13.1</aether.version>
+        
+        <!-- Attention - make sure that the tools version is the versions of the transitive dependencies of the builder version -->
+        <android.builder.version>0.5.7</android.builder.version>
+        <android.tools.version>22.2.0</android.tools.version>
     </properties>
     <scm>
         <url>http://github.com/jayway/maven-android-plugin/tree/${scm.branch}</url>
@@ -119,10 +123,61 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>com.android.tools</groupId>
+            <artifactId>common</artifactId>
+            <version>${android.tools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.android.tools</groupId>
+            <artifactId>dvlib</artifactId>
+            <version>${android.tools.version}</version>
+        </dependency>
+         <dependency>
+            <groupId>com.android.tools</groupId>
+            <artifactId>sdk-common</artifactId>
+            <version>${android.tools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.android.tools</groupId>
+            <artifactId>sdklib</artifactId>
+            <version>${android.tools.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.android.tools.build</groupId>
             <artifactId>builder</artifactId>
-            <version>0.5.7</version>
+            <version>${android.builder.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.android.tools.build</groupId>
+            <artifactId>manifest-merger</artifactId>
+            <version>${android.tools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.android.tools.ddms</groupId>
+            <artifactId>ddmlib</artifactId>
+            <version>${android.tools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.android.tools.layoutlib</groupId>
+            <artifactId>layoutlib-api</artifactId>
+            <version>${android.tools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.android.tools.lint</groupId>
+            <artifactId>lint</artifactId>
+            <version>${android.tools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.android.tools.lint</groupId>
+            <artifactId>lint-api</artifactId>
+            <version>${android.tools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.android.tools.lint</groupId>
+            <artifactId>lint-checks</artifactId>
+            <version>${android.tools.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-artifact</artifactId>
