@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -157,6 +159,12 @@ public class MakefileHelper
             {
                 boolean apklibStatic = false;
 
+                if ( artifact.hasClassifier() )
+                {
+                    makeFile.append( '\n' );
+                    makeFile.append( "ifeq ($(TARGET_ARCH_ABI)," ).append( artifact.getClassifier() ).append( ")\n" );
+                }
+
                 makeFile.append( "#\n" );
                 makeFile.append( "# Group ID: " );
                 makeFile.append( artifact.getGroupId() );
@@ -227,6 +235,12 @@ public class MakefileHelper
                 else
                 {
                     makeFile.append( "include $(PREBUILT_SHARED_LIBRARY)\n" );
+                }
+
+                if ( artifact.hasClassifier() )
+                {
+                    makeFile.append( "endif #" ).append( artifact.getClassifier() ).append( '\n' );
+                    makeFile.append( '\n' );
                 }
             }
         }
@@ -475,17 +489,17 @@ public class MakefileHelper
                                      String ndkArchitecture,
                                      boolean staticLibrary )
     {
-        StringBuilder sb = new StringBuilder();
+        Set<String> libraryNames = new LinkedHashSet<String>();
 
         for ( Artifact a : resolvedLibraryList )
         {
             if ( staticLibrary && "a".equals( a.getType() ) )
             {
-                sb.append( a.getArtifactId() );
+                libraryNames.add( a.getArtifactId() );
             }
             if ( ! staticLibrary && "so".equals( a.getType() ) )
             {
-                sb.append( a.getArtifactId() );
+                libraryNames.add( a.getArtifactId() );
             }
             if ( AndroidExtension.APKLIB.equals( a.getType() ) || AndroidExtension.AAR.equals( a.getType() ) )
             {
@@ -493,11 +507,24 @@ public class MakefileHelper
                                                                 ndkArchitecture, staticLibrary );
                 if ( libFiles != null && libFiles.length > 0 )
                 {
-                    sb.append( a.getArtifactId() );
+                    libraryNames.add( a.getArtifactId() );
                 }
                 
             }
-            sb.append( " " );
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        Iterator<String> iter = libraryNames.iterator();
+
+        while ( iter.hasNext() )
+        {
+            sb.append( iter.next() );
+
+            if ( iter.hasNext() )
+            {
+                sb.append( " " );
+            }
         }
 
         return sb.toString();
