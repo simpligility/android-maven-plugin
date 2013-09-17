@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -155,9 +157,10 @@ public class MakefileHelper
         {
             for ( Artifact artifact : artifacts )
             {
-                if ( !NativeHelper.isMatchinArchitecture( ndkArchitecture, artifact ) )
+                if ( artifact.hasClassifier() )
                 {
-                    continue;
+                    makeFile.append( '\n' );
+                    makeFile.append( "ifeq ($(TARGET_ARCH_ABI)," ).append( artifact.getClassifier() ).append( ")\n" );
                 }
 
                 makeFile.append( "#\n" );
@@ -233,6 +236,12 @@ public class MakefileHelper
                 {
                     makeFile.append( "include $(PREBUILT_SHARED_LIBRARY)\n" );
                 }
+
+                if ( artifact.hasClassifier() )
+                {
+                    makeFile.append( "endif #" ).append( artifact.getClassifier() ).append( '\n' );
+                    makeFile.append( '\n' );
+                }
             }
         }
         
@@ -251,7 +260,8 @@ public class MakefileHelper
             // We assume that APKLIB contains a single static OR shared library
             // that we should link against. The follow code identifies that file.
             //
-            File[] staticLibs = NativeHelper.listNativeFiles( artifact, unpackedApkLibsDirectory, architecture, true );
+            File[] staticLibs = NativeHelper.listNativeFiles( artifact, unpackedApkLibsDirectory, 
+                                                              architecture, true );
             if ( staticLibs != null && staticLibs.length > 0 )
             {
                 int libIdx = findApklibNativeLibrary( staticLibs, artifact.getArtifactId() );
@@ -479,25 +489,17 @@ public class MakefileHelper
                                      String ndkArchitecture,
                                      boolean staticLibrary )
     {
-        StringBuilder sb = new StringBuilder();
+        Set<String> libraryNames = new LinkedHashSet<String>();
 
         for ( Artifact a : resolvedLibraryList )
         {
             if ( staticLibrary && "a".equals( a.getType() ) )
             {
-                // Only add the library if the architecture is matching
-                if ( NativeHelper.isMatchinArchitecture( ndkArchitecture, a ) )
-                {
-                    sb.append( a.getArtifactId() );
-                }
+                libraryNames.add( a.getArtifactId() );
             }
             if ( ! staticLibrary && "so".equals( a.getType() ) )
             {
-                // Only add the library if the architecture is matching
-                if ( NativeHelper.isMatchinArchitecture( ndkArchitecture, a ) )
-                {
-                    sb.append( a.getArtifactId() );
-                }
+                libraryNames.add( a.getArtifactId() );
             }
             if ( AndroidExtension.APKLIB.equals( a.getType() ) || AndroidExtension.AAR.equals( a.getType() ) )
             {
@@ -505,11 +507,24 @@ public class MakefileHelper
                                                                 ndkArchitecture, staticLibrary );
                 if ( libFiles != null && libFiles.length > 0 )
                 {
-                    sb.append( a.getArtifactId() );
+                    libraryNames.add( a.getArtifactId() );
                 }
                 
             }
-            sb.append( " " );
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        Iterator<String> iter = libraryNames.iterator();
+
+        while ( iter.hasNext() )
+        {
+            sb.append( iter.next() );
+
+            if ( iter.hasNext() )
+            {
+                sb.append( " " );
+            }
         }
 
         return sb.toString();
