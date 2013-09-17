@@ -74,8 +74,8 @@ public class AndroidSdkTest {
      */
     @Test
     public void validPlatformsAndApiLevels() {
+        // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
         final AndroidSdk sdk16 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "16"); 
-        final AndroidSdk sdk18 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "18");
     }
 
     @Test(expected = InvalidSdkException.class)
