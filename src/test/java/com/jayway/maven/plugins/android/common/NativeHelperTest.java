@@ -111,7 +111,7 @@ public class NativeHelperTest {
         for (String ndkArchitecture : AndroidNdk.NDK_ARCHITECTURES)
         {
             Artifact artifact = new DefaultArtifact("acme", "acme", "1.0", "runtime", "so", ndkArchitecture, null);
-            String architecture = NativeHelper.extractArchitectureFromArtifact(artifact);
+            String architecture = NativeHelper.extractArchitectureFromArtifact(artifact, "armeabi");
             assertNotNull("unexpected null architecture", architecture);
             assertEquals("unexpected architecture", ndkArchitecture, architecture);
         }
@@ -124,7 +124,7 @@ public class NativeHelperTest {
         for (String ndkArchitecture : AndroidNdk.NDK_ARCHITECTURES)
         {
             Artifact artifact = new DefaultArtifact("acme", "acme", "1.0", "runtime", "so", ndkArchitecture + "-acme", null);
-            String architecture = NativeHelper.extractArchitectureFromArtifact(artifact);
+            String architecture = NativeHelper.extractArchitectureFromArtifact(artifact, "armeabi");
             assertNotNull("unexpected null architecture", architecture);
             assertEquals("unexpected architecture", ndkArchitecture, architecture);
         }
@@ -134,9 +134,47 @@ public class NativeHelperTest {
     public void architectureResolutionForDefaultLegacyArchitectureClassifier() throws Exception
     {
         Artifact artifact = new DefaultArtifact("acme", "acme", "1.0", "runtime", "so", "acme", null);
-        String architecture = NativeHelper.extractArchitectureFromArtifact(artifact);
+        String architecture = NativeHelper.extractArchitectureFromArtifact(artifact, "armeabi");
         assertNotNull("unexpected null architecture", architecture);
         assertEquals("unexpected architecture", "armeabi", architecture);
+    }
+
+    @Test
+    public void artifactHasHardwareArchitecture() throws Exception
+    {
+        for (String ndkArchitecture : AndroidNdk.NDK_ARCHITECTURES)
+       {
+           Artifact artifact = new DefaultArtifact("acme", "acme", "1.0", "runtime", "so", ndkArchitecture, null);
+           boolean value = NativeHelper.artifactHasHardwareArchitecture(artifact, ndkArchitecture, "armeabi");
+           assertTrue("unexpected value", value);
+       }
+    }
+
+    @Test
+    public void artifactHasHardwareArchitectureWithClassifier() throws Exception
+    {
+       for (String ndkArchitecture : AndroidNdk.NDK_ARCHITECTURES)
+       {
+           Artifact artifact = new DefaultArtifact("acme", "acme", "1.0", "runtime", "so", ndkArchitecture + "-acme", null);
+           boolean value = NativeHelper.artifactHasHardwareArchitecture(artifact, ndkArchitecture, "armeabi");
+           assertTrue("unexpected value", value);
+       }
+    }
+
+    @Test
+    public void artifactHasHardwareArchitectureWithDefaultLegacyClassifier() throws Exception
+    {
+        Artifact artifact = new DefaultArtifact("acme", "acme", "1.0", "runtime", "so", "acme", null);
+        boolean value = NativeHelper.artifactHasHardwareArchitecture(artifact, "armeabi", "armeabi");
+        assertTrue("unexpected value", value);
+    }
+
+    @Test
+    public void artifactHasHardwareArchitectureNotNativeLibrary() throws Exception
+    {
+        Artifact artifact = new DefaultArtifact("acme", "acme", "1.0", "runtime", "jar", "armeabi", null);
+        boolean value = NativeHelper.artifactHasHardwareArchitecture(artifact, "armeabi", "armeabi");
+        assertFalse("unexpected value", value);
     }
 
 }

@@ -391,7 +391,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                                                                           unpackedApkLibsDirectory );
                 final MakefileHelper.MakefileHolder makefileHolder = makefileHelper
                         .createMakefileFromArtifacts( new File( ndkBuildDirectory ),
-                                                      resolveNativeLibraryArtifacts, ndkArchitecture,
+                                                      resolveNativeLibraryArtifacts, ndkArchitecture, "armeabi",
                                                       useHeaderArchives );
 
                 final FileOutputStream output = new FileOutputStream( androidMavenMakefile );
