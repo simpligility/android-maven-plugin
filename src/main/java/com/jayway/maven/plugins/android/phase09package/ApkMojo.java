@@ -256,6 +256,15 @@ public class ApkMojo extends AbstractAndroidMojo
     private static final Pattern PATTERN_JAR_EXT = Pattern.compile( "^.+\\.jar$", 2 );
 
     /**
+     * <p>Default hardware architecture for native library dependencies (with {@code &lt;type>so&lt;/type>})
+     * without a classifier.</p>
+     * <p>Valid values currently include {@code armeabi}, {@code armeabi-v7a}, {@code mips} and {@code x86}.</p>
+     *
+     * @parameter expression="${android.nativeLibrariesDependenciesHardwareArchitectureDefault}" default-value="armeabi"
+     */
+    private String nativeLibrariesDependenciesHardwareArchitectureDefault;
+
+    /**
      *
      * @throws MojoExecutionException
      * @throws MojoFailureException
@@ -743,18 +752,9 @@ public class ApkMojo extends AbstractAndroidMojo
         // Examine the native libraries directory for content. This will only be true if:
         // a) the directory exists
         // b) it contains at least 1 file
-        final boolean hasValidNativeLibrariesDirectory = nativeLibrariesDirectory != null
-                && nativeLibrariesDirectory.exists()
-                && ( nativeLibrariesDirectory.listFiles() != null && nativeLibrariesDirectory.listFiles().length > 0 );
-
-        // Retrieve any native dependencies or attached artifacts.  This may include artifacts from the ndk-build MOJO
-        NativeHelper nativeHelper = new NativeHelper( project, projectRepos, repoSession, repoSystem, artifactFactory,
-                getLog() );
-        final Set<Artifact> artifacts = nativeHelper.getNativeDependenciesArtifacts( unpackedApkLibsDirectory, true );
-
-        final boolean hasValidBuildNativeLibrariesDirectory = nativeLibrariesOutputDirectory.exists() && (
-                nativeLibrariesOutputDirectory.listFiles() != null
-                && nativeLibrariesOutputDirectory.listFiles().length > 0 );
+        final boolean hasValidNativeLibrariesDirectory = hasValidNativeLibrariesDirectory();
+        final boolean hasValidBuildNativeLibrariesDirectory = hasValidBuildNativeLibrariesDirectory();
+        final Set<Artifact> artifacts = getNativeLibraryArtifacts();
 
         if ( artifacts.isEmpty() && hasValidNativeLibrariesDirectory && ! hasValidBuildNativeLibrariesDirectory )
         {
@@ -777,9 +777,7 @@ public class ApkMojo extends AbstractAndroidMojo
                 // In this case, we may have both .so files in it's normal location
                 // as well as .so dependencies
 
-                // Create the ${project.build.outputDirectory}/libs
-                final File destinationDirectory = new File( nativeLibrariesOutputDirectory.getAbsolutePath() );
-                destinationDirectory.mkdirs();
+                final File destinationDirectory = makeNativeLibrariesOutputDirectory();
 
                 // Point directly to the directory
                 addNativeDirectory( natives, destinationDirectory );
@@ -797,44 +795,14 @@ public class ApkMojo extends AbstractAndroidMojo
                         if ( "so".equals( resolvedArtifact.getType() ) && NativeHelper.isMatchingArchitecture(
                                 ndkArchitecture, resolvedArtifact ) )
                         {
-                            final File artifactFile = resolvedArtifact.getFile();
-                            try
-                            {
-                                final String artifactId = resolvedArtifact.getArtifactId();
-                                String filename = artifactId.startsWith( "lib" ) 
-                                        ? artifactId + ".so"
-                                        : "lib" + artifactId + ".so";
-                                if ( ndkFinalLibraryName != null 
-                                        && ( resolvedArtifact.getFile().getName()
-                                                .startsWith( "lib" + ndkFinalLibraryName ) ) )
-                                {
-                                    // The artifact looks like one we built with the NDK in this module
-                                    // preserve the name from the NDK build
-                                    filename = resolvedArtifact.getFile().getName();
-                                }
-
-                                final File finalDestinationDirectory = getFinalDestinationDirectoryFor(
-                                        resolvedArtifact, destinationDirectory, ndkArchitecture );
-                                final File file = new File( finalDestinationDirectory, filename );
-                                getLog().debug(
-                                        "Copying native dependency " + artifactId + " (" + resolvedArtifact.getGroupId()
-                                        +
-                                        ") to " + file );
-                                org.apache.commons.io.FileUtils.copyFile( artifactFile, file );
-                            }
-                            catch ( Exception e )
-                            {
-                                throw new MojoExecutionException( "Could not copy native dependency.", e );
-                            }
+                            copyNativeLibraryArtifactFileToDirectory( resolvedArtifact, destinationDirectory,
+                                    ndkArchitecture );
                         }
-                        else
-                        {
-                            if ( APKLIB.equals( resolvedArtifact.getType() )
+                        else if ( APKLIB.equals( resolvedArtifact.getType() )
                                 || AAR.equals( resolvedArtifact.getType() ) )
-                            {
+                        {
                                 addNativeDirectory( natives, new File( getLibraryUnpackDirectory( resolvedArtifact )
                                                                            + "/libs" ) );
-                            }
                         }
                     }
                 }
@@ -844,6 +812,95 @@ public class ApkMojo extends AbstractAndroidMojo
             }
         }
     }
+
+    /**
+     * Examine the native libraries directory for content. This will only be true if:
+     * <ul>
+     * <li>The directory exists</li>
+     * <li>It contains at least 1 file</li>
+     * </ul>
+     */
+    private boolean hasValidNativeLibrariesDirectory()
+    {
+        return nativeLibrariesDirectory != null
+                && nativeLibrariesDirectory.exists()
+                && ( nativeLibrariesDirectory.listFiles() != null && nativeLibrariesDirectory.listFiles().length > 0 );
+    }
+
+    private boolean hasValidBuildNativeLibrariesDirectory()
+    {
+        return nativeLibrariesOutputDirectory.exists() && (
+                nativeLibrariesOutputDirectory.listFiles() != null
+                        && nativeLibrariesOutputDirectory.listFiles().length > 0 );
+    }
+
+    /**
+     * @return Any native dependencies or attached artifacts. This may include artifacts from the ndk-build MOJO.
+     * @throws MojoExecutionException
+     */
+    private Set<Artifact> getNativeLibraryArtifacts() throws MojoExecutionException
+    {
+        return new NativeHelper( project, projectRepos, repoSession, repoSystem, artifactFactory, getLog() )
+                .getNativeDependenciesArtifacts( unpackedApkLibsDirectory, true );
+    }
+
+    /**
+     * Create the ${project.build.outputDirectory}/libs directory.
+     *
+     * @return File reference to the native libraries output directory.
+     */
+    private File makeNativeLibrariesOutputDirectory()
+    {
+        final File destinationDirectory = new File( nativeLibrariesOutputDirectory.getAbsolutePath() );
+        destinationDirectory.mkdirs();
+        return destinationDirectory;
+    }
+
+
+    private boolean artifactHasHardwareArchitecture( Artifact artifact, String ndkArchitecture )
+    {
+        return "so".equals( artifact.getType() )
+                && ndkArchitecture.equals( getHardwareArchitectureForArtifact( artifact ) );
+    }
+
+    private String getHardwareArchitectureForArtifact( Artifact artifact )
+    {
+        return NativeHelper.extractArchitectureFromArtifact( artifact );
+    }
+
+    private void copyNativeLibraryArtifactFileToDirectory( Artifact artifact, File destinationDirectory,
+                                                           String ndkArchitecture ) throws MojoExecutionException
+    {
+        final File artifactFile = artifact.getFile();
+        try
+        {
+            final String artifactId = artifact.getArtifactId();
+            String filename = artifactId.startsWith( "lib" )
+                    ? artifactId + ".so"
+                    : "lib" + artifactId + ".so";
+            if ( ndkFinalLibraryName != null
+                    && artifact.getFile().getName().startsWith( "lib" + ndkFinalLibraryName ) )
+            {
+                // The artifact looks like one we built with the NDK in this module
+                // preserve the name from the NDK build
+                filename = artifact.getFile().getName();
+            }
+
+            final File finalDestinationDirectory = getFinalDestinationDirectoryFor( artifact,
+                    destinationDirectory, ndkArchitecture );
+            final File file = new File( finalDestinationDirectory, filename );
+            getLog().debug(
+                    "Copying native dependency " + artifactId + " (" + artifact.getGroupId()
+                            +
+                            ") to " + file );
+            FileUtils.copyFile( artifactFile, file );
+        }
+        catch ( Exception e )
+        {
+            throw new MojoExecutionException( "Could not copy native dependency.", e );
+        }
+    }
+
 
     private void optionallyCopyGdbServer( File destinationDirectory, String architecture ) throws MojoExecutionException
     {
