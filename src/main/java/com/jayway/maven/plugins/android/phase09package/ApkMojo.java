@@ -794,7 +794,7 @@ public class ApkMojo extends AbstractAndroidMojo
                 {
                     for ( Artifact resolvedArtifact : artifacts )
                     {
-                        if ( "so".equals( resolvedArtifact.getType() ) && NativeHelper.isMatchinArchitecture(
+                        if ( "so".equals( resolvedArtifact.getType() ) && NativeHelper.isMatchingArchitecture(
                                 ndkArchitecture, resolvedArtifact ) )
                         {
                             final File artifactFile = resolvedArtifact.getFile();
