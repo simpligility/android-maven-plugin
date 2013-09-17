@@ -131,7 +131,7 @@ public class MakefileHelper
      * @return The created Makefile
      */
     public MakefileHolder createMakefileFromArtifacts( File outputDir, Set<Artifact> artifacts,
-                                                              String ndkArchitecture,
+                                                              String ndkArchitecture, String defaultNDKArchitecture,
                                                               boolean useHeaderArchives )
             throws IOException, MojoExecutionException
     {
@@ -157,13 +157,11 @@ public class MakefileHelper
         {
             for ( Artifact artifact : artifacts )
             {
-                boolean apklibStatic = false;
+                final String architecture = NativeHelper.extractArchitectureFromArtifact( artifact,
+                        defaultNDKArchitecture );
 
-                if ( artifact.hasClassifier() )
-                {
-                    makeFile.append( '\n' );
-                    makeFile.append( "ifeq ($(TARGET_ARCH_ABI)," ).append( artifact.getClassifier() ).append( ")\n" );
-                }
+                makeFile.append( '\n' );
+                makeFile.append( "ifeq ($(TARGET_ARCH_ABI)," ).append( architecture ).append( ")\n" );
 
                 makeFile.append( "#\n" );
                 makeFile.append( "# Group ID: " );
@@ -183,7 +181,9 @@ public class MakefileHelper
                 makeFile.append( "LOCAL_MODULE    := " );
                 makeFile.append( artifact.getArtifactId() );
                 makeFile.append( '\n' );
-                apklibStatic = addLibraryDetails( makeFile, outputDir, artifact, ndkArchitecture );
+
+                final boolean apklibStatic = addLibraryDetails( makeFile, outputDir, artifact, ndkArchitecture );
+
                 if ( useHeaderArchives )
                 {
                     try
@@ -237,11 +237,9 @@ public class MakefileHelper
                     makeFile.append( "include $(PREBUILT_SHARED_LIBRARY)\n" );
                 }
 
-                if ( artifact.hasClassifier() )
-                {
-                    makeFile.append( "endif #" ).append( artifact.getClassifier() ).append( '\n' );
-                    makeFile.append( '\n' );
-                }
+                makeFile.append( "endif #" ).append( artifact.getClassifier() ).append( '\n' );
+                makeFile.append( '\n' );
+
             }
         }
         

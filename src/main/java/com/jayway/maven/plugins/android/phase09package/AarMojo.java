@@ -208,8 +208,7 @@ public class AarMojo extends AbstractAndroidMojo
                 getLog().info( nativeLibrariesDirectory 
                         + " does not exist, looking for libraries in target directory." );
                 // Add native libraries built and attached in this build
-                String[] ndkArchitectures = NativeHelper.getNdkArchitectures( ndkClassifier,
-                                                                              ndkArchitecture,
+                String[] ndkArchitectures = NativeHelper.getNdkArchitectures( ndkArchitecture,
                                                                               applicationMakefile,
                                                                               project.getBasedir() );
                 for ( String ndkArchitecture : ndkArchitectures )
