@@ -199,6 +199,11 @@ public class DexMojo extends AbstractAndroidMojo
                         inputs.add( new File( apkLibResDir ) );
                     }
                 }
+                else if ( artifact.getType().equals( "so" ) || artifact.getType().equals( "a" ) )
+                {
+                    // Ignore native dependencies - no need for dexer to see those
+                    continue;
+                }
                 else
                 {
                     inputs.add( artifact.getFile().getAbsoluteFile() );

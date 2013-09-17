@@ -383,14 +383,23 @@ public class NativeHelper
         String classifier = artifact.getClassifier();
         if ( classifier != null )
         {
-            for ( String ndkArchitecture : AndroidNdk.NDK_ARCHITECTURES )
+            //
+            // We loop backwards to catch the case where the classifier is
+            // potentially armeabi-v7a - this collides with armeabi if looping
+            // through this loop in the other direction
+            //
+
+            for ( int i = AndroidNdk.NDK_ARCHITECTURES.length - 1; i >= 0; i-- )
             {
+                String ndkArchitecture = AndroidNdk.NDK_ARCHITECTURES[i];
                 if ( classifier.startsWith( ndkArchitecture ) )
                 {
                     return ndkArchitecture;
                 }
             }
+
         }
+        // Default case is to return the default architecture (armeabi)
         return "armeabi";
     }
 
@@ -437,11 +446,6 @@ public class NativeHelper
             String[] foundNdkArchitectures = getAppAbi( appMK );
             if ( foundNdkArchitectures != null )
             {
-                if ( foundNdkArchitectures.length > 1 )
-                {
-                    throw new MojoExecutionException( "Currently, only a single architecture"
-                            + " is supported in the Application.mk" );
-                }
                 return foundNdkArchitectures;
             }
         }
@@ -460,7 +464,7 @@ public class NativeHelper
      * @param artifact Artifact to check the classifier match for
      * @return True if the architecture matches, otherwise false
      */
-    public static boolean isMatchinArchitecture( final String ndkArchitecture, final Artifact artifact )
+    public static boolean isMatchingArchitecture( final String ndkArchitecture, final Artifact artifact )
     {
         String classifier = extractArchitectureFromArtifact( artifact );
         return classifier != null && classifier.equals( ndkArchitecture );
