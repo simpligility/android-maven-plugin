@@ -792,8 +792,8 @@ public class ApkMojo extends AbstractAndroidMojo
                 {
                     for ( Artifact resolvedArtifact : artifacts )
                     {
-                        if ( "so".equals( resolvedArtifact.getType() ) && NativeHelper.isMatchingArchitecture(
-                                ndkArchitecture, resolvedArtifact ) )
+                        if ( NativeHelper.artifactHasHardwareArchitecture( resolvedArtifact,
+                                ndkArchitecture, nativeLibrariesDependenciesHardwareArchitectureDefault ) )
                         {
                             copyNativeLibraryArtifactFileToDirectory( resolvedArtifact, destinationDirectory,
                                     ndkArchitecture );
@@ -854,18 +854,6 @@ public class ApkMojo extends AbstractAndroidMojo
         final File destinationDirectory = new File( nativeLibrariesOutputDirectory.getAbsolutePath() );
         destinationDirectory.mkdirs();
         return destinationDirectory;
-    }
-
-
-    private boolean artifactHasHardwareArchitecture( Artifact artifact, String ndkArchitecture )
-    {
-        return "so".equals( artifact.getType() )
-                && ndkArchitecture.equals( getHardwareArchitectureForArtifact( artifact ) );
-    }
-
-    private String getHardwareArchitectureForArtifact( Artifact artifact )
-    {
-        return NativeHelper.extractArchitectureFromArtifact( artifact );
     }
 
     private void copyNativeLibraryArtifactFileToDirectory( Artifact artifact, File destinationDirectory,

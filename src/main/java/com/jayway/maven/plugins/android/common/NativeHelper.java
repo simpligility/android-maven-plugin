@@ -375,10 +375,12 @@ public class NativeHelper
      * classifier, if including the architecture is &lt;architecture&gt;-&lt;classifier&gt;.  If no
      * architecture is embedded in the classifier, 'armeabi' will be returned.
      *
+     *
      * @param artifact The artifact to retrieve the classifier from.
-     * @return The retrieved architecture, or 'armeabi' if not resolveable
+     * @param defaultArchitecture The architecture to return if can't be resolved from the classifier
+     * @return The retrieved architecture, or <code>defaulArchitecture</code> if not resolveable
      */
-    public static String extractArchitectureFromArtifact( Artifact artifact )
+    public static String extractArchitectureFromArtifact( Artifact artifact, final String defaultArchitecture )
     {
         String classifier = artifact.getClassifier();
         if ( classifier != null )
@@ -399,8 +401,8 @@ public class NativeHelper
             }
 
         }
-        // Default case is to return the default architecture (armeabi)
-        return "armeabi";
+        // Default case is to return the default architecture
+        return defaultArchitecture;
     }
 
     /** Attempts to extract, from various sources, the applicable list of NDK architectures to support
@@ -455,7 +457,7 @@ public class NativeHelper
     }
 
     /** Helper method for determining whether the specified architecture is a match for the
-     * artifact using the classifier.  When used for architecture matching, the classifier must be
+     * artifact using its classifier.  When used for architecture matching, the classifier must be
      * formed by &lt;architecture&gt;-&lt;classifier&gt;.
      * If the artifact is legacy and defines no valid architecture, the artifact architecture will
      * default to <strong>armeabi</strong>.
@@ -464,9 +466,11 @@ public class NativeHelper
      * @param artifact Artifact to check the classifier match for
      * @return True if the architecture matches, otherwise false
      */
-    public static boolean isMatchingArchitecture( final String ndkArchitecture, final Artifact artifact )
+    public static boolean artifactHasHardwareArchitecture( Artifact artifact, String ndkArchitecture,
+                                                           String defaultArchitecture )
     {
-        String classifier = extractArchitectureFromArtifact( artifact );
-        return classifier != null && classifier.equals( ndkArchitecture );
+        return "so".equals( artifact.getType() )
+                && ndkArchitecture.equals( extractArchitectureFromArtifact( artifact, defaultArchitecture ) );
     }
+
 }

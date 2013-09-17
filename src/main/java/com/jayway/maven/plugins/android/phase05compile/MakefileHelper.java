@@ -131,7 +131,7 @@ public class MakefileHelper
      * @return The created Makefile
      */
     public MakefileHolder createMakefileFromArtifacts( File outputDir, Set<Artifact> artifacts,
-                                                              String ndkArchitecture,
+                                                              String ndkArchitecture, String defaultNDKArchitecture,
                                                               boolean useHeaderArchives )
             throws IOException, MojoExecutionException
     {
@@ -157,7 +157,8 @@ public class MakefileHelper
         {
             for ( Artifact artifact : artifacts )
             {
-                final String architecture = NativeHelper.extractArchitectureFromArtifact( artifact );
+                final String architecture = NativeHelper.extractArchitectureFromArtifact( artifact,
+                        defaultNDKArchitecture );
 
                 makeFile.append( '\n' );
                 makeFile.append( "ifeq ($(TARGET_ARCH_ABI)," ).append( architecture ).append( ")\n" );
