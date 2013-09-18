@@ -1,0 +1,9 @@
+com.jayway.maven.plugins.android
+com.jayway.maven.plugins.android.asm
+com.jayway.maven.plugins.android.asm.withouttests
+com.jayway.maven.plugins.android.asm.withtests
+com.jayway.maven.plugins.android.common
+com.jayway.maven.plugins.android.config
+com.jayway.maven.plugins.android.phase05compile
+com.jayway.maven.plugins.android.phase09package
+com.jayway.maven.plugins.android.standalonemojos

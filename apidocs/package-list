@@ -1,0 +1,15 @@
+com.android.ddmlib.testrunner
+com.jayway.maven.plugins.android
+com.jayway.maven.plugins.android.asm
+com.jayway.maven.plugins.android.common
+com.jayway.maven.plugins.android.config
+com.jayway.maven.plugins.android.configuration
+com.jayway.maven.plugins.android.phase00clean
+com.jayway.maven.plugins.android.phase01generatesources
+com.jayway.maven.plugins.android.phase04processclasses
+com.jayway.maven.plugins.android.phase05compile
+com.jayway.maven.plugins.android.phase08preparepackage
+com.jayway.maven.plugins.android.phase09package
+com.jayway.maven.plugins.android.phase11preintegrationtest
+com.jayway.maven.plugins.android.phase12integrationtest
+com.jayway.maven.plugins.android.standalonemojos
