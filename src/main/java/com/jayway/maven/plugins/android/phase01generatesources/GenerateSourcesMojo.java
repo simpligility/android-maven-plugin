@@ -544,6 +544,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( "-c" );
             commands.add( configurations );
         }
+
+        for ( String aaptExtraArg : aaptExtraArgs )
+        {
+            commands.add( aaptExtraArg );
+        }
+
         if ( proguardFile != null )
         {
             File parentFolder = proguardFile.getParentFile();
@@ -739,6 +745,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( "-c" );
             commands.add( configurations );
         }
+
+        for ( String aaptExtraArg : aaptExtraArgs )
+        {
+            commands.add( aaptExtraArg );
+        }
+
         getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
         try
         {
