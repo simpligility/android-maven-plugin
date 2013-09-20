@@ -459,8 +459,6 @@
                     </reportPlugins>
                 </configuration>
             </plugin>
-
-<!--
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -472,16 +470,10 @@
                     <stagingProfileId>26a4c760b261ca</stagingProfileId>
                 </configuration>
             </plugin>
--->
         </plugins>
     </build>
 
     <distributionManagement>
-        <repository>
-            <id>oss.sonatype.org-jayway-staging</id>
-            <name>OpenSource Release Staging on Sonatype.org</name>
-            <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
         <snapshotRepository>
             <id>oss.sonatype.org-jayway-snapshots</id>
             <name>Jayway OpenSource SNAPSHOTs on Sonatype.org</name>
