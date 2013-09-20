@@ -356,7 +356,8 @@
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <useReleaseProfile>false</useReleaseProfile>
                     <arguments>-Pofficial-release</arguments>
-                    <goals>plugin:report deploy site-deploy</goals>
+                    <!--  only site since the ghpages are deployed in that phase -->
+                    <goals>plugin:report deploy site</goals>
                 </configuration>
             </plugin>
             <plugin>
@@ -496,7 +497,7 @@
                         </configuration>
                         <executions>
                             <execution>
-                                <phase>site-deploy</phase>
+                                <phase>site</phase>
                                 <goals>
                                     <goal>site</goal> <!-- the site goal uploads to ghpages -->
                                 </goals>
