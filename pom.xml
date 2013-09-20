@@ -491,6 +491,24 @@
             <id>official-release</id>
             <build>
                 <plugins>
+                    <plugin>
+                        <!-- deploy the site to github pages -->
+                        <groupId>com.github.github</groupId>
+                        <artifactId>site-maven-plugin</artifactId>
+                        <configuration>
+                            <server>github</server> <!--  the id of the server with the passwords in settings.xml -->
+                            <message>Creating site for ${project.version}</message>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <!-- the deploy phase is automatically run during release -->
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>site</goal> <!-- the site goal uploads to ghpages -->
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <!-- We want to sign the artifact, the POM, and all attached artifacts -->
                     <plugin>
                         <artifactId>maven-gpg-plugin</artifactId>
