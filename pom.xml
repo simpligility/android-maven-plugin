@@ -69,8 +69,8 @@
         <url>http://code.google.com/p/maven-android-plugin/issues/list</url>
     </issueManagement>
     <ciManagement>
-        <system>Jenkins</system>
-        <url>http://jenkins.josefson.org/job/maven-android-plugin-master/</url>
+        <system>Travis</system>
+        <url>https://travis-ci.org/jayway/maven-android-plugin</url>
     </ciManagement>
     <licenses>
         <license>
