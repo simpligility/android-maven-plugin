@@ -22,7 +22,7 @@
     <parent>
         <groupId>com.simpligility.maven</groupId>
         <artifactId>progressive-company-super-pom</artifactId>
-        <version>0.6.0</version>
+        <version>0.7.0</version>
     </parent>
     <groupId>com.jayway.maven.plugins.android.generation2</groupId>
     <artifactId>android-maven-plugin</artifactId>
