@@ -21,8 +21,8 @@
     where we depend on lower version (e.g. plugin-plugin) -->
     <parent>
         <groupId>com.simpligility.maven</groupId>
-        <artifactId>progressive-company-super-pom</artifactId>
-        <version>0.7.0</version>
+        <artifactId>progressive-organization-pom</artifactId>
+        <version>0.8.1-SNAPSHOT</version>
     </parent>
     <groupId>com.jayway.maven.plugins.android.generation2</groupId>
     <artifactId>android-maven-plugin</artifactId>
@@ -479,11 +479,6 @@
             <name>Jayway OpenSource SNAPSHOTs on Sonatype.org</name>
             <url>http://oss.sonatype.org/content/repositories/jayway-snapshots/</url>
         </snapshotRepository>
-        <site>
-            <id>maven-android-plugin-m2site.googlecode.com</id>
-            <name>maven-android-plugin-m2site on Google Code</name>
-            <url>${env.MAVEN_ANDROID_PLUGIN_M2SITE_SVN_WORKINGCOPY}</url>
-        </site>
     </distributionManagement>
 
     <profiles>
@@ -501,8 +496,7 @@
                         </configuration>
                         <executions>
                             <execution>
-                                <!-- the deploy phase is automatically run during release -->
-                                <phase>deploy</phase>
+                                <phase>site-deploy</phase>
                                 <goals>
                                     <goal>site</goal> <!-- the site goal uploads to ghpages -->
                                 </goals>
