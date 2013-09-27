@@ -56,7 +56,7 @@ public class AarMojo extends AbstractAndroidMojo
      * NOTE: This is inconsistent with APK where the folder is called "lib"
      */
     public static final String NATIVE_LIBRARIES_FOLDER = "libs";
-    
+
     /**
      * Build folder to place built native libraries into
      *
@@ -64,7 +64,7 @@ public class AarMojo extends AbstractAndroidMojo
      * default-value="${project.build.directory}/ndk-libs"
      */
     private File ndkOutputDirectory;
-    
+
     /**
      * <p>Classifier to add to the artifact generated. If given, the artifact will be an attachment instead.</p>
      *
@@ -95,11 +95,26 @@ public class AarMojo extends AbstractAndroidMojo
      */
     @PullParameter
     private String ndkClassifier;
-    
+
+    /**
+     * Specifies the files that should be included in the classes.jar within the aar
+     *
+     * @parameter
+     */
+    @PullParameter
+    private String[] classesJarIncludes = new String[]{"**/*"};
+
+    /**
+     * Specifies the files that should be excluded from the classes.jar within the aar
+     *
+     * @parameter
+     */
+    @PullParameter
+    private String[] classesJarExcludes = new String[]{"**/R.class", "**/R$*.class", "**/BuildConfig.class"};
+
     private List<String> sourceFolders = new ArrayList<String>();
 
     /**
-     *
      * @throws MojoExecutionException
      * @throws MojoFailureException
      */
@@ -108,18 +123,18 @@ public class AarMojo extends AbstractAndroidMojo
         String out = project.getBuild().getDirectory();
         for ( String src : project.getCompileSourceRoots() )
         {
-            if ( !src.startsWith( out ) ) 
+            if ( !src.startsWith( out ) )
             {
                 sourceFolders.add( src );
             }
         }
-        
+
         generateIntermediateApk();
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
 
-        File outputFile = createApkLibraryFile();
+        File outputFile = createApkLibraryFile( createAarClassesJar() );
 
         if ( classifier == null )
         {
@@ -134,11 +149,40 @@ public class AarMojo extends AbstractAndroidMojo
     }
 
     /**
+     * Creates an appropriate aar/classes.jar that does not include R
      *
      * @return
      * @throws MojoExecutionException
      */
-    protected File createApkLibraryFile() throws MojoExecutionException
+    protected File createAarClassesJar() throws MojoExecutionException
+    {
+        final File classesJar = new File( project.getBuild().getDirectory(),
+                project.getBuild().getFinalName() + ".aar.classes.jar" );
+        try
+        {
+            JarArchiver jarArchiver = new JarArchiver();
+            jarArchiver.setDestFile( classesJar );
+            jarArchiver.addDirectory( new File( project.getBuild().getOutputDirectory() ),
+                    classesJarIncludes,
+                    classesJarExcludes );
+            jarArchiver.createArchive();
+            return classesJar;
+        }
+        catch ( ArchiverException e )
+        {
+            throw new MojoExecutionException( "ArchiverException while creating ." + classesJar + " file.", e );
+        }
+        catch ( IOException e )
+        {
+            throw new MojoExecutionException( "IOException while creating ." + classesJar + " file.", e );
+        }
+    }
+
+    /**
+     * @return
+     * @throws MojoExecutionException
+     */
+    protected File createApkLibraryFile( File classesJar ) throws MojoExecutionException
     {
         final File apklibrary = new File( project.getBuild().getDirectory(),
                 project.getBuild().getFinalName() + "." + AAR );
@@ -152,11 +196,8 @@ public class AarMojo extends AbstractAndroidMojo
             jarArchiver.addFile( androidManifestFile, "AndroidManifest.xml" );
             addDirectory( jarArchiver, assetsDirectory, "assets" );
             addDirectory( jarArchiver, resourceDirectory, "res" );
-            
-            File jarFile = new File( project.getBuild().getDirectory() 
-                + File.separator + project.getBuild().getFinalName() + ".jar" );
-            jarArchiver.addFile( jarFile, "classes.jar" );
-            
+            jarArchiver.addFile( classesJar, "classes.jar" );
+
             File[] overlayDirectories = getResourceOverlayDirectories();
             for ( File resOverlayDir : overlayDirectories )
             {
@@ -205,7 +246,7 @@ public class AarMojo extends AbstractAndroidMojo
             }
             else
             {
-                getLog().info( nativeLibrariesDirectory 
+                getLog().info( nativeLibrariesDirectory
                         + " does not exist, looking for libraries in target directory." );
                 // Add native libraries built and attached in this build
                 String[] ndkArchitectures = NativeHelper.getNdkArchitectures( ndkArchitecture,
@@ -215,7 +256,7 @@ public class AarMojo extends AbstractAndroidMojo
                 {
                     final File ndkLibsDirectory = new File( ndkOutputDirectory, ndkArchitecture );
                     addSharedLibraries( jarArchiver, ndkLibsDirectory, ndkArchitecture );
-                
+
                     // Add native library dependencies
                     // FIXME: Remove as causes duplicate libraries when building final APK if this set includes
                     //        libraries from dependencies of the AAR
@@ -324,10 +365,10 @@ public class AarMojo extends AbstractAndroidMojo
             getLog().debug( "Added files from " + directory );
         }
     }
-    
+
     /**
      * Adds all shared libraries (.so) to a {@link JarArchiver} under 'libs'.
-     * 
+     *
      * @param jarArchiver The jarArchiver to add files to
      * @param directory   The directory to scan for .so files
      * @param ndkArchitecture      The prefix for where in the jar the .so files will go.
