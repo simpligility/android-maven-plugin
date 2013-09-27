@@ -178,6 +178,26 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File androidManifestFile;
 
     /**
+     * The <code>AndroidManifest.xml</code> file.
+     *
+     * @parameter property="androidManifestFileAlias"
+     */
+    protected File androidManifestFileAlias;
+
+    /*
+    * The alias for <code>AndroidManifest</code> parameter.
+    * It is should be used to avoid IDEA IDE to relocate <code>AndroidManifest.xml</code> file location.
+    * If you need it only for maven use.
+    *
+    * @parameter alias="androidManifestFileAlias" default-value="${project.basedir}/AndroidManifest.xml"
+    */
+    public void setAndroidManifestFileAlias( File file )
+    {
+        androidManifestFileAlias = file;
+        androidManifestFile = file;
+    }
+
+    /**
      * <p>A possibly new package name for the application. This value will be passed on to the aapt
      * parameter --rename-manifest-package. Look to aapt for more help on this. </p>
      *
