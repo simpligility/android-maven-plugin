@@ -30,6 +30,7 @@
           </generate-sources>
           <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
           <compile>
+            com.jayway.maven.plugins.android.generation2:android-maven-plugin:consume-aar,
             org.apache.maven.plugins:maven-compiler-plugin:compile
           </compile>
           <process-classes>
