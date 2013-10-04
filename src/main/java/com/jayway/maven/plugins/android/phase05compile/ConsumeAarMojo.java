@@ -18,7 +18,6 @@ package com.jayway.maven.plugins.android.phase05compile;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
-import com.jayway.maven.plugins.android.configuration.BuildConfigConstant;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
