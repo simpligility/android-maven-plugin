@@ -232,9 +232,9 @@
           <artifactId>plexus-archiver</artifactId>
         </dependency>
         <dependency>
-          <artifactId>plexus-utils</artifactId>
           <groupId>org.codehaus.plexus</groupId>
-          <version>3.0.10</version>
+          <artifactId>plexus-utils</artifactId>
+          <version>3.0.15</version>
         </dependency>
 
         <dependency>
