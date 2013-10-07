@@ -39,6 +39,9 @@ import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.configuration.Dex;
 import com.jayway.maven.plugins.android.phase04processclasses.ProguardMojo;
 
+import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
+
+
 /**
  * Converts compiled Java classes to the Android dex format.
  * 
@@ -188,7 +191,23 @@ public class DexMojo extends AbstractAndroidMojo
             inputs.add( new File( project.getBuild().getOutputDirectory() ) );
             for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
             {
-                inputs.add( artifact.getFile().getAbsoluteFile() );
+                if ( artifact.getType().equals( AAR ) )
+                {
+                    final String apkLibResDir = getLibraryUnpackDirectory( artifact ) + "/classes.jar";
+                    if ( new File( apkLibResDir ).exists() )
+                    {
+                        inputs.add( new File( apkLibResDir ) );
+                    }
+                }
+                else if ( artifact.getType().equals( "so" ) || artifact.getType().equals( "a" ) )
+                {
+                    // Ignore native dependencies - no need for dexer to see those
+                    continue;
+                }
+                else
+                {
+                    inputs.add( artifact.getFile().getAbsoluteFile() );
+                }
             }
         }
 

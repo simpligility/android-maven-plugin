@@ -21,6 +21,7 @@ import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.NativeHelper;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.HeaderFilesDirective;
+import com.jayway.maven.plugins.android.configuration.NDKArchitectureToolchainMappings;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.archiver.MavenArchiver;
@@ -137,9 +138,30 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      * Defines the architecture for the NDK build
      *
      * @parameter expression="${android.ndk.build.architecture}"
+     * @deprecated Use {@link NdkBuildMojo#ndkArchitectures} instead
      */
     @PullParameter
     private String ndkArchitecture;
+
+    /**
+     * Defines the architectures for the NDK build - this is a space separated list (i.e x86 armeabi)
+     *
+     * @parameter expression="${android.ndk.build.architectures}"
+     */
+    @PullParameter
+    private String ndkArchitectures;
+
+    /**
+     * Defines the architecture to toolchain mappings for the NDK build
+     * &lt;ndkArchitectureToolchainMappings&gt;
+     *   &lt;x86&gt;x86-4.7&lt;/x86&gt;
+     *   &lt;armeabi&gt;arm-linux-androideabi-4.7&lt;/armeabi&gt;
+     * &lt;/ndkArchitectureToolchainMappings&gt;
+     *
+     * @parameter
+     */
+    @PullParameter
+    private NDKArchitectureToolchainMappings ndkArchitectureToolchainMappings;
 
     /**
      * @component
@@ -326,11 +348,11 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             // the include of our Android Maven plugin generated makefile.
             validateMakefile( project, makefile );
 
-            String[] ndkArchitectures = NativeHelper.getNdkArchitectures( ndkClassifier,
-                                                                          ndkArchitecture,
-                                                                          applicationMakefile,
-                                                                          project.getBasedir() );
-            for ( String ndkArchitecture : ndkArchitectures )
+            String[] resolvedNDKArchitectures = NativeHelper.getNdkArchitectures(
+                    ndkArchitecture != null ? ndkArchitecture : ndkArchitectures, applicationMakefile,
+                    project.getBasedir() );
+
+            for ( String ndkArchitecture : resolvedNDKArchitectures )
             {
                 Preparation preparation = new Preparation().invoke( ndkArchitecture );
                 boolean libsDirectoryExists = preparation.isLibsDirectoryExists();
@@ -369,9 +391,18 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                                                                           unpackedApkLibsDirectory );
                 final MakefileHelper.MakefileHolder makefileHolder = makefileHelper
                         .createMakefileFromArtifacts( new File( ndkBuildDirectory ),
-                                                      resolveNativeLibraryArtifacts, ndkArchitecture,
+                                                      resolveNativeLibraryArtifacts, ndkArchitecture, "armeabi",
                                                       useHeaderArchives );
-                IOUtil.copy( makefileHolder.getMakeFile(), new FileOutputStream( androidMavenMakefile ) );
+
+                final FileOutputStream output = new FileOutputStream( androidMavenMakefile );
+                try
+                {
+                    IOUtil.copy( makefileHolder.getMakeFile(), output );
+                }
+                finally
+                {
+                    output.close();
+                }
 
                 // Add the path to the generated makefile - this is picked up by the build (by an include from the user)
                 executor.addEnvironment( "ANDROID_MAVEN_PLUGIN_MAKEFILE", androidMavenMakefile.getAbsolutePath() );
@@ -419,18 +450,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
                 configureApplicationMakefile( commands );
                 configureMaxJobs( commands );
-                configureNdkToolchain( commands );
+                configureNdkToolchain( ndkArchitecture, commands );
+                configureAdditionalCommands( commands );
 
-                // Anything else on the command line the user wants to add - simply splice it up and
-                // add it one by one to the command line
-                if ( ndkBuildAdditionalCommandline != null )
-                {
-                    String[] additionalCommands = ndkBuildAdditionalCommandline.split( " " );
-                    for ( final String command : additionalCommands )
-                    {
-                        commands.add( command );
-                    }
-                }
                 // If a build target is specified, tag that onto the command line as the
                 // very last of the parameters
                 if ( target != null )
@@ -464,6 +486,20 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
     }
 
+    private void configureAdditionalCommands( final List<String> commands )
+    {
+        // Anything else on the command line the user wants to add - simply splice it up and
+        // add it one by one to the command line
+        if ( ndkBuildAdditionalCommandline != null )
+        {
+            String[] additionalCommands = ndkBuildAdditionalCommandline.split( " " );
+            for ( final String command : additionalCommands )
+            {
+                commands.add( command );
+            }
+        }
+    }
+
     private void configureApplicationMakefile( List<String> commands )
         throws MojoExecutionException
     {
@@ -490,13 +526,28 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         }
     }
 
-    private void configureNdkToolchain( List<String> commands )
+    private void configureNdkToolchain( String ndkArchitecture, List<String> commands )
+            throws MojoExecutionException
     {
         if ( ndkToolchain != null )
         {
             // Setup the correct toolchain to use
             // FIXME: perform a validation that this toolchain exists in the NDK
             commands.add( "NDK_TOOLCHAIN=" + ndkToolchain );
+        }
+        else
+        {
+            // Resolve the toolchain from the architecture
+            // <ndkArchitectures>
+            //   <x86>x86-4.6</x86>
+            //   <armeabi>x86-4.6</armeabi>
+            // </ndkArchitectures>
+            final String toolchainFromArchitecture = getAndroidNdk().getToolchainFromArchitecture(
+                    ndkArchitecture, ndkArchitectureToolchainMappings );
+            getLog().debug( "Resolved toolchain for " + ndkArchitecture + " to " + toolchainFromArchitecture );
+            commands.add( "NDK_TOOLCHAIN=" + toolchainFromArchitecture );
+            commands.add( "APP_ABI=" + ndkArchitecture );
+
         }
     }
 
@@ -540,22 +591,38 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 getLog().debug( "Adding native compiled artifact: " + nativeArtifactFile );
 
                 File fileToAttach = nativeArtifactFile;
-                if ( ! libsDirectoryExists )
+                if ( ! libsDirectoryExists && !clearNativeArtifacts )
                 {
-                    getLog().debug( "Moving native compiled artifact to target directory for preservation" );
-                    // This indicates the output directory was created by the build (us) and that we should really
-                    // move it to the target (needed to preserve the attached artifact once install is invoked)
                     final String destFileName = ndkArchitecture + File.separator + nativeArtifactFile.getName();
                     final File destFile = new File( ndkOutputDirectory, destFileName );
-                    if ( destFile.exists() )
+                    if ( !destFile.equals( nativeArtifactFile ) )
                     {
-                        destFile.delete();
+                        getLog().debug( "Moving native compiled artifact to target directory for preservation" );
+                        // This indicates the output directory was created by the build (us) and that we should really
+                        // move it to the target (needed to preserve the attached artifact once install is invoked)
+                        if ( destFile.exists() )
+                        {
+                            destFile.delete();
+                        }
+                        getLog().debug( nativeArtifactFile + " -> " + destFile );
+                        FileUtils.moveFile( nativeArtifactFile, destFile );
+                        fileToAttach = destFile;
                     }
-                    getLog().debug( nativeArtifactFile + " -> " + destFile );
-                    FileUtils.moveFile( nativeArtifactFile, destFile );
-                    fileToAttach = destFile;
+                    else
+                    {
+                        getLog().debug( "Not moving native compiled artifact "
+                            + nativeArtifactFile + " to target as they point to the same file" );
+                        fileToAttach = nativeArtifactFile;
+                    }
                 }
-                projectHelper.attachArtifact( this.project, artifactType, ndkArchitecture, fileToAttach );
+
+                String classifier = ndkArchitecture;
+                if ( ndkClassifier != null )
+                {
+                    classifier += "-" + ndkClassifier;
+                }
+
+                projectHelper.attachArtifact( this.project, artifactType, classifier, fileToAttach );
             }
 
             // Process conditionally any of the headers to include into the header archive file
@@ -599,7 +666,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 {
                     libraryName = project.getArtifactId();
                 }
-                
+
                 // FIXME: The following logic won't work for an APKLIB building a static library
                 if ( "a".equals( project.getPackaging() ) )
                 {
@@ -672,8 +739,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         {
             getLog().error(
                     "Could not locate final native library using the provided ndkFinalLibraryName "
-                    + ndkFinalLibraryName + " (tried " + libraryFile.getAbsolutePath()
-                    + ")" );
+                            + ndkFinalLibraryName + " (tried " + libraryFile.getAbsolutePath()
+                            + ")" );
             throw new MojoExecutionException(
                     "Could not locate final native library using the provided ndkFinalLibraryName "
                     + ndkFinalLibraryName + " (tried " + libraryFile.getAbsolutePath()
@@ -847,6 +914,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
             final File jarFile = new File( new File( project.getBuild().getDirectory() ),
                     project.getBuild().getFinalName() + ".har" );
+
             mavenArchiver.setOutputFile( jarFile );
 
             for ( HeaderFilesDirective headerFilesDirective : finalHeaderFilesDirectives )
@@ -859,16 +927,22 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             mavenArchiveConfiguration.setAddMavenDescriptor( false );
 
             mavenArchiver.createArchive( project, mavenArchiveConfiguration );
-            
+
+            String classifier = ndkArchitecture;
+            if ( ndkClassifier != null )
+            {
+                classifier += "-" + ndkClassifier;
+            }
+
             if ( AndroidExtension.APKLIB.equals( project.getPackaging() ) )
             {
                 projectHelper.attachArtifact( project, "har", 
-                        ndkClassifier, 
+                        classifier,
                         jarFile );
             }
             else
             {
-                projectHelper.attachArtifact( project, "har", ndkArchitecture, jarFile );
+                projectHelper.attachArtifact( project, "har", classifier, jarFile );
             }
 
         }

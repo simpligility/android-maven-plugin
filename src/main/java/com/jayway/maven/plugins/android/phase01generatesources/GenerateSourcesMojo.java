@@ -24,6 +24,7 @@ import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.common.AetherHelper;
 
+import com.jayway.maven.plugins.android.configuration.BuildConfigConstant;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -49,6 +50,7 @@ import java.util.Set;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKSOURCES;
 
 /**
@@ -161,7 +163,15 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * default-value="${project.build.directory}/generated-sources/aidl"
      */
     protected File genDirectoryAidl;
-    
+
+    /**
+     * <p>Parameter designed to generate custom BuildConfig constants
+     *
+     * @parameter expression="${android.buildConfigConstants}"
+     * @readonly
+     */
+    protected BuildConfigConstant[] buildConfigConstants;
+
     public void execute() throws MojoExecutionException, MojoFailureException
     {
 
@@ -176,7 +186,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             extractSourceDependencies();
             extractApkLibDependencies();
-
+            extractAarDependencies();
+            
             final String[] relativeAidlFileNames1 = findRelativeAidlFileNames( sourceDirectory );
             final String[] relativeAidlFileNames2 = findRelativeAidlFileNames( extractedDependenciesJavaSources );
             final Map<String, String[]> relativeApklibAidlFileNames = new HashMap<String, String[]>();
@@ -357,6 +368,75 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
     }
 
+    private void extractAarDependencies() throws MojoExecutionException
+    {
+        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+        {
+            String type = artifact.getType();
+            if ( type.equals( AAR ) )
+            {
+                getLog().debug( "Extracting aar " + artifact.getArtifactId() + "..." );
+                extractAarlib( artifact );
+            }
+        }
+    }
+
+    private void extractAarlib( Artifact aarArtifact ) throws MojoExecutionException
+    {
+
+        final Artifact resolvedArtifact = AetherHelper
+                .resolveArtifact( aarArtifact, repoSystem, repoSession, projectRepos );
+
+        File aarFile = resolvedArtifact.getFile();
+
+        // When the artifact is not installed in local repository, but rather part of the current reactor,
+        // resolve from within the reactor. (i.e. ../someothermodule/target/*)
+        if ( ! aarFile.exists() )
+        {
+            aarFile = resolveArtifactToFile( aarArtifact );
+        }
+
+        //When using maven under eclipse the artifact will by default point to a directory, which isn't correct.
+        //To work around this we'll first try to get the archive from the local repo, and only if it isn't found there
+        // we'll do a normal resolve.
+        if ( aarFile.isDirectory() )
+        {
+            aarFile = resolveArtifactToFile( aarArtifact );
+        }
+
+        if ( aarFile.isDirectory() )
+        {
+            getLog().warn(
+                    "The aar artifact points to '" + aarFile + "' which is a directory; skipping unpacking it." );
+            return;
+        }
+
+        final UnArchiver unArchiver = new ZipUnArchiver( aarFile )
+        {
+            @Override
+            protected Logger getLogger()
+            {
+                return new ConsoleLogger( Logger.LEVEL_DEBUG, "dependencies-unarchiver" );
+            }
+        };
+        File aarDirectory = new File( getLibraryUnpackDirectory( aarArtifact ) );
+        aarDirectory.mkdirs();
+        unArchiver.setDestDirectory( aarDirectory );
+        try
+        {
+            unArchiver.extract();
+        }
+        catch ( ArchiverException e )
+        {
+            throw new MojoExecutionException( "ArchiverException while extracting " + aarDirectory.getAbsolutePath()
+                    + ". Message: " + e.getLocalizedMessage(), e );
+        }
+
+        projectHelper.addResource( project, aarDirectory.getAbsolutePath() + "/src", null,
+                Arrays.asList( "**/*.aidl" ) );
+        //project.addCompileSourceRoot( aarDirectory.getAbsolutePath() + "/src" );
+
+    }
 
     private void generateR() throws MojoExecutionException
     {
@@ -464,6 +544,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( "-c" );
             commands.add( configurations );
         }
+
+        for ( String aaptExtraArg : aaptExtraArgs )
+        {
+            commands.add( aaptExtraArg );
+        }
+
         if ( proguardFile != null )
         {
             File parentFolder = proguardFile.getParentFile();
@@ -513,7 +599,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
         {
-            if ( artifact.getType().equals( APKLIB ) )
+            if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
             {
                 String apklibResDirectory = getLibraryUnpackDirectory( artifact ) + "/res";
                 if ( new File( apklibResDirectory ).exists() )
@@ -539,7 +625,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         List<File> libManifests = new ArrayList<File>();
         for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
         {
-            if ( artifact.getType().equals( APKLIB ) )
+            if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
             {
                 File apklibManifeset = new File( getLibraryUnpackDirectory( artifact ), "AndroidManifest.xml" );
                 if ( !apklibManifeset.exists() )
@@ -624,7 +710,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
         for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
         {
-            if ( artifact.getType().equals( APKLIB ) )
+            if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
             {
                 final String apkLibResDir = getLibraryUnpackDirectory( artifact ) + "/res";
                 if ( new File( apkLibResDir ).exists() )
@@ -659,6 +745,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( "-c" );
             commands.add( configurations );
         }
+
+        for ( String aaptExtraArg : aaptExtraArgs )
+        {
+            commands.add( aaptExtraArg );
+        }
+
         getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
         try
         {
@@ -680,34 +772,52 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             packageName = customPackage;
         }
-        generateBuildConfigForPackage( packageName, !release );
+        generateBuildConfigForPackage( packageName );
 
         // Generate the BuildConfig for any apklib dependencies.
         for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
         {
-            if ( artifact.getType().equals( "apklib" ) )
+            if ( artifact.getType().equals( APKLIB ) )
             {
                 File apklibManifeset = new File( getLibraryUnpackDirectory( artifact ), "AndroidManifest.xml" );
                 String apklibPackageName = extractPackageNameFromAndroidManifest( apklibManifeset );
-                generateBuildConfigForPackage( apklibPackageName, !release );
+                generateBuildConfigForPackage( apklibPackageName );
             }
         }
     }
 
-    private void generateBuildConfigForPackage( String packageName, boolean debug ) throws MojoExecutionException
+    private void generateBuildConfigForPackage( String packageName ) throws MojoExecutionException
     {
         File outputFolder = new File( genDirectory, packageName.replace( ".", File.separator ) );
         outputFolder.mkdirs();
-        String buildConfig = ""
-                + "package " + packageName + ";\n\n"
-                + "public final class BuildConfig {\n"
-                + "  public static final boolean DEBUG = " + Boolean.toString( debug ) + ";\n"
-                + "}\n"
-        ;
+
+        StringBuilder buildConfig = new StringBuilder();
+        buildConfig.append( "package " ).append( packageName ).append( ";\n\n" );
+        buildConfig.append( "public final class BuildConfig {\n" );
+        buildConfig.append( "  public static final boolean DEBUG = " ).append( !release ).append( ";\n" );
+        for ( BuildConfigConstant constant : buildConfigConstants )
+        {
+            String value = constant.getValue();
+            if ( "String".equals( constant.getType() ) )
+            {
+                value = "\"" + value + "\"";
+            }
+
+            buildConfig.append( "  public static final " )
+                       .append( constant.getType() )
+                       .append( " " )
+                       .append( constant.getName() )
+                       .append( " = " )
+                       .append( value )
+                       .append( ";\n" );
+        }
+        buildConfig.append( "}\n" );
+
+
         File outputFile = new File( outputFolder, "BuildConfig.java" );
         try
         {
-            FileUtils.writeStringToFile( outputFile, buildConfig );
+            FileUtils.writeStringToFile( outputFile, buildConfig.toString() );
         }
         catch ( IOException e )
         {
@@ -783,7 +893,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         Set<String> androidArtifacts = new HashSet<String>()
         {
             {
-                addAll( Arrays.asList( APK, APKLIB, APKSOURCES ) );
+                addAll( Arrays.asList( APK, APKLIB, APKSOURCES, AAR ) );
             }
         };
         return androidArtifacts.contains( project.getArtifact().getType() );
