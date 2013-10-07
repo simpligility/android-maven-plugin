@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -128,7 +130,7 @@ public class MakefileHelper
      * @return The created Makefile
      */
     public MakefileHolder createMakefileFromArtifacts( File outputDir, Set<Artifact> artifacts,
-                                                              String ndkArchitecture,
+                                                              String ndkArchitecture, String defaultNDKArchitecture,
                                                               boolean useHeaderArchives )
             throws IOException, MojoExecutionException
     {
@@ -154,7 +156,11 @@ public class MakefileHelper
         {
             for ( Artifact artifact : artifacts )
             {
-                boolean apklibStatic = false;
+                final String architecture = NativeHelper.extractArchitectureFromArtifact( artifact,
+                        defaultNDKArchitecture );
+
+                makeFile.append( '\n' );
+                makeFile.append( "ifeq ($(TARGET_ARCH_ABI)," ).append( architecture ).append( ")\n" );
 
                 makeFile.append( "#\n" );
                 makeFile.append( "# Group ID: " );
@@ -174,7 +180,9 @@ public class MakefileHelper
                 makeFile.append( "LOCAL_MODULE    := " );
                 makeFile.append( artifact.getArtifactId() );
                 makeFile.append( '\n' );
-                apklibStatic = addLibraryDetails( makeFile, outputDir, artifact, ndkArchitecture );
+
+                final boolean apklibStatic = addLibraryDetails( makeFile, outputDir, artifact, ndkArchitecture );
+
                 if ( useHeaderArchives )
                 {
                     try
@@ -227,6 +235,10 @@ public class MakefileHelper
                 {
                     makeFile.append( "include $(PREBUILT_SHARED_LIBRARY)\n" );
                 }
+
+                makeFile.append( "endif #" ).append( artifact.getClassifier() ).append( '\n' );
+                makeFile.append( '\n' );
+
             }
         }
         
@@ -251,7 +263,7 @@ public class MakefileHelper
             {
                 int libIdx = findApklibNativeLibrary( staticLibs, artifact.getArtifactId() );
                 apklibStatic = true;
-                addLibraryDetails( makeFile, outputDir, staticLibs[libIdx] );
+                addLibraryDetails( makeFile, outputDir, staticLibs[libIdx], "" );
             }
             else
             {
@@ -262,18 +274,18 @@ public class MakefileHelper
                     throw new IOException( "Failed to find any library file in APKLIB" );
                 }
                 int libIdx = findApklibNativeLibrary( sharedLibs, artifact.getArtifactId() );
-                addLibraryDetails( makeFile, outputDir, sharedLibs[libIdx] );
+                addLibraryDetails( makeFile, outputDir, sharedLibs[libIdx], "" );
             }
         }
         else
         {
-            addLibraryDetails( makeFile, outputDir, artifact.getFile() );
+            addLibraryDetails( makeFile, outputDir, artifact.getFile(), artifact.getArtifactId() );
         }
 
         return apklibStatic;
     }
 
-    private void addLibraryDetails( StringBuilder makeFile, File outputDir, File libFile )
+    private void addLibraryDetails( StringBuilder makeFile, File outputDir, File libFile, String outputName )
         throws IOException
     {
         String localPath = resolveRelativePath( outputDir, libFile );
@@ -286,7 +298,14 @@ public class MakefileHelper
         makeFile.append( libFile.getName() );
         makeFile.append( '\n' );
         makeFile.append( "LOCAL_MODULE_FILENAME := " );
-        makeFile.append( FilenameUtils.removeExtension( libFile.getName() ) );
+        if ( "".equals( outputName ) )
+        {
+            makeFile.append( FilenameUtils.removeExtension( libFile.getName() ) );
+        }
+        else
+        {
+            makeFile.append( outputName );
+        }
         makeFile.append( '\n' );
     }
 
@@ -467,29 +486,42 @@ public class MakefileHelper
                                      String ndkArchitecture,
                                      boolean staticLibrary )
     {
-        StringBuilder sb = new StringBuilder();
+        Set<String> libraryNames = new LinkedHashSet<String>();
 
         for ( Artifact a : resolvedLibraryList )
         {
             if ( staticLibrary && "a".equals( a.getType() ) )
             {
-                sb.append( a.getArtifactId() );
+                libraryNames.add( a.getArtifactId() );
             }
             if ( ! staticLibrary && "so".equals( a.getType() ) )
             {
-                sb.append( a.getArtifactId() );
+                libraryNames.add( a.getArtifactId() );
             }
-            if ( AndroidExtension.APKLIB.equals( a.getType() ) )
+            if ( AndroidExtension.APKLIB.equals( a.getType() ) || AndroidExtension.AAR.equals( a.getType() ) )
             {
                 File[] libFiles = NativeHelper.listNativeFiles( a, unpackedApkLibsDirectory, 
                                                                 ndkArchitecture, staticLibrary );
                 if ( libFiles != null && libFiles.length > 0 )
                 {
-                    sb.append( a.getArtifactId() );
+                    libraryNames.add( a.getArtifactId() );
                 }
                 
             }
-            sb.append( " " );
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        Iterator<String> iter = libraryNames.iterator();
+
+        while ( iter.hasNext() )
+        {
+            sb.append( iter.next() );
+
+            if ( iter.hasNext() )
+            {
+                sb.append( " " );
+            }
         }
 
         return sb.toString();
