@@ -110,13 +110,6 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
-        <!-- Use this to force sisu's version of ASM which is causing a problem. Will be fixed in Maven 3.1.1 -->
-        <dependency>
-            <groupId>org.eclipse.sisu</groupId>
-            <artifactId>org.eclipse.sisu.plexus</artifactId>
-            <version>0.0.0.M4</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
