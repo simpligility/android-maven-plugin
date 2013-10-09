@@ -188,7 +188,7 @@ public class MakefileHelper
                     try
                     {
                         Artifact harArtifact = new DefaultArtifact( artifact.getGroupId(), artifact.getArtifactId(),
-                                artifact.getVersion(), artifact.getScope(), "har", artifact.getClassifier(),
+                                artifact.getVersion(), artifact.getScope(), "har", architecture,
                                 artifact.getArtifactHandler() );
                         final Artifact resolvedHarArtifact = AetherHelper
                                 .resolveArtifact( harArtifact, repoSystem, repoSession, projectRepos );
