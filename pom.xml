@@ -96,7 +96,7 @@
         </mailingList>
     </mailingLists>
     <prerequisites>
-        <maven>[3.1.1,)</maven>
+        <maven>3.1.1</maven>
     </prerequisites>
     <dependencyManagement>
         <dependencies>
@@ -360,6 +360,26 @@
                         <goals>
                             <goal>check</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>[3.1.1,)</version>
+                                    <message>Check for Maven version &gt;=3.1.1 failed. Upgrade your Maven installation.</message>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
