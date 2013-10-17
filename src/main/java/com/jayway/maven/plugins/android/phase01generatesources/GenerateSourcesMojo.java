@@ -16,9 +16,13 @@
  */
 package com.jayway.maven.plugins.android.phase01generatesources;
 
+import com.android.builder.internal.SymbolLoader;
+import com.android.builder.internal.SymbolWriter;
 import com.android.manifmerger.ManifestMerger;
 import com.android.manifmerger.MergerLog;
 import com.android.utils.StdLogger;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
@@ -42,6 +46,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -205,6 +210,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             mergeManifests();
             generateR();
             generateApklibR();
+            generateAarR();
             generateBuildConfig();
 
             // When compiling AIDL for this project,
@@ -666,6 +672,75 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             getLog().info( "No APKLIB manifests found. Using project manifest only." );
         }
+    }
+
+    private void generateAarR() throws MojoExecutionException
+    {
+        getLog().debug( "Generating R file for projects dependent on aar's" );
+
+        genDirectory.mkdirs();
+
+        SymbolLoader fullSymbolValues = null;
+
+        // list of all the symbol loaders per package names.
+        Multimap<String, SymbolLoader> libMap = ArrayListMultimap.create();
+
+        try
+        {
+            for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+            {
+                if ( !artifact.getType().equals( AAR ) )
+                {
+                    continue;
+                }
+
+                String unpackDir = getLibraryUnpackDirectory( artifact );
+
+                String packageName = extractPackageNameFromAndroidManifest(
+                        new File( unpackDir + "/" + "AndroidManifest.xml" ) );
+
+                File rFile = new File( unpackDir + "/R.txt" );
+                // if the library has no resource, this file won't exist.
+                if ( rFile.isFile() )
+                {
+                    // load the full values if that's not already been done.
+                    // Doing it lazily allow us to support the case where there's no
+                    // resources anywhere.
+                    if ( fullSymbolValues == null )
+                    {
+                        fullSymbolValues = new SymbolLoader( rFile, null );
+
+                        fullSymbolValues.load();
+                    }
+
+                    SymbolLoader libSymbols = new SymbolLoader( rFile, null );
+                    libSymbols.load();
+
+                    // store these symbols by associating them with the package name.
+                    libMap.put( packageName, libSymbols );
+                }
+            }
+
+            // now loop on all the package name, merge all the symbols to write, and write them
+            for ( String packageName : libMap.keySet() )
+            {
+                Collection<SymbolLoader> symbols = libMap.get( packageName );
+
+                SymbolWriter writer = new SymbolWriter( genDirectory.getPath(), packageName,
+                        fullSymbolValues );
+                for ( SymbolLoader symbolLoader : symbols )
+                {
+                    writer.addSymbolsToWrite( symbolLoader );
+                }
+                writer.write();
+            }
+        }
+        catch ( IOException ex )
+        {
+            getLog().error( ex );
+        }
+
+        project.addCompileSourceRoot( genDirectory.getAbsolutePath() );
     }
 
     private void generateApklibR() throws MojoExecutionException

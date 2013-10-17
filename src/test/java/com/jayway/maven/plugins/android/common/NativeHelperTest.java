@@ -1,27 +1,27 @@
 package com.jayway.maven.plugins.android.common;
 
 import com.jayway.maven.plugins.android.AndroidNdk;
+
 import org.apache.maven.artifact.*;
 import org.apache.maven.artifact.factory.DefaultArtifactFactory;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.SilentLog;
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.repository.internal.MavenRepositorySystemSession;
+import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
+import org.eclipse.aether.internal.impl.DefaultRepositorySystem;
+import org.eclipse.aether.repository.RemoteRepository;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.sonatype.aether.impl.internal.DefaultRepositorySystem;
-import org.sonatype.aether.repository.RemoteRepository;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.Set;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 /**
  * @author Johan Lindquist
@@ -50,7 +50,7 @@ public class NativeHelperTest {
         project.addAttachedArtifact(apklib);
 
         nativeHelper = new NativeHelper(project, Collections.<RemoteRepository>emptyList(),
-                new MavenRepositorySystemSession(), new DefaultRepositorySystem(),
+                MavenRepositorySystemUtils.newSession(), new DefaultRepositorySystem(),
                 new DefaultArtifactFactory(), new SilentLog());
     }
 

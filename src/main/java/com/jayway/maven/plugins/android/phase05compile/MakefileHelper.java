@@ -12,9 +12,9 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
-import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.repository.RemoteRepository;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.RemoteRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -95,8 +95,7 @@ public class MakefileHelper
      * Cleans up all include directories created in the temp directory during the build.
      *
      * @param makefileHolder The holder produced by the
-     * {@link MakefileHelper#createMakefileFromArtifacts(java.io.File, java.util.Set,
-     * boolean, org.sonatype.aether.RepositorySystemSession, java.util.List, org.sonatype.aether.RepositorySystem)}
+     * {@link MakefileHelper#createMakefileFromArtifacts(File, Set, String, boolean)}
      */
     public static void cleanupAfterBuild( MakefileHolder makefileHolder )
     {
@@ -189,7 +188,7 @@ public class MakefileHelper
                     try
                     {
                         Artifact harArtifact = new DefaultArtifact( artifact.getGroupId(), artifact.getArtifactId(),
-                                artifact.getVersion(), artifact.getScope(), "har", artifact.getClassifier(),
+                                artifact.getVersion(), artifact.getScope(), "har", architecture,
                                 artifact.getArtifactHandler() );
                         final Artifact resolvedHarArtifact = AetherHelper
                                 .resolveArtifact( harArtifact, repoSystem, repoSession, projectRepos );

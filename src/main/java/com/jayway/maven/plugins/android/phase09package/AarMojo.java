@@ -35,6 +35,7 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
 
+import com.android.SdkConstants;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
@@ -196,7 +197,7 @@ public class AarMojo extends AbstractAndroidMojo
             jarArchiver.addFile( androidManifestFile, "AndroidManifest.xml" );
             addDirectory( jarArchiver, assetsDirectory, "assets" );
             addDirectory( jarArchiver, resourceDirectory, "res" );
-            jarArchiver.addFile( classesJar, "classes.jar" );
+            jarArchiver.addFile( classesJar, SdkConstants.FN_CLASSES_JAR );
 
             File[] overlayDirectories = getResourceOverlayDirectories();
             for ( File resOverlayDir : overlayDirectories )
