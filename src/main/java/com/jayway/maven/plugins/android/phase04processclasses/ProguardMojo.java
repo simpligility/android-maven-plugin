@@ -12,8 +12,8 @@ import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
-import org.sonatype.aether.util.artifact.JavaScopes;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.util.artifact.JavaScopes;
 
 import java.io.File;
 import java.util.ArrayList;

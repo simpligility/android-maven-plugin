@@ -67,6 +67,7 @@ public class DexMojo extends AbstractAndroidMojo
      *   &lt;optimize&gt;true|false&lt;/optimize&gt;
      *   &lt;preDex&gt;true|false&lt;/preDex&gt;
      *   &lt;preDexLibLocation&gt;path to predexed libraries, defaults to target/dexedLibs&lt;/preDexLibLocation&gt;
+     *   &lt;incremental&gt;true|false&lt;/incremental&gt;
      * &lt;/dex&gt;
      * </pre>
      * <p/>
@@ -119,12 +120,20 @@ public class DexMojo extends AbstractAndroidMojo
      */
     private String dexPreDexLibLocation;
 
+    /**
+     * Decides whether to pass the --incremental flag to dx.
+     *
+     * @parameter expression="${android.dex.incremental}" default-value="false"
+     */
+    private boolean dexIncremental;
+
     private String[] parsedJvmArguments;
     private boolean parsedCoreLibrary;
     private boolean parsedNoLocals;
     private boolean parsedOptimize;
     private boolean parsedPreDex;
     private String parsedPreDexLibLocation;
+    private boolean parsedIncremental;
 
     /**
      * @throws MojoExecutionException
@@ -270,6 +279,14 @@ public class DexMojo extends AbstractAndroidMojo
             {
                 parsedPreDexLibLocation = dex.getPreDexLibLocation();
             }
+            if ( dex.isIncremental() == null )
+            {
+                parsedIncremental = dexIncremental;
+            }
+            else
+            {
+                parsedIncremental = dex.isIncremental();
+            }
         }
         else
         {
@@ -279,6 +296,7 @@ public class DexMojo extends AbstractAndroidMojo
             parsedOptimize = dexOptimize;
             parsedPreDex = dexPreDex;
             parsedPreDexLibLocation = dexPreDexLibLocation;
+            parsedIncremental = dexIncremental;
         }
     }
 
@@ -377,6 +395,10 @@ public class DexMojo extends AbstractAndroidMojo
         if ( parsedCoreLibrary )
         {
             commands.add( "--core-library" );
+        }
+        if ( parsedIncremental )
+        {
+            commands.add( "--incremental" );
         }
         commands.add( "--output=" + outputFile.getAbsolutePath() );
         if ( parsedNoLocals )
