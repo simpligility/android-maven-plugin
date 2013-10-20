@@ -16,11 +16,17 @@
  */
 package com.jayway.maven.plugins.android.phase05compile;
 
+import com.android.SdkConstants;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.codehaus.plexus.archiver.ArchiverException;
+import org.codehaus.plexus.archiver.UnArchiver;
+import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
+import org.codehaus.plexus.logging.Logger;
+import org.codehaus.plexus.logging.console.ConsoleLogger;
 
 import java.io.File;
 import java.util.Arrays;
@@ -61,12 +67,35 @@ public class ConsumeAarMojo extends AbstractAndroidMojo
         {
             if ( artifact.getType().equals( AAR ) )
             {
-                String aarJar = getLibraryUnpackDirectory( artifact ) + "/classes.jar";
+                String aarJar = getLibraryUnpackDirectory( artifact ) + "/" + SdkConstants.FN_CLASSES_JAR;
 
-                projectHelper.attachArtifact( this.project,
-                                              "jar",
-                                              artifact.getClassifier(),
-                                              new File( aarJar ) );
+                File aarFileJar = new File( aarJar );
+
+                final UnArchiver unArchiver = new ZipUnArchiver( aarFileJar )
+                {
+                    @Override
+                    protected Logger getLogger()
+                    {
+                        return new ConsoleLogger( Logger.LEVEL_DEBUG, "classes-unarchiver" );
+                    }
+                };
+                File classes = new File( project.getBuild().getOutputDirectory() + "/classes" );
+
+                getLog().info( "classes " + classes );
+
+                classes.mkdir();
+
+                unArchiver.setDestDirectory( classes );
+                try
+                {
+                    unArchiver.extract();
+                }
+                catch ( ArchiverException e )
+                {
+                    throw new MojoExecutionException( "ArchiverException while extracting "
+                            + aarFileJar.getAbsolutePath()
+                            + ". Message: " + e.getLocalizedMessage(), e );
+                }
 
                 getLog().info( "Adding " + aarJar );
             }
