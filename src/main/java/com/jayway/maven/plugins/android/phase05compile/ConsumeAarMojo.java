@@ -79,9 +79,9 @@ public class ConsumeAarMojo extends AbstractAndroidMojo
                         return new ConsoleLogger( Logger.LEVEL_DEBUG, "classes-unarchiver" );
                     }
                 };
-                File classes = new File( project.getBuild().getOutputDirectory() + "/classes" );
+                File classes = new File( project.getBuild().getOutputDirectory() );
 
-                getLog().info( "classes " + classes );
+                getLog().info( "output " + classes );
 
                 classes.mkdir();
 
@@ -97,7 +97,7 @@ public class ConsumeAarMojo extends AbstractAndroidMojo
                             + ". Message: " + e.getLocalizedMessage(), e );
                 }
 
-                getLog().info( "Adding " + aarJar );
+                getLog().info( "Extracted " + aarJar );
             }
         }
 
