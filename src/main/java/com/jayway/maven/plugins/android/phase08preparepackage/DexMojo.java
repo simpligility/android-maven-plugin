@@ -39,7 +39,6 @@ import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.configuration.Dex;
 import com.jayway.maven.plugins.android.phase04processclasses.ProguardMojo;
 
-import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
 
 
 /**
