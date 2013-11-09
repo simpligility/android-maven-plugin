@@ -542,6 +542,7 @@
                         <!-- deploy the site to github pages -->
                         <groupId>com.github.github</groupId>
                         <artifactId>site-maven-plugin</artifactId>
+                        <version>0.9</version>
                         <configuration>
                             <server>github</server> <!--  the id of the server with the passwords in settings.xml -->
                             <message>Creating site for ${project.version}</message>
