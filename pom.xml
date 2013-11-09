@@ -63,7 +63,7 @@
         <connection>scm:git:git://github.com/jayway/maven-android-plugin.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/jayway/maven-android-plugin.git</developerConnection>
       <tag>HEAD</tag>
-  </scm>
+    </scm>
     <issueManagement>
         <system>Google Code Issue Tracking</system>
         <url>http://code.google.com/p/maven-android-plugin/issues/list</url>
@@ -72,6 +72,13 @@
         <system>Travis</system>
         <url>https://travis-ci.org/jayway/maven-android-plugin</url>
     </ciManagement>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>oss.sonatype.org-jayway-snapshots</id>
+            <name>Jayway OpenSource SNAPSHOTs on Sonatype.org</name>
+            <url>http://oss.sonatype.org/content/repositories/jayway-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
     <licenses>
         <license>
             <name>Apache 2.0</name>
@@ -525,14 +532,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>oss.sonatype.org-jayway-snapshots</id>
-            <name>Jayway OpenSource SNAPSHOTs on Sonatype.org</name>
-            <url>http://oss.sonatype.org/content/repositories/jayway-snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <profiles>
         <profile>
