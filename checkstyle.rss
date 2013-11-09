@@ -8,8 +8,8 @@
     <language>en-us</language>
     <copyright>&#169;2008 - 2013 simpligility technologies inc.</copyright>
     <item>
-      <title>File: 85,
-             Errors: 17090,
+      <title>File: 86,
+             Errors: 17220,
              Warnings: 0,
              Infos: 0
       </title>
@@ -206,7 +206,7 @@
                   0
                 </td>
                 <td>
-                  902
+                  958
                 </td>
               </tr>
                           <tr>
@@ -962,7 +962,7 @@
                   0
                 </td>
                 <td>
-                  397
+                  408
                 </td>
               </tr>
                           <tr>
@@ -1032,7 +1032,7 @@
                   0
                 </td>
                 <td>
-                  599
+                  597
                 </td>
               </tr>
                           <tr>
@@ -1079,6 +1079,20 @@
               </tr>
                           <tr>
                 <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.phase05compile.ConsumeAarMojo.java">com/jayway/maven/plugins/android/phase05compile/ConsumeAarMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  60
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.configuration.NDKArchitectureToolchainMappings.java">com/jayway/maven/plugins/android/configuration/NDKArchitectureToolchainMappings.java</a>
                 </td>
                 <td>
@@ -1116,7 +1130,7 @@
                   0
                 </td>
                 <td>
-                  33
+                  38
                 </td>
               </tr>
                           <tr>

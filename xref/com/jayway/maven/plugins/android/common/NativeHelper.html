@@ -22,19 +22,19 @@
 <a class="jxr_linenumber" name="12" href="#12">12</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.plugin.MojoExecutionException;
 <a class="jxr_linenumber" name="13" href="#13">13</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.plugin.logging.Log;
 <a class="jxr_linenumber" name="14" href="#14">14</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.project.MavenProject;
-<a class="jxr_linenumber" name="15" href="#15">15</a>  <strong class="jxr_keyword">import</strong> org.sonatype.aether.RepositorySystem;
-<a class="jxr_linenumber" name="16" href="#16">16</a>  <strong class="jxr_keyword">import</strong> org.sonatype.aether.RepositorySystemSession;
-<a class="jxr_linenumber" name="17" href="#17">17</a>  <strong class="jxr_keyword">import</strong> org.sonatype.aether.collection.CollectRequest;
-<a class="jxr_linenumber" name="18" href="#18">18</a>  <strong class="jxr_keyword">import</strong> org.sonatype.aether.graph.Dependency;
-<a class="jxr_linenumber" name="19" href="#19">19</a>  <strong class="jxr_keyword">import</strong> org.sonatype.aether.graph.DependencyFilter;
-<a class="jxr_linenumber" name="20" href="#20">20</a>  <strong class="jxr_keyword">import</strong> org.sonatype.aether.graph.DependencyNode;
-<a class="jxr_linenumber" name="21" href="#21">21</a>  <strong class="jxr_keyword">import</strong> org.sonatype.aether.graph.Exclusion;
-<a class="jxr_linenumber" name="22" href="#22">22</a>  <strong class="jxr_keyword">import</strong> org.sonatype.aether.repository.RemoteRepository;
-<a class="jxr_linenumber" name="23" href="#23">23</a>  <strong class="jxr_keyword">import</strong> org.sonatype.aether.resolution.DependencyRequest;
-<a class="jxr_linenumber" name="24" href="#24">24</a>  <strong class="jxr_keyword">import</strong> org.sonatype.aether.util.filter.AndDependencyFilter;
-<a class="jxr_linenumber" name="25" href="#25">25</a>  <strong class="jxr_keyword">import</strong> org.sonatype.aether.util.filter.ExclusionsDependencyFilter;
-<a class="jxr_linenumber" name="26" href="#26">26</a>  <strong class="jxr_keyword">import</strong> org.sonatype.aether.util.filter.ScopeDependencyFilter;
-<a class="jxr_linenumber" name="27" href="#27">27</a>  <strong class="jxr_keyword">import</strong> org.sonatype.aether.util.graph.PreorderNodeListGenerator;
+<a class="jxr_linenumber" name="15" href="#15">15</a>  <strong class="jxr_keyword">import</strong> org.eclipse.aether.RepositorySystem;
+<a class="jxr_linenumber" name="16" href="#16">16</a>  <strong class="jxr_keyword">import</strong> org.eclipse.aether.RepositorySystemSession;
+<a class="jxr_linenumber" name="17" href="#17">17</a>  <strong class="jxr_keyword">import</strong> org.eclipse.aether.collection.CollectRequest;
+<a class="jxr_linenumber" name="18" href="#18">18</a>  <strong class="jxr_keyword">import</strong> org.eclipse.aether.graph.Dependency;
+<a class="jxr_linenumber" name="19" href="#19">19</a>  <strong class="jxr_keyword">import</strong> org.eclipse.aether.graph.DependencyFilter;
+<a class="jxr_linenumber" name="20" href="#20">20</a>  <strong class="jxr_keyword">import</strong> org.eclipse.aether.graph.DependencyNode;
+<a class="jxr_linenumber" name="21" href="#21">21</a>  <strong class="jxr_keyword">import</strong> org.eclipse.aether.graph.Exclusion;
+<a class="jxr_linenumber" name="22" href="#22">22</a>  <strong class="jxr_keyword">import</strong> org.eclipse.aether.repository.RemoteRepository;
+<a class="jxr_linenumber" name="23" href="#23">23</a>  <strong class="jxr_keyword">import</strong> org.eclipse.aether.resolution.DependencyRequest;
+<a class="jxr_linenumber" name="24" href="#24">24</a>  <strong class="jxr_keyword">import</strong> org.eclipse.aether.util.filter.AndDependencyFilter;
+<a class="jxr_linenumber" name="25" href="#25">25</a>  <strong class="jxr_keyword">import</strong> org.eclipse.aether.util.filter.ExclusionsDependencyFilter;
+<a class="jxr_linenumber" name="26" href="#26">26</a>  <strong class="jxr_keyword">import</strong> org.eclipse.aether.util.filter.ScopeDependencyFilter;
+<a class="jxr_linenumber" name="27" href="#27">27</a>  <strong class="jxr_keyword">import</strong> org.eclipse.aether.util.graph.visitor.PreorderNodeListGenerator;
 <a class="jxr_linenumber" name="28" href="#28">28</a>  
 <a class="jxr_linenumber" name="29" href="#29">29</a>  <strong class="jxr_keyword">import</strong> java.io.File;
 <a class="jxr_linenumber" name="30" href="#30">30</a>  <strong class="jxr_keyword">import</strong> java.io.FileNotFoundException;
@@ -278,7 +278,7 @@
 <a class="jxr_linenumber" name="268" href="#268">268</a> 
 <a class="jxr_linenumber" name="269" href="#269">269</a>             <strong class="jxr_keyword">for</strong> ( Dependency dep : dependencies )
 <a class="jxr_linenumber" name="270" href="#270">270</a>             {
-<a class="jxr_linenumber" name="271" href="#271">271</a>                 <strong class="jxr_keyword">final</strong> org.sonatype.aether.artifact.Artifact depAetherArtifact = dep.getArtifact();
+<a class="jxr_linenumber" name="271" href="#271">271</a>                 <strong class="jxr_keyword">final</strong> org.eclipse.aether.artifact.Artifact depAetherArtifact = dep.getArtifact();
 <a class="jxr_linenumber" name="272" href="#272">272</a>                 <strong class="jxr_keyword">if</strong> ( isNativeLibrary( sharedLibraries, depAetherArtifact.getExtension() ) )
 <a class="jxr_linenumber" name="273" href="#273">273</a>                 {
 <a class="jxr_linenumber" name="274" href="#274">274</a>                     <strong class="jxr_keyword">final</strong> Artifact mavenArtifact = artifactFactory
