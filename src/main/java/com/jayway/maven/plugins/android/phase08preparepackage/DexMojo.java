@@ -39,7 +39,6 @@ import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.configuration.Dex;
 import com.jayway.maven.plugins.android.phase04processclasses.ProguardMojo;
 
-import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
 
 
 /**
@@ -200,15 +199,7 @@ public class DexMojo extends AbstractAndroidMojo
             inputs.add( new File( project.getBuild().getOutputDirectory() ) );
             for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
             {
-                if ( artifact.getType().equals( AAR ) )
-                {
-                    final String apkLibResDir = getLibraryUnpackDirectory( artifact ) + "/classes.jar";
-                    if ( new File( apkLibResDir ).exists() )
-                    {
-                        inputs.add( new File( apkLibResDir ) );
-                    }
-                }
-                else if ( artifact.getType().equals( "so" ) || artifact.getType().equals( "a" ) )
+               if ( artifact.getType().equals( "so" ) || artifact.getType().equals( "a" ) )
                 {
                     // Ignore native dependencies - no need for dexer to see those
                     continue;
