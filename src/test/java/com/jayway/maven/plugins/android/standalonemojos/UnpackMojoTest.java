@@ -2,9 +2,7 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
 import org.junit.After;
-
-import static org.junit.Assert.*;
-
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -82,7 +80,9 @@ extends AbstractAndroidMojoTestCase<UnpackMojo>
 
 		MetaInf result = getFieldValue( mojo, "unpackMetaInf" );
 
-		assertEquals( this.expected, result );
+		Assert.assertEquals( this.expected, result );
+		
+		Assert.assertEquals( result == null, getFieldValue( mojo, "unpack" ) == null );
 	}
 
 	protected <T> T getFieldValue( Object object, String fieldName )
