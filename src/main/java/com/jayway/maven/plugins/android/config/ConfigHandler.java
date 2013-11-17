@@ -20,220 +20,216 @@ import java.util.Collection;
 public class ConfigHandler
 {
 
-	private Object	mojo;
+    private Object mojo;
+    private Object configPojoInstance;
+    private String configPojoName;
+    private String configPojoPrefix;
 
-	private Object	configPojoInstance;
+    public ConfigHandler( Object mojo )
+    {
+        this.mojo = mojo;
+        initConfigPojo();
+    }
 
-	private String	configPojoName;
+    private Collection< Field > findPropertiesByAnnotation( Class< ? extends Annotation > annotation )
+    {
+        Collection< Field > result = new ArrayList< Field >();
+        for( Class< ? extends Object > cls = mojo.getClass(); cls != Object.class; cls = cls.getSuperclass() )
+        {
+            for ( Field field : cls.getDeclaredFields() )
+            {
+                if ( field.isAnnotationPresent( annotation ) )
+                {
+                    field.setAccessible( true );
+                    result.add( field );
+                }
+            }
+        }
 
-	private String	configPojoPrefix;
+        return result;
+    }
 
-	public ConfigHandler( Object mojo )
-	{
-		this.mojo = mojo;
-		initConfigPojo();
-	}
+    public void parseConfiguration()
+    {
+        Collection< Field > parsedFields = findPropertiesByAnnotation( PullParameter.class );
 
-	private Collection<Field> findPropertiesByAnnotation( Class<? extends Annotation> annotation )
-	{
-		Collection<Field> result = new ArrayList<Field>();
+        for ( Field field : parsedFields )
+        {
+            Object value = null;
+            String fieldBaseName = getFieldNameWithoutParsedPrefix( field );
+            // first take the setting from the config pojo (e.g. nested config in plugin configuration)
+            if ( configPojoInstance != null )
+            {
+                value = getValueFromPojo( fieldBaseName );
+            }
+            // then override with value from properties supplied in pom, settings or command line
+            // unless it is null or an empty array
+            Object propertyValue = getValueFromMojo( fieldBaseName );
+            if ( propertyValue == null || propertyValue instanceof Object[]//
+                    && ( (Object[]) propertyValue ).length == 0 )
+            {
+                // no useful value
+            }
+            else
+            {
+                value = propertyValue;
+            }
+            // and only if we still have no value, get the default as declared in the annotation
+            if ( value == null )
+            {
+                value = getValueFromAnnotation( field );
+            }
 
-		for( Class<? extends Object> cls = mojo.getClass(); cls != Object.class; cls = cls.getSuperclass() )
-		{
-			for( Field field : cls.getDeclaredFields() )
-			{
-				if( field.isAnnotationPresent( annotation ) )
-				{
-					field.setAccessible( true );
-					result.add( field );
-				}
-			}
-		}
+            try
+            {
+                field.set( mojo, value );
+            }
+            catch ( Exception e )
+            {
+                e.printStackTrace();
+            }
+        }
+    }
 
-		return result;
-	}
+    private Object getValueFromAnnotation( Field field )
+    {
+        PullParameter annotation = field.getAnnotation( PullParameter.class );
+        String defaultValue = annotation.defaultValue();
+        boolean required = annotation.required();
+        String currentParameterName = "android." + configPojoName + "." + getFieldNameWithoutParsedPrefix( field );
 
-	public void parseConfiguration()
-	{
-		Collection<Field> parsedFields = findPropertiesByAnnotation( PullParameter.class );
+        if ( !defaultValue.isEmpty() )
+        { // TODO find a better way to define an empty default value
+            Class< ? > fieldType = field.getType();
+            if ( fieldType.isAssignableFrom( String.class ) )
+            {
+                return defaultValue;
+            }
+            if( fieldType.isAssignableFrom( Boolean.class ) )
+            {
+                return Boolean.valueOf( defaultValue );
+            }
+            if( fieldType.isAssignableFrom( Long.class ) )
+            {
+                return Long.valueOf( defaultValue );
+            }
+            if( fieldType.isAssignableFrom( Integer.class ) )
+            {
+                return Integer.valueOf( defaultValue );
+            }
 
-		for( Field field : parsedFields )
-		{
-			Object value = null;
-			String fieldBaseName = getFieldNameWithoutParsedPrefix( field );
-			// first take the setting from the config pojo (e.g. nested config in plugin configuration)
-			if( configPojoInstance != null )
-			{
-				value = getValueFromPojo( fieldBaseName );
-			}
-			// then override with value from properties supplied in pom, settings or command line
-			// unless it is null or an empty array
-			Object propertyValue = getValueFromMojo( fieldBaseName );
-			if( propertyValue == null || propertyValue instanceof Object[]//
-				&& ((Object[]) propertyValue).length == 0 )
-			{
-				// no useful value
-			}
-			else
-			{
-				value = propertyValue;
-			}
-			// and only if we still have no value, get the default as declared in the annotation
-			if( value == null )
-			{
-				value = getValueFromAnnotation( field );
-			}
+            // TODO add more handler types as required, for example integer, long, ... we will do that when we encounter
+            // them in other mojos..
+            throw new RuntimeException( "No handler for type " + fieldType + " on " //
+                    + currentParameterName + " found." );
+        }
+        else
+        {
+            if( !required )
+            {
+                // if no default value method, simply return null
+                if( annotation.defaultValueGetterMethod().isEmpty() ) {
+                    return null;
+                }
 
-			try
-			{
-				field.set( mojo, value );
-			}
-			catch( Exception e )
-			{
-				e.printStackTrace();
-			}
-		}
-	}
+                try
+                {
+                    Method method = mojo.getClass().getDeclaredMethod( annotation.defaultValueGetterMethod() );
+                    // even access it if the method is private
+                    method.setAccessible( true );
+                    return method.invoke( mojo );
+                }
+                catch ( Exception e )
+                {
+                    throw new RuntimeException( "Problem encountered accessing default value for "
+                            + currentParameterName + " parameter", e );
+                }
+            }
+            else
+            {
+                throw new RuntimeException( "Required parameter " + currentParameterName + " has no value. Please "
+                        + "supply with -D" + currentParameterName + "=value on the command line or as property or "
+                        + "plugin configuration in your pom or settings file." );
+            }
+        }
+    }
 
-	private Object getValueFromAnnotation( Field field )
-	{
-		PullParameter annotation = field.getAnnotation( PullParameter.class );
-		String defaultValue = annotation.defaultValue();
-		boolean required = annotation.required();
-		String currentParameterName = "android." + configPojoName + "." + getFieldNameWithoutParsedPrefix( field );
+    private Object getValueFromMojo( String fieldBaseName )
+    {
+        return getValueFromObject( mojo, configPojoName + toFirstLetterUppercase( fieldBaseName ) );
+    }
 
-		if( !defaultValue.isEmpty() )
-		{ // TODO find a better way to define an empty default value
-			Class<?> fieldType = field.getType();
-			if( fieldType.isAssignableFrom( String.class ) )
-			{
-				return defaultValue;
-			}
-			if( fieldType.isAssignableFrom( Boolean.class ) )
-			{
-				return Boolean.valueOf( defaultValue );
-			}
-			if( fieldType.isAssignableFrom( Long.class ) )
-			{
-				return Long.valueOf( defaultValue );
-			}
-			if( fieldType.isAssignableFrom( Integer.class ) )
-			{
-				return Integer.valueOf( defaultValue );
-			}
+    private Object getValueFromPojo( String fieldBaseName )
+    {
+        return getValueFromObject( configPojoInstance, fieldBaseName );
+    }
 
-			// TODO add more handler types as required, for example integer, long, ... we will do that when we encounter
-			// them in other mojos..
-			throw new RuntimeException( "No handler for type " + fieldType + " on " //
-				+ currentParameterName + " found." );
-		}
-		else
-		{
-			if( !required )
-			{
-				// if no default value method, simply return null
-				if( annotation.defaultValueGetterMethod().isEmpty() ) {
-					return null;
-				}
+    private Object getValueFromObject( Object object, String fieldBaseName )
+    {
+        Object value = null;
+        try
+        {
+            Field pojoField = findFieldByName( object, fieldBaseName );
+            if ( pojoField != null )
+            {
+                value = pojoField.get( object );
+            }
+        }
+        catch ( Exception e )
+        {
+            // swallow
+        }
+        return value;
+    }
 
-				try
-				{
-					Method method = mojo.getClass().getDeclaredMethod( annotation.defaultValueGetterMethod() );
-					// even access it if the method is private
-					method.setAccessible( true );
-					return method.invoke( mojo );
-				}
-				catch( Exception e )
-				{
-					throw new RuntimeException( "Problem encountered accessing default value for "
-						+ currentParameterName + " parameter", e );
-				}
-			}
-			else
-			{
-				throw new RuntimeException( "Required parameter " + currentParameterName + " has no value. Please "
-					+ "supply with -D" + currentParameterName + "=value on the command line or as property or "
-					+ "plugin configuration in your pom or settings file." );
-			}
-		}
-	}
+    private Field findFieldByName( Object object, String name )
+    {
+        for ( Field field : object.getClass().getDeclaredFields() )
+        {
+            if ( field.getName().equals( name ) )
+            {
+                field.setAccessible( true );
+                return field;
+            }
+        }
+        return null;
+    }
 
-	private Object getValueFromMojo( String fieldBaseName )
-	{
-		return getValueFromObject( mojo, configPojoName + toFirstLetterUppercase( fieldBaseName ) );
-	}
+    private String getFieldNameWithoutPrefix( Field field, String prefix )
+    {
+        if ( field.getName().startsWith( prefix ) )
+        {
+            String fieldName = field.getName().substring( prefix.length() );
+            return fieldName.substring( 0, 1 ).toLowerCase() + fieldName.substring( 1 );
+        }
+        else
+        {
+            return field.getName();
+        }
+    }
 
-	private Object getValueFromPojo( String fieldBaseName )
-	{
-		return getValueFromObject( configPojoInstance, fieldBaseName );
-	}
+    private String toFirstLetterUppercase( String s )
+    {
+        return s.substring( 0, 1 ).toUpperCase() + s.substring( 1 );
+    }
 
-	private Object getValueFromObject( Object object, String fieldBaseName )
-	{
-		Object value = null;
-		try
-		{
-			Field pojoField = findFieldByName( object, fieldBaseName );
-			if( pojoField != null )
-			{
-				value = pojoField.get( object );
-			}
-		}
-		catch( Exception e )
-		{
-			// swallow
-		}
-		return value;
-	}
+    private String getFieldNameWithoutParsedPrefix( Field field )
+    {
+        return getFieldNameWithoutPrefix( field, configPojoPrefix );
+    }
 
-	private Field findFieldByName( Object object, String name )
-	{
-		for( Field field : object.getClass().getDeclaredFields() )
-		{
-			if( field.getName().equals( name ) )
-			{
-				field.setAccessible( true );
-				return field;
-			}
-		}
-		return null;
-	}
-
-	private String getFieldNameWithoutPrefix( Field field, String prefix )
-	{
-		if( field.getName().startsWith( prefix ) )
-		{
-			String fieldName = field.getName().substring( prefix.length() );
-			return fieldName.substring( 0, 1 ).toLowerCase() + fieldName.substring( 1 );
-		}
-		else
-		{
-			return field.getName();
-		}
-	}
-
-	private String toFirstLetterUppercase( String s )
-	{
-		return s.substring( 0, 1 ).toUpperCase() + s.substring( 1 );
-	}
-
-	private String getFieldNameWithoutParsedPrefix( Field field )
-	{
-		return getFieldNameWithoutPrefix( field, configPojoPrefix );
-	}
-
-	private void initConfigPojo()
-	{
-		try
-		{
-			Field configPojo = findPropertiesByAnnotation( ConfigPojo.class ).iterator().next();
-			configPojoName = configPojo.getName();
-			configPojoInstance = configPojo.get( mojo );
-			configPojoPrefix = configPojo.getAnnotation( ConfigPojo.class ).prefix();
-		}
-		catch( Exception e )
-		{
-			// ignore, we can live without a config pojo
-		}
-	}
+    private void initConfigPojo()
+    {
+        try
+        {
+            Field configPojo = findPropertiesByAnnotation( ConfigPojo.class ).iterator().next();
+            configPojoName = configPojo.getName();
+            configPojoInstance = configPojo.get( mojo );
+            configPojoPrefix = configPojo.getAnnotation( ConfigPojo.class ).prefix();
+        }
+        catch ( Exception e )
+        {
+            // ignore, we can live without a config pojo
+        }
+    }
 }
