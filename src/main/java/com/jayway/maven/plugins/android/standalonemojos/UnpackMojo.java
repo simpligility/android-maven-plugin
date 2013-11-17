@@ -16,9 +16,12 @@
  */
 package com.jayway.maven.plugins.android.standalonemojos;
 
+import static com.jayway.maven.plugins.android.common.FileNameHelper.*;
+
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.common.JarHelper;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -50,6 +53,11 @@ public class UnpackMojo extends AbstractAndroidMojo
      * default-value="false"
      */
     private boolean lazyLibraryUnpack;
+    
+    /**
+     * @parameter
+     */
+    private String[] metaIncludes;
 
     public void execute() throws MojoExecutionException, MojoFailureException
     {
@@ -99,8 +107,7 @@ public class UnpackMojo extends AbstractAndroidMojo
                                     @Override
                                     public boolean include( JarEntry jarEntry )
                                     {
-                                        return ! jarEntry.getName().startsWith( "META-INF" ) && jarEntry.getName()
-                                                .endsWith( ".class" );
+                                        return isIncluded( jarEntry );
                                     }
                                 } );
                     }
@@ -127,5 +134,12 @@ public class UnpackMojo extends AbstractAndroidMojo
         }
         return outputDirectory;
     }
+
+	boolean isIncluded( JarEntry jarEntry )
+	{
+		String entName = jarEntry.getName();
+
+		return isMetaInfMatch( entName, metaIncludes ) && entName.endsWith( ".class" );
+	}
 
 }
