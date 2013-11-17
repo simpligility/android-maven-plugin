@@ -18,6 +18,9 @@ import com.jayway.maven.plugins.android.configuration.MetaInf;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Pappy STĂNESCU <a href="mailto:pappy.stanescu&#64;gmail.com">&lt;pappy.stanescu&#64;gmail.com&gt;</a>
+ */
 @RunWith( Parameterized.class )
 @FixMethodOrder( MethodSorters.NAME_ASCENDING )
 public class UnpackMojoTest

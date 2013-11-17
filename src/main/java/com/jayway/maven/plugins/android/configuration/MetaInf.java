@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * POJO to specify META-INF include and exclude patterns.
  * 
- * @author <a href="mailto:pa314159&#64;gmail.com">Pappy STĂNESCU &lt;pa314159&#64;gmail.com&gt;</a>
+ * @author Pappy STĂNESCU <a href="mailto:pappy.stanescu&#64;gmail.com">&lt;pappy.stanescu&#64;gmail.com&gt;</a>
  */
 public class MetaInf
 {
