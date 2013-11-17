@@ -16,8 +16,6 @@
  */
 package com.jayway.maven.plugins.android.phase09package;
 
-import static com.jayway.maven.plugins.android.common.FileNameHelper.*;
-
 import com.android.sdklib.build.ApkBuilder;
 import com.android.sdklib.build.ApkCreationException;
 import com.android.sdklib.build.DuplicateFileException;
@@ -419,7 +417,7 @@ public class ApkMojo extends AbstractAndroidMojo
                     continue;
                 }
 
-                if ( ! isMetaInfMatch( zn, apkMetaIncludes ) )
+                if ( ! metaInfMatches( zn ) )
                 {
                     continue;
                 }
@@ -436,6 +434,19 @@ public class ApkMojo extends AbstractAndroidMojo
         }
 
         zin.close();
+    }
+
+    private boolean metaInfMatches( String path )
+    {
+        for ( String inc : this.apkMetaIncludes )
+        {
+            if ( SelectorUtils.matchPath( "META-INF/" + inc, path ) )
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private Map<String, List<File>> jars = new HashMap<String, List<File>>();
