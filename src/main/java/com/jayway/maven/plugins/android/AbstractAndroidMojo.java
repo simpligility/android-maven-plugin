@@ -140,6 +140,27 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File resourceDirectory;
 
     /**
+     * The android resources directory.
+     *
+     * @parameter property="resourceDirectoryAlias"
+     */
+    protected File resourceDirectoryAlias;
+
+    /**
+     * The alias for <code>resourceDirectory</code> parameter.
+     * It is should be used to avoid IDEA IDE to relocate <code>res</code> folder location.
+     * If you need it only for maven use.
+     *
+     * @parameter alias="resourceDirectoryAlias" default-value="${project.basedir}/res"
+     */
+    public void setResourceDirectoryAlias( File file )
+    {
+        resourceDirectory = file;
+        resourceDirectoryAlias = file;
+    }
+
+
+    /**
      * <p>Root folder containing native libraries to include in the application package.</p>
      *
      * @parameter expression="${android.nativeLibrariesDirectory}" default-value="${project.basedir}/libs"
@@ -171,6 +192,26 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File assetsDirectory;
 
     /**
+     * The android assets directory.
+     *
+     * @parameter property="assetsDirectoryAlias"
+     */
+    protected File assetsDirectoryAlias;
+
+    /**
+     * The alias for <code>resourceDirectory</code> parameter.
+     * It is should be used to avoid IDEA IDE to relocate <code>res</code> folder location.
+     * If you need it only for maven use.
+     *
+     * @parameter alias="assetsDirectoryAlias" default-value="${project.basedir}/assets"
+     */
+    public void setAssetsDirectoryAlias( File file )
+    {
+        assetsDirectory = file;
+        assetsDirectoryAlias = file;
+    }
+
+    /**
      * The <code>AndroidManifest.xml</code> file.
      *
      * @parameter default-value="${project.basedir}/AndroidManifest.xml"
@@ -184,17 +225,18 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected File androidManifestFileAlias;
 
-    /*
-    * The alias for <code>AndroidManifest</code> parameter.
-    * It is should be used to avoid IDEA IDE to relocate <code>AndroidManifest.xml</code> file location.
-    * If you need it only for maven use.
-    *
-    * @parameter alias="androidManifestFileAlias" default-value="${project.basedir}/AndroidManifest.xml"
-    */
+
+    /**
+     * The alias for <code>AndroidManifest</code> parameter.
+     * It is should be used to avoid IDEA IDE to relocate <code>AndroidManifest.xml</code> file location.
+     * If you need it only for maven use.
+     *
+     * @parameter alias="androidManifestFileAlias" default-value="${project.basedir}/AndroidManifest.xml"
+     */
     public void setAndroidManifestFileAlias( File file )
     {
-        androidManifestFileAlias = file;
         androidManifestFile = file;
+        androidManifestFileAlias = file;
     }
 
     /**
@@ -530,7 +572,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                 continue;
             }
 
-            if ( "apk".equalsIgnoreCase( artifact.getType() ) )
+            if ( "apk".equalsIgnoreCase(artifact.getType()) )
             {
                 continue;
             }
@@ -932,10 +974,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         commands.add( "xmltree" );
         commands.add( apkFile.getAbsolutePath() );
         commands.add( "AndroidManifest.xml" );
-        getLog().info( getAndroidSdk().getPathForTool( "aapt" ) + " " + commands.toString() );
+        getLog().info( getAndroidSdk().getPathForTool("aapt") + " " + commands.toString() );
         try
         {
-            executor.executeCommand( getAndroidSdk().getPathForTool( "aapt" ), commands, false );
+            executor.executeCommand( getAndroidSdk().getPathForTool("aapt"), commands, false );
             final String xmlTree = executor.getStandardOut();
             return extractPackageNameFromAndroidManifestXmlTree( xmlTree );
         }
