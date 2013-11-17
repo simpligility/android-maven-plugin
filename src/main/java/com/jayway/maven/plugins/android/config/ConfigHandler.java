@@ -109,20 +109,17 @@ public class ConfigHandler
 			{
 				return defaultValue;
 			}
-			else
+			if( fieldType.isAssignableFrom( Boolean.class ) )
 			{
-				if( fieldType.isAssignableFrom( Boolean.class ) )
-				{
-					return Boolean.valueOf( defaultValue );
-				}
-				if( fieldType.isAssignableFrom( Long.class ) )
-				{
-					return Long.valueOf( defaultValue );
-				}
-				if( fieldType.isAssignableFrom( Integer.class ) )
-				{
-					return Integer.valueOf( defaultValue );
-				}
+				return Boolean.valueOf( defaultValue );
+			}
+			if( fieldType.isAssignableFrom( Long.class ) )
+			{
+				return Long.valueOf( defaultValue );
+			}
+			if( fieldType.isAssignableFrom( Integer.class ) )
+			{
+				return Integer.valueOf( defaultValue );
 			}
 
 			// TODO add more handler types as required, for example integer, long, ... we will do that when we encounter
@@ -134,6 +131,11 @@ public class ConfigHandler
 		{
 			if( !required )
 			{
+				// if no default value method, simply return null
+				if( annotation.defaultValueGetterMethod().isEmpty() ) {
+					return null;
+				}
+
 				try
 				{
 					Method method = mojo.getClass().getDeclaredMethod( annotation.defaultValueGetterMethod() );
