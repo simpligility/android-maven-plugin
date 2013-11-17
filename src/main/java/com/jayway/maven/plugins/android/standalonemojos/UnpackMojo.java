@@ -17,17 +17,18 @@
 
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import static com.jayway.maven.plugins.android.common.FileNameHelper.*;
-
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.CommandExecutor;
-import com.jayway.maven.plugins.android.common.JarHelper;
-import com.jayway.maven.plugins.android.configuration.MetaInf;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.common.JarHelper;
+import com.jayway.maven.plugins.android.config.ConfigPojo;
+import com.jayway.maven.plugins.android.config.PullParameter;
+import com.jayway.maven.plugins.android.configuration.MetaInf;
+import com.jayway.maven.plugins.android.configuration.Unpack;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,9 +60,16 @@ extends AbstractAndroidMojo
 	private boolean	lazyLibraryUnpack;
 
 	/**
+	 * @parameter expression="${android.unpack.metaInf}"
+	 */
+	@PullParameter
+	private MetaInf	unpackMetaInf;
+
+	/**
 	 * @parameter
 	 */
-	private MetaInf	metaInf;
+	@ConfigPojo( prefix = "unpack" )
+	private Unpack	unpack;
 
 	public void execute()
 	throws MojoExecutionException, MojoFailureException
@@ -146,9 +154,10 @@ extends AbstractAndroidMojo
 	{
 		String entName = jarEntry.getName();
 
-		if( entName.endsWith( ".class" ) ) return true;
-		
-		return metaInf != null && metaInf.isIncluded( entName );
+		if( entName.endsWith( ".class" ) )
+			return true;
+
+		return this.unpackMetaInf != null && this.unpackMetaInf.isIncluded( entName );
 	}
 
 }
