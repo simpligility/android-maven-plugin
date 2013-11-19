@@ -55,13 +55,9 @@ public class MetaInf
 		return true;
 	}
 
-	/**
-	 * used in tests
-	 */
-	public MetaInf exclude( String first, String... rest )
+	public MetaInf exclude( String... excludes )
 	{
-		getExcludes().add( first );
-		getExcludes().addAll( Arrays.asList( rest ) );
+		getExcludes().addAll( Arrays.asList( excludes ) );
 
 		return this;
 	}
@@ -94,13 +90,9 @@ public class MetaInf
 		return result;
 	}
 
-	/**
-	 * used in tests
-	 */
-	public MetaInf include( String first, String... rest )
+	public MetaInf include( String... includes )
 	{
-		getIncludes().add( first );
-		getIncludes().addAll( Arrays.asList( rest ) );
+		getIncludes().addAll( Arrays.asList( includes ) );
 
 		return this;
 	}
