@@ -356,7 +356,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         commands.add( "-printmapping" );
         commands.add( "'" + proguardDir + File.separator + "mapping.txt'" );
 
-        commands.addAll( Arrays.asList( proguardOptions ) );
+        commands.addAll( Arrays.asList( parsedOptions ) );
 
         final String javaExecutable = getJavaExecutable().getAbsolutePath();
         getLog().info( javaExecutable + " " + commands.toString() );
