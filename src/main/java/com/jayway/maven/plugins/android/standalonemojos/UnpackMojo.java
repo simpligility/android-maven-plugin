@@ -61,7 +61,7 @@ public class UnpackMojo extends AbstractAndroidMojo
 	/**
      * @parameter expression="${android.unpack.metaInf}"
      */
-    @PullParameter
+    @PullParameter( defaultValueGetterMethod = "getDefaultMetaInf" )
     private MetaInf unpackMetaInf;
 
     /**
@@ -71,6 +71,11 @@ public class UnpackMojo extends AbstractAndroidMojo
     private Boolean unpackLazy;
 
     /**
+     * @parameter alias="metaInf" expression="${android.metaInf}"
+     */
+    private MetaInf	pluginMetaInf;
+
+	/**
      * @parameter
      */
     @ConfigPojo( prefix = "unpack" )
@@ -154,13 +159,18 @@ public class UnpackMojo extends AbstractAndroidMojo
 
     boolean isIncluded( JarEntry jarEntry )
     {
-        String entName = jarEntry.getName();
+		String entName = jarEntry.getName();
 
-        if( entName.endsWith( ".class" ) )
-            return true;
+		if( entName.endsWith( ".class" ) )
+			return true;
 
-        return this.unpackMetaInf != null && this.unpackMetaInf.isIncluded( entName );
+		return this.unpackMetaInf != null && this.unpackMetaInf.isIncluded( entName );
     }
+    
+ 	MetaInf getDefaultMetaInf()
+ 	{
+ 		return this.pluginMetaInf;
+ 	}
 
 	boolean getLazyLibraryUnpack()
 	{

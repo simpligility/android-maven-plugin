@@ -12,7 +12,13 @@ public class Apk
     /**
      * Mirror of {@link com.jayway.maven.plugins.android.phase09package.ApkMojo#apkMetaIncludes}.
      */
+	@Deprecated
     private String[] metaIncludes;
+
+	/**
+	 * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ApkMojo#unpackMetaInf}.
+	 */
+	private MetaInf	metaInf;
 
     /**
      * Mirror of {@link com.jayway.maven.plugins.android.phase09package.ApkMojo#apkDebug}.
