@@ -103,6 +103,8 @@ public class UnpackMojo extends AbstractAndroidMojo
         }
         else
         {
+        	outputDirectory.mkdirs();
+
             for ( Artifact artifact : getRelevantCompileArtifacts() )
             {
 
