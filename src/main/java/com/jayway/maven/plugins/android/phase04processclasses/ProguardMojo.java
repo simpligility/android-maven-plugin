@@ -108,6 +108,17 @@ public class ProguardMojo extends AbstractAndroidMojo
     private String[] parsedConfigs;
 
     /**
+     * Additional ProGuard options
+     *
+     * @parameter expression="${android.proguard.options}"
+     * @optional
+     */
+    private String[] proguardOptions;
+
+    @PullParameter( defaultValueGetterMethod = "getDefaultProguardOptions" )
+    private String[] parsedOptions;
+
+    /**
      * Path to the proguard jar and therefore version of proguard to be used. By default this will load the jar from
      * the Android SDK install. Overriding it with an absolute path allows you to use a newer or custom proguard
      * version..
@@ -344,6 +355,8 @@ public class ProguardMojo extends AbstractAndroidMojo
         commands.add( "'" + proguardDir + File.separator + "usage.txt'" );
         commands.add( "-printmapping" );
         commands.add( "'" + proguardDir + File.separator + "mapping.txt'" );
+
+        commands.addAll( Arrays.asList( proguardOptions ) );
 
         final String javaExecutable = getJavaExecutable().getAbsolutePath();
         getLog().info( javaExecutable + " " + commands.toString() );
@@ -627,6 +640,17 @@ public class ProguardMojo extends AbstractAndroidMojo
      * @see #parsedConfigs
      */
     private String[] getDefaultProguardConfigs()
+    {
+        return new String[0];
+    }
+
+    /**
+     * Get the default ProGuard options.
+     *
+     * @return
+     * @see #parsedOptions
+     */
+    private String[] getDefaultProguardOptions()
     {
         return new String[0];
     }
