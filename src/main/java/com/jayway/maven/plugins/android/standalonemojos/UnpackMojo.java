@@ -14,11 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.jayway.maven.plugins.android.standalonemojos;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.common.JarHelper;
+import com.jayway.maven.plugins.android.config.ConfigPojo;
+import com.jayway.maven.plugins.android.config.PullParameter;
+import com.jayway.maven.plugins.android.configuration.MetaInf;
+import com.jayway.maven.plugins.android.configuration.Unpack;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -50,6 +56,18 @@ public class UnpackMojo extends AbstractAndroidMojo
      * default-value="false"
      */
     private boolean lazyLibraryUnpack;
+
+    /**
+     * @parameter expression="${android.unpack.metaInf}"
+     */
+    @PullParameter
+    private MetaInf unpackMetaInf;
+
+    /**
+     * @parameter
+     */
+    @ConfigPojo( prefix = "unpack" )
+    private Unpack unpack;
 
     public void execute() throws MojoExecutionException, MojoFailureException
     {
@@ -99,8 +117,7 @@ public class UnpackMojo extends AbstractAndroidMojo
                                     @Override
                                     public boolean include( JarEntry jarEntry )
                                     {
-                                        return ! jarEntry.getName().startsWith( "META-INF" ) && jarEntry.getName()
-                                                .endsWith( ".class" );
+                                         return isIncluded( jarEntry );
                                     }
                                 } );
                     }
@@ -126,6 +143,16 @@ public class UnpackMojo extends AbstractAndroidMojo
                     + " into " + outputDirectory.getAbsolutePath(), e );
         }
         return outputDirectory;
+    }
+
+    boolean isIncluded( JarEntry jarEntry )
+    {
+        String entName = jarEntry.getName();
+
+        if( entName.endsWith( ".class" ) )
+            return true;
+
+        return this.unpackMetaInf != null && this.unpackMetaInf.isIncluded( entName );
     }
 
 }
