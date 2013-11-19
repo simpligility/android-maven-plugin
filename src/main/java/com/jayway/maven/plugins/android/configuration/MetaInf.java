@@ -107,6 +107,10 @@ public class MetaInf
 
 	public boolean isIncluded( String name )
 	{
+		if( this.includes == null && this.excludes == null ) {
+			return false;
+		}
+
 		boolean included = this.includes == null;
 
 		if( this.includes != null ) {
