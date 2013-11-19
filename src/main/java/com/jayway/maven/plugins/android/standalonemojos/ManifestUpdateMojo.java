@@ -514,6 +514,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         FileWriter writer = null;
         try
         {
+        	manifestFile.getParentFile().mkdirs();
             writer = new FileWriter( manifestFile, false );
             if ( doc.getXmlEncoding() != null && doc.getXmlVersion() != null )
             {
@@ -681,7 +682,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         		
         		manifestFile = updatedManifestFile;
         	}
-            if ( ! manifestFile.delete() )
+            if ( manifestFile.exists() && ! manifestFile.delete() )
             {
                 getLog().warn( "Could not remove old " + manifestFile );
             }
