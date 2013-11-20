@@ -714,7 +714,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                     if ( fullSymbolValues == null )
                     {
                         fullSymbolValues = new SymbolLoader(
-                                new File( genDirectory + "/" + packageName ), null );
+                                new File( project.getBuild().getDirectory() + "/R.txt" ), null );
 
                         fullSymbolValues.load();
                     }
