@@ -37,9 +37,6 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.configuration.Dex;
-import com.jayway.maven.plugins.android.phase04processclasses.ProguardMojo;
-
-
 
 /**
  * Converts compiled Java classes to the Android dex format.
@@ -126,6 +123,12 @@ public class DexMojo extends AbstractAndroidMojo
      */
     private boolean dexIncremental;
 
+    /**
+     * The name of the obfuscated JAR
+     * @parameter expression="${android.proguard.obfuscatedJar}"
+     */
+    private File obfuscatedJar;
+
     private String[] parsedJvmArguments;
     private boolean parsedCoreLibrary;
     private boolean parsedNoLocals;
@@ -178,19 +181,13 @@ public class DexMojo extends AbstractAndroidMojo
      */
     private Set< File > getDexInputFiles()
     {
-
         Set< File > inputs = new HashSet< File >();
 
-        // ugly, don't know a better way to get this in mvn
-        File proguardJar = new File( project.getBuild().getDirectory(), ProguardMojo.PROGUARD_OBFUSCATED_JAR );
-
-        getLog().debug( "Checking for existence of: " + proguardJar.toString() );
-
-        if ( proguardJar.exists() )
+        if ( obfuscatedJar != null && obfuscatedJar.exists() )
         {
             // progurad has been run, use this jar
             getLog().debug( "Obfuscated jar exists, using that as input" );
-            inputs.add( proguardJar );
+            inputs.add( obfuscatedJar );
         }
         else
         {
@@ -199,7 +196,7 @@ public class DexMojo extends AbstractAndroidMojo
             inputs.add( new File( project.getBuild().getOutputDirectory() ) );
             for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
             {
-               if ( artifact.getType().equals( "so" ) || artifact.getType().equals( "a" ) )
+                if ( artifact.getType().equals( "so" ) || artifact.getType().equals( "a" ) )
                 {
                     // Ignore native dependencies - no need for dexer to see those
                     continue;
