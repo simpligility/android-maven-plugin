@@ -9,7 +9,7 @@ import java.lang.reflect.Field;
 /**
  * Helper for parsing the embedded configuration of a mojo.
  *
- * @author <a href="mailto:pa314159&#64;gmail.com">Pappy Răzvan STĂNESCU &lt;pa314159&#64;gmail.com&gt;</a>
+ * @author Pappy STĂNESCU <a href="mailto:pappy.stanescu&#64;gmail.com">&lt;pappy.stanescu&#64;gmail.com&gt;</a>
  */
 public final class ConfigHelper
 {
