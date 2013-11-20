@@ -566,6 +566,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( "-G" );
             commands.add( proguardFile.getAbsolutePath() );
         }
+
+        commands.add( "--output-text-symbols" );
+
+        commands.add( project.getBuild().getDirectory() );
+
         getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
         try
         {
@@ -708,7 +713,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                     // resources anywhere.
                     if ( fullSymbolValues == null )
                     {
-                        fullSymbolValues = new SymbolLoader( rFile, null );
+                        fullSymbolValues = new SymbolLoader(
+                                new File( genDirectory + "/" + packageName ), null );
 
                         fullSymbolValues.load();
                     }
