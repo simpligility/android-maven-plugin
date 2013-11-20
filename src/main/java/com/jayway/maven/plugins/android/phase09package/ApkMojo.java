@@ -209,18 +209,16 @@ public class ApkMojo extends AbstractAndroidMojo
      * </p>
      *
      * @parameter expression="${android.apk.metaIncludes}"
+     * @deprecated in favour of apk.metaInf
      */
     @PullParameter
     private String[] apkMetaIncludes;
 
-	/**
-     * @parameter expression="${android.apk.metaInf}"
-     */
     @PullParameter( defaultValueGetterMethod = "getDefaultMetaInf" )
     private MetaInf apkMetaInf;
 
     /**
-     * @parameter alias="metaInf" expression="${android.metaInf}"
+     * @parameter alias="metaInf"
      */
     private MetaInf	pluginMetaInf;
 
