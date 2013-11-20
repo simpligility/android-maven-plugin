@@ -9,13 +9,13 @@ package com.jayway.maven.plugins.android.configuration;
 public class Unpack
 {
 
-	/**
-	 * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.UnpackMojo#unpackMetaInf}.
-	 */
-	private MetaInf	metaInf;
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.UnpackMojo#unpackMetaInf}.
+     */
+    private MetaInf metaInf;
 
-	/**
-	 * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.UnpackMojo#unpackLazy}.
-	 */
-	private Boolean	lazy;
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.UnpackMojo#unpackLazy}.
+     */
+    private Boolean lazy;
 }

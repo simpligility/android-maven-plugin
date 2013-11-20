@@ -34,7 +34,7 @@ public class ConfigHandler
     private Collection< Field > findPropertiesByAnnotation( Class< ? extends Annotation > annotation )
     {
         Collection< Field > result = new ArrayList< Field >();
-        for( Class< ? extends Object > cls = mojo.getClass(); cls != Object.class; cls = cls.getSuperclass() )
+        for ( Class< ? extends Object > cls = mojo.getClass(); cls != Object.class; cls = cls.getSuperclass() )
         {
             for ( Field field : cls.getDeclaredFields() )
             {
@@ -105,15 +105,15 @@ public class ConfigHandler
             {
                 return defaultValue;
             }
-            if( fieldType.isAssignableFrom( Boolean.class ) )
+            if ( fieldType.isAssignableFrom( Boolean.class ) )
             {
                 return Boolean.valueOf( defaultValue );
             }
-            if( fieldType.isAssignableFrom( Long.class ) )
+            if ( fieldType.isAssignableFrom( Long.class ) )
             {
                 return Long.valueOf( defaultValue );
             }
-            if( fieldType.isAssignableFrom( Integer.class ) )
+            if ( fieldType.isAssignableFrom( Integer.class ) )
             {
                 return Integer.valueOf( defaultValue );
             }
@@ -125,10 +125,11 @@ public class ConfigHandler
         }
         else
         {
-            if( !required )
+            if ( !required )
             {
                 // if no default value method, simply return null
-                if( annotation.defaultValueGetterMethod().isEmpty() ) {
+                if ( annotation.defaultValueGetterMethod().isEmpty() )
+                {
                     return null;
                 }
 

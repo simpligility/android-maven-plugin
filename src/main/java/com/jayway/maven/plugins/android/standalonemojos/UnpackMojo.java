@@ -55,10 +55,10 @@ public class UnpackMojo extends AbstractAndroidMojo
      * @parameter expression="${android.lazyLibraryUnpack}" default-value="false"
      * @deprecated use ${android.unpack.lazy}
      */
-	@Deprecated
+    @Deprecated
     private boolean lazyLibraryUnpack;
 
-	/**
+    /**
      * @parameter expression="${android.unpack.metaInf}"
      */
     @PullParameter
@@ -67,7 +67,7 @@ public class UnpackMojo extends AbstractAndroidMojo
     /**
      * @parameter expression="${android.unpack.lazy}"
      */
-    @PullParameter(defaultValueGetterMethod="getLazyLibraryUnpack")
+    @PullParameter( defaultValueGetterMethod = "getLazyLibraryUnpack" )
     private Boolean unpackLazy;
 
     /**
@@ -98,7 +98,7 @@ public class UnpackMojo extends AbstractAndroidMojo
         }
         else
         {
-        	outputDirectory.mkdirs();
+            outputDirectory.mkdirs();
 
             for ( Artifact artifact : getRelevantCompileArtifacts() )
             {
@@ -158,14 +158,15 @@ public class UnpackMojo extends AbstractAndroidMojo
     {
         String entName = jarEntry.getName();
 
-        if( entName.endsWith( ".class" ) )
+        if ( entName.endsWith( ".class" ) )
+        {
             return true;
-
+        }
         return this.unpackMetaInf != null && this.unpackMetaInf.isIncluded( entName );
     }
 
-	boolean getLazyLibraryUnpack()
-	{
-		return this.lazyLibraryUnpack;
-	}
+    boolean getLazyLibraryUnpack()
+    {
+        return this.lazyLibraryUnpack;
+    }
 }
