@@ -27,7 +27,7 @@ public class Proguard
     private Boolean includeJdkLibs;
     private String[] options;
 
-	public Boolean isSkip()
+    public Boolean isSkip()
     {
         return skip;
     }
@@ -73,7 +73,7 @@ public class Proguard
     }
 
     public String[] getOptions()
-	{
-		return options;
-	}
+    {
+        return options;
+    }
 }
