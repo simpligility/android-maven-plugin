@@ -169,14 +169,22 @@ public class ProguardMojo extends AbstractAndroidMojo
      * Output directory is defined relatively so it could be also outside of the target directory.
      * <p/>
      *
-     * @parameter expression="${android.proguard.outputDirectory}"  default-value="proguard"
+     * @parameter expression="${android.proguard.outputDirectory}"  default-value="${project.build.directory}/proguard"
      * @optional
      */
     private String outputDirectory;
 
+   /**
+    * @parameter expression="${android.proguard.obfuscatedJar}" 
+    *            default-value="${project.build.directory}/${project.build.finalName}_obfuscated.jar"
+    */
+   private String obfuscatedJar;
+
     @PullParameter( defaultValue = "proguard" )
     private String parsedOutputDirectory;
     
+    @PullParameter
+    private String parsedObfuscatedJar;
 
     /**
      * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build.
@@ -230,8 +238,6 @@ public class ProguardMojo extends AbstractAndroidMojo
      * @readonly
      */
     protected List<Artifact> pluginDependencies;
-
-    public static final String PROGUARD_OBFUSCATED_JAR = "proguard-obfuscated.jar";
 
     private static final Collection<String> ANDROID_LIBRARY_EXCLUDED_FILTER = Arrays
             .asList( "org/xml/**", "org/w3c/**", "java/**", "javax/**" );
@@ -300,6 +306,9 @@ public class ProguardMojo extends AbstractAndroidMojo
 
         if ( ! parsedSkip )
         {
+            // TODO: make the property name a constant sometime after switching to @Mojo
+            project.getProperties().setProperty( "android.proguard.obfuscatedJar", obfuscatedJar );
+
             executeProguard();
         }
     }
@@ -307,7 +316,7 @@ public class ProguardMojo extends AbstractAndroidMojo
     private void executeProguard() throws MojoExecutionException
     {
 
-        final File proguardDir = new File( project.getBuild().getDirectory(), parsedOutputDirectory );
+        final File proguardDir = new File( parsedOutputDirectory );
           
         if ( ! proguardDir.exists() && ! proguardDir.mkdir() )
         {
@@ -345,7 +354,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         collectInputFiles( commands );
 
         commands.add( "-outjars" );
-        commands.add( "'" + project.getBuild().getDirectory() + File.separator + PROGUARD_OBFUSCATED_JAR + "'" );
+        commands.add( "'" + obfuscatedJar + "'" );
 
         commands.add( "-dump" );
         commands.add( "'" + proguardDir + File.separator + "dump.txt'" );
