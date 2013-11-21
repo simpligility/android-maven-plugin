@@ -22,41 +22,41 @@ public class MetaInf
     @Override
     public boolean equals( Object obj )
     {
-        if ( this == obj ) 
+        if ( this == obj )
         {
             return true;
         }
-        if ( obj == null ) 
+        if ( obj == null )
         {
             return false;
         }
-        if ( getClass() != obj.getClass() ) 
+        if ( getClass() != obj.getClass() )
         {
             return false;
         }
 
         final MetaInf that = (MetaInf) obj;
 
-        if ( this.includes == null ) 
+        if ( this.includes == null )
         {
-            if ( that.includes != null ) 
+            if ( that.includes != null )
             {
                 return false;
             }
         }
-        else if ( !this.includes.equals( that.includes ) ) 
+        else if ( !this.includes.equals( that.includes ) )
         {
             return false;
         }
 
-        if ( this.excludes == null ) 
+        if ( this.excludes == null )
         {
-            if ( that.excludes != null ) 
+            if ( that.excludes != null )
             {
                 return false;
             }
         }
-        else if ( !this.excludes.equals( that.excludes ) ) 
+        else if ( !this.excludes.equals( that.excludes ) )
         {
             return false;
         }
@@ -64,20 +64,16 @@ public class MetaInf
         return true;
     }
 
-    /**
-     * used in tests
-     */
-    public MetaInf exclude( String first, String... rest )
+    public MetaInf exclude( String... excludes )
     {
-        getExcludes().add( first );
-        getExcludes().addAll( Arrays.asList( rest ) );
+        getExcludes().addAll( Arrays.asList( excludes ) );
 
         return this;
     }
 
     public List<String> getExcludes()
     {
-        if ( this.excludes == null ) 
+        if ( this.excludes == null )
         {
             this.excludes = new ArrayList<String>();
         }
@@ -87,7 +83,7 @@ public class MetaInf
 
     public List<String> getIncludes()
     {
-        if ( this.includes == null ) 
+        if ( this.includes == null )
         {
             this.includes = new ArrayList<String>();
         }
@@ -105,31 +101,22 @@ public class MetaInf
         return result;
     }
 
-    /**
-     * used in tests
-     */
-    public MetaInf include( String first, String... rest )
+    public MetaInf include( String... includes )
     {
-        getIncludes().add( first );
-        getIncludes().addAll( Arrays.asList( rest ) );
+        getIncludes().addAll( Arrays.asList( includes ) );
 
         return this;
     }
 
     public boolean isIncluded( String name )
     {
-        if ( this.includes == null && this.excludes == null ) 
-        {
-            return false;
-        }
-
         boolean included = this.includes == null;
 
         if ( this.includes != null )
         {
-            for ( final String x : this.includes ) 
+            for ( final String x : this.includes )
             {
-                if ( SelectorUtils.matchPath( "META-INF/" + x, name ) ) 
+                if ( SelectorUtils.matchPath( "META-INF/" + x, name ) )
                 {
                     included = true;
 
@@ -140,11 +127,12 @@ public class MetaInf
 
         if ( included && ( this.excludes != null ) )
         {
-            for ( final String x : this.excludes ) 
+            for ( final String x : this.excludes )
             {
                 if ( SelectorUtils.matchPath( "META-INF/" + x, name ) )
                 {
                     included = false;
+
                     break;
                 }
             }
