@@ -108,6 +108,17 @@ public class ProguardMojo extends AbstractAndroidMojo
     private String[] parsedConfigs;
 
     /**
+     * Additional ProGuard options
+     *
+     * @parameter expression="${android.proguard.options}"
+     * @optional
+     */
+    private String[] proguardOptions;
+
+    @PullParameter( defaultValueGetterMethod = "getDefaultProguardOptions" )
+    private String[] parsedOptions;
+
+    /**
      * Path to the proguard jar and therefore version of proguard to be used. By default this will load the jar from
      * the Android SDK install. Overriding it with an absolute path allows you to use a newer or custom proguard
      * version..
@@ -163,9 +174,17 @@ public class ProguardMojo extends AbstractAndroidMojo
      */
     private String outputDirectory;
 
+   /**
+    * @parameter expression="${android.proguard.obfuscatedJar}" 
+    *            default-value="${project.build.directory}/${project.build.finalName}_obfuscated.jar"
+    */
+   private String obfuscatedJar;
+
     @PullParameter( defaultValue = "proguard" )
     private String parsedOutputDirectory;
     
+    @PullParameter
+    private String parsedObfuscatedJar;
 
     /**
      * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build.
@@ -219,8 +238,6 @@ public class ProguardMojo extends AbstractAndroidMojo
      * @readonly
      */
     protected List<Artifact> pluginDependencies;
-
-    public static final String PROGUARD_OBFUSCATED_JAR = "proguard-obfuscated.jar";
 
     private static final Collection<String> ANDROID_LIBRARY_EXCLUDED_FILTER = Arrays
             .asList( "org/xml/**", "org/w3c/**", "java/**", "javax/**" );
@@ -289,6 +306,9 @@ public class ProguardMojo extends AbstractAndroidMojo
 
         if ( ! parsedSkip )
         {
+            // TODO: make the property name a constant sometime after switching to @Mojo
+            project.getProperties().setProperty( "android.proguard.obfuscatedJar", obfuscatedJar );
+
             executeProguard();
         }
     }
@@ -334,7 +354,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         collectInputFiles( commands );
 
         commands.add( "-outjars" );
-        commands.add( "'" + project.getBuild().getDirectory() + File.separator + PROGUARD_OBFUSCATED_JAR + "'" );
+        commands.add( "'" + obfuscatedJar + "'" );
 
         commands.add( "-dump" );
         commands.add( "'" + proguardDir + File.separator + "dump.txt'" );
@@ -344,6 +364,8 @@ public class ProguardMojo extends AbstractAndroidMojo
         commands.add( "'" + proguardDir + File.separator + "usage.txt'" );
         commands.add( "-printmapping" );
         commands.add( "'" + proguardDir + File.separator + "mapping.txt'" );
+
+        commands.addAll( Arrays.asList( parsedOptions ) );
 
         final String javaExecutable = getJavaExecutable().getAbsolutePath();
         getLog().info( javaExecutable + " " + commands.toString() );
@@ -627,6 +649,17 @@ public class ProguardMojo extends AbstractAndroidMojo
      * @see #parsedConfigs
      */
     private String[] getDefaultProguardConfigs()
+    {
+        return new String[0];
+    }
+
+    /**
+     * Get the default ProGuard options.
+     *
+     * @return
+     * @see #parsedOptions
+     */
+    private String[] getDefaultProguardOptions()
     {
         return new String[0];
     }
