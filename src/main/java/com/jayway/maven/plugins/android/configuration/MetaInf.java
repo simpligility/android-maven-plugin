@@ -64,7 +64,6 @@ public class MetaInf
         return true;
     }
 
-
     public MetaInf exclude( String... excludes )
     {
         getExcludes().addAll( Arrays.asList( excludes ) );

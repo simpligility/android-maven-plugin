@@ -208,6 +208,7 @@ public class ApkMojo extends AbstractAndroidMojo
      * </p>
      *
      * @parameter expression="${android.apk.metaIncludes}"
+     * @deprecated in favour of apk.metaInf
      */
     @PullParameter
     private String[] apkMetaIncludes;
