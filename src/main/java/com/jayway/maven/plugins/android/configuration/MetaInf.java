@@ -64,10 +64,7 @@ public class MetaInf
         return true;
     }
 
-<<<<<<< HEAD
 
-=======
->>>>>>> issue-174-ext
     public MetaInf exclude( String... excludes )
     {
         getExcludes().addAll( Arrays.asList( excludes ) );
