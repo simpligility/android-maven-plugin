@@ -26,6 +26,7 @@
       <configuration>
         <phases>
           <generate-sources>
+            com.jayway.maven.plugins.android.generation2:android-maven-plugin:manifest-update,
             com.jayway.maven.plugins.android.generation2:android-maven-plugin:generate-sources
           </generate-sources>
           <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
@@ -34,6 +35,7 @@
             org.apache.maven.plugins:maven-compiler-plugin:compile
           </compile>
           <process-classes>
+            com.jayway.maven.plugins.android.generation2:android-maven-plugin:unpack,
             com.jayway.maven.plugins.android.generation2:android-maven-plugin:proguard
           </process-classes>
           <process-test-resources>

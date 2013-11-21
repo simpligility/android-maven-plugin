@@ -8,4 +8,5 @@
   <fileset name="src/main/java" enabled="true" check-config-name="android-maven-plugin" local="true">
     <file-match-pattern match-pattern="src/main/java/.*\.java$" include-pattern="true"/>
   </fileset>
+  <filter name="FilesInSync" enabled="true"/>
 </fileset-config>
