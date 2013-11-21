@@ -164,6 +164,7 @@ public class UnpackMojo extends AbstractAndroidMojo
         {
             return true;
         }
+
         return this.unpackMetaInf != null && this.unpackMetaInf.isIncluded( entName );
     }
 

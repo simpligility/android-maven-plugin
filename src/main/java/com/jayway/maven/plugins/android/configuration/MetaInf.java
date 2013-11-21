@@ -64,7 +64,10 @@ public class MetaInf
         return true;
     }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> issue-174-ext
     public MetaInf exclude( String... excludes )
     {
         getExcludes().addAll( Arrays.asList( excludes ) );
@@ -111,11 +114,6 @@ public class MetaInf
 
     public boolean isIncluded( String name )
     {
-        if ( this.includes == null && this.excludes == null )
-        {
-            return false;
-        }
-
         boolean included = this.includes == null;
 
         if ( this.includes != null )
@@ -138,6 +136,7 @@ public class MetaInf
                 if ( SelectorUtils.matchPath( "META-INF/" + x, name ) )
                 {
                     included = false;
+
                     break;
                 }
             }
