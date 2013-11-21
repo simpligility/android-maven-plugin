@@ -30,6 +30,7 @@ import com.jayway.maven.plugins.android.config.ConfigHandler;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.Apk;
+import com.jayway.maven.plugins.android.configuration.MetaInf;
 import com.jayway.maven.plugins.android.configuration.Sign;
 
 import org.apache.commons.io.FileUtils;
@@ -44,7 +45,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.util.AbstractScanner;
 import org.codehaus.plexus.util.DirectoryScanner;
-import org.codehaus.plexus.util.SelectorUtils;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -207,10 +207,19 @@ public class ApkMojo extends AbstractAndroidMojo
      * See also <a href="http://code.google.com/p/maven-android-plugin/issues/detail?id=97">Issue 97</a>
      * </p>
      *
-     * @parameter expression="${android.apk.metaIncludes}" default-value=""
+     * @parameter expression="${android.apk.metaIncludes}"
+     * @deprecated in favour of apk.metaInf
      */
-    @PullParameter( defaultValueGetterMethod = "getDefaultMetaIncludes" )
+    @PullParameter
     private String[] apkMetaIncludes;
+
+    @PullParameter( defaultValueGetterMethod = "getDefaultMetaInf" )
+    private MetaInf apkMetaInf;
+
+    /**
+     * @parameter alias="metaInf"
+     */
+    private MetaInf pluginMetaInf;
 
     /**
      * Defines whether or not the APK is being produced in debug mode or not.
@@ -351,7 +360,7 @@ public class ApkMojo extends AbstractAndroidMojo
         doAPKWithAPKBuilder( outputFile, dexFile, zipArchive, sourceFolders, jarFiles, nativeFolders,
                     signWithDebugKeyStore );
 
-        if ( this.apkMetaIncludes != null && this.apkMetaIncludes.length > 0 )
+        if ( this.apkMetaInf != null )
         {
             try
             {
@@ -417,7 +426,7 @@ public class ApkMojo extends AbstractAndroidMojo
                     continue;
                 }
 
-                if ( ! metaInfMatches( zn ) )
+                if ( ! this.apkMetaInf.isIncluded( zn ) )
                 {
                     continue;
                 }
@@ -434,19 +443,6 @@ public class ApkMojo extends AbstractAndroidMojo
         }
 
         zin.close();
-    }
-
-    private boolean metaInfMatches( String path )
-    {
-        for ( String inc : this.apkMetaIncludes )
-        {
-            if ( SelectorUtils.matchPath( "META-INF/" + inc, path ) )
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private Map<String, List<File>> jars = new HashMap<String, List<File>>();
@@ -1268,10 +1264,6 @@ public class ApkMojo extends AbstractAndroidMojo
     }
 
 
-    /**
-     *
-     * @return
-     */
     protected AndroidSigner getAndroidSigner()
     {
         if ( sign == null )
@@ -1284,12 +1276,14 @@ public class ApkMojo extends AbstractAndroidMojo
         }
     }
 
-    /**
-     *
-     * @return
-     */
-    private String[] getDefaultMetaIncludes()
+    private MetaInf getDefaultMetaInf()
     {
-        return new String[ 0 ];
+        // check for deprecated first
+        if ( apkMetaIncludes != null && apkMetaIncludes.length > 0 )
+        {
+            return new MetaInf().include( apkMetaIncludes );
+        }
+
+        return this.pluginMetaInf;
     }
 }

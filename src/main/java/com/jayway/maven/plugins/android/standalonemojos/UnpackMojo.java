@@ -58,10 +58,7 @@ public class UnpackMojo extends AbstractAndroidMojo
     @Deprecated
     private boolean lazyLibraryUnpack;
 
-    /**
-     * @parameter expression="${android.unpack.metaInf}"
-     */
-    @PullParameter
+    @PullParameter( defaultValueGetterMethod = "getDefaultMetaInf" )
     private MetaInf unpackMetaInf;
 
     /**
@@ -69,6 +66,11 @@ public class UnpackMojo extends AbstractAndroidMojo
      */
     @PullParameter( defaultValueGetterMethod = "getLazyLibraryUnpack" )
     private Boolean unpackLazy;
+
+    /**
+     * @parameter alias="metaInf"
+     */
+    private MetaInf pluginMetaInf;
 
     /**
      * @parameter
@@ -162,7 +164,13 @@ public class UnpackMojo extends AbstractAndroidMojo
         {
             return true;
         }
+
         return this.unpackMetaInf != null && this.unpackMetaInf.isIncluded( entName );
+    }
+    
+    MetaInf getDefaultMetaInf()
+    {
+        return this.pluginMetaInf;
     }
 
     boolean getLazyLibraryUnpack()
