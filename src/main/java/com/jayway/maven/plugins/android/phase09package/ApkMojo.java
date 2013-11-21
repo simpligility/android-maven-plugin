@@ -45,7 +45,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.util.AbstractScanner;
 import org.codehaus.plexus.util.DirectoryScanner;
-import org.codehaus.plexus.util.SelectorUtils;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -219,7 +218,7 @@ public class ApkMojo extends AbstractAndroidMojo
     /**
      * @parameter alias="metaInf"
      */
-    private MetaInf	pluginMetaInf;
+    private MetaInf pluginMetaInf;
 
     /**
      * Defines whether or not the APK is being produced in debug mode or not.
@@ -1278,10 +1277,11 @@ public class ApkMojo extends AbstractAndroidMojo
 
     private MetaInf getDefaultMetaInf()
     {
-    	// check for deprecated first
-    	if( apkMetaIncludes != null && apkMetaIncludes.length > 0 ) {
-    		return new MetaInf().include( apkMetaIncludes );
-    	}
+        // check for deprecated first
+        if ( apkMetaIncludes != null && apkMetaIncludes.length > 0 )
+        {
+            return new MetaInf().include( apkMetaIncludes );
+        }
 
         return this.pluginMetaInf;
     }

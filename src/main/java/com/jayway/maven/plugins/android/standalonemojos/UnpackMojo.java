@@ -55,7 +55,7 @@ public class UnpackMojo extends AbstractAndroidMojo
      * @parameter expression="${android.lazyLibraryUnpack}" default-value="false"
      * @deprecated use ${android.unpack.lazy}
      */
-	@Deprecated
+    @Deprecated
     private boolean lazyLibraryUnpack;
 
     @PullParameter( defaultValueGetterMethod = "getDefaultMetaInf" )
@@ -64,15 +64,15 @@ public class UnpackMojo extends AbstractAndroidMojo
     /**
      * @parameter expression="${android.unpack.lazy}"
      */
-    @PullParameter(defaultValueGetterMethod="getLazyLibraryUnpack")
+    @PullParameter( defaultValueGetterMethod = "getLazyLibraryUnpack" )
     private Boolean unpackLazy;
 
     /**
      * @parameter alias="metaInf"
      */
-    private MetaInf	pluginMetaInf;
+    private MetaInf pluginMetaInf;
 
-	/**
+    /**
      * @parameter
      */
     @ConfigPojo( prefix = "unpack" )
@@ -100,7 +100,7 @@ public class UnpackMojo extends AbstractAndroidMojo
         }
         else
         {
-        	outputDirectory.mkdirs();
+            outputDirectory.mkdirs();
 
             for ( Artifact artifact : getRelevantCompileArtifacts() )
             {
@@ -158,21 +158,22 @@ public class UnpackMojo extends AbstractAndroidMojo
 
     boolean isIncluded( JarEntry jarEntry )
     {
-		String entName = jarEntry.getName();
+        String entName = jarEntry.getName();
 
-		if( entName.endsWith( ".class" ) )
-			return true;
-
-		return this.unpackMetaInf != null && this.unpackMetaInf.isIncluded( entName );
+        if ( entName.endsWith( ".class" ) )
+        {
+            return true;
+        }
+        return this.unpackMetaInf != null && this.unpackMetaInf.isIncluded( entName );
     }
-    
- 	MetaInf getDefaultMetaInf()
- 	{
- 		return this.pluginMetaInf;
- 	}
 
-	boolean getLazyLibraryUnpack()
-	{
-		return this.lazyLibraryUnpack;
-	}
+    MetaInf getDefaultMetaInf()
+    {
+        return this.pluginMetaInf;
+    }
+
+    boolean getLazyLibraryUnpack()
+    {
+        return this.lazyLibraryUnpack;
+    }
 }

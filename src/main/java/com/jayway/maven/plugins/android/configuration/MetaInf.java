@@ -15,116 +15,134 @@ import java.util.List;
 public class MetaInf
 {
 
-	private List<String>	includes;
+    private List<String> includes;
 
-	private List<String>	excludes;
+    private List<String> excludes;
 
-	@Override
-	public boolean equals( Object obj )
-	{
-		if( this == obj ) {
-			return true;
-		}
-		if( obj == null ) {
-			return false;
-		}
-		if( getClass() != obj.getClass() ) {
-			return false;
-		}
+    @Override
+    public boolean equals( Object obj )
+    {
+        if ( this == obj )
+        {
+            return true;
+        }
+        if ( obj == null )
+        {
+            return false;
+        }
+        if ( getClass() != obj.getClass() )
+        {
+            return false;
+        }
 
-		final MetaInf that = (MetaInf) obj;
+        final MetaInf that = (MetaInf) obj;
 
-		if( this.includes == null ) {
-			if( that.includes != null ) {
-				return false;
-			}
-		}
-		else if( !this.includes.equals( that.includes ) ) {
-			return false;
-		}
+        if ( this.includes == null )
+        {
+            if ( that.includes != null )
+            {
+                return false;
+            }
+        }
+        else if ( !this.includes.equals( that.includes ) )
+        {
+            return false;
+        }
 
-		if( this.excludes == null ) {
-			if( that.excludes != null ) {
-				return false;
-			}
-		}
-		else if( !this.excludes.equals( that.excludes ) ) {
-			return false;
-		}
+        if ( this.excludes == null )
+        {
+            if ( that.excludes != null )
+            {
+                return false;
+            }
+        }
+        else if ( !this.excludes.equals( that.excludes ) )
+        {
+            return false;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	public MetaInf exclude( String... excludes )
-	{
-		getExcludes().addAll( Arrays.asList( excludes ) );
 
-		return this;
-	}
+    public MetaInf exclude( String... excludes )
+    {
+        getExcludes().addAll( Arrays.asList( excludes ) );
 
-	public List<String> getExcludes()
-	{
-		if( this.excludes == null ) {
-			this.excludes = new ArrayList<String>();
-		}
+        return this;
+    }
 
-		return this.excludes;
-	}
+    public List<String> getExcludes()
+    {
+        if ( this.excludes == null )
+        {
+            this.excludes = new ArrayList<String>();
+        }
 
-	public List<String> getIncludes()
-	{
-		if( this.includes == null ) {
-			this.includes = new ArrayList<String>();
-		}
+        return this.excludes;
+    }
 
-		return this.includes;
-	}
+    public List<String> getIncludes()
+    {
+        if ( this.includes == null )
+        {
+            this.includes = new ArrayList<String>();
+        }
 
-	@Override
-	public int hashCode()
-	{
-		final int prime = 31;
-		int result = 1;
-		result = (prime * result) + ((this.excludes == null) ? 0 : this.excludes.hashCode());
-		result = (prime * result) + ((this.includes == null) ? 0 : this.includes.hashCode());
-		return result;
-	}
+        return this.includes;
+    }
 
-	public MetaInf include( String... includes )
-	{
-		getIncludes().addAll( Arrays.asList( includes ) );
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = ( prime * result ) + ( ( this.excludes == null ) ? 0 : this.excludes.hashCode() );
+        result = ( prime * result ) + ( ( this.includes == null ) ? 0 : this.includes.hashCode() );
+        return result;
+    }
 
-		return this;
-	}
+    public MetaInf include( String... includes )
+    {
+        getIncludes().addAll( Arrays.asList( includes ) );
 
-	public boolean isIncluded( String name )
-	{
-		if( this.includes == null && this.excludes == null ) {
-			return false;
-		}
+        return this;
+    }
 
-		boolean included = this.includes == null;
+    public boolean isIncluded( String name )
+    {
+        if ( this.includes == null && this.excludes == null )
+        {
+            return false;
+        }
 
-		if( this.includes != null ) {
-			for( final String x : this.includes ) {
-				if( SelectorUtils.matchPath( "META-INF/" + x, name ) ) {
-					included = true;
+        boolean included = this.includes == null;
 
-					break;
-				}
-			}
-		}
+        if ( this.includes != null )
+        {
+            for ( final String x : this.includes )
+            {
+                if ( SelectorUtils.matchPath( "META-INF/" + x, name ) )
+                {
+                    included = true;
 
-		if( included && (this.excludes != null) ) {
-			for( final String x : this.excludes ) {
-				if( SelectorUtils.matchPath( "META-INF/" + x, name ) ) {
-					included = false;
+                    break;
+                }
+            }
+        }
 
-					break;
-				}
-			}
-		}
+        if ( included && ( this.excludes != null ) )
+        {
+            for ( final String x : this.excludes )
+            {
+                if ( SelectorUtils.matchPath( "META-INF/" + x, name ) )
+                {
+                    included = false;
+                    break;
+                }
+            }
+        }
 
-		return included;
-	}
+        return included;
+    }
 }
