@@ -288,6 +288,13 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private UsesSdk parsedUsesSdk;
 
     /**
+     * The modified <code>AndroidManifest.xml</code> file.
+     *
+     * @parameter expression="${android.manifestFile}" default-value="${project.basedir}/AndroidManifest.xml"
+     */
+    protected File updatedManifestFile;
+
+    /**
      *
      * @throws MojoExecutionException
      * @throws MojoFailureException
@@ -507,6 +514,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         FileWriter writer = null;
         try
         {
+            manifestFile.getParentFile().mkdirs();
+
             writer = new FileWriter( manifestFile, false );
             if ( doc.getXmlEncoding() != null && doc.getXmlVersion() != null )
             {
@@ -534,7 +543,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      * @throws MojoFailureException
      */
     public void updateManifest( File manifestFile )
-       throws IOException, ParserConfigurationException, SAXException, TransformerException, MojoFailureException
+    throws IOException, ParserConfigurationException, SAXException, TransformerException, MojoFailureException
     {
         Document doc = readManifest( manifestFile );
         Element manifestElement = doc.getDocumentElement();
@@ -663,12 +672,17 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         }
 
         dirty = processProviderAuthorities( manifestElement, dirty );
-
         dirty = processUsesSdk( doc, manifestElement, dirty );
 
         if ( dirty )
         {
-            if ( ! manifestFile.delete() )
+            if ( updatedManifestFile != null && !manifestFile.equals( updatedManifestFile ) )
+            {
+                project.getProperties().setProperty( "android.manifestFile", updatedManifestFile.getAbsolutePath() );
+
+                manifestFile = updatedManifestFile;
+            }
+            if ( manifestFile.exists() && ! manifestFile.delete() )
             {
                 getLog().warn( "Could not remove old " + manifestFile );
             }
