@@ -169,7 +169,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      * Output directory is defined relatively so it could be also outside of the target directory.
      * <p/>
      *
-     * @parameter expression="${android.proguard.outputDirectory}"  default-value="${project.build.directory}/proguard"
+     * @parameter expression="${android.proguard.outputDirectory}"  default-value="proguard"
      * @optional
      */
     private String outputDirectory;
@@ -316,7 +316,7 @@ public class ProguardMojo extends AbstractAndroidMojo
     private void executeProguard() throws MojoExecutionException
     {
 
-        final File proguardDir = new File( parsedOutputDirectory );
+        final File proguardDir = new File( project.getBuild().getDirectory(), parsedOutputDirectory );
           
         if ( ! proguardDir.exists() && ! proguardDir.mkdir() )
         {
