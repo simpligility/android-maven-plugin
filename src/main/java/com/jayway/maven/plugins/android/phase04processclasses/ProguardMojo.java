@@ -231,6 +231,15 @@ public class ProguardMojo extends AbstractAndroidMojo
     private Boolean parsedIncludeJdkLibs;
 
     /**
+     * If set to true the mapping.txt file will be attached as artifact of type <code>map</code>
+     * @parameter expression="${android.proguard.attachMap}"
+     */
+    private Boolean attachMap;
+    
+    @PullParameter( defaultValue = "false" )
+    private Boolean parsedAttachMap;
+
+    /**
      * The plugin dependencies.
      *
      * @parameter expression="${plugin.artifacts}"
@@ -315,7 +324,6 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     private void executeProguard() throws MojoExecutionException
     {
-
         final File proguardDir = new File( project.getBuild().getDirectory(), parsedOutputDirectory );
           
         if ( ! proguardDir.exists() && ! proguardDir.mkdir() )
@@ -355,20 +363,25 @@ public class ProguardMojo extends AbstractAndroidMojo
 
         commands.add( "-outjars" );
         commands.add( "'" + obfuscatedJar + "'" );
-
+        
         commands.add( "-dump" );
         commands.add( "'" + proguardDir + File.separator + "dump.txt'" );
         commands.add( "-printseeds" );
         commands.add( "'" + proguardDir + File.separator + "seeds.txt'" );
         commands.add( "-printusage" );
         commands.add( "'" + proguardDir + File.separator + "usage.txt'" );
+        
+        File mapFile = new File(proguardDir, "mapping.txt");
+
         commands.add( "-printmapping" );
-        commands.add( "'" + proguardDir + File.separator + "mapping.txt'" );
+        commands.add( "'" + mapFile + "mapping.txt'" );
 
         commands.addAll( Arrays.asList( parsedOptions ) );
 
         final String javaExecutable = getJavaExecutable().getAbsolutePath();
+        
         getLog().info( javaExecutable + " " + commands.toString() );
+        
         try
         {
             executor.executeCommand( javaExecutable, commands, project.getBasedir(), false );
@@ -376,6 +389,11 @@ public class ProguardMojo extends AbstractAndroidMojo
         catch ( ExecutionException e )
         {
             throw new MojoExecutionException( "", e );
+        }
+        
+        if( parsedAttachMap )
+        {
+            projectHelper.attachArtifact( project, "map", mapFile );
         }
     }
 
