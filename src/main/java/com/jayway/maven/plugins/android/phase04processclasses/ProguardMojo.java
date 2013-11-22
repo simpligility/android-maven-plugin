@@ -374,7 +374,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         File mapFile = new File( proguardDir, "mapping.txt" );
 
         commands.add( "-printmapping" );
-        commands.add( "'" + mapFile + "mapping.txt'" );
+        commands.add( "'" + mapFile + "'" );
 
         commands.addAll( Arrays.asList( parsedOptions ) );
 
