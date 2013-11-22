@@ -371,10 +371,10 @@ public class ProguardMojo extends AbstractAndroidMojo
         commands.add( "-printusage" );
         commands.add( "'" + proguardDir + File.separator + "usage.txt'" );
         
-        File mapFile = new File(proguardDir, "mapping.txt");
+        File mapFile = new File( proguardDir, "mapping.txt" );
 
         commands.add( "-printmapping" );
-        commands.add( "'" + mapFile + "mapping.txt'" );
+        commands.add( "'" + mapFile + "'" );
 
         commands.addAll( Arrays.asList( parsedOptions ) );
 
@@ -391,7 +391,7 @@ public class ProguardMojo extends AbstractAndroidMojo
             throw new MojoExecutionException( "", e );
         }
         
-        if( parsedAttachMap )
+        if ( parsedAttachMap )
         {
             projectHelper.attachArtifact( project, "map", mapFile );
         }
