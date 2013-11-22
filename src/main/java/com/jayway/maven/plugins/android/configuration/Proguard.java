@@ -10,6 +10,7 @@ package com.jayway.maven.plugins.android.configuration;
  */
 public class Proguard
 {
+
     /**
      * Whether ProGuard is enabled or not.
      */
@@ -26,6 +27,7 @@ public class Proguard
     private Boolean filterManifest;
     private Boolean includeJdkLibs;
     private String[] options;
+    private Boolean attachMap;
 
     public Boolean isSkip()
     {
