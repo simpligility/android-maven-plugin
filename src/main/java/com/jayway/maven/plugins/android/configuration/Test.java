@@ -63,6 +63,10 @@ public class Test
      * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testExcludeAnnotations}
      */
     private List<String> excludeAnnotations;
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.AbstractInstrumentationMojo#testInstrumentationArgs}
+     */
+    private List<String> instrumentationArgs;
 
     public String getSkip()
     {
@@ -127,5 +131,10 @@ public class Test
     public List<String> getExcludeAnnotations()
     {
         return excludeAnnotations;
+    }
+
+    public List<String> getInstrumentationArgs()
+    {
+        return instrumentationArgs;
     }
 }
