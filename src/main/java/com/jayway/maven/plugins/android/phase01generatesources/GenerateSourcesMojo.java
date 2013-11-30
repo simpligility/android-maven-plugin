@@ -189,6 +189,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         try
         {
+            targetDirectory.mkdirs();
+
             extractSourceDependencies();
             extractApkLibDependencies();
             extractAarDependencies();
@@ -569,11 +571,13 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         commands.add( "--output-text-symbols" );
 
-        commands.add( project.getBuild().getDirectory() );
+        commands.add( targetDirectory.getAbsolutePath() );
 
         getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
         try
         {
+            targetDirectory.mkdirs();
+
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
@@ -713,8 +717,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                     // resources anywhere.
                     if ( fullSymbolValues == null )
                     {
-                        fullSymbolValues = new SymbolLoader(
-                                new File( project.getBuild().getDirectory() + "/R.txt" ), null );
+                        fullSymbolValues = new SymbolLoader( new File( targetDirectory, "R.txt" ), null );
 
                         fullSymbolValues.load();
                     }
