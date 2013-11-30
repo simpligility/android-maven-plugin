@@ -133,6 +133,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File sourceDirectory;
 
     /**
+     * The java target directory.
+     *
+     * @parameter default-value="${project.build.directory}"
+     * @readonly
+     */
+    protected File targetDirectory;
+
+    /**
      * The android resources directory.
      *
      * @parameter default-value="${project.basedir}/res"
