@@ -189,6 +189,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         try
         {
+            targetDirectory.mkdirs();
+
             extractSourceDependencies();
             extractApkLibDependencies();
             extractAarDependencies();
