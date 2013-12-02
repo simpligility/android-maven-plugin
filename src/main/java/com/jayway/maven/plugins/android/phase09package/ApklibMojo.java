@@ -313,6 +313,10 @@ public class ApklibMojo extends AbstractAndroidMojo
             final DefaultFileSet fileSet = new DefaultFileSet();
             fileSet.setPrefix( endWithSlash( prefix ) );
             fileSet.setDirectory( directory );
+
+            // XXX: trying to avoid duplicated sources
+            fileSet.setExcludes( new String[] { "**/R.java", "**/BuildConfig.java" } );
+
             jarArchiver.addFileSet( fileSet );
             getLog().debug( "Added files from " + directory );
         }
