@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
 
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
 <rss version="0.91">
   <channel>
     <title>Android Maven Plugin - android-maven-plugin - Checkstyle report</title>
@@ -8,8 +25,8 @@
     <language>en-us</language>
     <copyright>&#169;2008 - 2013 simpligility technologies inc.</copyright>
     <item>
-      <title>File: 86,
-             Errors: 17220,
+      <title>File: 89,
+             Errors: 17487,
              Warnings: 0,
              Infos: 0
       </title>
@@ -66,7 +83,7 @@
                   0
                 </td>
                 <td>
-                  70
+                  75
                 </td>
               </tr>
                           <tr>
@@ -206,7 +223,7 @@
                   0
                 </td>
                 <td>
-                  958
+                  965
                 </td>
               </tr>
                           <tr>
@@ -295,6 +312,20 @@
               </tr>
                           <tr>
                 <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.configuration.MetaInf.java">com/jayway/maven/plugins/android/configuration/MetaInf.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  125
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.standalonemojos.RedeployMojo.java">com/jayway/maven/plugins/android/standalonemojos/RedeployMojo.java</a>
                 </td>
                 <td>
@@ -332,7 +363,7 @@
                   0
                 </td>
                 <td>
-                  401
+                  405
                 </td>
               </tr>
                           <tr>
@@ -472,7 +503,7 @@
                   0
                 </td>
                 <td>
-                  970
+                  980
                 </td>
               </tr>
                           <tr>
@@ -486,7 +517,7 @@
                   0
                 </td>
                 <td>
-                  38
+                  43
                 </td>
               </tr>
                           <tr>
@@ -528,7 +559,21 @@
                   0
                 </td>
                 <td>
-                  875
+                  898
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.InstrumentationArgumentParser.java">com/jayway/maven/plugins/android/InstrumentationArgumentParser.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  46
                 </td>
               </tr>
                           <tr>
@@ -542,7 +587,7 @@
                   0
                 </td>
                 <td>
-                  82
+                  107
                 </td>
               </tr>
                           <tr>
@@ -570,7 +615,7 @@
                   0
                 </td>
                 <td>
-                  531
+                  564
                 </td>
               </tr>
                           <tr>
@@ -668,7 +713,7 @@
                   0
                 </td>
                 <td>
-                  841
+                  843
                 </td>
               </tr>
                           <tr>
@@ -822,7 +867,7 @@
                   0
                 </td>
                 <td>
-                  1115
+                  1108
                 </td>
               </tr>
                           <tr>
@@ -962,7 +1007,7 @@
                   0
                 </td>
                 <td>
-                  408
+                  385
                 </td>
               </tr>
                           <tr>
@@ -1046,7 +1091,7 @@
                   0
                 </td>
                 <td>
-                  9
+                  11
                 </td>
               </tr>
                           <tr>
@@ -1061,6 +1106,20 @@
                 </td>
                 <td>
                   34
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.configuration.Unpack.java">com/jayway/maven/plugins/android/configuration/Unpack.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  6
                 </td>
               </tr>
                           <tr>
@@ -1116,7 +1175,7 @@
                   0
                 </td>
                 <td>
-                  249
+                  253
                 </td>
               </tr>
                           <tr>
