@@ -22,11 +22,11 @@
     <parent>
         <groupId>com.simpligility.maven</groupId>
         <artifactId>progressive-organization-pom</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
     </parent>
     <groupId>com.jayway.maven.plugins.android.generation2</groupId>
     <artifactId>android-maven-plugin</artifactId>
-    <version>3.8.1-ascelion-SNAPSHOT</version>
+    <version>3.8.2-ascelion-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
     <name>Android Maven Plugin - android-maven-plugin</name>
     <description>Maven Plugin for Android Development</description>
@@ -542,7 +542,6 @@
                         <!-- deploy the site to github pages -->
                         <groupId>com.github.github</groupId>
                         <artifactId>site-maven-plugin</artifactId>
-                        <version>0.9</version>
                         <configuration>
                             <server>github</server> <!--  the id of the server with the passwords in settings.xml -->
                             <message>Creating site for ${project.version}</message>
