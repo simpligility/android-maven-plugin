@@ -523,13 +523,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( proguardFile.getAbsolutePath() );
         }
 
-        final boolean debuggable = true; // TODO have this injected somehow.
-        if ( debuggable )
-        {
-            getLog().debug( "Adding debug-mode" );
-            commands.add( "--debug-mode" );
-        }
-
         if ( StringUtils.isNotBlank( customPackage ) )
         {
             getLog().debug( "Adding custom-package : " + customPackage );
