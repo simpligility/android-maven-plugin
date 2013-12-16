@@ -25,6 +25,7 @@ import com.jayway.maven.plugins.android.common.DeviceHelper;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.configuration.Ndk;
 import com.jayway.maven.plugins.android.configuration.Sdk;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.jxpath.JXPathContext;
@@ -34,6 +35,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
@@ -127,6 +129,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected MavenSession session;
 
+    /**
+     * @parameter expression="${mojoExecution}"
+     * @readonly
+     * @required
+     *
+     */
+    protected MojoExecution execution;
 
     /**
      * The java sources directory.
