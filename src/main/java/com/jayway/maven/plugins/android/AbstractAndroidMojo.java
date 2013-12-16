@@ -25,6 +25,8 @@ import com.jayway.maven.plugins.android.common.DeviceHelper;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.configuration.Ndk;
 import com.jayway.maven.plugins.android.configuration.Sdk;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.JXPathNotFoundException;
 import org.apache.commons.jxpath.xml.DocumentContainer;
@@ -42,6 +44,8 @@ import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -239,9 +243,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File combinedAssets;
 
     /**
-     * Extract the apklib dependencies here
+     * Extract the library (aar and apklib) dependencies here.
      *
-     * @parameter expression="${project.build.directory}/unpack/apklibs"
+     * @parameter expression="${project.build.directory}/unpack/libs"
      * @readonly
      */
     protected File unpackedApkLibsDirectory;
@@ -984,6 +988,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         final DocumentContainer documentContainer = new DocumentContainer( xmlURL );
         final Object packageName = JXPathContext.newContext( documentContainer )
                 .getValue( "manifest/@package", String.class );
+        getLog().debug( "Extracting package " + packageName + " from Manifest : "  + androidManifestFile );
         return ( String ) packageName;
     }
 
@@ -1181,7 +1186,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @param apkLibraryArtifact
      * @return
      */
-    protected String getLibraryUnpackDirectory( Artifact apkLibraryArtifact )
+    public final String getLibraryUnpackDirectory( Artifact apkLibraryArtifact )
     {
         return AbstractAndroidMojo.getLibraryUnpackDirectory( unpackedApkLibsDirectory, apkLibraryArtifact );
     }
@@ -1293,5 +1298,72 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         }
 
         protected abstract void runDo() throws MojoFailureException, MojoExecutionException;
+    }
+
+    protected final void copyLocalResourceFiles() throws MojoExecutionException
+    {
+        copyFolder( resourceDirectory, combinedRes,
+                new FileFilter()
+                {
+                    /**
+                     * Excludes files matching one of the common files to exclude.
+                     * The default excludes pattern are the ones from
+                     * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
+                     */
+                    public boolean accept( File file )
+                    {
+                        for ( String pattern : DirectoryScanner.DEFAULTEXCLUDES )
+                        {
+                            if ( DirectoryScanner.match( pattern, file.getAbsolutePath() ) )
+                            {
+                                getLog().debug(
+                                        "Excluding " + file.getName() + " from resource copy : matching " + pattern );
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                }
+        );
+    }
+
+    /**
+     * Copies the files contained within the source folder to the target folder.
+     * <p>
+     * The the target folder doesn't exist it will be created.
+     * </p>
+     *
+     * @param sourceFolder      Folder from which to copy the resources.
+     * @param targetFolder      Folder to which to copy the files.
+     * @throws MojoExecutionException if the files cannot be copied.
+     */
+    protected final void copyFolder( File sourceFolder, File targetFolder ) throws MojoExecutionException
+    {
+        copyFolder( sourceFolder, targetFolder, TrueFileFilter.TRUE );
+    }
+
+    private void copyFolder( File sourceFolder, File targetFolder, FileFilter filter ) throws MojoExecutionException
+    {
+        if ( !sourceFolder.exists() )
+        {
+            return;
+        }
+
+        try
+        {
+            getLog().debug( "Copying " + sourceFolder + " to " + targetFolder );
+            if ( ! targetFolder.exists() )
+            {
+                if ( ! targetFolder.mkdirs() )
+                {
+                    throw new MojoExecutionException( "Could not create target directory " + targetFolder );
+                }
+            }
+            FileUtils.copyDirectory( sourceFolder, targetFolder, filter );
+        }
+        catch ( IOException e )
+        {
+            throw new MojoExecutionException( "Could not copy source folder to target folder", e );
+        }
     }
 }
