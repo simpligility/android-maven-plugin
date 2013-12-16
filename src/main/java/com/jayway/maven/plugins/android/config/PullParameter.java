@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
 public @interface PullParameter
 {
 
-    String defaultValue() default "";
+    String[] defaultValue() default { };
 
     String defaultValueGetterMethod() default "";
 
