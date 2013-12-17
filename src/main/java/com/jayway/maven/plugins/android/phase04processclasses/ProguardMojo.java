@@ -92,10 +92,10 @@ public class ProguardMojo extends AbstractAndroidMojo
      * @parameter expression="${android.proguard.config}"
      * @optional
      */
-    private String proguardConfig;
+    private File proguardConfig;
 
-    @PullParameter( defaultValue = "proguard.cfg" )
-    private String parsedConfig;
+    @PullParameter( defaultValue = "${project.basedir}/proguard.cfg" )
+    private File parsedConfig;
 
     /**
      * Additional ProGuard configuration files (relative to project root).
@@ -147,7 +147,7 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     @PullParameter( defaultValueGetterMethod = "getProguardJarPath" )
     private String parsedProguardJarPath;
-
+    
     /**
      * Path relative to the project's build directory (target) where proguard puts folowing files:
      * <p/>
@@ -170,22 +170,19 @@ public class ProguardMojo extends AbstractAndroidMojo
      * Output directory is defined relatively so it could be also outside of the target directory.
      * <p/>
      *
-     * @parameter expression="${android.proguard.outputDirectory}"  default-value="proguard"
+     * @parameter expression="${android.proguard.outputDirectory}"
      * @optional
      */
-    private String outputDirectory;
+    private File outputDirectory;
 
-    @PullParameter( defaultValue = "proguard" )
-    private String parsedOutputDirectory;
+    @PullParameter( defaultValue = "${project.build.directory}/proguard" )
+    private File parsedOutputDirectory;
 
-    /**
-     * @parameter expression="${android.proguard.obfuscatedJar}" 
-     *            default-value="${project.build.directory}/${project.build.finalName}_obfuscated.jar"
-     */
+   /**
+    * @parameter expression="${android.proguard.obfuscatedJar}" 
+    *            default-value="${project.build.directory}/${project.build.finalName}_obfuscated.jar"
+    */
     private String obfuscatedJar;
-
-    @PullParameter
-    private String parsedObfuscatedJar;
 
     /**
      * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build.
@@ -220,14 +217,14 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     @PullParameter( defaultValue = "true" )
     private Boolean parsedFilterManifest;
-
+    
     /**
      * If set to true JDK jars will be included as library jars and corresponding filters
      * will be applied to android.jar.  Defaults to true.
      * @parameter expression="${android.proguard.includeJdkLibs}"
      */
     private Boolean includeJdkLibs;
-
+    
     @PullParameter( defaultValue = "true" )
     private Boolean parsedIncludeJdkLibs;
 
@@ -236,7 +233,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      * @parameter expression="${android.proguard.attachMap}"
      */
     private Boolean attachMap;
-
+    
     @PullParameter( defaultValue = "false" )
     private Boolean parsedAttachMap;
 
@@ -250,7 +247,7 @@ public class ProguardMojo extends AbstractAndroidMojo
     protected List<Artifact> pluginDependencies;
 
     private static final Collection<String> ANDROID_LIBRARY_EXCLUDED_FILTER = Arrays
-        .asList( "org/xml/**", "org/w3c/**", "java/**", "javax/**" );
+            .asList( "org/xml/**", "org/w3c/**", "java/**", "javax/**" );
 
     private static final Collection<String> MAVEN_DESCRIPTOR = Arrays.asList( "META-INF/maven/**" );
     private static final Collection<String> META_INF_MANIFEST = Arrays.asList( "META-INF/MANIFEST.MF" );
@@ -325,7 +322,7 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     private void executeProguard() throws MojoExecutionException
     {
-        final File proguardDir = new File( project.getBuild().getDirectory(), parsedOutputDirectory );
+        final File proguardDir = this.parsedOutputDirectory;
           
         if ( ! proguardDir.exists() && ! proguardDir.mkdir() )
         {
