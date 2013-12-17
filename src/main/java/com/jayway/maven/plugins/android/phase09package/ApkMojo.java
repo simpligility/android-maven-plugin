@@ -287,7 +287,7 @@ public class ApkMojo extends AbstractAndroidMojo
             return;
         }
 
-        ConfigHandler cfh = new ConfigHandler( this );
+        ConfigHandler cfh = new ConfigHandler( this, this.session, this.execution );
 
         cfh.parseConfiguration();
 

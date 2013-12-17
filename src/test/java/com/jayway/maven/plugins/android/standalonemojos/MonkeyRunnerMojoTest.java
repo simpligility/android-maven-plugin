@@ -39,7 +39,7 @@ public class MonkeyRunnerMojoTest extends AbstractAndroidMojoTestCase< MonkeyRun
     public void testDefaultMonkeyRunnerConfig() throws Exception
     {
         MonkeyRunnerMojo mojo = createMojo( "monkey-runner-config-project0" );
-        final ConfigHandler cfh = new ConfigHandler( mojo );
+        final ConfigHandler cfh = new ConfigHandler( mojo, this.session, this.execution );
         cfh.parseConfiguration();
 
         Boolean monkeyrunnerSkip = Whitebox.getInternalState( mojo, "parsedSkip" );
@@ -55,7 +55,7 @@ public class MonkeyRunnerMojoTest extends AbstractAndroidMojoTestCase< MonkeyRun
     public void testDefaultUnskippedMonkeyRunnerConfig() throws Exception
     {
         MonkeyRunnerMojo mojo = createMojo( "monkey-runner-config-project1" );
-        final ConfigHandler cfh = new ConfigHandler( mojo );
+        final ConfigHandler cfh = new ConfigHandler( mojo, this.session, this.execution );
         cfh.parseConfiguration();
 
         Boolean monkeyrunnerSkip = Whitebox.getInternalState( mojo, "parsedSkip" );
@@ -77,7 +77,7 @@ public class MonkeyRunnerMojoTest extends AbstractAndroidMojoTestCase< MonkeyRun
     public void testCustomMonkeyRunnerConfig() throws Exception
     {
         MonkeyRunnerMojo mojo = createMojo( "monkey-runner-config-project2" );
-        final ConfigHandler cfh = new ConfigHandler( mojo );
+        final ConfigHandler cfh = new ConfigHandler( mojo, this.session, this.execution );
         cfh.parseConfiguration();
 
         Boolean monkeyrunnerSkip = Whitebox.getInternalState( mojo, "parsedSkip" );
