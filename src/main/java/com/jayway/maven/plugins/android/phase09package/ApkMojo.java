@@ -44,7 +44,6 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.util.AbstractScanner;
-import org.codehaus.plexus.util.DirectoryScanner;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -960,15 +959,6 @@ public class ApkMojo extends AbstractAndroidMojo
         executor.setLogger( this.getLog() );
         File[] overlayDirectories = getResourceOverlayDirectories();
 
-        if ( extractedDependenciesRes.exists() )
-        {
-            copyDependenciesRes();
-        }
-        if ( resourceDirectory.exists() && combinedRes.exists() )
-        {
-            copyLocalResourceFiles();
-        }
-
         // Must combine assets.
         // The aapt tools does not support several -A arguments.
         // We copy the assets from extracted dependencies first, and then the local assets.
@@ -1001,18 +991,10 @@ public class ApkMojo extends AbstractAndroidMojo
                 commands.add( resOverlayDir.getAbsolutePath() );
             }
         }
-        if ( combinedRes.exists() )
+        if ( resourceDirectory.exists() )
         {
             commands.add( "-S" );
-            commands.add( combinedRes.getAbsolutePath() );
-        }
-        else
-        {
-            if ( resourceDirectory.exists() )
-            {
-                commands.add( "-S" );
-                commands.add( resourceDirectory.getAbsolutePath() );
-            }
+            commands.add( resourceDirectory.getAbsolutePath() );
         }
         for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
         {
@@ -1079,63 +1061,6 @@ public class ApkMojo extends AbstractAndroidMojo
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
-        {
-            throw new MojoExecutionException( "", e );
-        }
-    }
-
-    private void copyDependenciesRes() throws MojoExecutionException
-    {
-        try
-        {
-            getLog().info( "Copying dependency resource files to combined resource directory." );
-            if ( ! combinedRes.exists() )
-            {
-                if ( ! combinedRes.mkdirs() )
-                {
-                    throw new MojoExecutionException(
-                            "Could not create directory for combined resources at "
-                                    + combinedRes.getAbsolutePath() );
-                }
-            }
-            FileUtils.copyDirectory( extractedDependenciesRes, combinedRes );
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( "", e );
-        }
-    }
-
-    private void copyLocalResourceFiles() throws MojoExecutionException
-    {
-        try
-        {
-            getLog().info( "Copying local resource files to combined resource directory." );
-            org.apache.commons.io.FileUtils.copyDirectory( resourceDirectory, combinedRes, new FileFilter()
-            {
-
-                /**
-                 * Excludes files matching one of the common file to exclude.
-                 * The default excludes pattern are the ones from
-                 * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
-                 * @see java.io.FileFilter#accept(java.io.File)
-                 */
-                public boolean accept( File file )
-                {
-                    for ( String pattern : DirectoryScanner.DEFAULTEXCLUDES )
-                    {
-                        if ( DirectoryScanner.match( pattern, file.getAbsolutePath() ) )
-                        {
-                            getLog().debug(
-                                    "Excluding " + file.getName() + " from resource copy : matching " + pattern );
-                            return false;
-                        }
-                    }
-                    return true;
-                }
-            } );
-        }
-        catch ( IOException e )
         {
             throw new MojoExecutionException( "", e );
         }
