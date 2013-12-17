@@ -462,9 +462,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         getLog().debug( "Resource overlay folders : " + Arrays.asList( overlayDirectories ) );
 
         getLog().debug( "Extracted dependency resources : " + extractedDependenciesRes );
-        getLog().debug( "Combined resources : " + combinedRes );
-        copyFolder( extractedDependenciesRes, combinedRes );
-        copyLocalResourceFiles();
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
@@ -559,7 +556,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         commands.add( targetDirectory.getAbsolutePath() );
 
         // Removed because it is not used by AndroidBuilder
-        // commands.add( "--auto-add-overlay" );
+        commands.add( "--auto-add-overlay" );
 
         getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
         try
@@ -604,7 +601,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
     private void addResourcesDirectories( List<String> commands, File[] overlayDirectories )
     {
-/*
         for ( File resOverlayDir : overlayDirectories )
         {
             if ( resOverlayDir != null && resOverlayDir.exists() )
@@ -614,23 +610,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 commands.add( resOverlayDir.getAbsolutePath() );
             }
         }
-*/
-        if ( combinedRes.exists() )
+        if ( resourceDirectory.exists() )
         {
-            getLog().debug( "Adding combinedRes folder : " + combinedRes );
+            getLog().debug( "Adding resource folder : " + resourceDirectory );
             commands.add( "-S" );
-            commands.add( combinedRes.getAbsolutePath() );
+            commands.add( resourceDirectory.getAbsolutePath() );
         }
-        else
-        {
-            if ( resourceDirectory.exists() )
-            {
-                getLog().debug( "Adding resource folder : " + resourceDirectory );
-                commands.add( "-S" );
-                commands.add( resourceDirectory.getAbsolutePath() );
-            }
-        }
-/*
         for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
         {
             getLog().debug( "Considering dep artifact : " + artifact );
@@ -645,7 +630,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 }
             }
         }
-*/
     }
     
     private void mergeManifests() throws MojoExecutionException
