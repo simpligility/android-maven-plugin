@@ -225,15 +225,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File extractedDependenciesJavaResources;
 
     /**
-     * The combined resources directory. This will contain both the resources found in "res" as well as any resources
-     * contained in a apksources dependency.
-     *
-     * @parameter expression="${project.build.directory}/generated-sources/combined-resources/res"
-     * @readonly
-     */
-    protected File combinedRes;
-
-    /**
      * The combined assets directory. This will contain both the assets found in "assets" as well as any assets
      * contained in a apksources dependency.
      *
@@ -1298,33 +1289,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         }
 
         protected abstract void runDo() throws MojoFailureException, MojoExecutionException;
-    }
-
-    protected final void copyLocalResourceFiles() throws MojoExecutionException
-    {
-        copyFolder( resourceDirectory, combinedRes,
-                new FileFilter()
-                {
-                    /**
-                     * Excludes files matching one of the common files to exclude.
-                     * The default excludes pattern are the ones from
-                     * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
-                     */
-                    public boolean accept( File file )
-                    {
-                        for ( String pattern : DirectoryScanner.DEFAULTEXCLUDES )
-                        {
-                            if ( DirectoryScanner.match( pattern, file.getAbsolutePath() ) )
-                            {
-                                getLog().debug(
-                                        "Excluding " + file.getName() + " from resource copy : matching " + pattern );
-                                return false;
-                            }
-                        }
-                        return true;
-                    }
-                }
-        );
     }
 
     /**

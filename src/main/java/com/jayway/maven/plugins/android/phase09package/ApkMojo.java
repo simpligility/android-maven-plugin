@@ -959,9 +959,6 @@ public class ApkMojo extends AbstractAndroidMojo
         executor.setLogger( this.getLog() );
         File[] overlayDirectories = getResourceOverlayDirectories();
 
-        copyFolder( extractedDependenciesRes, combinedRes );
-        copyLocalResourceFiles();
-
         // Must combine assets.
         // The aapt tools does not support several -A arguments.
         // We copy the assets from extracted dependencies first, and then the local assets.
@@ -994,18 +991,10 @@ public class ApkMojo extends AbstractAndroidMojo
                 commands.add( resOverlayDir.getAbsolutePath() );
             }
         }
-        if ( combinedRes.exists() )
+        if ( resourceDirectory.exists() )
         {
             commands.add( "-S" );
-            commands.add( combinedRes.getAbsolutePath() );
-        }
-        else
-        {
-            if ( resourceDirectory.exists() )
-            {
-                commands.add( "-S" );
-                commands.add( resourceDirectory.getAbsolutePath() );
-            }
+            commands.add( resourceDirectory.getAbsolutePath() );
         }
         for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
         {
