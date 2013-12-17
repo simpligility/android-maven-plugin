@@ -69,7 +69,7 @@ extends AbstractAndroidMojoTestCase<ApkMojo>
 	{
 		final ApkMojo mojo = createMojo( this.projectName );
 
-		final ConfigHandler cfh = new ConfigHandler( mojo );
+        final ConfigHandler cfh = new ConfigHandler( mojo, this.session, this.execution );
 
 		cfh.parseConfiguration();
 

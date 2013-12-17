@@ -43,7 +43,7 @@ public class UIAutomatorMojoTest extends AbstractAndroidMojoTestCase< UIAutomato
     {
         // given
         UIAutomatorMojo mojo = createMojo( "ui-automator-config-project0" );
-        final ConfigHandler cfh = new ConfigHandler( mojo );
+        final ConfigHandler cfh = new ConfigHandler( mojo, this.session, this.execution );
         cfh.parseConfiguration();
 
         // when
@@ -77,7 +77,7 @@ public class UIAutomatorMojoTest extends AbstractAndroidMojoTestCase< UIAutomato
         PowerMock.replay( project );
 
         // when
-        final ConfigHandler cfh = new ConfigHandler( mojo );
+        final ConfigHandler cfh = new ConfigHandler( mojo, this.session, this.execution );
         cfh.parseConfiguration();
 
         // then
@@ -131,7 +131,7 @@ public class UIAutomatorMojoTest extends AbstractAndroidMojoTestCase< UIAutomato
         PowerMock.replay( project );
 
         // when
-        final ConfigHandler cfh = new ConfigHandler( mojo );
+        final ConfigHandler cfh = new ConfigHandler( mojo, this.session, this.execution );
         cfh.parseConfiguration();
 
         // then
