@@ -77,7 +77,7 @@ extends AbstractAndroidMojoTestCase<UnpackMojo>
 	throws Exception
 	{
 		final UnpackMojo mojo = createMojo( this.projectName );
-		final ConfigHandler cfh = new ConfigHandler( mojo );
+        final ConfigHandler cfh = new ConfigHandler( mojo, this.session, this.execution );
 
 		cfh.parseConfiguration();
 
