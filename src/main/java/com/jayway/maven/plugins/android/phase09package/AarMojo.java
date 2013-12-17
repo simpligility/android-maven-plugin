@@ -16,15 +16,12 @@
  */
 package com.jayway.maven.plugins.android.phase09package;
 
-import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
-import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
-
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.android.SdkConstants;
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.common.NativeHelper;
+import com.jayway.maven.plugins.android.config.PullParameter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -35,12 +32,14 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
 
-import com.android.SdkConstants;
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.CommandExecutor;
-import com.jayway.maven.plugins.android.ExecutionException;
-import com.jayway.maven.plugins.android.common.NativeHelper;
-import com.jayway.maven.plugins.android.config.PullParameter;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
 
 
 /**
@@ -424,18 +423,10 @@ public class AarMojo extends AbstractAndroidMojo
                 commands.add( resOverlayDir.getAbsolutePath() );
             }
         }
-        if ( combinedRes.exists() )
+        if ( resourceDirectory.exists() )
         {
             commands.add( "-S" );
-            commands.add( combinedRes.getAbsolutePath() );
-        }
-        else
-        {
-            if ( resourceDirectory.exists() )
-            {
-                commands.add( "-S" );
-                commands.add( resourceDirectory.getAbsolutePath() );
-            }
+            commands.add( resourceDirectory.getAbsolutePath() );
         }
         for ( Artifact apkLibraryArtifact : getAllRelevantDependencyArtifacts() )
         {
