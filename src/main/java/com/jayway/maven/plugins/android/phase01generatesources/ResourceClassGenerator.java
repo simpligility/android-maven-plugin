@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
+
 /**
  * Generates R classes containing appropriate resource value for dependent libraries.
  *<p>
@@ -50,6 +52,11 @@ final class ResourceClassGenerator
 
         for ( final Artifact lib : libraries )
         {
+            if ( lib.getType().equals( APKLIB ) )
+            {
+                log.debug( "Ignoring APKLIB as it has been processed: " + lib.getArtifactId() );
+            }
+
             final File unpackedLibDirectory = new File( mojo.getLibraryUnpackDirectory( lib ) );
             final File rFile = new File( unpackedLibDirectory, "R.txt" );
 
@@ -62,11 +69,6 @@ final class ResourceClassGenerator
                 // store these symbols by associating them with the package name.
                 final SymbolLoader libSymbols = loadSymbols( rFile );
                 libMap.put( packageName, libSymbols );
-            }
-            else
-            {
-                log.warn( "No R.txt found for library dependency : " + unpackedLibDirectory );
-                // TODO Attempt to generate one using #generateRForApkLibDependency (commented out below)
             }
         }
 
@@ -121,89 +123,4 @@ final class ResourceClassGenerator
         }
     }
 
-    /**
-     * Executes aapt to generate the R class for the given apklib.
-     *
-     * @param apklibArtifact    apklib for which to generate the R class.
-     * @throws MojoExecutionException if it fails.
-     */
-/*
-    private void generateRForApkLibDependency( Artifact apklibArtifact ) throws MojoExecutionException
-    {
-        final String unpackDir = getLibraryUnpackDirectory( apklibArtifact );
-        log.debug( "Generating R file for apklibrary: " + apklibArtifact.getGroupId()
-                + ":" + apklibArtifact.getArtifactId() );
-
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger( log );
-
-        List<String> commands = new ArrayList<String>();
-        commands.add( "package" );
-        commands.add( "--non-constant-id" );
-        commands.add( "-m" );
-        commands.add( "-J" );
-        commands.add( genDirectory.getAbsolutePath() );
-        commands.add( "--custom-package" );
-        commands.add( extractPackageNameFromAndroidManifest( new File( unpackDir + "/" + "AndroidManifest.xml" ) ) );
-        commands.add( "-M" );
-        commands.add( androidManifestFile.getAbsolutePath() );
-        if ( resourceDirectory.exists() )
-        {
-            commands.add( "-S" );
-            commands.add( resourceDirectory.getAbsolutePath() );
-        }
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
-        {
-            if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
-            {
-                final String apkLibResDir = getLibraryUnpackDirectory( artifact ) + "/res";
-                if ( new File( apkLibResDir ).exists() )
-                {
-                    commands.add( "-S" );
-                    commands.add( apkLibResDir );
-                }
-            }
-        }
-        commands.add( "--auto-add-overlay" );
-        if ( assetsDirectory.exists() )
-        {
-            commands.add( "-A" );
-            commands.add( assetsDirectory.getAbsolutePath() );
-        }
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
-        {
-            if ( artifact.getType().equals( APKLIB ) )
-            {
-                final String apkLibAssetsDir = getLibraryUnpackDirectory( artifact ) + "/assets";
-                if ( new File( apkLibAssetsDir ).exists() )
-                {
-                    commands.add( "-A" );
-                    commands.add( apkLibAssetsDir );
-                }
-            }
-        }
-        commands.add( "-I" );
-        commands.add( getAndroidSdk().getAndroidJar().getAbsolutePath() );
-        if ( StringUtils.isNotBlank( configurations ) )
-        {
-            commands.add( "-c" );
-            commands.add( configurations );
-        }
-
-        for ( String aaptExtraArg : aaptExtraArgs )
-        {
-            commands.add( aaptExtraArg );
-        }
-
-        getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
-        try
-        {
-            executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
-        }
-        catch ( ExecutionException e )
-        {
-            throw new MojoExecutionException( "", e );
-        }
-    }
-*/
 }
