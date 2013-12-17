@@ -1,14 +1,13 @@
 
 package com.jayway.maven.plugins.android.phase04processclasses;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.config.ConfigHandler;
+import com.jayway.maven.plugins.android.config.ConfigPojo;
+import com.jayway.maven.plugins.android.config.PullParameter;
+import com.jayway.maven.plugins.android.configuration.Proguard;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.RepositoryUtils;
@@ -18,18 +17,19 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.util.artifact.JavaScopes;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.CommandExecutor;
-import com.jayway.maven.plugins.android.ExecutionException;
-import com.jayway.maven.plugins.android.config.ConfigHandler;
-import com.jayway.maven.plugins.android.config.ConfigPojo;
-import com.jayway.maven.plugins.android.config.PullParameter;
-import com.jayway.maven.plugins.android.configuration.Proguard;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Processes both application and dependency classes using the ProGuard byte code obfuscator,
  * minimzer, and optimizer. For more information, see https://proguard.sourceforge.net.
- * 
+ *
  * @author Jonson
  * @author Matthias Kaeppler
  * @author Manfred Moser
@@ -38,17 +38,15 @@ import com.jayway.maven.plugins.android.configuration.Proguard;
  * @phase process-classes
  * @requiresDependencyResolution compile
  */
-public class ProguardMojo
-extends AbstractAndroidMojo
+public class ProguardMojo extends AbstractAndroidMojo
 {
 
     /**
      * <p>
-     * ProGuard configuration. ProGuard is disabled by default. Set the skip parameter to false to activate proguard. A
-     * complete configuartion can include any of the following:
+     * ProGuard configuration. ProGuard is disabled by default. Set the skip parameter to false to activate proguard.
+     * A complete configuartion can include any of the following:
      * </p>
      * <p/>
-     * 
      * <pre>
      * &lt;proguard&gt;
      *    &lt;skip&gt;true|false&lt;/skip&gt;
@@ -66,60 +64,61 @@ extends AbstractAndroidMojo
      * &lt;/proguard&gt;
      * </pre>
      * <p>
-     * A good practice is to create a release profile in your POM, in which you enable ProGuard. ProGuard should be
-     * disabled for development builds, since it obfuscates class and field names, and it may interfere with test
-     * projects that rely on your application classes. All parameters can be overridden in profiles or the the proguard*
-     * properties. Default values apply and are documented with these properties.
+     * A good practice is to create a release profile in your POM, in which you enable ProGuard.
+     * ProGuard should be disabled for development builds, since it obfuscates class and field
+     * names, and it may interfere with test projects that rely on your application classes.
+     * All parameters can be overridden in profiles or the the proguard* properties. Default values apply and are
+     * documented with these properties.
      * </p>
-     * 
+     *
      * @parameter
      */
     @ConfigPojo
-    protected Proguard                      proguard;
+    protected Proguard proguard;
 
     /**
      * Whether ProGuard is enabled or not. Defaults to true.
-     * 
+     *
      * @parameter expression="${android.proguard.skip}"
      * @optional
      */
-    private Boolean                         proguardSkip;
+    private Boolean proguardSkip;
 
     @PullParameter( defaultValue = "true" )
-    private Boolean                         parsedSkip;
+    private Boolean parsedSkip;
 
     /**
      * Path to the ProGuard configuration file (relative to project root). Defaults to "proguard.cfg"
-     * 
+     *
      * @parameter expression="${android.proguard.config}"
      * @optional
      */
-    private String                          proguardConfig;
+    private String proguardConfig;
 
     @PullParameter( defaultValue = "proguard.cfg" )
-    private String                          parsedConfig;
+    private String parsedConfig;
 
     /**
      * Additional ProGuard configuration files (relative to project root).
-     * 
+     *
      * @parameter expression="${android.proguard.configs}"
      * @optional
      */
-    private String[]                        proguardConfigs;
+    private String[] proguardConfigs;
 
     @PullParameter( defaultValueGetterMethod = "getDefaultProguardConfigs" )
-    private String[]                        parsedConfigs;
+    private String[] parsedConfigs;
 
     /**
      * Additional ProGuard options
-     * 
+     *
      * @parameter expression="${android.proguard.options}"
      * @optional
      */
-    private String[]                        proguardOptions;
+    private String[] proguardOptions;
 
     @PullParameter( defaultValueGetterMethod = "getDefaultProguardOptions" )
-    private String[]                        parsedOptions;
+    private String[] parsedOptions;
 
     /**
      * Path to the proguard jar and therefore version of proguard to be used. By default this will load the jar from
@@ -127,7 +126,6 @@ extends AbstractAndroidMojo
      * version..
      * <p/>
      * You can also reference an external Proguard version as a plugin dependency like this:
-     * 
      * <pre>
      * &lt;plugin&gt;
      *   &lt;groupId&gt;com.jayway.maven.plugins.android.generation2&lt;/groupId&gt;
@@ -142,153 +140,143 @@ extends AbstractAndroidMojo
      * </pre>
      * <p/>
      * which will download and use Proguard 4.7 as deployed to the Central Repository.
-     * 
+     *
      * @parameter expression="${android.proguard.proguardJarPath}
      * @optional
      */
-    private String                          proguardProguardJarPath;
+    private String proguardProguardJarPath;
 
     @PullParameter( defaultValueGetterMethod = "getProguardJarPath" )
-    private String                          parsedProguardJarPath;
+    private String parsedProguardJarPath;
 
     /**
      * Path relative to the project's build directory (target) where proguard puts folowing files:
      * <p/>
      * <ul>
-     * <li>dump.txt</li>
-     * <li>seeds.txt</li>
-     * <li>usage.txt</li>
-     * <li>mapping.txt</li>
+     *   <li>dump.txt</li>
+     *   <li>seeds.txt</li>
+     *   <li>usage.txt</li>
+     *   <li>mapping.txt</li>
      * </ul>
      * <p/>
      * You can define the directory like this:
-     * 
      * <pre>
      * &lt;proguard&gt;
      *   &lt;skip&gt;false&lt;/skip&gt;
      *   &lt;config&gt;proguard.cfg&lt;/config&gt;
      *   &lt;outputDirectory&gt;my_proguard&lt;/outputDirectory&gt;
-     * &lt;/proguard&gt;
+     * &lt;/proguard&gt; 
      * </pre>
      * <p/>
      * Output directory is defined relatively so it could be also outside of the target directory.
      * <p/>
-     * 
-     * @parameter expression="${android.proguard.outputDirectory}" default-value="proguard"
+     *
+     * @parameter expression="${android.proguard.outputDirectory}"  default-value="proguard"
      * @optional
      */
-    private String                          outputDirectory;
+    private String outputDirectory;
 
     /**
-     * @parameter expression="${android.proguard.obfuscatedJar}"
+     * @parameter expression="${android.proguard.obfuscatedJar}" 
      *            default-value="${project.build.directory}/${project.build.finalName}_obfuscated.jar"
      */
-    private String                          obfuscatedJar;
+    private String obfuscatedJar;
 
     @PullParameter( defaultValue = "proguard" )
-    private String                          parsedOutputDirectory;
+    private String parsedOutputDirectory;
 
     @PullParameter
-    private String                          parsedObfuscatedJar;
+    private String parsedObfuscatedJar;
 
     /**
      * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build.
      * Defaults to "-Xmx512M".
-     * 
+     *
      * @parameter expression="${android.proguard.jvmArguments}"
      * @optional
      */
-    private String[]                        proguardJvmArguments;
+    private String[] proguardJvmArguments;
 
     @PullParameter( defaultValueGetterMethod = "getDefaultJvmArguments" )
-    private String[]                        parsedJvmArguments;
+    private String[] parsedJvmArguments;
 
     /**
      * If set to true will add a filter to remove META-INF/maven/* files. Defaults to false.
-     * 
+     *
      * @parameter expression="${android.proguard.filterMavenDescriptor}"
      * @optional
      */
-    private Boolean                         proguardFilterMavenDescriptor;
+    private Boolean proguardFilterMavenDescriptor;
 
     @PullParameter( defaultValue = "true" )
-    private Boolean                         parsedFilterMavenDescriptor;
+    private Boolean parsedFilterMavenDescriptor;
 
     /**
-     * If set to true will add a filter to remove META-INF/MANIFEST.MF files. Defaults to false.
-     * 
+     * If set to true will add a filter to remove META-INF/MANIFEST.MF files.  Defaults to false.
+     *
      * @parameter expression="${android.proguard.filterManifest}"
      * @optional
      */
-    private Boolean                         proguardFilterManifest;
+    private Boolean proguardFilterManifest;
 
     @PullParameter( defaultValue = "true" )
-    private Boolean                         parsedFilterManifest;
+    private Boolean parsedFilterManifest;
 
     /**
      * If set to true JDK jars will be included as library jars and corresponding filters
-     * will be applied to android.jar. Defaults to true.
-     * 
+     * will be applied to android.jar.  Defaults to true.
      * @parameter expression="${android.proguard.includeJdkLibs}"
      */
-    private Boolean                         includeJdkLibs;
+    private Boolean includeJdkLibs;
 
     @PullParameter( defaultValue = "true" )
-    private Boolean                         parsedIncludeJdkLibs;
+    private Boolean parsedIncludeJdkLibs;
 
     /**
      * If set to true the mapping.txt file will be attached as artifact of type <code>map</code>
-     * 
      * @parameter expression="${android.proguard.attachMap}"
      */
-    private Boolean                         attachMap;
+    private Boolean attachMap;
 
     @PullParameter( defaultValue = "false" )
-    private Boolean                         parsedAttachMap;
+    private Boolean parsedAttachMap;
 
     /**
      * The plugin dependencies.
-     * 
+     *
      * @parameter expression="${plugin.artifacts}"
      * @required
      * @readonly
      */
-    protected List<Artifact>                pluginDependencies;
+    protected List<Artifact> pluginDependencies;
 
     private static final Collection<String> ANDROID_LIBRARY_EXCLUDED_FILTER = Arrays
-                                                                                .asList( "org/xml/**", "org/w3c/**",
-                                                                                    "java/**", "javax/**" );
+        .asList( "org/xml/**", "org/w3c/**", "java/**", "javax/**" );
 
-    private static final Collection<String> MAVEN_DESCRIPTOR                = Arrays.asList( "META-INF/maven/**" );
-
-    private static final Collection<String> META_INF_MANIFEST               = Arrays.asList( "META-INF/MANIFEST.MF" );
+    private static final Collection<String> MAVEN_DESCRIPTOR = Arrays.asList( "META-INF/maven/**" );
+    private static final Collection<String> META_INF_MANIFEST = Arrays.asList( "META-INF/MANIFEST.MF" );
 
     /**
      * For Proguard is required only jar type dependencies, all other like .so or .apklib can be skipped.
      */
-    private static final String             USED_DEPENDENCY_TYPE            = "jar";
+    private static final String USED_DEPENDENCY_TYPE = "jar";
 
-    private Collection<String>              globalInJarExcludes             = new HashSet<String>();
+    private Collection<String> globalInJarExcludes = new HashSet<String>();
 
-    private List<Artifact>                  artifactBlacklist               = new LinkedList<Artifact>();
+    private List<Artifact> artifactBlacklist = new LinkedList<Artifact>();
+    private List<Artifact> artifactsToShift = new LinkedList<Artifact>();
 
-    private List<Artifact>                  artifactsToShift                = new LinkedList<Artifact>();
+    private List<ProGuardInput> inJars = new LinkedList<ProguardMojo.ProGuardInput>();
+    private List<ProGuardInput> libraryJars = new LinkedList<ProguardMojo.ProGuardInput>();
 
-    private List<ProGuardInput>             inJars                          = new LinkedList<ProguardMojo.ProGuardInput>();
-
-    private List<ProGuardInput>             libraryJars                     = new LinkedList<ProguardMojo.ProGuardInput>();
-
-    private File                            javaHomeDir;
-
-    private File                            javaLibDir;
-
-    private File                            altJavaLibDir;
+    private File javaHomeDir;
+    private File javaLibDir;
+    private File altJavaLibDir;
 
     private static class ProGuardInput
     {
 
-        private String             path;
-
+        private String path;
         private Collection<String> excludedFilter;
 
         public ProGuardInput( String path, Collection<String> excludedFilter )
@@ -322,13 +310,12 @@ extends AbstractAndroidMojo
     }
 
     @Override
-    public void execute()
-    throws MojoExecutionException, MojoFailureException
+    public void execute() throws MojoExecutionException, MojoFailureException
     {
-        ConfigHandler configHandler = new ConfigHandler( this );
+        ConfigHandler configHandler = new ConfigHandler( this, this.session, this.execution );
         configHandler.parseConfiguration();
 
-        if ( !parsedSkip && new File( parsedConfig ).exists() )
+        if ( !parsedSkip )
         {
             // TODO: make the property name a constant sometime after switching to @Mojo
             project.getProperties().setProperty( "android.proguard.obfuscatedJar", obfuscatedJar );
@@ -337,8 +324,7 @@ extends AbstractAndroidMojo
         }
     }
 
-    private void executeProguard()
-    throws MojoExecutionException
+    private void executeProguard() throws MojoExecutionException
     {
         final File proguardDir = new File( project.getBuild().getDirectory(), parsedOutputDirectory );
 
@@ -416,7 +402,7 @@ extends AbstractAndroidMojo
     /**
      * Convert the jvm arguments in parsedJvmArguments as populated by the config in format as needed by the java
      * command. Also preserve backwards compatibility in terms of dashes required or not..
-     * 
+     *
      * @param commands
      */
     private void collectJvmArguments( List<String> commands )
@@ -460,7 +446,7 @@ extends AbstractAndroidMojo
 
     /**
      * Figure out the full path to the current java executable.
-     * 
+     *
      * @return the full path to the current java executable.
      */
     private static File getJavaExecutable()
@@ -610,12 +596,11 @@ extends AbstractAndroidMojo
 
     /**
      * Get the path to the proguard jar.
-     * 
+     *
      * @return
      * @throws MojoExecutionException
      */
-    private String getProguardJarPath()
-    throws MojoExecutionException
+    private String getProguardJarPath() throws MojoExecutionException
     {
         String proguardJarPath = getProguardJarPathFromDependencies();
         if ( StringUtils.isEmpty( proguardJarPath ) )
@@ -626,8 +611,7 @@ extends AbstractAndroidMojo
         return proguardJarPath;
     }
 
-    private String getProguardJarPathFromDependencies()
-    throws MojoExecutionException
+    private String getProguardJarPathFromDependencies() throws MojoExecutionException
     {
         Artifact proguardArtifact = null;
         int proguardArtifactDistance = -1;
@@ -668,7 +652,7 @@ extends AbstractAndroidMojo
 
     /**
      * Get the default JVM arguments for the proguard invocation.
-     * 
+     *
      * @return
      * @see #parsedJvmArguments
      */
@@ -679,7 +663,7 @@ extends AbstractAndroidMojo
 
     /**
      * Get the default ProGuard config files.
-     * 
+     *
      * @return
      * @see #parsedConfigs
      */
@@ -690,7 +674,7 @@ extends AbstractAndroidMojo
 
     /**
      * Get the default ProGuard options.
-     * 
+     *
      * @return
      * @see #parsedOptions
      */
@@ -701,9 +685,7 @@ extends AbstractAndroidMojo
 
     /**
      * Finds a library file in either the primary or alternate lib directory.
-     * 
-     * @param fileName
-     *            The base name of the file.
+     * @param fileName The base name of the file.
      * @return Either a canonical filename, or {@code null} if not found.
      */
     private File getJVMLibrary( String fileName )
@@ -722,7 +704,6 @@ extends AbstractAndroidMojo
 
     /**
      * Determines the java.home directory.
-     * 
      * @return The java.home directory, as a File.
      */
     private File getJavaHomeDir()
@@ -736,7 +717,6 @@ extends AbstractAndroidMojo
 
     /**
      * Determines the primary JVM library location.
-     * 
      * @return The primary library directory, as a File.
      */
     private File getJavaLibDir()
@@ -751,7 +731,6 @@ extends AbstractAndroidMojo
     /**
      * Determines the alternate JVM library location (applies with older
      * MacOSX JVMs).
-     * 
      * @return The alternate JVM library location, as a File.
      */
     private File getAltJavaLibDir()
