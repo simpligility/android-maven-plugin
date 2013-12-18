@@ -623,9 +623,20 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         if ( resourceDirectory.exists() )
         {
             commands.add( "-S" );
-            commands.add( resourceDirectory.getAbsolutePath() );
+            commands.add( getLibraryUnpackDirectory( apklibArtifact ) + "/res" );
         }
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+        /*
+    We might also want to add in any dependencies of the apklib
+    In which case we should probably use Aether to resolve the artifact dependencies.
+
+    See http://git.eclipse.org/c/aether/aether-demo.git/tree/aether-demo-maven-plugin/
+        src/main/java/org/eclipse/aether/examples/maven/ResolveArtifactMojo.java
+
+    And http://git.eclipse.org/c/aether/aether-demo.git/tree/aether-demo-snippets/
+        src/main/java/org/eclipse/aether/examples/GetDirectDependencies.java
+
+        .. resolve apklibDependencies
+        for ( Artifact artifact : apklibDependencies() )
         {
             if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
             {
@@ -637,24 +648,17 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 }
             }
         }
+*/
         commands.add( "--auto-add-overlay" );
         if ( assetsDirectory.exists() )
         {
             commands.add( "-A" );
-            commands.add( assetsDirectory.getAbsolutePath() );
+            commands.add( getLibraryUnpackDirectory( apklibArtifact ) + "/assets" );
         }
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
-        {
-            if ( artifact.getType().equals( APKLIB ) )
-            {
-                final String apkLibAssetsDir = getLibraryUnpackDirectory( artifact ) + "/assets";
-                if ( new File( apkLibAssetsDir ).exists() )
-                {
-                    commands.add( "-A" );
-                    commands.add( apkLibAssetsDir );
-                }
-            }
-        }
+/*
+    Same as above for resources we might want to add assets for dependencies of the apklib.
+ */
+
         commands.add( "-I" );
         commands.add( getAndroidSdk().getAndroidJar().getAbsolutePath() );
         if ( StringUtils.isNotBlank( configurations ) )
