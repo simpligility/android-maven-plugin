@@ -535,9 +535,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( "--non-constant-id" );
         }
 
-        // Ignoring these because we weren't originally specifying them and I don't think we have anything to map to.
-        // Not including "--ignore-assets"
-        // Not including "-0" (No Compress)
         for ( String aaptExtraArg : aaptExtraArgs )
         {
             getLog().debug( "Adding aapt arg : " + aaptExtraArg );
@@ -552,12 +549,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( configurations );
         }
 
-        // NB We are always outputting R.txt
-        // AndroidBuilder only outputs if aar or if this project deps on an aar
+        // We need to generate R.txt for all projects as it needs to be consumed when generating R class.
+        // It also needs to be consumed when packaging aar.
         commands.add( "--output-text-symbols" );
         commands.add( targetDirectory.getAbsolutePath() );
 
-        // Removed because it is not used by AndroidBuilder
+        // Allows us to supply multiple -S arguments.
         commands.add( "--auto-add-overlay" );
 
         getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
