@@ -535,9 +535,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( "--non-constant-id" );
         }
 
-        // Ignoring these because we weren't originally specifying them and I don't think we have anything to map to.
-        // Not including "--ignore-assets"
-        // Not including "-0" (No Compress)
         for ( String aaptExtraArg : aaptExtraArgs )
         {
             getLog().debug( "Adding aapt arg : " + aaptExtraArg );
@@ -552,12 +549,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( configurations );
         }
 
-        // NB We are always outputting R.txt
-        // AndroidBuilder only outputs if aar or if this project deps on an aar
+        // We need to generate R.txt for all projects as it needs to be consumed when generating R class.
+        // It also needs to be consumed when packaging aar.
         commands.add( "--output-text-symbols" );
         commands.add( targetDirectory.getAbsolutePath() );
 
-        // Removed because it is not used by AndroidBuilder
+        // Allows us to supply multiple -S arguments.
         commands.add( "--auto-add-overlay" );
 
         getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
@@ -626,9 +623,20 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         if ( resourceDirectory.exists() )
         {
             commands.add( "-S" );
-            commands.add( resourceDirectory.getAbsolutePath() );
+            commands.add( getLibraryUnpackDirectory( apklibArtifact ) + "/res" );
         }
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+        /*
+    We might also want to add in any dependencies of the apklib
+    In which case we should probably use Aether to resolve the artifact dependencies.
+
+    See http://git.eclipse.org/c/aether/aether-demo.git/tree/aether-demo-maven-plugin/
+        src/main/java/org/eclipse/aether/examples/maven/ResolveArtifactMojo.java
+
+    And http://git.eclipse.org/c/aether/aether-demo.git/tree/aether-demo-snippets/
+        src/main/java/org/eclipse/aether/examples/GetDirectDependencies.java
+
+        .. resolve apklibDependencies
+        for ( Artifact artifact : apklibDependencies() )
         {
             if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
             {
@@ -640,24 +648,18 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 }
             }
         }
+*/
         commands.add( "--auto-add-overlay" );
-        if ( assetsDirectory.exists() )
+        final String apkLibAssetsDir = getLibraryUnpackDirectory( apklibArtifact ) + "/assets";
+        if ( new File( apkLibAssetsDir ).exists()  )
         {
             commands.add( "-A" );
-            commands.add( assetsDirectory.getAbsolutePath() );
+            commands.add( apkLibAssetsDir );
         }
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
-        {
-            if ( artifact.getType().equals( APKLIB ) )
-            {
-                final String apkLibAssetsDir = getLibraryUnpackDirectory( artifact ) + "/assets";
-                if ( new File( apkLibAssetsDir ).exists() )
-                {
-                    commands.add( "-A" );
-                    commands.add( apkLibAssetsDir );
-                }
-            }
-        }
+/*
+    Same as above for resources we might want to add assets for dependencies of the apklib.
+ */
+
         commands.add( "-I" );
         commands.add( getAndroidSdk().getAndroidJar().getAbsolutePath() );
         if ( StringUtils.isNotBlank( configurations ) )

@@ -476,9 +476,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected Set<Artifact> getRelevantDependencyArtifacts()
     {
-        final Set<Artifact> allArtifacts = ( Set<Artifact> ) project.getDependencyArtifacts();
-        final Set<Artifact> results = filterOutIrrelevantArtifacts( allArtifacts );
-        return results;
+        final Set<Artifact> allArtifacts = project.getDependencyArtifacts();
+        return filterOutIrrelevantArtifacts( allArtifacts );
     }
 
     /**
@@ -488,9 +487,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected Set<Artifact> getAllRelevantDependencyArtifacts()
     {
-        final Set<Artifact> allArtifacts = ( Set<Artifact> ) project.getArtifacts();
-        final Set<Artifact> results = filterOutIrrelevantArtifacts( allArtifacts );
-        return results;
+        final Set<Artifact> allArtifacts = project.getArtifacts();
+        return filterOutIrrelevantArtifacts( allArtifacts );
     }
 
     /**
