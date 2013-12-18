@@ -650,10 +650,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
 */
         commands.add( "--auto-add-overlay" );
-        if ( assetsDirectory.exists() )
+        final String apkLibAssetsDir = getLibraryUnpackDirectory( apklibArtifact ) + "/assets";
+        if ( new File( apkLibAssetsDir ).exists()  )
         {
             commands.add( "-A" );
-            commands.add( getLibraryUnpackDirectory( apklibArtifact ) + "/assets" );
+            commands.add( apkLibAssetsDir );
         }
 /*
     Same as above for resources we might want to add assets for dependencies of the apklib.
