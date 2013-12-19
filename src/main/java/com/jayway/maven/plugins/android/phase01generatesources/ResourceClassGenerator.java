@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Generates R classes containing appropriate resource values for dependent libraries.
  *
- * Created by William on 16/12/13.
+ * @author William Ferguson <william.ferguson@xandar.com.au>
  */
 final class ResourceClassGenerator
 {
