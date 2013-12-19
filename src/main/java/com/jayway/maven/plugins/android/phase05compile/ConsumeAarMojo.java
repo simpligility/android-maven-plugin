@@ -60,16 +60,17 @@ public class ConsumeAarMojo extends AbstractAndroidMojo
             return;
         }
 
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
+        getLog().info( "Extracting classes for all aar dependencies" );
 
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+        for ( final Artifact artifact : getAllRelevantDependencyArtifacts() )
         {
             if ( artifact.getType().equals( AAR ) )
             {
-                String aarJar = getLibraryUnpackDirectory( artifact ) + "/" + SdkConstants.FN_CLASSES_JAR;
+                final String aarJar = getLibraryUnpackDirectory( artifact ) + "/" + SdkConstants.FN_CLASSES_JAR;
 
-                File aarFileJar = new File( aarJar );
+                final File aarFileJar = new File( aarJar );
 
                 final UnArchiver unArchiver = new ZipUnArchiver( aarFileJar )
                 {
@@ -79,9 +80,9 @@ public class ConsumeAarMojo extends AbstractAndroidMojo
                         return new ConsoleLogger( Logger.LEVEL_DEBUG, "classes-unarchiver" );
                     }
                 };
-                File classes = new File( project.getBuild().getOutputDirectory() );
+                final File classes = new File( project.getBuild().getOutputDirectory() );
 
-                getLog().info( "output " + classes );
+                getLog().info( "Extract aar classes for " + artifact );
 
                 classes.mkdir();
 
@@ -108,7 +109,7 @@ public class ConsumeAarMojo extends AbstractAndroidMojo
      */
     private boolean isCurrentProjectAndroid()
     {
-        Set<String> androidArtifacts = new HashSet<String>()
+        final Set<String> androidArtifacts = new HashSet<String>()
         {
             {
                 addAll( Arrays.asList( APK, APKLIB, APKSOURCES, AAR ) );
