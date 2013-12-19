@@ -170,8 +170,6 @@ public class ApklibMojo extends AbstractAndroidMojo
 
             addJavaResources( jarArchiver, project.getBuild().getResources(), "src" );
 
-            addR( jarArchiver );
-
             // Lastly, add any native libraries
             addNativeLibraries( jarArchiver );
 
@@ -187,12 +185,6 @@ public class ApklibMojo extends AbstractAndroidMojo
         }
 
         return apklibrary;
-    }
-
-    private void addR( JarArchiver jarArchiver ) throws MojoExecutionException
-    {
-        File rFile = new File( project.getBuild().getDirectory() + "/R.txt" );
-        jarArchiver.addFile( rFile, "R.txt" );
     }
 
     private void addNativeLibraries( final JarArchiver jarArchiver ) throws MojoExecutionException
