@@ -27,6 +27,7 @@ import com.jayway.maven.plugins.android.configuration.BuildConfigConstant;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.archiver.ArchiverException;
@@ -34,6 +35,14 @@ import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactDescriptorException;
+import org.eclipse.aether.resolution.ArtifactDescriptorRequest;
+import org.eclipse.aether.resolution.ArtifactDescriptorResult;
 
 import java.io.File;
 import java.io.IOException;
@@ -168,6 +177,36 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * @readonly
      */
     protected BuildConfigConstant[] buildConfigConstants;
+
+    /**
+     * The entry point to Aether, i.e. the component doing all the work.
+     *
+     * @component
+     */
+    private RepositorySystem repoSystem;
+
+    /**
+     * The current repository/network configuration of Maven.
+     *
+     * @parameter default-value="${repositorySystemSession}"
+     * @readonly
+     */
+    private RepositorySystemSession repoSession;
+
+    /**
+     * The project's remote repositories to use for the resolution.
+     *
+     * @parameter default-value="${project.remoteProjectRepositories}"
+     * @readonly
+     */
+    private List<RemoteRepository> remoteRepos;
+
+    /**
+     * @component
+     * @required
+     * @readonly
+     */
+    private ArtifactHandler artifactHandler;
 
     /**
      * Generates the source.
@@ -585,16 +624,17 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
     private void generateApkLibRs() throws MojoExecutionException
     {
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+        getLog().debug( "Generating Rs for apklib deps of project " + project.getArtifact() );
+        for ( final Artifact artifact : getAllRelevantDependencyArtifacts() )
         {
-            String type = artifact.getType();
-            if ( type.equals( APKLIB ) )
+            if ( artifact.getType().equals( APKLIB ) )
             {
-                getLog().debug( "Generating apklib R.java" + artifact.getArtifactId() + "..." );
+                getLog().debug( "Generating apklib R.java for " + artifact.getArtifactId() + "..." );
                 generateRForApkLibDependency( artifact );
             }
         }
     }
+
      /**
      * Executes aapt to generate the R class for the given apklib.
      *
@@ -607,7 +647,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         getLog().debug( "Generating R file for apklibrary: " + apklibArtifact.getGroupId()
                 + ":" + apklibArtifact.getArtifactId() );
 
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( getLog() );
 
         List<String> commands = new ArrayList<String>();
@@ -625,40 +665,40 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( "-S" );
             commands.add( getLibraryUnpackDirectory( apklibArtifact ) + "/res" );
         }
-        /*
-    We might also want to add in any dependencies of the apklib
-    In which case we should probably use Aether to resolve the artifact dependencies.
 
-    See http://git.eclipse.org/c/aether/aether-demo.git/tree/aether-demo-maven-plugin/
-        src/main/java/org/eclipse/aether/examples/maven/ResolveArtifactMojo.java
-
-    And http://git.eclipse.org/c/aether/aether-demo.git/tree/aether-demo-snippets/
-        src/main/java/org/eclipse/aether/examples/GetDirectDependencies.java
-
-        .. resolve apklibDependencies
-        for ( Artifact artifact : apklibDependencies() )
+        final List<Artifact> apklibDependencies = getDependenciesFor( apklibArtifact );
+        getLog().debug( "apklib dependencies = " + apklibDependencies );
+        for ( Artifact dependency : apklibDependencies )
         {
-            if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
+            // Add in the resources that are dependencies of the apklib.
+            final String extension = dependency.getType();
+            final String dependencyResDir = getLibraryUnpackDirectory( dependency ) + "/res";
+            if ( ( extension.equals( APKLIB ) || extension.equals( AAR ) ) && new File( dependencyResDir ).exists() )
             {
-                final String apkLibResDir = getLibraryUnpackDirectory( artifact ) + "/res";
-                if ( new File( apkLibResDir ).exists() )
-                {
-                    commands.add( "-S" );
-                    commands.add( apkLibResDir );
-                }
+                commands.add( "-S" );
+                commands.add( dependencyResDir );
             }
         }
-*/
+
         commands.add( "--auto-add-overlay" );
+
         final String apkLibAssetsDir = getLibraryUnpackDirectory( apklibArtifact ) + "/assets";
         if ( new File( apkLibAssetsDir ).exists()  )
         {
             commands.add( "-A" );
             commands.add( apkLibAssetsDir );
         }
-/*
-    Same as above for resources we might want to add assets for dependencies of the apklib.
- */
+        for ( Artifact dependency : apklibDependencies )
+        {
+            // Same as for resources we want to add assets for dependencies of the apklib.
+            final String extension = dependency.getType();
+            final String dependencyAssetsDir = getLibraryUnpackDirectory( dependency ) + "/assets";
+            if ( ( extension.equals( APKLIB ) || extension.equals( AAR ) ) && new File( dependencyAssetsDir ).exists() )
+            {
+                commands.add( "-A" );
+                commands.add( dependencyAssetsDir );
+            }
+        }
 
         commands.add( "-I" );
         commands.add( getAndroidSdk().getAndroidJar().getAbsolutePath() );
@@ -683,7 +723,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             throw new MojoExecutionException( "", e );
         }
     }
-     private List<Artifact> getLibraries()
+
+    private List<Artifact> getLibraries()
     {
         final List<Artifact> result = new ArrayList<Artifact>();
         for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
@@ -697,6 +738,53 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         return result;
     }
 
+    private List<Artifact> getDependenciesFor( Artifact artifact ) throws MojoExecutionException
+    {
+        final List<Artifact> results = new ArrayList<Artifact>();
+
+        final org.eclipse.aether.artifact.Artifact artifactToResolve =
+                new DefaultArtifact(
+                        artifact.getGroupId(),
+                        artifact.getArtifactId(),
+                        artifact.getType(),
+                        artifact.getVersion()
+                );
+        //new DefaultArtifact( "org.eclipse.aether:aether-impl:0.9.0.M3" );
+
+        final ArtifactDescriptorRequest descriptorRequest = new ArtifactDescriptorRequest();
+        descriptorRequest.setArtifact( artifactToResolve );
+        descriptorRequest.setRepositories( remoteRepos );
+
+        final ArtifactDescriptorResult descriptorResult;
+        try
+        {
+            descriptorResult = repoSystem.readArtifactDescriptor( repoSession, descriptorRequest );
+        }
+        catch ( ArtifactDescriptorException e )
+        {
+            throw new MojoExecutionException( "Could not resolve dependencies for " + artifactToResolve, e );
+        }
+
+        for ( Dependency dependency : descriptorResult.getDependencies() )
+        {
+            final String extension = dependency.getArtifact().getExtension();
+            if ( extension.equals( APKLIB ) || extension.equals( AAR ) )
+            {
+                final Artifact apklibDep = new org.apache.maven.artifact.DefaultArtifact(
+                        dependency.getArtifact().getGroupId(),
+                        dependency.getArtifact().getArtifactId(),
+                        dependency.getArtifact().getVersion(),
+                        dependency.getScope(),
+                        dependency.getArtifact().getExtension(),
+                        dependency.getArtifact().getClassifier(),
+                        artifactHandler
+                );
+                results.add( apklibDep );
+            }
+        }
+
+        return results;
+    }
 
     private void addResourcesDirectories( List<String> commands, File[] overlayDirectories )
     {
