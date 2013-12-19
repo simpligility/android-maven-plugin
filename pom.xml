@@ -55,7 +55,7 @@
         <aether.version>0.9.0.M2</aether.version>
         
         <!-- Attention - make sure that the tools version is the versions of the transitive dependencies of the builder version -->
-        <android.builder.version>0.7.0</android.builder.version>
+        <android.builder.version>0.7.1</android.builder.version>
         <android.tools.version>22.4.0</android.tools.version>
     </properties>
     <scm>
