@@ -15,15 +15,10 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
-
 /**
- * Generates R classes containing appropriate resource value for dependent libraries.
- *<p>
- * Appropriate means that the values are static for AAR dependencies and have been modified for APKLIB dependencies.
- *</p>
+ * Generates R classes containing appropriate resource values for dependent libraries.
  *
- * Created by William on 16/12/13.
+ * @author William Ferguson <william.ferguson@xandar.com.au>
  */
 final class ResourceClassGenerator
 {
@@ -52,11 +47,6 @@ final class ResourceClassGenerator
 
         for ( final Artifact lib : libraries )
         {
-            if ( lib.getType().equals( APKLIB ) )
-            {
-                log.debug( "Ignoring APKLIB as it has been processed: " + lib.getArtifactId() );
-            }
-
             final File unpackedLibDirectory = new File( mojo.getLibraryUnpackDirectory( lib ) );
             final File rFile = new File( unpackedLibDirectory, "R.txt" );
 
