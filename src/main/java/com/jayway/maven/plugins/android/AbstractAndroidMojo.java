@@ -206,12 +206,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File extractedDependenciesDirectory;
 
     /**
-     * @parameter expression="${project.build.directory}/generated-sources/extracted-dependencies/res"
-     * @readonly
-     */
-    // TODO Remove this because because GenerateSourcesMojo adds the resources for each dep individually in #addResourcesDirectories
-    protected File extractedDependenciesRes; //
-    /**
      * @parameter expression="${project.build.directory}/generated-sources/extracted-dependencies/src/main/java"
      * @readonly
      */
@@ -234,7 +228,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * Extract the library (aar and apklib) dependencies here.
      *
-     * @parameter expression="${project.build.directory}/unpack/libs"
+     * @parameter expression="${project.build.directory}/unpacked-libs"
      * @readonly
      */
     protected File unpackedApkLibsDirectory;

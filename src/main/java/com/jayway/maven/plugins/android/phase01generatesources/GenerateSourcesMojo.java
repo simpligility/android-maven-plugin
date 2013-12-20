@@ -388,9 +388,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                     + ". Message: " + e.getLocalizedMessage(), e );
         }
 
-        // Copy the resources into the the extracted dependencies folders
-        copyFolder( new File( apklibDirectory, "res" ), extractedDependenciesRes );
-
         // Copy the assets to the the combinedAssets folder.
         copyFolder( new File( apklibDirectory, "assets" ), combinedAssets );
 
@@ -451,9 +448,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                     + ". Message: " + e.getLocalizedMessage(), e );
         }
 
-        // Copy the resources into the the extracted dependencies folders
-        copyFolder( new File( aarDirectory, "res" ), extractedDependenciesRes );
-
         // Copy the assets to the the combinedAssets folder.
         copyFolder( new File( aarDirectory, "assets" ), combinedAssets );
 
@@ -472,8 +466,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         File[] overlayDirectories = getResourceOverlayDirectories();
         getLog().debug( "Resource overlay folders : " + Arrays.asList( overlayDirectories ) );
-
-        getLog().debug( "Extracted dependency resources : " + extractedDependenciesRes );
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
