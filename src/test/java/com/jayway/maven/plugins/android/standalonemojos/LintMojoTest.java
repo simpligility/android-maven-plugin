@@ -49,7 +49,7 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
     public void testDefaultLintConfig() throws Exception
     {
         LintMojo mojo = createMojo( "lint-config-project0" );
-        final ConfigHandler cfh = new ConfigHandler( mojo );
+        final ConfigHandler cfh = new ConfigHandler( mojo, this.session, this.execution );
         cfh.parseConfiguration();
 
         Boolean lintSkip = Whitebox.getInternalState( mojo, "parsedSkip" );
@@ -65,7 +65,7 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
     public void testDefaultUnskippedLintConfig() throws Exception
     {
         LintMojo mojo = createMojo( "lint-config-project1" );
-        final ConfigHandler cfh = new ConfigHandler( mojo );
+        final ConfigHandler cfh = new ConfigHandler( mojo, this.session, this.execution );
         cfh.parseConfiguration();
         MavenProject project = Whitebox.getInternalState( mojo, "project" );
 
@@ -138,7 +138,7 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
     public void testCustomLintConfig() throws Exception
     {
         LintMojo mojo = createMojo( "lint-config-project2" );
-        final ConfigHandler cfh = new ConfigHandler( mojo );
+        final ConfigHandler cfh = new ConfigHandler( mojo, this.session, this.execution );
         cfh.parseConfiguration();
 
         Boolean lintSkip = Whitebox.getInternalState( mojo, "parsedSkip" );
@@ -222,7 +222,8 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
                     }
                 } );
 
-        PowerMock.expectNew( ConfigHandler.class, mojo ).andReturn( EasyMock.createNiceMock( ConfigHandler.class ) );
+        PowerMock.expectNew( ConfigHandler.class, mojo, this.session, this.execution )
+            .andReturn( EasyMock.createNiceMock( ConfigHandler.class ) );
         Capture< List< String > > capturedArgument = new Capture< List< String > >();
 
         mockExecutor.setLogger( EasyMock.anyObject( Log.class ) );
@@ -256,8 +257,8 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
         File projectBaseDir = new File( "project/" );
         EasyMock.expect( project.getBasedir() ).andReturn( projectBaseDir );
         final CommandExecutor mockExecutor = PowerMock.createMock( CommandExecutor.class );
-        PowerMock.replace( CommandExecutor.Factory.class.getDeclaredMethod( "createDefaultCommmandExecutor" ) ).with(
-                new InvocationHandler()
+        PowerMock.replace( CommandExecutor.Factory.class.getDeclaredMethod( "createDefaultCommmandExecutor" ) )
+            .with( new InvocationHandler()
                 {
 
                     @Override
@@ -267,7 +268,8 @@ public class LintMojoTest extends AbstractAndroidMojoTestCase< LintMojo >
                     }
                 } );
 
-        PowerMock.expectNew( ConfigHandler.class, mojo ).andReturn( EasyMock.createNiceMock( ConfigHandler.class ) );
+        PowerMock.expectNew( ConfigHandler.class, mojo, this.session, this.execution )
+            .andReturn( EasyMock.createNiceMock( ConfigHandler.class ) );
         Whitebox.setInternalState( mojo, "parsedSkip", Boolean.FALSE );
         Capture< List< String > > capturedArgument = new Capture< List< String > >();
 

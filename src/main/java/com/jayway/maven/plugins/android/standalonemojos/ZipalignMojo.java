@@ -119,7 +119,7 @@ public class ZipalignMojo extends AbstractAndroidMojo
             return;
         }
 
-        ConfigHandler configHandler = new ConfigHandler( this );
+        ConfigHandler configHandler = new ConfigHandler( this, this.session, this.execution );
         configHandler.parseConfiguration();
 
         parsedInputApk = FilenameUtils.separatorsToSystem( parsedInputApk );

@@ -441,16 +441,15 @@ public class AarMojo extends AbstractAndroidMojo
             }
         }
         commands.add( "--auto-add-overlay" );
-        if ( assetsDirectory.exists() )
+
+        // NB aapt only accepts a single assets parameter - combinedAssets is a merge of all assets
+        if ( combinedAssets.exists() )
         {
+            getLog().debug( "Adding assets folder : " + combinedAssets );
             commands.add( "-A" );
-            commands.add( assetsDirectory.getAbsolutePath() );
+            commands.add( combinedAssets.getAbsolutePath() );
         }
-        if ( extractedDependenciesAssets.exists() )
-        {
-            commands.add( "-A" );
-            commands.add( extractedDependenciesAssets.getAbsolutePath() );
-        }
+
         commands.add( "-I" );
         commands.add( androidJar.getAbsolutePath() );
         commands.add( "-F" );

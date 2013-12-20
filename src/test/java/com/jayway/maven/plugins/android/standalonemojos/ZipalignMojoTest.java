@@ -44,7 +44,7 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
     public void testDefaultConfig () throws Exception
     {
         ZipalignMojo mojo = createMojo( "zipalign-config-project0" );
-        final ConfigHandler cfh = new ConfigHandler( mojo );
+        final ConfigHandler cfh = new ConfigHandler( mojo, this.session, this.execution );
         cfh.parseConfiguration();
 
         Boolean skip = Whitebox.getInternalState( mojo, "parsedSkip" );
@@ -75,7 +75,7 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
     public void testConfigParse () throws Exception
     {
         ZipalignMojo mojo = createMojo( "zipalign-config-project1" );
-        final ConfigHandler cfh = new ConfigHandler( mojo );
+        final ConfigHandler cfh = new ConfigHandler( mojo, this.session, this.execution );
         cfh.parseConfiguration();
 
         Boolean skip = Whitebox.getInternalState( mojo, "parsedSkip" );
