@@ -123,6 +123,8 @@ public class ApkMojo extends AbstractAndroidMojo
      * Look to aapt for more help on this. </p>
      *
      * @parameter expression="${android.renameInstrumentationTargetPackage}"
+     *
+     * TODO pass this into AaptExecutor
      */
     private String renameInstrumentationTargetPackage;
 
@@ -959,22 +961,6 @@ public class ApkMojo extends AbstractAndroidMojo
         executor.setLogger( this.getLog() );
         File[] overlayDirectories = getResourceOverlayDirectories();
 
-        // Must combine assets.
-        // The aapt tools does not support several -A arguments.
-        // We copy the assets from extracted dependencies first, and then the local assets.
-        // This allows redefining the assets in the current project
-        if ( extractedDependenciesAssets.exists() )
-        {
-            copyDependencyAssets();
-        }
-
-        processApkLibAssets();
-
-        if ( assetsDirectory.exists() )
-        {
-            copyLocalAssets();
-        }
-
         File androidJar = getAndroidSdk().getAndroidJar();
         File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_" );
 
@@ -1010,10 +996,10 @@ public class ApkMojo extends AbstractAndroidMojo
         }
         commands.add( "--auto-add-overlay" );
 
-        // Use the combined assets.
-        // Indeed, aapt does not support several -A arguments.
+        // NB aapt only accepts a single assets parameter - combinedAssets is a merge of all assets
         if ( combinedAssets.exists() )
         {
+            getLog().debug( "Adding assets folder : " + combinedAssets );
             commands.add( "-A" );
             commands.add( combinedAssets.getAbsolutePath() );
         }
@@ -1061,78 +1047,6 @@ public class ApkMojo extends AbstractAndroidMojo
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
-        {
-            throw new MojoExecutionException( "", e );
-        }
-    }
-
-    private void copyDependencyAssets() throws MojoExecutionException
-    {
-        try
-        {
-            getLog().info( "Copying dependency assets files to combined assets directory." );
-            FileUtils.copyDirectory( extractedDependenciesAssets, combinedAssets, new FileFilter()
-            {
-                /**
-                 * Excludes files matching one of the common file to exclude.
-                 * The default excludes pattern are the ones from
-                 * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
-                 * @see java.io.FileFilter#accept(java.io.File)
-                 */
-                public boolean accept( File file )
-                {
-                    for ( String pattern : AbstractScanner.DEFAULTEXCLUDES )
-                    {
-                        if ( AbstractScanner.match( pattern, file.getAbsolutePath() ) )
-                        {
-                            getLog().debug(
-                                    "Excluding " + file.getName() + " from asset copy : matching " + pattern );
-                            return false;
-                        }
-                    }
-
-                    return true;
-
-                }
-            } );
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( "", e );
-        }
-    }
-
-    private void copyLocalAssets() throws MojoExecutionException
-    {
-        try
-        {
-            getLog().info( "Copying local assets files to combined assets directory." );
-            org.apache.commons.io.FileUtils.copyDirectory( assetsDirectory, combinedAssets, new FileFilter()
-            {
-                /**
-                 * Excludes files matching one of the common file to exclude.
-                 * The default excludes pattern are the ones from
-                 * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
-                 * @see java.io.FileFilter#accept(java.io.File)
-                 */
-                public boolean accept( File file )
-                {
-                    for ( String pattern : AbstractScanner.DEFAULTEXCLUDES )
-                    {
-                        if ( AbstractScanner.match( pattern, file.getAbsolutePath() ) )
-                        {
-                            getLog().debug(
-                                    "Excluding " + file.getName() + " from asset copy : matching " + pattern );
-                            return false;
-                        }
-                    }
-
-                    return true;
-
-                }
-            } );
-        }
-        catch ( IOException e )
         {
             throw new MojoExecutionException( "", e );
         }
