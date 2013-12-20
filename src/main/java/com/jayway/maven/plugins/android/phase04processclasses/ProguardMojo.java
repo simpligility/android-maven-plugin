@@ -245,29 +245,29 @@ public class ProguardMojo extends AbstractAndroidMojo
      * @required
      * @readonly
      */
-    protected List<Artifact> pluginDependencies;
+    protected List< Artifact > pluginDependencies;
 
-    private static final Collection<String> ANDROID_LIBRARY_EXCLUDED_FILTER = Arrays
+    private static final Collection< String > ANDROID_LIBRARY_EXCLUDED_FILTER = Arrays
         .asList( "org/xml/**", "org/w3c/**", "java/**", "javax/**" );
 
-    private static final Collection<String> MAVEN_DESCRIPTOR = Arrays.asList( "META-INF/maven/**" );
+    private static final Collection< String > MAVEN_DESCRIPTOR = Arrays.asList( "META-INF/maven/**" );
 
-    private static final Collection<String> META_INF_MANIFEST = Arrays.asList( "META-INF/MANIFEST.MF" );
+    private static final Collection< String > META_INF_MANIFEST = Arrays.asList( "META-INF/MANIFEST.MF" );
 
     /**
      * For Proguard is required only jar type dependencies, all other like .so or .apklib can be skipped.
      */
     private static final String USED_DEPENDENCY_TYPE = "jar";
 
-    private Collection<String> globalInJarExcludes = new HashSet<String>();
+    private Collection< String > globalInJarExcludes = new HashSet< String >();
 
-    private List<Artifact> artifactBlacklist = new LinkedList<Artifact>();
+    private List< Artifact > artifactBlacklist = new LinkedList< Artifact >();
 
-    private List<Artifact> artifactsToShift = new LinkedList<Artifact>();
+    private List< Artifact > artifactsToShift = new LinkedList< Artifact >();
 
-    private List<ProGuardInput> inJars = new LinkedList<ProguardMojo.ProGuardInput>();
+    private List< ProGuardInput > inJars = new LinkedList< ProguardMojo.ProGuardInput >();
 
-    private List<ProGuardInput> libraryJars = new LinkedList<ProguardMojo.ProGuardInput>();
+    private List< ProGuardInput > libraryJars = new LinkedList< ProguardMojo.ProGuardInput >();
 
     private File javaHomeDir;
 
@@ -280,9 +280,9 @@ public class ProguardMojo extends AbstractAndroidMojo
 
         private String path;
 
-        private Collection<String> excludedFilter;
+        private Collection< String > excludedFilter;
 
-        public ProGuardInput( String path, Collection<String> excludedFilter )
+        public ProGuardInput( String path, Collection< String > excludedFilter )
         {
             this.path = path;
             this.excludedFilter = excludedFilter;
@@ -294,7 +294,7 @@ public class ProguardMojo extends AbstractAndroidMojo
             {
                 StringBuilder sb = new StringBuilder( path );
                 sb.append( '(' );
-                for ( Iterator<String> it = excludedFilter.iterator(); it.hasNext(); )
+                for ( Iterator< String > it = excludedFilter.iterator(); it.hasNext(); )
                 {
                     sb.append( '!' ).append( it.next() );
                     if ( it.hasNext() )
@@ -318,12 +318,20 @@ public class ProguardMojo extends AbstractAndroidMojo
         ConfigHandler configHandler = new ConfigHandler( this, this.session, this.execution );
         configHandler.parseConfiguration();
 
-        if ( !parsedSkip && parsedConfig.exists() )
+        if ( !parsedSkip )
         {
-            // TODO: make the property name a constant sometime after switching to @Mojo
-            project.getProperties().setProperty( "android.proguard.obfuscatedJar", obfuscatedJar );
+            if ( parsedConfig.exists() )
+            {
+                // TODO: make the property name a constant sometime after switching to @Mojo
+                project.getProperties().setProperty( "android.proguard.obfuscatedJar", obfuscatedJar );
 
-            executeProguard();
+                executeProguard();
+            }
+            else
+            {
+                getLog().info( String
+                    .format( "Proguard skipped because the configuration file doesn't exist: %s", parsedConfig ) );
+            }
         }
     }
 
@@ -345,17 +353,14 @@ public class ProguardMojo extends AbstractAndroidMojo
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
-        List<String> commands = new ArrayList<String>();
+        List< String > commands = new ArrayList< String >();
 
         collectJvmArguments( commands );
 
         commands.add( "-jar" );
         commands.add( parsedProguardJarPath );
 
-        if ( parsedConfig.exists() )
-        {
-            commands.add( "@" + parsedConfig );
-        }
+        commands.add( "@" + parsedConfig );
 
         for ( String config : parsedConfigs )
         {
@@ -411,7 +416,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      *
      * @param commands
      */
-    private void collectJvmArguments( List<String> commands )
+    private void collectJvmArguments( List< String > commands )
     {
         if ( parsedJvmArguments != null )
         {
@@ -429,7 +434,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         }
     }
 
-    private void collectInputFiles( List<String> commands )
+    private void collectInputFiles( List< String > commands )
     {
         // commons-logging breaks everything horribly, so we skip it from the program
         // dependencies and declare it to be a library dependency instead
@@ -523,7 +528,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         }
     }
 
-    private void addInJar( String path, Collection<String> filterExpression )
+    private void addInJar( String path, Collection< String > filterExpression )
     {
         inJars.add( new ProGuardInput( path, filterExpression ) );
     }
@@ -533,7 +538,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         addInJar( path, null );
     }
 
-    private void addLibraryJar( String path, Collection<String> filterExpression )
+    private void addLibraryJar( String path, Collection< String > filterExpression )
     {
         libraryJars.add( new ProGuardInput( path, filterExpression ) );
     }
