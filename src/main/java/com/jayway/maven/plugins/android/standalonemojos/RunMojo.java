@@ -168,7 +168,7 @@ public class RunMojo extends AbstractAndroidMojo
 
             launcherInfo = getLauncherActivity();
 
-            ConfigHandler configHandler = new ConfigHandler( this );
+            ConfigHandler configHandler = new ConfigHandler( this, this.session, this.execution );
             configHandler.parseConfiguration();
 
             launch( launcherInfo );
