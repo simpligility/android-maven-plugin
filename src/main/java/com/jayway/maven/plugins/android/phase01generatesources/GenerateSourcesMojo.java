@@ -646,6 +646,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         final String unpackDir = getLibraryUnpackDirectory( apklibArtifact );
         getLog().debug( "Generating R file for apklibrary: " + apklibArtifact.getGroupId()
                 + ":" + apklibArtifact.getArtifactId() );
+        final File apklibManifest = new File( unpackDir, "AndroidManifest.xml" );
+        final File apklibResDir = new File( unpackDir, "/res" );
 
         final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( getLog() );
@@ -657,14 +659,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         commands.add( "-J" );
         commands.add( genDirectory.getAbsolutePath() );
         commands.add( "--custom-package" );
-        commands.add( extractPackageNameFromAndroidManifest( new File( unpackDir + "/" + "AndroidManifest.xml" ) ) );
+        commands.add( extractPackageNameFromAndroidManifest( apklibManifest ) );
         commands.add( "-M" );
-        commands.add( androidManifestFile.getAbsolutePath() );
-        if ( resourceDirectory.exists() )
-        {
-            commands.add( "-S" );
-            commands.add( getLibraryUnpackDirectory( apklibArtifact ) + "/res" );
-        }
+        commands.add( apklibManifest.getAbsolutePath() );
 
         final List<Artifact> apklibDependencies = getDependenciesFor( apklibArtifact );
         getLog().debug( "apklib dependencies = " + apklibDependencies );
@@ -678,6 +675,13 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 commands.add( "-S" );
                 commands.add( dependencyResDir );
             }
+        }
+
+        if ( apklibResDir.exists() )
+        {
+            // Add the APKLIB resources last so they overlay any of it's dependencies.
+            commands.add( "-S" );
+            commands.add( apklibResDir.getAbsolutePath() );
         }
 
         commands.add( "--auto-add-overlay" );
