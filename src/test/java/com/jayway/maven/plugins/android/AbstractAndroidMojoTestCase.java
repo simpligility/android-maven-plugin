@@ -1,8 +1,6 @@
 package com.jayway.maven.plugins.android;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.*;
 
 import java.io.File;
 
@@ -24,11 +22,17 @@ import org.codehaus.plexus.configuration.PlexusConfiguration;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.junit.Assert;
+import org.powermock.reflect.Whitebox;
 
 import com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo;
 import com.jayway.maven.plugins.android.standalonemojos.MojoProjectStub;
 
 public abstract class AbstractAndroidMojoTestCase<T extends AbstractAndroidMojo> extends AbstractMojoTestCase {
+
+    protected MavenSession session;
+    protected MojoExecution execution;
+
+
     /**
      * The Goal Name of the Plugin being tested.
      * <p>
@@ -103,20 +107,26 @@ public abstract class AbstractAndroidMojoTestCase<T extends AbstractAndroidMojo>
         // - Declared to prevent NPE from logging events in maven core
         Logger logger = new ConsoleLogger(Logger.LEVEL_DEBUG, mojo.getClass().getName());
 
-         MavenSession context = createMock(MavenSession.class);
+        MavenSession context = createNiceMock( MavenSession.class );
 
-        expect(context.getExecutionProperties()).andReturn(project.getProperties());
-        expect(context.getCurrentProject()).andReturn(project);
-        replay(context);
+        expect( context.getExecutionProperties() ).andReturn( project.getProperties() );
+        expect( context.getCurrentProject() ).andReturn( project );
+        replay( context );
 
         // Declare evalator that maven itself uses.
         ExpressionEvaluator evaluator = new PluginParameterExpressionEvaluator(
-                context, mojoExec, pathTranslator, logger, project, project.getProperties());
+            context, mojoExec, pathTranslator, logger, project, project.getProperties() );
         // Lookup plexus configuration component
         ComponentConfigurator configurator = (ComponentConfigurator) lookup(ComponentConfigurator.ROLE,"basic");
         // Configure mojo using above
         ConfigurationListener listener = new DebugConfigurationListener( logger );
         configurator.configureComponent( mojo, config, evaluator, getContainer().getContainerRealm(), listener );
+
+        this.session = context;
+        this.execution = mojoExec;
+
+        Whitebox.setInternalState( mojo, "session", this.session );
+        Whitebox.setInternalState( mojo, "execution", this.execution );
 
         return mojo;
     }

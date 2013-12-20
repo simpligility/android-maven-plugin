@@ -104,7 +104,7 @@ public class PushMojo extends AbstractAndroidMojo
     public void execute() throws MojoExecutionException, MojoFailureException
     {
 
-        ConfigHandler configHandler = new ConfigHandler( this );
+        ConfigHandler configHandler = new ConfigHandler( this, this.session, this.execution );
         configHandler.parseConfiguration();
 
         final Map<String, String> sourceDestinationMap = calculateSourceDestinationMapping();

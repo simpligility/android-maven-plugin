@@ -43,7 +43,7 @@ public class MonkeyMojoTest extends AbstractAndroidMojoTestCase< MonkeyMojo >
     {
         // given
         MonkeyMojo mojo = createMojo( "monkey-config-project0" );
-        final ConfigHandler cfh = new ConfigHandler( mojo );
+        final ConfigHandler cfh = new ConfigHandler( mojo, this.session, this.execution );
         cfh.parseConfiguration();
 
         // when
@@ -77,7 +77,7 @@ public class MonkeyMojoTest extends AbstractAndroidMojoTestCase< MonkeyMojo >
         PowerMock.replay( project );
 
         // when
-        final ConfigHandler cfh = new ConfigHandler( mojo );
+        final ConfigHandler cfh = new ConfigHandler( mojo, this.session, this.execution );
         cfh.parseConfiguration();
 
         // then
@@ -158,7 +158,7 @@ public class MonkeyMojoTest extends AbstractAndroidMojoTestCase< MonkeyMojo >
         PowerMock.replay( project );
 
         // when
-        final ConfigHandler cfh = new ConfigHandler( mojo );
+        final ConfigHandler cfh = new ConfigHandler( mojo, this.session, this.execution );
         cfh.parseConfiguration();
 
         // then
