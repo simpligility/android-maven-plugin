@@ -1,6 +1,10 @@
 
 package com.jayway.maven.plugins.android.config;
 
+import org.apache.maven.execution.MavenSession;
+import org.apache.maven.plugin.MojoExecution;
+import org.apache.maven.plugin.PluginParameterExpressionEvaluator;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -24,10 +28,23 @@ public class ConfigHandler
     private Object configPojoInstance;
     private String configPojoName;
     private String configPojoPrefix;
+    private PluginParameterExpressionEvaluator evaluator;
 
-    public ConfigHandler( Object mojo )
+    public ConfigHandler( Object mojo, MavenSession session, MojoExecution execution )
     {
         this.mojo = mojo;
+
+        if ( session == null )
+        {
+            throw new IllegalArgumentException( "The argument session is required" );
+        }
+        if ( execution == null )
+        {
+            throw new IllegalArgumentException( "The argument execution is required" );
+        }
+
+        this.evaluator = new PluginParameterExpressionEvaluator( session, execution );
+
         initConfigPojo();
     }
 
@@ -66,7 +83,7 @@ public class ConfigHandler
             // unless it is null or an empty array
             Object propertyValue = getValueFromMojo( fieldBaseName );
             if ( propertyValue == null || propertyValue instanceof Object[]//
-                    && ( (Object[]) propertyValue ).length == 0 )
+                && ( (Object[]) propertyValue ).length == 0 )
             {
                 // no useful value
             }
@@ -94,34 +111,40 @@ public class ConfigHandler
     private Object getValueFromAnnotation( Field field )
     {
         PullParameter annotation = field.getAnnotation( PullParameter.class );
-        String defaultValue = annotation.defaultValue();
+        String[] defaultValue = annotation.defaultValue();
         boolean required = annotation.required();
         String currentParameterName = "android." + configPojoName + "." + getFieldNameWithoutParsedPrefix( field );
 
-        if ( !defaultValue.isEmpty() )
-        { // TODO find a better way to define an empty default value
-            Class< ? > fieldType = field.getType();
-            if ( fieldType.isAssignableFrom( String.class ) )
+        if ( defaultValue.length > 0 )
+        {
+            if ( defaultValue.length > 1 )
             {
-                return defaultValue;
-            }
-            if ( fieldType.isAssignableFrom( Boolean.class ) )
-            {
-                return Boolean.valueOf( defaultValue );
-            }
-            if ( fieldType.isAssignableFrom( Long.class ) )
-            {
-                return Long.valueOf( defaultValue );
-            }
-            if ( fieldType.isAssignableFrom( Integer.class ) )
-            {
-                return Integer.valueOf( defaultValue );
+                throw new RuntimeException( String.format( "Too many default values for field %s", field.getName() ) );
             }
 
-            // TODO add more handler types as required, for example integer, long, ... we will do that when we encounter
-            // them in other mojos..
-            throw new RuntimeException( "No handler for type " + fieldType + " on " //
-                    + currentParameterName + " found." );
+            final Class< ? > fieldType = field.getType();
+
+            try
+            {
+                final Object defValue = evaluator.evaluate( defaultValue[0], fieldType );
+
+                if ( defValue == null || fieldType.isInstance( defValue ) )
+                {
+                    return defValue;
+                }
+
+                return convertTo( fieldType, defValue );
+            }
+            catch ( RuntimeException e )
+            {
+                throw e;
+            }
+            catch ( Exception e )
+            {
+                throw new RuntimeException( String.format(
+                    "Problem encountered converting default value for %s parameter to %s",
+                    currentParameterName, fieldType ), e );
+            }
         }
         else
         {
@@ -142,16 +165,33 @@ public class ConfigHandler
                 }
                 catch ( Exception e )
                 {
-                    throw new RuntimeException( "Problem encountered accessing default value for "
-                            + currentParameterName + " parameter", e );
+                    throw new RuntimeException( String.format(
+                        "Problem encountered accessing default value for %s parameter",
+                        currentParameterName ), e );
                 }
             }
             else
             {
-                throw new RuntimeException( "Required parameter " + currentParameterName + " has no value. Please "
-                        + "supply with -D" + currentParameterName + "=value on the command line or as property or "
-                        + "plugin configuration in your pom or settings file." );
+                throw new RuntimeException( String.format(
+                    "Required parameter %1$ has no value. Please "
+                        + "supply with -D%1$=value on the command line or as property or "
+                        + "plugin configuration in your pom or settings file.",
+                    currentParameterName ) );
             }
+        }
+    }
+
+    private Object convertTo( Class< ? > javaType, Object defValue )
+    throws Exception
+    {
+        // try valueOf
+        try
+        {
+            return javaType.getMethod( "valueOf", String.class ).invoke( null, defValue );
+        }
+        catch ( NoSuchMethodException e )
+        {
+            return javaType.getConstructor( String.class ).newInstance( defValue );
         }
     }
 

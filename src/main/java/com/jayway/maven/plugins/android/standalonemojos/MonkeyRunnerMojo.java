@@ -257,7 +257,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        ConfigHandler configHandler = new ConfigHandler( this );
+        ConfigHandler configHandler = new ConfigHandler( this, this.session, this.execution );
         configHandler.parseConfiguration();
 
         doWithDevices( new DeviceCallback()
