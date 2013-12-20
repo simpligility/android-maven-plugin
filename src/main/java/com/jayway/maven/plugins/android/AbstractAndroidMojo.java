@@ -21,6 +21,7 @@ import com.android.ddmlib.IDevice;
 import com.android.ddmlib.InstallException;
 import com.jayway.maven.plugins.android.common.AetherHelper;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
+import com.jayway.maven.plugins.android.common.DependencyResolver;
 import com.jayway.maven.plugins.android.common.DeviceHelper;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.configuration.Ndk;
@@ -33,6 +34,7 @@ import org.apache.commons.jxpath.JXPathNotFoundException;
 import org.apache.commons.jxpath.xml.DocumentContainer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
@@ -213,16 +215,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File extractedDependenciesDirectory;
 
     /**
-     * @parameter expression="${project.build.directory}/generated-sources/extracted-dependencies/res"
-     * @readonly
-     */
-    protected File extractedDependenciesRes;
-    /**
-     * @parameter expression="${project.build.directory}/generated-sources/extracted-dependencies/assets"
-     * @readonly
-     */
-    protected File extractedDependenciesAssets;
-    /**
      * @parameter expression="${project.build.directory}/generated-sources/extracted-dependencies/src/main/java"
      * @readonly
      */
@@ -235,7 +227,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     /**
      * The combined assets directory. This will contain both the assets found in "assets" as well as any assets
-     * contained in a apksources dependency.
+     * contained in a apksources, apklib or aar dependencies.
      *
      * @parameter expression="${project.build.directory}/generated-sources/combined-assets/assets"
      * @readonly
@@ -245,7 +237,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * Extract the library (aar and apklib) dependencies here.
      *
-     * @parameter expression="${project.build.directory}/unpack/libs"
+     * @parameter expression="${project.build.directory}/unpacked-libs"
      * @readonly
      */
     protected File unpackedApkLibsDirectory;
@@ -318,6 +310,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @readonly
      */
     protected List<RemoteRepository> projectRepos;
+
+    /**
+     * @component
+     * @required
+     * @readonly
+     */
+    private ArtifactHandler artifactHandler;
 
     /**
      * Generates R.java into a different package.
@@ -453,7 +452,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected boolean release;
 
-
     /**
      *
      */
@@ -468,15 +466,19 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected static final List<String> EXCLUDED_DEPENDENCY_SCOPES = Arrays.asList( "provided", "system", "import" );
 
+    protected final DependencyResolver getDependencyResolver()
+    {
+        return new DependencyResolver( repoSystem, repoSession, projectRepos, artifactHandler );
+    }
+
     /**
      * @return a {@code Set} of dependencies which may be extracted and otherwise included in other artifacts. Never
      *         {@code null}. This excludes artifacts of the {@code EXCLUDED_DEPENDENCY_SCOPES} scopes.
      */
     protected Set<Artifact> getRelevantCompileArtifacts()
     {
-        final List<Artifact> allArtifacts = ( List<Artifact> ) project.getCompileArtifacts();
-        final Set<Artifact> results = filterOutIrrelevantArtifacts( allArtifacts );
-        return results;
+        final List<Artifact> allArtifacts = project.getCompileArtifacts();
+        return filterOutIrrelevantArtifacts( allArtifacts );
     }
 
     /**
