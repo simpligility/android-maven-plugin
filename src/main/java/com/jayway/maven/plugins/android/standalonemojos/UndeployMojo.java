@@ -17,6 +17,8 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.common.AndroidExtension;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -27,7 +29,7 @@ import java.io.File;
  *
  * @author hugo.josefson@jayway.com
  * @goal undeploy
- * @requiresProject false
+ * @requiresProject true
  */
 public class UndeployMojo extends AbstractAndroidMojo
 {
@@ -60,33 +62,40 @@ public class UndeployMojo extends AbstractAndroidMojo
      */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        String packageToUndeploy = packageName;
-        if ( packageToUndeploy != null && ! "".equals( packageToUndeploy ) && ! "null".equals( packageToUndeploy ) )
+        if ( project.getPackaging().equals( AndroidExtension.APK ) ) 
         {
-            undeployApk( packageToUndeploy );
-        }
-        else
-        {
-            if ( file != null )
+            String packageToUndeploy = packageName;
+            if ( packageToUndeploy != null && ! "".equals( packageToUndeploy ) && ! "null".equals( packageToUndeploy ) )
             {
-                undeployApk( file );
+                undeployApk( packageToUndeploy );
             }
             else
             {
-                if ( ! SUPPORTED_PACKAGING_TYPES.contains( project.getPackaging() ) )
+                if ( file != null )
                 {
-                    getLog().info( "Skipping undeploy on " + project.getPackaging() );
-                    getLog().info( "Execute undeploy within an Maven Android project or specify package with e.g. "
-                            + "-Dandroid.package=com.simpligility.android.helloflashlight" );
-                    return;
+                    undeployApk( file );
                 }
-
-                packageToUndeploy = renameManifestPackage != null
-                    ? renameManifestPackage
-                    : extractPackageNameFromAndroidManifest( androidManifestFile );
-
-                undeployApk( packageToUndeploy );
+                else
+                {
+                    if ( ! SUPPORTED_PACKAGING_TYPES.contains( project.getPackaging() ) )
+                    {
+                        getLog().info( "Skipping undeploy on " + project.getPackaging() );
+                        getLog().info( "Execute undeploy within an Maven Android project or specify package with e.g. "
+                                + "-Dandroid.package=com.simpligility.android.helloflashlight" );
+                    } 
+                    else
+                    {
+                        packageToUndeploy = renameManifestPackage != null
+                            ? renameManifestPackage
+                            : extractPackageNameFromAndroidManifest( androidManifestFile );
+                        undeployApk( packageToUndeploy );
+                    }
+                }
             }
+        }
+        else 
+        {
+            getLog().info( "Skipping undeploy on project with packaging " + project.getPackaging() );
         }
 
     }
