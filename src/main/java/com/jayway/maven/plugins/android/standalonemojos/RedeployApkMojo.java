@@ -27,10 +27,10 @@ import java.io.File;
  * Redeploys the built apk file, or another specified apk, to a connected device.
  * This simply tries to undeploy the APK and re-deploy it.
  *
- * @author clement.escoffier@akquinet.de
- * @goal redeploy
+ * @author Manfred Moser <manfred@simpligility.com>
+ * 
+ * @goal redeploy-apk
  * @requiresProject false
- * @requiresDependencyResolution runtime
  */
 public class RedeployApkMojo extends AbstractAndroidMojo
 {
