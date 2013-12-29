@@ -27,9 +27,10 @@ import java.io.File;
 /**
  * Undeploys the built apk file, or another specified apk, from a connected device.<br/>
  *
- * @author hugo.josefson@jayway.com
- * @goal undeploy
- * @requiresProject true
+ * @author Manfred Moser <manfred@simpligility.com>
+ * 
+ * @goal undeploy-apk
+ * @requiresProject false
  */
 public class UndeployApkMojo extends AbstractAndroidMojo
 {

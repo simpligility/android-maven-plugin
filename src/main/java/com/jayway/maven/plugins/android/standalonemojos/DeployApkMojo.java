@@ -27,11 +27,10 @@ import java.io.File;
  * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on a project
  * with instrumentation tests.
  *
- * @author hugo.josefson@jayway.com
- * @goal deploy
+ * @author Manfred Moser <manfred@simpligility.com>
+ * 
+ * @goal deploy-apk
  * @requiresProject false
- * @phase pre-integration-test
- * @requiresDependencyResolution runtime
  */
 public class DeployApkMojo extends AbstractAndroidMojo
 {
