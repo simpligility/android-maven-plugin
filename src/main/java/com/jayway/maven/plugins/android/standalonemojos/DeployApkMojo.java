@@ -17,6 +17,11 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.config.ConfigHandler;
+import com.jayway.maven.plugins.android.config.ConfigPojo;
+import com.jayway.maven.plugins.android.config.PullParameter;
+import com.jayway.maven.plugins.android.configuration.DeployApk;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -34,14 +39,26 @@ import java.io.File;
  */
 public class DeployApkMojo extends AbstractAndroidMojo
 {
+    @ConfigPojo
+    protected DeployApk deployApk;
 
     /**
-     * Optionally used to specify a different apk file to deploy to a connected emulator or usb device, instead of the
-     * built apk from this project.
-     *
-     * @parameter expression="${android.file}"
-     */
-    private File file;
+     * @parameter expression="${android.deployApk.apkFile}"
+     * @optional
+    */
+    private File apkFile;
+
+    @PullParameter
+    private File parsedApkFile;
+
+    /**
+     * @parameter expression="${android.deployApk.packageName}"
+     * @optional
+    */
+    private String packageName;
+
+    @PullParameter
+    private String parsedPackageName;
 
     /**
      * Deploy the app to the attached devices and emulators.
@@ -51,13 +68,17 @@ public class DeployApkMojo extends AbstractAndroidMojo
      */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        if ( file == null )
+        ConfigHandler configHandler = new ConfigHandler( this, this.session, this.execution );
+        configHandler.parseConfiguration();
+        
+        if ( parsedApkFile != null && parsedApkFile.isFile() )
         {
-            deployBuiltApk();
-        }
-        else
+            getLog().debug( "Deploying with apkFile " + parsedApkFile );
+            deployApk( parsedApkFile );
+        } 
+        else 
         {
-            deployApk( file );
+            throw new MojoFailureException( "Insufficient parameters ... add more " );
         }
     }
 

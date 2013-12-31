@@ -17,8 +17,12 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.common.AndroidExtension;
+import com.jayway.maven.plugins.android.config.ConfigHandler;
+import com.jayway.maven.plugins.android.config.ConfigPojo;
+import com.jayway.maven.plugins.android.config.PullParameter;
+import com.jayway.maven.plugins.android.configuration.DeployApk;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -34,27 +38,26 @@ import java.io.File;
  */
 public class UndeployApkMojo extends AbstractAndroidMojo
 {
+    @ConfigPojo
+    protected DeployApk deployApk;
 
     /**
-     * Optionally used to specify a different apk package to undeploy from a connected emulator or usb device, instead
-     * of the built apk from this project.
-     *
-     * @parameter property="package" expression="${android.package}" default-value="null"
-     */
+     * @parameter expression="${android.deployApk.apkFile}"
+     * @optional
+    */
+    private File apkFile;
+
+    @PullParameter
+    private File parsedApkFile;
+
+    /**
+     * @parameter expression="${android.deployApk.packageName}"
+     * @optional
+    */
     private String packageName;
 
-    public void setPackage( String packageName )
-    {
-        this.packageName = packageName;
-    }
-
-    /**
-     * Optionally used to specify a different apk file to undeploy from a connected emulator or usb device, instead of
-     * the built apk from this project.
-     *
-     * @parameter expression="${android.file}"
-     */
-    private File file;
+    @PullParameter
+    private String parsedPackageName;
 
     /**
      *
@@ -63,41 +66,22 @@ public class UndeployApkMojo extends AbstractAndroidMojo
      */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        if ( project.getPackaging().equals( AndroidExtension.APK ) ) 
+        ConfigHandler configHandler = new ConfigHandler( this, this.session, this.execution );
+        configHandler.parseConfiguration();
+        
+        if ( StringUtils.isNotBlank( parsedPackageName ) ) 
         {
-            String packageToUndeploy = packageName;
-            if ( packageToUndeploy != null && ! "".equals( packageToUndeploy ) && ! "null".equals( packageToUndeploy ) )
-            {
-                undeployApk( packageToUndeploy );
-            }
-            else
-            {
-                if ( file != null )
-                {
-                    undeployApk( file );
-                }
-                else
-                {
-                    if ( ! SUPPORTED_PACKAGING_TYPES.contains( project.getPackaging() ) )
-                    {
-                        getLog().info( "Skipping undeploy on " + project.getPackaging() );
-                        getLog().info( "Execute undeploy within an Maven Android project or specify package with e.g. "
-                                + "-Dandroid.package=com.simpligility.android.helloflashlight" );
-                    } 
-                    else
-                    {
-                        packageToUndeploy = renameManifestPackage != null
-                            ? renameManifestPackage
-                            : extractPackageNameFromAndroidManifest( androidManifestFile );
-                        undeployApk( packageToUndeploy );
-                    }
-                }
-            }
-        }
+            getLog().debug( "Undeploying with packageName " + parsedPackageName );
+            undeployApk( parsedPackageName ); 
+        } 
+        else if ( parsedApkFile != null && parsedApkFile.isFile() )
+        {
+            getLog().debug( "Undeploying with apkFile " + parsedApkFile );
+            undeployApk( parsedApkFile );
+        } 
         else 
         {
-            getLog().info( "Skipping undeploy on project with packaging " + project.getPackaging() );
+            throw new MojoFailureException( "Insufficient parameters ... add more " );
         }
-
     }
 }
