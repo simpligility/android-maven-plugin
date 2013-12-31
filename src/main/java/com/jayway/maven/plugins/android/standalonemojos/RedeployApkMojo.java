@@ -18,13 +18,19 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.config.ConfigHandler;
+import com.jayway.maven.plugins.android.config.ConfigPojo;
+import com.jayway.maven.plugins.android.config.PullParameter;
+import com.jayway.maven.plugins.android.configuration.DeployApk;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import java.io.File;
 
 /**
- * Redeploys the built apk file, or another specified apk, to a connected device.
+ * Redeploys an apk file.
  * This simply tries to undeploy the APK and re-deploy it.
  *
  * @author Manfred Moser <manfred@simpligility.com>
@@ -34,32 +40,55 @@ import java.io.File;
  */
 public class RedeployApkMojo extends AbstractAndroidMojo
 {
+    @ConfigPojo
+    protected DeployApk deployApk;
 
     /**
-     * Optionally used to specify a different apk file to deploy to a connected emulator or usb device, instead of the
-     * built apk from this project.
-     *
-     * @parameter expression="${android.file}"
-     */
-    private File file;
+     * @parameter expression="${android.deployApk.apkFile}"
+     * @optional
+    */
+    private File apkFile;
+
+    @PullParameter
+    private File parsedApkFile;
+
+    /**
+     * @parameter expression="${android.deployApk.packageName}"
+     * @optional
+    */
+    private String packageName;
+
+    @PullParameter
+    private String parsedPackageName;
 
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        if ( file == null )
+        ConfigHandler configHandler = new ConfigHandler( this, this.session, this.execution );
+        configHandler.parseConfiguration();
+        
+        if ( StringUtils.isNotBlank( parsedPackageName ) ) 
         {
-            if ( ! SUPPORTED_PACKAGING_TYPES.contains( project.getPackaging() ) )
-            {
-                getLog().info( "Skipping redeploy on " + project.getPackaging() );
-                return;
-            }
-            String packageToUndeploy = extractPackageNameFromAndroidManifest( androidManifestFile );
-            undeployApk( packageToUndeploy );
-            deployBuiltApk();
+            getLog().debug( "Undeploying with packageName " + parsedPackageName );
+            undeployApk( parsedPackageName ); 
+        } 
+        else if ( parsedApkFile != null && parsedApkFile.isFile() )
+        {
+            getLog().debug( "Undeploying with apkFile " + parsedApkFile );
+            undeployApk( parsedApkFile );
+        } 
+        else 
+        {
+            throw new MojoFailureException( "Insufficient parameters ... add more " );
         }
-        else
+        
+        if ( parsedApkFile != null && parsedApkFile.isFile() )
         {
-            undeployApk( file );
-            deployApk( file );
+            getLog().debug( "Deploying with apkFile " + parsedApkFile );
+            deployApk( parsedApkFile );
+        } 
+        else 
+        {
+            throw new MojoFailureException( "Insufficient parameters ... add more " );
         }
     }
 
