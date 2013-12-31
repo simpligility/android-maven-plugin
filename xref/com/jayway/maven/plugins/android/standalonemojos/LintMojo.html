@@ -372,7 +372,7 @@
 <a class="jxr_linenumber" name="362" href="#362">362</a>     @Override
 <a class="jxr_linenumber" name="363" href="#363">363</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> execute() <strong class="jxr_keyword">throws</strong> MojoExecutionException, MojoFailureException
 <a class="jxr_linenumber" name="364" href="#364">364</a>     {
-<a class="jxr_linenumber" name="365" href="#365">365</a>         <a href="../../../../../../com/jayway/maven/plugins/android/config/ConfigHandler.html">ConfigHandler</a> configHandler = <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/config/ConfigHandler.html">ConfigHandler</a>( <strong class="jxr_keyword">this</strong> );
+<a class="jxr_linenumber" name="365" href="#365">365</a>         <a href="../../../../../../com/jayway/maven/plugins/android/config/ConfigHandler.html">ConfigHandler</a> configHandler = <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/config/ConfigHandler.html">ConfigHandler</a>( <strong class="jxr_keyword">this</strong>, <strong class="jxr_keyword">this</strong>.session, <strong class="jxr_keyword">this</strong>.execution );
 <a class="jxr_linenumber" name="366" href="#366">366</a>         configHandler.parseConfiguration();
 <a class="jxr_linenumber" name="367" href="#367">367</a>         getLog().debug( <span class="jxr_string">"Parsed values for Android Lint invocation: "</span> );
 <a class="jxr_linenumber" name="368" href="#368">368</a>         getLog().debug( <span class="jxr_string">"failOnError:"</span> + parsedFailOnError );

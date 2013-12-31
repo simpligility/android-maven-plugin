@@ -54,7 +54,7 @@
 <a class="jxr_linenumber" name="44" href="#44">44</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testDefaultConfig () <strong class="jxr_keyword">throws</strong> Exception
 <a class="jxr_linenumber" name="45" href="#45">45</a>      {
 <a class="jxr_linenumber" name="46" href="#46">46</a>          ZipalignMojo mojo = createMojo( <span class="jxr_string">"zipalign-config-project0"</span> );
-<a class="jxr_linenumber" name="47" href="#47">47</a>          <strong class="jxr_keyword">final</strong> ConfigHandler cfh = <strong class="jxr_keyword">new</strong> ConfigHandler( mojo );
+<a class="jxr_linenumber" name="47" href="#47">47</a>          <strong class="jxr_keyword">final</strong> ConfigHandler cfh = <strong class="jxr_keyword">new</strong> ConfigHandler( mojo, <strong class="jxr_keyword">this</strong>.session, <strong class="jxr_keyword">this</strong>.execution );
 <a class="jxr_linenumber" name="48" href="#48">48</a>          cfh.parseConfiguration();
 <a class="jxr_linenumber" name="49" href="#49">49</a>  
 <a class="jxr_linenumber" name="50" href="#50">50</a>          Boolean skip = Whitebox.getInternalState( mojo, <span class="jxr_string">"parsedSkip"</span> );
@@ -85,7 +85,7 @@
 <a class="jxr_linenumber" name="75" href="#75">75</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testConfigParse () <strong class="jxr_keyword">throws</strong> Exception
 <a class="jxr_linenumber" name="76" href="#76">76</a>      {
 <a class="jxr_linenumber" name="77" href="#77">77</a>          ZipalignMojo mojo = createMojo( <span class="jxr_string">"zipalign-config-project1"</span> );
-<a class="jxr_linenumber" name="78" href="#78">78</a>          <strong class="jxr_keyword">final</strong> ConfigHandler cfh = <strong class="jxr_keyword">new</strong> ConfigHandler( mojo );
+<a class="jxr_linenumber" name="78" href="#78">78</a>          <strong class="jxr_keyword">final</strong> ConfigHandler cfh = <strong class="jxr_keyword">new</strong> ConfigHandler( mojo, <strong class="jxr_keyword">this</strong>.session, <strong class="jxr_keyword">this</strong>.execution );
 <a class="jxr_linenumber" name="79" href="#79">79</a>          cfh.parseConfiguration();
 <a class="jxr_linenumber" name="80" href="#80">80</a>  
 <a class="jxr_linenumber" name="81" href="#81">81</a>          Boolean skip = Whitebox.getInternalState( mojo, <span class="jxr_string">"parsedSkip"</span> );

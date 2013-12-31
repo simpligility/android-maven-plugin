@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2008 - 2013 simpligility technologies inc.</copyright>
     <item>
-      <title>File: 89,
-             Errors: 17487,
+      <title>File: 92,
+             Errors: 17598,
              Warnings: 0,
              Infos: 0
       </title>
@@ -153,7 +153,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  449
+                  450
                 </td>
               </tr>
                           <tr>
@@ -200,6 +200,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.phase01generatesources.ResourceClassGenerator.java">com/jayway/maven/plugins/android/phase01generatesources/ResourceClassGenerator.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  107
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.standalonemojos.PushMojo.java">com/jayway/maven/plugins/android/standalonemojos/PushMojo.java</a>
                 </td>
                 <td>
@@ -209,7 +223,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  113
+                  114
                 </td>
               </tr>
                           <tr>
@@ -223,7 +237,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  965
+                  912
                 </td>
               </tr>
                           <tr>
@@ -237,7 +251,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  177
+                  178
                 </td>
               </tr>
                           <tr>
@@ -307,7 +321,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  452
+                  439
                 </td>
               </tr>
                           <tr>
@@ -363,7 +377,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  405
+                  392
                 </td>
               </tr>
                           <tr>
@@ -433,7 +447,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  839
+                  840
                 </td>
               </tr>
                           <tr>
@@ -545,7 +559,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  177
+                  178
                 </td>
               </tr>
                           <tr>
@@ -615,7 +629,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  564
+                  549
                 </td>
               </tr>
                           <tr>
@@ -671,7 +685,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  904
+                  905
                 </td>
               </tr>
                           <tr>
@@ -704,6 +718,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.common.DependencyResolver.java">com/jayway/maven/plugins/android/common/DependencyResolver.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  72
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.AbstractAndroidMojo.java">com/jayway/maven/plugins/android/AbstractAndroidMojo.java</a>
                 </td>
                 <td>
@@ -713,7 +741,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  843
+                  870
                 </td>
               </tr>
                           <tr>
@@ -741,7 +769,21 @@ under the License.
                   0
                 </td>
                 <td>
-                  859
+                  860
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.phase01generatesources.MavenILogger.java">com/jayway/maven/plugins/android/phase01generatesources/MavenILogger.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  78
                 </td>
               </tr>
                           <tr>
@@ -867,7 +909,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  1108
+                  979
                 </td>
               </tr>
                           <tr>
@@ -993,7 +1035,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  155
+                  156
                 </td>
               </tr>
                           <tr>
@@ -1147,7 +1189,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  60
+                  62
                 </td>
               </tr>
                           <tr>
@@ -1175,7 +1217,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  253
+                  293
                 </td>
               </tr>
                           <tr>

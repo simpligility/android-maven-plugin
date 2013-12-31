@@ -79,7 +79,7 @@
 <a class="jxr_linenumber" name="69" href="#69">69</a>  	{
 <a class="jxr_linenumber" name="70" href="#70">70</a>  		<strong class="jxr_keyword">final</strong> ApkMojo mojo = createMojo( <strong class="jxr_keyword">this</strong>.projectName );
 <a class="jxr_linenumber" name="71" href="#71">71</a>  
-<a class="jxr_linenumber" name="72" href="#72">72</a>  		<strong class="jxr_keyword">final</strong> ConfigHandler cfh = <strong class="jxr_keyword">new</strong> ConfigHandler( mojo );
+<a class="jxr_linenumber" name="72" href="#72">72</a>          <strong class="jxr_keyword">final</strong> ConfigHandler cfh = <strong class="jxr_keyword">new</strong> ConfigHandler( mojo, <strong class="jxr_keyword">this</strong>.session, <strong class="jxr_keyword">this</strong>.execution );
 <a class="jxr_linenumber" name="73" href="#73">73</a>  
 <a class="jxr_linenumber" name="74" href="#74">74</a>  		cfh.parseConfiguration();
 <a class="jxr_linenumber" name="75" href="#75">75</a>  

@@ -389,63 +389,54 @@
 <a class="jxr_linenumber" name="379" href="#379">379</a>                 commands.add( resOverlayDir.getAbsolutePath() );
 <a class="jxr_linenumber" name="380" href="#380">380</a>             }
 <a class="jxr_linenumber" name="381" href="#381">381</a>         }
-<a class="jxr_linenumber" name="382" href="#382">382</a>         <strong class="jxr_keyword">if</strong> ( combinedRes.exists() )
+<a class="jxr_linenumber" name="382" href="#382">382</a>         <strong class="jxr_keyword">if</strong> ( resourceDirectory.exists() )
 <a class="jxr_linenumber" name="383" href="#383">383</a>         {
 <a class="jxr_linenumber" name="384" href="#384">384</a>             commands.add( <span class="jxr_string">"-S"</span> );
-<a class="jxr_linenumber" name="385" href="#385">385</a>             commands.add( combinedRes.getAbsolutePath() );
+<a class="jxr_linenumber" name="385" href="#385">385</a>             commands.add( resourceDirectory.getAbsolutePath() );
 <a class="jxr_linenumber" name="386" href="#386">386</a>         }
-<a class="jxr_linenumber" name="387" href="#387">387</a>         <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="387" href="#387">387</a>         <strong class="jxr_keyword">for</strong> ( Artifact apkLibraryArtifact : getAllRelevantDependencyArtifacts() )
 <a class="jxr_linenumber" name="388" href="#388">388</a>         {
-<a class="jxr_linenumber" name="389" href="#389">389</a>             <strong class="jxr_keyword">if</strong> ( resourceDirectory.exists() )
+<a class="jxr_linenumber" name="389" href="#389">389</a>             <strong class="jxr_keyword">if</strong> ( apkLibraryArtifact.getType().equals( APKLIB ) )
 <a class="jxr_linenumber" name="390" href="#390">390</a>             {
-<a class="jxr_linenumber" name="391" href="#391">391</a>                 commands.add( <span class="jxr_string">"-S"</span> );
-<a class="jxr_linenumber" name="392" href="#392">392</a>                 commands.add( resourceDirectory.getAbsolutePath() );
-<a class="jxr_linenumber" name="393" href="#393">393</a>             }
-<a class="jxr_linenumber" name="394" href="#394">394</a>         }
-<a class="jxr_linenumber" name="395" href="#395">395</a>         <strong class="jxr_keyword">for</strong> ( Artifact apkLibraryArtifact : getAllRelevantDependencyArtifacts() )
-<a class="jxr_linenumber" name="396" href="#396">396</a>         {
-<a class="jxr_linenumber" name="397" href="#397">397</a>             <strong class="jxr_keyword">if</strong> ( apkLibraryArtifact.getType().equals( APKLIB ) )
-<a class="jxr_linenumber" name="398" href="#398">398</a>             {
-<a class="jxr_linenumber" name="399" href="#399">399</a>                 String apklibResDirectory = getLibraryUnpackDirectory( apkLibraryArtifact ) + <span class="jxr_string">"/res"</span>;
-<a class="jxr_linenumber" name="400" href="#400">400</a>                 <strong class="jxr_keyword">if</strong> ( <strong class="jxr_keyword">new</strong> File( apklibResDirectory ).exists() )
-<a class="jxr_linenumber" name="401" href="#401">401</a>                 {
-<a class="jxr_linenumber" name="402" href="#402">402</a>                     commands.add( <span class="jxr_string">"-S"</span> );
-<a class="jxr_linenumber" name="403" href="#403">403</a>                     commands.add( apklibResDirectory );
-<a class="jxr_linenumber" name="404" href="#404">404</a>                 }
-<a class="jxr_linenumber" name="405" href="#405">405</a>             }
-<a class="jxr_linenumber" name="406" href="#406">406</a>         }
-<a class="jxr_linenumber" name="407" href="#407">407</a>         commands.add( <span class="jxr_string">"--auto-add-overlay"</span> );
-<a class="jxr_linenumber" name="408" href="#408">408</a>         <strong class="jxr_keyword">if</strong> ( assetsDirectory.exists() )
-<a class="jxr_linenumber" name="409" href="#409">409</a>         {
-<a class="jxr_linenumber" name="410" href="#410">410</a>             commands.add( <span class="jxr_string">"-A"</span> );
-<a class="jxr_linenumber" name="411" href="#411">411</a>             commands.add( assetsDirectory.getAbsolutePath() );
-<a class="jxr_linenumber" name="412" href="#412">412</a>         }
-<a class="jxr_linenumber" name="413" href="#413">413</a>         <strong class="jxr_keyword">if</strong> ( extractedDependenciesAssets.exists() )
+<a class="jxr_linenumber" name="391" href="#391">391</a>                 String apklibResDirectory = getLibraryUnpackDirectory( apkLibraryArtifact ) + <span class="jxr_string">"/res"</span>;
+<a class="jxr_linenumber" name="392" href="#392">392</a>                 <strong class="jxr_keyword">if</strong> ( <strong class="jxr_keyword">new</strong> File( apklibResDirectory ).exists() )
+<a class="jxr_linenumber" name="393" href="#393">393</a>                 {
+<a class="jxr_linenumber" name="394" href="#394">394</a>                     commands.add( <span class="jxr_string">"-S"</span> );
+<a class="jxr_linenumber" name="395" href="#395">395</a>                     commands.add( apklibResDirectory );
+<a class="jxr_linenumber" name="396" href="#396">396</a>                 }
+<a class="jxr_linenumber" name="397" href="#397">397</a>             }
+<a class="jxr_linenumber" name="398" href="#398">398</a>         }
+<a class="jxr_linenumber" name="399" href="#399">399</a>         commands.add( <span class="jxr_string">"--auto-add-overlay"</span> );
+<a class="jxr_linenumber" name="400" href="#400">400</a> 
+<a class="jxr_linenumber" name="401" href="#401">401</a>         <em class="jxr_comment">// NB aapt only accepts a single assets parameter - combinedAssets is a merge of all assets</em>
+<a class="jxr_linenumber" name="402" href="#402">402</a>         <strong class="jxr_keyword">if</strong> ( combinedAssets.exists() )
+<a class="jxr_linenumber" name="403" href="#403">403</a>         {
+<a class="jxr_linenumber" name="404" href="#404">404</a>             getLog().debug( <span class="jxr_string">"Adding assets folder : "</span> + combinedAssets );
+<a class="jxr_linenumber" name="405" href="#405">405</a>             commands.add( <span class="jxr_string">"-A"</span> );
+<a class="jxr_linenumber" name="406" href="#406">406</a>             commands.add( combinedAssets.getAbsolutePath() );
+<a class="jxr_linenumber" name="407" href="#407">407</a>         }
+<a class="jxr_linenumber" name="408" href="#408">408</a> 
+<a class="jxr_linenumber" name="409" href="#409">409</a>         commands.add( <span class="jxr_string">"-I"</span> );
+<a class="jxr_linenumber" name="410" href="#410">410</a>         commands.add( androidJar.getAbsolutePath() );
+<a class="jxr_linenumber" name="411" href="#411">411</a>         commands.add( <span class="jxr_string">"-F"</span> );
+<a class="jxr_linenumber" name="412" href="#412">412</a>         commands.add( outputFile.getAbsolutePath() );
+<a class="jxr_linenumber" name="413" href="#413">413</a>         <strong class="jxr_keyword">if</strong> ( StringUtils.isNotBlank( configurations ) )
 <a class="jxr_linenumber" name="414" href="#414">414</a>         {
-<a class="jxr_linenumber" name="415" href="#415">415</a>             commands.add( <span class="jxr_string">"-A"</span> );
-<a class="jxr_linenumber" name="416" href="#416">416</a>             commands.add( extractedDependenciesAssets.getAbsolutePath() );
+<a class="jxr_linenumber" name="415" href="#415">415</a>             commands.add( <span class="jxr_string">"-c"</span> );
+<a class="jxr_linenumber" name="416" href="#416">416</a>             commands.add( configurations );
 <a class="jxr_linenumber" name="417" href="#417">417</a>         }
-<a class="jxr_linenumber" name="418" href="#418">418</a>         commands.add( <span class="jxr_string">"-I"</span> );
-<a class="jxr_linenumber" name="419" href="#419">419</a>         commands.add( androidJar.getAbsolutePath() );
-<a class="jxr_linenumber" name="420" href="#420">420</a>         commands.add( <span class="jxr_string">"-F"</span> );
-<a class="jxr_linenumber" name="421" href="#421">421</a>         commands.add( outputFile.getAbsolutePath() );
-<a class="jxr_linenumber" name="422" href="#422">422</a>         <strong class="jxr_keyword">if</strong> ( StringUtils.isNotBlank( configurations ) )
-<a class="jxr_linenumber" name="423" href="#423">423</a>         {
-<a class="jxr_linenumber" name="424" href="#424">424</a>             commands.add( <span class="jxr_string">"-c"</span> );
-<a class="jxr_linenumber" name="425" href="#425">425</a>             commands.add( configurations );
+<a class="jxr_linenumber" name="418" href="#418">418</a>         getLog().info( getAndroidSdk().getAaptPath() + <span class="jxr_string">" "</span> + commands.toString() );
+<a class="jxr_linenumber" name="419" href="#419">419</a>         <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="420" href="#420">420</a>         {
+<a class="jxr_linenumber" name="421" href="#421">421</a>             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
+<a class="jxr_linenumber" name="422" href="#422">422</a>         }
+<a class="jxr_linenumber" name="423" href="#423">423</a>         <strong class="jxr_keyword">catch</strong> ( ExecutionException e )
+<a class="jxr_linenumber" name="424" href="#424">424</a>         {
+<a class="jxr_linenumber" name="425" href="#425">425</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">""</span>, e );
 <a class="jxr_linenumber" name="426" href="#426">426</a>         }
-<a class="jxr_linenumber" name="427" href="#427">427</a>         getLog().info( getAndroidSdk().getAaptPath() + <span class="jxr_string">" "</span> + commands.toString() );
-<a class="jxr_linenumber" name="428" href="#428">428</a>         <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="429" href="#429">429</a>         {
-<a class="jxr_linenumber" name="430" href="#430">430</a>             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
-<a class="jxr_linenumber" name="431" href="#431">431</a>         }
-<a class="jxr_linenumber" name="432" href="#432">432</a>         <strong class="jxr_keyword">catch</strong> ( ExecutionException e )
-<a class="jxr_linenumber" name="433" href="#433">433</a>         {
-<a class="jxr_linenumber" name="434" href="#434">434</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">""</span>, e );
-<a class="jxr_linenumber" name="435" href="#435">435</a>         }
-<a class="jxr_linenumber" name="436" href="#436">436</a>     }
-<a class="jxr_linenumber" name="437" href="#437">437</a> 
-<a class="jxr_linenumber" name="438" href="#438">438</a> }
+<a class="jxr_linenumber" name="427" href="#427">427</a>     }
+<a class="jxr_linenumber" name="428" href="#428">428</a> 
+<a class="jxr_linenumber" name="429" href="#429">429</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

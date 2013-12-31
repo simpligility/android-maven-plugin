@@ -59,7 +59,7 @@
 <a class="jxr_linenumber" name="49" href="#49">49</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testDefaultLintConfig() <strong class="jxr_keyword">throws</strong> Exception
 <a class="jxr_linenumber" name="50" href="#50">50</a>      {
 <a class="jxr_linenumber" name="51" href="#51">51</a>          LintMojo mojo = createMojo( <span class="jxr_string">"lint-config-project0"</span> );
-<a class="jxr_linenumber" name="52" href="#52">52</a>          <strong class="jxr_keyword">final</strong> ConfigHandler cfh = <strong class="jxr_keyword">new</strong> ConfigHandler( mojo );
+<a class="jxr_linenumber" name="52" href="#52">52</a>          <strong class="jxr_keyword">final</strong> ConfigHandler cfh = <strong class="jxr_keyword">new</strong> ConfigHandler( mojo, <strong class="jxr_keyword">this</strong>.session, <strong class="jxr_keyword">this</strong>.execution );
 <a class="jxr_linenumber" name="53" href="#53">53</a>          cfh.parseConfiguration();
 <a class="jxr_linenumber" name="54" href="#54">54</a>  
 <a class="jxr_linenumber" name="55" href="#55">55</a>          Boolean lintSkip = Whitebox.getInternalState( mojo, <span class="jxr_string">"parsedSkip"</span> );
@@ -75,7 +75,7 @@
 <a class="jxr_linenumber" name="65" href="#65">65</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testDefaultUnskippedLintConfig() <strong class="jxr_keyword">throws</strong> Exception
 <a class="jxr_linenumber" name="66" href="#66">66</a>      {
 <a class="jxr_linenumber" name="67" href="#67">67</a>          LintMojo mojo = createMojo( <span class="jxr_string">"lint-config-project1"</span> );
-<a class="jxr_linenumber" name="68" href="#68">68</a>          <strong class="jxr_keyword">final</strong> ConfigHandler cfh = <strong class="jxr_keyword">new</strong> ConfigHandler( mojo );
+<a class="jxr_linenumber" name="68" href="#68">68</a>          <strong class="jxr_keyword">final</strong> ConfigHandler cfh = <strong class="jxr_keyword">new</strong> ConfigHandler( mojo, <strong class="jxr_keyword">this</strong>.session, <strong class="jxr_keyword">this</strong>.execution );
 <a class="jxr_linenumber" name="69" href="#69">69</a>          cfh.parseConfiguration();
 <a class="jxr_linenumber" name="70" href="#70">70</a>          MavenProject project = Whitebox.getInternalState( mojo, <span class="jxr_string">"project"</span> );
 <a class="jxr_linenumber" name="71" href="#71">71</a>  
@@ -148,7 +148,7 @@
 <a class="jxr_linenumber" name="138" href="#138">138</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCustomLintConfig() <strong class="jxr_keyword">throws</strong> Exception
 <a class="jxr_linenumber" name="139" href="#139">139</a>     {
 <a class="jxr_linenumber" name="140" href="#140">140</a>         LintMojo mojo = createMojo( <span class="jxr_string">"lint-config-project2"</span> );
-<a class="jxr_linenumber" name="141" href="#141">141</a>         <strong class="jxr_keyword">final</strong> ConfigHandler cfh = <strong class="jxr_keyword">new</strong> ConfigHandler( mojo );
+<a class="jxr_linenumber" name="141" href="#141">141</a>         <strong class="jxr_keyword">final</strong> ConfigHandler cfh = <strong class="jxr_keyword">new</strong> ConfigHandler( mojo, <strong class="jxr_keyword">this</strong>.session, <strong class="jxr_keyword">this</strong>.execution );
 <a class="jxr_linenumber" name="142" href="#142">142</a>         cfh.parseConfiguration();
 <a class="jxr_linenumber" name="143" href="#143">143</a> 
 <a class="jxr_linenumber" name="144" href="#144">144</a>         Boolean lintSkip = Whitebox.getInternalState( mojo, <span class="jxr_string">"parsedSkip"</span> );
@@ -232,134 +232,136 @@
 <a class="jxr_linenumber" name="222" href="#222">222</a>                     }
 <a class="jxr_linenumber" name="223" href="#223">223</a>                 } );
 <a class="jxr_linenumber" name="224" href="#224">224</a> 
-<a class="jxr_linenumber" name="225" href="#225">225</a>         PowerMock.expectNew( ConfigHandler.<strong class="jxr_keyword">class</strong>, mojo ).andReturn( EasyMock.createNiceMock( ConfigHandler.<strong class="jxr_keyword">class</strong> ) );
-<a class="jxr_linenumber" name="226" href="#226">226</a>         Capture&lt; List&lt; String &gt; &gt; capturedArgument = <strong class="jxr_keyword">new</strong> Capture&lt; List&lt; String &gt; &gt;();
-<a class="jxr_linenumber" name="227" href="#227">227</a> 
-<a class="jxr_linenumber" name="228" href="#228">228</a>         mockExecutor.setLogger( EasyMock.anyObject( Log.<strong class="jxr_keyword">class</strong> ) );
-<a class="jxr_linenumber" name="229" href="#229">229</a>         mockExecutor.executeCommand( EasyMock.anyObject( String.<strong class="jxr_keyword">class</strong> ), EasyMock.capture( capturedArgument ),
-<a class="jxr_linenumber" name="230" href="#230">230</a>                 EasyMock.eq( false ) );
-<a class="jxr_linenumber" name="231" href="#231">231</a>         PowerMock.replay( project );
-<a class="jxr_linenumber" name="232" href="#232">232</a>         PowerMock.replay( mockExecutor );
-<a class="jxr_linenumber" name="233" href="#233">233</a> 
-<a class="jxr_linenumber" name="234" href="#234">234</a>         mojo.execute();
-<a class="jxr_linenumber" name="235" href="#235">235</a> 
-<a class="jxr_linenumber" name="236" href="#236">236</a>         PowerMock.verify( mockExecutor );
-<a class="jxr_linenumber" name="237" href="#237">237</a>         List&lt; String &gt; parameters = capturedArgument.getValue();
-<a class="jxr_linenumber" name="238" href="#238">238</a>         List&lt; String &gt; parametersExpected = <strong class="jxr_keyword">new</strong> ArrayList&lt; String &gt;();
-<a class="jxr_linenumber" name="239" href="#239">239</a>         parametersExpected.add( <span class="jxr_string">"--showall"</span> );
-<a class="jxr_linenumber" name="240" href="#240">240</a>         parametersExpected.add( <span class="jxr_string">"--xml"</span> );
-<a class="jxr_linenumber" name="241" href="#241">241</a>         parametersExpected.add( projectBaseDir.getAbsolutePath()
-<a class="jxr_linenumber" name="242" href="#242">242</a>                 + FilenameUtils.separatorsToSystem( <span class="jxr_string">"/target/lint-results/lint-results.xml"</span> ) );
-<a class="jxr_linenumber" name="243" href="#243">243</a>         parametersExpected.add( <span class="jxr_string">"--sources"</span> );
-<a class="jxr_linenumber" name="244" href="#244">244</a>         parametersExpected.add( projectBaseDir.getAbsolutePath() + File.separator + <span class="jxr_string">"src"</span> );
-<a class="jxr_linenumber" name="245" href="#245">245</a>         parametersExpected.add( projectBaseDir.getAbsolutePath() );
-<a class="jxr_linenumber" name="246" href="#246">246</a>         parametersExpected.add( <span class="jxr_string">"--exitcode"</span> );
-<a class="jxr_linenumber" name="247" href="#247">247</a>         assertEquals( parametersExpected, parameters );
-<a class="jxr_linenumber" name="248" href="#248">248</a>     }
-<a class="jxr_linenumber" name="249" href="#249">249</a> 
-<a class="jxr_linenumber" name="250" href="#250">250</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testAllLintCommandParametersWithCustomConfig() <strong class="jxr_keyword">throws</strong> Exception
-<a class="jxr_linenumber" name="251" href="#251">251</a>     {
-<a class="jxr_linenumber" name="252" href="#252">252</a>         LintMojo mojo = createMojo( <span class="jxr_string">"lint-config-project2"</span> );
-<a class="jxr_linenumber" name="253" href="#253">253</a> 
-<a class="jxr_linenumber" name="254" href="#254">254</a>         MavenProject project = EasyMock.createNiceMock( MavenProject.<strong class="jxr_keyword">class</strong> );
-<a class="jxr_linenumber" name="255" href="#255">255</a>         Whitebox.setInternalState( mojo, <span class="jxr_string">"project"</span>, project );
-<a class="jxr_linenumber" name="256" href="#256">256</a>         File projectBaseDir = <strong class="jxr_keyword">new</strong> File( <span class="jxr_string">"project/"</span> );
-<a class="jxr_linenumber" name="257" href="#257">257</a>         EasyMock.expect( project.getBasedir() ).andReturn( projectBaseDir );
-<a class="jxr_linenumber" name="258" href="#258">258</a>         <strong class="jxr_keyword">final</strong> CommandExecutor mockExecutor = PowerMock.createMock( CommandExecutor.<strong class="jxr_keyword">class</strong> );
-<a class="jxr_linenumber" name="259" href="#259">259</a>         PowerMock.replace( CommandExecutor.Factory.<strong class="jxr_keyword">class</strong>.getDeclaredMethod( <span class="jxr_string">"createDefaultCommmandExecutor"</span> ) ).with(
-<a class="jxr_linenumber" name="260" href="#260">260</a>                 <strong class="jxr_keyword">new</strong> InvocationHandler()
-<a class="jxr_linenumber" name="261" href="#261">261</a>                 {
-<a class="jxr_linenumber" name="262" href="#262">262</a> 
-<a class="jxr_linenumber" name="263" href="#263">263</a>                     @Override
-<a class="jxr_linenumber" name="264" href="#264">264</a>                     <strong class="jxr_keyword">public</strong> Object invoke( Object proxy, Method method, Object[] args ) <strong class="jxr_keyword">throws</strong> Throwable
-<a class="jxr_linenumber" name="265" href="#265">265</a>                     {
-<a class="jxr_linenumber" name="266" href="#266">266</a>                         <strong class="jxr_keyword">return</strong> mockExecutor;
-<a class="jxr_linenumber" name="267" href="#267">267</a>                     }
-<a class="jxr_linenumber" name="268" href="#268">268</a>                 } );
-<a class="jxr_linenumber" name="269" href="#269">269</a> 
-<a class="jxr_linenumber" name="270" href="#270">270</a>         PowerMock.expectNew( ConfigHandler.<strong class="jxr_keyword">class</strong>, mojo ).andReturn( EasyMock.createNiceMock( ConfigHandler.<strong class="jxr_keyword">class</strong> ) );
-<a class="jxr_linenumber" name="271" href="#271">271</a>         Whitebox.setInternalState( mojo, <span class="jxr_string">"parsedSkip"</span>, Boolean.FALSE );
-<a class="jxr_linenumber" name="272" href="#272">272</a>         Capture&lt; List&lt; String &gt; &gt; capturedArgument = <strong class="jxr_keyword">new</strong> Capture&lt; List&lt; String &gt; &gt;();
-<a class="jxr_linenumber" name="273" href="#273">273</a> 
-<a class="jxr_linenumber" name="274" href="#274">274</a>         mockExecutor.setLogger( EasyMock.anyObject( Log.<strong class="jxr_keyword">class</strong> ) );
-<a class="jxr_linenumber" name="275" href="#275">275</a>         mockExecutor.executeCommand( EasyMock.anyObject( String.<strong class="jxr_keyword">class</strong> ), EasyMock.capture( capturedArgument ),
-<a class="jxr_linenumber" name="276" href="#276">276</a>                 EasyMock.eq( false ) );
-<a class="jxr_linenumber" name="277" href="#277">277</a>         PowerMock.replay( project );
-<a class="jxr_linenumber" name="278" href="#278">278</a>         PowerMock.replay( mockExecutor );
-<a class="jxr_linenumber" name="279" href="#279">279</a> 
-<a class="jxr_linenumber" name="280" href="#280">280</a>         mojo.execute();
+<a class="jxr_linenumber" name="225" href="#225">225</a>         PowerMock.expectNew( ConfigHandler.<strong class="jxr_keyword">class</strong>, mojo, <strong class="jxr_keyword">this</strong>.session, <strong class="jxr_keyword">this</strong>.execution )
+<a class="jxr_linenumber" name="226" href="#226">226</a>             .andReturn( EasyMock.createNiceMock( ConfigHandler.<strong class="jxr_keyword">class</strong> ) );
+<a class="jxr_linenumber" name="227" href="#227">227</a>         Capture&lt; List&lt; String &gt; &gt; capturedArgument = <strong class="jxr_keyword">new</strong> Capture&lt; List&lt; String &gt; &gt;();
+<a class="jxr_linenumber" name="228" href="#228">228</a> 
+<a class="jxr_linenumber" name="229" href="#229">229</a>         mockExecutor.setLogger( EasyMock.anyObject( Log.<strong class="jxr_keyword">class</strong> ) );
+<a class="jxr_linenumber" name="230" href="#230">230</a>         mockExecutor.executeCommand( EasyMock.anyObject( String.<strong class="jxr_keyword">class</strong> ), EasyMock.capture( capturedArgument ),
+<a class="jxr_linenumber" name="231" href="#231">231</a>                 EasyMock.eq( false ) );
+<a class="jxr_linenumber" name="232" href="#232">232</a>         PowerMock.replay( project );
+<a class="jxr_linenumber" name="233" href="#233">233</a>         PowerMock.replay( mockExecutor );
+<a class="jxr_linenumber" name="234" href="#234">234</a> 
+<a class="jxr_linenumber" name="235" href="#235">235</a>         mojo.execute();
+<a class="jxr_linenumber" name="236" href="#236">236</a> 
+<a class="jxr_linenumber" name="237" href="#237">237</a>         PowerMock.verify( mockExecutor );
+<a class="jxr_linenumber" name="238" href="#238">238</a>         List&lt; String &gt; parameters = capturedArgument.getValue();
+<a class="jxr_linenumber" name="239" href="#239">239</a>         List&lt; String &gt; parametersExpected = <strong class="jxr_keyword">new</strong> ArrayList&lt; String &gt;();
+<a class="jxr_linenumber" name="240" href="#240">240</a>         parametersExpected.add( <span class="jxr_string">"--showall"</span> );
+<a class="jxr_linenumber" name="241" href="#241">241</a>         parametersExpected.add( <span class="jxr_string">"--xml"</span> );
+<a class="jxr_linenumber" name="242" href="#242">242</a>         parametersExpected.add( projectBaseDir.getAbsolutePath()
+<a class="jxr_linenumber" name="243" href="#243">243</a>                 + FilenameUtils.separatorsToSystem( <span class="jxr_string">"/target/lint-results/lint-results.xml"</span> ) );
+<a class="jxr_linenumber" name="244" href="#244">244</a>         parametersExpected.add( <span class="jxr_string">"--sources"</span> );
+<a class="jxr_linenumber" name="245" href="#245">245</a>         parametersExpected.add( projectBaseDir.getAbsolutePath() + File.separator + <span class="jxr_string">"src"</span> );
+<a class="jxr_linenumber" name="246" href="#246">246</a>         parametersExpected.add( projectBaseDir.getAbsolutePath() );
+<a class="jxr_linenumber" name="247" href="#247">247</a>         parametersExpected.add( <span class="jxr_string">"--exitcode"</span> );
+<a class="jxr_linenumber" name="248" href="#248">248</a>         assertEquals( parametersExpected, parameters );
+<a class="jxr_linenumber" name="249" href="#249">249</a>     }
+<a class="jxr_linenumber" name="250" href="#250">250</a> 
+<a class="jxr_linenumber" name="251" href="#251">251</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testAllLintCommandParametersWithCustomConfig() <strong class="jxr_keyword">throws</strong> Exception
+<a class="jxr_linenumber" name="252" href="#252">252</a>     {
+<a class="jxr_linenumber" name="253" href="#253">253</a>         LintMojo mojo = createMojo( <span class="jxr_string">"lint-config-project2"</span> );
+<a class="jxr_linenumber" name="254" href="#254">254</a> 
+<a class="jxr_linenumber" name="255" href="#255">255</a>         MavenProject project = EasyMock.createNiceMock( MavenProject.<strong class="jxr_keyword">class</strong> );
+<a class="jxr_linenumber" name="256" href="#256">256</a>         Whitebox.setInternalState( mojo, <span class="jxr_string">"project"</span>, project );
+<a class="jxr_linenumber" name="257" href="#257">257</a>         File projectBaseDir = <strong class="jxr_keyword">new</strong> File( <span class="jxr_string">"project/"</span> );
+<a class="jxr_linenumber" name="258" href="#258">258</a>         EasyMock.expect( project.getBasedir() ).andReturn( projectBaseDir );
+<a class="jxr_linenumber" name="259" href="#259">259</a>         <strong class="jxr_keyword">final</strong> CommandExecutor mockExecutor = PowerMock.createMock( CommandExecutor.<strong class="jxr_keyword">class</strong> );
+<a class="jxr_linenumber" name="260" href="#260">260</a>         PowerMock.replace( CommandExecutor.Factory.<strong class="jxr_keyword">class</strong>.getDeclaredMethod( <span class="jxr_string">"createDefaultCommmandExecutor"</span> ) )
+<a class="jxr_linenumber" name="261" href="#261">261</a>             .with( <strong class="jxr_keyword">new</strong> InvocationHandler()
+<a class="jxr_linenumber" name="262" href="#262">262</a>                 {
+<a class="jxr_linenumber" name="263" href="#263">263</a> 
+<a class="jxr_linenumber" name="264" href="#264">264</a>                     @Override
+<a class="jxr_linenumber" name="265" href="#265">265</a>                     <strong class="jxr_keyword">public</strong> Object invoke( Object proxy, Method method, Object[] args ) <strong class="jxr_keyword">throws</strong> Throwable
+<a class="jxr_linenumber" name="266" href="#266">266</a>                     {
+<a class="jxr_linenumber" name="267" href="#267">267</a>                         <strong class="jxr_keyword">return</strong> mockExecutor;
+<a class="jxr_linenumber" name="268" href="#268">268</a>                     }
+<a class="jxr_linenumber" name="269" href="#269">269</a>                 } );
+<a class="jxr_linenumber" name="270" href="#270">270</a> 
+<a class="jxr_linenumber" name="271" href="#271">271</a>         PowerMock.expectNew( ConfigHandler.<strong class="jxr_keyword">class</strong>, mojo, <strong class="jxr_keyword">this</strong>.session, <strong class="jxr_keyword">this</strong>.execution )
+<a class="jxr_linenumber" name="272" href="#272">272</a>             .andReturn( EasyMock.createNiceMock( ConfigHandler.<strong class="jxr_keyword">class</strong> ) );
+<a class="jxr_linenumber" name="273" href="#273">273</a>         Whitebox.setInternalState( mojo, <span class="jxr_string">"parsedSkip"</span>, Boolean.FALSE );
+<a class="jxr_linenumber" name="274" href="#274">274</a>         Capture&lt; List&lt; String &gt; &gt; capturedArgument = <strong class="jxr_keyword">new</strong> Capture&lt; List&lt; String &gt; &gt;();
+<a class="jxr_linenumber" name="275" href="#275">275</a> 
+<a class="jxr_linenumber" name="276" href="#276">276</a>         mockExecutor.setLogger( EasyMock.anyObject( Log.<strong class="jxr_keyword">class</strong> ) );
+<a class="jxr_linenumber" name="277" href="#277">277</a>         mockExecutor.executeCommand( EasyMock.anyObject( String.<strong class="jxr_keyword">class</strong> ), EasyMock.capture( capturedArgument ),
+<a class="jxr_linenumber" name="278" href="#278">278</a>                 EasyMock.eq( false ) );
+<a class="jxr_linenumber" name="279" href="#279">279</a>         PowerMock.replay( project );
+<a class="jxr_linenumber" name="280" href="#280">280</a>         PowerMock.replay( mockExecutor );
 <a class="jxr_linenumber" name="281" href="#281">281</a> 
-<a class="jxr_linenumber" name="282" href="#282">282</a>         PowerMock.verify( mockExecutor );
-<a class="jxr_linenumber" name="283" href="#283">283</a>         List&lt; String &gt; parameters = capturedArgument.getValue();
-<a class="jxr_linenumber" name="284" href="#284">284</a>         List&lt; String &gt; parametersExpected = <strong class="jxr_keyword">new</strong> ArrayList&lt; String &gt;();
-<a class="jxr_linenumber" name="285" href="#285">285</a>         parametersExpected.add( <span class="jxr_string">"-w"</span> );
-<a class="jxr_linenumber" name="286" href="#286">286</a>         parametersExpected.add( <span class="jxr_string">"-Wall"</span> );
-<a class="jxr_linenumber" name="287" href="#287">287</a>         parametersExpected.add( <span class="jxr_string">"-Werror"</span> );
-<a class="jxr_linenumber" name="288" href="#288">288</a>         parametersExpected.add( <span class="jxr_string">"--config"</span> );
-<a class="jxr_linenumber" name="289" href="#289">289</a>         parametersExpected.add( <span class="jxr_string">"lint"</span> );
-<a class="jxr_linenumber" name="290" href="#290">290</a>         parametersExpected.add( <span class="jxr_string">"--fullpath"</span> );
-<a class="jxr_linenumber" name="291" href="#291">291</a>         parametersExpected.add( <span class="jxr_string">"--nolines"</span> );
-<a class="jxr_linenumber" name="292" href="#292">292</a>         parametersExpected.add( <span class="jxr_string">"--html"</span> );
-<a class="jxr_linenumber" name="293" href="#293">293</a>         parametersExpected.add( <span class="jxr_string">"html"</span> );
-<a class="jxr_linenumber" name="294" href="#294">294</a>         parametersExpected.add( <span class="jxr_string">"--url"</span> );
-<a class="jxr_linenumber" name="295" href="#295">295</a>         parametersExpected.add( <span class="jxr_string">"url"</span> );
-<a class="jxr_linenumber" name="296" href="#296">296</a>         parametersExpected.add( <span class="jxr_string">"--simplehtml"</span> );
-<a class="jxr_linenumber" name="297" href="#297">297</a>         parametersExpected.add( <span class="jxr_string">"simple"</span> );
-<a class="jxr_linenumber" name="298" href="#298">298</a>         parametersExpected.add( <span class="jxr_string">"--classpath"</span> );
-<a class="jxr_linenumber" name="299" href="#299">299</a>         parametersExpected.add( <span class="jxr_string">"cla2"</span> );
-<a class="jxr_linenumber" name="300" href="#300">300</a>         parametersExpected.add( <span class="jxr_string">"--libraries"</span> );
-<a class="jxr_linenumber" name="301" href="#301">301</a>         parametersExpected.add( <span class="jxr_string">"lib2"</span> );
-<a class="jxr_linenumber" name="302" href="#302">302</a>         parametersExpected.add( projectBaseDir.getAbsolutePath() );
-<a class="jxr_linenumber" name="303" href="#303">303</a>         parametersExpected.add( <span class="jxr_string">"--exitcode"</span> );
-<a class="jxr_linenumber" name="304" href="#304">304</a>         assertEquals( parametersExpected, parameters );
-<a class="jxr_linenumber" name="305" href="#305">305</a>     }
-<a class="jxr_linenumber" name="306" href="#306">306</a> 
-<a class="jxr_linenumber" name="307" href="#307">307</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testAllParametersOffConfig() <strong class="jxr_keyword">throws</strong> Exception
-<a class="jxr_linenumber" name="308" href="#308">308</a>     {
-<a class="jxr_linenumber" name="309" href="#309">309</a>         LintMojo mojo = <strong class="jxr_keyword">new</strong> LintMojo() {
-<a class="jxr_linenumber" name="310" href="#310">310</a>             @Override
-<a class="jxr_linenumber" name="311" href="#311">311</a>             <strong class="jxr_keyword">protected</strong> AndroidSdk getAndroidSdk() {
-<a class="jxr_linenumber" name="312" href="#312">312</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/SdkTestSupport.html">SdkTestSupport</a>().getSdk_with_platform_<strong class="jxr_keyword">default</strong>();
-<a class="jxr_linenumber" name="313" href="#313">313</a>             }
-<a class="jxr_linenumber" name="314" href="#314">314</a>         };
-<a class="jxr_linenumber" name="315" href="#315">315</a>         MavenProject project = EasyMock.createNiceMock( MavenProject.<strong class="jxr_keyword">class</strong> );
-<a class="jxr_linenumber" name="316" href="#316">316</a>         Whitebox.setInternalState( mojo, <span class="jxr_string">"project"</span>, project );
-<a class="jxr_linenumber" name="317" href="#317">317</a>         File projectBaseDir = <strong class="jxr_keyword">new</strong> File( <span class="jxr_string">"project/"</span> );
-<a class="jxr_linenumber" name="318" href="#318">318</a>         EasyMock.expect( project.getBasedir() ).andReturn( projectBaseDir );
-<a class="jxr_linenumber" name="319" href="#319">319</a> 
-<a class="jxr_linenumber" name="320" href="#320">320</a>         <strong class="jxr_keyword">final</strong> CommandExecutor mockExecutor = PowerMock.createMock( CommandExecutor.<strong class="jxr_keyword">class</strong> );
-<a class="jxr_linenumber" name="321" href="#321">321</a>         PowerMock.replace( CommandExecutor.Factory.<strong class="jxr_keyword">class</strong>.getDeclaredMethod( <span class="jxr_string">"createDefaultCommmandExecutor"</span> ) ).with(
-<a class="jxr_linenumber" name="322" href="#322">322</a>                 <strong class="jxr_keyword">new</strong> InvocationHandler()
-<a class="jxr_linenumber" name="323" href="#323">323</a>                 {
-<a class="jxr_linenumber" name="324" href="#324">324</a> 
-<a class="jxr_linenumber" name="325" href="#325">325</a>                     @Override
-<a class="jxr_linenumber" name="326" href="#326">326</a>                     <strong class="jxr_keyword">public</strong> Object invoke( Object proxy, Method method, Object[] args ) <strong class="jxr_keyword">throws</strong> Throwable
-<a class="jxr_linenumber" name="327" href="#327">327</a>                     {
-<a class="jxr_linenumber" name="328" href="#328">328</a>                         <strong class="jxr_keyword">return</strong> mockExecutor;
-<a class="jxr_linenumber" name="329" href="#329">329</a>                     }
-<a class="jxr_linenumber" name="330" href="#330">330</a>                 } );
-<a class="jxr_linenumber" name="331" href="#331">331</a> 
-<a class="jxr_linenumber" name="332" href="#332">332</a>         Capture&lt; List&lt; String &gt; &gt; capturedArgument = <strong class="jxr_keyword">new</strong> Capture&lt; List&lt; String &gt; &gt;();
+<a class="jxr_linenumber" name="282" href="#282">282</a>         mojo.execute();
+<a class="jxr_linenumber" name="283" href="#283">283</a> 
+<a class="jxr_linenumber" name="284" href="#284">284</a>         PowerMock.verify( mockExecutor );
+<a class="jxr_linenumber" name="285" href="#285">285</a>         List&lt; String &gt; parameters = capturedArgument.getValue();
+<a class="jxr_linenumber" name="286" href="#286">286</a>         List&lt; String &gt; parametersExpected = <strong class="jxr_keyword">new</strong> ArrayList&lt; String &gt;();
+<a class="jxr_linenumber" name="287" href="#287">287</a>         parametersExpected.add( <span class="jxr_string">"-w"</span> );
+<a class="jxr_linenumber" name="288" href="#288">288</a>         parametersExpected.add( <span class="jxr_string">"-Wall"</span> );
+<a class="jxr_linenumber" name="289" href="#289">289</a>         parametersExpected.add( <span class="jxr_string">"-Werror"</span> );
+<a class="jxr_linenumber" name="290" href="#290">290</a>         parametersExpected.add( <span class="jxr_string">"--config"</span> );
+<a class="jxr_linenumber" name="291" href="#291">291</a>         parametersExpected.add( <span class="jxr_string">"lint"</span> );
+<a class="jxr_linenumber" name="292" href="#292">292</a>         parametersExpected.add( <span class="jxr_string">"--fullpath"</span> );
+<a class="jxr_linenumber" name="293" href="#293">293</a>         parametersExpected.add( <span class="jxr_string">"--nolines"</span> );
+<a class="jxr_linenumber" name="294" href="#294">294</a>         parametersExpected.add( <span class="jxr_string">"--html"</span> );
+<a class="jxr_linenumber" name="295" href="#295">295</a>         parametersExpected.add( <span class="jxr_string">"html"</span> );
+<a class="jxr_linenumber" name="296" href="#296">296</a>         parametersExpected.add( <span class="jxr_string">"--url"</span> );
+<a class="jxr_linenumber" name="297" href="#297">297</a>         parametersExpected.add( <span class="jxr_string">"url"</span> );
+<a class="jxr_linenumber" name="298" href="#298">298</a>         parametersExpected.add( <span class="jxr_string">"--simplehtml"</span> );
+<a class="jxr_linenumber" name="299" href="#299">299</a>         parametersExpected.add( <span class="jxr_string">"simple"</span> );
+<a class="jxr_linenumber" name="300" href="#300">300</a>         parametersExpected.add( <span class="jxr_string">"--classpath"</span> );
+<a class="jxr_linenumber" name="301" href="#301">301</a>         parametersExpected.add( <span class="jxr_string">"cla2"</span> );
+<a class="jxr_linenumber" name="302" href="#302">302</a>         parametersExpected.add( <span class="jxr_string">"--libraries"</span> );
+<a class="jxr_linenumber" name="303" href="#303">303</a>         parametersExpected.add( <span class="jxr_string">"lib2"</span> );
+<a class="jxr_linenumber" name="304" href="#304">304</a>         parametersExpected.add( projectBaseDir.getAbsolutePath() );
+<a class="jxr_linenumber" name="305" href="#305">305</a>         parametersExpected.add( <span class="jxr_string">"--exitcode"</span> );
+<a class="jxr_linenumber" name="306" href="#306">306</a>         assertEquals( parametersExpected, parameters );
+<a class="jxr_linenumber" name="307" href="#307">307</a>     }
+<a class="jxr_linenumber" name="308" href="#308">308</a> 
+<a class="jxr_linenumber" name="309" href="#309">309</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testAllParametersOffConfig() <strong class="jxr_keyword">throws</strong> Exception
+<a class="jxr_linenumber" name="310" href="#310">310</a>     {
+<a class="jxr_linenumber" name="311" href="#311">311</a>         LintMojo mojo = <strong class="jxr_keyword">new</strong> LintMojo() {
+<a class="jxr_linenumber" name="312" href="#312">312</a>             @Override
+<a class="jxr_linenumber" name="313" href="#313">313</a>             <strong class="jxr_keyword">protected</strong> AndroidSdk getAndroidSdk() {
+<a class="jxr_linenumber" name="314" href="#314">314</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/SdkTestSupport.html">SdkTestSupport</a>().getSdk_with_platform_<strong class="jxr_keyword">default</strong>();
+<a class="jxr_linenumber" name="315" href="#315">315</a>             }
+<a class="jxr_linenumber" name="316" href="#316">316</a>         };
+<a class="jxr_linenumber" name="317" href="#317">317</a>         MavenProject project = EasyMock.createNiceMock( MavenProject.<strong class="jxr_keyword">class</strong> );
+<a class="jxr_linenumber" name="318" href="#318">318</a>         Whitebox.setInternalState( mojo, <span class="jxr_string">"project"</span>, project );
+<a class="jxr_linenumber" name="319" href="#319">319</a>         File projectBaseDir = <strong class="jxr_keyword">new</strong> File( <span class="jxr_string">"project/"</span> );
+<a class="jxr_linenumber" name="320" href="#320">320</a>         EasyMock.expect( project.getBasedir() ).andReturn( projectBaseDir );
+<a class="jxr_linenumber" name="321" href="#321">321</a> 
+<a class="jxr_linenumber" name="322" href="#322">322</a>         <strong class="jxr_keyword">final</strong> CommandExecutor mockExecutor = PowerMock.createMock( CommandExecutor.<strong class="jxr_keyword">class</strong> );
+<a class="jxr_linenumber" name="323" href="#323">323</a>         PowerMock.replace( CommandExecutor.Factory.<strong class="jxr_keyword">class</strong>.getDeclaredMethod( <span class="jxr_string">"createDefaultCommmandExecutor"</span> ) ).with(
+<a class="jxr_linenumber" name="324" href="#324">324</a>                 <strong class="jxr_keyword">new</strong> InvocationHandler()
+<a class="jxr_linenumber" name="325" href="#325">325</a>                 {
+<a class="jxr_linenumber" name="326" href="#326">326</a> 
+<a class="jxr_linenumber" name="327" href="#327">327</a>                     @Override
+<a class="jxr_linenumber" name="328" href="#328">328</a>                     <strong class="jxr_keyword">public</strong> Object invoke( Object proxy, Method method, Object[] args ) <strong class="jxr_keyword">throws</strong> Throwable
+<a class="jxr_linenumber" name="329" href="#329">329</a>                     {
+<a class="jxr_linenumber" name="330" href="#330">330</a>                         <strong class="jxr_keyword">return</strong> mockExecutor;
+<a class="jxr_linenumber" name="331" href="#331">331</a>                     }
+<a class="jxr_linenumber" name="332" href="#332">332</a>                 } );
 <a class="jxr_linenumber" name="333" href="#333">333</a> 
-<a class="jxr_linenumber" name="334" href="#334">334</a>         mockExecutor.setLogger( EasyMock.anyObject( Log.<strong class="jxr_keyword">class</strong> ) );
-<a class="jxr_linenumber" name="335" href="#335">335</a>         mockExecutor.executeCommand( EasyMock.anyObject( String.<strong class="jxr_keyword">class</strong> ), EasyMock.capture( capturedArgument ),
-<a class="jxr_linenumber" name="336" href="#336">336</a>                 EasyMock.eq( false ) );
-<a class="jxr_linenumber" name="337" href="#337">337</a>         PowerMock.replay( mockExecutor );
-<a class="jxr_linenumber" name="338" href="#338">338</a>         PowerMock.replay( project );
-<a class="jxr_linenumber" name="339" href="#339">339</a>         Whitebox.setInternalState( mojo, <span class="jxr_string">"parsedConfig"</span>, <span class="jxr_string">"null"</span> );
-<a class="jxr_linenumber" name="340" href="#340">340</a>         Whitebox.setInternalState( mojo, <span class="jxr_string">"parsedClasspath"</span>, <span class="jxr_string">"null"</span> );
-<a class="jxr_linenumber" name="341" href="#341">341</a>         Whitebox.setInternalState( mojo, <span class="jxr_string">"parsedLibraries"</span>, <span class="jxr_string">"null"</span> );
-<a class="jxr_linenumber" name="342" href="#342">342</a>         Whitebox.invokeMethod( mojo, <span class="jxr_string">"executeWhenConfigured"</span> );
-<a class="jxr_linenumber" name="343" href="#343">343</a> 
-<a class="jxr_linenumber" name="344" href="#344">344</a>         PowerMock.verify( mockExecutor );
-<a class="jxr_linenumber" name="345" href="#345">345</a>         PowerMock.verify( project );
-<a class="jxr_linenumber" name="346" href="#346">346</a>         List&lt; String &gt; parameters = capturedArgument.getValue();
-<a class="jxr_linenumber" name="347" href="#347">347</a>         List&lt; String &gt; parametersExpected = <strong class="jxr_keyword">new</strong> ArrayList&lt; String &gt;();
-<a class="jxr_linenumber" name="348" href="#348">348</a>         parametersExpected.add( projectBaseDir.getAbsolutePath() );
-<a class="jxr_linenumber" name="349" href="#349">349</a>         parametersExpected.add( <span class="jxr_string">"--exitcode"</span> );
-<a class="jxr_linenumber" name="350" href="#350">350</a>         assertEquals( parametersExpected, parameters );
-<a class="jxr_linenumber" name="351" href="#351">351</a>     }
-<a class="jxr_linenumber" name="352" href="#352">352</a> }
+<a class="jxr_linenumber" name="334" href="#334">334</a>         Capture&lt; List&lt; String &gt; &gt; capturedArgument = <strong class="jxr_keyword">new</strong> Capture&lt; List&lt; String &gt; &gt;();
+<a class="jxr_linenumber" name="335" href="#335">335</a> 
+<a class="jxr_linenumber" name="336" href="#336">336</a>         mockExecutor.setLogger( EasyMock.anyObject( Log.<strong class="jxr_keyword">class</strong> ) );
+<a class="jxr_linenumber" name="337" href="#337">337</a>         mockExecutor.executeCommand( EasyMock.anyObject( String.<strong class="jxr_keyword">class</strong> ), EasyMock.capture( capturedArgument ),
+<a class="jxr_linenumber" name="338" href="#338">338</a>                 EasyMock.eq( false ) );
+<a class="jxr_linenumber" name="339" href="#339">339</a>         PowerMock.replay( mockExecutor );
+<a class="jxr_linenumber" name="340" href="#340">340</a>         PowerMock.replay( project );
+<a class="jxr_linenumber" name="341" href="#341">341</a>         Whitebox.setInternalState( mojo, <span class="jxr_string">"parsedConfig"</span>, <span class="jxr_string">"null"</span> );
+<a class="jxr_linenumber" name="342" href="#342">342</a>         Whitebox.setInternalState( mojo, <span class="jxr_string">"parsedClasspath"</span>, <span class="jxr_string">"null"</span> );
+<a class="jxr_linenumber" name="343" href="#343">343</a>         Whitebox.setInternalState( mojo, <span class="jxr_string">"parsedLibraries"</span>, <span class="jxr_string">"null"</span> );
+<a class="jxr_linenumber" name="344" href="#344">344</a>         Whitebox.invokeMethod( mojo, <span class="jxr_string">"executeWhenConfigured"</span> );
+<a class="jxr_linenumber" name="345" href="#345">345</a> 
+<a class="jxr_linenumber" name="346" href="#346">346</a>         PowerMock.verify( mockExecutor );
+<a class="jxr_linenumber" name="347" href="#347">347</a>         PowerMock.verify( project );
+<a class="jxr_linenumber" name="348" href="#348">348</a>         List&lt; String &gt; parameters = capturedArgument.getValue();
+<a class="jxr_linenumber" name="349" href="#349">349</a>         List&lt; String &gt; parametersExpected = <strong class="jxr_keyword">new</strong> ArrayList&lt; String &gt;();
+<a class="jxr_linenumber" name="350" href="#350">350</a>         parametersExpected.add( projectBaseDir.getAbsolutePath() );
+<a class="jxr_linenumber" name="351" href="#351">351</a>         parametersExpected.add( <span class="jxr_string">"--exitcode"</span> );
+<a class="jxr_linenumber" name="352" href="#352">352</a>         assertEquals( parametersExpected, parameters );
+<a class="jxr_linenumber" name="353" href="#353">353</a>     }
+<a class="jxr_linenumber" name="354" href="#354">354</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

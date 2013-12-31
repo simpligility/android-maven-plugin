@@ -20,7 +20,7 @@
 <a class="jxr_linenumber" name="10" href="#10">10</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="11" href="#11">11</a>  <em class="jxr_javadoccomment"> * Display help information on android-maven-plugin.&lt;br/&gt; Call &lt;pre&gt;  mvn android:help -Ddetail=true -Dgoal=&amp;lt;goal-name&amp;gt;&lt;/pre&gt; to display parameter details.</em>
 <a class="jxr_linenumber" name="12" href="#12">12</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="13" href="#13">13</a>  <em class="jxr_javadoccomment"> * @version generated on Thu Dec 05 12:36:44 PST 2013</em>
+<a class="jxr_linenumber" name="13" href="#13">13</a>  <em class="jxr_javadoccomment"> * @version generated on Mon Dec 30 22:17:42 PST 2013</em>
 <a class="jxr_linenumber" name="14" href="#14">14</a>  <em class="jxr_javadoccomment"> * @author org.apache.maven.tools.plugin.generator.PluginHelpGenerator (version 2.8)</em>
 <a class="jxr_linenumber" name="15" href="#15">15</a>  <em class="jxr_javadoccomment"> * @goal help</em>
 <a class="jxr_linenumber" name="16" href="#16">16</a>  <em class="jxr_javadoccomment"> * @requiresProject false</em>
@@ -75,7 +75,7 @@
 <a class="jxr_linenumber" name="65" href="#65">65</a>  
 <a class="jxr_linenumber" name="66" href="#66">66</a>          StringBuffer sb = <strong class="jxr_keyword">new</strong> StringBuffer();
 <a class="jxr_linenumber" name="67" href="#67">67</a>  
-<a class="jxr_linenumber" name="68" href="#68">68</a>          append( sb, <span class="jxr_string">"com.jayway.maven.plugins.android.generation2:android-maven-plugin:3.8.1"</span>, 0 );
+<a class="jxr_linenumber" name="68" href="#68">68</a>          append( sb, <span class="jxr_string">"com.jayway.maven.plugins.android.generation2:android-maven-plugin:3.8.2"</span>, 0 );
 <a class="jxr_linenumber" name="69" href="#69">69</a>          append( sb, <span class="jxr_string">""</span>, 0 );
 <a class="jxr_linenumber" name="70" href="#70">70</a>  
 <a class="jxr_linenumber" name="71" href="#71">71</a>          append( sb, <span class="jxr_string">"Android Maven Plugin - android-maven-plugin"</span>, 0 );
@@ -3303,7 +3303,7 @@
 <a class="jxr_linenumber" name="3293" href="#3293">3293</a>                 append( sb, <span class="jxr_string">"Expression: ${android.proguard.obfuscatedJar}"</span>, 3 );
 <a class="jxr_linenumber" name="3294" href="#3294">3294</a>                 append( sb, <span class="jxr_string">""</span>, 0 );
 <a class="jxr_linenumber" name="3295" href="#3295">3295</a> 
-<a class="jxr_linenumber" name="3296" href="#3296">3296</a>                 append( sb, <span class="jxr_string">"outputDirectory (Default: proguard)"</span>, 2 );
+<a class="jxr_linenumber" name="3296" href="#3296">3296</a>                 append( sb, <span class="jxr_string">"outputDirectory"</span>, 2 );
 <a class="jxr_linenumber" name="3297" href="#3297">3297</a>                 append( sb, <span class="jxr_string">"Path relative to the project\'s build directory (target) where proguard puts folowing files:\n-\tdump.txt\n-\tseeds.txt\n-\tusage.txt\n-\tmapping.txt\nYou can define the directory like this:\n&lt;proguard&gt;\n\u00a0\u00a0&lt;skip&gt;false&lt;/skip&gt;\n\u00a0\u00a0&lt;config&gt;proguard.cfg&lt;/config&gt;\n\u00a0\u00a0&lt;outputDirectory&gt;my_proguard&lt;/outputDirectory&gt;\n&lt;/proguard&gt;\u00a0\nOutput directory is defined relatively so it could be also outside of the target directory."</span>, 3 );
 <a class="jxr_linenumber" name="3298" href="#3298">3298</a>                 append( sb, <span class="jxr_string">"Expression: ${android.proguard.outputDirectory}"</span>, 3 );
 <a class="jxr_linenumber" name="3299" href="#3299">3299</a>                 append( sb, <span class="jxr_string">""</span>, 0 );

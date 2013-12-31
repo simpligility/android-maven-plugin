@@ -114,7 +114,7 @@
 <a class="jxr_linenumber" name="104" href="#104">104</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> execute() <strong class="jxr_keyword">throws</strong> MojoExecutionException, MojoFailureException
 <a class="jxr_linenumber" name="105" href="#105">105</a>     {
 <a class="jxr_linenumber" name="106" href="#106">106</a> 
-<a class="jxr_linenumber" name="107" href="#107">107</a>         <a href="../../../../../../com/jayway/maven/plugins/android/config/ConfigHandler.html">ConfigHandler</a> configHandler = <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/config/ConfigHandler.html">ConfigHandler</a>( <strong class="jxr_keyword">this</strong> );
+<a class="jxr_linenumber" name="107" href="#107">107</a>         <a href="../../../../../../com/jayway/maven/plugins/android/config/ConfigHandler.html">ConfigHandler</a> configHandler = <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/config/ConfigHandler.html">ConfigHandler</a>( <strong class="jxr_keyword">this</strong>, <strong class="jxr_keyword">this</strong>.session, <strong class="jxr_keyword">this</strong>.execution );
 <a class="jxr_linenumber" name="108" href="#108">108</a>         configHandler.parseConfiguration();
 <a class="jxr_linenumber" name="109" href="#109">109</a> 
 <a class="jxr_linenumber" name="110" href="#110">110</a>         <strong class="jxr_keyword">final</strong> Map&lt;String, String&gt; sourceDestinationMap = calculateSourceDestinationMapping();

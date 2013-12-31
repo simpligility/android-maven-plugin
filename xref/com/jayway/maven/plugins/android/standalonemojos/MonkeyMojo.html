@@ -472,7 +472,7 @@
 <a class="jxr_linenumber" name="462" href="#462">462</a>     @Override
 <a class="jxr_linenumber" name="463" href="#463">463</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> execute() <strong class="jxr_keyword">throws</strong> MojoExecutionException, MojoFailureException
 <a class="jxr_linenumber" name="464" href="#464">464</a>     {
-<a class="jxr_linenumber" name="465" href="#465">465</a>         <a href="../../../../../../com/jayway/maven/plugins/android/config/ConfigHandler.html">ConfigHandler</a> configHandler = <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/config/ConfigHandler.html">ConfigHandler</a>( <strong class="jxr_keyword">this</strong> );
+<a class="jxr_linenumber" name="465" href="#465">465</a>         <a href="../../../../../../com/jayway/maven/plugins/android/config/ConfigHandler.html">ConfigHandler</a> configHandler = <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/config/ConfigHandler.html">ConfigHandler</a>( <strong class="jxr_keyword">this</strong>, <strong class="jxr_keyword">this</strong>.session, <strong class="jxr_keyword">this</strong>.execution );
 <a class="jxr_linenumber" name="466" href="#466">466</a>         configHandler.parseConfiguration();
 <a class="jxr_linenumber" name="467" href="#467">467</a> 
 <a class="jxr_linenumber" name="468" href="#468">468</a>         <strong class="jxr_keyword">if</strong> ( isEnableIntegrationTest() )
