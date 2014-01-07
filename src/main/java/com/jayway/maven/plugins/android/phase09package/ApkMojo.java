@@ -619,7 +619,9 @@ public class ApkMojo extends AbstractAndroidMojo
         } 
         catch ( DuplicateFileException e )
         {
-            throw new MojoExecutionException( e.getMessage() );
+            final String msg = String.format("Duplicate file! archive: %s, file1: %s, file2: %s",
+                    e.getArchivePath(), e.getFile1(), e.getFile2());
+            throw new MojoExecutionException( msg, e );
         } 
         catch ( SealedApkException e )
         {
