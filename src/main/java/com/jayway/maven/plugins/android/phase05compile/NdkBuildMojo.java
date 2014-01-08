@@ -934,16 +934,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 classifier += "-" + ndkClassifier;
             }
 
-            if ( AndroidExtension.APKLIB.equals( project.getPackaging() ) )
-            {
-                projectHelper.attachArtifact( project, "har", 
-                        classifier,
-                        jarFile );
-            }
-            else
-            {
-                projectHelper.attachArtifact( project, "har", classifier, jarFile );
-            }
+            projectHelper.attachArtifact( project, "har", classifier, jarFile );
 
         }
         catch ( Exception e )
