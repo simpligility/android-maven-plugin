@@ -17,7 +17,6 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.common.AetherHelper;
-import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.NativeHelper;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.HeaderFilesDirective;
