@@ -34,7 +34,7 @@ before_install:
 before_script:
   - ./wait_for_emulator
 
-script: mvn install -Dandroid.device=test
+script: mvn clean install -Dandroid.device=test
 
 after_script:
   # Install Android NDK
