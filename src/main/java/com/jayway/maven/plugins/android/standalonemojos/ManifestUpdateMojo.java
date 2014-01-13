@@ -9,8 +9,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.maven.artifact.versioning.ArtifactVersion;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.w3c.dom.Attr;
@@ -93,9 +91,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private static final String ELEM_USES_SDK = "uses-sdk";
 
     // version encoding 
-    private static final int INCREMENTAL_VERSION_POSITION = 1;
-    private static final int MINOR_VERSION_POSITION = 1000;
-    private static final int MAJOR_VERSION_POSITION = 1000000;
+    private static final int NUMBER_OF_DIGITS_FOR_VERSION_POSITION = 3;
+    
 
     /**
      * Configuration for the manifest-update goal.
@@ -776,37 +773,24 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     {
         String verString = project.getVersion();
         getLog().debug( "Generating versionCode for " + verString );
-        ArtifactVersion artifactVersion = new DefaultArtifactVersion( verString );
-        String verCode;
-        if ( artifactVersion.getMajorVersion() < 1 && artifactVersion.getMinorVersion() < 1
-             && artifactVersion.getIncrementalVersion() < 1 )
-        {
-            getLog().warn( "Problem parsing version number occurred. Using fall back to determine version code. " );
-
-            verCode = verString.replaceAll( "\\D", "" );
-
-            Attr versionCodeAttr = manifestElement.getAttributeNode( ATTR_VERSION_CODE );
-            int currentVersionCode = 0;
-            if ( versionCodeAttr != null )
-            {
-                currentVersionCode = NumberUtils.toInt( versionCodeAttr.getValue(), 0 );
-            }
-
-            if ( Integer.parseInt( verCode ) < currentVersionCode )
-            {
-                getLog().info( verCode + " < " + currentVersionCode + " so padding versionCode" );
-                verCode = StringUtils.rightPad( verCode, versionCodeAttr.getValue().length(), "0" );
-            }
-        }
-        else
-        {
-            verCode = Integer.toString( artifactVersion.getMajorVersion() * MAJOR_VERSION_POSITION
-                    + artifactVersion.getMinorVersion() * MINOR_VERSION_POSITION
-                    + artifactVersion.getIncrementalVersion() * INCREMENTAL_VERSION_POSITION );
-        }
+        String verCode = generateVersionCodeFromVersionName( verString );
         getLog().info( "Setting " + ATTR_VERSION_CODE + " to " + verCode );
         manifestElement.setAttribute( ATTR_VERSION_CODE, verCode );
         project.getProperties().setProperty( "android.manifest.versionCode", String.valueOf( verCode ) );
+    }
+
+    private String generateVersionCodeFromVersionName( String versionName ) 
+    {
+      String[] versionNameDigits = versionName.replaceAll( "[^0-9.]", "" ).split( "\\." );
+      
+      long versionCode = 0;
+      for ( int i = 0; i < versionNameDigits.length; i++ ) 
+      {
+        double digitMultiplayer = Math.pow( 10, i * NUMBER_OF_DIGITS_FOR_VERSION_POSITION );
+        String versionDigit = versionNameDigits[versionNameDigits.length - i - 1 ];
+        versionCode += Integer.valueOf( versionDigit ).intValue() * digitMultiplayer;
+      }
+      return String.valueOf( versionCode );
     }
 
     private boolean performSupportScreenModification( Document doc, Element manifestElement )
