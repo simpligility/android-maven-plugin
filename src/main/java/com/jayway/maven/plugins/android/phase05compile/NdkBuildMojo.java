@@ -17,7 +17,6 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.common.AetherHelper;
-import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.NativeHelper;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.HeaderFilesDirective;
@@ -934,16 +933,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 classifier += "-" + ndkClassifier;
             }
 
-            if ( AndroidExtension.APKLIB.equals( project.getPackaging() ) )
-            {
-                projectHelper.attachArtifact( project, "har", 
-                        classifier,
-                        jarFile );
-            }
-            else
-            {
-                projectHelper.attachArtifact( project, "har", classifier, jarFile );
-            }
+            projectHelper.attachArtifact( project, "har", classifier, jarFile );
 
         }
         catch ( Exception e )
