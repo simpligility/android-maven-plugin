@@ -251,7 +251,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo {
     protected String[] devices;
 
     /**
-     * External IP addresses. ADB will execute an adb connect on each IP address before any goal.
+     * External IP addresses. The connect goal  will execute an adb connect on each IP address.
      *
      * @parameter expression="${android.ips}"
      */
