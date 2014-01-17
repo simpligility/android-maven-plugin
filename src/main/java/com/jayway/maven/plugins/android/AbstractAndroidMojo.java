@@ -243,15 +243,15 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File unpackedApkLibsDirectory;
 
     /**
-     * Specifies which the serial number of the device to connect to. Using the special values "usb" or
+     * Specifies which the serial number of each device to connect to. Using the special values "usb" or
      * "emulator" is also valid. "usb" will connect to all actual devices connected (via usb). "emulator" will
      * connect to all emulators connected. Multiple devices will be iterated over in terms of goals to run. All
      * device interaction goals support this so you can e.. deploy the apk to all attached emulators and devices.
      * Goals supporting this are devices, deploy, undeploy, redeploy, pull, push and instrument.
      *
-     * @parameter expression="${android.device}"
+     * @parameter expression="${android.devices}"
      */
-    protected String device;
+    protected String[] devices;
 
     /**
      * A selection of configurations to be included in the APK as a comma separated list. This will limit the
@@ -750,14 +750,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
             throw new MojoExecutionException( "No online devices attached." );
         }
 
-        boolean shouldRunOnAllDevices = StringUtils.isBlank( device );
+        boolean shouldRunOnAllDevices = devices.size() == 0;
         if ( shouldRunOnAllDevices )
         {
             getLog().info( "android.device parameter not set, using all attached devices" );
         }
         else
         {
-            getLog().info( "android.device parameter set to " + device );
+            getLog().info( "android.device parameter set to " + devices.toString() );
         }
 
         ArrayList<DoThread> doThreads = new ArrayList<DoThread>();
@@ -786,7 +786,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
         if ( ! shouldRunOnAllDevices && doThreads.isEmpty() )
         {
-            throw new MojoExecutionException( "No device found for android.device=" + device );
+            throw new MojoExecutionException( "No device found for android.device=" + devices.toString() );
         }
     }
 
@@ -800,7 +800,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
             }
             catch ( InterruptedException e )
             {
-                new MojoExecutionException( "Thread#join error for device: " + device );
+                new MojoExecutionException( "Thread#join error for device: " + devices.toString() );
             }
         }
     }
@@ -833,27 +833,31 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     private boolean shouldDoWithThisDevice( IDevice idevice ) throws MojoExecutionException, MojoFailureException
     {
-        // use specified device or all emulators or all devices
-        if ( "emulator".equals( device ) && idevice.isEmulator() )
-        {
-            return true;
+
+        for(String device : devices) {
+            // use specified device or all emulators or all devices
+            if ( "emulator".equals( device ) && idevice.isEmulator() )
+            {
+                return true;
+            }
+
+            if ( "usb".equals( device ) && ! idevice.isEmulator() )
+            {
+                return true;
+            }
+
+            if ( idevice.isEmulator() && ( device.equalsIgnoreCase( idevice.getAvdName() ) || device
+                    .equalsIgnoreCase( idevice.getSerialNumber() ) ) )
+            {
+                return true;
+            }
+
+            if ( ! idevice.isEmulator() && device.equals( idevice.getSerialNumber() ) )
+            {
+                return true;
+            }
         }
 
-        if ( "usb".equals( device ) && ! idevice.isEmulator() )
-        {
-            return true;
-        }
-
-        if ( idevice.isEmulator() && ( device.equalsIgnoreCase( idevice.getAvdName() ) || device
-                .equalsIgnoreCase( idevice.getSerialNumber() ) ) )
-        {
-            return true;
-        }
-
-        if ( ! idevice.isEmulator() && device.equals( idevice.getSerialNumber() ) )
-        {
-            return true;
-        }
 
         return false;
     }
