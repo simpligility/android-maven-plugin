@@ -25,23 +25,23 @@ public class DeviceHelper
     {
         // if any of this logic changes update javadoc for
         // AbstractInstrumentationMojo#testCreateReport
-        StringBuilder identfier = new StringBuilder().append( device.getSerialNumber() );
+        StringBuilder identifier = new StringBuilder().append( device.getSerialNumber() );
         if ( device.getAvdName() != null )
         {
-            identfier.append( SEPARATOR ).append( device.getAvdName() );
+            identifier.append( SEPARATOR ).append( device.getAvdName() );
         }
         String manufacturer = getManufacturer( device );
         if ( StringUtils.isNotBlank( manufacturer ) )
         {
-            identfier.append( SEPARATOR ).append( manufacturer );
+            identifier.append( SEPARATOR ).append( manufacturer );
         }
         String model = getModel( device );
         if ( StringUtils.isNotBlank( model ) )
         {
-            identfier.append( SEPARATOR ).append( model );
+            identifier.append( SEPARATOR ).append( model );
         }
 
-        return FileNameHelper.fixFileName( identfier.toString() );
+        return FileNameHelper.fixFileName( identifier.toString() );
     }
     
     public static String getDeviceLogLinePrefix( IDevice device ) 
