@@ -47,7 +47,7 @@ final class ResourceClassGenerator
 
         for ( final Artifact lib : libraries )
         {
-            final File unpackedLibDirectory = new File( mojo.getLibraryUnpackDirectory( lib ) );
+            final File unpackedLibDirectory = mojo.getUnpackedLibFolder( lib );
             final File rFile = new File( unpackedLibDirectory, "R.txt" );
 
             if ( rFile.isFile() )
