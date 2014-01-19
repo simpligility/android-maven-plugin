@@ -221,9 +221,8 @@ public class ApklibMojo extends AbstractAndroidMojo
                     {
                         if ( apkLibraryArtifact.getType().equals( APKLIB ) )
                         {
-                            final File apklibLibsDirectory = new File( getLibraryUnpackDirectory( apkLibraryArtifact )
-                                                                       + "/" + NATIVE_LIBRARIES_FOLDER + "/"
-                                                                       + ndkArchitecture );
+                            final File apklibLibsDirectory = new File(
+                                    getUnpackedLibNativesFolder( apkLibraryArtifact ), ndkArchitecture );
                             if ( apklibLibsDirectory.exists() )
                             {
                                 addSharedLibraries( jarArchiver, apklibLibsDirectory, ndkArchitecture );
@@ -270,7 +269,7 @@ public class ApklibMojo extends AbstractAndroidMojo
             if ( javaResourceDirectory.exists() )
             {
                 final String resourcePath = javaResourceDirectory.getCanonicalPath();
-                final String apkLibUnpackBasePath = unpackedApkLibsDirectory.getCanonicalPath();
+                final String apkLibUnpackBasePath = unpackedLibsDirectory.getCanonicalPath();
                 // Don't include our dependencies' resource dirs.
                 if ( ! resourcePath.startsWith( apkLibUnpackBasePath ) )
                 {
@@ -388,11 +387,11 @@ public class ApklibMojo extends AbstractAndroidMojo
         {
             if ( apkLibraryArtifact.getType().equals( APKLIB ) )
             {
-                String apklibResDirectory = getLibraryUnpackDirectory( apkLibraryArtifact ) + "/res";
-                if ( new File( apklibResDirectory ).exists() )
+                final File apklibResDirectory = getUnpackedLibResourceFolder( apkLibraryArtifact );
+                if ( apklibResDirectory.exists() )
                 {
                     commands.add( "-S" );
-                    commands.add( apklibResDirectory );
+                    commands.add( apklibResDirectory.getAbsolutePath() );
                 }
             }
         }

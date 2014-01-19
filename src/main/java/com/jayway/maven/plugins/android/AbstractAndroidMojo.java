@@ -68,6 +68,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  *
  * @author hugo.josefson@jayway.com
  * @author Manfred Moser <manfred@simpligility.com>
+ * @author William Ferguson <william.ferguson@xandar.com.au>
  */
 public abstract class AbstractAndroidMojo extends AbstractMojo
 {
@@ -229,7 +230,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * The combined assets directory. This will contain both the assets found in "assets" as well as any assets
      * contained in a apksources, apklib or aar dependencies.
      *
-     * @parameter expression="${project.build.directory}/generated-sources/combined-assets/assets"
+     * @parameter expression="${project.build.directory}/generated-sources/combined-assets"
      * @readonly
      */
     protected File combinedAssets;
@@ -240,7 +241,16 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @parameter expression="${project.build.directory}/unpacked-libs"
      * @readonly
      */
-    protected File unpackedApkLibsDirectory;
+    protected File unpackedLibsDirectory;
+
+    /**
+     * Contains folders for each of the Android dependent libraries.
+     * Each folder contains the unpacked classes for that library
+     *
+     * @parameter expression="${project.build.directory}/unpacked-lib-classes"
+     * @readonly
+     */
+    protected File unpackedLibClassesDirectory;
 
     /**
      * Specifies which the serial number of the device to connect to. Using the special values "usb" or
@@ -1181,14 +1191,43 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         return androidHome;
     }
 
+    public final File getUnpackedLibFolder( Artifact artifact )
+    {
+        return new File( AbstractAndroidMojo.getLibraryUnpackDirectory( unpackedLibsDirectory, artifact ) );
+    }
+
+    protected final File getUnpackedLibSourceFolder( Artifact artifact )
+    {
+        return new File( getUnpackedLibFolder( artifact ), "src" );
+    }
+
+    protected final File getUnpackedLibResourceFolder( Artifact artifact )
+    {
+        return new File( getUnpackedLibFolder( artifact ), "res" );
+    }
+
+    protected final File getUnpackedLibAssetsFolder( Artifact artifact )
+    {
+        return new File( getUnpackedLibFolder( artifact ), "assets" );
+    }
+
+    /**
+     * @param artifact  Android dependency that is being referenced.
+     * @return Folder where the unpacked native libraries are located.
+     */
+    protected final File getUnpackedLibNativesFolder( Artifact artifact )
+    {
+        return new File( getUnpackedLibFolder( artifact ), "libs" );
+    }
+
     /**
      *
      * @param apkLibraryArtifact
      * @return
      */
-    public final String getLibraryUnpackDirectory( Artifact apkLibraryArtifact )
+    public final String getUnpackedLibraryClassesDirectory( Artifact apkLibraryArtifact )
     {
-        return AbstractAndroidMojo.getLibraryUnpackDirectory( unpackedApkLibsDirectory, apkLibraryArtifact );
+        return AbstractAndroidMojo.getLibraryUnpackDirectory( unpackedLibClassesDirectory, apkLibraryArtifact );
     }
 
     /**
@@ -1298,6 +1337,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         }
 
         protected abstract void runDo() throws MojoFailureException, MojoExecutionException;
+    }
+
+    /**
+     * @return True if this project constructs an APK as opposed to an AAR or APKLIB.
+     */
+    protected final boolean isAPKBuild()
+    {
+        return APK.equals( project.getPackaging() );
     }
 
     /**
