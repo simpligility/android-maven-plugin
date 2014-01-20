@@ -26,7 +26,6 @@ import com.jayway.maven.plugins.android.common.DeviceHelper;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.configuration.Ndk;
 import com.jayway.maven.plugins.android.configuration.Sdk;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.jxpath.JXPathContext;
@@ -58,6 +57,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
@@ -88,7 +88,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * The <code>ANDROID_NDK_HOME</code> environment variable name.
      */
     public static final String ENV_ANDROID_NDK_HOME = "ANDROID_NDK_HOME";
-    
+
     /**
      * <p>The Android NDK to use.</p>
      * <p>Looks like this:</p>
@@ -252,6 +252,17 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @parameter expression="${android.device}"
      */
     protected String device;
+
+    /**
+     * Specifies which the serial number of each device to connect to. Using the special values "usb" or
+     * "emulator" is also valid. "usb" will connect to all actual devices connected (via usb). "emulator" will
+     * connect to all emulators connected. Multiple devices will be iterated over in terms of goals to run. All
+     * device interaction goals support this so you can e.. deploy the apk to all attached emulators and devices.
+     * Goals supporting this are devices, deploy, undeploy, redeploy, pull, push and instrument.
+     *
+     * @parameter expression="${android.devices}"
+     */
+    protected String[] devices;
 
     /**
      * A selection of configurations to be included in the APK as a comma separated list. This will limit the
@@ -657,7 +668,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                     // according to the docs for installPackage, not null response is error
                     if ( result != null )
                     {
-                        throw new MojoExecutionException( deviceLogLinePrefix 
+                        throw new MojoExecutionException( deviceLogLinePrefix
                                 + "Install of " + apkFile.getAbsolutePath()
                                 + " failed - [" + result + "]" );
                     }
@@ -666,7 +677,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                 }
                 catch ( InstallException e )
                 {
-                    throw new MojoExecutionException( deviceLogLinePrefix + "Install of " + apkFile.getAbsolutePath() 
+                    throw new MojoExecutionException( deviceLogLinePrefix + "Install of " + apkFile.getAbsolutePath()
                             + " failed.", e );
                 }
             }
@@ -750,14 +761,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
             throw new MojoExecutionException( "No online devices attached." );
         }
 
-        boolean shouldRunOnAllDevices = StringUtils.isBlank( device );
+        boolean shouldRunOnAllDevices = getDevices().size() == 0;
         if ( shouldRunOnAllDevices )
         {
-            getLog().info( "android.device parameter not set, using all attached devices" );
+            getLog().info( "android.devices parameter not set, using all attached devices" );
         }
         else
         {
-            getLog().info( "android.device parameter set to " + device );
+            getLog().info( "android.devices parameter set to " + getDevices().toString() );
         }
 
         ArrayList<DoThread> doThreads = new ArrayList<DoThread>();
@@ -786,7 +797,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
         if ( ! shouldRunOnAllDevices && doThreads.isEmpty() )
         {
-            throw new MojoExecutionException( "No device found for android.device=" + device );
+            throw new MojoExecutionException( "No device found for android.device=" + getDevices().toString() );
         }
     }
 
@@ -800,7 +811,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
             }
             catch ( InterruptedException e )
             {
-                new MojoExecutionException( "Thread#join error for device: " + device );
+                new MojoExecutionException( "Thread#join error for device: " + getDevices().toString() );
             }
         }
     }
@@ -833,26 +844,30 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     private boolean shouldDoWithThisDevice( IDevice idevice ) throws MojoExecutionException, MojoFailureException
     {
-        // use specified device or all emulators or all devices
-        if ( "emulator".equals( device ) && idevice.isEmulator() )
-        {
-            return true;
-        }
 
-        if ( "usb".equals( device ) && ! idevice.isEmulator() )
+        for ( String device : getDevices() )
         {
-            return true;
-        }
+            // use specified device or all emulators or all devices
+            if ( "emulator".equals( device ) && idevice.isEmulator() )
+            {
+                return true;
+            }
 
-        if ( idevice.isEmulator() && ( device.equalsIgnoreCase( idevice.getAvdName() ) || device
-                .equalsIgnoreCase( idevice.getSerialNumber() ) ) )
-        {
-            return true;
-        }
+            if ( "usb".equals( device ) && ! idevice.isEmulator() )
+            {
+                return true;
+            }
 
-        if ( ! idevice.isEmulator() && device.equals( idevice.getSerialNumber() ) )
-        {
-            return true;
+            if ( idevice.isEmulator() && ( device.equalsIgnoreCase( idevice.getAvdName() ) || device
+                    .equalsIgnoreCase( idevice.getSerialNumber() ) ) )
+            {
+                return true;
+            }
+
+            if ( ! idevice.isEmulator() && device.equals( idevice.getSerialNumber() ) )
+            {
+                return true;
+            }
         }
 
         return false;
@@ -900,7 +915,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                 catch ( InstallException e )
                 {
                     result.set( false );
-                    throw new MojoExecutionException( deviceLogLinePrefix + "Uninstall of " + packageName 
+                    throw new MojoExecutionException( deviceLogLinePrefix + "Uninstall of " + packageName
                             + " failed.", e );
                 }
             }
@@ -1276,6 +1291,20 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         return overlayDirectories;
     }
 
+    private Set<String> getDevices()
+    {
+        Set<String> list = new HashSet<String>();
+
+        if ( StringUtils.isNotBlank( device ) )
+        {
+            list.add( device );
+        }
+
+        list.addAll( Arrays.asList( devices ) );
+
+        return list;
+    }
+
     private abstract class DoThread extends Thread
     {
         private MojoFailureException failure;
@@ -1338,5 +1367,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         {
             throw new MojoExecutionException( "Could not copy source folder to target folder", e );
         }
+
     }
+
 }
