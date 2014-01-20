@@ -282,8 +282,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 extractApksources( apksourcesFile );
             }
         }
-        projectHelper.addResource( project, extractedDependenciesJavaResources.getAbsolutePath(), null, null );
-        project.addCompileSourceRoot( extractedDependenciesJavaSources.getAbsolutePath() );
+
+        if ( extractedDependenciesJavaResources.exists() )
+        {
+            projectHelper.addResource( project, extractedDependenciesJavaResources.getAbsolutePath(), null, null );
+            project.addCompileSourceRoot( extractedDependenciesJavaSources.getAbsolutePath() );
+        }
     }
 
     private void extractApksources( File apksourcesFile ) throws MojoExecutionException
