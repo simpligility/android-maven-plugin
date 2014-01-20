@@ -1193,7 +1193,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     public final File getUnpackedLibFolder( Artifact artifact )
     {
-        return new File( AbstractAndroidMojo.getLibraryUnpackDirectory( unpackedLibsDirectory, artifact ) );
+        return new File( unpackedLibsDirectory.getAbsolutePath(), artifact.getArtifactId() );
     }
 
     protected final File getUnpackedLibSourceFolder( Artifact artifact )
@@ -1215,30 +1215,20 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @param artifact  Android dependency that is being referenced.
      * @return Folder where the unpacked native libraries are located.
      */
-    protected final File getUnpackedLibNativesFolder( Artifact artifact )
+    public final File getUnpackedLibNativesFolder( Artifact artifact )
     {
         return new File( getUnpackedLibFolder( artifact ), "libs" );
     }
 
-    /**
-     *
-     * @param apkLibraryArtifact
-     * @return
-     */
-    public final String getUnpackedLibraryClassesDirectory( Artifact apkLibraryArtifact )
+    protected final File getUnpackedLibClassesFolder( Artifact artifact )
     {
-        return AbstractAndroidMojo.getLibraryUnpackDirectory( unpackedLibClassesDirectory, apkLibraryArtifact );
+        return new File( unpackedLibClassesDirectory.getAbsolutePath(), artifact.getArtifactId() );
     }
 
-    /**
-     *
-     * @param unpackedApkLibsDirectory
-     * @param apkLibraryArtifact
-     * @return
-     */
-    public static String getLibraryUnpackDirectory( File unpackedApkLibsDirectory, Artifact apkLibraryArtifact )
+    // TODO Replace this with a non-static method (could even replace it with one of the methods above).
+    public static File getLibraryUnpackDirectory( File unpackedApkLibsDirectory, Artifact artifact )
     {
-        return unpackedApkLibsDirectory.getAbsolutePath() + "/" + apkLibraryArtifact.getId().replace( ":", "_" );
+        return new File( unpackedApkLibsDirectory.getAbsolutePath(), artifact.getArtifactId() );
     }
 
     /**
