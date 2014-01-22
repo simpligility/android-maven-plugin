@@ -146,7 +146,7 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     @PullParameter( defaultValueGetterMethod = "getProguardJarPath" )
     private String parsedProguardJarPath;
-    
+
     /**
      * Path relative to the project's build directory (target) where proguard puts folowing files:
      * <p/>
@@ -175,14 +175,14 @@ public class ProguardMojo extends AbstractAndroidMojo
     private String outputDirectory;
 
    /**
-    * @parameter expression="${android.proguard.obfuscatedJar}" 
+    * @parameter expression="${android.proguard.obfuscatedJar}"
     *            default-value="${project.build.directory}/${project.build.finalName}_obfuscated.jar"
     */
    private String obfuscatedJar;
 
     @PullParameter( defaultValue = "proguard" )
     private String parsedOutputDirectory;
-    
+
     @PullParameter
     private String parsedObfuscatedJar;
 
@@ -219,14 +219,14 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     @PullParameter( defaultValue = "true" )
     private Boolean parsedFilterManifest;
-    
+
     /**
      * If set to true JDK jars will be included as library jars and corresponding filters
      * will be applied to android.jar.  Defaults to true.
      * @parameter expression="${android.proguard.includeJdkLibs}"
      */
     private Boolean includeJdkLibs;
-    
+
     @PullParameter( defaultValue = "true" )
     private Boolean parsedIncludeJdkLibs;
 
@@ -235,7 +235,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      * @parameter expression="${android.proguard.attachMap}"
      */
     private Boolean attachMap;
-    
+
     @PullParameter( defaultValue = "false" )
     private Boolean parsedAttachMap;
 
@@ -287,8 +287,9 @@ public class ProguardMojo extends AbstractAndroidMojo
         {
             if ( excludedFilter != null && ! excludedFilter.isEmpty() )
             {
-                StringBuilder sb = new StringBuilder( path );
-                sb.append( '(' );
+                StringBuilder sb = new StringBuilder( "'\"" );
+                sb.append( path );
+                sb.append( "\"(" );
                 for ( Iterator<String> it = excludedFilter.iterator(); it.hasNext(); )
                 {
                     sb.append( '!' ).append( it.next() );
@@ -297,12 +298,12 @@ public class ProguardMojo extends AbstractAndroidMojo
                         sb.append( ',' );
                     }
                 }
-                sb.append( ')' );
+                sb.append( ")'" );
                 return sb.toString();
             }
             else
             {
-                return "\'" + path + "\'";
+                return "\'\"" + path + "\"\'";
             }
         }
     }
@@ -325,7 +326,7 @@ public class ProguardMojo extends AbstractAndroidMojo
     private void executeProguard() throws MojoExecutionException
     {
         final File proguardDir = new File( project.getBuild().getDirectory(), parsedOutputDirectory );
-          
+
         if ( ! proguardDir.exists() && ! proguardDir.mkdir() )
         {
             throw new MojoExecutionException( "Cannot create proguard output directory" );
@@ -362,26 +363,26 @@ public class ProguardMojo extends AbstractAndroidMojo
         collectInputFiles( commands );
 
         commands.add( "-outjars" );
-        commands.add( "'" + obfuscatedJar + "'" );
-        
+        commands.add( "'\"" + obfuscatedJar + "\"'" );
+
         commands.add( "-dump" );
-        commands.add( "'" + proguardDir + File.separator + "dump.txt'" );
+        commands.add( "'\"" + proguardDir + File.separator + "dump.txt\"'" );
         commands.add( "-printseeds" );
-        commands.add( "'" + proguardDir + File.separator + "seeds.txt'" );
+        commands.add( "'\"" + proguardDir + File.separator + "seeds.txt\"'" );
         commands.add( "-printusage" );
-        commands.add( "'" + proguardDir + File.separator + "usage.txt'" );
-        
+        commands.add( "'\"" + proguardDir + File.separator + "usage.txt\"'" );
+
         File mapFile = new File( proguardDir, "mapping.txt" );
 
         commands.add( "-printmapping" );
-        commands.add( "'" + mapFile + "'" );
+        commands.add( "'\"" + mapFile + "\"'" );
 
         commands.addAll( Arrays.asList( parsedOptions ) );
 
         final String javaExecutable = getJavaExecutable().getAbsolutePath();
-        
+
         getLog().info( javaExecutable + " " + commands.toString() );
-        
+
         try
         {
             executor.executeCommand( javaExecutable, commands, project.getBasedir(), false );
@@ -390,7 +391,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         {
             throw new MojoExecutionException( "", e );
         }
-        
+
         if ( parsedAttachMap )
         {
             projectHelper.attachArtifact( project, "map", mapFile );
