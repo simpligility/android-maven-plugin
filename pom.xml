@@ -33,6 +33,9 @@
     <url>http://code.google.com/p/maven-android-plugin</url>
     <inceptionYear>2008</inceptionYear>
     <properties>
+        <!-- github server corresponds to entry in ~/.m2/settings.xml -->
+        <github.global.server>github</github.global.server>
+
         <scm.branch>master</scm.branch>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Don't upgrade maven-plugin-plugin until MPLUGIN-187 is fixed:
@@ -73,11 +76,11 @@
         <url>https://travis-ci.org/jayway/maven-android-plugin</url>
     </ciManagement>
     <distributionManagement>
-        <snapshotRepository>
-            <id>oss.sonatype.org-jayway-snapshots</id>
-            <name>Jayway OpenSource SNAPSHOTs on Sonatype.org</name>
-            <url>http://oss.sonatype.org/content/repositories/jayway-snapshots/</url>
-        </snapshotRepository>
+        <repository>
+            <id>internal.repo</id>
+            <name>Temporary Staging Repository</name>
+            <url>file://${project.build.directory}/mvn-repo</url>
+        </repository>
     </distributionManagement>
     <licenses>
         <license>
@@ -360,6 +363,14 @@
                     <artifactId>maven-plugin-plugin</artifactId>
                     <version>${maven-plugin-plugin.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.0</version>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -452,17 +463,6 @@
                     <argLine>-Xmx512m -XX:MaxPermSize=128m</argLine>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <extensions>true</extensions>
-                <inherited>false</inherited>
-                <configuration>
-                    <serverId>oss.sonatype.org-jayway-staging</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <stagingProfileId>26a4c760b261ca</stagingProfileId>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
     <reporting>
@@ -539,35 +539,26 @@
             <build>
                 <plugins>
                     <plugin>
-                        <!-- deploy the site to github pages -->
                         <groupId>com.github.github</groupId>
                         <artifactId>site-maven-plugin</artifactId>
+                        <version>0.9</version>
                         <configuration>
-                            <server>github</server> <!--  the id of the server with the passwords in settings.xml -->
-                            <message>Creating site for ${project.version}</message>
+                            <message>Maven artifacts for ${project.version}</message>  <!-- git commit message -->
+                            <noJekyll>true</noJekyll>                                  <!-- disable webpage processing -->
+                            <merge>true</merge>
+                            <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> <!-- matches distribution management repository url above -->
+                            <branch>refs/heads/mvn-repo</branch>                       <!-- remote branch name -->
+                            <includes><include>**/*</include></includes>
+                            <repositoryName>maven-android-plugin</repositoryName>      <!-- github repo name -->
+                            <repositoryOwner>mmadev</repositoryOwner>    <!-- github username  -->
                         </configuration>
                         <executions>
+                            <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
                             <execution>
-                                <phase>site</phase>
                                 <goals>
-                                    <goal>site</goal> <!-- the site goal uploads to ghpages -->
+                                    <goal>site</goal>
                                 </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- We want to sign the artifact, the POM, and all attached artifacts -->
-                    <plugin>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <configuration>
-                            <useAgent>true</useAgent>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
+                                <phase>deploy</phase>
                             </execution>
                         </executions>
                     </plugin>
