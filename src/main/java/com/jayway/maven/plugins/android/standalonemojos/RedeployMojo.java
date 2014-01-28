@@ -26,8 +26,9 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 /**
- * Redeploys the built apk of the current project to a connected device.
- * This simply tries to undeploy the APK and re-deploy it.
+ * Undeploys and the deploys (= redeploys) the apk(s) of the current project(s) to all
+ * attached devices and emulators. Automatically skips other projects in a multi-module
+ * build that do not use packaging apk without terminating.<br/>
  *
  * @author clement.escoffier@akquinet.de
  * @author Manfred Moser <manfred@simpligility.com>

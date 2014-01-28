@@ -21,10 +21,12 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 /**
- * Deploy the apk built with the current projects to all attached devices and emulators. Skips other projects in 
- * a multi-module build without terminating.<br/>
- * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on a project
- * with instrumentation tests.
+ * Deploys the apk(s) of the current project(s) to all attached devices and emulators.
+ * Automatically skips other projects in a multi-module build that do not use packaging
+ * apk without terminating.<br/>
+ *
+ * Deploymnet is automatically performed when running <code>mvn integration-test</code>
+ * (or <code>mvn install</code>) on a project with instrumentation tests.
  *
  * @author hugo.josefson@jayway.com
  * @author Manfred Moser <manfred@simpligility.com>
