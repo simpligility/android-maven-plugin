@@ -100,8 +100,10 @@ public final class ConsumeAarMojo extends AbstractAndroidMojo
                 }
 
                 // Now add the extracted classes folder to the compile classpath
-                this.project.addCompileSourceRoot( extractedClassesFolder.getAbsolutePath() );
-                getLog().debug( "Adding classpath element : " + extractedClassesFolder );
+                // TODO Add the classpath in the AarMavenLifecycleParticipant because adding it here won't work.
+                // this.project.addCompileSourceRoot( extractedClassesFolder.getAbsolutePath() );
+                getLog().warn( "Not adding classpath element : " + extractedClassesFolder
+                        + " because it won't work from ConsumeAarMojo" );
             }
         }
     }

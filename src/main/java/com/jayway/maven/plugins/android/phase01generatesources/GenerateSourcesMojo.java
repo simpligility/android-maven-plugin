@@ -190,11 +190,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             targetDirectory.mkdirs();
 
+            // TODO Do we really want to continue supporting APKSOURCES? How long has it bee deprecated
             extractSourceDependencies();
-
-            // This will copy assets of all dependencies into combinedAssets.
-            // It also copies resources of all dependencies into extractedDependenciesRes
-            extractLibraryDependencies();
 
             // Copy project assets to combinedAssets so that aapt has a single assets folder to load.
             copyFolder( assetsDirectory, combinedAssets );
@@ -210,7 +207,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                     final File libSourceFolder = getUnpackedLibSourceFolder( artifact );
                     final String[] apklibAidlFiles = findRelativeAidlFileNames( libSourceFolder );
                     relativeApklibAidlFileNames.put( artifact.getId(), apklibAidlFiles );
-                }
+        }
             }
 
             mergeManifests();
