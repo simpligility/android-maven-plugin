@@ -39,15 +39,17 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKSOURCES;
 
 /**
+ * Extracts any dependent AARs so that they are available to the build.
  *
  * @author Benoit Billington
+ * @author William Ferguson <william.ferguson@xandar.com.au>
  *
  * @goal consume-aar
  * @phase compile
  * @requiresProject true
  * @requiresDependencyResolution compile
  */
-public class ConsumeAarMojo extends AbstractAndroidMojo
+public final class ConsumeAarMojo extends AbstractAndroidMojo
 {
 
     public void execute() throws MojoExecutionException, MojoFailureException
@@ -68,11 +70,9 @@ public class ConsumeAarMojo extends AbstractAndroidMojo
         {
             if ( artifact.getType().equals( AAR ) )
             {
-                final String aarJar = getLibraryUnpackDirectory( artifact ) + "/" + SdkConstants.FN_CLASSES_JAR;
-
-                final File aarFileJar = new File( aarJar );
-
-                final UnArchiver unArchiver = new ZipUnArchiver( aarFileJar )
+                // Extract the library classes into their own folders and append them to the compile classpath
+                final File aarClassesJar = new File( getUnpackedLibFolder( artifact ), SdkConstants.FN_CLASSES_JAR );
+                final UnArchiver unArchiver = new ZipUnArchiver( aarClassesJar )
                 {
                     @Override
                     protected Logger getLogger()
@@ -80,13 +80,14 @@ public class ConsumeAarMojo extends AbstractAndroidMojo
                         return new ConsoleLogger( Logger.LEVEL_DEBUG, "classes-unarchiver" );
                     }
                 };
-                final File classes = new File( project.getBuild().getOutputDirectory() );
 
+                final File extractedClassesFolder = getUnpackedLibClassesFolder( artifact );
                 getLog().info( "Extract aar classes for " + artifact );
+                getLog().debug( "                   from " + aarClassesJar );
+                getLog().debug( "                     to " + extractedClassesFolder );
+                extractedClassesFolder.mkdirs();
 
-                classes.mkdir();
-
-                unArchiver.setDestDirectory( classes );
+                unArchiver.setDestDirectory( extractedClassesFolder );
                 try
                 {
                     unArchiver.extract();
@@ -94,14 +95,17 @@ public class ConsumeAarMojo extends AbstractAndroidMojo
                 catch ( ArchiverException e )
                 {
                     throw new MojoExecutionException( "ArchiverException while extracting "
-                            + aarFileJar.getAbsolutePath()
+                            + aarClassesJar.getAbsolutePath()
                             + ". Message: " + e.getLocalizedMessage(), e );
                 }
 
-                getLog().info( "Extracted " + aarJar );
+                // Now add the extracted classes folder to the compile classpath
+                // TODO Add the classpath in the AarMavenLifecycleParticipant because adding it here won't work.
+                // this.project.addCompileSourceRoot( extractedClassesFolder.getAbsolutePath() );
+                getLog().warn( "Not adding classpath element : " + extractedClassesFolder
+                        + " because it won't work from ConsumeAarMojo" );
             }
         }
-
     }
 
     /**

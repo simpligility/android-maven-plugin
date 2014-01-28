@@ -800,8 +800,7 @@ public class ApkMojo extends AbstractAndroidMojo
                         else if ( APKLIB.equals( resolvedArtifact.getType() )
                                 || AAR.equals( resolvedArtifact.getType() ) )
                         {
-                                addNativeDirectory( natives, new File( getLibraryUnpackDirectory( resolvedArtifact )
-                                                                           + "/libs" ) );
+                                addNativeDirectory( natives, getUnpackedLibNativesFolder( resolvedArtifact ) );
                         }
                     }
                 }
@@ -840,7 +839,7 @@ public class ApkMojo extends AbstractAndroidMojo
     private Set<Artifact> getNativeLibraryArtifacts() throws MojoExecutionException
     {
         return new NativeHelper( project, projectRepos, repoSession, repoSystem, artifactFactory, getLog() )
-                .getNativeDependenciesArtifacts( unpackedApkLibsDirectory, true );
+                .getNativeDependenciesArtifacts( unpackedLibsDirectory, true );
     }
 
     /**
@@ -988,11 +987,11 @@ public class ApkMojo extends AbstractAndroidMojo
         {
             if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
             {
-                final String apkLibResDir = getLibraryUnpackDirectory( artifact ) + "/res";
-                if ( new File( apkLibResDir ).exists() )
+                final File apkLibResDir = getUnpackedLibResourceFolder( artifact );
+                if ( apkLibResDir.exists() )
                 {
                     commands.add( "-S" );
-                    commands.add( apkLibResDir );
+                    commands.add( apkLibResDir.getAbsolutePath() );
                 }
             }
         }
@@ -1062,7 +1061,7 @@ public class ApkMojo extends AbstractAndroidMojo
         {
             if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
             {
-                File apklibAsssetsDirectory = new File( getLibraryUnpackDirectory( artifact ) + "/assets" );
+                final File apklibAsssetsDirectory = getUnpackedLibAssetsFolder( artifact );
                 if ( apklibAsssetsDirectory.exists() )
                 {
                     try
