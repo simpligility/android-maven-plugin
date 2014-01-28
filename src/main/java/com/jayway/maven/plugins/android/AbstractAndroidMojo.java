@@ -19,14 +19,13 @@ package com.jayway.maven.plugins.android;
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.InstallException;
-import com.jayway.maven.plugins.android.common.AetherHelper;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
+import com.jayway.maven.plugins.android.common.BuildHelper;
 import com.jayway.maven.plugins.android.common.DependencyResolver;
 import com.jayway.maven.plugins.android.common.DeviceHelper;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.configuration.Ndk;
 import com.jayway.maven.plugins.android.configuration.Sdk;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.jxpath.JXPathContext;
@@ -42,6 +41,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.codehaus.plexus.component.annotations.Requirement;
+import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
@@ -335,6 +336,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected String customPackage;
 
+    @SuppressWarnings( "unused" )
+    @Requirement
+    private Logger log;
+
     /**
      * Maven ProjectHelper.
      *
@@ -462,6 +467,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected boolean release;
 
+    private BuildHelper buildHelper;
+
     /**
      *
      */
@@ -508,8 +515,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected Set<Artifact> getAllRelevantDependencyArtifacts()
     {
-        final Set<Artifact> allArtifacts = project.getArtifacts();
-        return filterOutIrrelevantArtifacts( allArtifacts );
+        return getBuildHelper().getAllRelevantDependencyArtifacts( project );
     }
 
     /**
@@ -551,15 +557,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected File resolveArtifactToFile( Artifact artifact ) throws MojoExecutionException
     {
-        Artifact resolvedArtifact = AetherHelper.resolveArtifact( artifact, repoSystem, repoSession, projectRepos );
-        final File jar = resolvedArtifact.getFile();
-        if ( jar == null )
-        {
-            throw new MojoExecutionException( "Could not resolve artifact " + artifact.getId()
-                    + ". Please install it with \"mvn install:install-file ...\" or deploy it to a repository "
-                    + "with \"mvn deploy:deploy-file ...\"" );
-        }
-        return jar;
+        return getBuildHelper().resolveArtifactToFile( artifact );
     }
 
     /**
@@ -1193,22 +1191,22 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     public final File getUnpackedLibFolder( Artifact artifact )
     {
-        return new File( unpackedLibsDirectory.getAbsolutePath(), artifact.getArtifactId() );
+        return getBuildHelper().getUnpackedLibFolder( artifact );
     }
 
     protected final File getUnpackedLibSourceFolder( Artifact artifact )
     {
-        return new File( getUnpackedLibFolder( artifact ), "src" );
+        return getBuildHelper().getUnpackedLibSourceFolder( artifact );
     }
 
     protected final File getUnpackedLibResourceFolder( Artifact artifact )
     {
-        return new File( getUnpackedLibFolder( artifact ), "res" );
+        return getBuildHelper().getUnpackedLibResourceFolder( artifact );
     }
 
     protected final File getUnpackedLibAssetsFolder( Artifact artifact )
     {
-        return new File( getUnpackedLibFolder( artifact ), "assets" );
+        return getBuildHelper().getUnpackedLibAssetsFolder( artifact );
     }
 
     /**
@@ -1217,12 +1215,12 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     public final File getUnpackedLibNativesFolder( Artifact artifact )
     {
-        return new File( getUnpackedLibFolder( artifact ), "libs" );
+        return getBuildHelper().getUnpackedLibNativesFolder( artifact );
     }
 
     protected final File getUnpackedLibClassesFolder( Artifact artifact )
     {
-        return new File( unpackedLibClassesDirectory.getAbsolutePath(), artifact.getArtifactId() );
+        return getBuildHelper().getUnpackedLibClassesFolder( artifact );
     }
 
     // TODO Replace this with a non-static method (could even replace it with one of the methods above).
@@ -1334,7 +1332,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected final boolean isAPKBuild()
     {
-        return APK.equals( project.getPackaging() );
+        return getBuildHelper().isAPKBuild( project );
     }
 
     /**
@@ -1375,5 +1373,19 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         {
             throw new MojoExecutionException( "Could not copy source folder to target folder", e );
         }
+    }
+
+    private BuildHelper getBuildHelper()
+    {
+        if ( buildHelper == null )
+        {
+            buildHelper = new BuildHelper(
+                    repoSystem, repoSession,
+                    projectRepos, combinedAssets,
+                    projectHelper,
+                    unpackedLibsDirectory, unpackedLibClassesDirectory,
+                    log );
+        }
+        return buildHelper;
     }
 }
