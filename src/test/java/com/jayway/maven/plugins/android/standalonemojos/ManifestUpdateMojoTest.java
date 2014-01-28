@@ -74,12 +74,20 @@ public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<Manifest
         assertExpectedAndroidManifest(manifestFile, dir);
     }
 
-    public void testWhenNewVersionHasLessDigitsItshouldBePaddedSoVersionCodeIsNotLess() throws Exception {
+    public void testWhenNewVersionHasLessDigitsItshouldBePaddedSoVersionCodeIsLess() throws Exception {
         ManifestUpdateMojo mojo = createMojo("manifest-tests/differentLengthVersion-android-project");
         mojo.execute();
         File dir = getProjectDir(mojo);
         File manifestFile = new File(dir, "AndroidManifest.xml");
         assertExpectedAndroidManifest(manifestFile, dir);
+    }
+    
+    public void testWhenNewVersionHasfiveDigits() throws Exception {
+      ManifestUpdateMojo mojo = createMojo("manifest-tests/fiveDigitLengthVersion-android-project");
+      mojo.execute();
+      File dir = getProjectDir(mojo);
+      File manifestFile = new File(dir, "AndroidManifest.xml");
+      assertExpectedAndroidManifest(manifestFile, dir);
     }
 
     public void testVersionCodeUpdateAndIncrementFail() throws Exception {
