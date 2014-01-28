@@ -25,7 +25,11 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 
 /**
- * Undeploys the built apk file, or another specified apk, from a connected device.<br/>
+ * Undeploys the apk(s) of the current project(s) to all attached devices and emulators.
+ * Automatically skips other projects in a multi-module build that do not use packaging
+ * apk without terminating.<br/>
+ * Deploymnet is automatically performed when running <code>mvn integration-test</code>
+ * (or <code>mvn install</code>) on a project with instrumentation tests.
  *
  * @author hugo.josefson@jayway.com
  * @author Manfred Moser <manfred@simpligility.com>
