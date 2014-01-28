@@ -81,9 +81,11 @@ public final class ConsumeAarMojo extends AbstractAndroidMojo
                     }
                 };
 
-                final File extractedClassesFolder = new File( getUnpackedLibraryClassesDirectory( artifact ) );
+                final File extractedClassesFolder = getUnpackedLibClassesFolder( artifact );
                 getLog().info( "Extract aar classes for " + artifact );
-                extractedClassesFolder.mkdir();
+                getLog().debug( "                   from " + aarClassesJar );
+                getLog().debug( "                     to " + extractedClassesFolder );
+                extractedClassesFolder.mkdirs();
 
                 unArchiver.setDestDirectory( extractedClassesFolder );
                 try
@@ -99,6 +101,7 @@ public final class ConsumeAarMojo extends AbstractAndroidMojo
 
                 // Now add the extracted classes folder to the compile classpath
                 this.project.addCompileSourceRoot( extractedClassesFolder.getAbsolutePath() );
+                getLog().debug( "Adding classpath element : " + extractedClassesFolder );
             }
         }
     }
