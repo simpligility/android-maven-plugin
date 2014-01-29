@@ -17,6 +17,7 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.config.ConfigHandler;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.config.PullParameter;
@@ -28,9 +29,9 @@ import org.apache.maven.plugin.MojoFailureException;
 import java.io.File;
 
 /**
- * Deploys the built apk file, or another specified apk, to a connected device.<br/>
- * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on a project
- * with instrumentation tests.
+ * Deploys a specified Android application apk to attached devices and emulators. 
+ * By default it will deploy to all, but subset or single one can be configured 
+ * with the device and devices parameters.<br/>
  *
  * @author Manfred Moser <manfred@simpligility.com>
  * 
@@ -43,22 +44,22 @@ public class DeployApkMojo extends AbstractAndroidMojo
     protected DeployApk deployApk;
 
     /**
-     * @parameter expression="${android.deployApk.apkFile}"
+     * @parameter expression="${android.deployApk.file}"
      * @optional
     */
-    private File apkFile;
+    private File deployApkFile;
 
     @PullParameter
-    private File parsedApkFile;
+    private File parsedFile;
 
     /**
-     * @parameter expression="${android.deployApk.packageName}"
+     * @parameter expression="${android.deployApk.package}"
      * @optional
     */
-    private String packageName;
+    private String deployApkPackage;
 
     @PullParameter
-    private String parsedPackageName;
+    private String parsedPackage;
 
     /**
      * Deploy the app to the attached devices and emulators.
@@ -71,15 +72,25 @@ public class DeployApkMojo extends AbstractAndroidMojo
         ConfigHandler configHandler = new ConfigHandler( this, this.session, this.execution );
         configHandler.parseConfiguration();
         
-        if ( parsedApkFile != null && parsedApkFile.isFile() )
+        if ( parsedFile == null )
         {
-            getLog().debug( "Deploying with apkFile " + parsedApkFile );
-            deployApk( parsedApkFile );
-        } 
+            throw new MojoFailureException( "\n\n The parameter android.deployApk.file is missing. \n"
+                    + "Try mvn android:deploy-apk -Dandroid.deployApk.file=yourapk.apk\n" );
+        }
+        else if ( !parsedFile.isFile() )
+        {
+            throw new MojoFailureException( "\n\n The file parameter does not point to a file: " 
+                    + parsedFile.getAbsolutePath() + "\n" );
+        }
+        else if ( !parsedFile.getAbsolutePath().toLowerCase().endsWith( AndroidExtension.APK ) )
+        {
+            throw new MojoFailureException( "\n\n The file parameter does not point to an APK: " 
+                    + parsedFile.getAbsolutePath() + "\n" );
+        }
         else 
         {
-            throw new MojoFailureException( "Insufficient parameters ... add more " );
-        }
+            getLog().info( "Deploying apk file at " + parsedFile );
+            deployApk( parsedFile );
+        } 
     }
-
 }
