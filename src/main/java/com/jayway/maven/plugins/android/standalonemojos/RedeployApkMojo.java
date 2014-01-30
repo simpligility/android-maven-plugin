@@ -22,16 +22,19 @@ import com.jayway.maven.plugins.android.config.ConfigHandler;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.DeployApk;
+import com.jayway.maven.plugins.android.configuration.ValidationResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import java.io.File;
 
 /**
- * Redeploys an apk file.
- * This simply tries to undeploy the APK and re-deploy it.
+ * Reploys a specified Android application apk to attached devices and emulators. 
+ * By default it will deploy to all, but a asubset or single one can be configured 
+ * with the device and devices parameters. This simply tries to undeploy the APK 
+ * first and then deploy it again. This goal can be used in non-android projects and 
+ * as standalone execution on the command line.<br/>
  *
  * @author Manfred Moser <manfred@simpligility.com>
  * 
@@ -40,56 +43,45 @@ import java.io.File;
  */
 public class RedeployApkMojo extends AbstractAndroidMojo
 {
+    /**
+     * Configuration for apk file redeployment within a pom file. See {@link #deployapkFilename}. 
+     * <p/>
+     * <pre>
+     * &lt;deployapk&gt;
+     *    &lt;filename&gt;yourapk.apke&lt;/filename&gt;
+     * &lt;/deployapk&gt;
+     * </pre>
+     * 
+     * @parameter
+     */
     @ConfigPojo
-    protected DeployApk deployApk;
+    protected DeployApk deployapk;
 
     /**
-     * @parameter expression="${android.deployApk.apkFile}"
+     * @parameter expression="${android.deployapk.filename}"
      * @optional
     */
-    private File apkFile;
+    private File deployapkFilename;
 
     @PullParameter
-    private File parsedApkFile;
-
-    /**
-     * @parameter expression="${android.deployApk.packageName}"
-     * @optional
-    */
-    private String packageName;
-
-    @PullParameter
-    private String parsedPackageName;
+    private File parsedFilename;
 
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         ConfigHandler configHandler = new ConfigHandler( this, this.session, this.execution );
         configHandler.parseConfiguration();
         
-        if ( StringUtils.isNotBlank( parsedPackageName ) ) 
-        {
-            getLog().debug( "Undeploying with packageName " + parsedPackageName );
-            undeployApk( parsedPackageName ); 
-        } 
-        else if ( parsedApkFile != null && parsedApkFile.isFile() )
-        {
-            getLog().debug( "Undeploying with apkFile " + parsedApkFile );
-            undeployApk( parsedApkFile );
+        ValidationResponse response = DeployApk.validFileParameter( parsedFilename );
+        if ( response.isValid() ) 
+        {   
+            getLog().debug( "Undeploying with file " + parsedFilename );
+            undeployApk( parsedFilename );
+            getLog().debug( "Deploying with apkFile " + parsedFilename );
+            deployApk( parsedFilename );
         } 
         else 
         {
-            throw new MojoFailureException( "Insufficient parameters ... add more " );
-        }
-        
-        if ( parsedApkFile != null && parsedApkFile.isFile() )
-        {
-            getLog().debug( "Deploying with apkFile " + parsedApkFile );
-            deployApk( parsedApkFile );
-        } 
-        else 
-        {
-            throw new MojoFailureException( "Insufficient parameters ... add more " );
+            throw new MojoFailureException( response.getMessage() );
         }
     }
-
 }
