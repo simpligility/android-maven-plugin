@@ -292,7 +292,9 @@ public class ProguardMojo extends AbstractAndroidMojo
         {
             if ( excludedFilter != null && !excludedFilter.isEmpty() )
             {
-                StringBuilder sb = new StringBuilder( path );
+                StringBuilder sb = new StringBuilder( "'\"" );
+                    sb.append( path );
+                    sb.append( "\"(" );
                 sb.append( '(' );
                 for ( Iterator< String > it = excludedFilter.iterator(); it.hasNext(); )
                 {
@@ -302,12 +304,12 @@ public class ProguardMojo extends AbstractAndroidMojo
                         sb.append( ',' );
                     }
                 }
-                sb.append( ')' );
+                sb.append( ")'" );
                 return sb.toString();
             }
             else
             {
-                return "\'" + path + "\'";
+                return "\'\"" + path + "\"\'";
             }
         }
     }
@@ -375,19 +377,19 @@ public class ProguardMojo extends AbstractAndroidMojo
         collectInputFiles( commands );
 
         commands.add( "-outjars" );
-        commands.add( "'" + obfuscatedJar + "'" );
+        commands.add( "'\"" + obfuscatedJar + "\"'" );
 
         commands.add( "-dump" );
-        commands.add( "'" + proguardDir + File.separator + "dump.txt'" );
+        commands.add( "'\"" + proguardDir + File.separator + "dump.txt\"'" );
         commands.add( "-printseeds" );
-        commands.add( "'" + proguardDir + File.separator + "seeds.txt'" );
+        commands.add( "'\"" + proguardDir + File.separator + "seeds.txt\"'" );
         commands.add( "-printusage" );
-        commands.add( "'" + proguardDir + File.separator + "usage.txt'" );
+        commands.add( "'\"" + proguardDir + File.separator + "usage.txt\"'" );
 
         File mapFile = new File( proguardDir, "mapping.txt" );
 
         commands.add( "-printmapping" );
-        commands.add( "'" + mapFile + "'" );
+        commands.add( "'\"" + mapFile + "\"'" );
 
         commands.addAll( Arrays.asList( parsedOptions ) );
 
