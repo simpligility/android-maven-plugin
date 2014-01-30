@@ -29,18 +29,18 @@ import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
-import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
-import static com.jayway.maven.plugins.android.common.AndroidExtension.APKSOURCES;
 
 /**
- *
+ * ConsumeAarMojo is responsible for consuming an Android Archive (aar) and 
+ * its transitive dependencies into the current project. It only proceeds with 
+ * this for Android Applications (apk), since it only makes sense for these to 
+ * consume an aar. For projects with other packaging the execution is skipped.
+ * 
  * @author Benoit Billington
+ * @author Manfred Moser
  *
  * @goal consume-aar
  * @phase compile
@@ -52,11 +52,12 @@ public class ConsumeAarMojo extends AbstractAndroidMojo
 
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-
-        // If the current POM isn't an Android-related POM, then don't do
-        // anything.  This helps work with multi-module projects.
-        if ( ! isCurrentProjectAndroid() )
+        // Skip execution if the current project is not packaging apk.
+        // This helps work with multi-module projects.
+        String projectPackaging = project.getPackaging();
+        if ( ! APK.equals( projectPackaging ) )
         {
+            getLog().info( "Project packaging (" + projectPackaging + ") is not APK - skipping AAR consumption" );
             return;
         }
 
@@ -103,19 +104,4 @@ public class ConsumeAarMojo extends AbstractAndroidMojo
         }
 
     }
-
-    /**
-     * @return true if the pom type is APK, AAR, APKLIB, or APKSOURCES
-     */
-    private boolean isCurrentProjectAndroid()
-    {
-        final Set<String> androidArtifacts = new HashSet<String>()
-        {
-            {
-                addAll( Arrays.asList( APK, APKLIB, APKSOURCES, AAR ) );
-            }
-        };
-        return androidArtifacts.contains( project.getArtifact().getType() );
-    }
-
 }
