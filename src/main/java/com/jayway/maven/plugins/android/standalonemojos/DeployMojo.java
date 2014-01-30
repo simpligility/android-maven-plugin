@@ -20,46 +20,32 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import java.io.File;
-
 /**
- * Deploys the built apk file, or another specified apk, to a connected device.<br/>
- * Automatically performed when running <code>mvn integration-test</code> (or <code>mvn install</code>) on a project
- * with instrumentation tests.
+ * Deploys the apk(s) of the current project(s) to all attached devices and emulators.
+ * Automatically skips other projects in a multi-module build that do not use packaging
+ * apk without terminating.<br/>
+ *
+ * Deploymnet is automatically performed when running <code>mvn integration-test</code>
+ * (or <code>mvn install</code>) on a project with instrumentation tests.
  *
  * @author hugo.josefson@jayway.com
+ * @author Manfred Moser <manfred@simpligility.com>
+ * 
  * @goal deploy
- * @requiresProject false
+ * @requiresProject true
  * @phase pre-integration-test
  * @requiresDependencyResolution runtime
  */
 public class DeployMojo extends AbstractAndroidMojo
 {
-
     /**
-     * Optionally used to specify a different apk file to deploy to a connected emulator or usb device, instead of the
-     * built apk from this project.
-     *
-     * @parameter expression="${android.file}"
-     */
-    private File file;
-
-    /**
-     * Deploy the app to the attached devices and emulators.
+     * Deploy the apk built with the current projects to all attached devices and emulators. 
      *
      * @throws MojoExecutionException
      * @throws MojoFailureException
      */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        if ( file == null )
-        {
-            deployBuiltApk();
-        }
-        else
-        {
-            deployApk( file );
-        }
+        deployBuiltApk();
     }
-
 }

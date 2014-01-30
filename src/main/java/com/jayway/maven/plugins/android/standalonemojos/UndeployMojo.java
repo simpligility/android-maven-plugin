@@ -16,43 +16,29 @@
  */
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import java.io.File;
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.common.AndroidExtension;
 
 /**
- * Undeploys the built apk file, or another specified apk, from a connected device.<br/>
+ * Undeploys the apk(s) of the current project(s) to all attached devices and emulators.
+ * Automatically skips other projects in a multi-module build that do not use packaging
+ * apk without terminating.<br/>
+ * Deploymnet is automatically performed when running <code>mvn integration-test</code>
+ * (or <code>mvn install</code>) on a project with instrumentation tests.
  *
  * @author hugo.josefson@jayway.com
+ * @author Manfred Moser <manfred@simpligility.com>
+ *
  * @goal undeploy
- * @requiresProject false
+ * @requiresProject true
  */
 public class UndeployMojo extends AbstractAndroidMojo
 {
-
-    /**
-     * Optionally used to specify a different apk package to undeploy from a connected emulator or usb device, instead
-     * of the built apk from this project.
-     *
-     * @parameter property="package" expression="${android.package}" default-value="null"
-     */
-    private String packageName;
-
-    public void setPackage( String packageName )
-    {
-        this.packageName = packageName;
-    }
-
-    /**
-     * Optionally used to specify a different apk file to undeploy from a connected emulator or usb device, instead of
-     * the built apk from this project.
-     *
-     * @parameter expression="${android.file}"
-     */
-    private File file;
-
     /**
      *
      * @throws MojoExecutionException
@@ -60,34 +46,20 @@ public class UndeployMojo extends AbstractAndroidMojo
      */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        String packageToUndeploy = packageName;
-        if ( packageToUndeploy != null && ! "".equals( packageToUndeploy ) && ! "null".equals( packageToUndeploy ) )
+        String packageToUndeploy;
+        if ( project.getPackaging().equals( AndroidExtension.APK ) ) 
         {
-            undeployApk( packageToUndeploy );
-        }
-        else
-        {
-            if ( file != null )
+            packageToUndeploy = renameManifestPackage != null
+                ? renameManifestPackage
+                : extractPackageNameFromAndroidManifest( androidManifestFile );
+            if ( StringUtils.isNotBlank( packageToUndeploy ) ) 
             {
-                undeployApk( file );
-            }
-            else
-            {
-                if ( ! SUPPORTED_PACKAGING_TYPES.contains( project.getPackaging() ) )
-                {
-                    getLog().info( "Skipping undeploy on " + project.getPackaging() );
-                    getLog().info( "Execute undeploy within an Maven Android project or specify package with e.g. "
-                            + "-Dandroid.package=com.simpligility.android.helloflashlight" );
-                    return;
-                }
-
-                packageToUndeploy = renameManifestPackage != null
-                    ? renameManifestPackage
-                    : extractPackageNameFromAndroidManifest( androidManifestFile );
-
                 undeployApk( packageToUndeploy );
             }
         }
-
+        else 
+        {
+            getLog().info( "Project packaging is not apk, skipping undeployment." );
+        }
     }
 }
