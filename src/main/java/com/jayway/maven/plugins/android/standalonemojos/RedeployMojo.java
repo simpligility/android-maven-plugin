@@ -17,49 +17,45 @@
  */
 package com.jayway.maven.plugins.android.standalonemojos;
 
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
+
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import java.io.File;
-
 /**
- * Redeploys the built apk file, or another specified apk, to a connected device.
- * This simply tries to undeploy the APK and re-deploy it.
+ * Undeploys and the deploys (= redeploys) the apk(s) of the current project(s) to all
+ * attached devices and emulators. Automatically skips other projects in a multi-module
+ * build that do not use packaging apk without terminating.<br/>
  *
  * @author clement.escoffier@akquinet.de
+ * @author Manfred Moser <manfred@simpligility.com>
+ * 
  * @goal redeploy
- * @requiresProject false
+ * @requiresProject true
  * @requiresDependencyResolution runtime
  */
 public class RedeployMojo extends AbstractAndroidMojo
 {
 
-    /**
-     * Optionally used to specify a different apk file to deploy to a connected emulator or usb device, instead of the
-     * built apk from this project.
-     *
-     * @parameter expression="${android.file}"
-     */
-    private File file;
-
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        if ( file == null )
+        if ( project.getPackaging().equals( APK ) )
         {
-            if ( ! SUPPORTED_PACKAGING_TYPES.contains( project.getPackaging() ) )
+            String packageToUndeploy = renameManifestPackage != null
+                    ? renameManifestPackage
+                    : extractPackageNameFromAndroidManifest( androidManifestFile );
+            if ( StringUtils.isNotBlank( packageToUndeploy ) ) 
             {
-                getLog().info( "Skipping redeploy on " + project.getPackaging() );
-                return;
+                undeployApk( packageToUndeploy );
             }
-            String packageToUndeploy = extractPackageNameFromAndroidManifest( androidManifestFile );
-            undeployApk( packageToUndeploy );
             deployBuiltApk();
-        }
-        else
+        } 
+        else 
         {
-            undeployApk( file );
-            deployApk( file );
+            getLog().info( "Project packaging is not apk, skipping redeployment" );
         }
     }
 

@@ -661,8 +661,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                                 + "Install of " + apkFile.getAbsolutePath()
                                 + " failed - [" + result + "]" );
                     }
-                    getLog().info( deviceLogLinePrefix + "Successfully installed " + apkFile.getAbsolutePath() + " to "
-                            + DeviceHelper.getDescriptiveName( device ) );
+                    getLog().info( deviceLogLinePrefix + "Successfully installed " + apkFile.getAbsolutePath() ); 
+                    getLog().debug( " to " + DeviceHelper.getDescriptiveName( device ) );
                 }
                 catch ( InstallException e )
                 {
@@ -703,21 +703,23 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     }
 
     /**
-     *
+     * Deploy the apk built with the current projects to all attached devices and emulators. 
+     * Skips other projects in a multi-module build without terminating.
+     * 
      * @throws MojoExecutionException
      * @throws MojoFailureException
      */
     protected void deployBuiltApk() throws MojoExecutionException, MojoFailureException
     {
-        // If we're not on a supported packaging with just skip (Issue 112)
-        // http://code.google.com/p/maven-android-plugin/issues/detail?id=112
-        if ( ! SUPPORTED_PACKAGING_TYPES.contains( project.getPackaging() ) )
+        if ( project.getPackaging().equals( APK ) )
         {
-            getLog().info( "Skipping deployment on " + project.getPackaging() );
-            return;
+            File apkFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + "." + APK );
+            deployApk( apkFile );
         }
-        File apkFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + "." + APK );
-        deployApk( apkFile );
+        else 
+        {
+            getLog().info( "Project packaging is not apk, skipping deployment." );
+        }
     }
 
 
@@ -744,7 +746,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         waitForInitialDeviceList( androidDebugBridge );
         List<IDevice> devices = Arrays.asList( androidDebugBridge.getDevices() );
         int numberOfDevices = devices.size();
-        getLog().info( "Found " + numberOfDevices + " devices connected with the Android Debug Bridge" );
+        getLog().debug( "Found " + numberOfDevices + " devices connected with the Android Debug Bridge" );
         if ( devices.size() == 0 )
         {
             throw new MojoExecutionException( "No online devices attached." );
@@ -753,11 +755,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         boolean shouldRunOnAllDevices = StringUtils.isBlank( device );
         if ( shouldRunOnAllDevices )
         {
-            getLog().info( "android.device parameter not set, using all attached devices" );
+            getLog().debug( "android.device parameter not set, using all attached devices" );
         }
         else
         {
-            getLog().info( "android.device parameter set to " + device );
+            getLog().debug( "android.device parameter set to " + device );
         }
 
         ArrayList<DoThread> doThreads = new ArrayList<DoThread>();
@@ -893,8 +895,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                 try
                 {
                     device.uninstallPackage( packageName );
-                    getLog().info( deviceLogLinePrefix + "Successfully uninstalled " + packageName + " from "
-                            + DeviceHelper.getDescriptiveName( device ) );
+                    getLog().info( deviceLogLinePrefix + "Successfully uninstalled " + packageName );
+                    getLog().debug( " from " + DeviceHelper.getDescriptiveName( device ) );
                     result.set( true );
                 }
                 catch ( InstallException e )

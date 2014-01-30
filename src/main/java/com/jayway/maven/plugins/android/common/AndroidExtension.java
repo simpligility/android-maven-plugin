@@ -17,7 +17,7 @@ public final class AndroidExtension
 
     /**
      * Android archive as introduced by the Gradle Android build system (modelled after apklib with extensions and some
-     * differences(.
+     * differences).
      */
     public static final String AAR = "aar";
 

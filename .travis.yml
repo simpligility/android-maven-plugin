@@ -47,4 +47,4 @@ after_script:
   # Run the samples.
   - mkdir target
   - git clone git://github.com/jayway/maven-android-plugin-samples.git target/maven-android-plugin-samples
-  - mvn install -B -f target/maven-android-plugin-samples/pom.xml -Dandroid.device=test
+  - mvn clean install -B -f target/maven-android-plugin-samples/pom.xml -Dandroid.device=test
