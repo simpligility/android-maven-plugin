@@ -37,6 +37,10 @@ public class Dex
      * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#dexIncremental}
      */
     private Boolean incremental;
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#forceJumbo}
+     */
+    private Boolean forceJumbo;
 
 
 
@@ -74,5 +78,10 @@ public class Dex
     public Boolean isIncremental()
     {
         return incremental;
+    }
+
+    public Boolean isForceJumbo()
+    {
+        return forceJumbo;
     }
 }

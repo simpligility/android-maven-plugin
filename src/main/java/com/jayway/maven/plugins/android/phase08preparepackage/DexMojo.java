@@ -60,6 +60,7 @@ public class DexMojo extends AbstractAndroidMojo
      *   &lt;/jvmArguments&gt;
      *   &lt;coreLibrary&gt;true|false&lt;/coreLibrary&gt;
      *   &lt;noLocals&gt;true|false&lt;/noLocals&gt;
+     *   &lt;forceJumbo&gt;true|false&lt;/forceJumbo&gt;
      *   &lt;optimize&gt;true|false&lt;/optimize&gt;
      *   &lt;preDex&gt;true|false&lt;/preDex&gt;
      *   &lt;preDexLibLocation&gt;path to predexed libraries, defaults to target/dexedLibs&lt;/preDexLibLocation&gt;
@@ -107,6 +108,13 @@ public class DexMojo extends AbstractAndroidMojo
      * @parameter expression="${android.dex.predex}" default-value="false"
      */
     private boolean dexPreDex;
+    
+    /**
+     * Decides whether to use force jumbo mode.
+     * 
+     * @parameter expression="${android.dex.forcejumbo}" default-value="false"
+     */
+    private boolean dexForceJumbo;
 
     /**
      * Path to predexed libraries.
@@ -134,6 +142,7 @@ public class DexMojo extends AbstractAndroidMojo
     private boolean parsedNoLocals;
     private boolean parsedOptimize;
     private boolean parsedPreDex;
+    private boolean parsedForceJumbo;
     private String parsedPreDexLibLocation;
     private boolean parsedIncremental;
 
@@ -275,6 +284,14 @@ public class DexMojo extends AbstractAndroidMojo
             {
                 parsedIncremental = dex.isIncremental();
             }
+            if ( dex.isForceJumbo() == null )
+            {
+                parsedForceJumbo = dexForceJumbo;
+            }
+            else
+            {
+                parsedForceJumbo = dex.isForceJumbo();
+            }
         }
         else
         {
@@ -285,6 +302,7 @@ public class DexMojo extends AbstractAndroidMojo
             parsedPreDex = dexPreDex;
             parsedPreDexLibLocation = dexPreDexLibLocation;
             parsedIncremental = dexIncremental;
+            parsedForceJumbo = dexForceJumbo;
         }
     }
 
@@ -392,6 +410,10 @@ public class DexMojo extends AbstractAndroidMojo
         if ( parsedNoLocals )
         {
             commands.add( "--no-locals" );
+        }
+        if ( parsedForceJumbo )
+        {
+            commands.add( "--force-jumbo" );
         }
 
         for ( File inputFile : filteredFiles )
