@@ -45,7 +45,6 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -53,11 +52,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
@@ -68,6 +67,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  *
  * @author hugo.josefson@jayway.com
  * @author Manfred Moser <manfred@simpligility.com>
+ * @author Malachi de AElfweald malachid@gmail.com
  */
 public abstract class AbstractAndroidMojo extends AbstractMojo
 {
@@ -192,6 +192,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @parameter default-value="${project.basedir}/assets"
      */
     protected File assetsDirectory;
+
+    /**
+     * Source <code>AndroidManifest.xml</code> file to copy into the {@link #androidManifestFile} location.
+     *
+     * @parameter expression="${source.manifestFile}"
+     */
+    protected File sourceManifestFile;
 
     /**
      * The <code>AndroidManifest.xml</code> file.
