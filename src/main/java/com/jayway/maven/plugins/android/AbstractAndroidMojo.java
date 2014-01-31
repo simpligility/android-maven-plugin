@@ -254,11 +254,19 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected String device;
 
     /**
-     * Specifies which the serial number of each device to connect to. Using the special values "usb" or
+     * <p>Specifies a list of serial numbers of each device you want to connect to. Using the special values "usb" or
      * "emulator" is also valid. "usb" will connect to all actual devices connected (via usb). "emulator" will
      * connect to all emulators connected. Multiple devices will be iterated over in terms of goals to run. All
      * device interaction goals support this so you can e.. deploy the apk to all attached emulators and devices.
-     * Goals supporting this are devices, deploy, undeploy, redeploy, pull, push and instrument.
+     * Goals supporting this are devices, deploy, undeploy, redeploy, pull, push and instrument.</p>
+     * <pre>
+     * &lt;devices&gt;
+     *     &lt;device&gt;usb&lt;/device&gt;
+     *     &lt;device&gt;emulator-5554&lt;/device&gt;
+     * &lt;/devices&gt;
+     * </pre>
+     * <p>This parameter can also be configured from command-line with
+     * parameter <code>-Dandroid.devices=usb,emulator</code>.</p>
      *
      * @parameter expression="${android.devices}"
      */
