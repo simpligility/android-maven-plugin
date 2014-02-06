@@ -179,7 +179,7 @@ public class NativeHelper
                                 AbstractAndroidMojo.getLibraryUnpackDirectory( unpackDirectory, artifact ) + "/libs" );
                         // make sure we ignore libs folders that only contain JARs
                         if ( libsFolder.exists()
-                                && libsFolder.list( new PatternFilenameFilter( ".+[^.jar]$" ) ).length > 0 )
+                                && libsFolder.list( new PatternFilenameFilter( "^.*(?<!(?i)\\.jar)$" ) ).length > 0 )
                         {
                             log.debug( "Including attached artifact: " + artifact.getArtifactId() 
                                     + "(" + artifact.getGroupId() + "). Artifact is APKLIB." );
