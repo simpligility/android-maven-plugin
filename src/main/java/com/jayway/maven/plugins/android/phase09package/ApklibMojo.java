@@ -217,7 +217,7 @@ public class ApklibMojo extends AbstractAndroidMojo
                     //addSharedLibraries( jarArchiver, dependentLibs, prefix );
 
                     // get native libs from other apklibs
-                    for ( Artifact apkLibraryArtifact : getAllRelevantDependencyArtifacts() )
+                    for ( Artifact apkLibraryArtifact : getTransitiveDependencyArtifacts() )
                     {
                         if ( apkLibraryArtifact.getType().equals( APKLIB ) )
                         {
@@ -383,7 +383,7 @@ public class ApklibMojo extends AbstractAndroidMojo
             commands.add( "-S" );
             commands.add( resourceDirectory.getAbsolutePath() );
         }
-        for ( Artifact apkLibraryArtifact : getAllRelevantDependencyArtifacts() )
+        for ( Artifact apkLibraryArtifact : getTransitiveDependencyArtifacts() )
         {
             if ( apkLibraryArtifact.getType().equals( APKLIB ) )
             {

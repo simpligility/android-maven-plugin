@@ -983,7 +983,7 @@ public class ApkMojo extends AbstractAndroidMojo
             commands.add( "-S" );
             commands.add( resourceDirectory.getAbsolutePath() );
         }
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+        for ( Artifact artifact : getTransitiveDependencyArtifacts() )
         {
             if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
             {
@@ -1056,7 +1056,7 @@ public class ApkMojo extends AbstractAndroidMojo
     private void processApkLibAssets() throws MojoExecutionException
     {
         // Next pull APK Lib assets, reverse the order to give precedence to libs higher up the chain
-        List<Artifact> artifactList = new ArrayList<Artifact>( getAllRelevantDependencyArtifacts() );
+        List<Artifact> artifactList = new ArrayList<Artifact>( getTransitiveDependencyArtifacts() );
         for ( Artifact artifact : artifactList )
         {
             if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )

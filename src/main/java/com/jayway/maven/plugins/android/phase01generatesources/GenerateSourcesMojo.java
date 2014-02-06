@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -192,6 +193,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
             // TODO Do we really want to continue supporting APKSOURCES? How long has it bee deprecated
             extractSourceDependencies();
+            extractLibraryDependencies();
 
             // Copy project assets to combinedAssets so that aapt has a single assets folder to load.
             copyFolder( assetsDirectory, combinedAssets );
@@ -200,7 +202,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             final String[] relativeAidlFileNames2 = findRelativeAidlFileNames( extractedDependenciesJavaSources );
             final Map<String, String[]> relativeApklibAidlFileNames = new HashMap<String, String[]>();
 
-            for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+            for ( Artifact artifact : getTransitiveDependencyArtifacts() )
             {
                 if ( artifact.getType().equals( APKLIB ) )
                 {
@@ -223,7 +225,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             Map<File, String[]> files = new HashMap<File, String[]>();
             files.put( sourceDirectory, relativeAidlFileNames1 );
             files.put( extractedDependenciesJavaSources, relativeAidlFileNames2 );
-            for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+            for ( Artifact artifact : getTransitiveDependencyArtifacts() )
             {
                 if ( artifact.getType().equals( APKLIB ) )
                 {
@@ -247,7 +249,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      */
     protected void extractSourceDependencies() throws MojoExecutionException
     {
-        for ( Artifact artifact : getRelevantDependencyArtifacts() )
+        for ( Artifact artifact : getDirectDependencyArtifacts() )
         {
             String type = artifact.getType();
             if ( type.equals( APKSOURCES ) )
@@ -318,9 +320,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
     private void extractLibraryDependencies() throws MojoExecutionException
     {
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+        final Collection<Artifact> artifacts = getTransitiveDependencyArtifacts();
+        getLog().debug( "gen-sources - extracting libs : " + artifacts );
+
+        for ( Artifact artifact : artifacts )
         {
-            String type = artifact.getType();
+            final String type = artifact.getType();
             if ( type.equals( APKLIB ) )
             {
                 getLog().debug( "Extracting apklib " + artifact.getArtifactId() + "..." );
@@ -336,62 +341,14 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 getLog().debug( "Not extracting " + artifact.getArtifactId() + "..." );
             }
         }
-
     }
 
+    /**
+     * Extracts ApkLib and adds the assets and apklib sources and resources to the build.
+     */
     private void extractApklib( Artifact apklibArtifact ) throws MojoExecutionException
     {
-
-        final Artifact resolvedArtifact = AetherHelper
-                .resolveArtifact( apklibArtifact, repoSystem, repoSession, projectRepos );
-
-        File apkLibFile = resolvedArtifact.getFile();
-
-        // When the artifact is not installed in local repository, but rather part of the current reactor,
-        // resolve from within the reactor. (i.e. ../someothermodule/target/*)
-        if ( ! apkLibFile.exists() )
-        {
-            apkLibFile = resolveArtifactToFile( apklibArtifact );
-        }
-
-        //When using maven under eclipse the artifact will by default point to a directory, which isn't correct.
-        //To work around this we'll first try to get the archive from the local repo, and only if it isn't found there
-        // we'll do a normal resolve.
-        if ( apkLibFile.isDirectory() )
-        {
-            apkLibFile = resolveArtifactToFile( apklibArtifact );
-        }
-
-        if ( apkLibFile.isDirectory() )
-        {
-            getLog().warn(
-                    "The apklib artifact points to '" + apkLibFile + "' which is a directory; skipping unpacking it." );
-            return;
-        }
-
-        final UnArchiver unArchiver = new ZipUnArchiver( apkLibFile )
-        {
-            @Override
-            protected Logger getLogger()
-            {
-                return new ConsoleLogger( Logger.LEVEL_DEBUG, "dependencies-unarchiver" );
-            }
-        };
-
-        final File apklibDirectory = getUnpackedLibFolder( apklibArtifact );
-        apklibDirectory.mkdirs();
-        unArchiver.setDestDirectory( apklibDirectory );
-        try
-        {
-            unArchiver.extract();
-        }
-        catch ( ArchiverException e )
-        {
-            throw new MojoExecutionException( "ArchiverException while extracting " + apklibDirectory
-                    + ". Message: " + e.getLocalizedMessage(), e );
-        }
-
-
+        getBuildHelper().extractApklib( apklibArtifact );
 
         // Copy the assets to the the combinedAssets folder.
         // Add the apklib source and resource to the compile.
@@ -405,56 +362,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         project.addCompileSourceRoot( apklibSourceFolder.getAbsolutePath() );
     }
 
+    /**
+     * Extracts AarLib and if this is an APK build then adds the assets and resources to the build.
+     */
     private void extractAarLib( Artifact aarArtifact ) throws MojoExecutionException
     {
-
-        final Artifact resolvedArtifact = AetherHelper
-                .resolveArtifact( aarArtifact, repoSystem, repoSession, projectRepos );
-
-        File aarFile = resolvedArtifact.getFile();
-
-        // When the artifact is not installed in local repository, but rather part of the current reactor,
-        // resolve from within the reactor. (i.e. ../someothermodule/target/*)
-        if ( ! aarFile.exists() )
-        {
-            aarFile = resolveArtifactToFile( aarArtifact );
-        }
-
-        //When using maven under eclipse the artifact will by default point to a directory, which isn't correct.
-        //To work around this we'll first try to get the archive from the local repo, and only if it isn't found there
-        // we'll do a normal resolve.
-        if ( aarFile.isDirectory() )
-        {
-            aarFile = resolveArtifactToFile( aarArtifact );
-        }
-
-        if ( aarFile.isDirectory() )
-        {
-            getLog().warn(
-                    "The aar artifact points to '" + aarFile + "' which is a directory; skipping unpacking it." );
-            return;
-        }
-
-        final UnArchiver unArchiver = new ZipUnArchiver( aarFile )
-        {
-            @Override
-            protected Logger getLogger()
-            {
-                return new ConsoleLogger( Logger.LEVEL_DEBUG, "dependencies-unarchiver" );
-            }
-        };
-        final File aarDirectory = getUnpackedLibFolder( aarArtifact );
-        aarDirectory.mkdirs();
-        unArchiver.setDestDirectory( aarDirectory );
-        try
-        {
-            unArchiver.extract();
-        }
-        catch ( ArchiverException e )
-        {
-            throw new MojoExecutionException( "ArchiverException while extracting " + aarDirectory.getAbsolutePath()
-                    + ". Message: " + e.getLocalizedMessage(), e );
-        }
+        getBuildHelper().extractAarLib( aarArtifact );
 
         // Copy the assets to the the combinedAssets folder, but only if an APK build.
         // Ie we only want to package assets that we own.
@@ -466,7 +379,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         // Aar lib resources should only be included if we are building an apk.
         // Aar lib will not contain any classes in the src folder as classes will already be compiled.
-        // We will added the classes later when we extract the lib classes.jar
         if ( isAPKBuild() )
         {
             final File libSourceFolder = getUnpackedLibSourceFolder( aarArtifact );
@@ -615,14 +527,14 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             rGenerator.generateLibraryRs();
         }
 
-        getLog().warn( "Adding R gen folder to compile classpath: " + genDirectory );
+        getLog().info( "Adding R gen folder to compile classpath: " + genDirectory );
         project.addCompileSourceRoot( genDirectory.getAbsolutePath() );
     }
 
     private void generateApkLibRs() throws MojoExecutionException
     {
         getLog().debug( "Generating Rs for apklib deps of project " + project.getArtifact() );
-        for ( final Artifact artifact : getAllRelevantDependencyArtifacts() )
+        for ( final Artifact artifact : getTransitiveDependencyArtifacts() )
         {
             if ( artifact.getType().equals( APKLIB ) )
             {
@@ -634,7 +546,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
     private void addLibraryResourceFolders( List<String> commands )
     {
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+        for ( Artifact artifact : getTransitiveDependencyArtifacts() )
         {
             getLog().debug( "Considering dep artifact : " + artifact );
             if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
@@ -750,7 +662,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private List<Artifact> getLibraries()
     {
         final List<Artifact> result = new ArrayList<Artifact>();
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+        for ( Artifact artifact : getTransitiveDependencyArtifacts() )
         {
             String type = artifact.getType();
             if ( type.equals( APKLIB )  || type.equals( AAR ) )
@@ -773,7 +685,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         getLog().info( "Getting manifests of dependent apklibs" );
         List<File> libManifests = new ArrayList<File>();
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+        for ( Artifact artifact : getTransitiveDependencyArtifacts() )
         {
             if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
             {
@@ -831,7 +743,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         generateBuildConfigForPackage( packageName );
 
         // Generate the BuildConfig for any apklib dependencies.
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+        for ( Artifact artifact : getTransitiveDependencyArtifacts() )
         {
             if ( artifact.getType().equals( APKLIB ) )
             {

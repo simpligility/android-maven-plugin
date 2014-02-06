@@ -265,7 +265,7 @@ public class AarMojo extends AbstractAndroidMojo
                     //addSharedLibraries( jarArchiver, dependentLibs, prefix );
 
                     // get native libs from other aars
-                    for ( Artifact apkLibraryArtifact : getAllRelevantDependencyArtifacts() )
+                    for ( Artifact apkLibraryArtifact : getTransitiveDependencyArtifacts() )
                     {
                         if ( apkLibraryArtifact.getType().equals( AAR )
                             || apkLibraryArtifact.getType().equals( APKLIB ) )

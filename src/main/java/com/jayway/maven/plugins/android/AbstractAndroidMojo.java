@@ -23,6 +23,7 @@ import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.BuildHelper;
 import com.jayway.maven.plugins.android.common.DependencyResolver;
 import com.jayway.maven.plugins.android.common.DeviceHelper;
+import com.jayway.maven.plugins.android.common.MavenToPlexusLogAdapter;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.configuration.Ndk;
 import com.jayway.maven.plugins.android.configuration.Sdk;
@@ -41,8 +42,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
-import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
@@ -55,7 +54,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
@@ -245,15 +243,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File unpackedLibsDirectory;
 
     /**
-     * Contains folders for each of the Android dependent libraries.
-     * Each folder contains the unpacked classes for that library
-     *
-     * @parameter expression="${project.build.directory}/unpacked-lib-classes"
-     * @readonly
-     */
-    protected File unpackedLibClassesDirectory;
-
-    /**
      * Specifies which the serial number of the device to connect to. Using the special values "usb" or
      * "emulator" is also valid. "usb" will connect to all actual devices connected (via usb). "emulator" will
      * connect to all emulators connected. Multiple devices will be iterated over in terms of goals to run. All
@@ -335,10 +324,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @parameter expression="${android.customPackage}"
      */
     protected String customPackage;
-
-    @SuppressWarnings( "unused" )
-    @Requirement
-    private Logger log;
 
     /**
      * Maven ProjectHelper.
@@ -478,11 +463,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     private static boolean adbInitialized = false;
 
-    /**
-     * Which dependency scopes should not be included when unpacking dependencies into the apk.
-     */
-    protected static final List<String> EXCLUDED_DEPENDENCY_SCOPES = Arrays.asList( "provided", "system", "import" );
-
     protected final DependencyResolver getDependencyResolver()
     {
         return new DependencyResolver( repoSystem, repoSession, projectRepos, artifactHandler );
@@ -495,17 +475,17 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected Set<Artifact> getRelevantCompileArtifacts()
     {
         final List<Artifact> allArtifacts = project.getCompileArtifacts();
-        return filterOutIrrelevantArtifacts( allArtifacts );
+        return getBuildHelper().getFilteredArtifacts( allArtifacts );
     }
 
     /**
      * @return a {@code Set} of direct project dependencies. Never {@code null}. This excludes artifacts of the {@code
      *         EXCLUDED_DEPENDENCY_SCOPES} scopes.
      */
-    protected Set<Artifact> getRelevantDependencyArtifacts()
+    protected Set<Artifact> getDirectDependencyArtifacts()
     {
         final Set<Artifact> allArtifacts = project.getDependencyArtifacts();
-        return filterOutIrrelevantArtifacts( allArtifacts );
+        return getBuildHelper().getFilteredArtifacts( allArtifacts );
     }
 
     /**
@@ -513,39 +493,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      *         EXCLUDED_DEPENDENCY_SCOPES} scopes. And
      *         This should maintain dependency order to comply with library project resource precedence.
      */
-    protected Set<Artifact> getAllRelevantDependencyArtifacts()
+    protected Set<Artifact> getTransitiveDependencyArtifacts()
     {
-        return getBuildHelper().getAllRelevantDependencyArtifacts( project );
-    }
-
-    /**
-     *
-     * @param allArtifacts
-     * @return
-     */
-    private Set<Artifact> filterOutIrrelevantArtifacts( Iterable<Artifact> allArtifacts )
-    {
-        final Set<Artifact> results = new LinkedHashSet<Artifact>();
-        for ( Artifact artifact : allArtifacts )
-        {
-            if ( artifact == null )
-            {
-                continue;
-            }
-
-            if ( EXCLUDED_DEPENDENCY_SCOPES.contains( artifact.getScope() ) )
-            {
-                continue;
-            }
-
-            if ( APK.equalsIgnoreCase( artifact.getType() ) )
-            {
-                continue;
-            }
-
-            results.add( artifact );
-        }
-        return results;
+        return getBuildHelper().getFilteredArtifacts( project.getArtifacts() );
     }
 
     /**
@@ -1218,11 +1168,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         return getBuildHelper().getUnpackedLibNativesFolder( artifact );
     }
 
-    protected final File getUnpackedLibClassesFolder( Artifact artifact )
-    {
-        return getBuildHelper().getUnpackedLibClassesFolder( artifact );
-    }
-
     // TODO Replace this with a non-static method (could even replace it with one of the methods above).
     public static File getLibraryUnpackDirectory( File unpackedApkLibsDirectory, Artifact artifact )
     {
@@ -1375,16 +1320,15 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         }
     }
 
-    private BuildHelper getBuildHelper()
+    protected final BuildHelper getBuildHelper()
     {
         if ( buildHelper == null )
         {
             buildHelper = new BuildHelper(
-                    repoSystem, repoSession,
-                    projectRepos, combinedAssets,
-                    projectHelper,
-                    unpackedLibsDirectory, unpackedLibClassesDirectory,
-                    log );
+                repoSystem, repoSession,
+                project,
+                new MavenToPlexusLogAdapter( getLog() )
+            );
         }
         return buildHelper;
     }
