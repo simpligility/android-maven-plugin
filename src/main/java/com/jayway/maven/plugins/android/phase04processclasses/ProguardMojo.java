@@ -518,7 +518,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         addInJar( project.getBuild().getOutputDirectory() );
 
         // we then add all its dependencies (incl. transitive ones), unless they're blacklisted
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+        for ( Artifact artifact : getTransitiveDependencyArtifacts() )
         {
             if ( isBlacklistedArtifact( artifact ) || !USED_DEPENDENCY_TYPE.equals( artifact.getType() ) )
             {

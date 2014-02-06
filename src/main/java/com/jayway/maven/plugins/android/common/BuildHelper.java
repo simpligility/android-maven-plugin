@@ -15,7 +15,6 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
@@ -40,7 +39,6 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
  */
 public final class BuildHelper
 {
-
     /**
      * Which dependency scopes should not be included when unpacking dependencies into the apk.
      */
@@ -49,50 +47,26 @@ public final class BuildHelper
     private final RepositorySystem repoSystem;
     private final RepositorySystemSession repoSession;
     private final List<RemoteRepository> projectRepos;
-    private final File combinedAssets;
-    private final MavenProjectHelper projectHelper;
-    private final File unpackedLibsDirectory;
-    private final File unpackedLibClassesDirectory;
     private final Logger log;
 
-    public BuildHelper( RepositorySystem repoSystem, RepositorySystemSession repoSession,
-                        List<RemoteRepository> projectRepos, File combinedAssets, MavenProjectHelper projectHelper,
-                        File unpackedLibsDirectory, File unpackedLibClassesDirectory,
-                        Logger log )
+    // ${project.build.directory}/unpacked-libs
+    private final File unpackedLibsDirectory;
+
+    public BuildHelper( RepositorySystem repoSystem,
+                        RepositorySystemSession repoSession,
+                        MavenProject project,
+                        Logger log
+    )
     {
         this.repoSystem = repoSystem;
         this.repoSession = repoSession;
-        this.projectRepos = projectRepos;
-        this.combinedAssets = combinedAssets;
-        this.projectHelper = projectHelper;
-        this.unpackedLibsDirectory = unpackedLibsDirectory;
-        this.unpackedLibClassesDirectory = unpackedLibClassesDirectory;
+        this.projectRepos = project.getRemoteProjectRepositories();
+        final File targetFolder = new File( project.getBasedir(), "target" );
+        this.unpackedLibsDirectory = new File( targetFolder, "unpacked-libs" );
         this.log = log;
     }
 
-    public void extractLibraryDependencies( MavenProject project ) throws MojoExecutionException
-    {
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts( project ) )
-        {
-            String type = artifact.getType();
-            if ( type.equals( AndroidExtension.APKLIB ) )
-            {
-                log.info( "Extracting apklib " + artifact.getArtifactId() + "..." );
-                extractApklib( project, artifact );
-            }
-            else if ( type.equals( AndroidExtension.AAR ) )
-            {
-                log.info( "Extracting aar " + artifact.getArtifactId() + "..." );
-                extractAarLib( project, artifact );
-            }
-            else
-            {
-                log.info( "Not extracting " + artifact.getArtifactId() + "..." );
-            }
-        }
-    }
-
-    private void extractApklib( MavenProject project, Artifact apklibArtifact ) throws MojoExecutionException
+    public void extractApklib( Artifact apklibArtifact ) throws MojoExecutionException
     {
 
         final Artifact resolvedArtifact = AetherHelper
@@ -127,13 +101,14 @@ public final class BuildHelper
             @Override
             protected Logger getLogger()
             {
-                return new ConsoleLogger( Logger.LEVEL_DEBUG, "dependencies-unarchiver" );
+                return new ConsoleLogger( log.getThreshold(), "dependencies-unarchiver" );
             }
         };
 
         final File apklibDirectory = getUnpackedLibFolder( apklibArtifact );
         apklibDirectory.mkdirs();
         unArchiver.setDestDirectory( apklibDirectory );
+        log.debug( "Extracting APKLIB to " + apklibDirectory );
         try
         {
             unArchiver.extract();
@@ -143,22 +118,9 @@ public final class BuildHelper
             throw new MojoExecutionException( "ArchiverException while extracting " + apklibDirectory
                     + ". Message: " + e.getLocalizedMessage(), e );
         }
-
-
-
-        // Copy the assets to the the combinedAssets folder.
-        // Add the apklib source and resource to the compile.
-        // NB apklib sources are added to compileSourceRoot because we may need to compile against them.
-        //    This means the apklib classes will be compiled into target/classes and packaged with this build.
-        copyFolder( getUnpackedLibAssetsFolder( apklibArtifact ), combinedAssets );
-
-        final File apklibSourceFolder = getUnpackedLibSourceFolder( apklibArtifact );
-        final List<String> resourceExclusions = Arrays.asList( "**/*.java", "**/*.aidl" );
-        projectHelper.addResource( project, apklibSourceFolder.getAbsolutePath(), null, resourceExclusions );
-        project.addCompileSourceRoot( apklibSourceFolder.getAbsolutePath() );
     }
 
-    private void extractAarLib( MavenProject project, Artifact aarArtifact ) throws MojoExecutionException
+    public void extractAarLib( Artifact aarArtifact ) throws MojoExecutionException
     {
 
         final Artifact resolvedArtifact = AetherHelper
@@ -193,12 +155,13 @@ public final class BuildHelper
             @Override
             protected Logger getLogger()
             {
-                return new ConsoleLogger( Logger.LEVEL_DEBUG, "dependencies-unarchiver" );
+                return new ConsoleLogger( log.getThreshold(), "dependencies-unarchiver" );
             }
         };
         final File aarDirectory = getUnpackedLibFolder( aarArtifact );
         aarDirectory.mkdirs();
         unArchiver.setDestDirectory( aarDirectory );
+        log.debug( "Extracting AAR to " + aarDirectory );
         try
         {
             unArchiver.extract();
@@ -208,36 +171,14 @@ public final class BuildHelper
             throw new MojoExecutionException( "ArchiverException while extracting " + aarDirectory.getAbsolutePath()
                     + ". Message: " + e.getLocalizedMessage(), e );
         }
-
-        // Copy the assets to the the combinedAssets folder, but only if an APK build.
-        // Ie we only want to package assets that we own.
-        // Assets should only live within their owners or the final APK.
-        if ( isAPKBuild( project ) )
-        {
-            copyFolder( getUnpackedLibAssetsFolder( aarArtifact ), combinedAssets );
-        }
-
-        // Aar lib resources should only be included if we are building an apk.
-        // Aar lib will not contain any classes in the src folder as classes will already be compiled.
-        // We will added the classes later when we extract the lib classes.jar
-        if ( isAPKBuild( project ) )
-        {
-            final File libSourceFolder = getUnpackedLibSourceFolder( aarArtifact );
-            projectHelper.addResource( project, libSourceFolder.getAbsolutePath(), null, Arrays.asList( "**/*.aidl" ) );
-        }
     }
 
-    // @return a {@code List} of all project dependencies. Never {@code null}. This excludes artifacts of the {@code
-    //     EXCLUDED_DEPENDENCY_SCOPES} scopes. And this should maintain dependency order to comply with library
-    //     project resource precedence.
-    public Set<Artifact> getAllRelevantDependencyArtifacts( MavenProject project )
-    {
-        final Set<Artifact> allArtifacts = project.getArtifacts();
-        log.info( "projectArtifacts=" + allArtifacts );
-        return filterOutIrrelevantArtifacts( allArtifacts );
-    }
-
-    private Set<Artifact> filterOutIrrelevantArtifacts( Iterable<Artifact> allArtifacts )
+    /**
+     * @return a {@code List} of all project dependencies. Never {@code null}.
+     *      This excludes artifacts of the {@code EXCLUDED_DEPENDENCY_SCOPES} scopes.
+     *      And this should maintain dependency order to comply with library project resource precedence.
+     */
+    public Set<Artifact> getFilteredArtifacts( Iterable<Artifact> allArtifacts )
     {
         final Set<Artifact> results = new LinkedHashSet<Artifact>();
         for ( Artifact artifact : allArtifacts )
@@ -310,10 +251,6 @@ public final class BuildHelper
         return new File( getUnpackedLibFolder( artifact ), "libs" );
     }
 
-    public File getUnpackedLibClassesFolder( Artifact artifact )
-    {
-        return new File( unpackedLibClassesDirectory.getAbsolutePath(), artifact.getArtifactId() );
-    }
     /**
      * Copies the files contained within the source folder to the target folder.
      * <p>

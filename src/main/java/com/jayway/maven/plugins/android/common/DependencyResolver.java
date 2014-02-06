@@ -64,7 +64,7 @@ public final class DependencyResolver
         final List<Dependency> transitiveDeps = getDependenciesFor( artifactToResolve );
         for ( Dependency dependency : transitiveDeps )
         {
-            final Artifact apklibDep = new org.apache.maven.artifact.DefaultArtifact(
+            final Artifact artifactDep = new org.apache.maven.artifact.DefaultArtifact(
                     dependency.getArtifact().getGroupId(),
                     dependency.getArtifact().getArtifactId(),
                     dependency.getArtifact().getVersion(),
@@ -73,7 +73,7 @@ public final class DependencyResolver
                     dependency.getArtifact().getClassifier(),
                     artifactHandler
             );
-            results.add( apklibDep );
+            results.add( artifactDep );
         }
 
         return results;
