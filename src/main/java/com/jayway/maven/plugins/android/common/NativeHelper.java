@@ -4,7 +4,6 @@ import com.google.common.io.PatternFilenameFilter;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.AndroidNdk;
 import com.jayway.maven.plugins.android.phase09package.ApklibMojo;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -118,9 +117,8 @@ public class NativeHelper
                                           final String ndkArchitecture, final boolean staticLibrary )
     {
         File libsFolder = new File(
-                AbstractAndroidMojo
-                    .getLibraryUnpackDirectory( unpackDirectory, a ), 
-                File.separator + ApklibMojo.NATIVE_LIBRARIES_FOLDER + File.separator + ndkArchitecture );
+                AbstractAndroidMojo.getLibraryUnpackDirectory( unpackDirectory, a ),
+                ApklibMojo.NATIVE_LIBRARIES_FOLDER + File.separator + ndkArchitecture );
         if ( libsFolder.exists() )
         {
             File[] libFiles = libsFolder.listFiles( new FilenameFilter()
@@ -176,7 +174,7 @@ public class NativeHelper
                     {
                         // Check if the artifact contains a libs folder - if so, include it in the list
                         File libsFolder = new File(
-                                AbstractAndroidMojo.getLibraryUnpackDirectory( unpackDirectory, artifact ) + "/libs" );
+                                AbstractAndroidMojo.getLibraryUnpackDirectory( unpackDirectory, artifact ), "libs" );
                         // make sure we ignore libs folders that only contain JARs
                         if ( libsFolder.exists()
                                 && libsFolder.list( new PatternFilenameFilter( ".+[^.jar]$" ) ).length > 0 )

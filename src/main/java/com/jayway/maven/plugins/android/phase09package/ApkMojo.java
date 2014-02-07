@@ -800,8 +800,7 @@ public class ApkMojo extends AbstractAndroidMojo
                         else if ( APKLIB.equals( resolvedArtifact.getType() )
                                 || AAR.equals( resolvedArtifact.getType() ) )
                         {
-                                addNativeDirectory( natives, new File( getLibraryUnpackDirectory( resolvedArtifact )
-                                                                           + "/libs" ) );
+                                addNativeDirectory( natives, getUnpackedLibNativesFolder( resolvedArtifact ) );
                         }
                     }
                 }
@@ -840,7 +839,7 @@ public class ApkMojo extends AbstractAndroidMojo
     private Set<Artifact> getNativeLibraryArtifacts() throws MojoExecutionException
     {
         return new NativeHelper( project, projectRepos, repoSession, repoSystem, artifactFactory, getLog() )
-                .getNativeDependenciesArtifacts( unpackedApkLibsDirectory, true );
+                .getNativeDependenciesArtifacts( unpackedLibsDirectory, true );
     }
 
     /**
@@ -984,15 +983,15 @@ public class ApkMojo extends AbstractAndroidMojo
             commands.add( "-S" );
             commands.add( resourceDirectory.getAbsolutePath() );
         }
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+        for ( Artifact artifact : getTransitiveDependencyArtifacts() )
         {
             if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
             {
-                final String apkLibResDir = getLibraryUnpackDirectory( artifact ) + "/res";
-                if ( new File( apkLibResDir ).exists() )
+                final File apkLibResDir = getUnpackedLibResourceFolder( artifact );
+                if ( apkLibResDir.exists() )
                 {
                     commands.add( "-S" );
-                    commands.add( apkLibResDir );
+                    commands.add( apkLibResDir.getAbsolutePath() );
                 }
             }
         }
@@ -1057,12 +1056,12 @@ public class ApkMojo extends AbstractAndroidMojo
     private void processApkLibAssets() throws MojoExecutionException
     {
         // Next pull APK Lib assets, reverse the order to give precedence to libs higher up the chain
-        List<Artifact> artifactList = new ArrayList<Artifact>( getAllRelevantDependencyArtifacts() );
+        List<Artifact> artifactList = new ArrayList<Artifact>( getTransitiveDependencyArtifacts() );
         for ( Artifact artifact : artifactList )
         {
             if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
             {
-                File apklibAsssetsDirectory = new File( getLibraryUnpackDirectory( artifact ) + "/assets" );
+                final File apklibAsssetsDirectory = getUnpackedLibAssetsFolder( artifact );
                 if ( apklibAsssetsDirectory.exists() )
                 {
                     try
