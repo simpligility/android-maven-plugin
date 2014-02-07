@@ -202,8 +202,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             targetDirectory.mkdirs();
             copyManifest();
-
+            // TODO Do we really want to continue supporting APKSOURCES? How long has it bee deprecated
             extractSourceDependencies();
+            
             extractLibraryDependencies();
 
             // Copy project assets to combinedAssets so that aapt has a single assets folder to load.
@@ -415,18 +416,16 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     {
         getBuildHelper().extractApklib( apklibArtifact );
 
-        
+        // Copy the assets to the the combinedAssets folder.
         // Add the apklib source and resource to the compile.
         // NB apklib sources are added to compileSourceRoot because we may need to compile against them.
         //    This means the apklib classes will be compiled into target/classes and packaged with this build.
-        // Copy the assets to the the combinedAssets folder.        
         copyFolder( getUnpackedLibAssetsFolder( apklibArtifact ), combinedAssets );
 
         final File apklibSourceFolder = getUnpackedLibSourceFolder( apklibArtifact );
         final List<String> resourceExclusions = Arrays.asList( "**/*.java", "**/*.aidl" );
         projectHelper.addResource( project, apklibSourceFolder.getAbsolutePath(), null, resourceExclusions );
         project.addCompileSourceRoot( apklibSourceFolder.getAbsolutePath() );
-
     }
 
     /**
