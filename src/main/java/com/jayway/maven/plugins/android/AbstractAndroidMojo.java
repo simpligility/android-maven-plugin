@@ -936,6 +936,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
+        executor.setCaptureStdOut( true );
+        executor.setCaptureStdErr( true );
         List<String> commands = new ArrayList<String>();
         commands.add( "dump" );
         commands.add( "xmltree" );
