@@ -295,7 +295,6 @@ public class ProguardMojo extends AbstractAndroidMojo
                 StringBuilder sb = new StringBuilder( "'\"" );
                     sb.append( path );
                     sb.append( "\"(" );
-                sb.append( '(' );
                 for ( Iterator< String > it = excludedFilter.iterator(); it.hasNext(); )
                 {
                     sb.append( '!' ).append( it.next() );
