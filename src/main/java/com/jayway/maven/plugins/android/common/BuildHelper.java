@@ -225,7 +225,8 @@ public final class BuildHelper
 
     public File getUnpackedLibFolder( Artifact artifact )
     {
-        return new File( unpackedLibsDirectory.getAbsolutePath(), artifact.getArtifactId() );
+        return new File( unpackedLibsDirectory.getAbsolutePath(),
+                artifact.getGroupId() + "_" + artifact.getArtifactId() );
     }
     public File getUnpackedLibSourceFolder( Artifact artifact )
     {
