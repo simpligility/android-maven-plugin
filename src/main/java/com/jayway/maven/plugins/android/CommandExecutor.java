@@ -131,6 +131,9 @@ public interface CommandExecutor
 
     void setCustomShell( Shell s );
 
+    void setCaptureStdOut( boolean captureStdOut );
+    void setCaptureStdErr( boolean captureStdErr );
+
     /**
      *
      */
@@ -178,6 +181,9 @@ public interface CommandExecutor
             private Commandline commandline;
             private Shell customShell;
 
+            private boolean captureStdOut;
+            private boolean captureStdErr;
+
             @Override
             public void setLogger( Log logger )
             {
@@ -205,8 +211,8 @@ public interface CommandExecutor
                 {
                     commands = new ArrayList< String >();
                 }
-                stdOut = new StreamConsumerImpl( logger );
-                stdErr = new ErrorStreamConsumer( logger, errorListener );
+                stdOut = new StreamConsumerImpl( logger, captureStdOut );
+                stdErr = new ErrorStreamConsumer( logger, errorListener, captureStdErr );
                 commandline = new Commandline();
                 if ( customShell != null )
                 {
@@ -264,12 +270,20 @@ public interface CommandExecutor
             @Override
             public String getStandardOut()
             {
+                if ( ! captureStdOut )
+                {
+                    throw new IllegalStateException( "Unable to provide StdOut since it was not captured" );
+                }
                 return stdOut.toString();
             }
 
             @Override
             public String getStandardError()
             {
+                if ( ! captureStdErr )
+                {
+                    throw new IllegalStateException( "Unable to provide StdOut since it was not captured" );
+                }
                 return stdErr.toString();
             }
 
@@ -305,6 +319,18 @@ public interface CommandExecutor
             {
                 this.customShell = shell;
             }
+
+            @Override
+            public void setCaptureStdOut( boolean captureStdOut )
+            {
+                this.captureStdOut = captureStdOut;
+            }
+
+            @Override
+            public void setCaptureStdErr( boolean captureStdErr )
+            {
+                this.captureStdErr = captureStdErr;
+            }
         }
 
         /**
@@ -314,16 +340,21 @@ public interface CommandExecutor
         {
             private StringBuffer sb = new StringBuffer();
             private final Log logger;
+            private boolean captureStdOut;
 
-            public StreamConsumerImpl( Log logger )
+            public StreamConsumerImpl( Log logger, boolean captureStdOut )
             {
                 this.logger = logger;
+                this.captureStdOut = captureStdOut;
             }
 
             @Override
             public void consumeLine( String line )
             {
-                sb.append( line );
+                if ( captureStdOut )
+                {
+                    sb.append( line );
+                }
                 if ( logger != null )
                 {
                     logger.debug( line );
@@ -355,11 +386,13 @@ public interface CommandExecutor
             private StringBuffer sbe = new StringBuffer();
             private final Log logger;
             private final ErrorListener errorListener;
+            private boolean captureStdErr;
 
-            public ErrorStreamConsumer( Log logger, ErrorListener errorListener )
+            public ErrorStreamConsumer( Log logger, ErrorListener errorListener, boolean captureStdErr )
             {
                 this.logger = logger;
                 this.errorListener = errorListener;
+                this.captureStdErr = captureStdErr;
 
                 if ( logger == null )
                 {
@@ -371,7 +404,10 @@ public interface CommandExecutor
             @Override
             public void consumeLine( String line )
             {
-                sbe.append( line );
+                if ( captureStdErr )
+                {
+                    sbe.append( line );
+                }
                 if ( logger != null )
                 {
                     logger.info( line );
