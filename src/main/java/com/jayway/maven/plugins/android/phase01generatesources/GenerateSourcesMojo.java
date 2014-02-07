@@ -25,6 +25,7 @@ import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.common.AetherHelper;
 import com.jayway.maven.plugins.android.configuration.BuildConfigConstant;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -34,8 +35,18 @@ import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
-
+import org.w3c.dom.Document;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +55,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
@@ -56,6 +66,7 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APKSOURCE
  *
  * @author hugo.josefson@jayway.com
  * @author Manfred Moser <manfred@simpligility.com>
+ * @author Malachi de AElfweald malachid@gmail.com
  *
  * @goal generate-sources
  * @phase generate-sources
@@ -189,6 +200,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             targetDirectory.mkdirs();
 
+            copyManifest();
+
             extractSourceDependencies();
 
             // This will copy assets of all dependencies into combinedAssets.
@@ -239,6 +252,60 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             getLog().error( "Error when generating sources.", e );
             throw e;
+        }
+    }
+
+    /**
+     * Copy the AndroidManifest.xml from sourceManifestFile to androidManifestFile
+     *
+     * @throws MojoExecutionException
+     */
+    protected void copyManifest() throws MojoExecutionException
+    {
+        getLog().debug( "copyManifest: " + sourceManifestFile + " -> " + androidManifestFile );
+        if ( sourceManifestFile == null )
+        {
+            getLog().info( "Manifest copying disabled. Using default manifest only" );
+            return;
+        }
+
+        try
+        {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse( sourceManifestFile );
+            Source source = new DOMSource( doc );
+
+            TransformerFactory xfactory = TransformerFactory.newInstance();
+            Transformer xformer = xfactory.newTransformer();
+            xformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
+
+            FileWriter writer = null;
+            try
+            {
+                androidManifestFile.getParentFile().mkdirs();
+
+                writer = new FileWriter( androidManifestFile, false );
+                if ( doc.getXmlEncoding() != null && doc.getXmlVersion() != null )
+                {
+                    String xmldecl = String.format( "<?xml version=\"%s\" encoding=\"%s\"?>%n",
+                            doc.getXmlVersion(), doc.getXmlEncoding() );
+
+                    writer.write( xmldecl );
+                }
+                Result result = new StreamResult( writer );
+                xformer.transform( source, result );
+                getLog().info( "Manifest copied from " + sourceManifestFile + " to " + androidManifestFile );
+            }
+            finally
+            {
+                IOUtils.closeQuietly( writer );
+            }
+        }
+        catch ( Exception e )
+        {
+            getLog().error( "Error during copyManifest" );
+            throw new MojoExecutionException( "Error during copyManifest", e );
         }
     }
 
@@ -393,6 +460,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         projectHelper.addResource( project, apklibDirectory.getAbsolutePath() + "/src", null,
                 Arrays.asList( "**/*.java", "**/*.aidl" ) );
+
         project.addCompileSourceRoot( apklibDirectory.getAbsolutePath() + "/src" );
 
     }
