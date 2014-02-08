@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.android.SdkConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -194,8 +195,8 @@ public class DexMojo extends AbstractAndroidMojo
 
         if ( obfuscatedJar != null && obfuscatedJar.exists() )
         {
-            // progurad has been run, use this jar
-            getLog().debug( "Obfuscated jar exists, using that as input" );
+            // proguard has been run, use this jar
+            getLog().debug( "Added dex input (obfuscatedJar) : " + obfuscatedJar );
             inputs.add( obfuscatedJar );
         }
         else
@@ -203,6 +204,7 @@ public class DexMojo extends AbstractAndroidMojo
             getLog().debug( "Using non-obfuscated input" );
             // no proguard, use original config
             inputs.add( new File( project.getBuild().getOutputDirectory() ) );
+            getLog().debug( "Added dex input : " + project.getBuild().getOutputDirectory() );
             for ( Artifact artifact : getTransitiveDependencyArtifacts() )
             {
                 if ( artifact.getType().equals( "so" ) || artifact.getType().equals( "a" ) )
@@ -210,8 +212,16 @@ public class DexMojo extends AbstractAndroidMojo
                     // Ignore native dependencies - no need for dexer to see those
                     continue;
                 }
+                else if ( artifact.getType().equals( "aar" ) )
+                {
+                    // We need to get the aar classes, not the aar itself.
+                    final File jar = new File( getUnpackedLibFolder( artifact ), SdkConstants.FN_CLASSES_JAR );
+                    getLog().debug( "Added dex input : " + jar );
+                    inputs.add( jar.getAbsoluteFile() );
+                }
                 else
                 {
+                    getLog().debug( "Added dex input : " + artifact.getFile() );
                     inputs.add( artifact.getFile().getAbsoluteFile() );
                 }
             }
