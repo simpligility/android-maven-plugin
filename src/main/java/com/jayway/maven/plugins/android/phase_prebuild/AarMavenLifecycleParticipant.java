@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.jayway.maven.plugins.android.phase_prebuild;
 
-import com.android.SdkConstants;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.BuildHelper;
 import com.jayway.maven.plugins.android.common.DependencyResolver;
@@ -121,7 +120,7 @@ public final class AarMavenLifecycleParticipant extends AbstractMavenLifecyclePa
             log.debug( "Adding to classpath : " + artifact );
 
             // This is location where the GenerateSourcesMojo will extract the classes.
-            final File aarClassesJar = new File( helper.getUnpackedLibFolder( artifact ), SdkConstants.FN_CLASSES_JAR );
+            final File aarClassesJar = helper.getUnpackedAarClassesJar( artifact );
             log.info( "                    : " + aarClassesJar );
 
             // In order to satisfy the LifecycleDependencyResolver on execution up to a phase that

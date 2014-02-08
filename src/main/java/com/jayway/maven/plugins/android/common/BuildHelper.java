@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.jayway.maven.plugins.android.common;
 
+import com.android.SdkConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.maven.artifact.Artifact;
@@ -228,7 +229,13 @@ public final class BuildHelper
         return new File( unpackedLibsDirectory.getAbsolutePath(),
                 artifact.getGroupId() + "_" + artifact.getArtifactId() );
     }
-    public File getUnpackedLibSourceFolder( Artifact artifact )
+
+    public File getUnpackedAarClassesJar( Artifact artifact )
+    {
+        return new File( getUnpackedLibFolder( artifact ), SdkConstants.FN_CLASSES_JAR );
+    }
+
+    public File getUnpackedApkLibSourceFolder( Artifact artifact )
     {
         return new File( getUnpackedLibFolder( artifact ), "src" );
     }
