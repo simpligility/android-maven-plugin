@@ -16,14 +16,10 @@
  */
 package com.jayway.maven.plugins.android.phase08preparepackage;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import com.android.SdkConstants;
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.configuration.Dex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -34,10 +30,12 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.CommandExecutor;
-import com.jayway.maven.plugins.android.ExecutionException;
-import com.jayway.maven.plugins.android.configuration.Dex;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Converts compiled Java classes to the Android dex format.
@@ -215,7 +213,7 @@ public class DexMojo extends AbstractAndroidMojo
                 else if ( artifact.getType().equals( "aar" ) )
                 {
                     // We need to get the aar classes, not the aar itself.
-                    final File jar = new File( getUnpackedLibFolder( artifact ), SdkConstants.FN_CLASSES_JAR );
+                    final File jar = getUnpackedAarClassesJar( artifact );
                     getLog().debug( "Added dex input : " + jar );
                     inputs.add( jar.getAbsoluteFile() );
                 }
