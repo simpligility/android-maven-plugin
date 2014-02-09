@@ -46,6 +46,7 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -1179,9 +1180,19 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         return getBuildHelper().getUnpackedLibFolder( artifact );
     }
 
-    protected final File getUnpackedLibSourceFolder( Artifact artifact )
+    protected final File getUnpackedAarClassesJar( Artifact artifact )
     {
-        return getBuildHelper().getUnpackedLibSourceFolder( artifact );
+        return getBuildHelper().getUnpackedAarClassesJar( artifact );
+    }
+
+    protected final File getUnpackedAarJavaResourcesFolder( Artifact artifact )
+    {
+        return new File( getUnpackedLibFolder( artifact ), "java-resources" );
+    }
+
+    protected final File getUnpackedApkLibSourceFolder( Artifact artifact )
+    {
+        return getBuildHelper().getUnpackedApkLibSourceFolder( artifact );
     }
 
     protected final File getUnpackedLibResourceFolder( Artifact artifact )

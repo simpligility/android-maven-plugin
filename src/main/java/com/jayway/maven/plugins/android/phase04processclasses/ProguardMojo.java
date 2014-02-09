@@ -311,6 +311,15 @@ public class ProguardMojo extends AbstractAndroidMojo
                 return "\'\"" + path + "\"\'";
             }
         }
+
+        @Override
+        public String toString()
+        {
+            return "ProGuardInput{"
+                    + "path='" + path + '\''
+                    + ", excludedFilter=" + excludedFilter
+                    + '}';
+        }
     }
 
     @Override
@@ -444,6 +453,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         collectProgramInputFiles();
         for ( ProGuardInput injar : inJars )
         {
+            getLog().debug( "Added injar : " + injar );
             commands.add( "-injars" );
             commands.add( injar.toCommandLine() );
         }
@@ -451,6 +461,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         collectLibraryInputFiles();
         for ( ProGuardInput libraryjar : libraryJars )
         {
+            getLog().debug( "Added libraryJar : " + libraryjar );
             commands.add( "-libraryjars" );
             commands.add( libraryjar.toCommandLine() );
         }

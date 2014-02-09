@@ -23,6 +23,7 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.common.AetherHelper;
+import com.jayway.maven.plugins.android.common.ZipExtractor;
 import com.jayway.maven.plugins.android.configuration.BuildConfigConstant;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -36,6 +37,7 @@ import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.w3c.dom.Document;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -56,6 +58,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
@@ -218,7 +221,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             {
                 if ( artifact.getType().equals( APKLIB ) )
                 {
-                    final File libSourceFolder = getUnpackedLibSourceFolder( artifact );
+                    final File libSourceFolder = getUnpackedApkLibSourceFolder( artifact );
                     final String[] apklibAidlFiles = findRelativeAidlFileNames( libSourceFolder );
                     relativeApklibAidlFileNames.put( artifact.getId(), apklibAidlFiles );
         }
@@ -241,7 +244,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             {
                 if ( artifact.getType().equals( APKLIB ) )
                 {
-                    final File unpackedLibSourceFolder = getUnpackedLibSourceFolder( artifact );
+                    final File unpackedLibSourceFolder = getUnpackedApkLibSourceFolder( artifact );
                     files.put( unpackedLibSourceFolder, relativeApklibAidlFileNames.get( artifact.getId() ) );
                 }
             }
@@ -422,7 +425,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         //    This means the apklib classes will be compiled into target/classes and packaged with this build.
         copyFolder( getUnpackedLibAssetsFolder( apklibArtifact ), combinedAssets );
 
-        final File apklibSourceFolder = getUnpackedLibSourceFolder( apklibArtifact );
+        final File apklibSourceFolder = getUnpackedApkLibSourceFolder( apklibArtifact );
         final List<String> resourceExclusions = Arrays.asList( "**/*.java", "**/*.aidl" );
         projectHelper.addResource( project, apklibSourceFolder.getAbsolutePath(), null, resourceExclusions );
         project.addCompileSourceRoot( apklibSourceFolder.getAbsolutePath() );
@@ -444,14 +447,18 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
 
         // Aar lib resources should only be included if we are building an apk.
-        // Aar lib will not contain any classes in the src folder as classes will already be compiled.
+        // So we need to extract them into a folder that we then add to the resource classpath.
         if ( isAPKBuild() )
         {
-            final File libSourceFolder = getUnpackedLibSourceFolder( aarArtifact );
-            projectHelper.addResource( project, libSourceFolder.getAbsolutePath(), null, Arrays.asList( "**/*.aidl" ) );
+            // Extract the resources from the AAR classes and add them as a resource path to the project.
+            final File aarClassesJar = getUnpackedAarClassesJar( aarArtifact );
+            final ZipExtractor extractor = new ZipExtractor( getLog() );
+            final File javaResourcesFolder = getUnpackedAarJavaResourcesFolder( aarArtifact );
+            extractor.extract( aarClassesJar, javaResourcesFolder, ".class" );
+            projectHelper.addResource( project, javaResourcesFolder.getAbsolutePath(), null, null );
+            getLog().debug( "Added AAR resources to resource classpath : " + javaResourcesFolder );
         }
     }
-
 
     private void generateR() throws MojoExecutionException
     {
