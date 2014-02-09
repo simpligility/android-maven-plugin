@@ -16,13 +16,10 @@
  */
 package com.jayway.maven.plugins.android.phase08preparepackage;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.configuration.Dex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -33,10 +30,12 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.CommandExecutor;
-import com.jayway.maven.plugins.android.ExecutionException;
-import com.jayway.maven.plugins.android.configuration.Dex;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Converts compiled Java classes to the Android dex format.
@@ -194,8 +193,8 @@ public class DexMojo extends AbstractAndroidMojo
 
         if ( obfuscatedJar != null && obfuscatedJar.exists() )
         {
-            // progurad has been run, use this jar
-            getLog().debug( "Obfuscated jar exists, using that as input" );
+            // proguard has been run, use this jar
+            getLog().debug( "Added dex input (obfuscatedJar) : " + obfuscatedJar );
             inputs.add( obfuscatedJar );
         }
         else
@@ -203,15 +202,24 @@ public class DexMojo extends AbstractAndroidMojo
             getLog().debug( "Using non-obfuscated input" );
             // no proguard, use original config
             inputs.add( new File( project.getBuild().getOutputDirectory() ) );
-            for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+            getLog().debug( "Added dex input : " + project.getBuild().getOutputDirectory() );
+            for ( Artifact artifact : getTransitiveDependencyArtifacts() )
             {
                 if ( artifact.getType().equals( "so" ) || artifact.getType().equals( "a" ) )
                 {
                     // Ignore native dependencies - no need for dexer to see those
                     continue;
                 }
+                else if ( artifact.getType().equals( "aar" ) )
+                {
+                    // We need to get the aar classes, not the aar itself.
+                    final File jar = getUnpackedAarClassesJar( artifact );
+                    getLog().debug( "Added dex input : " + jar );
+                    inputs.add( jar.getAbsoluteFile() );
+                }
                 else
                 {
+                    getLog().debug( "Added dex input : " + artifact.getFile() );
                     inputs.add( artifact.getFile().getAbsoluteFile() );
                 }
             }
