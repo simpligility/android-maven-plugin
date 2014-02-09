@@ -292,8 +292,9 @@ public class ProguardMojo extends AbstractAndroidMojo
         {
             if ( excludedFilter != null && !excludedFilter.isEmpty() )
             {
-                StringBuilder sb = new StringBuilder( path );
-                sb.append( '(' );
+                StringBuilder sb = new StringBuilder( "'\"" );
+                    sb.append( path );
+                    sb.append( "\"(" );
                 for ( Iterator< String > it = excludedFilter.iterator(); it.hasNext(); )
                 {
                     sb.append( '!' ).append( it.next() );
@@ -302,13 +303,22 @@ public class ProguardMojo extends AbstractAndroidMojo
                         sb.append( ',' );
                     }
                 }
-                sb.append( ')' );
+                sb.append( ")'" );
                 return sb.toString();
             }
             else
             {
-                return "\'" + path + "\'";
+                return "\'\"" + path + "\"\'";
             }
+        }
+
+        @Override
+        public String toString()
+        {
+            return "ProGuardInput{"
+                    + "path='" + path + '\''
+                    + ", excludedFilter=" + excludedFilter
+                    + '}';
         }
     }
 
@@ -375,19 +385,19 @@ public class ProguardMojo extends AbstractAndroidMojo
         collectInputFiles( commands );
 
         commands.add( "-outjars" );
-        commands.add( "'" + obfuscatedJar + "'" );
+        commands.add( "'\"" + obfuscatedJar + "\"'" );
 
         commands.add( "-dump" );
-        commands.add( "'" + proguardDir + File.separator + "dump.txt'" );
+        commands.add( "'\"" + proguardDir + File.separator + "dump.txt\"'" );
         commands.add( "-printseeds" );
-        commands.add( "'" + proguardDir + File.separator + "seeds.txt'" );
+        commands.add( "'\"" + proguardDir + File.separator + "seeds.txt\"'" );
         commands.add( "-printusage" );
-        commands.add( "'" + proguardDir + File.separator + "usage.txt'" );
+        commands.add( "'\"" + proguardDir + File.separator + "usage.txt\"'" );
 
         File mapFile = new File( proguardDir, "mapping.txt" );
 
         commands.add( "-printmapping" );
-        commands.add( "'" + mapFile + "'" );
+        commands.add( "'\"" + mapFile + "\"'" );
 
         commands.addAll( Arrays.asList( parsedOptions ) );
 
@@ -443,6 +453,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         collectProgramInputFiles();
         for ( ProGuardInput injar : inJars )
         {
+            getLog().debug( "Added injar : " + injar );
             commands.add( "-injars" );
             commands.add( injar.toCommandLine() );
         }
@@ -450,6 +461,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         collectLibraryInputFiles();
         for ( ProGuardInput libraryjar : libraryJars )
         {
+            getLog().debug( "Added libraryJar : " + libraryjar );
             commands.add( "-libraryjars" );
             commands.add( libraryjar.toCommandLine() );
         }
@@ -518,7 +530,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         addInJar( project.getBuild().getOutputDirectory() );
 
         // we then add all its dependencies (incl. transitive ones), unless they're blacklisted
-        for ( Artifact artifact : getAllRelevantDependencyArtifacts() )
+        for ( Artifact artifact : getTransitiveDependencyArtifacts() )
         {
             if ( isBlacklistedArtifact( artifact ) || !USED_DEPENDENCY_TYPE.equals( artifact.getType() ) )
             {

@@ -91,6 +91,7 @@ Android Maven Plugin uses the APL v2 but with copyright mentions -->
 
         <!-- Checks for Javadoc comments.                     -->
         <!-- See http://checkstyle.sf.net/config_javadoc.html -->
+<!--
         <module name="JavadocMethod">
           <property name="severity" value="warning"/>
           <property name="scope" value="protected"/>
@@ -103,7 +104,7 @@ Android Maven Plugin uses the APL v2 but with copyright mentions -->
           <property name="severity" value="info"/>
           <property name="scope" value="protected"/>
         </module>
-
+-->
 
         <!-- Checks for Naming Conventions.                  -->
         <!-- See http://checkstyle.sf.net/config_naming.html -->
@@ -127,8 +128,9 @@ Android Maven Plugin uses the APL v2 but with copyright mentions -->
         <!-- Checks for Size Violations.                    -->
         <!-- See http://checkstyle.sf.net/config_sizes.html -->
         <module name="MethodLength"/>
-        <module name="ParameterNumber"/>
-
+        <module name="ParameterNumber">
+            <property name="max" value="10"/>
+        </module>
 
         <!-- Checks for whitespace                               -->
         <!-- See http://checkstyle.sf.net/config_whitespace.html -->
