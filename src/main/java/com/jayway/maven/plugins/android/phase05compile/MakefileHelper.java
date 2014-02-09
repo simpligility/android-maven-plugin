@@ -187,8 +187,26 @@ public class MakefileHelper
                 {
                     try
                     {
+                        // Fix for dealing with APKLIBs - unfortunately it does not fully work since
+                        // an APKLIB can contain any number of architectures making it somewhat to resolve the
+                        // related (HAR) artifact.
+                        //
+                        // In this case, we construct the classifier from <architecture> and the artifact classifier
+                        // if it is also present.  Only issue is that if the APKLIB contains more than the armeabi
+                        // libraries (e.g. x86 for examples) the HAR is not resolved correctly.
+                        //
+                        String classifier = artifact.getClassifier();
+                        if ( "apklib".equals( artifact.getType() ) )
+                        {
+                            classifier = ndkArchitecture;
+                            if ( artifact.getClassifier() != null )
+                            {
+                                classifier += "-" + artifact.getClassifier();
+                            }
+                        }
+
                         Artifact harArtifact = new DefaultArtifact( artifact.getGroupId(), artifact.getArtifactId(),
-                                artifact.getVersion(), artifact.getScope(), "har", artifact.getClassifier(),
+                                artifact.getVersion(), artifact.getScope(), "har", classifier,
                                 artifact.getArtifactHandler() );
                         final Artifact resolvedHarArtifact = AetherHelper
                                 .resolveArtifact( harArtifact, repoSystem, repoSession, projectRepos );
