@@ -370,16 +370,16 @@ public class ProguardMojo extends AbstractAndroidMojo
         commands.add( "-jar" );
         commands.add( parsedProguardJarPath );
 
-        commands.add( "@" + parsedConfig );
+        commands.add( "@\"" + parsedConfig + "\"" );
 
         for ( String config : parsedConfigs )
         {
-            commands.add( "@" + config );
+            commands.add( "@\"" + config + "\"" );
         }
 
         if ( proguardFile != null )
         {
-            commands.add( "@" + proguardFile.getAbsolutePath() );
+            commands.add( "@\"" + proguardFile.getAbsolutePath() + "\"" );
         }
 
         collectInputFiles( commands );
