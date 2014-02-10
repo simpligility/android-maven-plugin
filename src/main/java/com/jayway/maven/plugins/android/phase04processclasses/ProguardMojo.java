@@ -292,9 +292,9 @@ public class ProguardMojo extends AbstractAndroidMojo
         {
             if ( excludedFilter != null && !excludedFilter.isEmpty() )
             {
-                StringBuilder sb = new StringBuilder( "'\"" );
+                StringBuilder sb = new StringBuilder( "\"'" );
                     sb.append( path );
-                    sb.append( "\"(" );
+                    sb.append( "'(" );
                 for ( Iterator< String > it = excludedFilter.iterator(); it.hasNext(); )
                 {
                     sb.append( '!' ).append( it.next() );
@@ -303,12 +303,12 @@ public class ProguardMojo extends AbstractAndroidMojo
                         sb.append( ',' );
                     }
                 }
-                sb.append( ")'" );
+                sb.append( ")\"" );
                 return sb.toString();
             }
             else
             {
-                return "\'\"" + path + "\"\'";
+                return path;
             }
         }
 
