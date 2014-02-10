@@ -128,10 +128,8 @@ public class AarMojo extends AbstractAndroidMojo
             }
         }
 
+        getLog().info( "Generating AAR file : " + project.getArtifactId() );
         generateIntermediateApk();
-
-        final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger( this.getLog() );
 
         final File outputFile = createAarLibraryFile( createAarClassesJar() );
 
@@ -386,8 +384,20 @@ public class AarMojo extends AbstractAndroidMojo
             commands.add( resourceDirectory.getAbsolutePath() );
         }
 
-        // Don't add in any AAR or APKLIB dependent lib resources because we are not building an APK.
-        // Resources should only live within their owners or the final APK.
+        // Have to generate the AAR against the dependent resources or build will fail if any local resources
+        // directly reference any of the dependent resources. NB this does NOT include the dep resources in the AAR.
+        for ( Artifact artifact : getTransitiveDependencyArtifacts() )
+        {
+            if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
+            {
+                final File apkLibResDir = getUnpackedLibResourceFolder( artifact );
+                if ( apkLibResDir.exists() )
+                {
+                    commands.add( "-S" );
+                    commands.add( apkLibResDir.getAbsolutePath() );
+                }
+            }
+        }
 
         commands.add( "--auto-add-overlay" );
 
