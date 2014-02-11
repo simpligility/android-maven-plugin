@@ -462,7 +462,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
     private void generateR() throws MojoExecutionException
     {
-        getLog().debug( "Generating R file for " + project.getPackaging() );
+        getLog().info( "Generating R file for " + project.getArtifact() );
 
         genDirectory.mkdirs();
 
@@ -502,12 +502,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( resourceDirectory.getAbsolutePath() );
         }
 
-        // Add any AAR or APKLIB dependencies but only if we are building an APK.
-        // Ie we don't want to generate merged R values for included AARs or APKLIBs if we are not an APK.
-        if ( isAPKBuild() )
-        {
-            addLibraryResourceFolders( commands );
-        }
+        // Need to include any AAR or APKLIB dependencies when generating R because if any local
+        // resources directly reference dependent resources then R generation will crash.
+        addLibraryResourceFolders( commands );
 
         // NB aapt only accepts a single assets parameter - combinedAssets is a merge of all assets
         if ( combinedAssets.exists() )
@@ -532,7 +529,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         // If a proguard file is defined then output Proguard options to it.
         if ( proguardFile != null )
         {
-            File parentFolder = proguardFile.getParentFile();
+            final File parentFolder = proguardFile.getParentFile();
             if ( parentFolder != null )
             {
                 parentFolder.mkdirs();
@@ -591,9 +588,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         // if the project has libraries, R needs to be created for each library,
         // but only if the current project is not a library.
         final List<Artifact> libraries = getLibraries();
-        getLog().debug( "Generating R for " + libraries );
         if ( APK.equals( project.getArtifact().getType() ) && !libraries.isEmpty() )
         {
+            getLog().info( "Generating R for dependent libraries: " + libraries );
             final ResourceClassGenerator rGenerator = new ResourceClassGenerator(
                 this, libraries, targetDirectory, genDirectory, getLog()
             );
