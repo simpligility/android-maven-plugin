@@ -14,6 +14,7 @@ import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.codehaus.plexus.interpolation.os.Os;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.util.artifact.JavaScopes;
 
@@ -292,9 +293,24 @@ public class ProguardMojo extends AbstractAndroidMojo
         {
             if ( excludedFilter != null && !excludedFilter.isEmpty() )
             {
-                StringBuilder sb = new StringBuilder( "\"'" );
+                String startQuotes, middleQuote, endQuote;
+
+                if ( !Os.isFamily( Os.FAMILY_WINDOWS ) )
+                {
+                    startQuotes = "'\"";
+                    middleQuote = "\"(";
+                    endQuote = ")'";
+                }
+                else
+                {
+                    startQuotes = "\"'";
+                    middleQuote = "'(";
+                    endQuote = ")\"";
+                }
+
+                StringBuilder sb = new StringBuilder( startQuotes );
                     sb.append( path );
-                    sb.append( "'(" );
+                    sb.append( middleQuote );
                 for ( Iterator< String > it = excludedFilter.iterator(); it.hasNext(); )
                 {
                     sb.append( '!' ).append( it.next() );
@@ -303,7 +319,7 @@ public class ProguardMojo extends AbstractAndroidMojo
                         sb.append( ',' );
                     }
                 }
-                sb.append( ")\"" );
+                sb.append( endQuote );
                 return sb.toString();
             }
             else
