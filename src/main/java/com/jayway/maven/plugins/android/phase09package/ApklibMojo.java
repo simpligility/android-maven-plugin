@@ -132,6 +132,13 @@ public class ApklibMojo extends AbstractAndroidMojo
             // If there is a classifier specified, attach the artifact using that
             projectHelper.attachArtifact( project, outputFile, classifier );
         }
+
+        if ( attachJar )
+        {
+            final File jarFile = new File( project.getBuild().getDirectory(),
+                    project.getBuild().getFinalName() + ".jar" );
+            projectHelper.attachArtifact( project, "jar", project.getArtifact().getClassifier(), jarFile );
+        }
     }
 
     /**
