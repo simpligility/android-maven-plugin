@@ -229,8 +229,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
             mergeManifests();
             generateR();
-            //Compatibility with Apklib which isn't present in AndroidBuilder
-            generateApkLibRs();
             generateBuildConfig();
 
             // When compiling AIDL for this project,
@@ -585,6 +583,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             throw new MojoExecutionException( "", e );
         }
 
+        //Compatibility with Apklib which isn't present in AndroidBuilder
+        generateApkLibRs();
+
         // if the project has libraries, R needs to be created for each library,
         // but only if the current project is not a library.
         final List<Artifact> libraries = getLibraries();
@@ -717,6 +718,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             commands.add( aaptExtraArg );
         }
+
+        // We need to generate R.txt for all projects as it needs to be consumed when generating R class.
+        // It also needs to be consumed when packaging aar.
+        commands.add( "--output-text-symbols" );
+        commands.add( unpackDir.getAbsolutePath() );
 
         getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
         try
