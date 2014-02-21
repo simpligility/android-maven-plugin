@@ -16,14 +16,11 @@
  */
 package com.jayway.maven.plugins.android.phase09package;
 
-import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
-
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.common.NativeHelper;
+import com.jayway.maven.plugins.android.config.PullParameter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -34,11 +31,14 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
 
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.CommandExecutor;
-import com.jayway.maven.plugins.android.ExecutionException;
-import com.jayway.maven.plugins.android.common.NativeHelper;
-import com.jayway.maven.plugins.android.config.PullParameter;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
 
 
 /**
@@ -389,7 +389,7 @@ public class ApklibMojo extends AbstractAndroidMojo
         }
         for ( Artifact apkLibraryArtifact : getTransitiveDependencyArtifacts() )
         {
-            if ( apkLibraryArtifact.getType().equals( APKLIB ) )
+            if ( apkLibraryArtifact.getType().equals( APKLIB ) || apkLibraryArtifact.getType().equals( AAR ) )
             {
                 final File apklibResDirectory = getUnpackedLibResourceFolder( apkLibraryArtifact );
                 if ( apklibResDirectory.exists() )
