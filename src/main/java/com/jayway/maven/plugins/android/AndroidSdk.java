@@ -65,7 +65,7 @@ public class AndroidSdk
     private File platformToolsPath;
     private File toolsPath;
 
-    private IAndroidTarget androidTarget;
+    private final IAndroidTarget androidTarget;
     private SdkManager sdkManager;
     private int sdkMajorVersion;
 
@@ -90,13 +90,11 @@ public class AndroidSdk
         {
             apiLevel = DEFAULT_ANDROID_API_LEVEL;
         }
-        else
+
+        androidTarget = findPlatformByApiLevel( apiLevel );
+        if ( androidTarget == null )
         {
-            androidTarget = findPlatformByApiLevel( apiLevel );
-            if ( androidTarget == null )
-            {
-                throw invalidSdkException( sdkPath, apiLevel );
-            }
+            throw invalidSdkException( sdkPath, apiLevel );
         }
     }
 
@@ -298,7 +296,12 @@ public class AndroidSdk
      */
     public File getAndroidJar() throws MojoExecutionException
     {
-        return new File( androidTarget.getPath( IAndroidTarget.ANDROID_JAR ) );
+        final String androidJarPath = androidTarget.getPath( IAndroidTarget.ANDROID_JAR );
+        if ( androidJarPath == null )
+        {
+            throw new MojoExecutionException( "No AndroidJar found for " + androidTarget );
+        }
+        return new File ( androidJarPath );
     }
   
     /**
