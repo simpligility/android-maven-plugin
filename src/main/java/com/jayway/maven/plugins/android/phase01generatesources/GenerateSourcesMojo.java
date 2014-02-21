@@ -224,7 +224,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                     final File libSourceFolder = getUnpackedApkLibSourceFolder( artifact );
                     final String[] apklibAidlFiles = findRelativeAidlFileNames( libSourceFolder );
                     relativeApklibAidlFileNames.put( artifact.getId(), apklibAidlFiles );
-        }
+                }
             }
 
             mergeManifests();
@@ -586,11 +586,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         //Compatibility with Apklib which isn't present in AndroidBuilder
         generateApkLibRs();
 
-        final List<Artifact> libraries = getTDArtifacts( AAR, APKLIB );
+        final List<Artifact> libraries = getTransitiveDependencyArtifacts( AAR, APKLIB );
         if ( !libraries.isEmpty() )
         {
 
-            final List<Artifact> aarLibraries = getTDArtifacts( AAR );
+            final List<Artifact> aarLibraries = getTransitiveDependencyArtifacts( AAR );
             //if the current project is not a library
             //R.java must be created for each library based on R.txt
             if ( APK.equals( project.getArtifact().getType() ) )
@@ -757,7 +757,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * @param types types of transitive artifacts that should be selected
      * @return list of selected transitive artifacts
      */
-    private List<Artifact> getTDArtifacts( String... types )
+    private List<Artifact> getTransitiveDependencyArtifacts( String... types )
     {
         final List<String> typeList = Arrays.asList( types );
         final List<Artifact> result = new ArrayList<Artifact>();
