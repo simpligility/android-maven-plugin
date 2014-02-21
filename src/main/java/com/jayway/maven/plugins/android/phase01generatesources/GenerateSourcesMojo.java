@@ -224,7 +224,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                     final File libSourceFolder = getUnpackedApkLibSourceFolder( artifact );
                     final String[] apklibAidlFiles = findRelativeAidlFileNames( libSourceFolder );
                     relativeApklibAidlFileNames.put( artifact.getId(), apklibAidlFiles );
-        }
+                }
             }
 
             mergeManifests();
@@ -586,20 +586,35 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         //Compatibility with Apklib which isn't present in AndroidBuilder
         generateApkLibRs();
 
-        // if the project has libraries, R needs to be created for each library,
-        // but only if the current project is not a library.
-        final List<Artifact> libraries = getLibraries();
-        if ( APK.equals( project.getArtifact().getType() ) && !libraries.isEmpty() )
+        final List<Artifact> libraries = getTransitiveDependencyArtifacts( AAR, APKLIB );
+        if ( !libraries.isEmpty() )
         {
-            getLog().info( "Generating R for dependent libraries: " + libraries );
-            final ResourceClassGenerator rGenerator = new ResourceClassGenerator(
-                this, libraries, targetDirectory, genDirectory, getLog()
-            );
-            rGenerator.generateLibraryRs();
+
+            final List<Artifact> aarLibraries = getTransitiveDependencyArtifacts( AAR );
+            //if the current project is not a library
+            //R.java must be created for each library based on R.txt
+            if ( APK.equals( project.getArtifact().getType() ) )
+            {
+                getLog().info( "Generating R for dependent libraries: " + libraries );
+                generateRJavaFromRTxt( libraries );
+            }
+            //in other case R.java must be created for each AAR library based on R.txt
+            else if ( !aarLibraries.isEmpty() )
+            {
+                getLog().info( "Generating missed R for dependent AAR libraries: " + libraries );
+                generateRJavaFromRTxt( aarLibraries );
+            }
         }
 
         getLog().info( "Adding R gen folder to compile classpath: " + genDirectory );
         project.addCompileSourceRoot( genDirectory.getAbsolutePath() );
+    }
+
+    private void generateRJavaFromRTxt( List<Artifact> librariesToGenerateR ) throws MojoExecutionException
+    {
+        new ResourceClassGenerator(
+                this, librariesToGenerateR, targetDirectory, genDirectory, getLog()
+        ).generateLibraryRs();
     }
 
     private void generateApkLibRs() throws MojoExecutionException
@@ -735,13 +750,20 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
     }
 
-    private List<Artifact> getLibraries()
+    /**
+     * Method that returns transitive dependency artifacts for current artifact
+     * that matches provided types
+     *
+     * @param types types of transitive artifacts that should be selected
+     * @return list of selected transitive artifacts
+     */
+    private List<Artifact> getTransitiveDependencyArtifacts( String... types )
     {
+        final List<String> typeList = Arrays.asList( types );
         final List<Artifact> result = new ArrayList<Artifact>();
         for ( Artifact artifact : getTransitiveDependencyArtifacts() )
         {
-            String type = artifact.getType();
-            if ( type.equals( APKLIB )  || type.equals( AAR ) )
+            if ( typeList.contains( artifact.getType() ) )
             {
                 result.add( artifact );
             }
