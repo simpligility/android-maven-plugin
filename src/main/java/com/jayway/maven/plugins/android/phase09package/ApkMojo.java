@@ -839,7 +839,7 @@ public class ApkMojo extends AbstractAndroidMojo
     private Set<Artifact> getNativeLibraryArtifacts() throws MojoExecutionException
     {
         return new NativeHelper( project, projectRepos, repoSession, repoSystem, artifactFactory, getLog() )
-                .getNativeDependenciesArtifacts( unpackedLibsDirectory, true );
+                .getNativeDependenciesArtifacts( getUnpackedLibsDirectory(), true );
     }
 
     /**
