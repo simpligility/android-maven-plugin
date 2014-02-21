@@ -218,14 +218,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             final String[] relativeAidlFileNames2 = findRelativeAidlFileNames( extractedDependenciesJavaSources );
             final Map<String, String[]> relativeApklibAidlFileNames = new HashMap<String, String[]>();
 
-            for ( Artifact artifact : getTransitiveDependencyArtifacts() )
+            for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB ) )
             {
-                if ( artifact.getType().equals( APKLIB ) )
-                {
-                    final File libSourceFolder = getUnpackedApkLibSourceFolder( artifact );
-                    final String[] apklibAidlFiles = findRelativeAidlFileNames( libSourceFolder );
-                    relativeApklibAidlFileNames.put( artifact.getId(), apklibAidlFiles );
-                }
+                final File libSourceFolder = getUnpackedApkLibSourceFolder( artifact );
+                final String[] apklibAidlFiles = findRelativeAidlFileNames( libSourceFolder );
+                relativeApklibAidlFileNames.put( artifact.getId(), apklibAidlFiles );
             }
 
             mergeManifests();
@@ -239,13 +236,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             Map<File, String[]> files = new HashMap<File, String[]>();
             files.put( sourceDirectory, relativeAidlFileNames1 );
             files.put( extractedDependenciesJavaSources, relativeAidlFileNames2 );
-            for ( Artifact artifact : getTransitiveDependencyArtifacts() )
+            for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB ) )
             {
-                if ( artifact.getType().equals( APKLIB ) )
-                {
-                    final File unpackedLibSourceFolder = getUnpackedApkLibSourceFolder( artifact );
-                    files.put( unpackedLibSourceFolder, relativeApklibAidlFileNames.get( artifact.getId() ) );
-                }
+                final File unpackedLibSourceFolder = getUnpackedApkLibSourceFolder( artifact );
+                files.put( unpackedLibSourceFolder, relativeApklibAidlFileNames.get( artifact.getId() ) );
             }
             generateAidlFiles( files );
         }
@@ -587,10 +581,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         // Compatibility with Apklib which isn't present in AndroidBuilder
         generateApkLibRs();
 
-        final List<Artifact> libraries = getTransitiveDependencyArtifacts( AAR, APKLIB );
+        final Set<Artifact> libraries = getTransitiveDependencyArtifacts( AAR, APKLIB );
         if ( !libraries.isEmpty() )
         {
-            final List<Artifact> aarLibraries = getTransitiveDependencyArtifacts( AAR );
+            final Set<Artifact> aarLibraries = getTransitiveDependencyArtifacts( AAR );
             if ( APK.equals( project.getArtifact().getType() ) )
             {
                 // if the current project is not a library (ie is an APK)
@@ -610,7 +604,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         project.addCompileSourceRoot( genDirectory.getAbsolutePath() );
     }
 
-    private void generateRJavaFromRTxt( List<Artifact> librariesToGenerateR ) throws MojoExecutionException
+    private void generateRJavaFromRTxt( Set<Artifact> librariesToGenerateR ) throws MojoExecutionException
     {
         new ResourceClassGenerator(
                 this, librariesToGenerateR, targetDirectory, genDirectory, getLog()
@@ -620,13 +614,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private void generateApkLibRs() throws MojoExecutionException
     {
         getLog().debug( "Generating Rs for apklib deps of project " + project.getArtifact() );
-        for ( final Artifact artifact : getTransitiveDependencyArtifacts() )
+        for ( final Artifact artifact : getTransitiveDependencyArtifacts( APKLIB ) )
         {
-            if ( artifact.getType().equals( APKLIB ) )
-            {
-                getLog().debug( "Generating apklib R.java for " + artifact.getArtifactId() + "..." );
-                generateRForApkLibDependency( artifact );
-            }
+            getLog().debug( "Generating apklib R.java for " + artifact.getArtifactId() + "..." );
+            generateRForApkLibDependency( artifact );
         }
     }
 
@@ -750,27 +741,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
     }
 
-    /**
-     * Method that returns transitive dependency artifacts for current artifact
-     * that matches provided types
-     *
-     * @param types types of transitive artifacts that should be selected
-     * @return list of selected transitive artifacts
-     */
-    private List<Artifact> getTransitiveDependencyArtifacts( String... types )
-    {
-        final List<String> typeList = Arrays.asList( types );
-        final List<Artifact> result = new ArrayList<Artifact>();
-        for ( Artifact artifact : getTransitiveDependencyArtifacts() )
-        {
-            if ( typeList.contains( artifact.getType() ) )
-            {
-                result.add( artifact );
-            }
-        }
-        return result;
-    }
-
     private void mergeManifests() throws MojoExecutionException
     {
         getLog().debug( "mergeManifests: " + mergeManifests );
@@ -783,18 +753,15 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         getLog().info( "Getting manifests of dependent apklibs" );
         List<File> libManifests = new ArrayList<File>();
-        for ( Artifact artifact : getTransitiveDependencyArtifacts() )
+        for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
         {
-            if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
+            final File libManifest = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
+            if ( !libManifest.exists() )
             {
-                final File apklibManifest = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
-                if ( !apklibManifest.exists() )
-                {
-                    throw new MojoExecutionException( artifact.getArtifactId() + " is missing AndroidManifest.xml" );
-                }
-
-                libManifests.add( apklibManifest );
+                throw new MojoExecutionException( artifact.getArtifactId() + " is missing AndroidManifest.xml" );
             }
+
+            libManifests.add( libManifest );
         }
 
         if ( !libManifests.isEmpty() )
@@ -841,14 +808,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         generateBuildConfigForPackage( packageName );
 
         // Generate the BuildConfig for any apklib dependencies.
-        for ( Artifact artifact : getTransitiveDependencyArtifacts() )
+        for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB ) )
         {
-            if ( artifact.getType().equals( APKLIB ) )
-            {
-                final File apklibManifeset = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
-                final String apklibPackageName = extractPackageNameFromAndroidManifest( apklibManifeset );
-                generateBuildConfigForPackage( apklibPackageName );
-            }
+            final File apklibManifeset = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
+            final String apklibPackageName = extractPackageNameFromAndroidManifest( apklibManifeset );
+            generateBuildConfigForPackage( apklibPackageName );
         }
     }
 

@@ -517,13 +517,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     }
 
     /**
+     * @param types artifact types to be selected
      * @return a {@code List} of all project dependencies. Never {@code null}. This excludes artifacts of the {@code
      *         EXCLUDED_DEPENDENCY_SCOPES} scopes. And
      *         This should maintain dependency order to comply with library project resource precedence.
      */
-    protected Set<Artifact> getTransitiveDependencyArtifacts()
+    protected Set<Artifact> getTransitiveDependencyArtifacts( String... types )
     {
-        return getBuildHelper().getFilteredArtifacts( project.getArtifacts() );
+        return getBuildHelper().getFilteredArtifacts( project.getArtifacts(), types );
     }
 
     /**
