@@ -117,9 +117,6 @@ public class ApklibMojo extends AbstractAndroidMojo
         
         generateIntermediateApk();
 
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger( this.getLog() );
-
         File outputFile = createApkLibraryFile();
 
         if ( classifier == null )
