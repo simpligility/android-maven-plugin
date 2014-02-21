@@ -273,7 +273,7 @@ public class ApklibMojo extends AbstractAndroidMojo
             if ( javaResourceDirectory.exists() )
             {
                 final String resourcePath = javaResourceDirectory.getCanonicalPath();
-                final String apkLibUnpackBasePath = unpackedLibsDirectory.getCanonicalPath();
+                final String apkLibUnpackBasePath = getUnpackedLibsDirectory().getCanonicalPath();
                 // Don't include our dependencies' resource dirs.
                 if ( ! resourcePath.startsWith( apkLibUnpackBasePath ) )
                 {

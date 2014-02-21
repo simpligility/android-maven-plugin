@@ -244,14 +244,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File combinedAssets;
 
     /**
-     * Extract the library (aar and apklib) dependencies here.
-     *
-     * @parameter expression="${project.build.directory}/unpacked-libs"
-     * @readonly
-     */
-    protected File unpackedLibsDirectory;
-
-    /**
      * Specifies which the serial number of the device to connect to. Using the special values "usb" or
      * "emulator" is also valid. "usb" will connect to all actual devices connected (via usb). "emulator" will
      * connect to all emulators connected. Multiple devices will be iterated over in terms of goals to run. All
@@ -1173,6 +1165,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                     + "using -Dandroid.sdk.path=... or by setting environment variable " + ENV_ANDROID_HOME );
         }
         return androidHome;
+    }
+
+    protected final File getUnpackedLibsDirectory()
+    {
+        return getBuildHelper().getUnpackedLibsFolder();
     }
 
     public final File getUnpackedLibFolder( Artifact artifact )

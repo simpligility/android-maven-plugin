@@ -224,6 +224,11 @@ public final class BuildHelper
         return jar;
     }
 
+    public File getUnpackedLibsFolder()
+    {
+        return unpackedLibsDirectory;
+    }
+
     public File getUnpackedLibFolder( Artifact artifact )
     {
         return new File( unpackedLibsDirectory.getAbsolutePath(),

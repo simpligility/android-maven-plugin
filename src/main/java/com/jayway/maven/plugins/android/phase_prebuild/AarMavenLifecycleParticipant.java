@@ -57,8 +57,6 @@ public final class AarMavenLifecycleParticipant extends AbstractMavenLifecyclePa
     {
         log.debug( "" );
         log.debug( "AMLP afterProjectsRead" );
-        log.debug( "AMLP afterProjectsRead" );
-        log.debug( "AMLP afterProjectsRead" );
         log.debug( "" );
 
         log.debug( "CurrentProject=" + session.getCurrentProject() );
