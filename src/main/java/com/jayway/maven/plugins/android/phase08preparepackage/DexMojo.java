@@ -335,7 +335,7 @@ public class DexMojo extends AbstractAndroidMojo
                     getLog().info( "Pre-dex ing jar: " + inputFile.getAbsolutePath() );
 
                     final String javaExecutable = getJavaExecutable().getAbsolutePath();
-                    getLog().info( javaExecutable + " " + commands.toString() );
+                    getLog().debug( javaExecutable + " " + commands.toString() );
                     try
                     {
                         executor.executeCommand( javaExecutable, commands, project.getBasedir(), false );
@@ -431,7 +431,8 @@ public class DexMojo extends AbstractAndroidMojo
         }
 
         final String javaExecutable = getJavaExecutable().getAbsolutePath();
-        getLog().info( javaExecutable + " " + commands.toString() );
+        getLog().debug( javaExecutable + " " + commands.toString() );
+        getLog().info( "Dexing : " + inputFiles );
         try
         {
             executor.executeCommand( javaExecutable, commands, project.getBasedir(), false );

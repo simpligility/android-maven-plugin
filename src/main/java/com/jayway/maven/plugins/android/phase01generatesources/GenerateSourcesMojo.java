@@ -205,9 +205,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             targetDirectory.mkdirs();
             copyManifest();
-            // TODO Do we really want to continue supporting APKSOURCES? How long has it bee deprecated
+            // TODO Do we really want to continue supporting APKSOURCES? How long has it been deprecated
             extractSourceDependencies();
-            
+
+            // Extract the apklib and aar dependencies into unpacked-libs so that they can be referenced in the build.
             extractLibraryDependencies();
 
             // Copy project assets to combinedAssets so that aapt has a single assets folder to load.
@@ -388,19 +389,19 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private void extractLibraryDependencies() throws MojoExecutionException
     {
         final Collection<Artifact> artifacts = getTransitiveDependencyArtifacts();
-        getLog().debug( "gen-sources - extracting libs : " + artifacts );
+        getLog().info( "Extracting libs" );
 
         for ( Artifact artifact : artifacts )
         {
             final String type = artifact.getType();
             if ( type.equals( APKLIB ) )
             {
-                getLog().debug( "Extracting apklib " + artifact.getArtifactId() + "..." );
+                getLog().info( "Extracting apklib " + artifact.getArtifactId() + "..." );
                 extractApklib( artifact );
             }
             else if ( type.equals( AAR ) )
             {
-                getLog().debug( "Extracting aar " + artifact.getArtifactId() + "..." );
+                getLog().info( "Extracting aar " + artifact.getArtifactId() + "..." );
                 extractAarLib( artifact );
             }
             else
@@ -572,7 +573,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         // Allows us to supply multiple -S arguments.
         commands.add( "--auto-add-overlay" );
 
-        getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
+        getLog().debug( getAndroidSdk().getAaptPath() + " " + commands.toString() );
         try
         {
             targetDirectory.mkdirs();
@@ -583,25 +584,24 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             throw new MojoExecutionException( "", e );
         }
 
-        //Compatibility with Apklib which isn't present in AndroidBuilder
+        // Compatibility with Apklib which isn't present in AndroidBuilder
         generateApkLibRs();
 
         final List<Artifact> libraries = getTransitiveDependencyArtifacts( AAR, APKLIB );
         if ( !libraries.isEmpty() )
         {
-
             final List<Artifact> aarLibraries = getTransitiveDependencyArtifacts( AAR );
-            //if the current project is not a library
-            //R.java must be created for each library based on R.txt
             if ( APK.equals( project.getArtifact().getType() ) )
             {
-                getLog().info( "Generating R for dependent libraries: " + libraries );
+                // if the current project is not a library (ie is an APK)
+                // R.java must be created for each library based on R.txt
+                getLog().info( "Generating R file for dependent APK libraries" );
                 generateRJavaFromRTxt( libraries );
             }
-            //in other case R.java must be created for each AAR library based on R.txt
             else if ( !aarLibraries.isEmpty() )
             {
-                getLog().info( "Generating missed R for dependent AAR libraries: " + libraries );
+                // Otherwise R.java must be created for each AAR library based on R.txt
+                getLog().info( "Generating R file for dependent AAR libraries" );
                 generateRJavaFromRTxt( aarLibraries );
             }
         }
@@ -656,7 +656,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private void generateRForApkLibDependency( Artifact apklibArtifact ) throws MojoExecutionException
     {
         final File unpackDir = getUnpackedLibFolder( apklibArtifact );
-        getLog().debug( "Generating R file for apklibrary: " + apklibArtifact.getGroupId()
+        getLog().info( "Generating R file for apklibrary: " + apklibArtifact.getGroupId()
                 + ":" + apklibArtifact.getArtifactId() );
         final File apklibManifest = new File( unpackDir, "AndroidManifest.xml" );
         final File apklibResDir = new File( unpackDir, "res" );
@@ -739,7 +739,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         commands.add( "--output-text-symbols" );
         commands.add( unpackDir.getAbsolutePath() );
 
-        getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
+        getLog().debug( getAndroidSdk().getAaptPath() + " " + commands.toString() );
         try
         {
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
@@ -947,8 +947,15 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
     private String[] findRelativeAidlFileNames( File sourceDirectory )
     {
-        String[] relativeAidlFileNames = findFilesInDirectory( sourceDirectory, "**/*.aidl" );
-        getLog().info( "ANDROID-904-002: Found aidl files: Count = " + relativeAidlFileNames.length );
+        final String[] relativeAidlFileNames = findFilesInDirectory( sourceDirectory, "**/*.aidl" );
+        if ( relativeAidlFileNames.length == 0 )
+        {
+            getLog().debug( "ANDROID-904-002: Found aidl files: Count = " + relativeAidlFileNames.length );
+        }
+        else
+        {
+            getLog().info( "ANDROID-904-002: Found aidl files: Count = " + relativeAidlFileNames.length );
+        }
         return relativeAidlFileNames;
     }
 
