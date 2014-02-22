@@ -464,7 +464,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 }
 
                 final String ndkBuildPath = resolveNdkBuildExecutable();
-                getLog().info( ndkBuildPath + " " + commands.toString() );
+                getLog().debug( ndkBuildPath + " " + commands.toString() );
+                getLog().info( "Executing NDK make at : " + ndkBuildDirectory );
 
                 executor.executeCommand( ndkBuildPath, commands, project.getBasedir(), true );
 
