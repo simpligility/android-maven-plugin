@@ -80,6 +80,9 @@ public final class AarMavenLifecycleParticipant extends AbstractMavenLifecyclePa
                 final String type = artifact.getType();
                 if ( type.equals( AndroidExtension.AAR ) )
                 {
+                    // An AAR lib contains a classes jar that needs to be added to the classpath.
+                    // Create a placeholder classes.jar and add it to the compile classpath.
+                    // It will replaced with the real classes.jar by GenerateSourcesMojo.
                     addAarClassesToClasspath( helper, project, artifact );
                 }
             }
@@ -90,6 +93,7 @@ public final class AarMavenLifecycleParticipant extends AbstractMavenLifecyclePa
         throws MavenExecutionException
     {
         final DependencyResolver resolver = new DependencyResolver(
+            log,
             repoSystem,
             session.getRepositorySession(),
             project.getRemoteProjectRepositories(),
