@@ -19,6 +19,7 @@ package com.jayway.maven.plugins.android.phase08preparepackage;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.common.ZipExtractor;
 import com.jayway.maven.plugins.android.configuration.Dex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -36,6 +37,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
 
 /**
  * Converts compiled Java classes to the Android dex format.
@@ -158,13 +163,11 @@ public class DexMojo extends AbstractAndroidMojo
 
         File outputFile = new File( project.getBuild().getDirectory() + File.separator + "classes.dex" );
 
-        Set< File > inputFiles = getDexInputFiles();
-
         parseConfiguration();
 
         if ( generateApk )
         {
-            runDex( executor, outputFile, inputFiles );
+            runDex( executor, outputFile );
         }
 
         if ( attachJar )
@@ -187,14 +190,14 @@ public class DexMojo extends AbstractAndroidMojo
      * 
      * @return
      */
-    private Set< File > getDexInputFiles()
+    private Set< File > getDexInputFiles() throws MojoExecutionException
     {
         Set< File > inputs = new HashSet< File >();
 
         if ( obfuscatedJar != null && obfuscatedJar.exists() )
         {
             // proguard has been run, use this jar
-            getLog().debug( "Added dex input (obfuscatedJar) : " + obfuscatedJar );
+            getLog().debug( "Adding dex input (obfuscatedJar) : " + obfuscatedJar );
             inputs.add( obfuscatedJar );
         }
         else
@@ -202,7 +205,7 @@ public class DexMojo extends AbstractAndroidMojo
             getLog().debug( "Using non-obfuscated input" );
             // no proguard, use original config
             inputs.add( new File( project.getBuild().getOutputDirectory() ) );
-            getLog().debug( "Added dex input : " + project.getBuild().getOutputDirectory() );
+            getLog().debug( "Adding dex input : " + project.getBuild().getOutputDirectory() );
             for ( Artifact artifact : getTransitiveDependencyArtifacts() )
             {
                 if ( artifact.getType().equals( "so" ) || artifact.getType().equals( "a" ) )
@@ -210,16 +213,35 @@ public class DexMojo extends AbstractAndroidMojo
                     // Ignore native dependencies - no need for dexer to see those
                     continue;
                 }
-                else if ( artifact.getType().equals( "aar" ) )
+                else if ( artifact.getType().equals( APKLIB ) )
+                {
+                    // No classes in an APKLIB to dex.
+                    // Any potential classes will have already bee compiled to target/classes
+                    continue;
+                }
+                else if ( artifact.getType().equals( AAR ) )
                 {
                     // We need to get the aar classes, not the aar itself.
                     final File jar = getUnpackedAarClassesJar( artifact );
-                    getLog().debug( "Added dex input : " + jar );
+                    getLog().debug( "Adding dex input : " + jar );
                     inputs.add( jar.getAbsoluteFile() );
+                }
+                else if ( artifact.getType().equals( APK ) )
+                {
+                    // We need to dex the APK classes including the APK R.
+                    // But we don't want to add a second instance of the embedded Rs for any of the APK's dependencies
+                    // as they will already have been generated to target/classes. The R values from the APK will be
+                    // the correct ones, so best solution is to extract the APK classes (including all Rs) to
+                    // target/classes overwriting any generated Rs and let dex pick up the values from there.
+                    getLog().debug( "Extracting APK classes to target/classes : " + artifact.getArtifactId() );
+                    final File apkClassesJar = getBuildHelper().getJarFileForApk( artifact );
+                    getLog().debug( "Extracting APK : " + apkClassesJar + " to " + targetDirectory );
+                    final ZipExtractor extractor = new ZipExtractor( getLog() );
+                    extractor.extract( apkClassesJar, targetDirectory, ".class" );
                 }
                 else
                 {
-                    getLog().debug( "Added dex input : " + artifact.getFile() );
+                    getLog().debug( "Adding dex input : " + artifact.getFile() );
                     inputs.add( artifact.getFile().getAbsoluteFile() );
                 }
             }
@@ -358,10 +380,9 @@ public class DexMojo extends AbstractAndroidMojo
 
     private File predexJarPath( File inputFile )
     {
-        final String slash = File.separator;
         final File predexLibsDirectory = new File( parsedPreDexLibLocation.trim() );
         predexLibsDirectory.mkdirs();
-        return new File( predexLibsDirectory.getAbsolutePath() + slash + inputFile.getName() );
+        return new File( predexLibsDirectory, inputFile.getName() );
     }
 
     private List< String > dexDefaultCommands() throws MojoExecutionException
@@ -392,10 +413,11 @@ public class DexMojo extends AbstractAndroidMojo
 
     }
 
-    private void runDex( CommandExecutor executor, File outputFile, Set< File > inputFiles )
+    private void runDex( CommandExecutor executor, File outputFile )
             throws MojoExecutionException
     {
-        List< String > commands = dexDefaultCommands();
+        final List< String > commands = dexDefaultCommands();
+        final Set< File > inputFiles = getDexInputFiles();
         Set< File > filteredFiles = inputFiles;
 
         if ( parsedPreDex )
@@ -426,13 +448,12 @@ public class DexMojo extends AbstractAndroidMojo
 
         for ( File inputFile : filteredFiles )
         {
-            getLog().debug( "Adding dex input: " + inputFile.getAbsolutePath() );
             commands.add( inputFile.getAbsolutePath() );
         }
 
         final String javaExecutable = getJavaExecutable().getAbsolutePath();
         getLog().debug( javaExecutable + " " + commands.toString() );
-        getLog().info( "Dexing : " + inputFiles );
+        getLog().info( "Convert classes to Dex : " + outputFile );
         try
         {
             executor.executeCommand( javaExecutable, commands, project.getBasedir(), false );
