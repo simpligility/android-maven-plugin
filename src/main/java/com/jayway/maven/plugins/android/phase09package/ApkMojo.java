@@ -1034,15 +1034,15 @@ public class ApkMojo extends AbstractAndroidMojo
 
         if ( !release )
         {
-            getLog().info( "Enabling debug build for apk." );
+            getLog().info( "Generating debug apk." );
             commands.add( "--debug-mode" );
         }
         else 
         {
-            getLog().info( "Enabling release build for apk." );
+            getLog().info( "Generating release apk." );
         }
 
-        getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
+        getLog().debug( getAndroidSdk().getAaptPath() + " " + commands.toString() );
         try
         {
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
