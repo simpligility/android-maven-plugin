@@ -232,7 +232,10 @@ public final class BuildHelper
     public File getUnpackedLibFolder( Artifact artifact )
     {
         return new File( unpackedLibsDirectory.getAbsolutePath(),
-                artifact.getGroupId() + "_" + artifact.getArtifactId() );
+                getShortenedGroupId( artifact.getGroupId() )
+                + "_"
+                + artifact.getArtifactId()
+        );
     }
 
     public File getUnpackedAarClassesJar( Artifact artifact )
@@ -302,6 +305,22 @@ public final class BuildHelper
         {
             throw new MojoExecutionException( "Could not copy source folder to target folder", e );
         }
+    }
+
+    /**
+     * @param groupId   An a dot separated groupId (eg org.apache.maven)
+     * @return A shortened (and potentially non-unique) version of the groupId, that consists of the first letter
+     *      of each part of the groupId. Eg oam for org.apache.maven
+     */
+    private String getShortenedGroupId( String groupId )
+    {
+        final String[] parts = groupId.split( "\\." );
+        final StringBuilder sb = new StringBuilder();
+        for ( final String part : parts )
+        {
+            sb.append( part.charAt( 0 ) );
+        }
+        return sb.toString();
     }
 
     /**
