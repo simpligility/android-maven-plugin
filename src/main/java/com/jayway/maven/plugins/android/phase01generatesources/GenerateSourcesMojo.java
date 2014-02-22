@@ -584,26 +584,17 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             throw new MojoExecutionException( "", e );
         }
 
+        // Generate R.java for apklibs
         // Compatibility with Apklib which isn't present in AndroidBuilder
         generateApkLibRs();
 
-        final List<Artifact> libraries = getTransitiveDependencyArtifacts( AAR, APKLIB );
-        if ( !libraries.isEmpty() )
+        // Generate R.java for AAR libs.
+        final List<Artifact> aarLibraries = getTransitiveDependencyArtifacts( AAR );
+        if ( !aarLibraries.isEmpty() )
         {
-            final List<Artifact> aarLibraries = getTransitiveDependencyArtifacts( AAR );
-            if ( APK.equals( project.getArtifact().getType() ) )
-            {
-                // if the current project is not a library (ie is an APK)
-                // R.java must be created for each library based on R.txt
-                getLog().info( "Generating R file for dependent APK libraries" );
-                generateRJavaFromRTxt( libraries );
-            }
-            else if ( !aarLibraries.isEmpty() )
-            {
-                // Otherwise R.java must be created for each AAR library based on R.txt
-                getLog().info( "Generating R file for dependent AAR libraries" );
-                generateRJavaFromRTxt( aarLibraries );
-            }
+            // Otherwise R.java must be created for each AAR library based on R.txt
+            getLog().debug( "Generating R file for dependent AAR libraries" );
+            generateRJavaFromRTxt( aarLibraries );
         }
 
         getLog().info( "Adding R gen folder to compile classpath: " + genDirectory );
