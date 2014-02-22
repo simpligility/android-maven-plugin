@@ -404,6 +404,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 getLog().info( "Extracting aar " + artifact.getArtifactId() + "..." );
                 extractAarLib( artifact );
             }
+            else if ( type.equals( APK ) )
+            {
+                getLog().info( "Extracting apk " + artifact.getArtifactId() + "..." );
+                extractApkClassesJar( artifact );
+            }
             else
             {
                 getLog().debug( "Not extracting " + artifact.getArtifactId() + "..." );
@@ -457,6 +462,31 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             projectHelper.addResource( project, javaResourcesFolder.getAbsolutePath(), null, null );
             getLog().debug( "Added AAR resources to resource classpath : " + javaResourcesFolder );
         }
+    }
+
+    /**
+     * Copies a dependent APK jar over the top of the placeholder created for it in AarMavenLifeCycleParticipant.
+     *
+     * This is necessary because we need the classes of the APK added to the compile classpath.
+     * NB APK dependencies are uncommon as they should really only be used in a project that tests an apk.
+     *
+     * @param artifact  APK dependency for this project whose classes will be copied over.
+     */
+    private void extractApkClassesJar( Artifact artifact ) throws MojoExecutionException
+    {
+        final File apkClassesJar = getBuildHelper().getJarFileForApk( artifact );
+        final File unpackedClassesJar = getBuildHelper().getUnpackedClassesJar( artifact );
+        try
+        {
+            FileUtils.copyFile( apkClassesJar, unpackedClassesJar );
+        }
+        catch ( IOException e )
+        {
+            throw new MojoExecutionException(
+                    "Could not copy APK classes jar " + apkClassesJar + " to " + unpackedClassesJar, e );
+        }
+        getLog().debug( "Copied APK classes jar into compile classpath : " + unpackedClassesJar );
+
     }
 
     private void generateR() throws MojoExecutionException

@@ -150,7 +150,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File sourceDirectory;
 
     /**
-     * The java target directory.
+     * The java target directory. Ie target/classes.
      *
      * @parameter default-value="${project.build.directory}"
      * @readonly
@@ -1182,7 +1182,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     protected final File getUnpackedAarClassesJar( Artifact artifact )
     {
-        return getBuildHelper().getUnpackedAarClassesJar( artifact );
+        return getBuildHelper().getUnpackedClassesJar( artifact );
     }
 
     protected final File getUnpackedAarJavaResourcesFolder( Artifact artifact )
