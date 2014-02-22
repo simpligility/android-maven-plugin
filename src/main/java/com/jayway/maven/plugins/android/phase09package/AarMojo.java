@@ -435,7 +435,8 @@ public class AarMojo extends AbstractAndroidMojo
 
         commands.add( project.getBuild().getDirectory() );
 
-        getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
+        getLog().debug( getAndroidSdk().getAaptPath() + " " + commands.toString() );
+        getLog().info( "Generating aar" );
         try
         {
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );

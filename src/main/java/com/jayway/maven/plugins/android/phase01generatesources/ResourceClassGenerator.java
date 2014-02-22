@@ -74,7 +74,7 @@ final class ResourceClassGenerator
         // now loop on all the package name, merge all the symbols to write, and write them
         for ( final String packageName : libMap.keySet() )
         {
-            log.debug( "Writing R for " + packageName );
+            log.info( "Writing R file for " + packageName );
             final Collection<SymbolLoader> symbols = libMap.get( packageName );
 
             final SymbolWriter writer = new SymbolWriter(
