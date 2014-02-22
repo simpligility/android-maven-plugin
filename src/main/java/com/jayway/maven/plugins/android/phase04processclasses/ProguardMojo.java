@@ -377,6 +377,7 @@ public class ProguardMojo extends AbstractAndroidMojo
             }
         }
 
+        getLog().info( "Proguarding output" );
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
         List< String > commands = new ArrayList< String >();
@@ -419,7 +420,7 @@ public class ProguardMojo extends AbstractAndroidMojo
 
         final String javaExecutable = getJavaExecutable().getAbsolutePath();
 
-        getLog().info( javaExecutable + " " + commands.toString() );
+        getLog().debug( javaExecutable + " " + commands.toString() );
 
         try
         {
