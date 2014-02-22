@@ -948,7 +948,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private String[] findRelativeAidlFileNames( File sourceDirectory )
     {
         final String[] relativeAidlFileNames = findFilesInDirectory( sourceDirectory, "**/*.aidl" );
-        if ( relativeAidlFileNames.length == 0 ) {
+        if ( relativeAidlFileNames.length == 0 )
+        {
             getLog().debug( "ANDROID-904-002: Found aidl files: Count = " + relativeAidlFileNames.length );
         }
         else
