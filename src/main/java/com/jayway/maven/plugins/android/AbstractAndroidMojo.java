@@ -485,7 +485,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     protected final DependencyResolver getDependencyResolver()
     {
-        return new DependencyResolver( repoSystem, repoSession, projectRepos, artifactHandler );
+        return new DependencyResolver(
+                new MavenToPlexusLogAdapter( getLog() ),
+                repoSystem, repoSession, projectRepos, artifactHandler
+        );
     }
 
     /**
