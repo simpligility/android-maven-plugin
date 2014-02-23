@@ -618,23 +618,32 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         // Compatibility with Apklib which isn't present in AndroidBuilder
         generateApkLibRs();
 
-        // Generate R.java for AAR libs.
+        // Generate error corrected R.java for APKLIB dependencies, but only if this is an APK build.
+        final List<Artifact> apklibDependencies = getTransitiveDependencyArtifacts( APKLIB );
+        if ( !apklibDependencies.isEmpty() && APK.equals( project.getArtifact().getType() ) )
+        {
+            // Generate R.java for each APKLIB based on R.txt
+            getLog().debug( "Generating R file for APKLIB dependencies" );
+            generateRJavaFromRTxt( apklibDependencies, "apklib" );
+        }
+
+        // Generate error corrected R.java for AAR dependencies.
         final List<Artifact> aarLibraries = getTransitiveDependencyArtifacts( AAR );
         if ( !aarLibraries.isEmpty() )
         {
-            // Otherwise R.java must be created for each AAR library based on R.txt
-            getLog().debug( "Generating R file for dependent AAR libraries" );
-            generateRJavaFromRTxt( aarLibraries );
+            // Generate R.java for each AAR based on R.txt
+            getLog().debug( "Generating R file for AAR dependencies" );
+            generateRJavaFromRTxt( aarLibraries, "aar" );
         }
 
         getLog().info( "Adding R gen folder to compile classpath: " + genDirectory );
         project.addCompileSourceRoot( genDirectory.getAbsolutePath() );
     }
 
-    private void generateRJavaFromRTxt( List<Artifact> librariesToGenerateR ) throws MojoExecutionException
+    private void generateRJavaFromRTxt( List<Artifact> librariesToGenerateR, String type ) throws MojoExecutionException
     {
         new ResourceClassGenerator(
-                this, librariesToGenerateR, targetDirectory, genDirectory, getLog()
+                this, librariesToGenerateR, targetDirectory, genDirectory, getLog(), type
         ).generateLibraryRs();
     }
 
