@@ -27,6 +27,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
+
 /**
  * Processes both application and dependency classes using the ProGuard byte code obfuscator,
  * minimzer, and optimizer. For more information, see https://proguard.sourceforge.net.
@@ -258,7 +260,7 @@ public class ProguardMojo extends AbstractAndroidMojo
     /**
      * For Proguard is required only jar type dependencies, all other like .so or .apklib can be skipped.
      */
-    private static final String USED_DEPENDENCY_TYPE = "jar";
+    private static final String JAR_DEPENDENCY_TYPE = "jar";
 
     private List< Artifact > artifactBlacklist = new LinkedList< Artifact >();
 
@@ -546,13 +548,28 @@ public class ProguardMojo extends AbstractAndroidMojo
         // we then add all its dependencies (incl. transitive ones), unless they're blacklisted
         for ( Artifact artifact : getTransitiveDependencyArtifacts() )
         {
-            if ( isBlacklistedArtifact( artifact ) || !USED_DEPENDENCY_TYPE.equals( artifact.getType() ) )
+            if ( isBlacklistedArtifact( artifact ) )
+            {
+                getLog().debug( "Excluding (blacklisted) dependency as input jar : " + artifact );
+                continue;
+            }
+
+            if ( JAR_DEPENDENCY_TYPE.equals( artifact.getType() ) )
+            {
+                getLog().debug( "Including dependency as input jar : " + artifact );
+                inJars.add( createProguardInput( artifact.getFile().getAbsolutePath(), globalInJarExcludes ) );
+            }
+            else if ( AAR.equals( artifact.getType() ) )
+            {
+                final File aarClassesJar = getUnpackedAarClassesJar( artifact );
+                getLog().debug( "Including aar dependency as input jar : " + artifact );
+                inJars.add( createProguardInput( aarClassesJar.getAbsolutePath(), globalInJarExcludes ) );
+            }
+            else
             {
                 getLog().debug( "Excluding dependency as input jar : " + artifact );
                 continue;
             }
-            getLog().debug( "Including dependency as input jar : " + artifact );
-            inJars.add( createProguardInput( artifact.getFile().getAbsolutePath(), globalInJarExcludes ) );
         }
 
         return inJars;
