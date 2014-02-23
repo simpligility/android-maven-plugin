@@ -260,15 +260,9 @@ public class ProguardMojo extends AbstractAndroidMojo
      */
     private static final String USED_DEPENDENCY_TYPE = "jar";
 
-    private Collection< String > globalInJarExcludes = new HashSet< String >();
-
     private List< Artifact > artifactBlacklist = new LinkedList< Artifact >();
 
     private List< Artifact > artifactsToShift = new LinkedList< Artifact >();
-
-    private List< ProGuardInput > inJars = new LinkedList< ProguardMojo.ProGuardInput >();
-
-    private List< ProGuardInput > libraryJars = new LinkedList< ProguardMojo.ProGuardInput >();
 
     private File javaHomeDir;
 
@@ -467,16 +461,16 @@ public class ProguardMojo extends AbstractAndroidMojo
         // dependencies and declare it to be a library dependency instead
         skipArtifact( "commons-logging", "commons-logging", true );
 
-        collectProgramInputFiles();
-        for ( ProGuardInput injar : inJars )
+        final List< ProGuardInput > inJars = getProgramInputFiles();
+        for ( final ProGuardInput injar : inJars )
         {
             getLog().debug( "Added injar : " + injar );
             commands.add( "-injars" );
             commands.add( injar.toCommandLine() );
         }
 
-        collectLibraryInputFiles();
-        for ( ProGuardInput libraryjar : libraryJars )
+        final List< ProGuardInput > libraryJars = getLibraryInputFiles();
+        for ( final ProGuardInput libraryjar : libraryJars )
         {
             getLog().debug( "Added libraryJar : " + libraryjar );
             commands.add( "-libraryjars" );
@@ -532,8 +526,11 @@ public class ProguardMojo extends AbstractAndroidMojo
         return false;
     }
 
-    private void collectProgramInputFiles()
+    private List< ProGuardInput > getProgramInputFiles()
     {
+        final Collection< String > globalInJarExcludes = new HashSet< String >();
+        final List< ProGuardInput > inJars = new LinkedList< ProguardMojo.ProGuardInput >();
+
         if ( parsedFilterManifest )
         {
             globalInJarExcludes.addAll( META_INF_MANIFEST );
@@ -544,41 +541,37 @@ public class ProguardMojo extends AbstractAndroidMojo
         }
 
         // we first add the application's own class files
-        addInJar( project.getBuild().getOutputDirectory() );
+        inJars.add( createProguardInput( project.getBuild().getOutputDirectory() ) );
 
         // we then add all its dependencies (incl. transitive ones), unless they're blacklisted
         for ( Artifact artifact : getTransitiveDependencyArtifacts() )
         {
             if ( isBlacklistedArtifact( artifact ) || !USED_DEPENDENCY_TYPE.equals( artifact.getType() ) )
             {
+                getLog().debug( "Excluding dependency as input jar : " + artifact );
                 continue;
             }
-            addInJar( artifact.getFile().getAbsolutePath(), globalInJarExcludes );
+            getLog().debug( "Including dependency as input jar : " + artifact );
+            inJars.add( createProguardInput( artifact.getFile().getAbsolutePath(), globalInJarExcludes ) );
         }
+
+        return inJars;
     }
 
-    private void addInJar( String path, Collection< String > filterExpression )
+    private ProGuardInput createProguardInput( String path, Collection< String > filterExpression )
     {
-        inJars.add( new ProGuardInput( path, filterExpression ) );
+        return new ProGuardInput( path, filterExpression );
     }
 
-    private void addInJar( String path )
+    private ProGuardInput createProguardInput( String path )
     {
-        addInJar( path, null );
+        return createProguardInput( path, null );
     }
 
-    private void addLibraryJar( String path, Collection< String > filterExpression )
+    private List< ProGuardInput > getLibraryInputFiles()
     {
-        libraryJars.add( new ProGuardInput( path, filterExpression ) );
-    }
+        final List< ProGuardInput > libraryJars = new LinkedList< ProguardMojo.ProGuardInput >();
 
-    private void addLibraryJar( String path )
-    {
-        addLibraryJar( path, null );
-    }
-
-    private void collectLibraryInputFiles()
-    {
         if ( parsedIncludeJdkLibs )
         {
             // we have to add the Java framework classes to the library JARs, since they are not
@@ -591,21 +584,21 @@ public class ProguardMojo extends AbstractAndroidMojo
             }
             if ( rtJar != null )
             {
-                addLibraryJar( rtJar.getPath() );
+                libraryJars.add( createProguardInput( rtJar.getPath() ) );
             }
 
             // we also need to add the JAR containing e.g. javax.servlet
             File jsseJar = getJVMLibrary( "jsse.jar" );
             if ( jsseJar != null )
             {
-                addLibraryJar( jsseJar.getPath() );
+                libraryJars.add( createProguardInput( jsseJar.getPath() ) );
             }
 
             // and the javax.crypto stuff
             File jceJar = getJVMLibrary( "jce.jar" );
             if ( jceJar != null )
             {
-                addLibraryJar( jceJar.getPath() );
+                libraryJars.add( createProguardInput( jceJar.getPath() ) );
             }
         }
 
@@ -616,11 +609,15 @@ public class ProguardMojo extends AbstractAndroidMojo
             {
                 if ( artifact.getArtifactId().equals( "android" ) && parsedIncludeJdkLibs )
                 {
-                    addLibraryJar( artifact.getFile().getAbsolutePath(), ANDROID_LIBRARY_EXCLUDED_FILTER );
+                    getLog().debug( "Including dependency as (android) library jar : " + artifact );
+                    libraryJars.add(
+                            createProguardInput( artifact.getFile().getAbsolutePath(), ANDROID_LIBRARY_EXCLUDED_FILTER )
+                    );
                 }
                 else
                 {
-                    addLibraryJar( artifact.getFile().getAbsolutePath() );
+                    getLog().debug( "Including dependency as (provided) library jar : " + artifact );
+                    libraryJars.add( createProguardInput( artifact.getFile().getAbsolutePath() ) );
                 }
             }
             else
@@ -628,10 +625,17 @@ public class ProguardMojo extends AbstractAndroidMojo
                 if ( isShiftedArtifact( artifact ) )
                 {
                     // this is a blacklisted artifact that should be processed as a library instead
-                    addLibraryJar( artifact.getFile().getAbsolutePath() );
+                    getLog().debug( "Including dependency as (shifted) library jar : " + artifact );
+                    libraryJars.add( createProguardInput( artifact.getFile().getAbsolutePath() ) );
+                }
+                else
+                {
+                    getLog().debug( "Excluding dependency as library jar : " + artifact );
                 }
             }
         }
+
+        return libraryJars;
     }
 
     /**
