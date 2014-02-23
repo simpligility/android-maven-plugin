@@ -28,9 +28,10 @@ final class ResourceClassGenerator
     private final File genDirectory;
     private final Log log;
     private final ILogger androidUtilsLog;
+    private final String libraryType;
 
     public ResourceClassGenerator( GenerateSourcesMojo mojo, List<Artifact> libraries, File targetDirectory,
-                                   File genDirectory, Log log )
+                                   File genDirectory, Log log, String type )
     {
         this.mojo = mojo;
         this.libraries = libraries;
@@ -38,6 +39,7 @@ final class ResourceClassGenerator
         this.genDirectory = genDirectory;
         this.log = log;
         this.androidUtilsLog = new MavenILogger( log );
+        this.libraryType = type;
     }
 
     public void generateLibraryRs() throws MojoExecutionException
@@ -74,7 +76,7 @@ final class ResourceClassGenerator
         // now loop on all the package name, merge all the symbols to write, and write them
         for ( final String packageName : libMap.keySet() )
         {
-            log.info( "Generating R file for aar: " + packageName );
+            log.info( "Generating R file for " + libraryType + " : " + packageName );
             final Collection<SymbolLoader> symbols = libMap.get( packageName );
 
             final SymbolWriter writer = new SymbolWriter(
