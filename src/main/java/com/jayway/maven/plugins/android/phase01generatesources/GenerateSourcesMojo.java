@@ -873,11 +873,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         // Generate the BuildConfig for any apklib dependencies.
         for ( Artifact artifact : getTransitiveDependencyArtifacts() )
         {
-            if ( artifact.getType().equals( APKLIB ) )
+            // Need to generate for AAR too, because some old AARs like ActionBarSherlock do not have BuildConfig (or R)
+            if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
             {
-                final File apklibManifeset = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
-                final String apklibPackageName = extractPackageNameFromAndroidManifest( apklibManifeset );
-                generateBuildConfigForPackage( apklibPackageName );
+                final File manifest = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
+                final String depPackageName = extractPackageNameFromAndroidManifest( manifest );
+                generateBuildConfigForPackage( depPackageName );
             }
         }
     }
