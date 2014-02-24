@@ -11,8 +11,6 @@
 package com.jayway.maven.plugins.android.common;
 
 import com.android.SdkConstants;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -26,8 +24,6 @@ import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -201,11 +197,6 @@ public final class BuildHelper
                 continue;
             }
 
-            if ( AndroidExtension.APK.equalsIgnoreCase( artifact.getType() ) )
-            {
-                continue;
-            }
-
             if ( acceptAllArtifacts || acceptTypeList.contains( artifact.getType() ) )
             {
                 results.add( artifact );
@@ -234,13 +225,21 @@ public final class BuildHelper
         return jar;
     }
 
+    public File getUnpackedLibsFolder()
+    {
+        return unpackedLibsDirectory;
+    }
+
     public File getUnpackedLibFolder( Artifact artifact )
     {
         return new File( unpackedLibsDirectory.getAbsolutePath(),
-                artifact.getGroupId() + "_" + artifact.getArtifactId() );
+                getShortenedGroupId( artifact.getGroupId() )
+                + "_"
+                + artifact.getArtifactId()
+        );
     }
 
-    public File getUnpackedAarClassesJar( Artifact artifact )
+    public File getUnpackedClassesJar( Artifact artifact )
     {
         return new File( getUnpackedLibFolder( artifact ), SdkConstants.FN_CLASSES_JAR );
     }
@@ -269,44 +268,27 @@ public final class BuildHelper
         return new File( getUnpackedLibFolder( artifact ), "libs" );
     }
 
-    /**
-     * Copies the files contained within the source folder to the target folder.
-     * <p>
-     * The the target folder doesn't exist it will be created.
-     * </p>
-     *
-     * @param sourceFolder      Folder from which to copy the resources.
-     * @param targetFolder      Folder to which to copy the files.
-     * @throws org.apache.maven.plugin.MojoExecutionException if the files cannot be copied.
-     */
-    protected void copyFolder( File sourceFolder, File targetFolder ) throws MojoExecutionException
+    public File getJarFileForApk( Artifact artifact )
     {
-        copyFolder( sourceFolder, targetFolder, TrueFileFilter.TRUE );
+        final String fileName = artifact.getFile().getName();
+        final String modifiedFileName = fileName.substring( 0, fileName.lastIndexOf( "." ) ) + ".jar";
+        return new File( artifact.getFile().getParentFile(), modifiedFileName );
     }
 
-    private void copyFolder( File sourceFolder, File targetFolder, FileFilter filter ) throws MojoExecutionException
+    /**
+     * @param groupId   An a dot separated groupId (eg org.apache.maven)
+     * @return A shortened (and potentially non-unique) version of the groupId, that consists of the first letter
+     *      of each part of the groupId. Eg oam for org.apache.maven
+     */
+    private String getShortenedGroupId( String groupId )
     {
-        if ( !sourceFolder.exists() )
+        final String[] parts = groupId.split( "\\." );
+        final StringBuilder sb = new StringBuilder();
+        for ( final String part : parts )
         {
-            return;
+            sb.append( part.charAt( 0 ) );
         }
-
-        try
-        {
-            log.debug( "Copying " + sourceFolder + " to " + targetFolder );
-            if ( ! targetFolder.exists() )
-            {
-                if ( ! targetFolder.mkdirs() )
-                {
-                    throw new MojoExecutionException( "Could not create target directory " + targetFolder );
-                }
-            }
-            FileUtils.copyDirectory( sourceFolder, targetFolder, filter );
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( "Could not copy source folder to target folder", e );
-        }
+        return sb.toString();
     }
 
     /**

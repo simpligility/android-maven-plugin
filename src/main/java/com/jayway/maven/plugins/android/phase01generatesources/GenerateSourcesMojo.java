@@ -398,6 +398,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 getLog().info( "Extracting aar " + artifact.getArtifactId() + "..." );
                 extractAarLib( artifact );
             }
+            else if ( type.equals( APK ) )
+            {
+                getLog().info( "Extracting apk " + artifact.getArtifactId() + "..." );
+                extractApkClassesJar( artifact );
+            }
             else
             {
                 getLog().debug( "Not extracting " + artifact.getArtifactId() + "..." );
@@ -451,6 +456,31 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             projectHelper.addResource( project, javaResourcesFolder.getAbsolutePath(), null, null );
             getLog().debug( "Added AAR resources to resource classpath : " + javaResourcesFolder );
         }
+    }
+
+    /**
+     * Copies a dependent APK jar over the top of the placeholder created for it in AarMavenLifeCycleParticipant.
+     *
+     * This is necessary because we need the classes of the APK added to the compile classpath.
+     * NB APK dependencies are uncommon as they should really only be used in a project that tests an apk.
+     *
+     * @param artifact  APK dependency for this project whose classes will be copied over.
+     */
+    private void extractApkClassesJar( Artifact artifact ) throws MojoExecutionException
+    {
+        final File apkClassesJar = getBuildHelper().getJarFileForApk( artifact );
+        final File unpackedClassesJar = getBuildHelper().getUnpackedClassesJar( artifact );
+        try
+        {
+            FileUtils.copyFile( apkClassesJar, unpackedClassesJar );
+        }
+        catch ( IOException e )
+        {
+            throw new MojoExecutionException(
+                    "Could not copy APK classes jar " + apkClassesJar + " to " + unpackedClassesJar, e );
+        }
+        getLog().debug( "Copied APK classes jar into compile classpath : " + unpackedClassesJar );
+
     }
 
     private void generateR() throws MojoExecutionException
@@ -578,36 +608,36 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             throw new MojoExecutionException( "", e );
         }
 
+        // Generate R.java for apklibs
         // Compatibility with Apklib which isn't present in AndroidBuilder
         generateApkLibRs();
 
-        final Set<Artifact> libraries = getTransitiveDependencyArtifacts( AAR, APKLIB );
-        if ( !libraries.isEmpty() )
+        // Generate error corrected R.java for APKLIB dependencies, but only if this is an APK build.
+        final Set<Artifact> apklibDependencies = getTransitiveDependencyArtifacts( APKLIB );
+        if ( !apklibDependencies.isEmpty() && APK.equals( project.getArtifact().getType() ) )
         {
-            final Set<Artifact> aarLibraries = getTransitiveDependencyArtifacts( AAR );
-            if ( APK.equals( project.getArtifact().getType() ) )
-            {
-                // if the current project is not a library (ie is an APK)
-                // R.java must be created for each library based on R.txt
-                getLog().info( "Generating R file for dependent APK libraries" );
-                generateRJavaFromRTxt( libraries );
-            }
-            else if ( !aarLibraries.isEmpty() )
-            {
-                // Otherwise R.java must be created for each AAR library based on R.txt
-                getLog().info( "Generating R file for dependent AAR libraries" );
-                generateRJavaFromRTxt( aarLibraries );
-            }
+            // Generate R.java for each APKLIB based on R.txt
+            getLog().debug( "Generating R file for APKLIB dependencies" );
+            generateRJavaFromRTxt( apklibDependencies, "apklib" );
+        }
+
+        // Generate error corrected R.java for AAR dependencies.
+        final Set<Artifact> aarLibraries = getTransitiveDependencyArtifacts( AAR );
+        if ( !aarLibraries.isEmpty() )
+        {
+            // Generate R.java for each AAR based on R.txt
+            getLog().debug( "Generating R file for AAR dependencies" );
+            generateRJavaFromRTxt( aarLibraries, "aar" );
         }
 
         getLog().info( "Adding R gen folder to compile classpath: " + genDirectory );
         project.addCompileSourceRoot( genDirectory.getAbsolutePath() );
     }
 
-    private void generateRJavaFromRTxt( Set<Artifact> librariesToGenerateR ) throws MojoExecutionException
+    private void generateRJavaFromRTxt( Set<Artifact> librariesToGenerateR, String type ) throws MojoExecutionException
     {
         new ResourceClassGenerator(
-                this, librariesToGenerateR, targetDirectory, genDirectory, getLog()
+                this, librariesToGenerateR, targetDirectory, genDirectory, getLog(), type
         ).generateLibraryRs();
     }
 
@@ -807,12 +837,13 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
         generateBuildConfigForPackage( packageName );
 
-        // Generate the BuildConfig for any apklib dependencies.
-        for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB ) )
+        // Generate the BuildConfig for any APKLIB and AAR dependencies.
+        // Need to generate for AAR, because some old AARs like ActionBarSherlock do not have BuildConfig (or R)
+        for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
         {
-            final File apklibManifeset = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
-            final String apklibPackageName = extractPackageNameFromAndroidManifest( apklibManifeset );
-            generateBuildConfigForPackage( apklibPackageName );
+            final File manifest = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
+            final String depPackageName = extractPackageNameFromAndroidManifest( manifest );
+            generateBuildConfigForPackage( depPackageName );
         }
     }
 

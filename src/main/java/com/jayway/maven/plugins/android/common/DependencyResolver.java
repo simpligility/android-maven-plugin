@@ -3,6 +3,7 @@ package com.jayway.maven.plugins.android.common;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.codehaus.plexus.logging.Logger;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.DefaultArtifact;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
 
 /**
@@ -25,17 +27,19 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
  */
 public final class DependencyResolver
 {
-
+    private final Logger log;
     private final RepositorySystem repoSystem;
     private final RepositorySystemSession repoSession;
     private final List<RemoteRepository> remoteRepos;
     private final ArtifactHandler artifactHandler;
 
-    public DependencyResolver( RepositorySystem repoSystem,
+    public DependencyResolver( Logger log,
+                               RepositorySystem repoSystem,
                                RepositorySystemSession repoSession,
                                List<RemoteRepository> remoteRepos,
                                ArtifactHandler artifactHandler )
     {
+        this.log = log;
         this.repoSystem = repoSystem;
         this.repoSession = repoSession;
         this.remoteRepos = remoteRepos;
@@ -46,7 +50,7 @@ public final class DependencyResolver
      * Returns the list of transitive APKLIB or AAR dependencies of the supplied artifact.
      *
      * @param artifact  Artifact for whom to get the dependencies.
-     * @return List of APKLIB and AAR dependencies.
+     * @return List of APK, APKLIB and AAR dependencies.
      * @throws MojoExecutionException if it couldn't resolve any of the dependencies.
      */
     public List<Artifact> getDependenciesFor( Artifact artifact ) throws MojoExecutionException
@@ -83,7 +87,7 @@ public final class DependencyResolver
      * Returns the list of transitive APKLIB or AAR dependencies of the supplied artifact.
      *
      * @param artifact  Artifact for whom to get the dependencies.
-     * @return List of APKLIB and AAR dependencies.
+     * @return List of APK, APKLIB and AAR dependencies.
      * @throws MojoExecutionException if it couldn't resolve any of the dependencies.
      */
     private List<Dependency> getDependenciesFor( org.eclipse.aether.artifact.Artifact artifact )
@@ -107,8 +111,9 @@ public final class DependencyResolver
 
         for ( Dependency dependency : descriptorResult.getDependencies() )
         {
+            log.debug( "Found dependency: " + dependency );
             final String extension = dependency.getArtifact().getExtension();
-            if ( extension.equals( APKLIB ) || extension.equals( AAR ) )
+            if ( extension.equals( APKLIB ) || extension.equals( AAR ) || extension.equals( APK ) )
             {
                 results.add( dependency );
                 results.addAll( getDependenciesFor( dependency.getArtifact() ) );

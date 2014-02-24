@@ -387,7 +387,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
                 final MakefileHelper makefileHelper = new MakefileHelper( getLog(),
                                                                           repoSystem, repoSession, projectRepos,
-                        unpackedLibsDirectory );
+                        getUnpackedLibsDirectory() );
                 final MakefileHelper.MakefileHolder makefileHolder = makefileHelper
                         .createMakefileFromArtifacts( new File( ndkBuildDirectory ),
                                                       resolveNativeLibraryArtifacts, ndkArchitecture, "armeabi",
@@ -947,7 +947,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                                                 Set<Artifact> resolveNativeLibraryArtifacts, String ndkArchitecture )
     {
         // Only add the LOCAL_STATIC_LIBRARIES
-        if ( NativeHelper.hasStaticNativeLibraryArtifact( resolveNativeLibraryArtifacts, unpackedLibsDirectory,
+        if ( NativeHelper.hasStaticNativeLibraryArtifact( resolveNativeLibraryArtifacts, getUnpackedLibsDirectory(),
                                                           ndkArchitecture ) )
         {
             String staticlibs = makefileHelper.createLibraryList( resolveNativeLibraryArtifacts, 
@@ -958,7 +958,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         }
 
         // Only add the LOCAL_SHARED_LIBRARIES
-        if ( NativeHelper.hasSharedNativeLibraryArtifact( resolveNativeLibraryArtifacts, unpackedLibsDirectory,
+        if ( NativeHelper.hasSharedNativeLibraryArtifact( resolveNativeLibraryArtifacts, getUnpackedLibsDirectory(),
                                                           ndkArchitecture ) )
         {
             String sharedlibs = makefileHelper.createLibraryList( resolveNativeLibraryArtifacts, 
@@ -974,9 +974,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         NativeHelper nativeHelper = new NativeHelper( project, projectRepos, repoSession, repoSystem, artifactFactory,
                 getLog() );
         final Set<Artifact> staticLibraryArtifacts = nativeHelper
-                .getNativeDependenciesArtifacts( unpackedLibsDirectory, false );
+                .getNativeDependenciesArtifacts( getUnpackedLibsDirectory(), false );
         final Set<Artifact> sharedLibraryArtifacts = nativeHelper
-                .getNativeDependenciesArtifacts( unpackedLibsDirectory, true );
+                .getNativeDependenciesArtifacts( getUnpackedLibsDirectory(), true );
         
         final Set<Artifact> mergedArtifacts = new LinkedHashSet<Artifact>();
         filterNativeDependencies( mergedArtifacts, staticLibraryArtifacts );
