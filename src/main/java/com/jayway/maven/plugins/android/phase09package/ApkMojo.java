@@ -983,16 +983,13 @@ public class ApkMojo extends AbstractAndroidMojo
             commands.add( "-S" );
             commands.add( resourceDirectory.getAbsolutePath() );
         }
-        for ( Artifact artifact : getTransitiveDependencyArtifacts() )
+        for ( Artifact libraryArtifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
         {
-            if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
+            final File libraryResDir = getUnpackedLibResourceFolder( libraryArtifact );
+            if ( libraryResDir.exists() )
             {
-                final File apkLibResDir = getUnpackedLibResourceFolder( artifact );
-                if ( apkLibResDir.exists() )
-                {
-                    commands.add( "-S" );
-                    commands.add( apkLibResDir.getAbsolutePath() );
-                }
+                commands.add( "-S" );
+                commands.add( libraryResDir.getAbsolutePath() );
             }
         }
         commands.add( "--auto-add-overlay" );
@@ -1056,48 +1053,42 @@ public class ApkMojo extends AbstractAndroidMojo
     private void processApkLibAssets() throws MojoExecutionException
     {
         // Next pull APK Lib assets, reverse the order to give precedence to libs higher up the chain
-        List<Artifact> artifactList = new ArrayList<Artifact>( getTransitiveDependencyArtifacts() );
+        List<Artifact> artifactList = new ArrayList<Artifact>( getTransitiveDependencyArtifacts( APKLIB, AAR ) );
         for ( Artifact artifact : artifactList )
         {
-            if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
+            final File apklibAsssetsDirectory = getUnpackedLibAssetsFolder( artifact );
+            if ( apklibAsssetsDirectory.exists() )
             {
-                final File apklibAsssetsDirectory = getUnpackedLibAssetsFolder( artifact );
-                if ( apklibAsssetsDirectory.exists() )
+                try
                 {
-                    try
-                    {
-                        getLog().info( "Copying dependency assets files to combined assets directory." );
-                        org.apache.commons.io.FileUtils
-                                .copyDirectory( apklibAsssetsDirectory, combinedAssets, new FileFilter()
+                    getLog().info( "Copying dependency assets files to combined assets directory." );
+                    org.apache.commons.io.FileUtils
+                            .copyDirectory( apklibAsssetsDirectory, combinedAssets, new FileFilter() {
+                                /**
+                                 * Excludes files matching one of the common file to exclude.
+                                 * The default excludes pattern are the ones from
+                                 * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
+                                 * @see java.io.FileFilter#accept(java.io.File)
+                                 */
+                                public boolean accept( File file )
                                 {
-                                    /**
-                                     * Excludes files matching one of the common file to exclude.
-                                     * The default excludes pattern are the ones from
-                                     * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
-                                     * @see java.io.FileFilter#accept(java.io.File)
-                                     */
-                                    public boolean accept( File file )
+                                    for ( String pattern : AbstractScanner.DEFAULTEXCLUDES )
                                     {
-                                        for ( String pattern : AbstractScanner.DEFAULTEXCLUDES )
+                                        if ( AbstractScanner.match( pattern, file.getAbsolutePath() ) )
                                         {
-                                            if ( AbstractScanner.match( pattern, file.getAbsolutePath() ) )
-                                            {
-                                                getLog().debug( "Excluding " + file.getName() + " from asset copy : "
-                                                        + "matching " + pattern );
-                                                return false;
-                                            }
+                                            getLog().debug( "Excluding " + file.getName() + " from asset copy : "
+                                                    + "matching " + pattern );
+                                            return false;
                                         }
-
-                                        return true;
-
                                     }
-                                } );
-                    }
-                    catch ( IOException e )
-                    {
-                        throw new MojoExecutionException( "", e );
-                    }
 
+                                    return true;
+                                }
+                            } );
+                }
+                catch ( IOException e )
+                {
+                    throw new MojoExecutionException( "", e );
                 }
             }
         }
