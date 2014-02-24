@@ -175,6 +175,10 @@ public final class BuildHelper
     }
 
     /**
+     * Filters provided artifacts and selects only defined types based on {@code types} argument
+     * or all types if {@code types} argument is empty
+     *
+     * @param allArtifacts artifacts to be filtered
      * @param types artifact types to be selected
      * @return a {@code List} of all project dependencies. Never {@code null}.
      *      This excludes artifacts of the {@code EXCLUDED_DEPENDENCY_SCOPES} scopes.
@@ -183,6 +187,7 @@ public final class BuildHelper
     public Set<Artifact> getFilteredArtifacts( Iterable<Artifact> allArtifacts, String... types )
     {
         final List<String> acceptTypeList = Arrays.asList( types );
+        boolean acceptAllArtifacts = acceptTypeList.isEmpty();
         final Set<Artifact> results = new LinkedHashSet<Artifact>();
         for ( Artifact artifact : allArtifacts )
         {
@@ -201,11 +206,10 @@ public final class BuildHelper
                 continue;
             }
 
-            if ( !acceptTypeList.contains( artifact.getType() ) )
+            if ( acceptAllArtifacts || acceptTypeList.contains( artifact.getType() ) )
             {
-                continue;
+                results.add( artifact );
             }
-            results.add( artifact );
         }
         return results;
     }

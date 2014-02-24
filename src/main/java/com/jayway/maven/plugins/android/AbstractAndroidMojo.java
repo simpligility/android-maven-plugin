@@ -517,6 +517,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     }
 
     /**
+     * Provides transitive dependency artifacts only defined types based on {@code types} argument
+     * or all types if {@code types} argument is empty
+     *
      * @param types artifact types to be selected
      * @return a {@code List} of all project dependencies. Never {@code null}. This excludes artifacts of the {@code
      *         EXCLUDED_DEPENDENCY_SCOPES} scopes. And
