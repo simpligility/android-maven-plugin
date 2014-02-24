@@ -258,18 +258,14 @@ public class AarMojo extends AbstractAndroidMojo
                     //final File dependentLibs = new File( ndkOutputDirectory.getAbsolutePath(), ndkArchitecture );
                     //addSharedLibraries( jarArchiver, dependentLibs, prefix );
 
-                    // get native libs from other aars
-                    for ( Artifact apkLibraryArtifact : getTransitiveDependencyArtifacts() )
+                    // get native libs from other aars and apklibs
+                    for ( Artifact libraryArtifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
                     {
-                        if ( apkLibraryArtifact.getType().equals( AAR )
-                            || apkLibraryArtifact.getType().equals( APKLIB ) )
+                        final File apklibLibsDirectory = new File(
+                                getUnpackedLibNativesFolder( libraryArtifact ), ndkArchitecture );
+                        if ( apklibLibsDirectory.exists() )
                         {
-                            final File apklibLibsDirectory = new File(
-                                    getUnpackedLibNativesFolder( apkLibraryArtifact ), ndkArchitecture );
-                            if ( apklibLibsDirectory.exists() )
-                            {
-                                addSharedLibraries( jarArchiver, apklibLibsDirectory, ndkArchitecture );
-                            }
+                            addSharedLibraries( jarArchiver, apklibLibsDirectory, ndkArchitecture );
                         }
                     }
                 }
@@ -386,16 +382,13 @@ public class AarMojo extends AbstractAndroidMojo
 
         // Have to generate the AAR against the dependent resources or build will fail if any local resources
         // directly reference any of the dependent resources. NB this does NOT include the dep resources in the AAR.
-        for ( Artifact artifact : getTransitiveDependencyArtifacts() )
+        for ( Artifact libraryArtifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
         {
-            if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
+            final File apkLibResDir = getUnpackedLibResourceFolder( libraryArtifact );
+            if ( apkLibResDir.exists() )
             {
-                final File apkLibResDir = getUnpackedLibResourceFolder( artifact );
-                if ( apkLibResDir.exists() )
-                {
-                    commands.add( "-S" );
-                    commands.add( apkLibResDir.getAbsolutePath() );
-                }
+                commands.add( "-S" );
+                commands.add( apkLibResDir.getAbsolutePath() );
             }
         }
 

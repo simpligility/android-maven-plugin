@@ -13,7 +13,7 @@ import org.apache.maven.plugin.logging.Log;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Generates R classes containing appropriate resource values for dependent libraries.
@@ -23,14 +23,14 @@ import java.util.List;
 final class ResourceClassGenerator
 {
     private final GenerateSourcesMojo mojo;
-    private final List<Artifact> libraries;
+    private final Set<Artifact> libraries;
     private final File targetDirectory;
     private final File genDirectory;
     private final Log log;
     private final ILogger androidUtilsLog;
     private final String libraryType;
 
-    public ResourceClassGenerator( GenerateSourcesMojo mojo, List<Artifact> libraries, File targetDirectory,
+    public ResourceClassGenerator( GenerateSourcesMojo mojo, Set<Artifact> libraries, File targetDirectory,
                                    File genDirectory, Log log, String type )
     {
         this.mojo = mojo;

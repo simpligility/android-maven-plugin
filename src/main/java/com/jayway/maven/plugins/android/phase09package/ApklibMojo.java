@@ -221,16 +221,13 @@ public class ApklibMojo extends AbstractAndroidMojo
                     //addSharedLibraries( jarArchiver, dependentLibs, prefix );
 
                     // get native libs from other apklibs
-                    for ( Artifact apkLibraryArtifact : getTransitiveDependencyArtifacts() )
+                    for ( Artifact apkLibraryArtifact : getTransitiveDependencyArtifacts( APKLIB ) )
                     {
-                        if ( apkLibraryArtifact.getType().equals( APKLIB ) )
+                        final File apklibLibsDirectory = new File(
+                                getUnpackedLibNativesFolder( apkLibraryArtifact ), ndkArchitecture );
+                        if ( apklibLibsDirectory.exists() )
                         {
-                            final File apklibLibsDirectory = new File(
-                                    getUnpackedLibNativesFolder( apkLibraryArtifact ), ndkArchitecture );
-                            if ( apklibLibsDirectory.exists() )
-                            {
-                                addSharedLibraries( jarArchiver, apklibLibsDirectory, ndkArchitecture );
-                            }
+                            addSharedLibraries( jarArchiver, apklibLibsDirectory, ndkArchitecture );
                         }
                     }
                 }
@@ -387,16 +384,13 @@ public class ApklibMojo extends AbstractAndroidMojo
             commands.add( "-S" );
             commands.add( resourceDirectory.getAbsolutePath() );
         }
-        for ( Artifact apkLibraryArtifact : getTransitiveDependencyArtifacts() )
+        for ( Artifact libraryArtifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
         {
-            if ( apkLibraryArtifact.getType().equals( APKLIB ) || apkLibraryArtifact.getType().equals( AAR ) )
+            final File apklibResDirectory = getUnpackedLibResourceFolder( libraryArtifact );
+            if ( apklibResDirectory.exists() )
             {
-                final File apklibResDirectory = getUnpackedLibResourceFolder( apkLibraryArtifact );
-                if ( apklibResDirectory.exists() )
-                {
-                    commands.add( "-S" );
-                    commands.add( apklibResDirectory.getAbsolutePath() );
-                }
+                commands.add( "-S" );
+                commands.add( apklibResDirectory.getAbsolutePath() );
             }
         }
         commands.add( "--auto-add-overlay" );
