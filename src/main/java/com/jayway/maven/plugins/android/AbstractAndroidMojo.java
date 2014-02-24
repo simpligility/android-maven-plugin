@@ -150,7 +150,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File sourceDirectory;
 
     /**
-     * The java target directory.
+     * The java target directory. Ie target/classes.
      *
      * @parameter default-value="${project.build.directory}"
      * @readonly
@@ -242,14 +242,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @readonly
      */
     protected File combinedAssets;
-
-    /**
-     * Extract the library (aar and apklib) dependencies here.
-     *
-     * @parameter expression="${project.build.directory}/unpacked-libs"
-     * @readonly
-     */
-    protected File unpackedLibsDirectory;
 
     /**
      * Specifies which the serial number of the device to connect to. Using the special values "usb" or
@@ -493,7 +485,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     protected final DependencyResolver getDependencyResolver()
     {
-        return new DependencyResolver( repoSystem, repoSession, projectRepos, artifactHandler );
+        return new DependencyResolver(
+                new MavenToPlexusLogAdapter( getLog() ),
+                repoSystem, repoSession, projectRepos, artifactHandler
+        );
     }
 
     /**
@@ -1175,6 +1170,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         return androidHome;
     }
 
+    protected final File getUnpackedLibsDirectory()
+    {
+        return getBuildHelper().getUnpackedLibsFolder();
+    }
+
     public final File getUnpackedLibFolder( Artifact artifact )
     {
         return getBuildHelper().getUnpackedLibFolder( artifact );
@@ -1182,7 +1182,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     protected final File getUnpackedAarClassesJar( Artifact artifact )
     {
-        return getBuildHelper().getUnpackedAarClassesJar( artifact );
+        return getBuildHelper().getUnpackedClassesJar( artifact );
     }
 
     protected final File getUnpackedAarJavaResourcesFolder( Artifact artifact )
