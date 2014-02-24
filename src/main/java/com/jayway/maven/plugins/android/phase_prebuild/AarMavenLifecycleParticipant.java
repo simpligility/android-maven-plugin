@@ -57,8 +57,6 @@ public final class AarMavenLifecycleParticipant extends AbstractMavenLifecyclePa
     {
         log.debug( "" );
         log.debug( "AMLP afterProjectsRead" );
-        log.debug( "AMLP afterProjectsRead" );
-        log.debug( "AMLP afterProjectsRead" );
         log.debug( "" );
 
         log.debug( "CurrentProject=" + session.getCurrentProject() );
@@ -82,7 +80,17 @@ public final class AarMavenLifecycleParticipant extends AbstractMavenLifecyclePa
                 final String type = artifact.getType();
                 if ( type.equals( AndroidExtension.AAR ) )
                 {
-                    addAarClassesToClasspath( helper, project, artifact );
+                    // An AAR lib contains a classes jar that needs to be added to the classpath.
+                    // Create a placeholder classes.jar and add it to the compile classpath.
+                    // It will replaced with the real classes.jar by GenerateSourcesMojo.
+                    addClassesToClasspath( helper, project, artifact );
+                }
+                else if ( type.equals( AndroidExtension.APK ) )
+                {
+                    // The only time that an APK will likely be a dependency is when this an an APK test project.
+                    // So add a placeholder (we cannot resolve the actual dep pre build) to the compile classpath.
+                    // The placeholder will be replaced with the real APK jar later.
+                    addClassesToClasspath( helper, project, artifact );
                 }
             }
         }
@@ -92,6 +100,7 @@ public final class AarMavenLifecycleParticipant extends AbstractMavenLifecyclePa
         throws MavenExecutionException
     {
         final DependencyResolver resolver = new DependencyResolver(
+            log,
             repoSystem,
             session.getRepositorySession(),
             project.getRemoteProjectRepositories(),
@@ -108,38 +117,34 @@ public final class AarMavenLifecycleParticipant extends AbstractMavenLifecyclePa
     }
 
     /**
-     * If Aar dependency then add the Aar classes to the project classpath.
+     * Add the dependent library classes to the project classpath.
      */
-    private void addAarClassesToClasspath( BuildHelper helper, MavenProject project, Artifact artifact )
+    private void addClassesToClasspath( BuildHelper helper, MavenProject project, Artifact artifact )
         throws MavenExecutionException
     {
-        final String type = artifact.getType();
-        if ( type.equals( AndroidExtension.AAR ) )
+        // Work out where the dep will be extracted and calculate the file path to the classes jar.
+        log.debug( "Adding to classpath : " + artifact );
+
+        // This is location where the GenerateSourcesMojo will extract the classes.
+        final File classesJar = helper.getUnpackedClassesJar( artifact );
+        log.info( "                    : " + classesJar );
+
+        // In order to satisfy the LifecycleDependencyResolver on execution up to a phase that
+        // has a Mojo requiring dependency resolution I need to create a dummy classesJar here.
+        classesJar.getParentFile().mkdirs();
+        try
         {
-            // Work out where the aar will be extracted and calculate the file path to the aar classes.
-            log.debug( "Adding to classpath : " + artifact );
-
-            // This is location where the GenerateSourcesMojo will extract the classes.
-            final File aarClassesJar = helper.getUnpackedAarClassesJar( artifact );
-            log.info( "                    : " + aarClassesJar );
-
-            // In order to satisfy the LifecycleDependencyResolver on execution up to a phase that
-            // has a Mojo requiring dependency resolution I need to create a dummy aarClassesJar here.
-            aarClassesJar.getParentFile().mkdirs();
-            try
-            {
-                aarClassesJar.createNewFile();
-                log.debug( "Created dummy " + aarClassesJar.getName() + " exist=" + aarClassesJar.exists() );
-            }
-            catch ( IOException e )
-            {
-                throw new MavenExecutionException( "Could not add " + aarClassesJar.getName() + " as dependency", e );
-            }
-
-            // Add the Aar classes to the classpath
-            final Dependency dependency = createSystemScopeDependency( artifact, aarClassesJar );
-            project.getModel().addDependency( dependency );
+            classesJar.createNewFile();
+            log.debug( "Created dummy " + classesJar.getName() + " exist=" + classesJar.exists() );
         }
+        catch ( IOException e )
+        {
+            throw new MavenExecutionException( "Could not add " + classesJar.getName() + " as dependency", e );
+        }
+
+        // Add the classes to the classpath
+        final Dependency dependency = createSystemScopeDependency( artifact, classesJar );
+        project.getModel().addDependency( dependency );
     }
 
     private Dependency createSystemScopeDependency( Artifact artifact, File location )
