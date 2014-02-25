@@ -320,7 +320,20 @@ public class ProguardMojo extends AbstractAndroidMojo
             }
             else
             {
-                return path;
+                String startQuotes, endQuote;
+
+                if ( !Os.isFamily( Os.FAMILY_WINDOWS ) )
+                {
+                    startQuotes = "'\"";
+                    endQuote = "\"'";
+                }
+                else
+                {
+                    startQuotes = "\"'";
+                    endQuote = "'\"";
+                }
+
+                return startQuotes + path + endQuote;
             }
         }
 
