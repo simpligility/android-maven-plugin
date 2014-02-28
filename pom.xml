@@ -83,7 +83,7 @@
     </ciManagement>
     <distributionManagement>
         <snapshotRepository>
-            <id>oss.sonatype.org-jayway-snapshots</id>
+            <id>ossrh</id>
             <name>Jayway OpenSource SNAPSHOTs on Sonatype.org</name>
             <url>http://oss.sonatype.org/content/repositories/jayway-snapshots/</url>
         </snapshotRepository>
@@ -475,7 +475,7 @@
                 <extensions>true</extensions>
                 <inherited>false</inherited>
                 <configuration>
-                    <serverId>oss.sonatype.org-jayway-staging</serverId>
+                    <serverId>ossrh</serverId>
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <stagingProfileId>26a4c760b261ca</stagingProfileId>
                 </configuration>
