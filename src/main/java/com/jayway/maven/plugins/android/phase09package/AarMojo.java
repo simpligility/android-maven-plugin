@@ -30,6 +30,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
+import org.codehaus.plexus.archiver.zip.ZipArchiver;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -187,29 +188,29 @@ public class AarMojo extends AbstractAndroidMojo
 
         try
         {
-            final JarArchiver jarArchiver = new JarArchiver();
-            jarArchiver.setDestFile( aarLibrary );
+            final ZipArchiver zipArchiver = new ZipArchiver();
+            zipArchiver.setDestFile( aarLibrary );
 
-            jarArchiver.addFile( androidManifestFile, "AndroidManifest.xml" );
-            addDirectory( jarArchiver, assetsDirectory, "assets" );
-            addDirectory( jarArchiver, resourceDirectory, "res" );
-            jarArchiver.addFile( classesJar, SdkConstants.FN_CLASSES_JAR );
+            zipArchiver.addFile( androidManifestFile, "AndroidManifest.xml" );
+            addDirectory( zipArchiver, assetsDirectory, "assets" );
+            addDirectory( zipArchiver, resourceDirectory, "res" );
+            zipArchiver.addFile( classesJar, SdkConstants.FN_CLASSES_JAR );
 
             final File[] overlayDirectories = getResourceOverlayDirectories();
             for ( final File resOverlayDir : overlayDirectories )
             {
                 if ( resOverlayDir != null && resOverlayDir.exists() )
                 {
-                    addDirectory( jarArchiver, resOverlayDir, "res" );
+                    addDirectory( zipArchiver, resOverlayDir, "res" );
                 }
             }
 
-            addR( jarArchiver );
+            addR( zipArchiver );
 
             // Lastly, add any native libraries
-            addNativeLibraries( jarArchiver );
+            addNativeLibraries( zipArchiver );
 
-            jarArchiver.createArchive();
+            zipArchiver.createArchive();
         }
         catch ( ArchiverException e )
         {
@@ -223,13 +224,13 @@ public class AarMojo extends AbstractAndroidMojo
         return aarLibrary;
     }
 
-    private void addR( JarArchiver jarArchiver ) throws MojoExecutionException
+    private void addR( ZipArchiver zipArchiver ) throws MojoExecutionException
     {
         File rFile = new File( project.getBuild().getDirectory() + "/R.txt" );
-        jarArchiver.addFile( rFile, "R.txt" );
+        zipArchiver.addFile( rFile, "R.txt" );
     }
 
-    private void addNativeLibraries( final JarArchiver jarArchiver ) throws MojoExecutionException
+    private void addNativeLibraries( final ZipArchiver zipArchiver ) throws MojoExecutionException
     {
 
         try
@@ -237,7 +238,7 @@ public class AarMojo extends AbstractAndroidMojo
             if ( nativeLibrariesDirectory.exists() )
             {
                 getLog().info( nativeLibrariesDirectory + " exists, adding libraries." );
-                addDirectory( jarArchiver, nativeLibrariesDirectory, NATIVE_LIBRARIES_FOLDER );
+                addDirectory( zipArchiver, nativeLibrariesDirectory, NATIVE_LIBRARIES_FOLDER );
             }
             else
             {
@@ -250,7 +251,7 @@ public class AarMojo extends AbstractAndroidMojo
                 for ( String ndkArchitecture : ndkArchitectures )
                 {
                     final File ndkLibsDirectory = new File( ndkOutputDirectory, ndkArchitecture );
-                    addSharedLibraries( jarArchiver, ndkLibsDirectory, ndkArchitecture );
+                    addSharedLibraries( zipArchiver, ndkLibsDirectory, ndkArchitecture );
 
                     // Add native library dependencies
                     // FIXME: Remove as causes duplicate libraries when building final APK if this set includes
@@ -265,7 +266,7 @@ public class AarMojo extends AbstractAndroidMojo
                                 getUnpackedLibNativesFolder( libraryArtifact ), ndkArchitecture );
                         if ( apklibLibsDirectory.exists() )
                         {
-                            addSharedLibraries( jarArchiver, apklibLibsDirectory, ndkArchitecture );
+                            addSharedLibraries( zipArchiver, apklibLibsDirectory, ndkArchitecture );
                         }
                     }
                 }
@@ -301,18 +302,18 @@ public class AarMojo extends AbstractAndroidMojo
     /**
      * Adds a directory to a {@link JarArchiver} with a directory prefix.
      *
-     * @param jarArchiver
+     * @param zipArchiver
      * @param directory   The directory to add.
      * @param prefix      An optional prefix for where in the Jar file the directory's contents should go.
      */
-    protected void addDirectory( JarArchiver jarArchiver, File directory, String prefix )
+    protected void addDirectory( ZipArchiver zipArchiver, File directory, String prefix )
     {
         if ( directory != null && directory.exists() )
         {
             final DefaultFileSet fileSet = new DefaultFileSet();
             fileSet.setPrefix( endWithSlash( prefix ) );
             fileSet.setDirectory( directory );
-            jarArchiver.addFileSet( fileSet );
+            zipArchiver.addFileSet( fileSet );
             getLog().debug( "Added files from " + directory );
         }
     }
@@ -320,11 +321,11 @@ public class AarMojo extends AbstractAndroidMojo
     /**
      * Adds all shared libraries (.so) to a {@link JarArchiver} under 'libs'.
      *
-     * @param jarArchiver The jarArchiver to add files to
+     * @param zipArchiver The jarArchiver to add files to
      * @param directory   The directory to scan for .so files
      * @param ndkArchitecture      The prefix for where in the jar the .so files will go.
      */
-    protected void addSharedLibraries( JarArchiver jarArchiver, File directory, String ndkArchitecture )
+    protected void addSharedLibraries( ZipArchiver zipArchiver, File directory, String ndkArchitecture )
     {
         getLog().debug( "Searching for shared libraries in " + directory );
         File[] libFiles = directory.listFiles( new FilenameFilter()
@@ -341,7 +342,7 @@ public class AarMojo extends AbstractAndroidMojo
             {
                 String dest = "libs/" + ndkArchitecture + "/" + libFile.getName();
                 getLog().debug( "Adding " + libFile + " as " + dest );
-                jarArchiver.addFile( libFile, dest );
+                zipArchiver.addFile( libFile, dest );
             }
         }
     }
