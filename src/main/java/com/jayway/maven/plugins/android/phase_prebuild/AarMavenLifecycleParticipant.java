@@ -16,37 +16,34 @@ import com.jayway.maven.plugins.android.common.DependencyResolver;
 import org.apache.maven.AbstractMavenLifecycleParticipant;
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.Logger;
-import org.eclipse.aether.RepositorySystem;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Adds the classes from AAR dependencies to the project classpath.
  */
-@Component( role = AbstractMavenLifecycleParticipant.class, hint = "AarMavenLifecycleListener" )
+@Component( role = AbstractMavenLifecycleParticipant.class, hint = "default" )
 public final class AarMavenLifecycleParticipant extends AbstractMavenLifecycleParticipant
 {
-    /**
-     * The entry point to Aether, i.e. the component doing all the work.
-     */
     @SuppressWarnings( "unused" )
     @Requirement
-    private RepositorySystem repoSystem;
+    private ArtifactResolver artifactResolver;
 
     @SuppressWarnings( "unused" )
-    @Requirement
-    private ArtifactHandler artifactHandler;
+    @Requirement( hint = "default" )
+    private DependencyGraphBuilder dependencyGraphBuilder;
 
     @SuppressWarnings( "unused" )
     @Requirement
@@ -61,19 +58,25 @@ public final class AarMavenLifecycleParticipant extends AbstractMavenLifecyclePa
 
         log.debug( "CurrentProject=" + session.getCurrentProject() );
         final List<MavenProject> projects = session.getProjects();
+        final DependencyResolver dependencyResolver = new DependencyResolver( log, dependencyGraphBuilder );
 
         for ( MavenProject project : projects )
         {
             log.debug( "" );
             log.debug( "project=" + project.getArtifact() );
 
-            final BuildHelper helper = new BuildHelper(
-                repoSystem, session.getRepositorySession(),
-                project,
-                log
-            );
+            final BuildHelper helper = new BuildHelper( artifactResolver, project, log );
 
-            final Collection<Artifact> artifacts = getProjectsArtifacts( session, project );
+            final Set<Artifact> artifacts;
+            try
+            {
+                artifacts = dependencyResolver.getProjectDependenciesFor( project );
+            }
+            catch ( MojoExecutionException e )
+            {
+                throw new MavenExecutionException( "Could not resolve dependencies for project : " + project, e );
+            }
+
             log.debug( "projects deps: : " + artifacts );
             for ( Artifact artifact : artifacts )
             {
@@ -93,26 +96,6 @@ public final class AarMavenLifecycleParticipant extends AbstractMavenLifecyclePa
                     addClassesToClasspath( helper, project, artifact );
                 }
             }
-        }
-    }
-
-    private Collection<Artifact> getProjectsArtifacts( MavenSession session, MavenProject project )
-        throws MavenExecutionException
-    {
-        final DependencyResolver resolver = new DependencyResolver(
-            log,
-            repoSystem,
-            session.getRepositorySession(),
-            project.getRemoteProjectRepositories(),
-            artifactHandler );
-
-        try
-        {
-            return resolver.getDependenciesFor( project.getArtifact() );
-        }
-        catch ( MojoExecutionException e )
-        {
-            throw new MavenExecutionException( "Could not resolve dependencies for " + project.getArtifact(), e );
         }
     }
 

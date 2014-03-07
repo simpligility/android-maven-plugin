@@ -16,7 +16,6 @@ package com.jayway.maven.plugins.android.phase05compile;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
-import com.jayway.maven.plugins.android.common.AetherHelper;
 import com.jayway.maven.plugins.android.common.NativeHelper;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.HeaderFilesDirective;
@@ -25,7 +24,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
@@ -161,13 +159,6 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      */
     @PullParameter
     private NDKArchitectureToolchainMappings ndkArchitectureToolchainMappings;
-
-    /**
-     * @component
-     * @readonly
-     * @required
-     */
-    protected ArtifactFactory artifactFactory;
 
     /**
      * Flag indicating whether the header files used in the build should be included and attached to the build as
@@ -367,8 +358,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 final Set<Artifact> nativeLibraryArtifacts = findNativeLibraryDependencies();
 
                 // If there are any static libraries the code needs to link to, include those in the make file
-                final Set<Artifact> resolveNativeLibraryArtifacts = AetherHelper
-                        .resolveArtifacts( nativeLibraryArtifacts, repoSystem, repoSession, projectRepos );
+                final Set<Artifact> resolveNativeLibraryArtifacts =
+                        getBuildHelper().resolveArtifacts( nativeLibraryArtifacts );
+
                 if ( getLog().isDebugEnabled() )
                 {
                     getLog().debug( "resolveArtifacts found " + resolveNativeLibraryArtifacts.size()
@@ -385,8 +377,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                     ndkBuildDirectory = project.getBasedir().getAbsolutePath();
                 }
 
-                final MakefileHelper makefileHelper = new MakefileHelper( getLog(),
-                                                                          repoSystem, repoSession, projectRepos,
+                final MakefileHelper makefileHelper = new MakefileHelper( getLog(), getBuildHelper(),
                         getUnpackedLibsDirectory() );
                 final MakefileHelper.MakefileHolder makefileHolder = makefileHelper
                         .createMakefileFromArtifacts( new File( ndkBuildDirectory ),
@@ -971,8 +962,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
     
     private Set<Artifact> findNativeLibraryDependencies() throws MojoExecutionException
     {
-        NativeHelper nativeHelper = new NativeHelper( project, projectRepos, repoSession, repoSystem, artifactFactory,
-                getLog() );
+        final NativeHelper nativeHelper = getNativeHelper();
         final Set<Artifact> staticLibraryArtifacts = nativeHelper
                 .getNativeDependenciesArtifacts( getUnpackedLibsDirectory(), false );
         final Set<Artifact> sharedLibraryArtifacts = nativeHelper

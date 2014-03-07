@@ -4,33 +4,19 @@ import com.google.common.io.PatternFilenameFilter;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.AndroidNdk;
 import com.jayway.maven.plugins.android.phase09package.ApklibMojo;
+import edu.emory.mathcs.backport.java.util.Collections;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.versioning.VersionRange;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.collection.CollectRequest;
-import org.eclipse.aether.graph.Dependency;
-import org.eclipse.aether.graph.DependencyFilter;
-import org.eclipse.aether.graph.DependencyNode;
-import org.eclipse.aether.graph.Exclusion;
-import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.aether.resolution.DependencyRequest;
-import org.eclipse.aether.util.filter.AndDependencyFilter;
-import org.eclipse.aether.util.filter.ExclusionsDependencyFilter;
-import org.eclipse.aether.util.filter.ScopeDependencyFilter;
-import org.eclipse.aether.util.graph.visitor.PreorderNodeListGenerator;
+import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Scanner;
@@ -39,7 +25,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
-import static org.apache.maven.RepositoryUtils.toDependency;
 
 /**
  * @author Johan Lindquist
@@ -50,19 +35,15 @@ public class NativeHelper
     public static final int NDK_REQUIRED_VERSION = 7;
 
     private MavenProject project;
-    private RepositorySystemSession repoSession;
-    private RepositorySystem repoSystem;
+    private DependencyGraphBuilder dependencyGraphBuilder;
     private ArtifactFactory artifactFactory;
     private Log log;
-    private List<RemoteRepository> projectRepos;
 
-    public NativeHelper( MavenProject project, List<RemoteRepository> projectRepos, RepositorySystemSession repoSession,
-                         RepositorySystem repoSystem, ArtifactFactory artifactFactory, Log log )
+    public NativeHelper( MavenProject project, DependencyGraphBuilder dependencyGraphBuilder,
+                         ArtifactFactory artifactFactory, Log log )
     {
         this.project = project;
-        this.projectRepos = projectRepos;
-        this.repoSession = repoSession;
-        this.repoSystem = repoSystem;
+        this.dependencyGraphBuilder = dependencyGraphBuilder;
         this.artifactFactory = artifactFactory;
         this.log = log;
     }
@@ -202,18 +183,16 @@ public class NativeHelper
         return ( sharedLibraries ? "so".equals( artifactType ) : "a".equals( artifactType ) );
     }
 
-    private Set<Artifact> processTransientDependencies( List<org.apache.maven.model.Dependency> dependencies,
+    private Set<Artifact> processTransientDependencies( List<Dependency> dependencies,
                                                         boolean sharedLibraries ) throws MojoExecutionException
     {
 
         Set<Artifact> transientArtifacts = new LinkedHashSet<Artifact>();
-        for ( org.apache.maven.model.Dependency dependency : dependencies )
+        for ( Dependency dependency : dependencies )
         {
-            if ( ! "provided".equals( dependency.getScope() ) && ! dependency.isOptional() )
+            if ( ! Artifact.SCOPE_PROVIDED.equals( dependency.getScope() ) && ! dependency.isOptional() )
             {
-                transientArtifacts.addAll(
-                        processTransientDependencies( toDependency( dependency, repoSession.getArtifactTypeRegistry() ),
-                                sharedLibraries ) );
+                transientArtifacts.addAll( processTransientDependencies( dependency, sharedLibraries ) );
             }
         }
 
@@ -224,6 +203,9 @@ public class NativeHelper
     private Set<Artifact> processTransientDependencies( Dependency dependency, boolean sharedLibraries )
             throws MojoExecutionException
     {
+        return Collections.emptySet();
+        // TODO Implement this using DependencyGrapBuilder
+/*
         try
         {
             final Set<Artifact> artifacts = new LinkedHashSet<Artifact>();
@@ -288,6 +270,7 @@ public class NativeHelper
         {
             throw new MojoExecutionException( "Error while processing transient dependencies", e );
         }
+*/
     }
 
     public static void validateNDKVersion( File ndkHomeDir ) throws MojoExecutionException

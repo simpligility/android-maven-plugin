@@ -24,6 +24,7 @@ import com.jayway.maven.plugins.android.common.BuildHelper;
 import com.jayway.maven.plugins.android.common.DependencyResolver;
 import com.jayway.maven.plugins.android.common.DeviceHelper;
 import com.jayway.maven.plugins.android.common.MavenToPlexusLogAdapter;
+import com.jayway.maven.plugins.android.common.NativeHelper;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.configuration.Ndk;
 import com.jayway.maven.plugins.android.configuration.Sdk;
@@ -34,7 +35,9 @@ import org.apache.commons.jxpath.JXPathNotFoundException;
 import org.apache.commons.jxpath.xml.DocumentContainer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
@@ -42,10 +45,9 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
+import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.util.DirectoryScanner;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.repository.RemoteRepository;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -308,28 +310,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected boolean generateApk;
 
-    /**
-     * The entry point to Aether, i.e. the component doing all the work.
-     *
-     * @component
-     */
-    protected RepositorySystem repoSystem;
-
-    /**
-     * The current repository/network configuration of Maven.
-     *
-     * @parameter default-value="${repositorySystemSession}"
-     * @readonly
-     */
-    protected RepositorySystemSession repoSession;
-
-    /**
-     * The project's remote repositories to use for the resolution of project dependencies.
-     *
-     * @parameter default-value="${project.remoteProjectRepositories}"
-     * @readonly
-     */
-    protected List<RemoteRepository> projectRepos;
+    @Requirement
+    private ArtifactResolver artifactResolver;
 
     /**
      * @component
@@ -352,6 +334,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @readonly
      */
     protected MavenProjectHelper projectHelper;
+
+    @Requirement
+    protected ArtifactFactory artifactFactory;
 
     /**
      * <p>The Android SDK to use.</p>
@@ -473,6 +458,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected boolean release;
 
     private BuildHelper buildHelper;
+    private NativeHelper nativeHelper;
 
     /**
      *
@@ -483,12 +469,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     private static boolean adbInitialized = false;
 
+    @SuppressWarnings( "unused" )
+    @Requirement( hint = "default" )
+    protected DependencyGraphBuilder dependencyGraphBuilder;
+
+
     protected final DependencyResolver getDependencyResolver()
     {
-        return new DependencyResolver(
-                new MavenToPlexusLogAdapter( getLog() ),
-                repoSystem, repoSession, projectRepos, artifactHandler
-        );
+        return new DependencyResolver( new MavenToPlexusLogAdapter( getLog() ), dependencyGraphBuilder );
     }
 
     /**
@@ -1390,11 +1378,20 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         if ( buildHelper == null )
         {
             buildHelper = new BuildHelper(
-                repoSystem, repoSession,
+                artifactResolver,
                 project,
                 new MavenToPlexusLogAdapter( getLog() )
             );
         }
         return buildHelper;
+    }
+
+    protected final NativeHelper getNativeHelper()
+    {
+        if ( nativeHelper == null )
+        {
+            nativeHelper = new NativeHelper( project, dependencyGraphBuilder, artifactFactory, getLog() );
+        }
+        return nativeHelper;
     }
 }

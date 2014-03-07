@@ -8,15 +8,12 @@ import com.jayway.maven.plugins.android.config.ConfigHandler;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.Proguard;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.interpolation.os.Os;
-import org.eclipse.aether.artifact.DefaultArtifact;
-import org.eclipse.aether.util.artifact.JavaScopes;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -507,11 +504,11 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     private void skipArtifact( String groupId, String artifactId, boolean shiftToLibraries )
     {
-        artifactBlacklist.add( RepositoryUtils.toArtifact( new DefaultArtifact( groupId, artifactId, null, null ) ) );
+        final Artifact artifact = new DefaultArtifact( groupId, artifactId, (String)  null, null, null, null, null );
+        artifactBlacklist.add( artifact );
         if ( shiftToLibraries )
         {
-            artifactsToShift
-                .add( RepositoryUtils.toArtifact( new DefaultArtifact( groupId, artifactId, null, null ) ) );
+            artifactsToShift.add( artifact );
         }
     }
 
@@ -635,7 +632,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         // we treat any dependencies with provided scope as library JARs
         for ( Artifact artifact : project.getArtifacts() )
         {
-            if ( artifact.getScope().equals( JavaScopes.PROVIDED ) )
+            if ( artifact.getScope().equals( Artifact.SCOPE_PROVIDED ) )
             {
                 if ( artifact.getArtifactId().equals( "android" ) && parsedIncludeJdkLibs )
                 {

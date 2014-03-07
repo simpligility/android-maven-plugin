@@ -1,10 +1,9 @@
 package com.jayway.maven.plugins.android.phase05compile;
 
-import com.jayway.maven.plugins.android.common.AetherHelper;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
+import com.jayway.maven.plugins.android.common.BuildHelper;
 import com.jayway.maven.plugins.android.common.JarHelper;
 import com.jayway.maven.plugins.android.common.NativeHelper;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -12,9 +11,6 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.repository.RemoteRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,29 +61,20 @@ public class MakefileHelper
         }
     }
 
-    private Log log;
-    private final RepositorySystem repoSystem;
-    private final RepositorySystemSession repoSession;
-    private final List<RemoteRepository> projectRepos;
+    private final Log log;
+    private final BuildHelper buildHelper;
     private final File unpackedApkLibsDirectory;
     
     /**
      * Initialize the MakefileHelper by storing the supplied parameters to local variables.
      * @param log
-     * @param repoSystem
-     * @param repoSession
-     * @param projectRepos
+     * @param buildHelper   BuildHelper to use to resolve any artifacts.
      * @param unpackedApkLibsDirectory
      */
-    public MakefileHelper( Log log,
-                           RepositorySystem repoSystem, RepositorySystemSession repoSession, 
-                           List<RemoteRepository> projectRepos, 
-                           File unpackedApkLibsDirectory )
+    public MakefileHelper( Log log, BuildHelper buildHelper, File unpackedApkLibsDirectory )
     {
         this.log = log;
-        this.repoSystem = repoSystem;
-        this.repoSession = repoSession;
-        this.projectRepos = projectRepos;
+        this.buildHelper = buildHelper;
         this.unpackedApkLibsDirectory = unpackedApkLibsDirectory;
     }
     
@@ -95,7 +82,7 @@ public class MakefileHelper
      * Cleans up all include directories created in the temp directory during the build.
      *
      * @param makefileHolder The holder produced by the
-     * {@link MakefileHelper#createMakefileFromArtifacts(File, Set, String, boolean)}
+     * {@link MakefileHelper#createMakefileFromArtifacts(File, Set, String, String, boolean)}
      */
     public static void cleanupAfterBuild( MakefileHolder makefileHolder )
     {
@@ -124,9 +111,6 @@ public class MakefileHelper
      * @param artifacts         The list of (static library) dependency artifacts to create the Makefile from
      * @param useHeaderArchives If true, the Makefile should include a LOCAL_EXPORT_C_INCLUDES statement, pointing to
      *                          the location where the header archive was expanded
-     * @param repoSession
-     * @param projectRepos
-     * @param repoSystem
      * @return The created Makefile
      */
     public MakefileHolder createMakefileFromArtifacts( File outputDir, Set<Artifact> artifacts,
@@ -208,16 +192,16 @@ public class MakefileHelper
                         Artifact harArtifact = new DefaultArtifact( artifact.getGroupId(), artifact.getArtifactId(),
                                 artifact.getVersion(), artifact.getScope(), "har", classifier,
                                 artifact.getArtifactHandler() );
-                        final Artifact resolvedHarArtifact = AetherHelper
-                                .resolveArtifact( harArtifact, repoSystem, repoSession, projectRepos );
+
+                        final File resolvedHarArtifactFile = buildHelper.resolveArtifactToFile( harArtifact );
 
                         File includeDir = new File( System.getProperty( "java.io.tmpdir" ),
                                 "android_maven_plugin_native_includes" + System.currentTimeMillis() + "_"
-                                        + resolvedHarArtifact.getArtifactId() );
+                                        + harArtifact.getArtifactId() );
                         includeDir.deleteOnExit();
                         includeDirectories.add( includeDir );
 
-                        JarHelper.unjar( new JarFile( resolvedHarArtifact.getFile() ), includeDir,
+                        JarHelper.unjar( new JarFile( resolvedHarArtifactFile ), includeDir,
                                 new JarHelper.UnjarListener()
                                 {
                                     @Override
