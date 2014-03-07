@@ -67,20 +67,24 @@
         <android.builder.version>0.7.3</android.builder.version>
         <android.tools.version>22.4.2</android.tools.version>
     </properties>
+
     <scm>
         <url>http://github.com/jayway/maven-android-plugin/tree/${scm.branch}</url>
         <connection>scm:git:git://github.com/jayway/maven-android-plugin.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/jayway/maven-android-plugin.git</developerConnection>
       <tag>HEAD</tag>
     </scm>
+
     <issueManagement>
         <system>Google Code Issue Tracking</system>
         <url>http://code.google.com/p/maven-android-plugin/issues/list</url>
     </issueManagement>
+
     <ciManagement>
         <system>Travis</system>
         <url>https://travis-ci.org/jayway/maven-android-plugin</url>
     </ciManagement>
+
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
@@ -88,12 +92,14 @@
             <url>http://oss.sonatype.org/content/repositories/jayway-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
+
     <licenses>
         <license>
             <name>Apache 2.0</name>
             <url>LICENSE.txt</url>
         </license>
     </licenses>
+
     <developers>
         <developer>
             <name>See homepage and mailinglist for contributors.</name>
@@ -105,15 +111,18 @@
             </roles>
         </developer>
     </developers>
+
     <mailingLists>
         <mailingList>
             <name>Maven Android Developers</name>
             <archive>http://groups.google.com/group/maven-android-developers/topics</archive>
         </mailingList>
     </mailingLists>
+
     <prerequisites>
         <maven>3.1.1</maven>
     </prerequisites>
+
     <dependencyManagement>
         <dependencies>
             <!-- managing archiver explicitly to 2.3 since 2.2 as found in maven-archiver causes issues
@@ -125,6 +134,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -348,6 +358,7 @@
             <version>1.9</version>
         </dependency>
     </dependencies>
+
     <build>
         <pluginManagement>
             <plugins>
