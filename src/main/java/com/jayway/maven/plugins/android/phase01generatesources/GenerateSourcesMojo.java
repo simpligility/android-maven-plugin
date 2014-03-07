@@ -22,7 +22,6 @@ import com.android.utils.StdLogger;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
-import com.jayway.maven.plugins.android.common.AetherHelper;
 import com.jayway.maven.plugins.android.common.ZipExtractor;
 import com.jayway.maven.plugins.android.configuration.BuildConfigConstant;
 import org.apache.commons.io.FileUtils;
@@ -319,26 +318,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 getLog().debug( "Detected apksources dependency " + artifact + " with file " + artifact.getFile()
                         + ". Will resolve and extract..." );
 
-                Artifact resolvedArtifact = AetherHelper
-                        .resolveArtifact( artifact, repoSystem, repoSession, projectRepos );
-
-                File apksourcesFile = resolvedArtifact.getFile();
-
-                // When the artifact is not installed in local repository, but rather part of the current reactor,
-                // resolve from within the reactor. (i.e. ../someothermodule/target/*)
-                if ( ! apksourcesFile.exists() )
-                {
-                    apksourcesFile = resolveArtifactToFile( artifact );
-                }
-
-                // When using maven under eclipse the artifact will by default point to a directory, which isn't
-                // correct. To work around this we'll first try to get the archive from the local repo, and only if it
-                // isn't found there we'll do a normal resolve.
-
-                if ( apksourcesFile.isDirectory() )
-                {
-                    apksourcesFile = resolveArtifactToFile( artifact );
-                }
+                final File apksourcesFile = resolveArtifactToFile( artifact );
                 getLog().debug( "Extracting " + apksourcesFile + "..." );
                 extractApksources( apksourcesFile );
             }
@@ -703,9 +683,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( apklibResDir.getAbsolutePath() );
         }
 
-        final List<Artifact> apklibDependencies = getDependencyResolver().getDependenciesFor( apklibArtifact );
-        getLog().debug( "apklib dependencies = " + apklibDependencies );
-        for ( Artifact dependency : apklibDependencies )
+        final Set<Artifact> apklibDeps = getDependencyResolver().getLibraryDependenciesFor( project, apklibArtifact );
+        getLog().debug( "apklib dependencies = " + apklibDeps );
+        for ( Artifact dependency : apklibDeps )
         {
             // Add in the resources that are dependencies of the apklib.
             final String extension = dependency.getType();
@@ -721,7 +701,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         // Create combinedAssets for this apklib dependency - can't have multiple -A args
         final File apklibCombAssets = new File( getUnpackedLibFolder( apklibArtifact ), "combined-assets" );
-        for ( Artifact dependency : apklibDependencies )
+        for ( Artifact dependency : apklibDeps )
         {
             // Accumulate assets for dependencies of the apklib (if they exist).
             final String extension = dependency.getType();

@@ -1,16 +1,15 @@
 package com.jayway.maven.plugins.android.common;
 
 import com.jayway.maven.plugins.android.AndroidNdk;
-
-import org.apache.maven.artifact.*;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.factory.DefaultArtifactFactory;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.SilentLog;
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
-import org.eclipse.aether.internal.impl.DefaultRepositorySystem;
-import org.eclipse.aether.repository.RemoteRepository;
+import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
+import org.apache.maven.shared.dependency.graph.internal.DefaultDependencyGraphBuilder;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,7 +20,10 @@ import java.io.File;
 import java.util.Collections;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Johan Lindquist
@@ -49,8 +51,9 @@ public class NativeHelperTest {
         apklib.setType(AndroidExtension.APKLIB);
         project.addAttachedArtifact(apklib);
 
-        nativeHelper = new NativeHelper(project, Collections.<RemoteRepository>emptyList(),
-                MavenRepositorySystemUtils.newSession(), new DefaultRepositorySystem(),
+        final DependencyGraphBuilder dependencyGraphBuilder = new DefaultDependencyGraphBuilder();
+
+        nativeHelper = new NativeHelper(project, dependencyGraphBuilder,
                 new DefaultArtifactFactory(), new SilentLog());
     }
 

@@ -1,20 +1,17 @@
 package com.jayway.maven.plugins.android.common;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
+import org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;
+import org.apache.maven.shared.dependency.graph.DependencyNode;
+import org.apache.maven.shared.dependency.graph.filter.DependencyNodeFilter;
 import org.codehaus.plexus.logging.Logger;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.artifact.DefaultArtifact;
-import org.eclipse.aether.graph.Dependency;
-import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.aether.resolution.ArtifactDescriptorException;
-import org.eclipse.aether.resolution.ArtifactDescriptorRequest;
-import org.eclipse.aether.resolution.ArtifactDescriptorResult;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
@@ -28,99 +25,102 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
 public final class DependencyResolver
 {
     private final Logger log;
-    private final RepositorySystem repoSystem;
-    private final RepositorySystemSession repoSession;
-    private final List<RemoteRepository> remoteRepos;
-    private final ArtifactHandler artifactHandler;
+    private final DependencyGraphBuilder dependencyGraphBuilder;
 
-    public DependencyResolver( Logger log,
-                               RepositorySystem repoSystem,
-                               RepositorySystemSession repoSession,
-                               List<RemoteRepository> remoteRepos,
-                               ArtifactHandler artifactHandler )
+    public DependencyResolver( Logger log, DependencyGraphBuilder dependencyGraphBuilder )
     {
         this.log = log;
-        this.repoSystem = repoSystem;
-        this.repoSession = repoSession;
-        this.remoteRepos = remoteRepos;
-        this.artifactHandler = artifactHandler;
+        this.dependencyGraphBuilder = dependencyGraphBuilder;
     }
 
     /**
-     * Returns the list of transitive APKLIB or AAR dependencies of the supplied artifact.
-     *
-     * @param artifact  Artifact for whom to get the dependencies.
-     * @return List of APK, APKLIB and AAR dependencies.
-     * @throws MojoExecutionException if it couldn't resolve any of the dependencies.
+     * @param project   MavenProject for which to return the dependencies.
+     * @return all the dependencies for a project.
+     * @throws MojoExecutionException if the dependency graph can't be built.
      */
-    public List<Artifact> getDependenciesFor( Artifact artifact ) throws MojoExecutionException
+    public Set<Artifact> getProjectDependenciesFor( MavenProject project ) throws MojoExecutionException
     {
-        final List<Artifact> results = new ArrayList<Artifact>();
-
-        final org.eclipse.aether.artifact.Artifact artifactToResolve =
-                new DefaultArtifact(
-                        artifact.getGroupId(),
-                        artifact.getArtifactId(),
-                        artifact.getType(),
-                        artifact.getVersion()
-                );
-
-        final List<Dependency> transitiveDeps = getDependenciesFor( artifactToResolve );
-        for ( Dependency dependency : transitiveDeps )
-        {
-            final Artifact artifactDep = new org.apache.maven.artifact.DefaultArtifact(
-                    dependency.getArtifact().getGroupId(),
-                    dependency.getArtifact().getArtifactId(),
-                    dependency.getArtifact().getVersion(),
-                    dependency.getScope(),
-                    dependency.getArtifact().getExtension(),
-                    dependency.getArtifact().getClassifier(),
-                    artifactHandler
-            );
-            results.add( artifactDep );
-        }
-
-        return results;
-    }
-
-    /**
-     * Returns the list of transitive APKLIB or AAR dependencies of the supplied artifact.
-     *
-     * @param artifact  Artifact for whom to get the dependencies.
-     * @return List of APK, APKLIB and AAR dependencies.
-     * @throws MojoExecutionException if it couldn't resolve any of the dependencies.
-     */
-    private List<Dependency> getDependenciesFor( org.eclipse.aether.artifact.Artifact artifact )
-            throws MojoExecutionException
-    {
-        final List<Dependency> results = new ArrayList<Dependency>();
-
-        final ArtifactDescriptorRequest descriptorRequest = new ArtifactDescriptorRequest();
-        descriptorRequest.setArtifact( artifact );
-        descriptorRequest.setRepositories( remoteRepos );
-
-        final ArtifactDescriptorResult descriptorResult;
+        final ArtifactFilter filter = null;
+        final DependencyNode node;
         try
         {
-            descriptorResult = repoSystem.readArtifactDescriptor( repoSession, descriptorRequest );
+            node = dependencyGraphBuilder.buildDependencyGraph( project, filter );
         }
-        catch ( ArtifactDescriptorException e )
+        catch ( DependencyGraphBuilderException e )
         {
-            throw new MojoExecutionException( "Could not resolve dependencies for " + artifact, e );
+            throw new MojoExecutionException( "Could not resolve project dependency graph", e );
         }
 
-        for ( Dependency dependency : descriptorResult.getDependencies() )
-        {
-            log.debug( "Found dependency: " + dependency );
-            final String extension = dependency.getArtifact().getExtension();
-            if ( extension.equals( APKLIB ) || extension.equals( AAR ) || extension.equals( APK ) )
-            {
-                results.add( dependency );
-                results.addAll( getDependenciesFor( dependency.getArtifact() ) );
-            }
-        }
-
-        return results;
+        final Set<Artifact> dependencies = new HashSet<Artifact>();
+        resolveRecursively( dependencies, node, null );
+        return dependencies;
     }
 
+    /**
+     * Returns the Set of APKLIB, AAR, APK (direct or transitive) dependencies of the supplied artifact.
+     *
+     * The project is searched until artifact is found and then the library dependencies are looked for recursively.
+     *
+     * @param project   MavenProject that contains the artifact.
+     * @param artifact  Artifact for whom to get the dependencies.
+     * @return Set of APK, APKLIB and AAR dependencies.
+     * @throws org.apache.maven.plugin.MojoExecutionException if it couldn't resolve any of the dependencies.
+     */
+    public Set<Artifact> getLibraryDependenciesFor( MavenProject project, final Artifact artifact )
+            throws MojoExecutionException
+    {
+        // Set a filter that should only return the supplied artifact.
+        final ArtifactFilter filter = new ArtifactFilter()
+        {
+            @Override
+            public boolean include( Artifact found )
+            {
+                return found.getGroupId().equals( artifact.getGroupId() )
+                        && found.getArtifactId().equals( artifact.getArtifactId() )
+                        && found.getVersion().equals( artifact.getVersion() )
+                        && found.getType().equals( artifact.getType() )
+                        ;
+            }
+        };
+
+        final DependencyNode node;
+        try
+        {
+            node = dependencyGraphBuilder.buildDependencyGraph( project, filter );
+        }
+        catch ( DependencyGraphBuilderException e )
+        {
+            throw new MojoExecutionException( "Could not resolve project dependency graph", e );
+        }
+
+        final DependencyNodeFilter libraryFilter = new DependencyNodeFilter()
+        {
+            @Override
+            public boolean accept( DependencyNode child )
+            {
+                final String extension = child.getArtifact().getType();
+                return ( extension.equals( APKLIB ) || extension.equals( AAR ) || extension.equals( APK ) );
+            }
+        };
+
+        // Accrete any children that are libraries and any recurse down the libraries.
+        final Set<Artifact> dependencies = new HashSet<Artifact>();
+        resolveRecursively( dependencies, node, libraryFilter );
+        return dependencies;
+    }
+
+    private void resolveRecursively( Set<Artifact> result, DependencyNode node, DependencyNodeFilter filter )
+    {
+        if ( ( filter != null ) && ( !filter.accept( node ) ) )
+        {
+            return;
+        }
+
+        log.info( "Adding dep : " + node.getArtifact() );
+        result.add( node.getArtifact() );
+        for ( final DependencyNode child : node.getChildren() )
+        {
+            resolveRecursively( result, child, filter );
+        }
+    }
 }

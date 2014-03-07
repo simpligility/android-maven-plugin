@@ -12,6 +12,9 @@ package com.jayway.maven.plugins.android.common;
 
 import com.android.SdkConstants;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
+import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.archiver.ArchiverException;
@@ -19,12 +22,11 @@ import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.repository.RemoteRepository;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,25 +41,23 @@ public final class BuildHelper
     /**
      * Which dependency scopes should not be included when unpacking dependencies into the apk.
      */
-    protected static final List<String> EXCLUDED_DEPENDENCY_SCOPES = Arrays.asList( "provided", "system", "import" );
+    protected static final List<String> EXCLUDED_DEPENDENCY_SCOPES = Arrays.asList(
+            Artifact.SCOPE_PROVIDED, Artifact.SCOPE_SYSTEM, Artifact.SCOPE_IMPORT
+    );
 
-    private final RepositorySystem repoSystem;
-    private final RepositorySystemSession repoSession;
-    private final List<RemoteRepository> projectRepos;
+    private final ArtifactResolver artifactResolver;
     private final Logger log;
 
     // ${project.build.directory}/unpacked-libs
     private final File unpackedLibsDirectory;
 
-    public BuildHelper( RepositorySystem repoSystem,
-                        RepositorySystemSession repoSession,
+
+    public BuildHelper( ArtifactResolver artifactResolver, // @Component
                         MavenProject project,
                         Logger log
     )
     {
-        this.repoSystem = repoSystem;
-        this.repoSession = repoSession;
-        this.projectRepos = project.getRemoteProjectRepositories();
+        this.artifactResolver = artifactResolver;
         final File targetFolder = new File( project.getBasedir(), "target" );
         this.unpackedLibsDirectory = new File( targetFolder, "unpacked-libs" );
         this.log = log;
@@ -65,27 +65,7 @@ public final class BuildHelper
 
     public void extractApklib( Artifact apklibArtifact ) throws MojoExecutionException
     {
-
-        final Artifact resolvedArtifact = AetherHelper
-                .resolveArtifact( apklibArtifact, repoSystem, repoSession, projectRepos );
-
-        File apkLibFile = resolvedArtifact.getFile();
-
-        // When the artifact is not installed in local repository, but rather part of the current reactor,
-        // resolve from within the reactor. (i.e. ../someothermodule/target/*)
-        if ( ! apkLibFile.exists() )
-        {
-            apkLibFile = resolveArtifactToFile( apklibArtifact );
-        }
-
-        //When using maven under eclipse the artifact will by default point to a directory, which isn't correct.
-        //To work around this we'll first try to get the archive from the local repo, and only if it isn't found there
-        // we'll do a normal resolve.
-        if ( apkLibFile.isDirectory() )
-        {
-            apkLibFile = resolveArtifactToFile( apklibArtifact );
-        }
-
+        final File apkLibFile = resolveArtifactToFile( apklibArtifact );
         if ( apkLibFile.isDirectory() )
         {
             log.warn(
@@ -119,27 +99,7 @@ public final class BuildHelper
 
     public void extractAarLib( Artifact aarArtifact ) throws MojoExecutionException
     {
-
-        final Artifact resolvedArtifact = AetherHelper
-                .resolveArtifact( aarArtifact, repoSystem, repoSession, projectRepos );
-
-        File aarFile = resolvedArtifact.getFile();
-
-        // When the artifact is not installed in local repository, but rather part of the current reactor,
-        // resolve from within the reactor. (i.e. ../someothermodule/target/*)
-        if ( ! aarFile.exists() )
-        {
-            aarFile = resolveArtifactToFile( aarArtifact );
-        }
-
-        //When using maven under eclipse the artifact will by default point to a directory, which isn't correct.
-        //To work around this we'll first try to get the archive from the local repo, and only if it isn't found there
-        // we'll do a normal resolve.
-        if ( aarFile.isDirectory() )
-        {
-            aarFile = resolveArtifactToFile( aarArtifact );
-        }
-
+        final File aarFile = resolveArtifactToFile( aarArtifact );
         if ( aarFile.isDirectory() )
         {
             log.warn(
@@ -214,7 +174,7 @@ public final class BuildHelper
      */
     public File resolveArtifactToFile( Artifact artifact ) throws MojoExecutionException
     {
-        Artifact resolvedArtifact = AetherHelper.resolveArtifact( artifact, repoSystem, repoSession, projectRepos );
+        final Artifact resolvedArtifact = resolveArtifact( artifact );
         final File jar = resolvedArtifact.getFile();
         if ( jar == null )
         {
@@ -297,5 +257,31 @@ public final class BuildHelper
     public boolean isAPKBuild( MavenProject project )
     {
         return APK.equals( project.getPackaging() );
+    }
+
+    public Set<Artifact> resolveArtifacts( Collection<Artifact> artifacts )
+    {
+        final Set<Artifact> resolvedArtifacts = new HashSet<Artifact>();
+        for ( final Artifact artifact : artifacts )
+        {
+            resolvedArtifacts.add( resolveArtifact( artifact ) );
+        }
+        return resolvedArtifacts;
+    }
+
+    /**
+     * Resolves an artifact to a particular repository.
+     *
+     * @param artifact  Artifact to resolve
+     * @return fully resolved artifact.
+     */
+    private Artifact resolveArtifact( Artifact artifact )
+    {
+        final ArtifactResolutionRequest resolutionRequest = new ArtifactResolutionRequest().setArtifact( artifact );
+        final ArtifactResolutionResult resolutionResult = this.artifactResolver.resolve( resolutionRequest );
+
+        log.info( "Resolved - originator : " + resolutionResult.getOriginatingArtifact() );
+        log.info( "Resolved - artifacts : " + resolutionResult.getArtifacts() );
+        return resolutionResult.getOriginatingArtifact();
     }
 }
