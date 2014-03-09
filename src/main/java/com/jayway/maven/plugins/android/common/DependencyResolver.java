@@ -40,19 +40,24 @@ public final class DependencyResolver
      */
     public Set<Artifact> getProjectDependenciesFor( MavenProject project ) throws MojoExecutionException
     {
-        final ArtifactFilter filter = null;
         final DependencyNode node;
         try
         {
-            node = dependencyGraphBuilder.buildDependencyGraph( project, filter );
+            // No need to filter our search. We want to resolve all artifacts.
+            node = dependencyGraphBuilder.buildDependencyGraph( project, null );
         }
         catch ( DependencyGraphBuilderException e )
         {
             throw new MojoExecutionException( "Could not resolve project dependency graph", e );
         }
 
+        // Search all the children recursively.
+        // Don't want to search from the root node because then it would be included as it's own dependency.
         final Set<Artifact> dependencies = new HashSet<Artifact>();
-        resolveRecursively( dependencies, node, null );
+        for ( final DependencyNode child : node.getChildren() )
+        {
+            resolveRecursively( dependencies, child, null );
+        }
         return dependencies;
     }
 
@@ -116,7 +121,7 @@ public final class DependencyResolver
             return;
         }
 
-        log.info( "Adding dep : " + node.getArtifact() );
+        log.debug( "Adding dep : " + node.getArtifact() );
         result.add( node.getArtifact() );
         for ( final DependencyNode child : node.getChildren() )
         {
