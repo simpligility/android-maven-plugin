@@ -474,7 +474,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     private static boolean adbInitialized = false;
 
     @SuppressWarnings( "unused" )
-    @Requirement( hint = "default" )
+    /**
+     * @component
+     * @required
+     * @readonly
+     */
     protected DependencyGraphBuilder dependencyGraphBuilder;
 
 
