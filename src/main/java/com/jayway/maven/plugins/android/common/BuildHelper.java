@@ -259,7 +259,7 @@ public final class BuildHelper
         return APK.equals( project.getPackaging() );
     }
 
-    public Set<Artifact> resolveArtifacts( Collection<Artifact> artifacts )
+    public Set<Artifact> resolveArtifacts( Collection<Artifact> artifacts ) throws MojoExecutionException
     {
         final Set<Artifact> resolvedArtifacts = new HashSet<Artifact>();
         for ( final Artifact artifact : artifacts )
@@ -275,13 +275,19 @@ public final class BuildHelper
      * @param artifact  Artifact to resolve
      * @return fully resolved artifact.
      */
-    private Artifact resolveArtifact( Artifact artifact )
+    private Artifact resolveArtifact( Artifact artifact ) throws MojoExecutionException
     {
         final ArtifactResolutionRequest resolutionRequest = new ArtifactResolutionRequest().setArtifact( artifact );
         final ArtifactResolutionResult resolutionResult = this.artifactResolver.resolve( resolutionRequest );
 
-        log.info( "Resolved - originator : " + resolutionResult.getOriginatingArtifact() );
-        log.info( "Resolved - artifacts : " + resolutionResult.getArtifacts() );
-        return resolutionResult.getOriginatingArtifact();
+        log.debug( "Resolving : " + artifact + "  :   resolved artifacts : " + resolutionResult.getArtifacts() );
+        if ( resolutionResult.getArtifacts().size() != 1 )
+        {
+            throw new MojoExecutionException( "Could not resolve artifact " + artifact
+                    + ". Please install it with \"mvn install:install-file ...\" or deploy it to a repository "
+                    + "with \"mvn deploy:deploy-file ...\"" );
+        }
+
+        return resolutionResult.getArtifacts().iterator().next();
     }
 }
