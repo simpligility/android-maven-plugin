@@ -194,6 +194,7 @@ public class MakefileHelper
                                 artifact.getArtifactHandler() );
 
                         final File resolvedHarArtifactFile = buildHelper.resolveArtifactToFile( harArtifact );
+                        log.debug( "Resolved har artifact file : " + resolvedHarArtifactFile );
 
                         File includeDir = new File( System.getProperty( "java.io.tmpdir" ),
                                 "android_maven_plugin_native_includes" + System.currentTimeMillis() + "_"
