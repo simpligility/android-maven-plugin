@@ -106,11 +106,9 @@ public final class AarMavenLifecycleParticipant extends AbstractMavenLifecyclePa
         throws MavenExecutionException
     {
         // Work out where the dep will be extracted and calculate the file path to the classes jar.
-        log.debug( "Adding to classpath : " + artifact );
-
         // This is location where the GenerateSourcesMojo will extract the classes.
         final File classesJar = helper.getUnpackedClassesJar( artifact );
-        log.info( "                    : " + classesJar );
+        log.debug( "Adding to classpath : " + classesJar );
 
         // In order to satisfy the LifecycleDependencyResolver on execution up to a phase that
         // has a Mojo requiring dependency resolution I need to create a dummy classesJar here.

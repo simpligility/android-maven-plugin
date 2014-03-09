@@ -310,7 +310,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected boolean generateApk;
 
-    @Requirement
+    /**
+     * @component
+     * @required
+     * @readonly
+     */
     private ArtifactResolver artifactResolver;
 
     /**
