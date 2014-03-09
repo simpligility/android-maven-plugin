@@ -52,9 +52,7 @@ public class NativeHelperTest {
         project.addAttachedArtifact(apklib);
 
         final DependencyGraphBuilder dependencyGraphBuilder = new DefaultDependencyGraphBuilder();
-
-        nativeHelper = new NativeHelper(project, dependencyGraphBuilder,
-                new DefaultArtifactFactory(), new SilentLog());
+        nativeHelper = new NativeHelper(project, dependencyGraphBuilder, new SilentLog());
     }
 
     @Test

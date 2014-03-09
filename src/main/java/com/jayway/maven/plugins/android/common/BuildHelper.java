@@ -281,6 +281,7 @@ public final class BuildHelper
         final ArtifactResolutionResult resolutionResult = this.artifactResolver.resolve( resolutionRequest );
 
         log.debug( "Resolving : " + artifact + "  :   resolved artifacts : " + resolutionResult.getArtifacts() );
+        log.debug( "Resolved artifacts : " + resolutionResult.getArtifacts() );
         if ( resolutionResult.getArtifacts().size() != 1 )
         {
             throw new MojoExecutionException( "Could not resolve artifact " + artifact

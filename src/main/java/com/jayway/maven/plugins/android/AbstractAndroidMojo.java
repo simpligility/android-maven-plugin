@@ -35,7 +35,6 @@ import org.apache.commons.jxpath.JXPathNotFoundException;
 import org.apache.commons.jxpath.xml.DocumentContainer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.execution.MavenSession;
@@ -46,7 +45,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
-import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.util.DirectoryScanner;
 
 import java.io.File;
@@ -338,9 +336,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @readonly
      */
     protected MavenProjectHelper projectHelper;
-
-    @Requirement
-    protected ArtifactFactory artifactFactory;
 
     /**
      * <p>The Android SDK to use.</p>
@@ -1398,7 +1393,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     {
         if ( nativeHelper == null )
         {
-            nativeHelper = new NativeHelper( project, dependencyGraphBuilder, artifactFactory, getLog() );
+            nativeHelper = new NativeHelper( project, dependencyGraphBuilder, getLog() );
         }
         return nativeHelper;
     }
