@@ -58,7 +58,7 @@ public class NativeHelper
     {
         for ( Artifact resolveNativeLibraryArtifact : resolveNativeLibraryArtifacts )
         {
-            if ( "a".equals( resolveNativeLibraryArtifact.getType() ) )
+            if ( Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( resolveNativeLibraryArtifact.getType() ) )
             {
                 return true;
             }
@@ -81,7 +81,7 @@ public class NativeHelper
     {
         for ( Artifact resolveNativeLibraryArtifact : resolveNativeLibraryArtifacts )
         {
-            if ( "so".equals( resolveNativeLibraryArtifact.getType() ) )
+            if ( Const.ArtifactType.NATIVE_SYMBOL_OBJECT.equals( resolveNativeLibraryArtifact.getType() ) )
             {
                 return true;
             }
@@ -184,7 +184,10 @@ public class NativeHelper
 
     private boolean isNativeLibrary( boolean sharedLibraries, String artifactType )
     {
-        return ( sharedLibraries ? "so".equals( artifactType ) : "a".equals( artifactType ) );
+        return ( sharedLibraries
+                ? Const.ArtifactType.NATIVE_SYMBOL_OBJECT.equals( artifactType )
+                : Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( artifactType )
+        );
     }
 
     private Set<Artifact> processTransientDependencies( List<Dependency> dependencies,
@@ -441,7 +444,7 @@ public class NativeHelper
     public static boolean artifactHasHardwareArchitecture( Artifact artifact, String ndkArchitecture,
                                                            String defaultArchitecture )
     {
-        return "so".equals( artifact.getType() )
+        return Const.ArtifactType.NATIVE_SYMBOL_OBJECT.equals( artifact.getType() )
                 && ndkArchitecture.equals( extractArchitectureFromArtifact( artifact, defaultArchitecture ) );
     }
 

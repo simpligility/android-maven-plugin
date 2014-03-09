@@ -2,6 +2,7 @@ package com.jayway.maven.plugins.android.phase05compile;
 
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.BuildHelper;
+import com.jayway.maven.plugins.android.common.Const;
 import com.jayway.maven.plugins.android.common.JarHelper;
 import com.jayway.maven.plugins.android.common.NativeHelper;
 import org.apache.commons.io.FileUtils;
@@ -190,7 +191,8 @@ public class MakefileHelper
                         }
 
                         Artifact harArtifact = new DefaultArtifact( artifact.getGroupId(), artifact.getArtifactId(),
-                                artifact.getVersion(), artifact.getScope(), "har", classifier,
+                                artifact.getVersion(), artifact.getScope(),
+                                Const.ArtifactType.NATIVE_HEADER_ARCHIVE, classifier,
                                 artifact.getArtifactHandler() );
 
                         final File resolvedHarArtifactFile = buildHelper.resolveArtifactToFile( harArtifact );
@@ -230,7 +232,7 @@ public class MakefileHelper
                                 "Error while resolving header archive file for: " + artifact.getArtifactId(), e );
                     }
                 }
-                if ( "a".equals( artifact.getType() ) || apklibStatic )
+                if ( Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( artifact.getType() ) || apklibStatic )
                 {
                     makeFile.append( "include $(PREBUILT_STATIC_LIBRARY)\n" );
                 }
@@ -493,11 +495,11 @@ public class MakefileHelper
 
         for ( Artifact a : resolvedLibraryList )
         {
-            if ( staticLibrary && "a".equals( a.getType() ) )
+            if ( staticLibrary && Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( a.getType() ) )
             {
                 libraryNames.add( a.getArtifactId() );
             }
-            if ( ! staticLibrary && "so".equals( a.getType() ) )
+            if ( ! staticLibrary && Const.ArtifactType.NATIVE_SYMBOL_OBJECT.equals( a.getType() ) )
             {
                 libraryNames.add( a.getArtifactId() );
             }

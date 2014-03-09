@@ -16,6 +16,7 @@ package com.jayway.maven.plugins.android.phase05compile;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.common.Const;
 import com.jayway.maven.plugins.android.common.NativeHelper;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.HeaderFilesDirective;
@@ -449,7 +450,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 {
                     commands.add( target );
                 }
-                else /*if ( "a".equals( project.getPackaging() ) )*/
+                else /*if ( Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( project.getPackaging() ) )*/
                 {
                     commands.add( project.getArtifactId() );
                 }
@@ -558,7 +559,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             // Attempt to attach the native library if the project is defined as a "pure" native Android library
             // (packaging is 'so' or 'a') or if the plugin has been configured to attach the native library to the
             // build
-            if ( "so".equals( project.getPackaging() ) || "a".equals( project.getPackaging() )
+            if ( Const.ArtifactType.NATIVE_SYMBOL_OBJECT.equals( project.getPackaging() )
+                    || Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( project.getPackaging() )
                     || attachNativeArtifacts )
             {
 
@@ -659,7 +661,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 }
 
                 // FIXME: The following logic won't work for an APKLIB building a static library
-                if ( "a".equals( project.getPackaging() ) )
+                if ( Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( project.getPackaging() ) )
                 {
                     return name.startsWith(
                             "lib" + libraryName ) && name.endsWith( ".a" );
@@ -707,7 +709,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
     {
         final File libraryFile;
         // Find the nativeArtifactFile in the nativeLibDirectory/ndkFinalLibraryName
-        if ( "so".equals( project.getPackaging() ) || "a".equals( project.getPackaging() ) )
+        if ( Const.ArtifactType.NATIVE_SYMBOL_OBJECT.equals( project.getPackaging() )
+                || Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( project.getPackaging() ) )
         {
             libraryFile = new File( nativeLibDirectory,
                     "lib" + ndkFinalLibraryName + "." + project.getPackaging() );
@@ -925,7 +928,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 classifier += "-" + ndkClassifier;
             }
 
-            projectHelper.attachArtifact( project, "har", classifier, jarFile );
+            getLog().debug( "Attaching 'har' classifier=" + classifier + " file=" + jarFile );
+            projectHelper.attachArtifact( project, Const.ArtifactType.NATIVE_HEADER_ARCHIVE, classifier, jarFile );
 
         }
         catch ( Exception e )
@@ -1015,14 +1019,17 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      */
     private String resolveArtifactType( File file )
     {
-        if ( "so".equals( project.getPackaging() ) || "a".equals( project.getPackaging() ) )
+        if ( Const.ArtifactType.NATIVE_SYMBOL_OBJECT.equals( project.getPackaging() )
+                || Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( project.getPackaging() ) )
         {
             return project.getPackaging();
         }
         else
         {
             // At this point, the file (as found by our filtering previously will end with either 'so' or 'a'
-            return file.getName().endsWith( "so" ) ? "so" : "a";
+            return file.getName().endsWith( Const.ArtifactType.NATIVE_SYMBOL_OBJECT )
+                    ? Const.ArtifactType.NATIVE_SYMBOL_OBJECT
+                    : Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE;
         }
     }
 

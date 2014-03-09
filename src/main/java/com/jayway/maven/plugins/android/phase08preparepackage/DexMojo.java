@@ -19,6 +19,7 @@ package com.jayway.maven.plugins.android.phase08preparepackage;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.common.Const;
 import com.jayway.maven.plugins.android.common.ZipExtractor;
 import com.jayway.maven.plugins.android.configuration.Dex;
 import org.apache.commons.io.FileUtils;
@@ -208,7 +209,8 @@ public class DexMojo extends AbstractAndroidMojo
             getLog().debug( "Adding dex input : " + project.getBuild().getOutputDirectory() );
             for ( Artifact artifact : getTransitiveDependencyArtifacts() )
             {
-                if ( artifact.getType().equals( "so" ) || artifact.getType().equals( "a" ) )
+                if ( artifact.getType().equals( Const.ArtifactType.NATIVE_SYMBOL_OBJECT )
+                        || artifact.getType().equals( Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE ) )
                 {
                     // Ignore native dependencies - no need for dexer to see those
                     continue;
