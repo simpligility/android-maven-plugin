@@ -33,10 +33,10 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Adds the classes from AAR dependencies to the project classpath.
+ * Adds classes from AAR and APK dependencies to the project compile classpath.
  */
 @Component( role = AbstractMavenLifecycleParticipant.class, hint = "default" )
-public final class AarMavenLifecycleParticipant extends AbstractMavenLifecycleParticipant
+public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLifecycleParticipant
 {
     @SuppressWarnings( "unused" )
     @Requirement

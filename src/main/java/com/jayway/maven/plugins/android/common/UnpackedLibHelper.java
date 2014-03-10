@@ -25,7 +25,7 @@ import java.io.File;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
 
 /**
- * Injects into life cycle
+ * Provides convenience methods for unpacking Android libraries so that their contents can be used in the build.
  */
 public final class UnpackedLibHelper
 {
