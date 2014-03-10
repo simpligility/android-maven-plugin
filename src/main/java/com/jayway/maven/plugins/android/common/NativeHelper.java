@@ -121,6 +121,7 @@ public class NativeHelper
     public Set<Artifact> getNativeDependenciesArtifacts( File unpackDirectory, boolean sharedLibraries )
             throws MojoExecutionException
     {
+        log.debug( "Finding native dependencies. UnpackFolder=" + unpackDirectory + " shared=" + sharedLibraries );
         final Set<Artifact> filteredArtifacts = new LinkedHashSet<Artifact>();
         final Set<Artifact> allArtifacts = new LinkedHashSet<Artifact>();
         
@@ -134,13 +135,13 @@ public class NativeHelper
 
         for ( Artifact artifact : allArtifacts )
         {
+            log.debug( "Checking artifact : " + artifact );
             // A null value in the scope indicates that the artifact has been attached
             // as part of a previous build step (NDK mojo)
             if ( isNativeLibrary( sharedLibraries, artifact.getType() ) && artifact.getScope() == null )
             {
                 // Including attached artifact
-                log.debug( "Including attached artifact: " + artifact.getArtifactId() 
-                        + "(" + artifact.getGroupId() + "). Artifact scope is not set." );
+                log.debug( "Including attached artifact: " + artifact + ". Artifact scope is not set." );
                 filteredArtifacts.add( artifact );
             }
             else
@@ -149,8 +150,7 @@ public class NativeHelper
                         Artifact.SCOPE_COMPILE.equals( artifact.getScope() ) || Artifact.SCOPE_RUNTIME
                                 .equals( artifact.getScope() ) ) )
                 {
-                    log.debug( "Including attached artifact: " + artifact.getArtifactId() 
-                            + "(" + artifact.getGroupId() + "). Artifact scope is Compile or Runtime." );
+                    log.debug( "Including attached artifact: " + artifact + ". Artifact scope is Compile or Runtime." );
                     filteredArtifacts.add( artifact );
                 }
                 else
@@ -166,8 +166,7 @@ public class NativeHelper
                         if ( libsFolder.exists()
                                 && libsFolder.list( new PatternFilenameFilter( "^.*(?<!(?i)\\.jar)$" ) ).length > 0 )
                         {
-                            log.debug( "Including attached artifact: " + artifact.getArtifactId() 
-                                    + "(" + artifact.getGroupId() + "). Artifact is APKLIB." );
+                            log.debug( "Including attached artifact: " + artifact + ". Artifact is APKLIB." );
                             filteredArtifacts.add( artifact );
                         }
                     }

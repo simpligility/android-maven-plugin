@@ -25,6 +25,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
@@ -228,6 +229,11 @@ public class NdkBuildMojo extends AbstractAndroidMojo
     private JarArchiver jarArchiver;
 
     /**
+     * @component role="org.apache.maven.artifact.handler.ArtifactHandler" roleHint="har"
+     */
+    private ArtifactHandler harArtifactHandler;
+
+    /**
      * Flag indicating whether the header files for native, static library dependencies should be used.  If true,
      * the header archive for each statically linked dependency will be resolved.
      *
@@ -345,9 +351,10 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
             for ( String ndkArchitecture : resolvedNDKArchitectures )
             {
-                Preparation preparation = new Preparation().invoke( ndkArchitecture );
+                getLog().debug( "Resolving for NDK architecture : " + ndkArchitecture );
+                final Preparation preparation = new Preparation().invoke( ndkArchitecture );
                 boolean libsDirectoryExists = preparation.isLibsDirectoryExists();
-                File directoryToRemove = preparation.getDirectoryToRemove();
+                final File directoryToRemove = preparation.getDirectoryToRemove();
 
                 // Start setting up the command line to be executed
                 final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
@@ -362,11 +369,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 final Set<Artifact> resolveNativeLibraryArtifacts =
                         getBuildHelper().resolveArtifacts( nativeLibraryArtifacts );
 
-                if ( getLog().isDebugEnabled() )
-                {
-                    getLog().debug( "resolveArtifacts found " + resolveNativeLibraryArtifacts.size()
-                            + ": " + resolveNativeLibraryArtifacts.toString() );
-                }
+                getLog().debug( "resolveArtifacts found " + resolveNativeLibraryArtifacts.size()
+                        + ": " + resolveNativeLibraryArtifacts.toString() );
 
                 final File makefileDir = new File( project.getBuild().getDirectory(), NDK_MAKFILE_DIRECTORY );
                 makefileDir.mkdirs();
@@ -379,7 +383,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 }
 
                 final MakefileHelper makefileHelper = new MakefileHelper( getLog(), getBuildHelper(),
-                        getUnpackedLibsDirectory() );
+                        harArtifactHandler, getUnpackedLibsDirectory() );
                 final MakefileHelper.MakefileHolder makefileHolder = makefileHelper
                         .createMakefileFromArtifacts( new File( ndkBuildDirectory ),
                                                       resolveNativeLibraryArtifacts, ndkArchitecture, "armeabi",
@@ -976,12 +980,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         filterNativeDependencies( mergedArtifacts, staticLibraryArtifacts );
         filterNativeDependencies( mergedArtifacts, sharedLibraryArtifacts );
 
-        if ( getLog().isDebugEnabled() )
-        {
-            getLog().debug( "findNativeLibraryDependencies found " + mergedArtifacts.size() 
-                    + ": " + mergedArtifacts.toString() );
-        }
-        
+        getLog().debug( "findNativeLibraryDependencies found " + mergedArtifacts.size()
+                + ": " + mergedArtifacts.toString() );
+
         return mergedArtifacts;
     }
 
