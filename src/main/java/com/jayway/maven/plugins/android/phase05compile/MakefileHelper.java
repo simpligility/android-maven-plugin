@@ -10,6 +10,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
+import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
@@ -64,18 +65,21 @@ public class MakefileHelper
 
     private final Log log;
     private final BuildHelper buildHelper;
+    private final ArtifactHandler harArtifactHandler;
     private final File unpackedApkLibsDirectory;
     
     /**
      * Initialize the MakefileHelper by storing the supplied parameters to local variables.
-     * @param log
-     * @param buildHelper   BuildHelper to use to resolve any artifacts.
-     * @param unpackedApkLibsDirectory
+     * @param log                       Log to which to write log output.
+     * @param buildHelper               BuildHelper to use to resolve any artifacts.
+     * @param harHandler                ArtifactHandler for har files.
+     * @param unpackedApkLibsDirectory  Folder in which apklibs are unpacked.
      */
-    public MakefileHelper( Log log, BuildHelper buildHelper, File unpackedApkLibsDirectory )
+    public MakefileHelper( Log log, BuildHelper buildHelper, ArtifactHandler harHandler, File unpackedApkLibsDirectory )
     {
         this.log = log;
         this.buildHelper = buildHelper;
+        this.harArtifactHandler = harHandler;
         this.unpackedApkLibsDirectory = unpackedApkLibsDirectory;
     }
     
@@ -193,7 +197,7 @@ public class MakefileHelper
                         Artifact harArtifact = new DefaultArtifact( artifact.getGroupId(), artifact.getArtifactId(),
                                 artifact.getVersion(), artifact.getScope(),
                                 Const.ArtifactType.NATIVE_HEADER_ARCHIVE, classifier,
-                                artifact.getArtifactHandler() );
+                                harArtifactHandler );
 
                         final File resolvedHarArtifactFile = buildHelper.resolveArtifactToFile( harArtifact );
                         log.debug( "Resolved har artifact file : " + resolvedHarArtifactFile );
@@ -226,7 +230,7 @@ public class MakefileHelper
                             log.debug( "Listing LOCAL_EXPORT_C_INCLUDES for " + artifact.getId() + ": " + includes );
                         }
                     }
-                    catch ( Exception e )
+                    catch ( RuntimeException e )
                     {
                         throw new MojoExecutionException(
                                 "Error while resolving header archive file for: " + artifact.getArtifactId(), e );

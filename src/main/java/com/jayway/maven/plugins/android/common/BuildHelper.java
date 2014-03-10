@@ -280,15 +280,22 @@ public final class BuildHelper
         final ArtifactResolutionRequest resolutionRequest = new ArtifactResolutionRequest().setArtifact( artifact );
         final ArtifactResolutionResult resolutionResult = this.artifactResolver.resolve( resolutionRequest );
 
-        log.debug( "Resolving : " + artifact + "  :   resolved artifacts : " + resolutionResult.getArtifacts() );
-        log.debug( "Resolved artifacts : " + resolutionResult.getArtifacts() );
-        if ( resolutionResult.getArtifacts().size() != 1 )
+        log.debug( "Resolving : " + artifact );
+        if ( resolutionResult.getArtifacts().size() == 0 )
         {
             throw new MojoExecutionException( "Could not resolve artifact " + artifact
                     + ". Please install it with \"mvn install:install-file ...\" or deploy it to a repository "
                     + "with \"mvn deploy:deploy-file ...\"" );
         }
+        if ( resolutionResult.getArtifacts().size() > 1 )
+        {
+            log.debug( "Resolved artifacts : " + resolutionResult.getArtifacts() );
+            throw new MojoExecutionException( "Could not resolve artifact " + artifact
+                    + " to single target. Found the following possible options : " + resolutionResult.getArtifacts() );
+        }
 
-        return resolutionResult.getArtifacts().iterator().next();
+        final Artifact resolvedArtifact = resolutionResult.getArtifacts().iterator().next();
+        log.debug( "Resolved :" + artifact );
+        return resolvedArtifact;
     }
 }
