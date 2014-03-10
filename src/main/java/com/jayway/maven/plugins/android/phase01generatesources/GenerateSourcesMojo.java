@@ -395,7 +395,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      */
     private void extractApklib( Artifact apklibArtifact ) throws MojoExecutionException
     {
-        getBuildHelper().extractApklib( apklibArtifact );
+        getUnpackedLibHelper().extractApklib( apklibArtifact );
 
         // Copy the assets to the the combinedAssets folder.
         // Add the apklib source and resource to the compile.
@@ -414,7 +414,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      */
     private void extractAarLib( Artifact aarArtifact ) throws MojoExecutionException
     {
-        getBuildHelper().extractAarLib( aarArtifact );
+        getUnpackedLibHelper().extractAarLib( aarArtifact );
 
         // Copy the assets to the the combinedAssets folder, but only if an APK build.
         // Ie we only want to package assets that we own.
@@ -448,8 +448,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      */
     private void extractApkClassesJar( Artifact artifact ) throws MojoExecutionException
     {
-        final File apkClassesJar = getBuildHelper().getJarFileForApk( artifact );
-        final File unpackedClassesJar = getBuildHelper().getUnpackedClassesJar( artifact );
+        final File apkClassesJar = getUnpackedLibHelper().getJarFileForApk( artifact );
+        final File unpackedClassesJar = getUnpackedLibHelper().getUnpackedClassesJar( artifact );
         try
         {
             FileUtils.copyFile( apkClassesJar, unpackedClassesJar );

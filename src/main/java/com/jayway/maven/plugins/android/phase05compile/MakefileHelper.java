@@ -1,7 +1,8 @@
 package com.jayway.maven.plugins.android.phase05compile;
 
 import com.jayway.maven.plugins.android.common.AndroidExtension;
-import com.jayway.maven.plugins.android.common.BuildHelper;
+import com.jayway.maven.plugins.android.common.ArtifactResolverHelper;
+import com.jayway.maven.plugins.android.common.UnpackedLibHelper;
 import com.jayway.maven.plugins.android.common.Const;
 import com.jayway.maven.plugins.android.common.JarHelper;
 import com.jayway.maven.plugins.android.common.NativeHelper;
@@ -64,21 +65,25 @@ public class MakefileHelper
     }
 
     private final Log log;
-    private final BuildHelper buildHelper;
+    private final UnpackedLibHelper unpackedLibHelper;
+    private final ArtifactResolverHelper artifactResolverHelper;
     private final ArtifactHandler harArtifactHandler;
     private final File unpackedApkLibsDirectory;
     
     /**
      * Initialize the MakefileHelper by storing the supplied parameters to local variables.
      * @param log                       Log to which to write log output.
-     * @param buildHelper               BuildHelper to use to resolve any artifacts.
+     * @param unpackedLibHelper               UnpackedLibHelper to use to resolve any artifacts.
+     * @param artifactResolverHelper    ArtifactResolverHelper to use to resolve the artifacts.
      * @param harHandler                ArtifactHandler for har files.
      * @param unpackedApkLibsDirectory  Folder in which apklibs are unpacked.
      */
-    public MakefileHelper( Log log, BuildHelper buildHelper, ArtifactHandler harHandler, File unpackedApkLibsDirectory )
+    public MakefileHelper( Log log, UnpackedLibHelper unpackedLibHelper, ArtifactResolverHelper artifactResolverHelper,
+                           ArtifactHandler harHandler, File unpackedApkLibsDirectory )
     {
         this.log = log;
-        this.buildHelper = buildHelper;
+        this.unpackedLibHelper = unpackedLibHelper;
+        this.artifactResolverHelper = artifactResolverHelper;
         this.harArtifactHandler = harHandler;
         this.unpackedApkLibsDirectory = unpackedApkLibsDirectory;
     }
@@ -199,10 +204,10 @@ public class MakefileHelper
                                 Const.ArtifactType.NATIVE_HEADER_ARCHIVE, classifier,
                                 harArtifactHandler );
 
-                        final File resolvedHarArtifactFile = buildHelper.resolveArtifactToFile( harArtifact );
+                        File resolvedHarArtifactFile = artifactResolverHelper.resolveArtifactToFile( harArtifact );
                         log.debug( "Resolved har artifact file : " + resolvedHarArtifactFile );
 
-                        File includeDir = new File( System.getProperty( "java.io.tmpdir" ),
+                        final File includeDir = new File( System.getProperty( "java.io.tmpdir" ),
                                 "android_maven_plugin_native_includes" + System.currentTimeMillis() + "_"
                                         + harArtifact.getArtifactId() );
                         includeDir.deleteOnExit();
