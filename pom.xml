@@ -40,20 +40,8 @@
     <properties>
         <scm.branch>master</scm.branch>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Don't upgrade maven-plugin-plugin until MPLUGIN-187 is fixed:
-        http://jira.codehaus.org/browse/MPLUGIN-187 -->
-        <!-- 3.1 is available but causes build failure like
 
-                The syntax
-      [WARNING]     @parameter expression="${property}"
-      [WARNING]   is deprecated, please use
-      [WARNING]     @parameter property="property"
-      [WARNING]   instead.
-        
-        2.9 breaks the site build.. so atm we stick with 2.8
-       -->
-        <maven-plugin-plugin.version>2.8</maven-plugin-plugin.version>
-
+        <maven-plugin-plugin.version>3.2</maven-plugin-plugin.version>
         <maven.api.version>3.0.5</maven.api.version>
         <maven-testing.api.version>2.1</maven-testing.api.version> <!-- This depends on Maven-3.0.3 maven-testing-plugin-3.0.0 uses Maven 3.1 -->
 
@@ -349,6 +337,7 @@
             <plugins>
                 <plugin>
                     <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>2.11</version>
                     <configuration>
                         <!-- we are using the Maven code style from the Maven Checkstyle Plugin
                             but with header check disabled, using the license plugin for that instead -->
@@ -356,12 +345,41 @@
                         <enableRulesSummary>false</enableRulesSummary>
                     </configuration>
                 </plugin>
+
                 <plugin>
                     <artifactId>maven-plugin-plugin</artifactId>
                     <version>${maven-plugin-plugin.version}</version>
                 </plugin>
+
+                <plugin>
+                    <groupId>com.github.github</groupId>
+                    <artifactId>site-maven-plugin</artifactId>
+                    <version>0.9</version>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.8.1</version>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.5</version>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.9.1</version>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.2.1</version>
+                </plugin>
+
             </plugins>
         </pluginManagement>
+
         <plugins>
             <plugin>
                 <groupId>org.codehaus.plexus</groupId>
@@ -376,6 +394,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <executions>
@@ -387,6 +406,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <executions>
@@ -407,6 +427,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <artifactId>maven-scm-plugin</artifactId>
                 <configuration>
@@ -414,6 +435,7 @@
                     <scmVersion>${scm.branch}</scmVersion>
                 </configuration>
             </plugin>
+
             <plugin>
                 <artifactId>maven-release-plugin</artifactId>
                 <configuration>
@@ -424,6 +446,7 @@
                     <goals>plugin:report deploy site</goals>
                 </configuration>
             </plugin>
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
@@ -431,6 +454,7 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
+
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
@@ -442,8 +466,10 @@
                     </archive>
                 </configuration>
             </plugin>
+
             <plugin>
                 <artifactId>maven-plugin-plugin</artifactId>
+                <version>3.2</version>
                 <executions>
                     <execution>
                         <id>generated-helpmojo</id>
@@ -453,10 +479,12 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -466,6 +494,7 @@
                     <skip>false</skip>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -479,6 +508,7 @@
             </plugin>
         </plugins>
     </build>
+
     <reporting>
         <plugins>
             <plugin>
