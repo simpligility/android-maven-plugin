@@ -236,7 +236,7 @@ public class DexMojo extends AbstractAndroidMojo
                     // the correct ones, so best solution is to extract the APK classes (including all Rs) to
                     // target/classes overwriting any generated Rs and let dex pick up the values from there.
                     getLog().debug( "Extracting APK classes to target/classes : " + artifact.getArtifactId() );
-                    final File apkClassesJar = getBuildHelper().getJarFileForApk( artifact );
+                    final File apkClassesJar = getUnpackedLibHelper().getJarFileForApk( artifact );
                     getLog().debug( "Extracting APK : " + apkClassesJar + " to " + targetDirectory );
                     final ZipExtractor extractor = new ZipExtractor( getLog() );
                     extractor.extract( apkClassesJar, targetDirectory, ".class" );

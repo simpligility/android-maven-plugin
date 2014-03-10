@@ -11,7 +11,8 @@
 package com.jayway.maven.plugins.android.phase_prebuild;
 
 import com.jayway.maven.plugins.android.common.AndroidExtension;
-import com.jayway.maven.plugins.android.common.BuildHelper;
+import com.jayway.maven.plugins.android.common.ArtifactResolverHelper;
+import com.jayway.maven.plugins.android.common.UnpackedLibHelper;
 import com.jayway.maven.plugins.android.common.DependencyResolver;
 import org.apache.maven.AbstractMavenLifecycleParticipant;
 import org.apache.maven.MavenExecutionException;
@@ -59,13 +60,14 @@ public final class AarMavenLifecycleParticipant extends AbstractMavenLifecyclePa
         log.debug( "CurrentProject=" + session.getCurrentProject() );
         final List<MavenProject> projects = session.getProjects();
         final DependencyResolver dependencyResolver = new DependencyResolver( log, dependencyGraphBuilder );
+        final ArtifactResolverHelper artifactResolverHelper = new ArtifactResolverHelper( artifactResolver, log );
 
         for ( MavenProject project : projects )
         {
             log.debug( "" );
             log.debug( "project=" + project.getArtifact() );
 
-            final BuildHelper helper = new BuildHelper( artifactResolver, project, log );
+            final UnpackedLibHelper helper = new UnpackedLibHelper( artifactResolverHelper, project, log );
 
             final Set<Artifact> artifacts;
             try
@@ -102,7 +104,7 @@ public final class AarMavenLifecycleParticipant extends AbstractMavenLifecyclePa
     /**
      * Add the dependent library classes to the project classpath.
      */
-    private void addClassesToClasspath( BuildHelper helper, MavenProject project, Artifact artifact )
+    private void addClassesToClasspath( UnpackedLibHelper helper, MavenProject project, Artifact artifact )
         throws MavenExecutionException
     {
         // Work out where the dep will be extracted and calculate the file path to the classes jar.

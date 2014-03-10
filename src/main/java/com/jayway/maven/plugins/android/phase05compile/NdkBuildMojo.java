@@ -367,7 +367,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
                 // If there are any static libraries the code needs to link to, include those in the make file
                 final Set<Artifact> resolveNativeLibraryArtifacts =
-                        getBuildHelper().resolveArtifacts( nativeLibraryArtifacts );
+                        getArtifactResolverHelper().resolveArtifacts( nativeLibraryArtifacts );
 
                 getLog().debug( "resolveArtifacts found " + resolveNativeLibraryArtifacts.size()
                         + ": " + resolveNativeLibraryArtifacts.toString() );
@@ -382,8 +382,10 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                     ndkBuildDirectory = project.getBasedir().getAbsolutePath();
                 }
 
-                final MakefileHelper makefileHelper = new MakefileHelper( getLog(), getBuildHelper(),
-                        harArtifactHandler, getUnpackedLibsDirectory() );
+                final MakefileHelper makefileHelper = new MakefileHelper( getLog(),
+                        getUnpackedLibHelper(), getArtifactResolverHelper(),
+                        harArtifactHandler, getUnpackedLibsDirectory()
+                );
                 final MakefileHelper.MakefileHolder makefileHolder = makefileHelper
                         .createMakefileFromArtifacts( new File( ndkBuildDirectory ),
                                                       resolveNativeLibraryArtifacts, ndkArchitecture, "armeabi",
