@@ -296,6 +296,6 @@ public class AndroidNdk
 
         //  if we got here, throw an error
         throw new MojoExecutionException( "Toolchain for architecture " + ndkArchitecture
-                + "does not exist, please double check the setup" );
+                + " does not exist, please double check the setup" );
     }
 }
