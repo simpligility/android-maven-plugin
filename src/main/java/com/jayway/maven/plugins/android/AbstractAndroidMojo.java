@@ -55,6 +55,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
@@ -71,6 +73,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  * @author Manfred Moser <manfred@simpligility.com>
  * @author William Ferguson <william.ferguson@xandar.com.au>
  * @author Malachi de AElfweald malachid@gmail.com
+ * @author Roy Clarkson <rclarkson@gopivotal.com>
  */
 public abstract class AbstractAndroidMojo extends AbstractMojo
 {
@@ -273,6 +276,16 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @parameter expression="${android.devices}"
      */
     protected String[] devices;
+    
+    /**
+     * <p>Specifies the number of threads to use for deploying and testing on attached devices.
+     * 
+     * <p>This parameter can also be configured from command-line with
+     * parameter <code>-Dandroid.deviceThreads=2</code>.</p>
+     *
+     * @parameter expression="${android.deviceThreads}"
+     */
+    protected int deviceThreads;
 
     /**
      * A selection of configurations to be included in the APK as a comma separated list. This will limit the
@@ -730,6 +743,17 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
             throw new MojoExecutionException( "No online devices attached." );
         }
 
+        int threadCount = getDeviceThreads();
+        if ( getDeviceThreads() == 0 )
+        {
+            getLog().info( "android.devicesThreads parameter not set, using a thread for each attached device" );
+            threadCount = numberOfDevices;
+        }
+        else
+        {
+            getLog().info( "android.devicesThreads parameter set to " + getDeviceThreads() );
+        }
+
         boolean shouldRunOnAllDevices = getDevices().size() == 0;
         if ( shouldRunOnAllDevices )
         {
@@ -741,6 +765,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         }
 
         ArrayList<DoThread> doThreads = new ArrayList<DoThread>();
+        ExecutorService executor = Executors.newFixedThreadPool( threadCount );
         for ( final IDevice idevice : devices )
         {
             if ( shouldRunOnAllDevices )
@@ -757,31 +782,19 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                     }
                 };
                 doThreads.add( deviceDoThread );
-                deviceDoThread.start();
+                executor.execute( deviceDoThread );
             }
         }
-
-        joinAllThreads( doThreads );
+        executor.shutdown();
+        while ( ! executor.isTerminated() )
+        {
+            // waiting for threads finish
+        }
         throwAnyDoThreadErrors( doThreads );
 
         if ( ! shouldRunOnAllDevices && doThreads.isEmpty() )
         {
             throw new MojoExecutionException( "No device found for android.device=" + getDevices().toString() );
-        }
-    }
-
-    private void joinAllThreads( ArrayList<DoThread> doThreads )
-    {
-        for ( Thread deviceDoThread : doThreads )
-        {
-            try
-            {
-                deviceDoThread.join();
-            }
-            catch ( InterruptedException e )
-            {
-                new MojoExecutionException( "Thread#join error for device: " + getDevices().toString() );
-            }
         }
     }
 
@@ -1303,6 +1316,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         list.addAll( Arrays.asList( devices ) );
 
         return list;
+    }
+    
+    private int getDeviceThreads()
+    {
+        return deviceThreads;
     }
 
     private abstract class DoThread extends Thread
