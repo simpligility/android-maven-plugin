@@ -225,8 +225,16 @@ public class AarMojo extends AbstractAndroidMojo
 
     private void addR( JarArchiver jarArchiver ) throws MojoExecutionException
     {
-        File rFile = new File( project.getBuild().getDirectory() + "/R.txt" );
-        jarArchiver.addFile( rFile, "R.txt" );
+        final File rFile = new File( project.getBuild().getDirectory() + "/R.txt" );
+        if ( rFile.exists() )
+        {
+            jarArchiver.addFile( rFile, "R.txt" );
+            getLog().debug( "Packaging R.txt in AAR" );
+        }
+        else
+        {
+            getLog().debug( "Not packaging R.txt in AAR - it does not exist (no resources??)" );
+        }
     }
 
     private void addNativeLibraries( final JarArchiver jarArchiver ) throws MojoExecutionException
