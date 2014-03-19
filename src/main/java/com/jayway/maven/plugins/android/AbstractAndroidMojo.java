@@ -288,6 +288,24 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected int deviceThreads;
 
     /**
+     * <p>External IP addresses. The connect goal of the android maven plugin  will execute an adb connect on
+     * each IP address. If you have external dervice, you should call this connect goal before any other goal :
+     * mvn clean android:connect install.</p>
+     * <p>The Maven plugin will automatically add all these IP addresses into the the devices parameter.
+     * If you want to disconnect the IP addresses after the build, you can call the disconnect goal :
+     * mvn clean android:connect install android:disconnect</p>
+     *
+     * <pre>
+     * &lt;ips&gt;
+     *     &lt;ip&gt;127.0.0.1:5556&lt;/ip&gt;
+     * &lt;/ips&gt;
+     * </pre>
+     *
+     * @parameter expression="${android.ips}"
+     */
+    protected String[] ips;
+
+    /**
      * A selection of configurations to be included in the APK as a comma separated list. This will limit the
      * configurations for a certain type. For example, specifying <code>hdpi</code> will exclude all resource folders
      * with the <code>mdpi</code> or <code>ldpi</code> modifiers, but won't affect language or orientation modifiers.
@@ -1314,6 +1332,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         }
 
         list.addAll( Arrays.asList( devices ) );
+
+        list.addAll( Arrays.asList( ips ) );
 
         return list;
     }
