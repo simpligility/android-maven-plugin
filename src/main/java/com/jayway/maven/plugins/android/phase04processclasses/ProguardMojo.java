@@ -8,15 +8,11 @@ import com.jayway.maven.plugins.android.config.ConfigHandler;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.Proguard;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.interpolation.os.Os;
-import org.eclipse.aether.artifact.DefaultArtifact;
-import org.eclipse.aether.util.artifact.JavaScopes;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -262,9 +258,21 @@ public class ProguardMojo extends AbstractAndroidMojo
      */
     private static final String JAR_DEPENDENCY_TYPE = "jar";
 
-    private List< Artifact > artifactBlacklist = new LinkedList< Artifact >();
+    private static class ArtifactPrototype
+    {
+        private final String groupId;
+        private final String artifactId;
 
-    private List< Artifact > artifactsToShift = new LinkedList< Artifact >();
+        private ArtifactPrototype( String groupId, String artifactId )
+        {
+            this.groupId = groupId;
+            this.artifactId = artifactId;
+        }
+    }
+
+    private List< ArtifactPrototype > artifactBlacklist = new LinkedList< ArtifactPrototype>();
+
+    private List< ArtifactPrototype > artifactsToShift = new LinkedList< ArtifactPrototype>();
 
     private File javaHomeDir;
 
@@ -470,11 +478,11 @@ public class ProguardMojo extends AbstractAndroidMojo
         }
     }
 
-    private void collectInputFiles( List< String > commands )
+    private void collectInputFiles( List< String > commands ) throws MojoExecutionException
     {
         // commons-logging breaks everything horribly, so we skip it from the program
         // dependencies and declare it to be a library dependency instead
-        skipArtifact( "commons-logging", "commons-logging", true );
+        skipArtifact( "commons-logging", "commons-logging", "[1.0,)", true );
 
         final List< ProGuardInput > inJars = getProgramInputFiles();
         for ( final ProGuardInput injar : inJars )
@@ -505,22 +513,23 @@ public class ProguardMojo extends AbstractAndroidMojo
         return new File( javaHome + slash + "bin" + slash + "java" );
     }
 
-    private void skipArtifact( String groupId, String artifactId, boolean shiftToLibraries )
+    private void skipArtifact( String groupId, String artifactId, String versionRangeSpec, boolean shiftToLibraries )
+            throws MojoExecutionException
     {
-        artifactBlacklist.add( RepositoryUtils.toArtifact( new DefaultArtifact( groupId, artifactId, null, null ) ) );
+        final ArtifactPrototype artifact = new ArtifactPrototype( groupId, artifactId );
+        artifactBlacklist.add( artifact );
         if ( shiftToLibraries )
         {
-            artifactsToShift
-                .add( RepositoryUtils.toArtifact( new DefaultArtifact( groupId, artifactId, null, null ) ) );
+            artifactsToShift.add( artifact );
         }
     }
 
     private boolean isBlacklistedArtifact( Artifact artifact )
     {
-        for ( Artifact artifactToSkip : artifactBlacklist )
+        for ( ArtifactPrototype artifactToSkip : artifactBlacklist )
         {
-            if ( artifactToSkip.getGroupId().equals( artifact.getGroupId() ) && artifactToSkip.getArtifactId()
-                .equals( artifact.getArtifactId() ) )
+            if ( artifactToSkip.groupId.equals( artifact.getGroupId() )
+                    && artifactToSkip.artifactId.equals( artifact.getArtifactId() ) )
             {
                 return true;
             }
@@ -530,10 +539,10 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     private boolean isShiftedArtifact( Artifact artifact )
     {
-        for ( Artifact artifactToShift : artifactsToShift )
+        for ( ArtifactPrototype artifactToShift : artifactsToShift )
         {
-            if ( artifactToShift.getGroupId().equals( artifact.getGroupId() ) && artifactToShift.getArtifactId()
-                .equals( artifact.getArtifactId() ) )
+            if ( artifactToShift.groupId.equals( artifact.getGroupId() )
+                    && artifactToShift.artifactId.equals( artifact.getArtifactId() ) )
             {
                 return true;
             }
@@ -635,7 +644,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         // we treat any dependencies with provided scope as library JARs
         for ( Artifact artifact : project.getArtifacts() )
         {
-            if ( artifact.getScope().equals( JavaScopes.PROVIDED ) )
+            if ( artifact.getScope().equals( Artifact.SCOPE_PROVIDED ) )
             {
                 if ( artifact.getArtifactId().equals( "android" ) && parsedIncludeJdkLibs )
                 {

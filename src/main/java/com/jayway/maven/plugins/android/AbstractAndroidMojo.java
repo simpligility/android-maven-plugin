@@ -20,10 +20,12 @@ import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.InstallException;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
-import com.jayway.maven.plugins.android.common.BuildHelper;
+import com.jayway.maven.plugins.android.common.ArtifactResolverHelper;
 import com.jayway.maven.plugins.android.common.DependencyResolver;
 import com.jayway.maven.plugins.android.common.DeviceHelper;
 import com.jayway.maven.plugins.android.common.MavenToPlexusLogAdapter;
+import com.jayway.maven.plugins.android.common.NativeHelper;
+import com.jayway.maven.plugins.android.common.UnpackedLibHelper;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.configuration.Ndk;
 import com.jayway.maven.plugins.android.configuration.Sdk;
@@ -35,6 +37,7 @@ import org.apache.commons.jxpath.xml.DocumentContainer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
@@ -42,10 +45,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.codehaus.plexus.util.DirectoryScanner;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.repository.RemoteRepository;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -309,27 +310,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected boolean generateApk;
 
     /**
-     * The entry point to Aether, i.e. the component doing all the work.
-     *
      * @component
-     */
-    protected RepositorySystem repoSystem;
-
-    /**
-     * The current repository/network configuration of Maven.
-     *
-     * @parameter default-value="${repositorySystemSession}"
+     * @required
      * @readonly
      */
-    protected RepositorySystemSession repoSession;
-
-    /**
-     * The project's remote repositories to use for the resolution of project dependencies.
-     *
-     * @parameter default-value="${project.remoteProjectRepositories}"
-     * @readonly
-     */
-    protected List<RemoteRepository> projectRepos;
+    private ArtifactResolver artifactResolver;
 
     /**
      * @component
@@ -472,7 +457,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected boolean release;
 
-    private BuildHelper buildHelper;
+    private UnpackedLibHelper unpackedLibHelper;
+    private ArtifactResolverHelper artifactResolverHelper;
+    private NativeHelper nativeHelper;
 
     /**
      *
@@ -483,12 +470,18 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     private static boolean adbInitialized = false;
 
+    @SuppressWarnings( "unused" )
+    /**
+     * @component
+     * @required
+     * @readonly
+     */
+    protected DependencyGraphBuilder dependencyGraphBuilder;
+
+
     protected final DependencyResolver getDependencyResolver()
     {
-        return new DependencyResolver(
-                new MavenToPlexusLogAdapter( getLog() ),
-                repoSystem, repoSession, projectRepos, artifactHandler
-        );
+        return new DependencyResolver( new MavenToPlexusLogAdapter( getLog() ), dependencyGraphBuilder );
     }
 
     /**
@@ -498,7 +491,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected Set<Artifact> getRelevantCompileArtifacts()
     {
         final List<Artifact> allArtifacts = project.getCompileArtifacts();
-        return getBuildHelper().getFilteredArtifacts( allArtifacts );
+        return getArtifactResolverHelper().getFilteredArtifacts( allArtifacts );
     }
 
     /**
@@ -508,7 +501,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected Set<Artifact> getDirectDependencyArtifacts()
     {
         final Set<Artifact> allArtifacts = project.getDependencyArtifacts();
-        return getBuildHelper().getFilteredArtifacts( allArtifacts );
+        return getArtifactResolverHelper().getFilteredArtifacts( allArtifacts );
     }
 
     /**
@@ -522,7 +515,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected Set<Artifact> getTransitiveDependencyArtifacts( String... types )
     {
-        return getBuildHelper().getFilteredArtifacts( project.getArtifacts(), types );
+        return getArtifactResolverHelper().getFilteredArtifacts( project.getArtifacts(), types );
     }
 
     /**
@@ -534,7 +527,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected File resolveArtifactToFile( Artifact artifact ) throws MojoExecutionException
     {
-        return getBuildHelper().resolveArtifactToFile( artifact );
+        return getArtifactResolverHelper().resolveArtifactToFile( artifact );
     }
 
     /**
@@ -1176,17 +1169,17 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     protected final File getUnpackedLibsDirectory()
     {
-        return getBuildHelper().getUnpackedLibsFolder();
+        return getUnpackedLibHelper().getUnpackedLibsFolder();
     }
 
     public final File getUnpackedLibFolder( Artifact artifact )
     {
-        return getBuildHelper().getUnpackedLibFolder( artifact );
+        return getUnpackedLibHelper().getUnpackedLibFolder( artifact );
     }
 
     protected final File getUnpackedAarClassesJar( Artifact artifact )
     {
-        return getBuildHelper().getUnpackedClassesJar( artifact );
+        return getUnpackedLibHelper().getUnpackedClassesJar( artifact );
     }
 
     protected final File getUnpackedAarJavaResourcesFolder( Artifact artifact )
@@ -1196,17 +1189,17 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     protected final File getUnpackedApkLibSourceFolder( Artifact artifact )
     {
-        return getBuildHelper().getUnpackedApkLibSourceFolder( artifact );
+        return getUnpackedLibHelper().getUnpackedApkLibSourceFolder( artifact );
     }
 
     protected final File getUnpackedLibResourceFolder( Artifact artifact )
     {
-        return getBuildHelper().getUnpackedLibResourceFolder( artifact );
+        return getUnpackedLibHelper().getUnpackedLibResourceFolder( artifact );
     }
 
     protected final File getUnpackedLibAssetsFolder( Artifact artifact )
     {
-        return getBuildHelper().getUnpackedLibAssetsFolder( artifact );
+        return getUnpackedLibHelper().getUnpackedLibAssetsFolder( artifact );
     }
 
     /**
@@ -1215,7 +1208,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     public final File getUnpackedLibNativesFolder( Artifact artifact )
     {
-        return getBuildHelper().getUnpackedLibNativesFolder( artifact );
+        return getUnpackedLibHelper().getUnpackedLibNativesFolder( artifact );
     }
 
     // TODO Replace this with a non-static method (could even replace it with one of the methods above).
@@ -1341,7 +1334,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected final boolean isAPKBuild()
     {
-        return getBuildHelper().isAPKBuild( project );
+        return getUnpackedLibHelper().isAPKBuild( project );
     }
 
     /**
@@ -1385,16 +1378,37 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     }
 
-    protected final BuildHelper getBuildHelper()
+    protected final UnpackedLibHelper getUnpackedLibHelper()
     {
-        if ( buildHelper == null )
+        if ( unpackedLibHelper == null )
         {
-            buildHelper = new BuildHelper(
-                repoSystem, repoSession,
+            unpackedLibHelper = new UnpackedLibHelper(
+                getArtifactResolverHelper(),
                 project,
                 new MavenToPlexusLogAdapter( getLog() )
             );
         }
-        return buildHelper;
+        return unpackedLibHelper;
+    }
+
+    protected final ArtifactResolverHelper getArtifactResolverHelper()
+    {
+        if ( artifactResolverHelper == null )
+        {
+            artifactResolverHelper = new ArtifactResolverHelper(
+                    artifactResolver,
+                    new MavenToPlexusLogAdapter( getLog() )
+            );
+        }
+        return artifactResolverHelper;
+    }
+
+    protected final NativeHelper getNativeHelper()
+    {
+        if ( nativeHelper == null )
+        {
+            nativeHelper = new NativeHelper( project, dependencyGraphBuilder, getLog() );
+        }
+        return nativeHelper;
     }
 }

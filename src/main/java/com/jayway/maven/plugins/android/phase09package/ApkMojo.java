@@ -32,7 +32,6 @@ import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.Apk;
 import com.jayway.maven.plugins.android.configuration.MetaInf;
 import com.jayway.maven.plugins.android.configuration.Sign;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.FileFileFilter;
@@ -40,7 +39,6 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.util.AbstractScanner;
@@ -66,8 +64,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
 
 
@@ -172,13 +170,6 @@ public class ApkMojo extends AbstractAndroidMojo
      * @parameter expression="${android.sourceDirectories}" default-value=""
      */
     private File[] sourceDirectories;
-
-    /**
-     * @component
-     * @readonly
-     * @required
-     */
-    protected ArtifactFactory artifactFactory;
 
     /**
      * Pattern for additional META-INF resources to be packaged into the apk.
@@ -838,8 +829,7 @@ public class ApkMojo extends AbstractAndroidMojo
      */
     private Set<Artifact> getNativeLibraryArtifacts() throws MojoExecutionException
     {
-        return new NativeHelper( project, projectRepos, repoSession, repoSystem, artifactFactory, getLog() )
-                .getNativeDependenciesArtifacts( getUnpackedLibsDirectory(), true );
+        return getNativeHelper().getNativeDependenciesArtifacts( getUnpackedLibsDirectory(), true );
     }
 
     /**
