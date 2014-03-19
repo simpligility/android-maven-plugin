@@ -76,7 +76,8 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
             }
             catch ( MojoExecutionException e )
             {
-                throw new MavenExecutionException( "Could not resolve dependencies for project : " + project, e );
+                log.warn( "Could not resolve all dependencies for " + project );
+                continue;
             }
 
             log.debug( "projects deps: : " + artifacts );
