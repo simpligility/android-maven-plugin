@@ -84,6 +84,7 @@ public final class DependencyResolver
                         && found.getArtifactId().equals( artifact.getArtifactId() )
                         && found.getVersion().equals( artifact.getVersion() )
                         && found.getType().equals( artifact.getType() )
+                        && found.getClassifier().equals( artifact.getClassifier() )
                         ;
             }
         };
