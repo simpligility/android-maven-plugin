@@ -18,11 +18,9 @@ import java.util.List;
  */
 public class DisconnectMojo extends AbstractAndroidMojo
 {
-
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-
         if ( ips.length > 0 )
         {
             CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
@@ -31,6 +29,8 @@ public class DisconnectMojo extends AbstractAndroidMojo
             {
                 getLog().debug( "Disconnecting " + ip );
 
+                // It would be better to use the AndroidDebugBridge class 
+                // rather than calling the command line tool
                 String command = getAndroidSdk().getAdbPath();
 
                 List<String> parameters = new ArrayList<String>();
@@ -40,16 +40,12 @@ public class DisconnectMojo extends AbstractAndroidMojo
                 try
                 {
                     executor.executeCommand( command, parameters );
-
                 }
                 catch ( ExecutionException e )
                 {
                     throw new MojoExecutionException( String.format( "Can not disconnect %s", ip ), e );
                 }
-
             }
-
         }
-
     }
 }

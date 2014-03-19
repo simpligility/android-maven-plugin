@@ -31,6 +31,8 @@ public class ConnectMojo extends AbstractAndroidMojo
             {
                 getLog().debug( "Connecting " + ip );
 
+                // It would be better to use the AndroidDebugBridge class 
+                // rather than calling the command line tool
                 String command = getAndroidSdk().getAdbPath();
                 List<String> parameters = new ArrayList<String>();
                 parameters.add( "connect" );
@@ -39,16 +41,12 @@ public class ConnectMojo extends AbstractAndroidMojo
                 try
                 {
                     executor.executeCommand( command, parameters );
-
                 }
                 catch ( ExecutionException e )
                 {
                     throw new MojoExecutionException( String.format( "Can not connect %s", ip ), e );
                 }
-
             }
-
         }
-
     }
 }
