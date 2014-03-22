@@ -174,9 +174,9 @@ public class NativeHelper
             }
         }
 
-        Set<Artifact> transientArtifacts = processTransientDependencies( project.getDependencies(), sharedLibraries );
+        Set<Artifact> transitiveArtifacts = processTransitiveDependencies( project.getDependencies(), sharedLibraries );
 
-        filteredArtifacts.addAll( transientArtifacts );
+        filteredArtifacts.addAll( transitiveArtifacts );
 
         return filteredArtifacts;
     }
@@ -189,27 +189,26 @@ public class NativeHelper
         );
     }
 
-    private Set<Artifact> processTransientDependencies( List<Dependency> dependencies,
-                                                        boolean sharedLibraries ) throws MojoExecutionException
+    private Set<Artifact> processTransitiveDependencies( List<Dependency> dependencies, boolean sharedLibraries )
+            throws MojoExecutionException
     {
-
-        Set<Artifact> transientArtifacts = new LinkedHashSet<Artifact>();
+        final Set<Artifact> transitiveArtifacts = new LinkedHashSet<Artifact>();
         for ( Dependency dependency : dependencies )
         {
             if ( ! Artifact.SCOPE_PROVIDED.equals( dependency.getScope() ) && ! dependency.isOptional() )
             {
-                transientArtifacts.addAll( processTransientDependencies( dependency, sharedLibraries ) );
+                transitiveArtifacts.addAll( processTransitiveDependencies( dependency, sharedLibraries ) );
             }
         }
 
-        return transientArtifacts;
+        return transitiveArtifacts;
 
     }
 
-    private Set<Artifact> processTransientDependencies( Dependency dependency, boolean sharedLibraries )
+    private Set<Artifact> processTransitiveDependencies( Dependency dependency, boolean sharedLibraries )
             throws MojoExecutionException
     {
-        log.debug( "Processing transient dependencies for : " + dependency );
+        log.debug( "Processing transitive dependencies for : " + dependency );
 
         try
         {
@@ -260,7 +259,7 @@ public class NativeHelper
         }
         catch ( Exception e )
         {
-            throw new MojoExecutionException( "Error while processing transient dependencies", e );
+            throw new MojoExecutionException( "Error while processing transitive dependencies", e );
         }
     }
 
