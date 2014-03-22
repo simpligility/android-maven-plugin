@@ -190,7 +190,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * @throws MojoExecutionException if it fails.
      * @throws MojoFailureException if it fails.
      */
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void doExecute() throws MojoExecutionException, MojoFailureException
     {
 
         // If the current POM isn't an Android-related POM, then don't do

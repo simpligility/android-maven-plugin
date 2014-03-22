@@ -66,7 +66,7 @@ public class RedeployApkMojo extends AbstractAndroidMojo
     @PullParameter
     private File parsedFilename;
 
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void doExecute() throws MojoExecutionException, MojoFailureException
     {
         ConfigHandler configHandler = new ConfigHandler( this, this.session, this.execution );
         configHandler.parseConfiguration();

@@ -39,7 +39,7 @@ public class DeployDependenciesMojo extends AbstractAndroidMojo
      * @throws MojoExecutionException
      * @throws MojoFailureException
      */
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void doExecute() throws MojoExecutionException, MojoFailureException
     {
         deployDependencies();
     }

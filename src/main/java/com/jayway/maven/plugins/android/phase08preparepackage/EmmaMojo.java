@@ -79,7 +79,7 @@ public class EmmaMojo extends AbstractAndroidMojo
     private String parsedFilters;
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void doExecute() throws MojoExecutionException, MojoFailureException
     {
         getLog().debug( "Emma start working. Before parse configuration" );
         parseConfiguration();

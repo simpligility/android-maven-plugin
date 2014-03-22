@@ -34,7 +34,7 @@ public class InstrumentMojo extends AbstractInstrumentationMojo
      * @throws MojoExecutionException
      * @throws MojoFailureException
      */
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void doExecute() throws MojoExecutionException, MojoFailureException
     {
         instrument();
     }

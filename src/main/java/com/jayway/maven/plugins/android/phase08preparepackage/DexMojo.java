@@ -156,7 +156,7 @@ public class DexMojo extends AbstractAndroidMojo
      * @throws MojoFailureException
      */
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void doExecute() throws MojoExecutionException, MojoFailureException
     {
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();

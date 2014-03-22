@@ -296,7 +296,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      * @throws MojoExecutionException
      * @throws MojoFailureException
      */
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void doExecute() throws MojoExecutionException, MojoFailureException
     {
         if ( ! AndroidExtension.isAndroidPackaging( project.getPackaging() ) )
         {

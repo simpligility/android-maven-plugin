@@ -108,7 +108,7 @@ public class ZipalignMojo extends AbstractAndroidMojo
      *
      * @throws MojoExecutionException
      */
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void doExecute() throws MojoExecutionException, MojoFailureException
     {
 
         // If we're not on a supported packaging with just skip (Issue 87)

@@ -19,7 +19,7 @@ import java.util.List;
 public class DisconnectMojo extends AbstractAndroidMojo
 {
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void doExecute() throws MojoExecutionException, MojoFailureException
     {
         if ( ips.length > 0 )
         {

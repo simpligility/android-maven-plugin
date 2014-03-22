@@ -111,13 +111,13 @@ public class AbstractAndroidMojoTest {
             return new SdkTestSupport().getSdk_with_platform_default();
         }
 
-        public void execute() throws MojoExecutionException, MojoFailureException {
+        public void doExecute() throws MojoExecutionException, MojoFailureException {
 
         }
     }
 
     private class EmptyAndroidMojo extends AbstractAndroidMojo {
-        public void execute() throws MojoExecutionException, MojoFailureException {
+        public void doExecute() throws MojoExecutionException, MojoFailureException {
         }
     }
 }

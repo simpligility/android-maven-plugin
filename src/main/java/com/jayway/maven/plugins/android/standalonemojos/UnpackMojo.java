@@ -78,7 +78,7 @@ public class UnpackMojo extends AbstractAndroidMojo
     @ConfigPojo( prefix = "unpack" )
     private Unpack unpack;
 
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void doExecute() throws MojoExecutionException, MojoFailureException
     {
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
