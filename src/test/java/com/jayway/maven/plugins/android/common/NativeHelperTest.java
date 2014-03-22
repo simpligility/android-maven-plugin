@@ -3,7 +3,6 @@ package com.jayway.maven.plugins.android.common;
 import com.jayway.maven.plugins.android.AndroidNdk;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
-import org.apache.maven.artifact.factory.DefaultArtifactFactory;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.SilentLog;
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
@@ -90,7 +89,7 @@ public class NativeHelperTest {
         new File(apklibDir.getRoot(), "some-apklib/libs").mkdirs();
         new File(apklibDir.getRoot(), "some-apklib/libs/some.jar").createNewFile();
 
-        Set<Artifact> nativeDependencies = nativeHelper.getNativeDependenciesArtifacts(apklibDir.getRoot(), true);
+        Set<Artifact> nativeDependencies = nativeHelper.getNativeDependenciesArtifacts( null, apklibDir.getRoot(), true);
 
         assertTrue("Included JARs as native dependencies, but shouldn't", nativeDependencies.isEmpty());
     }
@@ -101,7 +100,7 @@ public class NativeHelperTest {
         new File(apklibDir.getRoot(), "some-apklib/libs/some.jar").createNewFile();
         new File(apklibDir.getRoot(), "some-apklib/libs/some.so").createNewFile();
 
-        Set<Artifact> nativeDependencies = nativeHelper.getNativeDependenciesArtifacts(apklibDir.getRoot(), true);
+        Set<Artifact> nativeDependencies = nativeHelper.getNativeDependenciesArtifacts( null, apklibDir.getRoot(), true);
 
         assertFalse("Excluded native dependencies, but shouldn't", nativeDependencies.isEmpty());
     }
