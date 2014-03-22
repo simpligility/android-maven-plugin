@@ -43,7 +43,17 @@
 
         <maven-plugin-plugin.version>3.2</maven-plugin-plugin.version>
         <maven.api.version>3.0.5</maven.api.version>
-        <maven-testing.api.version>2.1</maven-testing.api.version> <!-- This depends on Maven-3.0.3 maven-testing-plugin-3.0.0 uses Maven 3.1 -->
+
+        <!--
+            DON'T UPGRADE until we decide that building AMP requires maven-3.1+
+
+            maven-testing-plugin-3.0.0 depends on Maven 3.1 which causes the test cases to fail when run against
+            Maven-3.0 because the Maven-3.1 dependency resolution classes get loaded instead.
+
+            maven-testing-plugin-2.1 only depends on Maven-3.0.3 so it is safe to use
+            while we still allow the plugin to be built with maven-3.0
+        -->
+        <maven-testing.api.version>2.1</maven-testing.api.version>
 
         <easymock.version>3.2</easymock.version>
         <powermock.version>1.5.2</powermock.version>
