@@ -20,7 +20,7 @@ public class EmulatorStopAllMojo extends AbstractEmulatorMojo
      * @throws MojoExecutionException
      * @throws MojoFailureException
      */
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void doExecute() throws MojoExecutionException, MojoFailureException
     {
         stopAndroidEmulators();
     }

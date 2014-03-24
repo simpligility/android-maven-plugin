@@ -118,7 +118,7 @@ public class AarMojo extends AbstractAndroidMojo
      * @throws MojoExecutionException
      * @throws MojoFailureException
      */
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void doExecute() throws MojoExecutionException, MojoFailureException
     {
         String out = project.getBuild().getDirectory();
         for ( String src : project.getCompileSourceRoots() )

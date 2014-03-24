@@ -32,7 +32,7 @@ import org.apache.maven.plugin.MojoFailureException;
 public class InternalIntegrationTestMojo extends AbstractInstrumentationMojo
 {
 
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void doExecute() throws MojoExecutionException, MojoFailureException
     {
         if ( isEnableIntegrationTest() )
         {

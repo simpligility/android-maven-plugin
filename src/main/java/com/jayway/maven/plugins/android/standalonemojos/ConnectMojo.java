@@ -20,7 +20,7 @@ public class ConnectMojo extends AbstractAndroidMojo
 {
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void doExecute() throws MojoExecutionException, MojoFailureException
     {
 
         if ( ips.length > 0 )

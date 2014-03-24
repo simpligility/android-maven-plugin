@@ -29,6 +29,7 @@ import com.jayway.maven.plugins.android.common.UnpackedLibHelper;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.configuration.Ndk;
 import com.jayway.maven.plugins.android.configuration.Sdk;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.jxpath.JXPathContext;
@@ -487,6 +488,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * @parameter expression="${android.release}" default-value="false"
      */
     protected boolean release;
+    
+    /**
+     * Skips Mojo execution.
+     * 
+     * @parameter default-value="false"
+     */
+    private boolean skip;
 
     private UnpackedLibHelper unpackedLibHelper;
     private ArtifactResolverHelper artifactResolverHelper;
@@ -1449,4 +1457,19 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         }
         return nativeHelper;
     }
+    
+    @Override
+    public final void execute() throws MojoExecutionException, MojoFailureException
+    {
+        if ( ! skip )
+        {
+            doExecute();
+        }
+        else
+        {
+            getLog().info( "skipping execution" );
+        }
+    }
+
+    protected abstract void doExecute() throws MojoExecutionException, MojoFailureException;
 }

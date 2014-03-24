@@ -40,7 +40,7 @@ import org.apache.maven.plugin.MojoFailureException;
 public class RedeployMojo extends AbstractAndroidMojo
 {
 
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void doExecute() throws MojoExecutionException, MojoFailureException
     {
         if ( project.getPackaging().equals( APK ) )
         {

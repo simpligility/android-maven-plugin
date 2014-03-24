@@ -81,7 +81,7 @@ public class UndeployApkMojo extends AbstractAndroidMojo
      * @throws MojoExecutionException
      * @throws MojoFailureException
      */
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void doExecute() throws MojoExecutionException, MojoFailureException
     {
         ConfigHandler configHandler = new ConfigHandler( this, this.session, this.execution );
         configHandler.parseConfiguration();

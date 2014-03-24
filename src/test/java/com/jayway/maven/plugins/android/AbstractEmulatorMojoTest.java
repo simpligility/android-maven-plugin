@@ -117,7 +117,7 @@ public class AbstractEmulatorMojoTest
         }
 
         @Override
-        public void execute() throws MojoExecutionException, MojoFailureException
+        public void doExecute() throws MojoExecutionException, MojoFailureException
         {
         }
 

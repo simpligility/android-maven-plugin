@@ -270,7 +270,7 @@ public class ApkMojo extends AbstractAndroidMojo
      * @throws MojoExecutionException
      * @throws MojoFailureException
      */
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void doExecute() throws MojoExecutionException, MojoFailureException
     {
 
         // Make an early exit if we're not supposed to generate the APK

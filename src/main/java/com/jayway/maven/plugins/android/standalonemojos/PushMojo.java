@@ -101,7 +101,7 @@ public class PushMojo extends AbstractAndroidMojo
     @PullParameter( required = true )
     private String parsedDestination;
 
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void doExecute() throws MojoExecutionException, MojoFailureException
     {
 
         ConfigHandler configHandler = new ConfigHandler( this, this.session, this.execution );
