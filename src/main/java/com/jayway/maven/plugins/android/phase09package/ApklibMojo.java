@@ -219,17 +219,16 @@ public class ApklibMojo extends AbstractAndroidMojo
                     //        libraries from dependencies of the APKLIB
                     //final File dependentLibs = new File( ndkOutputDirectory.getAbsolutePath(), ndkArchitecture );
                     //addSharedLibraries( jarArchiver, dependentLibs, prefix );
+                }
+            }
 
-                    // get native libs from other apklibs
-                    for ( Artifact apkLibraryArtifact : getTransitiveDependencyArtifacts( APKLIB ) )
-                    {
-                        final File apklibLibsDirectory = new File(
-                                getUnpackedLibNativesFolder( apkLibraryArtifact ), ndkArchitecture );
-                        if ( apklibLibsDirectory.exists() )
-                        {
-                            addSharedLibraries( jarArchiver, apklibLibsDirectory, ndkArchitecture );
-                        }
-                    }
+            // get native libs from other apklibs
+            for ( Artifact apkLibraryArtifact : getTransitiveDependencyArtifacts( APKLIB ) )
+            {
+                final File apklibLibsDirectory = getUnpackedLibNativesFolder( apkLibraryArtifact );
+                if ( apklibLibsDirectory.exists() )
+                {
+                    addDirectory( jarArchiver, apklibLibsDirectory, NATIVE_LIBRARIES_FOLDER );
                 }
             }
         }
