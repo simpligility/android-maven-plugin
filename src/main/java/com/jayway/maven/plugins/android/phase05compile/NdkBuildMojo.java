@@ -974,9 +974,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo
     {
         final NativeHelper nativeHelper = getNativeHelper();
         final Set<Artifact> staticLibraryArtifacts = nativeHelper
-                .getNativeDependenciesArtifacts( getUnpackedLibsDirectory(), false );
+                .getNativeDependenciesArtifacts( this, getUnpackedLibsDirectory(), false );
         final Set<Artifact> sharedLibraryArtifacts = nativeHelper
-                .getNativeDependenciesArtifacts( getUnpackedLibsDirectory(), true );
+                .getNativeDependenciesArtifacts( this, getUnpackedLibsDirectory(), true );
         
         final Set<Artifact> mergedArtifacts = new LinkedHashSet<Artifact>();
         filterNativeDependencies( mergedArtifacts, staticLibraryArtifacts );

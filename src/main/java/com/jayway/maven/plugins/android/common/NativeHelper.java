@@ -118,7 +118,8 @@ public class NativeHelper
         return null;
     }
     
-    public Set<Artifact> getNativeDependenciesArtifacts( File unpackDirectory, boolean sharedLibraries )
+    public Set<Artifact> getNativeDependenciesArtifacts(
+            AbstractAndroidMojo mojo, File unpackDirectory, boolean sharedLibraries )
             throws MojoExecutionException
     {
         log.debug( "Finding native dependencies. UnpackFolder=" + unpackDirectory + " shared=" + sharedLibraries );
@@ -155,20 +156,47 @@ public class NativeHelper
                 }
                 else
                 {
-                    if ( APKLIB.equals( artifact.getType() ) )
+                    final String type = artifact.getType();
+
+                    if ( APKLIB.equals( type ) )
                     {
                         // Check if the artifact contains a libs folder - if so, include it in the list
-                        File libsFolder = new File(
+                        File libsFolder = null;
+                        if ( mojo != null )
+                        {
+                            libsFolder = mojo.getUnpackedLibNativesFolder( artifact );
+                        }
+                        else
+                        {
+                            // This is used from NativeHelperTest since we have no AbstractAndroidMojo there
+                            libsFolder = new File(
                                 AbstractAndroidMojo.getLibraryUnpackDirectory( unpackDirectory, artifact ), "libs" );
+                        }
+
+                        if ( !libsFolder.exists() )
+                        {
+                            log.debug( "Skipping " + libsFolder.getAbsolutePath() + " for native artifacts" );
+                            continue;
+                        }
+
+                        if ( !libsFolder.isDirectory() )
+                        {
+                            continue;
+                        }
+
+                        log.debug( "Checking " + libsFolder.getAbsolutePath() + " for native artifacts" );
                         // make sure we ignore libs folders that only contain JARs
                         // The regular expression filters out all file paths ending with '.jar' or '.JAR',
                         // so all native libs remain
-                        if ( libsFolder.exists()
-                                && libsFolder.list( new PatternFilenameFilter( "^.*(?<!(?i)\\.jar)$" ) ).length > 0 )
+                        if ( libsFolder.list( new PatternFilenameFilter( "^.*(?<!(?i)\\.jar)$" ) ).length > 0 )
                         {
                             log.debug( "Including attached artifact: " + artifact + ". Artifact is APKLIB." );
                             filteredArtifacts.add( artifact );
                         }
+                    }
+                    else if ( ! "jar".equals( type ) )
+                    {
+                        log.debug( "Not checking " + type + " for native artifacts" );
                     }
                 }
             }
