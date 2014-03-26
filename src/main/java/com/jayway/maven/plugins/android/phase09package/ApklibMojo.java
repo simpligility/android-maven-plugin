@@ -145,8 +145,7 @@ public class ApklibMojo extends AbstractAndroidMojo
      */
     protected File createApkLibraryFile() throws MojoExecutionException
     {
-        final File apklibrary = new File( project.getBuild().getDirectory(),
-                project.getBuild().getFinalName() + "." + APKLIB );
+        final File apklibrary = new File( project.getBuild().getDirectory(), artifactName + "." + APKLIB );
         FileUtils.deleteQuietly( apklibrary );
 
         try
@@ -363,7 +362,7 @@ public class ApklibMojo extends AbstractAndroidMojo
         File[] overlayDirectories = getResourceOverlayDirectories();
 
         File androidJar = getAndroidSdk().getAndroidJar();
-        File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_" );
+        File outputFile = new File( project.getBuild().getDirectory(), artifactName + ".ap_" );
 
         List<String> commands = new ArrayList<String>();
         commands.add( "package" );
