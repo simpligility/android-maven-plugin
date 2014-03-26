@@ -299,7 +299,7 @@ public class ApkMojo extends AbstractAndroidMojo
         }
         
         // Initialize apk build configuration
-        File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + "." + APK );
+        File outputFile = new File( project.getBuild().getDirectory(), artifactName + "." + APK );
         final boolean signWithDebugKeyStore = getAndroidSigner().isSignWithDebugKeyStore();
 
         if ( getAndroidSigner().shouldCreateBothSignedAndUnsignedApk() )
@@ -307,7 +307,7 @@ public class ApkMojo extends AbstractAndroidMojo
             getLog().info( "Creating debug key signed apk file " + outputFile );
             createApkFile( outputFile, true );
             final File unsignedOutputFile = new File( project.getBuild().getDirectory(),
-                    project.getBuild().getFinalName() + "-unsigned." + APK );
+                    artifactName + "-unsigned." + APK );
             getLog().info( "Creating additional unsigned apk file " + unsignedOutputFile );
             createApkFile( unsignedOutputFile, false );
             projectHelper.attachArtifact( project, unsignedOutputFile,
@@ -333,7 +333,7 @@ public class ApkMojo extends AbstractAndroidMojo
     void createApkFile( File outputFile, boolean signWithDebugKeyStore ) throws MojoExecutionException
     {
         File dexFile = new File( project.getBuild().getDirectory(), "classes.dex" );
-        File zipArchive = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_" );
+        File zipArchive = new File( project.getBuild().getDirectory(), artifactName + ".ap_" );
         ArrayList<File> sourceFolders = new ArrayList<File>();
         if ( sourceDirectories != null )
         {
@@ -953,7 +953,7 @@ public class ApkMojo extends AbstractAndroidMojo
         File[] overlayDirectories = getResourceOverlayDirectories();
 
         File androidJar = getAndroidSdk().getAndroidJar();
-        File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_" );
+        File outputFile = new File( project.getBuild().getDirectory(), artifactName + ".ap_" );
 
         List<String> commands = new ArrayList<String>();
         commands.add( "package" );
