@@ -1019,6 +1019,11 @@ public class ApkMojo extends AbstractAndroidMojo
             commands.add( aaptExtraArg );
         }
 
+        if ( aaptVerbose )
+        {
+            commands.add( "-v" );
+        }
+
         if ( !release )
         {
             getLog().info( "Generating debug apk." );

@@ -569,6 +569,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( configurations );
         }
 
+        if ( aaptVerbose )
+        {
+            commands.add( "-v" );
+        }
+
         // We need to generate R.txt for all projects as it needs to be consumed when generating R class.
         // It also needs to be consumed when packaging aar.
         commands.add( "--output-text-symbols" );
@@ -751,6 +756,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         for ( String aaptExtraArg : aaptExtraArgs )
         {
             commands.add( aaptExtraArg );
+        }
+
+        if ( aaptVerbose )
+        {
+            commands.add( "-v" );
         }
 
         // We need to generate R.txt for all projects as it needs to be consumed when generating R class.

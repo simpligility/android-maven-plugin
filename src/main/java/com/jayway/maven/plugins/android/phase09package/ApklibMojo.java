@@ -411,6 +411,12 @@ public class ApklibMojo extends AbstractAndroidMojo
             commands.add( "-c" );
             commands.add( configurations );
         }
+
+        if ( aaptVerbose )
+        {
+            commands.add( "-v" );
+        }
+
         getLog().debug( getAndroidSdk().getAaptPath() + " " + commands.toString() );
         getLog().info( "Generating apklib" );
         try
