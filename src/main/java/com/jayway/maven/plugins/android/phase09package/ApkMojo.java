@@ -1032,6 +1032,7 @@ public class ApkMojo extends AbstractAndroidMojo
         getLog().debug( getAndroidSdk().getAaptPath() + " " + commands.toString() );
         try
         {
+            executor.setCaptureStdOut( true );
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )

@@ -441,6 +441,7 @@ public class AarMojo extends AbstractAndroidMojo
         getLog().info( "Generating aar" );
         try
         {
+            executor.setCaptureStdOut( true );
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )

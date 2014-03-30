@@ -158,6 +158,7 @@ public class ZipalignMojo extends AbstractAndroidMojo
             {
                 getLog().info( "Running command: " + command );
                 getLog().info( "with parameters: " + parameters );
+                executor.setCaptureStdOut( true );
                 executor.executeCommand( command, parameters );
 
                 if ( FileUtils.fileExists( outputApk ) )

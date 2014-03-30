@@ -415,6 +415,7 @@ public class ApklibMojo extends AbstractAndroidMojo
         getLog().info( "Generating apklib" );
         try
         {
+            executor.setCaptureStdOut( true );
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )

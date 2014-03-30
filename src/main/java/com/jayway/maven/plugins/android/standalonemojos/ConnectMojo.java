@@ -40,6 +40,7 @@ public class ConnectMojo extends AbstractAndroidMojo
 
                 try
                 {
+                    executor.setCaptureStdOut( true );
                     executor.executeCommand( command, parameters );
                 }
                 catch ( ExecutionException e )

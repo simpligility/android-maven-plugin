@@ -362,6 +362,7 @@ public class DexMojo extends AbstractAndroidMojo
                     getLog().debug( javaExecutable + " " + commands.toString() );
                     try
                     {
+                        executor.setCaptureStdOut( true );
                         executor.executeCommand( javaExecutable, commands, project.getBasedir(), false );
                     }
                     catch ( ExecutionException e )
@@ -458,6 +459,7 @@ public class DexMojo extends AbstractAndroidMojo
         getLog().info( "Convert classes to Dex : " + outputFile );
         try
         {
+            executor.setCaptureStdOut( true );
             executor.executeCommand( javaExecutable, commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
