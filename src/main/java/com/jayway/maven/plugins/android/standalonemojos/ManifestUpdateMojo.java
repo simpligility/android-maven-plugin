@@ -30,8 +30,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -508,12 +509,13 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         xformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
         Source source = new DOMSource( doc );
 
-        FileWriter writer = null;
+        OutputStreamWriter writer = null;
         try
         {
             manifestFile.getParentFile().mkdirs();
 
-            writer = new FileWriter( manifestFile, false );
+            String encoding = doc.getXmlEncoding() != null ? doc.getXmlEncoding() : "UTF-8";
+            writer = new OutputStreamWriter(new FileOutputStream(manifestFile, false), encoding);
             if ( doc.getXmlEncoding() != null && doc.getXmlVersion() != null )
             {
                 String xmldecl = String
