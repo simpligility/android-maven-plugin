@@ -515,7 +515,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             manifestFile.getParentFile().mkdirs();
 
             String encoding = doc.getXmlEncoding() != null ? doc.getXmlEncoding() : "UTF-8";
-            writer = new OutputStreamWriter(new FileOutputStream(manifestFile, false), encoding);
+            writer = new OutputStreamWriter( new FileOutputStream( manifestFile, false ), encoding );
             if ( doc.getXmlEncoding() != null && doc.getXmlVersion() != null )
             {
                 String xmldecl = String
