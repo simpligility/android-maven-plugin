@@ -474,13 +474,21 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      */
     private void checkPackagesForDuplicates() throws MojoExecutionException
     {
+        Set<Artifact> dependencyArtifacts = getTransitiveDependencyArtifacts( AAR, APKLIB );
+
+        if ( dependencyArtifacts.isEmpty() )
+        {
+            //if no AAR or APKLIB dependencies presents than only one package presents
+            return;
+        }
+
         Map<String, Set<Artifact>> packageCompareMap = new HashMap<String, Set<Artifact>>();
 
         HashSet<Artifact> artifactSet = new HashSet<Artifact>();
         artifactSet.add( project.getArtifact() );
         packageCompareMap.put( extractPackageNameFromAndroidManifest( androidManifestFile ), artifactSet );
 
-        for ( Artifact artifact: getTransitiveDependencyArtifacts( AAR, APKLIB ) )
+        for ( Artifact artifact: dependencyArtifacts )
         {
 
             File unpackDir = getUnpackedLibFolder( artifact );
