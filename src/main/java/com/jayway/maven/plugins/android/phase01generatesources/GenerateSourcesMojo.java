@@ -882,7 +882,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         protoCommands.add( "-p" + getAndroidSdk().getPathForFrameworkAidl() );
 
         genDirectoryAidl.mkdirs();
-        getLog().warn( "Adding AIDL gen folder to compile classpath: " + genDirectoryAidl );
+        getLog().info( "Adding AIDL gen folder to compile classpath: " + genDirectoryAidl );
         project.addCompileSourceRoot( genDirectoryAidl.getPath() );
         Set<File> sourceDirs = files.keySet();
         for ( File sourceDir : sourceDirs )
