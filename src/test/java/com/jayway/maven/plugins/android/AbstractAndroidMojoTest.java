@@ -23,6 +23,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.android.ddmlib.DdmPreferences;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -102,6 +103,15 @@ public class AbstractAndroidMojoTest {
         final URL    resource     = this.getClass().getResource("apidemos-platformtests-0.1.0-SNAPSHOT.apk");
         final String foundPackage = androidMojo.extractPackageNameFromApk(new File(new URI(resource.toString())));
         Assert.assertEquals("com.example.android.apis.tests", foundPackage);
+    }
+
+    @Test
+    public void usesAdbConnectionTimeout() throws MojoExecutionException {
+        final int expectedTimeout = 1000;
+        androidMojo.adbConnectionTimeout = expectedTimeout;
+        androidMojo.initAndroidDebugBridge();
+
+        Assert.assertEquals(DdmPreferences.getTimeOut(), expectedTimeout);
     }
 
     private class DefaultTestAndroidMojo extends AbstractAndroidMojo {

@@ -17,6 +17,7 @@
 package com.jayway.maven.plugins.android;
 
 import com.android.ddmlib.AndroidDebugBridge;
+import com.android.ddmlib.DdmPreferences;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.InstallException;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
@@ -488,6 +489,12 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected boolean release;
 
+    /**
+     * The timeout value for an adb connection in milliseconds.
+     * @parameter expression="${android.adb.connection.timeout}" default-value="5000"
+     */
+    protected int adbConnectionTimeout;
+
     private UnpackedLibHelper unpackedLibHelper;
     private ArtifactResolverHelper artifactResolverHelper;
     private NativeHelper nativeHelper;
@@ -574,6 +581,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         {
             if ( ! adbInitialized )
             {
+                DdmPreferences.setTimeOut( adbConnectionTimeout );
                 AndroidDebugBridge.init( false );
                 adbInitialized = true;
             }
