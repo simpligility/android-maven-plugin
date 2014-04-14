@@ -110,7 +110,7 @@ public class AarMojo extends AbstractAndroidMojo
      * @parameter
      */
     @PullParameter
-    private String[] classesJarExcludes = new String[]{"**/R.class", "**/R$*.class", "**/BuildConfig.class"};
+    private String[] classesJarExcludes = new String[]{"**/R.class", "**/R$*.class"};
 
     private List<String> sourceFolders = new ArrayList<String>();
 
