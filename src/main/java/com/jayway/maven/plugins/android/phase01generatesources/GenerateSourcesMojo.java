@@ -833,8 +833,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                     final JarFile jar = new JarFile( getUnpackedAarClassesJar( artifact ) );
                     final JarEntry entry = jar.getJarEntry( depPackageName.replace( '.', '/' ) + "/BuildConfig.class" );
 
-                    getLog().warn( "AAA TEST:  "
-                            + depPackageName.replace( '.', '/' ) + "//" + getUnpackedAarClassesJar( artifact ) );
                     if ( entry != null )
                     {
                         getLog().info( "Skip BuildConfig.java generation for "
