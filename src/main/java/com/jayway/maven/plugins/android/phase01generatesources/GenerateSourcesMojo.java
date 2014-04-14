@@ -57,6 +57,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
@@ -817,12 +819,37 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
         generateBuildConfigForPackage( packageName );
 
-        // Generate the BuildConfig for APKLIB dependencies.
-        for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB ) )
+        try
         {
-            final File manifest = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
-            final String depPackageName = extractPackageNameFromAndroidManifest( manifest );
-            generateBuildConfigForPackage( depPackageName );
+            // Generate the BuildConfig for any APKLIB and AAR dependencies.
+            // Need to generate for AAR, because some old AARs like ActionBarSherlock do not have BuildConfig (or R)
+            for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
+            {
+                final File manifest = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
+                final String depPackageName = extractPackageNameFromAndroidManifest( manifest );
+
+                if ( artifact.getType().equals( AAR ) )
+                {
+                    final JarFile jar = new JarFile( getUnpackedAarClassesJar( artifact ) );
+                    final JarEntry entry = jar.getJarEntry( depPackageName.replace( '.', '/' ) + "/BuildConfig.class" );
+
+                    getLog().warn( "AAA TEST:  "
+                            + depPackageName.replace( '.', '/' ) + "//" + getUnpackedAarClassesJar( artifact ) );
+                    if ( entry != null )
+                    {
+                        getLog().info( "Skip BuildConfig.java generation for "
+                                + artifact.getGroupId() + " " + artifact.getArtifactId() );
+                        continue;
+                    }
+                }
+
+                generateBuildConfigForPackage( depPackageName );
+            }
+        }
+        catch ( IOException e )
+        {
+            getLog().error( "Error generating BuildConfig ", e );
+            throw new MojoExecutionException( "Error generating BuildConfig", e );
         }
     }
 
