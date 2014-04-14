@@ -819,30 +819,62 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
         generateBuildConfigForPackage( packageName );
 
+        // Generate the BuildConfig for any APKLIB and AAR dependencies.
+        // Need to generate for AAR, because some old AARs like ActionBarSherlock do not have BuildConfig (or R)
+        for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
+        {
+            if ( skipBuildConfigGeneration( artifact ) )
+            {
+                continue;
+            }
+
+            final File manifest = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
+            final String depPackageName = extractPackageNameFromAndroidManifest( manifest );
+
+            generateBuildConfigForPackage( depPackageName );
+        }
+    }
+
+    private boolean skipBuildConfigGeneration( Artifact artifact ) throws MojoExecutionException
+    {
+        if ( artifact.getType().equals( AAR ) )
+        {
+            if ( isBuildConfigPresent( artifact ) )
+            {
+                return true;
+            }
+
+            Set< Artifact > transitiveDep = getArtifactResolverHelper()
+                    .getFilteredArtifacts( project.getArtifacts(), AAR );
+
+            for ( Artifact transitiveArtifact : transitiveDep )
+            {
+                if ( isBuildConfigPresent( transitiveArtifact ) )
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isBuildConfigPresent( Artifact artifact ) throws MojoExecutionException
+    {
         try
         {
-            // Generate the BuildConfig for any APKLIB and AAR dependencies.
-            // Need to generate for AAR, because some old AARs like ActionBarSherlock do not have BuildConfig (or R)
-            for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
+            File manifest = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
+            String depPackageName = extractPackageNameFromAndroidManifest( manifest );
+
+            JarFile jar = new JarFile( getUnpackedAarClassesJar( artifact ) );
+            JarEntry entry = jar.getJarEntry( depPackageName.replace( '.', '/' ) + "/BuildConfig.class" );
+
+            if ( entry != null )
             {
-                final File manifest = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
-                final String depPackageName = extractPackageNameFromAndroidManifest( manifest );
-
-                if ( artifact.getType().equals( AAR ) )
-                {
-                    final JarFile jar = new JarFile( getUnpackedAarClassesJar( artifact ) );
-                    final JarEntry entry = jar.getJarEntry( depPackageName.replace( '.', '/' ) + "/BuildConfig.class" );
-
-                    if ( entry != null )
-                    {
-                        getLog().info( "Skip BuildConfig.java generation for "
-                                + artifact.getGroupId() + " " + artifact.getArtifactId() );
-                        continue;
-                    }
-                }
-
-                generateBuildConfigForPackage( depPackageName );
+                getLog().info( "Skip BuildConfig.java generation for "
+                        + artifact.getGroupId() + " " + artifact.getArtifactId() );
+                return true;
             }
+            return false;
         }
         catch ( IOException e )
         {
