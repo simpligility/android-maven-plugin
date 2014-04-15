@@ -20,7 +20,6 @@ import org.codehaus.plexus.logging.Logger;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -104,7 +103,7 @@ public final class ArtifactResolverHelper
 
     public Set<Artifact> resolveArtifacts( Collection<Artifact> artifacts ) throws MojoExecutionException
     {
-        final Set<Artifact> resolvedArtifacts = new HashSet<Artifact>();
+        final Set<Artifact> resolvedArtifacts = new LinkedHashSet<Artifact>();
         for ( final Artifact artifact : artifacts )
         {
             resolvedArtifacts.add( resolveArtifact( artifact ) );

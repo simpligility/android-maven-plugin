@@ -9,6 +9,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ExcludesArtifactFilter;
+import org.apache.maven.artifact.resolver.filter.OrArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Exclusion;
@@ -258,19 +259,17 @@ public class NativeHelper
                     return !artifact.isOptional();
                 }
             };
-            final ArtifactFilter filter = new AndArtifactFilter( Arrays.asList(
-                    new ExcludesArtifactFilter( exclusionPatterns ),
-                    new AndArtifactFilter( Arrays.asList(
-                            new ScopeArtifactFilter( "compile" ),
-                            new ScopeArtifactFilter( "runtime" ),
-                            new ScopeArtifactFilter( "test" ),
-                            optionalFilter
-                    ) )
-            ) );
+
+            final AndArtifactFilter filter = new AndArtifactFilter();
+            filter.add( new ExcludesArtifactFilter( exclusionPatterns ) );
+            filter.add( new OrArtifactFilter( Arrays.<ArtifactFilter>asList( new ScopeArtifactFilter( "compile" ),
+                                                                            new ScopeArtifactFilter( "runtime" ),
+                                                                            new ScopeArtifactFilter( "test" ) ) ) );
+            filter.add( optionalFilter );
 
             final DependencyNode node = dependencyGraphBuilder.buildDependencyGraph( project, filter );
             final CollectingDependencyNodeVisitor collectingVisitor = new CollectingDependencyNodeVisitor();
-            collectingVisitor.visit( node );
+            node.accept( collectingVisitor );
 
             final List<DependencyNode> dependencies = collectingVisitor.getNodes();
             for ( final DependencyNode dep : dependencies )
