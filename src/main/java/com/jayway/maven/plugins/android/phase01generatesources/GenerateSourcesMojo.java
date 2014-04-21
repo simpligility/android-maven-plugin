@@ -492,10 +492,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         for ( Artifact artifact: dependencyArtifacts )
         {
-
-            File unpackDir = getUnpackedLibFolder( artifact );
-            File apklibManifest = new File( unpackDir, "AndroidManifest.xml" );
-            String libPackage = extractPackageNameFromAndroidManifest( apklibManifest );
+            String libPackage = extractPackageNameFromAndroidArtifact( artifact );
 
             Set<Artifact> artifacts = packageCompareMap.get( libPackage );
             if ( artifacts == null )
@@ -926,8 +923,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 continue;
             }
 
-            final File manifest = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
-            final String depPackageName = extractPackageNameFromAndroidManifest( manifest );
+            final String depPackageName = extractPackageNameFromAndroidArtifact( artifact );
 
             generateBuildConfigForPackage( depPackageName );
         }
