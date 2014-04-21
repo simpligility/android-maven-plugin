@@ -468,7 +468,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     }
 
     /**
-     * Checks packages of project and all dependent libraries for duplicates.
+     * Checks packages in AndroidManifest.xml file of project and all dependent libraries for duplicates.
      * <p>Generate warning if duplicates presents.
      * <p>(in case of packages similarity R.java and BuildConfig files will be overridden)
      *
@@ -486,32 +486,37 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         Map<String, Set<Artifact>> packageCompareMap = getPackageCompareMap( dependencyArtifacts );
 
-        StringBuilder messageBuilder = new StringBuilder();
+        List<String> messageList = new ArrayList<String>();
         for ( Map.Entry<String, Set<Artifact>> entry: packageCompareMap.entrySet() )
         {
             Set<Artifact> artifacts = entry.getValue();
             if ( artifacts != null && artifacts.size() > 1 )
             {
-                messageBuilder
-                        .append( "\n" )
-                        .append( "    artifacts: " );
-
+                StringBuilder messageBuilder = new StringBuilder();
                 for ( Artifact item: artifacts )
                 {
+                    if ( messageBuilder.length() > 0 )
+                    {
+                        messageBuilder
+                                .append( ", " );
+                    }
                     messageBuilder
-                            .append( "\"" )
-                            .append( item.getArtifactId() )
-                            .append( "\"" )
-                            .append( " " );
+                            .append( item.getArtifactId() );
                 }
                 messageBuilder
-                        .append( "have similar package: " )
-                        .append( entry.getKey() );
+                        .append( " have similar package: '" )
+                        .append( entry.getKey() )
+                        .append( "'" );
+                messageList.add( messageBuilder.toString() );
             }
         }
-        if ( messageBuilder.length() > 0 )
+        if ( messageList.size() > 0 )
         {
-            getLog().warn( "Duplicate packages detected in next artifacts:" + messageBuilder.toString() );
+            getLog().warn( "Duplicate packages detected in AndroidManifest.xml file for the next artifacts:" );
+            for ( String messageLine: messageList )
+            {
+                getLog().warn( messageLine );
+            }
         }
     }
 
