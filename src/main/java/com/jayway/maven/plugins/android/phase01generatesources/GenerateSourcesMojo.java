@@ -484,24 +484,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             return;
         }
 
-        Map<String, Set<Artifact>> packageCompareMap = new HashMap<String, Set<Artifact>>();
-
-        HashSet<Artifact> artifactSet = new HashSet<Artifact>();
-        artifactSet.add( project.getArtifact() );
-        packageCompareMap.put( extractPackageNameFromAndroidManifest( androidManifestFile ), artifactSet );
-
-        for ( Artifact artifact: dependencyArtifacts )
-        {
-            String libPackage = extractPackageNameFromAndroidArtifact( artifact );
-
-            Set<Artifact> artifacts = packageCompareMap.get( libPackage );
-            if ( artifacts == null )
-            {
-                artifacts = new HashSet<Artifact>();
-                packageCompareMap.put( libPackage, artifacts );
-            }
-            artifacts.add( artifact );
-        }
+        Map<String, Set<Artifact>> packageCompareMap = getPackageCompareMap( dependencyArtifacts );
 
         StringBuilder messageBuilder = new StringBuilder();
         for ( Map.Entry<String, Set<Artifact>> entry: packageCompareMap.entrySet() )
@@ -530,6 +513,43 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             getLog().warn( "Duplicate packages detected in next artifacts:" + messageBuilder.toString() );
         }
+    }
+
+    /**
+     * Provides map with all provided dependencies or project itself grouped by package name
+     *
+     * @param dependencyArtifacts artifacts that should be grouped by package name
+     * @return map of with package names(String) and sets of artifacts (Set<Artifact>)
+     *          that have similar package names
+     * @throws MojoExecutionException
+     */
+    Map<String, Set<Artifact>> getPackageCompareMap( Set<Artifact> dependencyArtifacts )
+            throws MojoExecutionException
+    {
+        if ( dependencyArtifacts == null )
+        {
+            throw new IllegalArgumentException( "dependencies must be initialized" );
+        }
+
+        Map<String, Set<Artifact>> packageCompareMap = new HashMap<String, Set<Artifact>>();
+
+        Set<Artifact> artifactSet = new HashSet<Artifact>();
+        artifactSet.add( project.getArtifact() );
+        packageCompareMap.put( extractPackageNameFromAndroidManifest( androidManifestFile ), artifactSet );
+
+        for ( Artifact artifact: dependencyArtifacts )
+        {
+            String libPackage = extractPackageNameFromAndroidArtifact( artifact );
+
+            Set<Artifact> artifacts = packageCompareMap.get( libPackage );
+            if ( artifacts == null )
+            {
+                artifacts = new HashSet<Artifact>();
+                packageCompareMap.put( libPackage, artifacts );
+            }
+            artifacts.add( artifact );
+        }
+        return packageCompareMap;
     }
 
     private void generateR() throws MojoExecutionException
