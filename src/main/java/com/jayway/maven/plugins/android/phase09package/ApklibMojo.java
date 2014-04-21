@@ -222,15 +222,16 @@ public class ApklibMojo extends AbstractAndroidMojo
                 }
             }
 
+            // Removing this as the APK is now able to pull the native libs from the chained apklibs
             // get native libs from other apklibs
-            for ( Artifact apkLibraryArtifact : getTransitiveDependencyArtifacts( APKLIB ) )
-            {
-                final File apklibLibsDirectory = getUnpackedLibNativesFolder( apkLibraryArtifact );
-                if ( apklibLibsDirectory.exists() )
-                {
-                    addDirectory( jarArchiver, apklibLibsDirectory, NATIVE_LIBRARIES_FOLDER );
-                }
-            }
+//            for ( Artifact apkLibraryArtifact : getTransitiveDependencyArtifacts( APKLIB ) )
+//            {
+//                final File apklibLibsDirectory = getUnpackedLibNativesFolder( apkLibraryArtifact );
+//                if ( apklibLibsDirectory.exists() )
+//                {
+//                    addDirectory( jarArchiver, apklibLibsDirectory, NATIVE_LIBRARIES_FOLDER );
+//                }
+//            }
         }
         catch ( ArchiverException e )
         {
