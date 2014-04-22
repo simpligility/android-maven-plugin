@@ -227,6 +227,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             }
 
             mergeManifests();
+
+            checkPackagesForDuplicates();
             generateR();
             generateBuildConfig();
 
@@ -463,6 +465,74 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
         getLog().debug( "Copied APK classes jar into compile classpath : " + unpackedClassesJar );
 
+    }
+
+    /**
+     * Checks packages of project and all dependent libraries for duplicates.
+     * <p>Generate warning if duplicates presents.
+     * <p>(in case of packages similarity R.java and BuildConfig files will be overridden)
+     *
+     * @throws MojoExecutionException
+     */
+    private void checkPackagesForDuplicates() throws MojoExecutionException
+    {
+        Set<Artifact> dependencyArtifacts = getTransitiveDependencyArtifacts( AAR, APKLIB );
+
+        if ( dependencyArtifacts.isEmpty() )
+        {
+            //if no AAR or APKLIB dependencies presents than only one package presents
+            return;
+        }
+
+        Map<String, Set<Artifact>> packageCompareMap = new HashMap<String, Set<Artifact>>();
+
+        HashSet<Artifact> artifactSet = new HashSet<Artifact>();
+        artifactSet.add( project.getArtifact() );
+        packageCompareMap.put( extractPackageNameFromAndroidManifest( androidManifestFile ), artifactSet );
+
+        for ( Artifact artifact: dependencyArtifacts )
+        {
+
+            File unpackDir = getUnpackedLibFolder( artifact );
+            File apklibManifest = new File( unpackDir, "AndroidManifest.xml" );
+            String libPackage = extractPackageNameFromAndroidManifest( apklibManifest );
+
+            Set<Artifact> artifacts = packageCompareMap.get( libPackage );
+            if ( artifacts == null )
+            {
+                artifacts = new HashSet<Artifact>();
+                packageCompareMap.put( libPackage, artifacts );
+            }
+            artifacts.add( artifact );
+        }
+
+        StringBuilder messageBuilder = new StringBuilder();
+        for ( Map.Entry<String, Set<Artifact>> entry: packageCompareMap.entrySet() )
+        {
+            Set<Artifact> artifacts = entry.getValue();
+            if ( artifacts != null && artifacts.size() > 1 )
+            {
+                messageBuilder
+                        .append( "\n" )
+                        .append( "    artifacts: " );
+
+                for ( Artifact item: artifacts )
+                {
+                    messageBuilder
+                            .append( "\"" )
+                            .append( item.getArtifactId() )
+                            .append( "\"" )
+                            .append( " " );
+                }
+                messageBuilder
+                        .append( "have similar package: " )
+                        .append( entry.getKey() );
+            }
+        }
+        if ( messageBuilder.length() > 0 )
+        {
+            getLog().warn( "Duplicate packages detected in next artifacts:" + messageBuilder.toString() );
+        }
     }
 
     private void generateR() throws MojoExecutionException
@@ -938,7 +1008,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         protoCommands.add( "-p" + getAndroidSdk().getPathForFrameworkAidl() );
 
         genDirectoryAidl.mkdirs();
-        getLog().warn( "Adding AIDL gen folder to compile classpath: " + genDirectoryAidl );
+        getLog().info( "Adding AIDL gen folder to compile classpath: " + genDirectoryAidl );
         project.addCompileSourceRoot( genDirectoryAidl.getPath() );
         Set<File> sourceDirs = files.keySet();
         for ( File sourceDir : sourceDirs )
