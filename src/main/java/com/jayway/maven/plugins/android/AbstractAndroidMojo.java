@@ -131,7 +131,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * The maven session.
      *
-     * @parameter expression="${session}"
+     * @parameter default-value="${session}"
      * @required
      * @readonly
      */
