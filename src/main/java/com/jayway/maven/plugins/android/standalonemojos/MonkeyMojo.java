@@ -84,7 +84,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
     /**
      * -Dmaven.test.skip is commonly used with Maven to skip tests. We honor it.
      * 
-     * @parameter expression="${maven.test.skip}" default-value=false
+     * @parameter property="maven.test.skip" default-value=false
      * @readonly
      */
     private boolean mavenTestSkip;
@@ -92,7 +92,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
     /**
      * -DskipTests is commonly used with Maven to skip tests. We honor it too.
      * 
-     * @parameter expression="${skipTests}" default-value=false
+     * @parameter property="skipTests" default-value=false
      * @readonly
      */
     private boolean mavenSkipTests;
@@ -100,7 +100,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * -Dmaven.test.failure.ignore is commonly used with Maven to prevent failure of build when (some) tests fail. We
      * honor it too.
      * 
-     * @parameter expression="${maven.test.failure.ignore}" default-value=false
+     * @parameter property="maven.test.failure.ignore" default-value=false
      * @readonly
      */
     private boolean mavenTestFailureIgnore;
@@ -109,7 +109,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * -Dmaven.test.failure.ignore is commonly used with Maven to prevent failure of build when (some) tests fail. We
      * honor it too.
      * 
-     * @parameter expression="${testFailureIgnore}" default-value=false
+     * @parameter property="testFailureIgnore" default-value=false
      * @readonly
      */
     private boolean mavenIgnoreTestFailure;
