@@ -74,7 +74,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
     /**
      * -Dmaven.test.skip is commonly used with Maven to skip tests. We honor it too.
      *
-     * @parameter expression="${maven.test.skip}" default-value=false
+     * @parameter property="maven.test.skip" default-value=false
      * @readonly
      */
     private boolean mavenTestSkip;
@@ -82,7 +82,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
     /**
      * -DskipTests is commonly used with Maven to skip tests. We honor it too.
      *
-     * @parameter expression="${skipTests}" default-value=false
+     * @parameter property="skipTests" default-value=false
      * @readonly
      */
     private boolean mavenSkipTests;
@@ -92,7 +92,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * Ignore or not tests failures. If <code>true</code> they will be ignored; if
      * <code>false</code>, they will not. Default value is <code>false</code>.
      *
-     * @parameter expression="${maven.test.failure.ignore}" default-value=false required=false
+     * @parameter property="maven.test.failure.ignore" default-value=false required=false
      * @readonly
      */
     private boolean mavenIgnoreTestFailure;
@@ -102,7 +102,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * Ignore or not tests errors. If <code>true</code> they will be ignored; if
      * <code>false</code>, they will not. Default value is <code>false</code>.
      *
-     * @parameter expression="${maven.test.error.ignore}" default-value=false required=false
+     * @parameter property="maven.test.error.ignore" default-value=false required=false
      * @readonly
      */
     private boolean mavenIgnoreTestError;

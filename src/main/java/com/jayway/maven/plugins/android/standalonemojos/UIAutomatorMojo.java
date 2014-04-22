@@ -95,7 +95,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
     /**
      * -Dmaven.test.skip is commonly used with Maven to skip tests. We honor it.
      * 
-     * @parameter expression="${maven.test.skip}" default-value=false
+     * @parameter property="maven.test.skip" default-value=false
      * @readonly
      */
     private boolean mavenTestSkip;
@@ -103,7 +103,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
     /**
      * -DskipTests is commonly used with Maven to skip tests. We honor it too.
      * 
-     * @parameter expression="${skipTests}" default-value=false
+     * @parameter property="skipTests" default-value=false
      * @readonly
      */
     private boolean mavenSkipTests;
@@ -111,7 +111,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      * -Dmaven.test.failure.ignore is commonly used with Maven to prevent failure of build when (some) tests fail. We
      * honor it too. Builds will still fail if tests can't complete or throw an exception.
      * 
-     * @parameter expression="${maven.test.failure.ignore}" default-value=false
+     * @parameter property="maven.test.failure.ignore" default-value=false
      * @readonly
      */
     private boolean mavenTestFailureIgnore;
@@ -120,7 +120,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      * -Dmaven.test.failure.ignore is commonly used with Maven to prevent failure of build when (some) tests fail. We
      * honor it too. Builds will still fail if tests can't complete or throw an exception.
      * 
-     * @parameter expression="${testFailureIgnore}" default-value=false
+     * @parameter property="testFailureIgnore" default-value=false
      * @readonly
      */
     private boolean mavenIgnoreTestFailure;
