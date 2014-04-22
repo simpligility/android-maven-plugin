@@ -11,7 +11,7 @@ public class BuildConfigConstant
      * Name of the constant.
      * Eg.: SERVER_URL, etc
      *
-     * @parameter expression="{android.buildConfigConstants[].name}"
+     * @parameter property="android.buildConfigConstants[].name"
      * @required
      */
     private String name;
@@ -20,7 +20,7 @@ public class BuildConfigConstant
      * Type of the value.
      * Eg.: String, int, com.mypackage.MyType, etc
      *
-     * @parameter expression="{android.buildConfigConstants[].type}"
+     * @parameter property="android.buildConfigConstants[].type"
      * @required
      */
     private String type;
@@ -29,7 +29,7 @@ public class BuildConfigConstant
      * Value of the constant.
      * Eg.: MyString, 123, new com.mypackage.MyType(), etc
      *
-     * @parameter expression="{android.buildConfigConstants[].value}"
+     * @parameter property="android.buildConfigConstants[].value"
      * @required
      */
     private String value;
