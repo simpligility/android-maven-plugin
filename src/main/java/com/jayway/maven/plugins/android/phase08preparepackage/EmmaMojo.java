@@ -36,7 +36,7 @@ public class EmmaMojo extends AbstractAndroidMojo
      *   &lt;enable&gt;true|false&lt;/enable&gt;
      *   &lt;classFolders&gt;${project}/target/classes&lt;/classFolders&gt;
      *   &lt;outputMetaFile&gt;${project}/target/emma/coverage.em&lt;/outputMetaFile&gt;
-     *   &lt;filters&gt;${project}emma filterlt;/filters&gt;
+     *   &lt;filters&gt;${project}emma filter&lt;/filters&gt;
      * &lt;/emma&gt;
      * </pre>
      * <p/>
