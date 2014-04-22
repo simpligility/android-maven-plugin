@@ -134,6 +134,10 @@ public class NativeHelper
         // Add all attached artifacts as well - this could come from the NDK mojo for example
         allArtifacts.addAll( project.getAttachedArtifacts() );
 
+        // Add all transitive artifacts as well
+        // this allows armeabi classifier -> apklib -> apklib -> apk chaining to only include armeabi in APK
+        allArtifacts.addAll( project.getArtifacts() );
+
         for ( Artifact artifact : allArtifacts )
         {
             log.debug( "Checking artifact : " + artifact );
