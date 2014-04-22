@@ -24,7 +24,7 @@ public class NdkCleanMojo extends AbstractMojo
     File ndkBuildLibsOutputDirectory;
 
     /**
-     * @parameter property="$android.nativeBuildObjOutputDirectory" default-value="${project.basedir}/obj"
+     * @parameter property="android.nativeBuildObjOutputDirectory" default-value="${project.basedir}/obj"
      */
     File ndkBuildObjOutputDirectory;
 
