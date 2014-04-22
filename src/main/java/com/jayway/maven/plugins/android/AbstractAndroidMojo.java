@@ -138,7 +138,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected MavenSession session;
 
     /**
-     * @parameter expression="${mojoExecution}"
+     * @parameter default-value="${mojoExecution}"
      * @readonly
      * @required
      *
@@ -222,18 +222,18 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected String renameManifestPackage;
 
     /**
-     * @parameter expression="${project.build.directory}/generated-sources/extracted-dependencies"
+     * @parameter default-value="${project.build.directory}/generated-sources/extracted-dependencies"
      * @readonly
      */
     protected File extractedDependenciesDirectory;
 
     /**
-     * @parameter expression="${project.build.directory}/generated-sources/extracted-dependencies/src/main/java"
+     * @parameter default-value="${project.build.directory}/generated-sources/extracted-dependencies/src/main/java"
      * @readonly
      */
     protected File extractedDependenciesJavaSources;
     /**
-     * @parameter expression="${project.build.directory}/generated-sources/extracted-dependencies/src/main/resources"
+     * @parameter default-value="${project.build.directory}/generated-sources/extracted-dependencies/src/main/resources"
      * @readonly
      */
     protected File extractedDependenciesJavaResources;
@@ -242,7 +242,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * The combined assets directory. This will contain both the assets found in "assets" as well as any assets
      * contained in a apksources, apklib or aar dependencies.
      *
-     * @parameter expression="${project.build.directory}/generated-sources/combined-assets"
+     * @parameter default-value="${project.build.directory}/generated-sources/combined-assets"
      * @readonly
      */
     protected File combinedAssets;
@@ -413,7 +413,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * <p>Parameter designed to pick up environment variable <code>ANDROID_HOME</code> in case
      * <code>android.sdk.path</code> is not configured.</p>
      *
-     * @parameter expression="${env.ANDROID_HOME}"
+     * @parameter default-value="${env.ANDROID_HOME}"
      * @readonly
      */
     private String envAndroidHome;
