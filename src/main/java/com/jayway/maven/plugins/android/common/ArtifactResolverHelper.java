@@ -11,6 +11,7 @@
 package com.jayway.maven.plugins.android.common;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
 import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
@@ -38,12 +39,15 @@ public final class ArtifactResolverHelper
 
     private final ArtifactResolver artifactResolver;
     private final Logger log;
+    private final List<ArtifactRepository> remoteArtifactRepositories;
 
 
-    public ArtifactResolverHelper( ArtifactResolver artifactResolver, Logger log )
+    public ArtifactResolverHelper( ArtifactResolver artifactResolver, Logger log,
+                                  final List<ArtifactRepository> remoteArtifactRepositories )
     {
         this.artifactResolver = artifactResolver;
         this.log = log;
+        this.remoteArtifactRepositories = remoteArtifactRepositories;
     }
 
     /**
@@ -119,8 +123,13 @@ public final class ArtifactResolverHelper
      */
     private Artifact resolveArtifact( Artifact artifact ) throws MojoExecutionException
     {
-        final ArtifactResolutionRequest resolutionRequest = new ArtifactResolutionRequest().setArtifact( artifact );
-        final ArtifactResolutionResult resolutionResult = this.artifactResolver.resolve( resolutionRequest );
+        final ArtifactResolutionRequest artifactResolutionRequest = new ArtifactResolutionRequest();
+        artifactResolutionRequest.setArtifact( artifact );
+        if ( remoteArtifactRepositories != null && !remoteArtifactRepositories.isEmpty() )
+        {
+            artifactResolutionRequest.setRemoteRepositories( remoteArtifactRepositories );
+        }
+        final ArtifactResolutionResult resolutionResult = this.artifactResolver.resolve( artifactResolutionRequest );
 
         log.debug( "Resolving : " + artifact );
         if ( resolutionResult.getArtifacts().size() == 0 )
