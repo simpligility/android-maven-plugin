@@ -240,7 +240,7 @@ public class ProguardMojo extends AbstractAndroidMojo
     /**
      * The plugin dependencies.
      *
-     * @parameter expression="${plugin.artifacts}"
+     * @parameter default-value="${plugin.artifacts}"
      * @required
      * @readonly
      */
