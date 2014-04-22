@@ -157,21 +157,21 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * &lt;/resources&gt;
      * </pre>
      * 
-     * @parameter expression="${android.mergeManifests}" default-value="false"
+     * @parameter property="android.mergeManifests" default-value="false"
      */
     protected boolean mergeManifests;
 
     /**
      * Override default generated folder containing R.java
      *
-     * @parameter expression="${android.genDirectory}" default-value="${project.build.directory}/generated-sources/r"
+     * @parameter property="android.genDirectory" default-value="${project.build.directory}/generated-sources/r"
      */
     protected File genDirectory;
 
     /**
      * Override default generated folder containing aidl classes
      *
-     * @parameter expression="${android.genDirectoryAidl}"
+     * @parameter property="android.genDirectoryAidl"
      * default-value="${project.build.directory}/generated-sources/aidl"
      */
     protected File genDirectoryAidl;
@@ -179,7 +179,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     /**
      * <p>Parameter designed to generate custom BuildConfig constants
      *
-     * @parameter expression="${android.buildConfigConstants}"
+     * @parameter property="android.buildConfigConstants"
      * @readonly
      */
     protected BuildConfigConstant[] buildConfigConstants;

@@ -34,7 +34,7 @@ public class Sign
      * <a href="http://code.google.com/p/maven-android-plugin/issues/detail?id=2">Issue 2</a>.)
      * </ul>
      *
-     * @parameter expression="${android.sign.debug}" default-value="auto"
+     * @parameter property="android.sign.debug" default-value="auto"
      */
     private String debug;
 

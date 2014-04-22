@@ -169,7 +169,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      * will use the version number of the project. Exposed via the project property
      * <code>android.manifest.versionName</code>.
      *
-     * @parameter expression="${android.manifest.versionName}" default-value="${project.version}"
+     * @parameter property="android.manifest.versionName" default-value="${project.version}"
      */
     protected String manifestVersionName;
 
@@ -177,7 +177,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      * Update the <code>android:versionCode</code> attribute with the specified parameter. Exposed via
      * the project property <code>android.manifest.versionCode</code>.
      *
-     * @parameter expression="${android.manifest.versionCode}"
+     * @parameter property="android.manifest.versionCode"
      */
     protected Integer manifestVersionCode;
 
@@ -186,7 +186,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      * exposed via the project property <code>android.manifest.versionCodeAutoIncrement</code> and
      * the resulting value as <code>android.manifest.versionCode</code>.
      *
-     * @parameter expression="${android.manifest.versionCodeAutoIncrement}" default-value="false"
+     * @parameter property="android.manifest.versionCodeAutoIncrement" default-value="false"
      */
     private Boolean manifestVersionCodeAutoIncrement = false;
 
@@ -194,7 +194,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      * Update the <code>android:icon</code> attribute with the specified parameter. Exposed via
      * the project property <code>android.manifest.appIcon</code>.
      * 
-     * @parameter expression="${android.manifest.applicationIcon}" 
+     * @parameter property="android.manifest.applicationIcon" 
      */
     private String manifestApplicationIcon;
 
@@ -202,7 +202,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      * Update the <code>android:label</code> attribute with the specified parameter. Exposed via
      * the project property <code>android.manifest.appLabel</code>.
      * 
-     * @parameter expression="${android.manifest.applicationLabel}" 
+     * @parameter property="android.manifest.applicationLabel" 
      */
     private String manifestApplicationLabel;    
 
@@ -210,7 +210,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      * Update the <code>android:theme</code> attribute with the specified parameter. Exposed via
      * the project property <code>android.manifest.applicationTheme</code>.
      * 
-     * @parameter expression="${android.manifest.applicationTheme}" 
+     * @parameter property="android.manifest.applicationTheme" 
      */
     private String manifestApplicationTheme;    
     
@@ -226,7 +226,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      * the version major should be no larger than 2000.  Any other suffixes do not
      * participate in the version code generation.
      *
-     * @parameter expression="${android.manifest.versionCodeUpdateFromVersion}" default-value="false"
+     * @parameter property="android.manifest.versionCodeUpdateFromVersion" default-value="false"
      */
     protected Boolean manifestVersionCodeUpdateFromVersion = false;
 
@@ -234,7 +234,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      * Update the <code>android:sharedUserId</code> attribute with the specified parameter. If
      * specified, exposes the project property <code>android.manifest.sharedUserId</code>.
      *
-     * @parameter expression="${android.manifest.sharedUserId}"
+     * @parameter property="android.manifest.sharedUserId"
      */
     protected String manifestSharedUserId;
 
@@ -242,7 +242,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      * Update the <code>android:debuggable</code> attribute with the specified parameter. Exposed via
      * the project property <code>android.manifest.debuggable</code>.
      *
-     * @parameter expression="${android.manifest.debuggable}"
+     * @parameter property="android.manifest.debuggable"
      */
     protected Boolean manifestDebuggable;
 
@@ -250,7 +250,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      * For a given provider (named by <code>android:name</code> update the <code>android:authorities</code>
      * attribute for the provider. Exposed via the project property <code>android.manifest.providerAuthorities</code>.
      *
-     * @parameter expression="${android.manifest.providerAuthorities}"
+     * @parameter property="android.manifest.providerAuthorities"
      */
     protected Properties manifestProviderAuthorities;
 
@@ -287,7 +287,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     /**
      * The modified <code>AndroidManifest.xml</code> file.
      *
-     * @parameter expression="${android.manifestFile}" default-value="${project.basedir}/AndroidManifest.xml"
+     * @parameter property="android.manifestFile" default-value="${project.basedir}/AndroidManifest.xml"
      */
     protected File updatedManifestFile;
 
