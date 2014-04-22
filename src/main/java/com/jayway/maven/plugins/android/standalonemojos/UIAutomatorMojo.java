@@ -165,7 +165,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      * Enables or disables uiautomator test goal. If <code>true</code> it will be skipped; if <code>false</code>, it
      * will be run.
      * 
-     * @parameter expression="${android.uiautomator.skip}"
+     * @parameter property="android.uiautomator.skip"
      */
     private Boolean uiautomatorSkip;
 
@@ -175,7 +175,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
     /**
      * Jar file that will be run during ui uiautomator tests.
      * 
-     * @parameter expression="${android.uiautomator.jarFile}"
+     * @parameter property="android.uiautomator.jarFile"
      */
     private String uiautomatorJarFile;
 
@@ -190,7 +190,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      * <li>package_name.class_name#method_name
      * </ul>
      * 
-     * @parameter expression="${android.uiautomator.testClassOrMethod}"
+     * @parameter property="android.uiautomator.testClassOrMethod"
      * 
      */
     private String[] uiautomatorTestClassOrMethods;
@@ -202,7 +202,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      * Decides whether to run the test to completion on the device even if its parent process is terminated (for
      * example, if the device is disconnected).
      * 
-     * @parameter expression="${android.uiautomator.noHup}"
+     * @parameter property="android.uiautomator.noHup"
      * 
      */
     private Boolean uiautomatorNoHup;
@@ -213,7 +213,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
     /**
      * Decides whether to wait for debugger to connect before starting.
      * 
-     * @parameter expression="${android.uiautomator.debug}"
+     * @parameter property="android.uiautomator.debug"
      * 
      */
     private Boolean uiautomatorDebug = false;
@@ -224,7 +224,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
     /**
      * Decides whether to use a dump file or not.
      * 
-     * @parameter expression="${android.uiautomator.useDump}"
+     * @parameter property="android.uiautomator.useDump"
      * 
      */
     private Boolean uiautomatorUseDump;
@@ -236,7 +236,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      * Generate an XML file with a dump of the current UI hierarchy. If a filepath is not specified, by default, the
      * generated dump file is stored on the device in this location /storage/sdcard0/window_dump.xml.
      * 
-     * @parameter expression="${android.uiautomator.dumpFilePath}"
+     * @parameter property="android.uiautomator.dumpFilePath"
      * 
      */
     private String uiautomatorDumpFilePath;
@@ -263,7 +263,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      * Defaults to false.
      * 
      * @optional
-     * @parameter expression="${android.uiautomator.createReport}"
+     * @parameter property="android.uiautomator.createReport"
      * 
      */
     private Boolean uiautomatorCreateReport;
@@ -278,7 +278,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      * Defaults to null. Hence, in the default case, the name of the report will be TEST-deviceid.xml.
      *
      * @optional
-     * @parameter expression="${android.uiautomator.reportSuffix}"
+     * @parameter property="android.uiautomator.reportSuffix"
      */
     private String uiautomatorReportSuffix;
 
@@ -289,7 +289,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      * Decides whether or not to take screenshots when tests execution results in failure or error. Screenshots use the
      * utiliy screencap that is usually available within emulator/devices with SDK >= 16.
      * 
-     * @parameter expression="${android.uiautomator.takeScreenshotOnFailure}"
+     * @parameter property="android.uiautomator.takeScreenshotOnFailure"
      * 
      */
     private Boolean uiautomatorTakeScreenshotOnFailure;
@@ -301,7 +301,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      * Location of the screenshots on device. This value is only taken into account if takeScreenshotOnFailure = true.
      * If a filepath is not specified, by default, the screenshots will be located at /sdcard/uiautomator-screenshots/.
      * 
-     * @parameter expression="${android.uiautomator.screenshotsPathOnDevice}"
+     * @parameter property="android.uiautomator.screenshotsPathOnDevice"
      * 
      */
     private String uiautomatorScreenshotsPathOnDevice;
@@ -324,7 +324,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      * <p><code>&gt; mvn &lt;goal&gt; "-DUIAkey=value"</code></p>
      * <p>would become <code>"-e key value"</code> as it would be runned from adb</p>
      * 
-     * @parameter expression="${android.uiautomator.propertiesKeyPrefix}"
+     * @parameter property="android.uiautomator.propertiesKeyPrefix"
      * 
      */
     private String uiautomatorPropertiesKeyPrefix;

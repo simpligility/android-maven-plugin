@@ -76,7 +76,7 @@ public class PullMojo extends AbstractAndroidMojo
     /**
      * The path of the source file or directory on the emulator/device.
      *
-     * @parameter expression="${android.pull.source}"
+     * @parameter property="android.pull.source"
      */
     private String pullSource;
 
@@ -96,7 +96,7 @@ public class PullMojo extends AbstractAndroidMojo
      * <p/>
      * Any missing directories will be created.
      *
-     * @parameter expression="${android.pull.destination}"
+     * @parameter property="android.pull.destination"
      */
     private String pullDestination;
 

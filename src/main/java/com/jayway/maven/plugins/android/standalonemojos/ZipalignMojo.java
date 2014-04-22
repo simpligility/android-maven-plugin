@@ -53,7 +53,7 @@ public class ZipalignMojo extends AbstractAndroidMojo
 
     /**
      * Skip the zipalign goal execution. Defaults to "true".
-     * @parameter expression="${android.zipalign.skip}"
+     * @parameter property="android.zipalign.skip"
      * @see com.jayway.maven.plugins.android.configuration.Zipalign#skip
      */
     private Boolean zipalignSkip;
@@ -63,7 +63,7 @@ public class ZipalignMojo extends AbstractAndroidMojo
 
     /**
      * Activate verbose output for the zipalign goal execution. Defaults to "false".
-     * @parameter expression="${android.zipalign.verbose}"
+     * @parameter property="android.zipalign.verbose"
      * @see com.jayway.maven.plugins.android.configuration.Zipalign#verbose
      */
     private Boolean zipalignVerbose;
@@ -75,7 +75,7 @@ public class ZipalignMojo extends AbstractAndroidMojo
      * The apk file to be zipaligned. Per default the file is taken from build directory (target normally) using the
      * build final name as file name and apk as extension.
      *
-     * @parameter expression="${android.zipalign.inputApk}"
+     * @parameter property="android.zipalign.inputApk"
      * @see com.jayway.maven.plugins.android.configuration.Zipalign#inputApk
      */
     private String zipalignInputApk;
@@ -86,7 +86,7 @@ public class ZipalignMojo extends AbstractAndroidMojo
      * The apk file produced by the zipalign goal. Per default the file is placed into the build directory (target
      * normally) using the build final name appended with "-aligned" as file name and apk as extension.
      *
-     * @parameter expression="${android.zipalign.outputApk}"
+     * @parameter property="android.zipalign.outputApk"
      * @see com.jayway.maven.plugins.android.configuration.Zipalign#outputApk
      */
     private String zipalignOutputApk;

@@ -154,7 +154,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
      * Enables or disables monkey runner test goal. If <code>true</code> it will be skipped; if <code>false</code>, it
      * will be run. Defaults to true.
      * 
-     * @parameter expression="${android.monkeyrunner.skip}"
+     * @parameter property="android.monkeyrunner.skip"
      */
     private Boolean monkeyRunnerSkip;
 
@@ -168,7 +168,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
      * 
      * Defaults to no plugins.
      * 
-     * @parameter expression="${android.monkeyrunner.plugins}"
+     * @parameter property="android.monkeyrunner.plugins"
      */
     private String[] monkeyPlugins;
 
@@ -215,7 +215,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
      * Defaults to false.
      * 
      * @optional
-     * @parameter expression="${android.monkeyrunner.createReport}"
+     * @parameter property="android.monkeyrunner.createReport"
      * 
      */
     private Boolean monkeyCreateReport;
@@ -232,7 +232,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
      * 
      * Defaults to false.
      * 
-     * @parameter expression="${android.monkeyrunner.injectDeviceSerialNumberIntoScript}"
+     * @parameter property="android.monkeyrunner.injectDeviceSerialNumberIntoScript"
      * 
      */
     private Boolean monkeyInjectDeviceSerialNumberIntoScript;

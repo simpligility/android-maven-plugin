@@ -110,7 +110,7 @@ public class ApkMojo extends AbstractAndroidMojo
      * <code>&lt;sign&gt;</code> configuration tag.</p>
      * <p>Corresponds to {@link com.jayway.maven.plugins.android.configuration.Sign#debug}.</p>
      *
-     * @parameter expression="${android.sign.debug}" default-value="auto"
+     * @parameter property="android.sign.debug" default-value="auto"
      * @readonly
      */
     private String signDebug;
@@ -120,7 +120,7 @@ public class ApkMojo extends AbstractAndroidMojo
      * This value will be passed on to the aapt parameter --rename-instrumentation-target-package.
      * Look to aapt for more help on this. </p>
      *
-     * @parameter expression="${android.renameInstrumentationTargetPackage}"
+     * @parameter property="android.renameInstrumentationTargetPackage"
      *
      * TODO pass this into AaptExecutor
      */
@@ -132,7 +132,7 @@ public class ApkMojo extends AbstractAndroidMojo
      * Android does not support duplicates, and all dependencies are inlined in the APK. If duplicates files are found,
      * the resource is kept in the first dependency and removes from others.
      *
-     * @parameter expression="${android.extractDuplicates}" default-value="false"
+     * @parameter property="android.extractDuplicates" default-value="false"
      */
     private boolean extractDuplicates;
 
@@ -167,7 +167,7 @@ public class ApkMojo extends AbstractAndroidMojo
      * &lt;/configuration&gt;
      * </pre>
      *
-     * @parameter expression="${android.sourceDirectories}" default-value=""
+     * @parameter property="android.sourceDirectories" default-value=""
      */
     private File[] sourceDirectories;
 
@@ -199,7 +199,7 @@ public class ApkMojo extends AbstractAndroidMojo
      * See also <a href="http://code.google.com/p/maven-android-plugin/issues/detail?id=97">Issue 97</a>
      * </p>
      *
-     * @parameter expression="${android.apk.metaIncludes}"
+     * @parameter property="android.apk.metaIncludes"
      * @deprecated in favour of apk.metaInf
      */
     @PullParameter
@@ -216,13 +216,13 @@ public class ApkMojo extends AbstractAndroidMojo
     /**
      * Defines whether or not the APK is being produced in debug mode or not.
      *
-     * @parameter expression="${android.apk.debug}"
+     * @parameter property="android.apk.debug"
      */
     @PullParameter( defaultValue = "false" )
     private Boolean apkDebug;
 
     /**
-     * @parameter expression="${android.nativeToolchain}"
+     * @parameter property="android.nativeToolchain"
      */
     @PullParameter( defaultValue = "arm-linux-androideabi-4.4.3" )
     private String apkNativeToolchain;
@@ -230,7 +230,7 @@ public class ApkMojo extends AbstractAndroidMojo
     /**
      * Specifies the final name of the library output by the build (this allows
      *
-     * @parameter expression="${android.ndk.build.build.final-library.name}"
+     * @parameter property="android.ndk.build.build.final-library.name"
      */
     private String ndkFinalLibraryName;
 
@@ -261,7 +261,7 @@ public class ApkMojo extends AbstractAndroidMojo
      * without a classifier.</p>
      * <p>Valid values currently include {@code armeabi}, {@code armeabi-v7a}, {@code mips} and {@code x86}.</p>
      *
-     * @parameter expression="${android.nativeLibrariesDependenciesHardwareArchitectureDefault}" default-value="armeabi"
+     * @parameter property="android.nativeLibrariesDependenciesHardwareArchitectureDefault" default-value="armeabi"
      */
     private String nativeLibrariesDependenciesHardwareArchitectureDefault;
 
