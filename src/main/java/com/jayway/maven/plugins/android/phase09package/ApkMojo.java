@@ -847,7 +847,8 @@ public class ApkMojo extends AbstractAndroidMojo
     private void copyNativeLibraryArtifactFileToDirectory( Artifact artifact, File destinationDirectory,
                                                            String ndkArchitecture ) throws MojoExecutionException
     {
-        final File artifactFile = artifact.getFile();
+
+        final File artifactFile = getArtifactResolverHelper().resolveArtifactToFile( artifact );
         try
         {
             final String artifactId = artifact.getArtifactId();

@@ -1451,7 +1451,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         {
             artifactResolverHelper = new ArtifactResolverHelper(
                     artifactResolver,
-                    new MavenToPlexusLogAdapter( getLog() )
+                    new MavenToPlexusLogAdapter( getLog() ),
+                    project.getRemoteArtifactRepositories()
             );
         }
         return artifactResolverHelper;
