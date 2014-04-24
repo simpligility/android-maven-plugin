@@ -324,10 +324,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected String[] aaptExtraArgs;
 
     /**
-     * Activate verbose output for the aapt execution. Defaults to "false"
-     * <p><b>Note:</b> currently verbose mode for aapt works only in maven debug mode(i.e. mvn ... -X)
+     * Activate verbose output for the aapt execution in Maven debug mode. Defaults to "false"
      *
-     * @parameter expression="${android.aaptVerbose}"
+     * @parameter property="android.aaptVerbose"
      */
     protected boolean aaptVerbose;
 
