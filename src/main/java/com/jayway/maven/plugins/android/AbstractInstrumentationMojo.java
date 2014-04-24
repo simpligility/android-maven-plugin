@@ -262,7 +262,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * or as e.g. -Dandroid.test.classes=class1,class2
      *
      * @optional
-     * @parameter property="android.test.classes}"
+     * @parameter property="android.test.classes"
      */
     protected List<String> testClasses;
 
