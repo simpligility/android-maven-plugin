@@ -57,6 +57,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
@@ -919,9 +921,63 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         // Generate the BuildConfig for APKLIB dependencies.
         for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB ) )
         {
+            if ( skipBuildConfigGeneration( artifact ) )
+            {
+                continue;
+            }
+
             final File manifest = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
             final String depPackageName = extractPackageNameFromAndroidManifest( manifest );
+
             generateBuildConfigForPackage( depPackageName );
+        }
+    }
+
+    private boolean skipBuildConfigGeneration( Artifact artifact ) throws MojoExecutionException
+    {
+        if ( artifact.getType().equals( AAR ) )
+        {
+            if ( isBuildConfigPresent( artifact ) )
+            {
+                return true;
+            }
+
+            Set< Artifact > transitiveDep = getArtifactResolverHelper()
+                    .getFilteredArtifacts( project.getArtifacts(), AAR );
+
+            for ( Artifact transitiveArtifact : transitiveDep )
+            {
+                if ( isBuildConfigPresent( transitiveArtifact ) )
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isBuildConfigPresent( Artifact artifact ) throws MojoExecutionException
+    {
+        try
+        {
+            File manifest = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
+            String depPackageName = extractPackageNameFromAndroidManifest( manifest );
+
+            JarFile jar = new JarFile( getUnpackedAarClassesJar( artifact ) );
+            JarEntry entry = jar.getJarEntry( depPackageName.replace( '.', '/' ) + "/BuildConfig.class" );
+
+            if ( entry != null )
+            {
+                getLog().info( "Skip BuildConfig.java generation for "
+                        + artifact.getGroupId() + " " + artifact.getArtifactId() );
+                return true;
+            }
+            return false;
+        }
+        catch ( IOException e )
+        {
+            getLog().error( "Error generating BuildConfig ", e );
+            throw new MojoExecutionException( "Error generating BuildConfig", e );
         }
     }
 
