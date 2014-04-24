@@ -498,7 +498,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     /**
      * The timeout value for an adb connection in milliseconds.
-     * @parameter expression="${android.adb.connection.timeout}" default-value="5000"
+     *
+     * @parameter property="android.adb.connectionTimeout" default-value="5000"
      */
     protected int adbConnectionTimeout;
 
