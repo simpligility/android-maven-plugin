@@ -61,7 +61,7 @@ public class ApklibMojo extends AbstractAndroidMojo
     /**
      * Build folder to place built native libraries into
      *
-     * @parameter expression="${android.ndk.build.ndk-output-directory}"
+     * @parameter property="android.ndk.build.ndk-output-directory"
      * default-value="${project.build.directory}/ndk-libs"
      */
     private File ndkOutputDirectory;
@@ -84,7 +84,7 @@ public class ApklibMojo extends AbstractAndroidMojo
     /**
      * Defines the architecture for the NDK build
      *
-     * @parameter expression="${android.ndk.build.architecture}"
+     * @parameter property="android.ndk.build.architecture"
      */
     @PullParameter
     private String ndkArchitecture;
@@ -92,7 +92,7 @@ public class ApklibMojo extends AbstractAndroidMojo
     /**
      * Specifies the classifier with which the artifact should be stored in the repository
      *
-     * @parameter expression="${android.ndk.build.native-classifier}"
+     * @parameter property="android.ndk.build.native-classifier"
      */
     @PullParameter
     private String ndkClassifier;

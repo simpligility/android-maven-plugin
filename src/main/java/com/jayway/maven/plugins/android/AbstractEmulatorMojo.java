@@ -79,7 +79,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     /**
      * Name of the Android Virtual Device (emulatorAvd) that will be started by the emulator. Default value is "Default"
      *
-     * @parameter expression="${android.emulator.avd}"
+     * @parameter property="android.emulator.avd"
      * @see com.jayway.maven.plugins.android.configuration.Emulator#avd
      */
     private String emulatorAvd;
@@ -87,14 +87,14 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     /**
      * Unlock the emulator after it is started.
      * 
-     * @parameter expression="${android.emulatorUnlock}" default-value=false
+     * @parameter property="android.emulatorUnlock" default-value=false
      */
     private boolean emulatorUnlock;
 
     /**
      * Wait time for the emulator start up.
      *
-     * @parameter expression="${android.emulator.wait}"
+     * @parameter property="android.emulator.wait"
      * @see com.jayway.maven.plugins.android.configuration.Emulator#wait
      */
     private String emulatorWait;
@@ -104,7 +104,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      * options desired to the invocation of the emulator. Use emulator -help for more details. An example would be
      * "-no-skin".
      *
-     * @parameter expression="${android.emulator.options}"
+     * @parameter property="android.emulator.options"
      * @see com.jayway.maven.plugins.android.configuration.Emulator#options
      */
     private String emulatorOptions;
@@ -113,7 +113,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     /**
      * Override default emulator executable. Default uses just "emulator".
      *
-     * @parameter expression="${android.emulator.executable}"
+     * @parameter property="android.emulator.executable"
      * @see com.jayway.maven.plugins.android.configuration.Emulator#executable
      */
     private String emulatorExecutable;

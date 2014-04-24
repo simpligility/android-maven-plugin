@@ -122,7 +122,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * The maven project.
      *
-     * @parameter expression="${project}"
+     * @parameter default-value="${project}"
      * @required
      * @readonly
      */
@@ -131,14 +131,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * The maven session.
      *
-     * @parameter expression="${session}"
+     * @parameter default-value="${session}"
      * @required
      * @readonly
      */
     protected MavenSession session;
 
     /**
-     * @parameter expression="${mojoExecution}"
+     * @parameter default-value="${mojoExecution}"
      * @readonly
      * @required
      *
@@ -171,7 +171,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * <p>Root folder containing native libraries to include in the application package.</p>
      *
-     * @parameter expression="${android.nativeLibrariesDirectory}" default-value="${project.basedir}/libs"
+     * @parameter property="android.nativeLibrariesDirectory" default-value="${project.basedir}/libs"
      */
     protected File nativeLibrariesDirectory;
 
@@ -202,14 +202,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * Source <code>AndroidManifest.xml</code> file to copy into the {@link #androidManifestFile} location.
      *
-     * @parameter expression="${source.manifestFile}"
+     * @parameter property="source.manifestFile"
      */
     protected File sourceManifestFile;
 
     /**
      * The <code>AndroidManifest.xml</code> file.
      *
-     * @parameter expression="${android.manifestFile}" default-value="${project.basedir}/AndroidManifest.xml"
+     * @parameter property="android.manifestFile" default-value="${project.basedir}/AndroidManifest.xml"
      */
     protected File androidManifestFile;
 
@@ -217,23 +217,23 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * <p>A possibly new package name for the application. This value will be passed on to the aapt
      * parameter --rename-manifest-package. Look to aapt for more help on this. </p>
      *
-     * @parameter expression="${android.renameManifestPackage}"
+     * @parameter property="android.renameManifestPackage"
      */
     protected String renameManifestPackage;
 
     /**
-     * @parameter expression="${project.build.directory}/generated-sources/extracted-dependencies"
+     * @parameter default-value="${project.build.directory}/generated-sources/extracted-dependencies"
      * @readonly
      */
     protected File extractedDependenciesDirectory;
 
     /**
-     * @parameter expression="${project.build.directory}/generated-sources/extracted-dependencies/src/main/java"
+     * @parameter default-value="${project.build.directory}/generated-sources/extracted-dependencies/src/main/java"
      * @readonly
      */
     protected File extractedDependenciesJavaSources;
     /**
-     * @parameter expression="${project.build.directory}/generated-sources/extracted-dependencies/src/main/resources"
+     * @parameter default-value="${project.build.directory}/generated-sources/extracted-dependencies/src/main/resources"
      * @readonly
      */
     protected File extractedDependenciesJavaResources;
@@ -242,7 +242,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * The combined assets directory. This will contain both the assets found in "assets" as well as any assets
      * contained in a apksources, apklib or aar dependencies.
      *
-     * @parameter expression="${project.build.directory}/generated-sources/combined-assets"
+     * @parameter default-value="${project.build.directory}/generated-sources/combined-assets"
      * @readonly
      */
     protected File combinedAssets;
@@ -254,7 +254,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * device interaction goals support this so you can e.. deploy the apk to all attached emulators and devices.
      * Goals supporting this are devices, deploy, undeploy, redeploy, pull, push and instrument.
      *
-     * @parameter expression="${android.device}"
+     * @parameter property="android.device"
      */
     protected String device;
 
@@ -273,7 +273,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * <p>This parameter can also be configured from command-line with
      * parameter <code>-Dandroid.devices=usb,emulator</code>.</p>
      *
-     * @parameter expression="${android.devices}"
+     * @parameter property="android.devices"
      */
     protected String[] devices;
     
@@ -283,7 +283,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * <p>This parameter can also be configured from command-line with
      * parameter <code>-Dandroid.deviceThreads=2</code>.</p>
      *
-     * @parameter expression="${android.deviceThreads}"
+     * @parameter property="android.deviceThreads"
      */
     protected int deviceThreads;
 
@@ -301,7 +301,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * &lt;/ips&gt;
      * </pre>
      *
-     * @parameter expression="${android.ips}"
+     * @parameter property="android.ips"
      */
     protected String[] ips;
 
@@ -311,14 +311,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * with the <code>mdpi</code> or <code>ldpi</code> modifiers, but won't affect language or orientation modifiers.
      * For more information about this option, look in the aapt command line help.
      *
-     * @parameter expression="${android.configurations}"
+     * @parameter property="android.configurations"
      */
     protected String configurations;
 
     /**
      * A list of extra arguments that must be passed to aapt.
      *
-     * @parameter expression="${android.aaptExtraArgs}"
+     * @parameter property="android.aaptExtraArgs"
      */
     protected String[] aaptExtraArgs;
 
@@ -327,7 +327,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * defined in the AndroidManifest.xml. This files is then automatically used in the proguard mojo execution, 
      * if enabled.
      *
-     * @parameter expression="${android.proguardFile}"
+     * @parameter property="android.proguardFile"
      */
     protected File proguardFile;
 
@@ -336,7 +336,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * probably most useful for a project used to generate apk sources to be inherited into another application
      * project.
      *
-     * @parameter expression="${android.generateApk}" default-value="true"
+     * @parameter property="android.generateApk" default-value="true"
      */
     protected boolean generateApk;
 
@@ -357,7 +357,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * Generates R.java into a different package.
      *
-     * @parameter expression="${android.customPackage}"
+     * @parameter property="android.customPackage"
      */
     protected String customPackage;
 
@@ -404,7 +404,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * <code>&lt;sdk&gt;</code> configuration tag.</p>
      * <p>Corresponds to {@link com.jayway.maven.plugins.android.configuration.Sdk#path}.</p>
      *
-     * @parameter expression="${android.sdk.path}"
+     * @parameter property="android.sdk.path"
      * @readonly
      */
     private File sdkPath;
@@ -413,7 +413,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * <p>Parameter designed to pick up environment variable <code>ANDROID_HOME</code> in case
      * <code>android.sdk.path</code> is not configured.</p>
      *
-     * @parameter expression="${env.ANDROID_HOME}"
+     * @parameter default-value="${env.ANDROID_HOME}"
      * @readonly
      */
     private String envAndroidHome;
@@ -428,7 +428,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * <code>&lt;sdk&gt;</code> configuration tag.</p>
      * <p>Corresponds to {@link com.jayway.maven.plugins.android.configuration.Sdk#platform}.</p>
      *
-     * @parameter expression="${android.sdk.platform}"
+     * @parameter property="android.sdk.platform"
      * @readonly
      */
     private String sdkPlatform;
@@ -446,7 +446,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * keystore is different.</p>
      *
      * @parameter default-value=false
-     * expression="${android.undeployBeforeDeploy}"
+     * property="android.undeployBeforeDeploy"
      */
     protected boolean undeployBeforeDeploy;
 
@@ -456,7 +456,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * <p>Only disable it if you know you won't need it for any integration-tests. Otherwise, leave it enabled.</p>
      *
      * @parameter default-value=true
-     * expression="${android.attachJar}"
+     * property="android.attachJar"
      */
     protected boolean attachJar;
 
@@ -467,7 +467,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * other projects, using the Maven &lt;dependency&gt; tag.</p>
      *
      * @parameter default-value=false
-     * expression="${android.attachSources}"
+     * property="android.attachSources"
      */
     protected boolean attachSources;
 
@@ -476,7 +476,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * <code>&lt;ndk&gt;</code> configuration tag.</p>
      * <p>Corresponds to {@link com.jayway.maven.plugins.android.configuration.Ndk#path}.</p>
      *
-     * @parameter expression="${android.ndk.path}"
+     * @parameter property="android.ndk.path"
      * @readonly
      */
     private File ndkPath;
@@ -484,7 +484,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * Whether to create a release build (default is false / debug build). This affect BuildConfig generation 
      * and apk generation at this stage, but should probably affect other aspects of the build.
-     * @parameter expression="${android.release}" default-value="false"
+     * @parameter property="android.release" default-value="false"
      */
     protected boolean release;
 

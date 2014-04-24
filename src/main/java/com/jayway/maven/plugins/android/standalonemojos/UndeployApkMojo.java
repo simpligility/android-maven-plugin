@@ -59,7 +59,7 @@ public class UndeployApkMojo extends AbstractAndroidMojo
     protected DeployApk deployapk;
 
     /**
-     * @parameter expression="${android.deployapk.filename}"
+     * @parameter property="android.deployapk.filename"
      * @optional
     */
     private File deployapkFilename;
@@ -68,7 +68,7 @@ public class UndeployApkMojo extends AbstractAndroidMojo
     private File parsedFilename;
 
     /**
-     * @parameter expression="${android.deployapk.packagename}"
+     * @parameter property="android.deployapk.packagename"
      * @optional
     */
     private String deployapkPackagename;
