@@ -639,6 +639,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( configurations );
         }
 
+        if ( aaptVerbose )
+        {
+            commands.add( "-v" );
+        }
+
         // We need to generate R.txt for all projects as it needs to be consumed when generating R class.
         // It also needs to be consumed when packaging aar.
         commands.add( "--output-text-symbols" );
@@ -651,6 +656,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         try
         {
             targetDirectory.mkdirs();
+            executor.setCaptureStdOut( true );
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
@@ -658,6 +664,24 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             throw new MojoExecutionException( "", e );
         }
 
+        ResourceClassGenerator resourceGenerator
+                = new ResourceClassGenerator( this, targetDirectory, genDirectory );
+
+        generateCorrectRJavaForApklibDependencies( resourceGenerator );
+        generateCorrectRJavaForAarDependencies( resourceGenerator );
+
+        getLog().info( "Adding R gen folder to compile classpath: " + genDirectory );
+        project.addCompileSourceRoot( genDirectory.getAbsolutePath() );
+    }
+
+    /**
+     * Generate correct R.java for apklibs dependencies of a current project
+     *
+     * @throws MojoExecutionException
+     */
+    private void generateCorrectRJavaForApklibDependencies( ResourceClassGenerator resourceGenerator )
+            throws MojoExecutionException
+    {
         // Generate R.java for apklibs
         // Compatibility with Apklib which isn't present in AndroidBuilder
         generateApkLibRs();
@@ -668,27 +692,26 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             // Generate R.java for each APKLIB based on R.txt
             getLog().debug( "Generating R file for APKLIB dependencies" );
-            generateRJavaFromRTxt( apklibDependencies, "apklib" );
+            resourceGenerator.generateLibraryRs( apklibDependencies, "apklib" );
         }
+    }
 
+    /**
+     * Generate correct R.java for aar dependencies of a current project
+     *
+     * @throws MojoExecutionException
+     */
+    private void generateCorrectRJavaForAarDependencies( ResourceClassGenerator resourceGenerator )
+            throws MojoExecutionException
+    {
         // Generate error corrected R.java for AAR dependencies.
         final Set<Artifact> aarLibraries = getTransitiveDependencyArtifacts( AAR );
         if ( !aarLibraries.isEmpty() )
         {
             // Generate R.java for each AAR based on R.txt
             getLog().debug( "Generating R file for AAR dependencies" );
-            generateRJavaFromRTxt( aarLibraries, "aar" );
+            resourceGenerator.generateLibraryRs( aarLibraries, "aar" );
         }
-
-        getLog().info( "Adding R gen folder to compile classpath: " + genDirectory );
-        project.addCompileSourceRoot( genDirectory.getAbsolutePath() );
-    }
-
-    private void generateRJavaFromRTxt( Set<Artifact> librariesToGenerateR, String type ) throws MojoExecutionException
-    {
-        new ResourceClassGenerator(
-                this, librariesToGenerateR, targetDirectory, genDirectory, getLog(), type
-        ).generateLibraryRs();
     }
 
     private void generateApkLibRs() throws MojoExecutionException
@@ -805,6 +828,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( aaptExtraArg );
         }
 
+        if ( aaptVerbose )
+        {
+            commands.add( "-v" );
+        }
+
         // We need to generate R.txt for all projects as it needs to be consumed when generating R class.
         // It also needs to be consumed when packaging aar.
         commands.add( "--output-text-symbols" );
@@ -813,6 +841,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         getLog().debug( getAndroidSdk().getAaptPath() + " " + commands.toString() );
         try
         {
+            executor.setCaptureStdOut( true );
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
@@ -978,7 +1007,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 {
                     CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
                     executor.setLogger( this.getLog() );
-
+                    executor.setCaptureStdOut( true );
                     executor.executeCommand( getAndroidSdk().getAidlPath(), commands, project.getBasedir(),
                             false );
                 }

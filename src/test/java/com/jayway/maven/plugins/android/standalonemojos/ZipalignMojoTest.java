@@ -122,6 +122,7 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
 
         Capture<List<String>> capturedFile = new Capture<List<String>>();
         mockExecutor.setLogger( EasyMock.anyObject( Log.class ) );
+        mockExecutor.setCaptureStdOut( EasyMock.anyBoolean() );
         mockExecutor.executeCommand( EasyMock.anyObject( String.class ), EasyMock.capture( capturedFile ) );
 
         PowerMock.mockStatic( FileUtils.class );
@@ -178,6 +179,7 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
 
         Capture<List<String>> capturedFile = new Capture<List<String>>();
         mockExecutor.setLogger( EasyMock.anyObject( Log.class ) );
+        mockExecutor.setCaptureStdOut( EasyMock.anyBoolean() );
         mockExecutor.executeCommand( EasyMock.anyObject( String.class ), EasyMock.capture( capturedFile ) );
 
         PowerMock.mockStatic( FileUtils.class );
