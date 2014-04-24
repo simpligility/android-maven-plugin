@@ -441,6 +441,7 @@ public class ProguardMojo extends AbstractAndroidMojo
 
         try
         {
+            executor.setCaptureStdOut( true );
             executor.executeCommand( javaExecutable, commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )

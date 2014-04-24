@@ -23,26 +23,22 @@ import java.util.Set;
 final class ResourceClassGenerator
 {
     private final GenerateSourcesMojo mojo;
-    private final Set<Artifact> libraries;
     private final File targetDirectory;
     private final File genDirectory;
     private final Log log;
     private final ILogger androidUtilsLog;
-    private final String libraryType;
 
-    public ResourceClassGenerator( GenerateSourcesMojo mojo, Set<Artifact> libraries, File targetDirectory,
-                                   File genDirectory, Log log, String type )
+    public ResourceClassGenerator( GenerateSourcesMojo mojo, File targetDirectory,
+                                   File genDirectory )
     {
         this.mojo = mojo;
-        this.libraries = libraries;
         this.targetDirectory = targetDirectory;
         this.genDirectory = genDirectory;
-        this.log = log;
+        this.log = mojo.getLog();
         this.androidUtilsLog = new MavenILogger( log );
-        this.libraryType = type;
     }
 
-    public void generateLibraryRs() throws MojoExecutionException
+    public void generateLibraryRs( Set<Artifact> libraries, String libraryType ) throws MojoExecutionException
     {
         // list of all the symbol loaders per package names.
         final Multimap<String, SymbolLoader> libMap = ArrayListMultimap.create();

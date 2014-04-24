@@ -1019,6 +1019,11 @@ public class ApkMojo extends AbstractAndroidMojo
             commands.add( aaptExtraArg );
         }
 
+        if ( aaptVerbose )
+        {
+            commands.add( "-v" );
+        }
+
         if ( !release )
         {
             getLog().info( "Generating debug apk." );
@@ -1032,6 +1037,7 @@ public class ApkMojo extends AbstractAndroidMojo
         getLog().debug( getAndroidSdk().getAaptPath() + " " + commands.toString() );
         try
         {
+            executor.setCaptureStdOut( true );
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )

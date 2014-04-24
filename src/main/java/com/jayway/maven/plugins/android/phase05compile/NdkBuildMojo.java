@@ -450,8 +450,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 configureNdkToolchain( ndkArchitecture, commands );
                 configureAdditionalCommands( commands );
 
-                // If a build target is specified, tag that onto the command line as the
-                // very last of the parameters
+                // If a build target is specified, tag that onto the command line as the very last of the parameters
                 if ( target != null )
                 {
                     commands.add( target );
@@ -465,6 +464,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 getLog().debug( ndkBuildPath + " " + commands.toString() );
                 getLog().info( "Executing NDK make at : " + ndkBuildDirectory );
 
+                executor.setCaptureStdOut( true );
                 executor.executeCommand( ndkBuildPath, commands, project.getBasedir(), true );
 
                 cleanUp( preparation.getNativeLibDirectory(), ndkArchitecture, libsDirectoryExists, directoryToRemove,
@@ -818,7 +818,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 }
             } );
             stripCommandExecutor.setLogger( getLog() );
-
+            stripCommandExecutor.setCaptureStdOut( true );
             stripCommandExecutor.executeCommand( resolveNdkStripper( file ).getAbsolutePath(),
                                                  Arrays.asList( file.getAbsolutePath() ) );
         }
