@@ -74,7 +74,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
     /**
      * -Dmaven.test.skip is commonly used with Maven to skip tests. We honor it too.
      *
-     * @parameter expression="${maven.test.skip}" default-value=false
+     * @parameter property="maven.test.skip" default-value=false
      * @readonly
      */
     private boolean mavenTestSkip;
@@ -82,7 +82,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
     /**
      * -DskipTests is commonly used with Maven to skip tests. We honor it too.
      *
-     * @parameter expression="${skipTests}" default-value=false
+     * @parameter property="skipTests" default-value=false
      * @readonly
      */
     private boolean mavenSkipTests;
@@ -92,7 +92,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * Ignore or not tests failures. If <code>true</code> they will be ignored; if
      * <code>false</code>, they will not. Default value is <code>false</code>.
      *
-     * @parameter expression="${maven.test.failure.ignore}" default-value=false required=false
+     * @parameter property="maven.test.failure.ignore" default-value=false required=false
      * @readonly
      */
     private boolean mavenIgnoreTestFailure;
@@ -102,7 +102,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * Ignore or not tests errors. If <code>true</code> they will be ignored; if
      * <code>false</code>, they will not. Default value is <code>false</code>.
      *
-     * @parameter expression="${maven.test.error.ignore}" default-value=false required=false
+     * @parameter property="maven.test.error.ignore" default-value=false required=false
      * @readonly
      */
     private boolean mavenIgnoreTestError;
@@ -143,7 +143,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * <code>false</code>, they will be run. If <code>auto</code>, they will run if any of the classes inherit from any
      * class in <code>junit.framework.**</code> or <code>android.test.**</code>.
      *
-     * @parameter expression="${android.test.skip}" default-value="auto"
+     * @parameter property="android.test.skip" default-value="auto"
      */
     private String testSkip;
 
@@ -152,7 +152,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * <code>AndroidManifest.xml</code>.
      *
      * @optional
-     * @parameter expression="${android.test.instrumentationPackage}
+     * @parameter property="android.test.instrumentationPackage"
      */
     private String testInstrumentationPackage;
 
@@ -160,7 +160,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * Class name of test runner. If not specified, it is inferred from <code>AndroidManifest.xml</code>.
      *
      * @optional
-     * @parameter expression="${android.test.instrumentationRunner}"
+     * @parameter property="android.test.instrumentationRunner"
      */
     private String testInstrumentationRunner;
 
@@ -169,7 +169,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * connected with the Android debug bridge (adb).
      *
      * @optional
-     * @parameter default-value=false expression="${android.test.debug}"
+     * @parameter default-value=false property="android.test.debug"
      */
     private Boolean testDebug;
 
@@ -179,7 +179,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * run.
      *
      * @optional
-     * @parameter default-value=false expression="${android.test.coverage}"
+     * @parameter default-value=false property="android.test.coverage"
      */
     private Boolean testCoverage;
 
@@ -188,7 +188,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * Android default /data/data/your.package.here/files/coverage.ec).
      *
      * @optional
-     * @parameter default-value= expression="${android.test.coverageFile}"
+     * @parameter default-value= property="android.test.coverageFile"
      */
     private String testCoverageFile;
 
@@ -196,7 +196,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * Enable this flag to run a log only and not execute the tests.
      *
      * @optional
-     * @parameter default-value=false expression="${android.test.logonly}"
+     * @parameter default-value=false property="android.test.logonly"
      */
     private Boolean testLogOnly;
 
@@ -206,7 +206,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * LargeTest annotations. Use "small", "medium" or "large" as values.
      *
      * @optional
-     * @parameter expression="${android.test.testsize}"
+     * @parameter property="android.test.testsize"
      * @see com.android.ddmlib.testrunner.IRemoteAndroidTestRunner
      */
     private String testTestSize;
@@ -234,7 +234,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * details available.
      *
      * @optional
-     * @parameter default-value=true expression="${android.test.createreport}"
+     * @parameter default-value=true property="android.test.createreport"
      */
     private Boolean testCreateReport;
 
@@ -248,7 +248,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * or as e.g. -Dandroid.test.packages=package1,package2
      *
      * @optional
-     * @parameter expression="${android.test.packages}
+     * @parameter property="android.test.packages"
      */
     protected List<String> testPackages;
 
@@ -262,7 +262,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * or as e.g. -Dandroid.test.classes=class1,class2
      *
      * @optional
-     * @parameter expression="${android.test.classes}
+     * @parameter property="android.test.classes}"
      */
     protected List<String> testClasses;
 
@@ -277,7 +277,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * or as e.g. -Dandroid.test.annotations=annotation1,annotation2
      *
      * @optional
-     * @parameter expression="${android.test.annotations}
+     * @parameter property="android.test.annotations"
      */
     protected List<String> testAnnotations;
 
@@ -291,7 +291,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * or as e.g. -Dandroid.test.excludeAnnotations=annotation1,annotation2
      *
      * @optional
-     * @parameter expression="${android.test.excludeAnnotations}
+     * @parameter property="android.test.excludeAnnotations"
      */
     protected List<String> testExcludeAnnotations;
 
@@ -306,7 +306,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * or as e.g. -Dandroid.test.instrumentationArgs="key1 value1","key2 'value with spaces'"
      *
      * @optional
-     * @parameter expression="${android.test.instrumentationArgs}"
+     * @parameter property="android.test.instrumentationArgs"
      */
     protected List<String> testInstrumentationArgs;
 

@@ -36,7 +36,7 @@ public class EmmaMojo extends AbstractAndroidMojo
      *   &lt;enable&gt;true|false&lt;/enable&gt;
      *   &lt;classFolders&gt;${project}/target/classes&lt;/classFolders&gt;
      *   &lt;outputMetaFile&gt;${project}/target/emma/coverage.em&lt;/outputMetaFile&gt;
-     *   &lt;filters&gt;${project}emma filterlt;/filters&gt;
+     *   &lt;filters&gt;${project}emma filter&lt;/filters&gt;
      * &lt;/emma&gt;
      * </pre>
      * <p/>
@@ -48,19 +48,19 @@ public class EmmaMojo extends AbstractAndroidMojo
     /**
      * Decides whether to enable or not enable emma.
      * 
-     * @parameter expression="${android.emma.enable}" default-value="false"
+     * @parameter property="android.emma.enable" default-value="false"
      */
     private boolean emmaEnable;
     /**
      * Configure directory where compiled classes are.
      * 
-     * @parameter expression="${android.emma.classFolders}" default-value="${project.build.directory}/classes/"
+     * @parameter property="android.emma.classFolders" default-value="${project.build.directory}/classes/"
      */
     private String emmaClassFolders;
     /**
      * Path of the emma meta data file (.em).
      * 
-     * @parameter expression="${android.emma.outputMetaFile}"
+     * @parameter property="android.emma.outputMetaFile"
      *            default-value="${project.build.directory}/emma/coverage.em"
      */
     private File emmaOutputMetaFile;
@@ -69,7 +69,7 @@ public class EmmaMojo extends AbstractAndroidMojo
      * Emma filter. Refer to the <a href="http://emma.sourceforge.net/reference/ch02s06s02.html">emma syntax for
      * filters</a>.
      * 
-     * @parameter expression="${android.emma.filters}"
+     * @parameter property="android.emma.filters"
      */
     private String emmaFilters;
 

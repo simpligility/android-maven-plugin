@@ -81,7 +81,7 @@ public class DexMojo extends AbstractAndroidMojo
     /**
      * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build.
      * 
-     * @parameter expression="${android.dex.jvmArguments}" default-value="-Xmx1024M"
+     * @parameter property="android.dex.jvmArguments" default-value="-Xmx1024M"
      * @optional
      */
     private String[] dexJvmArguments;
@@ -89,42 +89,42 @@ public class DexMojo extends AbstractAndroidMojo
     /**
      * Decides whether to pass the --core-library flag to dx.
      * 
-     * @parameter expression="${android.dex.coreLibrary}" default-value="false"
+     * @parameter property="android.dex.coreLibrary" default-value="false"
      */
     private boolean dexCoreLibrary;
 
     /**
      * Decides whether to pass the --no-locals flag to dx.
      * 
-     * @parameter expression="${android.dex.noLocals}" default-value="false"
+     * @parameter property="android.dex.noLocals" default-value="false"
      */
     private boolean dexNoLocals;
 
     /**
      * Decides whether to pass the --no-optimize flag to dx.
      * 
-     * @parameter expression="${android.dex.optimize}" default-value="true"
+     * @parameter property="android.dex.optimize" default-value="true"
      */
     private boolean dexOptimize;
 
     /**
      * Decides whether to predex the jars.
      * 
-     * @parameter expression="${android.dex.predex}" default-value="false"
+     * @parameter property="android.dex.predex" default-value="false"
      */
     private boolean dexPreDex;
     
     /**
      * Decides whether to use force jumbo mode.
      * 
-     * @parameter expression="${android.dex.forcejumbo}" default-value="false"
+     * @parameter property="android.dex.forcejumbo" default-value="false"
      */
     private boolean dexForceJumbo;
 
     /**
      * Path to predexed libraries.
      * 
-     * @parameter expression="${android.dex.dexPreDexLibLocation}" default-value=
+     * @parameter property="android.dex.dexPreDexLibLocation" default-value=
      *            "${project.build.directory}${file.separator}dexedLibs"
      */
     private String dexPreDexLibLocation;
@@ -132,13 +132,13 @@ public class DexMojo extends AbstractAndroidMojo
     /**
      * Decides whether to pass the --incremental flag to dx.
      *
-     * @parameter expression="${android.dex.incremental}" default-value="false"
+     * @parameter property="android.dex.incremental" default-value="false"
      */
     private boolean dexIncremental;
 
     /**
      * The name of the obfuscated JAR
-     * @parameter expression="${android.proguard.obfuscatedJar}"
+     * @parameter property="android.proguard.obfuscatedJar"
      */
     private File obfuscatedJar;
 

@@ -94,7 +94,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
     /**
      * -Dmaven.test.skip is commonly used with Maven to skip tests. We honor it.
      * 
-     * @parameter expression="${maven.test.skip}" default-value=false
+     * @parameter property="maven.test.skip" default-value=false
      * @readonly
      */
     private boolean mavenTestSkip;
@@ -102,7 +102,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
     /**
      * -DskipTests is commonly used with Maven to skip tests. We honor it too.
      * 
-     * @parameter expression="${skipTests}" default-value=false
+     * @parameter property="skipTests" default-value=false
      * @readonly
      */
     private boolean mavenSkipTests;
@@ -110,7 +110,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
      * -Dmaven.test.failure.ignore is commonly used with Maven to prevent failure of build when (some) tests fail. We
      * honor it too.
      * 
-     * @parameter expression="${maven.test.failure.ignore}" default-value=false
+     * @parameter property="maven.test.failure.ignore" default-value=false
      * @readonly
      */
     private boolean mavenTestFailureIgnore;
@@ -119,7 +119,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
      * -Dmaven.test.failure.ignore is commonly used with Maven to prevent failure of build when (some) tests fail. We
      * honor it too.
      * 
-     * @parameter expression="${testFailureIgnore}" default-value=false
+     * @parameter property="testFailureIgnore" default-value=false
      * @readonly
      */
     private boolean mavenIgnoreTestFailure;
@@ -154,7 +154,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
      * Enables or disables monkey runner test goal. If <code>true</code> it will be skipped; if <code>false</code>, it
      * will be run. Defaults to true.
      * 
-     * @parameter expression="${android.monkeyrunner.skip}"
+     * @parameter property="android.monkeyrunner.skip"
      */
     private Boolean monkeyRunnerSkip;
 
@@ -168,7 +168,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
      * 
      * Defaults to no plugins.
      * 
-     * @parameter expression="${android.monkeyrunner.plugins}"
+     * @parameter property="android.monkeyrunner.plugins"
      */
     private String[] monkeyPlugins;
 
@@ -215,7 +215,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
      * Defaults to false.
      * 
      * @optional
-     * @parameter expression="${android.monkeyrunner.createReport}"
+     * @parameter property="android.monkeyrunner.createReport"
      * 
      */
     private Boolean monkeyCreateReport;
@@ -232,7 +232,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
      * 
      * Defaults to false.
      * 
-     * @parameter expression="${android.monkeyrunner.injectDeviceSerialNumberIntoScript}"
+     * @parameter property="android.monkeyrunner.injectDeviceSerialNumberIntoScript"
      * 
      */
     private Boolean monkeyInjectDeviceSerialNumberIntoScript;

@@ -84,7 +84,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
     /**
      * -Dmaven.test.skip is commonly used with Maven to skip tests. We honor it.
      * 
-     * @parameter expression="${maven.test.skip}" default-value=false
+     * @parameter property="maven.test.skip" default-value=false
      * @readonly
      */
     private boolean mavenTestSkip;
@@ -92,7 +92,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
     /**
      * -DskipTests is commonly used with Maven to skip tests. We honor it too.
      * 
-     * @parameter expression="${skipTests}" default-value=false
+     * @parameter property="skipTests" default-value=false
      * @readonly
      */
     private boolean mavenSkipTests;
@@ -100,7 +100,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * -Dmaven.test.failure.ignore is commonly used with Maven to prevent failure of build when (some) tests fail. We
      * honor it too.
      * 
-     * @parameter expression="${maven.test.failure.ignore}" default-value=false
+     * @parameter property="maven.test.failure.ignore" default-value=false
      * @readonly
      */
     private boolean mavenTestFailureIgnore;
@@ -109,7 +109,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * -Dmaven.test.failure.ignore is commonly used with Maven to prevent failure of build when (some) tests fail. We
      * honor it too.
      * 
-     * @parameter expression="${testFailureIgnore}" default-value=false
+     * @parameter property="testFailureIgnore" default-value=false
      * @readonly
      */
     private boolean mavenIgnoreTestFailure;
@@ -172,7 +172,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * Enables or disables monkey test goal. If <code>true</code> it will be skipped; if <code>false</code>, it will be
      * run. Defaults to true.
      * 
-     * @parameter expression="${android.monkey.skip}"
+     * @parameter property="android.monkey.skip"
      */
     private Boolean monkeySkip;
 
@@ -182,7 +182,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
     /**
      * Number of generated events. Defaults to 1000.
      * 
-     * @parameter expression="${android.monkey.eventCount}"
+     * @parameter property="android.monkey.eventCount"
      */
     private Integer monkeyEventCount;
 
@@ -195,7 +195,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to null.
      * 
-     * @parameter expression="${android.monkey.seed}"
+     * @parameter property="android.monkey.seed"
      */
     private Long monkeySeed;
 
@@ -207,7 +207,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to null.
      * 
-     * @parameter expression="${android.monkey.throttle}"
+     * @parameter property="android.monkey.throttle"
      */
     private Long monkeyThrottle;
 
@@ -218,7 +218,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to null.
      * 
-     * @parameter expression="${android.monkey.percentTouch}"
+     * @parameter property="android.monkey.percentTouch"
      */
     private Integer monkeyPercentTouch;
 
@@ -230,7 +230,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to null.
      * 
-     * @parameter expression="${android.monkey.percentMotion}"
+     * @parameter property="android.monkey.percentMotion"
      */
     private Integer monkeyPercentMotion;
 
@@ -242,7 +242,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to null.
      * 
-     * @parameter expression="${android.monkey.percentTrackball}"
+     * @parameter property="android.monkey.percentTrackball"
      */
     private Integer monkeyPercentTrackball;
 
@@ -254,7 +254,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to null.
      * 
-     * @parameter expression="${android.monkey.percentNav}"
+     * @parameter property="android.monkey.percentNav"
      */
     private Integer monkeyPercentNav;
 
@@ -266,7 +266,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to null.
      * 
-     * @parameter expression="${android.monkey.percentMajorNav}"
+     * @parameter property="android.monkey.percentMajorNav"
      */
     private Integer monkeyPercentMajorNav;
 
@@ -278,7 +278,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to null.
      * 
-     * @parameter expression="${android.monkey.percentSyskeys}"
+     * @parameter property="android.monkey.percentSyskeys"
      */
     private Integer monkeyPercentSyskeys;
 
@@ -290,7 +290,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to null.
      * 
-     * @parameter expression="${android.monkey.percentAppswitch}"
+     * @parameter property="android.monkey.percentAppswitch"
      */
     private Integer monkeyPercentAppswitch;
 
@@ -302,7 +302,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to null.
      * 
-     * @parameter expression="${android.monkey.percentAnyevent}"
+     * @parameter property="android.monkey.percentAnyevent"
      */
     private Integer monkeyPercentAnyEvent;
 
@@ -317,7 +317,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to Null.
      * 
-     * @parameter expression="${android.monkey.packages}"
+     * @parameter property="android.monkey.packages"
      */
     private String[] monkeyPackages;
 
@@ -331,7 +331,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to null.
      * 
-     * @parameter expression="${android.monkey.categories}"
+     * @parameter property="android.monkey.categories"
      */
     private String[] monkeyCategories;
 
@@ -345,7 +345,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to false.
      * 
-     * @parameter expression="${android.monkey.debugNoEvents}"
+     * @parameter property="android.monkey.debugNoEvents"
      */
     private Boolean monkeyDebugNoEvents;
 
@@ -359,7 +359,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to false.
      * 
-     * @parameter expression="${android.monkey.Hprof}"
+     * @parameter property="android.monkey.Hprof"
      */
     private Boolean monkeyHprof;
 
@@ -374,7 +374,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to false.
      * 
-     * @parameter expression="${android.monkey.ignoreCrashes}"
+     * @parameter property="android.monkey.ignoreCrashes"
      */
     private Boolean monkeyIgnoreCrashes;
 
@@ -387,7 +387,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to false.
      * 
-     * @parameter expression="${android.monkey.IgnoreTimeouts}"
+     * @parameter property="android.monkey.IgnoreTimeouts"
      */
     private Boolean monkeyIgnoreTimeouts;
 
@@ -400,7 +400,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to false.
      * 
-     * @parameter expression="${android.monkey.IgnoreSecurityExceptions}"
+     * @parameter property="android.monkey.IgnoreSecurityExceptions"
      */
     private Boolean monkeyIgnoreSecurityExceptions;
 
@@ -414,7 +414,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to false.
      * 
-     * @parameter expression="${android.monkey.KillProcessAfterError}"
+     * @parameter property="android.monkey.KillProcessAfterError"
      */
     private Boolean monkeyKillProcessAfterError;
 
@@ -426,7 +426,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Defaults to false.
      * 
-     * @parameter expression="${android.monkey.MonitorNativeCrashes}"
+     * @parameter property="android.monkey.MonitorNativeCrashes"
      */
     private Boolean monkeyMonitorNativeCrashes;
 
@@ -451,7 +451,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * Defaults to false.
      * 
      * @optional
-     * @parameter expression="${android.monkey.createReport}"
+     * @parameter property="android.monkey.createReport"
      * 
      */
     private Boolean monkeyCreateReport;

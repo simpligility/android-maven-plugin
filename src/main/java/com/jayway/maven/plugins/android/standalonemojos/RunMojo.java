@@ -112,7 +112,7 @@ public class RunMojo extends AbstractAndroidMojo
      * Debug parameter for the the run goal. If true, the device or emulator will pause execution of the process at
      * startup to wait for a debugger to connect. Also see the "run" parameter documentation. Default value is false.
      *
-     * @parameter expression="${android.run.debug}"
+     * @parameter property="android.run.debug"
      */
     protected Boolean runDebug;
 

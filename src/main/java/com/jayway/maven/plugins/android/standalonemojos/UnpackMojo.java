@@ -52,7 +52,7 @@ public class UnpackMojo extends AbstractAndroidMojo
      * If true, the library will be unpacked only when outputDirectory doesn't
      * exist, i.e, a clean build for most cases.
      *
-     * @parameter expression="${android.lazyLibraryUnpack}" default-value="false"
+     * @parameter property="android.lazyLibraryUnpack" default-value="false"
      * @deprecated use ${android.unpack.lazy}
      */
     @Deprecated
@@ -62,7 +62,7 @@ public class UnpackMojo extends AbstractAndroidMojo
     private MetaInf unpackMetaInf;
 
     /**
-     * @parameter expression="${android.unpack.lazy}"
+     * @parameter property="android.unpack.lazy"
      */
     @PullParameter( defaultValueGetterMethod = "getLazyLibraryUnpack" )
     private Boolean unpackLazy;

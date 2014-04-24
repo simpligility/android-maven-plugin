@@ -29,7 +29,7 @@ public class Sdk
     /**
      * Directory of the installed Android SDK, for example <code>/opt/android-sdk-linux_x86-1.5_r1</code>
      *
-     * @parameter expression="${android.sdk.path}"
+     * @parameter property="android.sdk.path"
      * @required
      */
     private File path;
@@ -40,7 +40,7 @@ public class Sdk
      * <p>Note: this parameter is just the version number, without <code>"android-"</code> in the
      * beginning.</p>
      *
-     * @parameter expression="${android.sdk.platform}"
+     * @parameter property="android.sdk.platform"
      */
     private String platform;
 
