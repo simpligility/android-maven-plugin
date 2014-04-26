@@ -919,7 +919,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         generateBuildConfigForPackage( packageName );
 
         // Generate the BuildConfig for APKLIB dependencies.
-        for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB ) )
+        for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
         {
             if ( skipBuildConfigGeneration( artifact ) )
             {
