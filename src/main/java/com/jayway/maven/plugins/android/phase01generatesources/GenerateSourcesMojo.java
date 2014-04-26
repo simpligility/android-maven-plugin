@@ -263,7 +263,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         getLog().debug( "copyManifest: " + sourceManifestFile + " -> " + androidManifestFile );
         if ( sourceManifestFile == null )
         {
-            getLog().info( "Manifest copying disabled. Using default manifest only" );
+            getLog().debug( "Manifest copying disabled. Using default manifest only" );
             return;
         }
 
@@ -752,7 +752,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private void generateRForApkLibDependency( Artifact apklibArtifact ) throws MojoExecutionException
     {
         final File unpackDir = getUnpackedLibFolder( apklibArtifact );
-        getLog().info( "Generating R file for apklibrary: " + apklibArtifact.getGroupId()
+        getLog().debug( "Generating incomplete R file for apklib: " + apklibArtifact.getGroupId()
                 + ":" + apklibArtifact.getArtifactId() );
         final File apklibManifest = new File( unpackDir, "AndroidManifest.xml" );
         final File apklibResDir = new File( unpackDir, "res" );
@@ -858,7 +858,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         if ( !mergeManifests )
         {
-            getLog().info( "Manifest merging disabled. Using project manifest only" );
+            getLog().debug( "Manifest merging disabled. Using project manifest only" );
             return;
         }
 
@@ -1079,7 +1079,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         final String[] relativeAidlFileNames = findFilesInDirectory( sourceDirectory, "**/*.aidl" );
         if ( relativeAidlFileNames.length == 0 )
         {
-            getLog().debug( "ANDROID-904-002: Found aidl files: Count = " + relativeAidlFileNames.length );
+            getLog().debug( "ANDROID-904-002: No aidl files found" );
         }
         else
         {
