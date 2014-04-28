@@ -981,8 +981,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     {
         try
         {
-            File manifest = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
-            String depPackageName = extractPackageNameFromAndroidManifest( manifest );
+            String depPackageName = extractPackageNameFromAndroidArtifact( artifact );
 
             JarFile jar = new JarFile( getUnpackedAarClassesJar( artifact ) );
             JarEntry entry = jar.getJarEntry( depPackageName.replace( '.', '/' ) + "/BuildConfig.class" );
