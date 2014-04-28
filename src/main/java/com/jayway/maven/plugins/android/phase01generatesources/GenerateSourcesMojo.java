@@ -918,7 +918,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
         generateBuildConfigForPackage( packageName );
 
-        // Generate the BuildConfig for APKLIB dependencies.
+        // Generate the BuildConfig for any APKLIB and some AAR dependencies.
+        // Need to generate for AAR, because some old AARs like ActionBarSherlock do not have BuildConfig (or R)
         for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
         {
             if ( skipBuildConfigGeneration( artifact ) )
