@@ -640,10 +640,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             commands.add( "-c" );
             commands.add( configurations );
         }
-
         if ( aaptVerbose )
         {
             commands.add( "-v" );
+            executor.setStdOutLoggingLevel( CommandExecutor.INFO );
         }
 
         // We need to generate R.txt for all projects as it needs to be consumed when generating R class.
@@ -833,6 +833,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         if ( aaptVerbose )
         {
             commands.add( "-v" );
+            executor.setStdOutLoggingLevel( CommandExecutor.INFO );
         }
 
         // We need to generate R.txt for all projects as it needs to be consumed when generating R class.

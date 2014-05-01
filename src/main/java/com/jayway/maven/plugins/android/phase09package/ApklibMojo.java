@@ -416,6 +416,7 @@ public class ApklibMojo extends AbstractAndroidMojo
         if ( aaptVerbose )
         {
             commands.add( "-v" );
+            executor.setStdOutLoggingLevel( CommandExecutor.INFO );
         }
 
         getLog().debug( getAndroidSdk().getAaptPath() + " " + commands.toString() );
