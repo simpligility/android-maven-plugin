@@ -16,12 +16,6 @@
  */
 package com.jayway.maven.plugins.android;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
@@ -29,11 +23,22 @@ import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamConsumer;
 import org.codehaus.plexus.util.cli.shell.Shell;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  *
  */
 public interface CommandExecutor
 {
+    int DEBUG = 0;
+    int INFO = 1;
+    int WARN = 2;
+    int ERROR = 3;
+
     /**
      * Sets the plexus logger.
      * 
@@ -133,6 +138,7 @@ public interface CommandExecutor
 
     void setCaptureStdOut( boolean captureStdOut );
     void setCaptureStdErr( boolean captureStdErr );
+    void setStdOutLoggingLevel( int loggingLevel );
 
     /**
      *
@@ -183,6 +189,7 @@ public interface CommandExecutor
 
             private boolean captureStdOut;
             private boolean captureStdErr;
+            private int stdOutLoggingLevel = DEBUG;
 
             @Override
             public void setLogger( Log logger )
@@ -211,7 +218,7 @@ public interface CommandExecutor
                 {
                     commands = new ArrayList< String >();
                 }
-                stdOut = new StreamConsumerImpl( logger, captureStdOut );
+                stdOut = new StreamConsumerImpl( logger, captureStdOut, stdOutLoggingLevel );
                 stdErr = new ErrorStreamConsumer( logger, errorListener, captureStdErr );
                 commandline = new Commandline();
                 if ( customShell != null )
@@ -331,6 +338,12 @@ public interface CommandExecutor
             {
                 this.captureStdErr = captureStdErr;
             }
+
+            @Override
+            public void setStdOutLoggingLevel( int loggingLevel )
+            {
+                this.stdOutLoggingLevel = loggingLevel;
+            }
         }
 
         /**
@@ -341,11 +354,13 @@ public interface CommandExecutor
             private StringBuffer sb = new StringBuffer();
             private final Log logger;
             private boolean captureStdOut;
+            private int stdOutLoggingLevel;
 
-            public StreamConsumerImpl( Log logger, boolean captureStdOut )
+            public StreamConsumerImpl( Log logger, boolean captureStdOut, int loggingLevel )
             {
                 this.logger = logger;
                 this.captureStdOut = captureStdOut;
+                this.stdOutLoggingLevel = loggingLevel;
             }
 
             @Override
@@ -357,7 +372,25 @@ public interface CommandExecutor
                 }
                 if ( logger != null )
                 {
-                    logger.debug( line );
+                    switch ( stdOutLoggingLevel )
+                    {
+                        case ERROR:
+                            logger.error( line );
+                            break;
+
+                        case WARN:
+                            logger.warn( line );
+                            break;
+
+                        case INFO:
+                            logger.info( line );
+                            break;
+
+                        case DEBUG:
+                        default:
+                            logger.debug( line );
+                            break;
+                    }
                 }
             }
 
