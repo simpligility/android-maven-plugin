@@ -20,6 +20,7 @@ import com.android.SdkConstants;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.common.AaptCommandBuilder;
 import com.jayway.maven.plugins.android.common.NativeHelper;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import org.apache.commons.io.FileUtils;
@@ -362,6 +363,17 @@ public class AarMojo extends AbstractAndroidMojo
      */
     private void generateIntermediateApk() throws MojoExecutionException
     {
+        // Have to generate the AAR against the dependent resources or build will fail if any local resources
+        // directly reference any of the dependent resources. NB this does NOT include the dep resources in the AAR.
+        List<File> dependenciesResDirectories = new ArrayList<File>();
+        for ( Artifact libraryArtifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
+        {
+            final File apkLibResDir = getUnpackedLibResourceFolder( libraryArtifact );
+            if ( apkLibResDir.exists() )
+            {
+                dependenciesResDirectories.add( apkLibResDir );
+            }
+        }
 
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
@@ -370,83 +382,33 @@ public class AarMojo extends AbstractAndroidMojo
         File androidJar = getAndroidSdk().getAndroidJar();
         File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_" );
 
-        List<String> commands = new ArrayList<String>();
-        commands.add( "package" );
-        commands.add( "-f" );
-        commands.add( "-M" );
-        commands.add( androidManifestFile.getAbsolutePath() );
-        for ( File resOverlayDir : overlayDirectories )
-        {
-            if ( resOverlayDir != null && resOverlayDir.exists() )
-            {
-                commands.add( "-S" );
-                commands.add( resOverlayDir.getAbsolutePath() );
-            }
-        }
-        if ( resourceDirectory.exists() )
-        {
-            commands.add( "-S" );
-            commands.add( resourceDirectory.getAbsolutePath() );
-        }
-
-        // Have to generate the AAR against the dependent resources or build will fail if any local resources
-        // directly reference any of the dependent resources. NB this does NOT include the dep resources in the AAR.
-        for ( Artifact libraryArtifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
-        {
-            final File apkLibResDir = getUnpackedLibResourceFolder( libraryArtifact );
-            if ( apkLibResDir.exists() )
-            {
-                commands.add( "-S" );
-                commands.add( apkLibResDir.getAbsolutePath() );
-            }
-        }
-
-        commands.add( "--auto-add-overlay" );
-
-        // NB aapt only accepts a single assets parameter - combinedAssets is a merge of all assets
-        if ( combinedAssets.exists() )
-        {
-            getLog().debug( "Adding assets folder : " + combinedAssets );
-            commands.add( "-A" );
-            commands.add( combinedAssets.getAbsolutePath() );
-        }
-
-        commands.add( "-I" );
-        commands.add( androidJar.getAbsolutePath() );
-        commands.add( "-F" );
-        commands.add( outputFile.getAbsolutePath() );
-        if ( StringUtils.isNotBlank( configurations ) )
-        {
-            commands.add( "-c" );
-            commands.add( configurations );
-        }
-
-        commands.add( "-m" );
-
-        commands.add( "-J" );
-
         String rDir = project.getBuild().getDirectory() + File.separator + "generated-sources"
-            + File.separator + "r";
+                + File.separator + "r";
 
-        commands.add( rDir );
+        AaptCommandBuilder commandBuilder = new AaptCommandBuilder()
+                .makePackageDirectories()
+                .forceOverwriteExistingFiles()
+                .setPathToAndroidManifest( androidManifestFile.getAbsolutePath() )
+                .addResourceDirectoriesIfExists( overlayDirectories )
+                .addResourceDirectoryIfExists( resourceDirectory )
+                .addResourceDirectoriesIfExists( dependenciesResDirectories )
+                .autoAddOverlay()
+                .addRawAssetsDirectoryIfExists( combinedAssets )
+                .addExistingPackageToBaseIncludeSet( androidJar.getAbsolutePath() )
+                .setOutputApkFile( outputFile.getAbsolutePath() )
+                .addConfigurations( configurations )
+                .makePackageDirectories()
+                .setWhereToOutputResourceConstants( rDir )
+                .makeResourcesNonConstant()
+                .generateRTextFile( project.getBuild().getDirectory() )
+                .setVerbose( aaptVerbose );
 
-        commands.add( "--non-constant-id" );
-
-
-        commands.add( "--output-text-symbols" );
-
-        commands.add( project.getBuild().getDirectory() );
-
-        if ( aaptVerbose )
-        {
-            commands.add( "-v" );
-        }
-
-        getLog().debug( getAndroidSdk().getAaptPath() + " " + commands.toString() );
+        getLog().debug( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
         getLog().info( "Generating aar" );
         try
         {
             executor.setCaptureStdOut( true );
+            List<String> commands = commandBuilder.build();
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
