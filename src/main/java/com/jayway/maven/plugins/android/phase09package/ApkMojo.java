@@ -1023,6 +1023,7 @@ public class ApkMojo extends AbstractAndroidMojo
         if ( aaptVerbose )
         {
             commands.add( "-v" );
+            executor.setStdOutLoggingLevel( CommandExecutor.INFO );
         }
 
         if ( !release )
