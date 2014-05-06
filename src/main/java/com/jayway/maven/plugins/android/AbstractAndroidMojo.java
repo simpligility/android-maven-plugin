@@ -390,7 +390,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * <code>platforms/android-*</code> directories in the Android SDK directory. Default is the latest available
      * version, so you only need to set it if you for example want to use platform 1.5 but also have e.g. 2.2 installed.
      * Has no effect when used on an Android SDK 1.1. The parameter can also be coded as the API level. Therefore valid
-     * values are 1.1, 1.5, 1.6, 2.0, 2.01, 2.1, 2.2 and so as well as 3, 4, 5, 6, 7, 8... 16. If a platform/api level 
+     * values are 1.1, 1.5, 1.6, 2.0, 2.01, 2.1, 2.2 and so as well as 3, 4, 5, 6, 7, 8... 19. If a platform/api level 
      * is not installed on the machine an error message will be produced. </p>
      * <p>The <code>&lt;path&gt;</code> parameter is optional. The default is the setting of the ANDROID_HOME
      * environment variable. The parameter can be used to override this setting with a different environment variable
