@@ -7,10 +7,8 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
-import org.apache.maven.shared.dependency.graph.filter.DependencyNodeFilter;
 import org.codehaus.plexus.logging.Logger;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
@@ -51,14 +49,9 @@ public final class DependencyResolver
             throw new MojoExecutionException( "Could not resolve project dependency graph", e );
         }
 
-        // Search all the children recursively.
-        // Don't want to search from the root node because then it would be included as it's own dependency.
-        final Set<Artifact> dependencies = new HashSet<Artifact>();
-        for ( final DependencyNode child : node.getChildren() )
-        {
-            resolveRecursively( dependencies, child, null );
-        }
-        return dependencies;
+        final DependencyCollector collector = new DependencyCollector( log, project.getArtifact() );
+        collector.visit( node, false );
+        return collector.getDependencies();
     }
 
     /**
@@ -74,18 +67,14 @@ public final class DependencyResolver
     public Set<Artifact> getLibraryDependenciesFor( MavenProject project, final Artifact artifact )
             throws MojoExecutionException
     {
-        // Set a filter that should only return the supplied artifact.
+        // Set a filter that should only return interesting artifacts.
         final ArtifactFilter filter = new ArtifactFilter()
         {
             @Override
             public boolean include( Artifact found )
             {
-                return found.getGroupId().equals( artifact.getGroupId() )
-                        && found.getArtifactId().equals( artifact.getArtifactId() )
-                        && found.getVersion().equals( artifact.getVersion() )
-                        && found.getType().equals( artifact.getType() )
-                        && found.getClassifier().equals( artifact.getClassifier() )
-                        ;
+                final String type = found.getType();
+                return ( type.equals( APKLIB ) || type.equals( AAR ) || type.equals( APK ) );
             }
         };
 
@@ -99,34 +88,8 @@ public final class DependencyResolver
             throw new MojoExecutionException( "Could not resolve project dependency graph", e );
         }
 
-        final DependencyNodeFilter libraryFilter = new DependencyNodeFilter()
-        {
-            @Override
-            public boolean accept( DependencyNode child )
-            {
-                final String extension = child.getArtifact().getType();
-                return ( extension.equals( APKLIB ) || extension.equals( AAR ) || extension.equals( APK ) );
-            }
-        };
-
-        // Accrete any children that are libraries and any recurse down the libraries.
-        final Set<Artifact> dependencies = new HashSet<Artifact>();
-        resolveRecursively( dependencies, node, libraryFilter );
-        return dependencies;
-    }
-
-    private void resolveRecursively( Set<Artifact> result, DependencyNode node, DependencyNodeFilter filter )
-    {
-        if ( ( filter != null ) && ( !filter.accept( node ) ) )
-        {
-            return;
-        }
-
-        log.debug( "Adding dep : " + node.getArtifact() );
-        result.add( node.getArtifact() );
-        for ( final DependencyNode child : node.getChildren() )
-        {
-            resolveRecursively( result, child, filter );
-        }
+        final DependencyCollector collector = new DependencyCollector( log, artifact );
+        collector.visit( node, false );
+        return collector.getDependencies();
     }
 }
