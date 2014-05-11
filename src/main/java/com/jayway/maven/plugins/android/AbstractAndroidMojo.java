@@ -331,7 +331,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected boolean aaptVerbose;
 
     /**
-     * Automatically create a ProGuard configuration file that will guard Activity classes and the like that are 
+     * Automatically create a ProGuard configuration file that will guard Activity classes and the like that are
      * defined in the AndroidManifest.xml. This files is then automatically used in the proguard mojo execution, 
      * if enabled.
      *
@@ -1021,7 +1021,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         final DocumentContainer documentContainer = new DocumentContainer( xmlURL );
         final Object packageName = JXPathContext.newContext( documentContainer )
                 .getValue( "manifest/@package", String.class );
-        getLog().debug( "Extracting package " + packageName + " from Manifest : "  + androidManifestFile );
+        getLog().debug( "Extracting packageName " + packageName + " from Manifest : "  + androidManifestFile );
         return ( String ) packageName;
     }
 
