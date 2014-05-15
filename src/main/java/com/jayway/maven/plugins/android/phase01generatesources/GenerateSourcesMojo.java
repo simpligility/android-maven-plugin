@@ -22,6 +22,7 @@ import com.android.utils.StdLogger;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.common.AaptCommandBuilder;
 import com.jayway.maven.plugins.android.common.ZipExtractor;
 import com.jayway.maven.plugins.android.configuration.BuildConfigConstant;
 import org.apache.commons.io.FileUtils;
@@ -779,27 +780,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         final File apklibManifest = new File( unpackDir, "AndroidManifest.xml" );
         final File apklibResDir = new File( unpackDir, "res" );
 
-        final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger( getLog() );
-
-        List<String> commands = new ArrayList<String>();
-        commands.add( "package" );
-        commands.add( "--non-constant-id" );
-        commands.add( "-m" );
-        commands.add( "-J" );
-        commands.add( genDirectory.getAbsolutePath() );
-        commands.add( "--custom-package" );
-        commands.add( extractPackageNameFromAndroidManifest( apklibManifest ) );
-        commands.add( "-M" );
-        commands.add( apklibManifest.getAbsolutePath() );
-
-        if ( apklibResDir.exists() )
-        {
-            // Add the APKLIB resources first so they overlay any of it's dependencies.
-            commands.add( "-S" );
-            commands.add( apklibResDir.getAbsolutePath() );
-        }
-
+        List<File> dependenciesResDirectories = new ArrayList<File>();
         final Set<Artifact> apklibDeps = getDependencyResolver().getLibraryDependenciesFor( project, apklibArtifact );
         getLog().debug( "apklib dependencies = " + apklibDeps );
         for ( Artifact dependency : apklibDeps )
@@ -809,12 +790,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             final File dependencyResDir = getUnpackedLibResourceFolder( dependency );
             if ( ( extension.equals( APKLIB ) || extension.equals( AAR ) ) && dependencyResDir.exists() )
             {
-                commands.add( "-S" );
-                commands.add( dependencyResDir.getAbsolutePath() );
+                dependenciesResDirectories.add( dependencyResDir );
             }
         }
-
-        commands.add( "--auto-add-overlay" );
 
         // Create combinedAssets for this apklib dependency - can't have multiple -A args
         final File apklibCombAssets = new File( getUnpackedLibFolder( apklibArtifact ), "combined-assets" );
@@ -832,40 +810,33 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         final File apkLibAssetsDir = getUnpackedLibAssetsFolder( apklibArtifact );
         copyFolder( apkLibAssetsDir, apklibCombAssets );
 
-        // If there are any combined assets for the apklib dependency then provide them to aapt.
-        if ( apklibCombAssets.exists() )
-        {
-            commands.add( "-A" );
-            commands.add( apklibCombAssets.getAbsolutePath() );
-        }
+        final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        executor.setLogger( getLog() );
 
-        commands.add( "-I" );
-        commands.add( getAndroidSdk().getAndroidJar().getAbsolutePath() );
-        if ( StringUtils.isNotBlank( configurations ) )
-        {
-            commands.add( "-c" );
-            commands.add( configurations );
-        }
+        AaptCommandBuilder commandBuilder = new AaptCommandBuilder()
+                .packageResources()
+                .makeResourcesNonConstant()
+                .makePackageDirectories()
+                .setWhereToOutputResourceConstants( genDirectory.getAbsolutePath() )
+                .generateRIntoPackage( extractPackageNameFromAndroidManifest( apklibManifest ) )
+                .setPathToAndroidManifest( apklibManifest.getAbsolutePath() )
+                .addResourceDirectoryIfExists( apklibResDir )
+                .addResourceDirectoriesIfExists( dependenciesResDirectories )
+                .autoAddOverlay()
+                .addRawAssetsDirectoryIfExists( apklibCombAssets )
+                .addExistingPackageToBaseIncludeSet( getAndroidSdk().getAndroidJar().getAbsolutePath() )
+                .addConfigurations( configurations )
+                .addExtraArguments( aaptExtraArgs )
+                .setVerbose( aaptVerbose )
+                // We need to generate R.txt for all projects as it needs to be consumed when generating R class.
+                // It also needs to be consumed when packaging aar.
+                .generateRTextFile( unpackDir.getAbsolutePath() );
 
-        for ( String aaptExtraArg : aaptExtraArgs )
-        {
-            commands.add( aaptExtraArg );
-        }
-
-        if ( aaptVerbose )
-        {
-            commands.add( "-v" );
-        }
-
-        // We need to generate R.txt for all projects as it needs to be consumed when generating R class.
-        // It also needs to be consumed when packaging aar.
-        commands.add( "--output-text-symbols" );
-        commands.add( unpackDir.getAbsolutePath() );
-
-        getLog().debug( getAndroidSdk().getAaptPath() + " " + commands.toString() );
+        getLog().debug( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
         try
         {
             executor.setCaptureStdOut( true );
+            List<String> commands = commandBuilder.build();
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
