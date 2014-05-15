@@ -715,16 +715,19 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private void generateCorrectRJavaForApklibDependencies( ResourceClassGenerator resourceGenerator )
             throws MojoExecutionException
     {
+        getLog().debug( "" );
+        getLog().debug( "#generateCorrectRJavaFoApklibDeps" );
         // Generate R.java for apklibs
         // Compatibility with Apklib which isn't present in AndroidBuilder
         generateApkLibRs();
 
-        // Generate error corrected R.java for APKLIB dependencies, but only if this is an APK build.
+        // Generate corrected R.java for APKLIB dependencies, but only if this is an APK build.
         final Set<Artifact> apklibDependencies = getTransitiveDependencyArtifacts( APKLIB );
         if ( !apklibDependencies.isEmpty() && APK.equals( project.getArtifact().getType() ) )
         {
             // Generate R.java for each APKLIB based on R.txt
-            getLog().debug( "Generating R file for APKLIB dependencies" );
+            getLog().debug( "" );
+            getLog().debug( "Rewriting R files for APKLIB dependencies : " + apklibDependencies );
             resourceGenerator.generateLibraryRs( apklibDependencies, "apklib" );
         }
     }
@@ -737,7 +740,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private void generateCorrectRJavaForAarDependencies( ResourceClassGenerator resourceGenerator )
             throws MojoExecutionException
     {
-        // Generate error corrected R.java for AAR dependencies.
+        // Generate corrected R.java for AAR dependencies.
         final Set<Artifact> aarLibraries = getTransitiveDependencyArtifacts( AAR );
         if ( !aarLibraries.isEmpty() )
         {
@@ -790,7 +793,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         List<File> dependenciesResDirectories = new ArrayList<File>();
         final Set<Artifact> apklibDeps = getDependencyResolver().getLibraryDependenciesFor( project, apklibArtifact );
-        getLog().debug( "apklib dependencies = " + apklibDeps );
+        getLog().debug( "apklib=" + apklibArtifact + "  dependencies=" + apklibDeps );
         for ( Artifact dependency : apklibDeps )
         {
             // Add in the resources that are dependencies of the apklib.
