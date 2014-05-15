@@ -397,7 +397,6 @@ public class AarMojo extends AbstractAndroidMojo
                 .addExistingPackageToBaseIncludeSet( androidJar.getAbsolutePath() )
                 .setOutputApkFile( outputFile.getAbsolutePath() )
                 .addConfigurations( configurations )
-                .makePackageDirectories()
                 .setWhereToOutputResourceConstants( rDir )
                 .makeResourcesNonConstant()
                 .generateRTextFile( project.getBuild().getDirectory() )
