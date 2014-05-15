@@ -147,6 +147,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected MojoExecution execution;
 
     /**
+     * The final name of the artifact.
+     *
+     * @parameter expression="${android.artifactName}" default-value="${project.build.finalName}"
+     */
+    protected String artifactName;
+
+    /**
      * The java sources directory.
      *
      * @parameter default-value="${project.build.sourceDirectory}"
@@ -738,7 +745,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     {
         if ( project.getPackaging().equals( APK ) )
         {
-            File apkFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + "." + APK );
+            File apkFile = new File( project.getBuild().getDirectory(), artifactName + "." + APK );
             deployApk( apkFile );
         }
         else 

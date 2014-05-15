@@ -154,8 +154,7 @@ public class AarMojo extends AbstractAndroidMojo
      */
     protected File createAarClassesJar() throws MojoExecutionException
     {
-        final File classesJar = new File( project.getBuild().getDirectory(),
-                project.getBuild().getFinalName() + ".aar.classes.jar" );
+        final File classesJar = new File( project.getBuild().getDirectory(), artifactName + ".aar.classes.jar" );
         try
         {
             JarArchiver jarArchiver = new JarArchiver();
@@ -182,8 +181,7 @@ public class AarMojo extends AbstractAndroidMojo
      */
     protected File createAarLibraryFile( File classesJar ) throws MojoExecutionException
     {
-        final File aarLibrary = new File( project.getBuild().getDirectory(),
-                project.getBuild().getFinalName() + "." + AAR );
+        final File aarLibrary = new File( project.getBuild().getDirectory(), artifactName + "." + AAR );
         FileUtils.deleteQuietly( aarLibrary );
 
         try
@@ -368,7 +366,7 @@ public class AarMojo extends AbstractAndroidMojo
         File[] overlayDirectories = getResourceOverlayDirectories();
 
         File androidJar = getAndroidSdk().getAndroidJar();
-        File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_" );
+        File outputFile = new File( project.getBuild().getDirectory(), artifactName + ".ap_" );
 
         List<String> commands = new ArrayList<String>();
         commands.add( "package" );
