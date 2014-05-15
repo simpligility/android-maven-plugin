@@ -1000,6 +1000,28 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     }
 
     /**
+     * Provides package name for android artifact.
+     *
+     * @param artifact android artifact which package have to be extracted
+     * @return package name
+     * @throws MojoExecutionException if there is no AndroidManifest.xml for provided artifact
+     *      or appears error while parsing in {@link #extractPackageNameFromAndroidManifest(File)}
+     *
+     * @see #extractPackageNameFromAndroidManifest(File)
+     */
+    protected String extractPackageNameFromAndroidArtifact( Artifact artifact ) throws MojoExecutionException
+    {
+        final File unpackedLibFolder = getUnpackedLibFolder( artifact );
+        final File manifest = new File( unpackedLibFolder, "AndroidManifest.xml" );
+        if ( !manifest.exists() )
+        {
+            throw new MojoExecutionException(
+                    "AndroidManifest.xml file wasn't found in next place: " + unpackedLibFolder );
+        }
+        return extractPackageNameFromAndroidManifest( manifest );
+    }
+
+    /**
      *
      * @param androidManifestFile
      * @return

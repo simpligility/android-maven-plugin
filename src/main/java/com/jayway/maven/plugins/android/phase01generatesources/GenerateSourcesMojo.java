@@ -468,7 +468,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     }
 
     /**
-     * Checks packages of project and all dependent libraries for duplicates.
+     * Checks packages in AndroidManifest.xml file of project and all dependent libraries for duplicates.
      * <p>Generate warning if duplicates presents.
      * <p>(in case of packages similarity R.java and BuildConfig files will be overridden)
      *
@@ -484,18 +484,67 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             return;
         }
 
+        Map<String, Set<Artifact>> packageCompareMap = getPackageCompareMap( dependencyArtifacts );
+
+        List<String> messageList = new ArrayList<String>();
+        for ( Map.Entry<String, Set<Artifact>> entry: packageCompareMap.entrySet() )
+        {
+            Set<Artifact> artifacts = entry.getValue();
+            if ( artifacts != null && artifacts.size() > 1 )
+            {
+                StringBuilder messageBuilder = new StringBuilder();
+                for ( Artifact item: artifacts )
+                {
+                    if ( messageBuilder.length() > 0 )
+                    {
+                        messageBuilder
+                                .append( ", " );
+                    }
+                    messageBuilder
+                            .append( item.getArtifactId() );
+                }
+                messageBuilder
+                        .append( " have similar package: '" )
+                        .append( entry.getKey() )
+                        .append( "'" );
+                messageList.add( messageBuilder.toString() );
+            }
+        }
+        if ( messageList.size() > 0 )
+        {
+            getLog().warn( "Duplicate packages detected in AndroidManifest.xml file for the next artifacts:" );
+            for ( String messageLine: messageList )
+            {
+                getLog().warn( messageLine );
+            }
+        }
+    }
+
+    /**
+     * Provides map with all provided dependencies or project itself grouped by package name
+     *
+     * @param dependencyArtifacts artifacts that should be grouped by package name
+     * @return map of with package names(String) and sets of artifacts (Set<Artifact>)
+     *          that have similar package names
+     * @throws MojoExecutionException
+     */
+    Map<String, Set<Artifact>> getPackageCompareMap( Set<Artifact> dependencyArtifacts )
+            throws MojoExecutionException
+    {
+        if ( dependencyArtifacts == null )
+        {
+            throw new IllegalArgumentException( "dependencies must be initialized" );
+        }
+
         Map<String, Set<Artifact>> packageCompareMap = new HashMap<String, Set<Artifact>>();
 
-        HashSet<Artifact> artifactSet = new HashSet<Artifact>();
+        Set<Artifact> artifactSet = new HashSet<Artifact>();
         artifactSet.add( project.getArtifact() );
         packageCompareMap.put( extractPackageNameFromAndroidManifest( androidManifestFile ), artifactSet );
 
         for ( Artifact artifact: dependencyArtifacts )
         {
-
-            File unpackDir = getUnpackedLibFolder( artifact );
-            File apklibManifest = new File( unpackDir, "AndroidManifest.xml" );
-            String libPackage = extractPackageNameFromAndroidManifest( apklibManifest );
+            String libPackage = extractPackageNameFromAndroidArtifact( artifact );
 
             Set<Artifact> artifacts = packageCompareMap.get( libPackage );
             if ( artifacts == null )
@@ -505,34 +554,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             }
             artifacts.add( artifact );
         }
-
-        StringBuilder messageBuilder = new StringBuilder();
-        for ( Map.Entry<String, Set<Artifact>> entry: packageCompareMap.entrySet() )
-        {
-            Set<Artifact> artifacts = entry.getValue();
-            if ( artifacts != null && artifacts.size() > 1 )
-            {
-                messageBuilder
-                        .append( "\n" )
-                        .append( "    artifacts: " );
-
-                for ( Artifact item: artifacts )
-                {
-                    messageBuilder
-                            .append( "\"" )
-                            .append( item.getArtifactId() )
-                            .append( "\"" )
-                            .append( " " );
-                }
-                messageBuilder
-                        .append( "have similar package: " )
-                        .append( entry.getKey() );
-            }
-        }
-        if ( messageBuilder.length() > 0 )
-        {
-            getLog().warn( "Duplicate packages detected in next artifacts:" + messageBuilder.toString() );
-        }
+        return packageCompareMap;
     }
 
     private void generateR() throws MojoExecutionException
@@ -927,8 +949,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 continue;
             }
 
-            final File manifest = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
-            final String depPackageName = extractPackageNameFromAndroidManifest( manifest );
+            final String depPackageName = extractPackageNameFromAndroidArtifact( artifact );
 
             generateBuildConfigForPackage( depPackageName );
         }
@@ -961,8 +982,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     {
         try
         {
-            File manifest = new File( getUnpackedLibFolder( artifact ), "AndroidManifest.xml" );
-            String depPackageName = extractPackageNameFromAndroidManifest( manifest );
+            String depPackageName = extractPackageNameFromAndroidArtifact( artifact );
 
             JarFile jar = new JarFile( getUnpackedAarClassesJar( artifact ) );
             JarEntry entry = jar.getJarEntry( depPackageName.replace( '.', '/' ) + "/BuildConfig.class" );
