@@ -386,6 +386,7 @@ public class AarMojo extends AbstractAndroidMojo
                 + File.separator + "r";
 
         AaptCommandBuilder commandBuilder = new AaptCommandBuilder()
+                .packageResources()
                 .makePackageDirectories()
                 .forceOverwriteExistingFiles()
                 .setPathToAndroidManifest( androidManifestFile.getAbsolutePath() )
