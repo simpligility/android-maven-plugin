@@ -12,8 +12,8 @@ package com.jayway.maven.plugins.android.phase_prebuild;
 
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.ArtifactResolverHelper;
-import com.jayway.maven.plugins.android.common.UnpackedLibHelper;
 import com.jayway.maven.plugins.android.common.DependencyResolver;
+import com.jayway.maven.plugins.android.common.UnpackedLibHelper;
 import org.apache.maven.AbstractMavenLifecycleParticipant;
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.artifact.Artifact;
@@ -75,11 +75,11 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
             final Set<Artifact> artifacts;
             try
             {
-                artifacts = dependencyResolver.getProjectDependenciesFor( project );
+                artifacts = dependencyResolver.getProjectDependenciesFor( project, session );
             }
             catch ( MojoExecutionException e )
             {
-                log.warn( "Could not resolve all dependencies for " + project );
+                log.warn( "Could not resolve all dependencies for " + project, e );
                 continue;
             }
 
