@@ -43,6 +43,8 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
+
 /**
  * Runs the first Activity shown in the top-level launcher as determined by its Intent filters.
  * <p>
@@ -162,20 +164,28 @@ public class RunMojo extends AbstractAndroidMojo
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        try
+        if ( project.getPackaging().equals( APK ) )
         {
-            LauncherInfo launcherInfo;
+            try
+            {
+                LauncherInfo launcherInfo;
 
-            launcherInfo = getLauncherActivity();
+                launcherInfo = getLauncherActivity();
 
-            ConfigHandler configHandler = new ConfigHandler( this, this.session, this.execution );
-            configHandler.parseConfiguration();
+                ConfigHandler configHandler = new ConfigHandler( this, this.session, this.execution );
+                configHandler.parseConfiguration();
 
-            launch( launcherInfo );
+                launch( launcherInfo );
+            }
+            catch ( Exception ex )
+            {
+                getLog().info( "Unable to run launcher Activity" );
+                getLog().debug( ex );
+            }
         }
-        catch ( Exception ex )
+        else
         {
-            throw new MojoFailureException( "Unable to run launcher Activity", ex );
+            getLog().info( "Project packaging is not apk, skipping run action." );
         }
     }
 
@@ -187,12 +197,11 @@ public class RunMojo extends AbstractAndroidMojo
      * Gets the first "Launcher" Activity by running an XPath query on <code>AndroidManifest.xml</code>.
      *
      * @return A {@link LauncherInfo}
-     * @throws MojoExecutionException
+     * @throws MojoFailureException
      * @throws ParserConfigurationException
      * @throws IOException
      * @throws SAXException
      * @throws XPathExpressionException
-     * @throws ActivityNotFoundException
      */
     private LauncherInfo getLauncherActivity()
             throws ParserConfigurationException, SAXException, IOException, XPathExpressionException,
