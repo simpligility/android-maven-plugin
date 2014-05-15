@@ -178,6 +178,14 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * default-value="${project.build.directory}/generated-sources/aidl"
      */
     protected File genDirectoryAidl;
+    
+    /**
+     * The directory containing the aidl files.
+     * 
+     * @parameter property="android.aidlSourceDirectory"
+     * default-value="${project.build.sourceDirectory}"
+     */
+    protected File aidlSourceDirectory;
 
     /**
      * <p>Parameter designed to generate custom BuildConfig constants
@@ -216,7 +224,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             // Copy project assets to combinedAssets so that aapt has a single assets folder to load.
             copyFolder( assetsDirectory, combinedAssets );
 
-            final String[] relativeAidlFileNames1 = findRelativeAidlFileNames( sourceDirectory );
+            final String[] relativeAidlFileNames1 = findRelativeAidlFileNames( aidlSourceDirectory );
             final String[] relativeAidlFileNames2 = findRelativeAidlFileNames( extractedDependenciesJavaSources );
             final Map<String, String[]> relativeApklibAidlFileNames = new HashMap<String, String[]>();
 
@@ -238,7 +246,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             // This is so project A, which depends on project B, can
             // use AIDL info from project B in its own AIDL
             Map<File, String[]> files = new HashMap<File, String[]>();
-            files.put( sourceDirectory, relativeAidlFileNames1 );
+            files.put( aidlSourceDirectory, relativeAidlFileNames1 );
             files.put( extractedDependenciesJavaSources, relativeAidlFileNames2 );
             for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB ) )
             {
