@@ -551,7 +551,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      */
     private void checkForConflictingLayouts() throws MojoExecutionException
     {
-        final ConflictingLayoutDetector detector = new ConflictingLayoutDetector( getLog() );
+        final ConflictingLayoutDetector detector = new ConflictingLayoutDetector();
 
         // Add layout files for this project
         final FileRetriever retriever = new FileRetriever( "layout*/*.xml" );
