@@ -16,6 +16,7 @@
  */
 package com.jayway.maven.plugins.android;
 
+import com.android.builder.VariantConfiguration;
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.DdmPreferences;
 import com.android.ddmlib.IDevice;
@@ -47,7 +48,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
-import org.codehaus.plexus.util.DirectoryScanner;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -1023,28 +1023,21 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     /**
      *
-     * @param androidManifestFile
+     * @param manifestFile
      * @return
      * @throws MojoExecutionException
      */
-    protected String extractPackageNameFromAndroidManifest( File androidManifestFile ) throws MojoExecutionException
+    protected String extractPackageNameFromAndroidManifest( File manifestFile )
     {
-        final URL xmlURL;
-        try
-        {
-            xmlURL = androidManifestFile.toURI().toURL();
-        }
-        catch ( MalformedURLException e )
-        {
-            throw new MojoExecutionException(
-                    "Error while trying to figure out package name from inside AndroidManifest.xml file "
-                            + androidManifestFile, e );
-        }
-        final DocumentContainer documentContainer = new DocumentContainer( xmlURL );
-        final Object packageName = JXPathContext.newContext( documentContainer )
-                .getValue( "manifest/@package", String.class );
-        getLog().debug( "Extracting packageName " + packageName + " from Manifest : "  + androidManifestFile );
-        return ( String ) packageName;
+        return VariantConfiguration.getManifestPackage( manifestFile );
+    }
+
+    /**
+     * @return the package name from this project's Android Manifest.
+     */
+    protected final String getAndroidManifestPackageName()
+    {
+        return extractPackageNameFromAndroidManifest( androidManifestFile );
     }
 
     /**
@@ -1081,64 +1074,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         }
         return ( String ) instrumentationRunner;
     }
-
-    /**
-     * TODO .. not used. Delete?
-     *
-     * @param baseDirectory
-     * @param includes
-     * @return
-     * @throws MojoExecutionException
-     */
-    protected int deleteFilesFromDirectory( File baseDirectory, String... includes ) throws MojoExecutionException
-    {
-        final String[] files = findFilesInDirectory( baseDirectory, includes );
-        if ( files == null )
-        {
-            return 0;
-        }
-
-        for ( String file : files )
-        {
-            final boolean successfullyDeleted = new File( baseDirectory, file ).delete();
-            if ( ! successfullyDeleted )
-            {
-                throw new MojoExecutionException( "Failed to delete \"" + file + "\"" );
-            }
-        }
-        return files.length;
-    }
-
-    /**
-     * Finds files.
-     *
-     * @param baseDirectory Directory to find files in.
-     * @param includes      Ant-style include statements, for example <code>"** /*.aidl"</code> (but without the space
-     *                      in the middle)
-     * @return <code>String[]</code> of the files' paths and names, relative to <code>baseDirectory</code>. Empty
-     *         <code>String[]</code> if <code>baseDirectory</code> does not exist.
-     */
-    protected String[] findFilesInDirectory( File baseDirectory, String... includes )
-    {
-        if ( baseDirectory.exists() )
-        {
-            DirectoryScanner directoryScanner = new DirectoryScanner();
-            directoryScanner.setBasedir( baseDirectory );
-
-            directoryScanner.setIncludes( includes );
-            directoryScanner.addDefaultExcludes();
-
-            directoryScanner.scan();
-            String[] files = directoryScanner.getIncludedFiles();
-            return files;
-        }
-        else
-        {
-            return new String[ 0 ];
-        }
-
-    }
-
 
     /**
      * <p>Returns the Android SDK to use.</p>
