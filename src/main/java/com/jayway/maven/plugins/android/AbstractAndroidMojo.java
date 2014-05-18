@@ -967,8 +967,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         executor.setCaptureStdOut( true );
         executor.setCaptureStdErr( true );
 
-        AaptCommandBuilder commandBuilder = new AaptCommandBuilder()
-                .dump()
+        AaptCommandBuilder commandBuilder = AaptCommandBuilder
+                .dump( getLog() )
                 .xmlTree()
                 .setPathToApk( apkFile.getAbsolutePath() )
                 .addAssetFile( "AndroidManifest.xml" );
