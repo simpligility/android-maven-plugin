@@ -319,6 +319,51 @@ public final class AaptCommandBuilder
         return this;
     }
 
+    /**
+     * Dump label, icon, permissions, compiled xmls etc.
+     *
+     * @return current instance of {@link AaptCommandBuilder}
+     */
+    public AaptCommandBuilder dump()
+    {
+        commands.add( "dump" );
+        return this;
+    }
+
+    /**
+     * Print the compiled xmls in the given assets.
+     *
+     * @return current instance of {@link AaptCommandBuilder}
+     */
+    public AaptCommandBuilder xmlTree()
+    {
+        commands.add( "xmltree" );
+        return this;
+    }
+
+    /**
+     * Set path to Apk file where to dump info from.
+     *
+     * @param pathToApk path to apk file for dumping
+     * @return current instance of {@link AaptCommandBuilder}
+     */
+    public AaptCommandBuilder setPathToApk( String pathToApk )
+    {
+        commands.add( pathToApk );
+        return this;
+    }
+
+    /**
+     *
+     * @param assetFile name of the asset file
+     * @return current instance of {@link AaptCommandBuilder}
+     */
+    public AaptCommandBuilder addAssetFile( String assetFile )
+    {
+        commands.add( assetFile );
+        return this;
+    }
+
     @Override
     public String toString()
     {
