@@ -4,15 +4,18 @@ import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 /**
+ * Collates commands used to invoke Aapt.
+ *
  * @author Oleg Green
  */
-public class AaptCommandBuilder
+public final class AaptCommandBuilder
 {
-    protected List<String> commands = new ArrayList<String>();
+    private final List<String> commands = new ArrayList<String>();
 
     /**
      * Package the android resources.
@@ -26,7 +29,9 @@ public class AaptCommandBuilder
     }
 
     /**
-     * Make the resources ID non constant. This is required to make an R java class
+     * Make the resources ID non constant.
+     *
+     * This is required to make an R java class
      * that does not contain the final value but is used to make reusable compiled
      * libraries that need to access resources.
      *
@@ -39,7 +44,7 @@ public class AaptCommandBuilder
     }
 
     /**
-     * make package directories under location specified by {@link #setWhereToOutputResourceConstants}
+     * Make package directories under location specified by {@link #setWhereToOutputResourceConstants}.
      *
      * @return current instance of {@link AaptCommandBuilder}
      */
@@ -50,46 +55,50 @@ public class AaptCommandBuilder
     }
 
     /**
-     * Specify where to output R.java resource constant definitions
+     * Specify where to output R java resource constant definitions.
      *
      * @param path path where to output R.java
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptCommandBuilder setWhereToOutputResourceConstants( String path )
+    public AaptCommandBuilder setWhereToOutputResourceConstants( File path )
     {
         commands.add( "-J" );
-        commands.add( path );
+        commands.add( path.getAbsolutePath() );
         return this;
     }
 
     /**
-     * Generates R.java into a different package
+     * Generates R java into a different package.
      *
      * @param packageName package name which generate R.java into
      * @return current instance of {@link AaptCommandBuilder}
      */
     public AaptCommandBuilder generateRIntoPackage( String packageName )
     {
-        commands.add( "--custom-package" );
-        commands.add( packageName );
+        if ( StringUtils.isNotBlank( packageName ) )
+        {
+            commands.add( "--custom-package" );
+            commands.add( packageName );
+        }
         return this;
     }
 
     /**
-     * Specify full path to AndroidManifest.xml to include in zip
+     * Specify full path to AndroidManifest.xml to include in zip.
      *
-     * @param path full path to AndroidManifest.xml
+     * @param path  Path to AndroidManifest.xml
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptCommandBuilder setPathToAndroidManifest( String path )
+    public AaptCommandBuilder setPathToAndroidManifest( File path )
     {
         commands.add( "-M" );
-        commands.add( path );
+        commands.add( path.getAbsolutePath() );
         return this;
     }
 
     /**
-     * Directory in which to find resources. <br>
+     * Directory in which to find resources.
+     *
      * Multiple directories will be scanned and the first match found (left to right) will take precedence.
      *
      * @param resourceDirectory resource directory {@link File}
@@ -106,7 +115,8 @@ public class AaptCommandBuilder
     }
 
     /**
-     * Directories in which to find resources. <br>
+     * Directories in which to find resources.
+     *
      * Multiple directories will be scanned and the first match found (left to right) will take precedence.
      *
      * @param resourceDirectories {@link List} of resource directories {@link File}
@@ -122,7 +132,8 @@ public class AaptCommandBuilder
     }
 
     /**
-     * Directories in which to find resources. <br>
+     * Directories in which to find resources.
+     *
      * Multiple directories will be scanned and the first match found (left to right) will take precedence.
      *
      * @param resourceDirectories array of resource directories {@link File}
@@ -138,7 +149,7 @@ public class AaptCommandBuilder
     }
 
     /**
-     * Automatically add resources that are only in overlays
+     * Automatically add resources that are only in overlays.
      *
      * @return current instance of {@link AaptCommandBuilder}
      */
@@ -149,36 +160,37 @@ public class AaptCommandBuilder
     }
 
     /**
-     * Additional directory in which to find raw asset files
+     * Additional directory in which to find raw asset files.
      *
-     * @param apklibCombAssets
+     * @param assetsFolder  Folder containing the combined raw assets to add.
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptCommandBuilder addRawAssetsDirectoryIfExists( File apklibCombAssets )
+    public AaptCommandBuilder addRawAssetsDirectoryIfExists( File assetsFolder )
     {
-        if ( apklibCombAssets.exists() )
+        if ( assetsFolder.exists() )
         {
             commands.add( "-A" );
-            commands.add( apklibCombAssets.getAbsolutePath() );
+            commands.add( assetsFolder.getAbsolutePath() );
         }
         return this;
     }
 
     /**
-     * Add an existing package to base include set
+     * Add an existing package to base include set.
      *
-     * @param path
+     * @param path  Path to existing package to add.
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptCommandBuilder addExistingPackageToBaseIncludeSet( String path )
+    public AaptCommandBuilder addExistingPackageToBaseIncludeSet( File path )
     {
         commands.add( "-I" );
-        commands.add( path );
+        commands.add( path.getAbsolutePath() );
         return this;
     }
 
     /**
      * Specify which configurations to include.
+     *
      * The default is all configurations. The value of the parameter should be a comma
      * separated list of configuration values.  Locales should be specified
      * as either a language or language-region pair.
@@ -210,22 +222,19 @@ public class AaptCommandBuilder
 
     /**
      * Adds some additional aapt arguments that are not represented as separate parameters
-     * android-maven-plugin configuration
+     * android-maven-plugin configuration.
      *
-     * @param extraArguments
+     * @param extraArguments    Array of extra arguments to pass to Aapt.
      * @return current instance of {@link AaptCommandBuilder}
      */
     public AaptCommandBuilder addExtraArguments( String[] extraArguments )
     {
-        for ( String extraArgument : extraArguments )
-        {
-            commands.add( extraArgument );
-        }
+        commands.addAll( Arrays.asList( extraArguments ) );
         return this;
     }
 
     /**
-     * Makes output verbose
+     * Makes output verbose.
      *
      * @param isVerbose if true aapt will be verbose, otherwise - no
      * @return current instance of {@link AaptCommandBuilder}
@@ -246,15 +255,15 @@ public class AaptCommandBuilder
      * @param folderForR folder in which text file will be generated
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptCommandBuilder generateRTextFile( String folderForR )
+    public AaptCommandBuilder generateRTextFile( File folderForR )
     {
         commands.add( "--output-text-symbols" );
-        commands.add( folderForR );
+        commands.add( folderForR.getAbsolutePath() );
         return this;
     }
 
     /**
-     * Force overwrite of existing files
+     * Force overwrite of existing files.
      *
      * @return current instance of {@link AaptCommandBuilder}
      */
@@ -265,7 +274,7 @@ public class AaptCommandBuilder
     }
 
     /**
-     * Disable PNG crunching
+     * Disable PNG crunching.
      *
      * @return current instance of {@link AaptCommandBuilder}
      */
@@ -276,14 +285,26 @@ public class AaptCommandBuilder
     }
 
     /**
-     * Specify the apk file to output
+     * Specify the apk file to output.
      *
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptCommandBuilder setOutputApkFile( String outputApkFile )
+    public AaptCommandBuilder setOutputApkFile( File outputFile )
     {
         commands.add( "-F" );
-        commands.add( outputApkFile );
+        commands.add( outputFile.getAbsolutePath() );
+        return this;
+    }
+
+    /**
+     * Output Proguard options to a File.
+     *
+     * @return current instance of {@link AaptCommandBuilder}
+     */
+    public AaptCommandBuilder setProguardOptionsOutputFile( File outputFile )
+    {
+        commands.add( "-F" );
+        commands.add( outputFile.getAbsolutePath() );
         return this;
     }
 
