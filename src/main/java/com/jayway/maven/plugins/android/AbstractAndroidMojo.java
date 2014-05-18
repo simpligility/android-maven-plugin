@@ -21,6 +21,7 @@ import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.DdmPreferences;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.InstallException;
+import com.jayway.maven.plugins.android.common.AaptCommandBuilder;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.ArtifactResolverHelper;
 import com.jayway.maven.plugins.android.common.DependencyResolver;
@@ -965,15 +966,17 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         executor.setLogger( this.getLog() );
         executor.setCaptureStdOut( true );
         executor.setCaptureStdErr( true );
-        List<String> commands = new ArrayList<String>();
-        commands.add( "dump" );
-        commands.add( "xmltree" );
-        commands.add( apkFile.getAbsolutePath() );
-        commands.add( "AndroidManifest.xml" );
-        getLog().info( getAndroidSdk().getAaptPath() + " " + commands.toString() );
+
+        AaptCommandBuilder commandBuilder = new AaptCommandBuilder()
+                .dump()
+                .xmlTree()
+                .setPathToApk( apkFile.getAbsolutePath() )
+                .addAssetFile( "AndroidManifest.xml" );
+
+        getLog().info( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
         try
         {
-            executor.executeCommand( getAndroidSdk().getAaptPath(), commands, false );
+            executor.executeCommand( getAndroidSdk().getAaptPath(), commandBuilder.build(), false );
             final String xmlTree = executor.getStandardOut();
             return extractPackageNameFromAndroidManifestXmlTree( xmlTree );
         }
