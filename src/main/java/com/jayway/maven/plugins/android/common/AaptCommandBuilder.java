@@ -30,7 +30,7 @@ public class AaptCommandBuilder
     /**
      * Package the android resources.
      *
-     * @return current instance of {@link AaptPackageCommandBuilder}
+     * @return instance of {@link AaptPackageCommandBuilder}
      */
     public static AaptPackageCommandBuilder packageResources( Log log )
     {
@@ -40,7 +40,7 @@ public class AaptCommandBuilder
     /**
      * Dump label, icon, permissions, compiled xmls etc.
      *
-     * @return current instance of {@link AaptDumpCommandBuilder}
+     * @return instance of {@link AaptDumpCommandBuilder}
      */
     public static final AaptDumpCommandBuilder dump( Log log )
     {
@@ -344,6 +344,56 @@ public class AaptCommandBuilder
         {
             commands.add( "-F" );
             commands.add( outputFile.getAbsolutePath() );
+            return this;
+        }
+
+        /**
+         * Rewrite the manifest so that its package name is the package name given here. <br>
+         * Relative class names (for example .Foo) will be changed to absolute names with the old package
+         * so that the code does not need to change.
+         *
+         * @param manifestPackage new manifest package to apply
+         * @return current instance of {@link AaptPackageCommandBuilder}
+         */
+        public AaptPackageCommandBuilder renameManifestPackage( String manifestPackage )
+        {
+            commands.add( "--rename-manifest-package" );
+            commands.add( manifestPackage );
+            return this;
+        }
+
+        /**
+         * Rewrite the manifest so that all of its instrumentation components target the given package. <br>
+         * Useful when used in conjunction with --rename-manifest-package to fix tests against
+         * a package that has been renamed.
+         *
+         * @param instrumentationPackage new instrumentation target package to apply
+         * @return current instance of {@link AaptPackageCommandBuilder}
+         */
+        public AaptPackageCommandBuilder renameInstrumentationTargetPackage( String instrumentationPackage )
+        {
+            commands.add( "--rename-instrumentation-target-package" );
+            commands.add( instrumentationPackage );
+            return this;
+        }
+
+        /**
+         * Inserts android:debuggable="true" into the application node of the
+         * manifest, making the application debuggable even on production devices.
+         *
+         * @return current instance of {@link AaptPackageCommandBuilder}
+         */
+        public AaptPackageCommandBuilder setDebugMode( boolean isDebugMode )
+        {
+            if ( isDebugMode )
+            {
+                log.info( "Generating debug apk." );
+                commands.add( "--debug-mode" );
+            }
+            else
+            {
+                log.info( "Generating release apk." );
+            }
             return this;
         }
     }

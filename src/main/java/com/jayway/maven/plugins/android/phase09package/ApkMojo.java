@@ -25,6 +25,7 @@ import com.jayway.maven.plugins.android.AndroidNdk;
 import com.jayway.maven.plugins.android.AndroidSigner;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.common.AaptCommandBuilder;
 import com.jayway.maven.plugins.android.common.NativeHelper;
 import com.jayway.maven.plugins.android.config.ConfigHandler;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
@@ -37,7 +38,6 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -956,89 +956,40 @@ public class ApkMojo extends AbstractAndroidMojo
         File androidJar = getAndroidSdk().getAndroidJar();
         File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_" );
 
-        List<String> commands = new ArrayList<String>();
-        commands.add( "package" );
-        commands.add( "-f" );
-        commands.add( "-M" );
-        commands.add( androidManifestFile.getAbsolutePath() );
-        for ( File resOverlayDir : overlayDirectories )
-        {
-            if ( resOverlayDir != null && resOverlayDir.exists() )
-            {
-                commands.add( "-S" );
-                commands.add( resOverlayDir.getAbsolutePath() );
-            }
-        }
-        if ( resourceDirectory.exists() )
-        {
-            commands.add( "-S" );
-            commands.add( resourceDirectory.getAbsolutePath() );
-        }
+        List<File> dependencyArtifactResDirectoryList = new ArrayList<File>();
         for ( Artifact libraryArtifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
         {
             final File libraryResDir = getUnpackedLibResourceFolder( libraryArtifact );
             if ( libraryResDir.exists() )
             {
-                commands.add( "-S" );
-                commands.add( libraryResDir.getAbsolutePath() );
+                dependencyArtifactResDirectoryList.add( libraryResDir );
             }
         }
-        commands.add( "--auto-add-overlay" );
 
-        // NB aapt only accepts a single assets parameter - combinedAssets is a merge of all assets
-        if ( combinedAssets.exists() )
-        {
-            getLog().debug( "Adding assets folder : " + combinedAssets );
-            commands.add( "-A" );
-            commands.add( combinedAssets.getAbsolutePath() );
-        }
+        AaptCommandBuilder commandBuilder = AaptCommandBuilder
+                .packageResources( getLog() )
+                .forceOverwriteExistingFiles()
+                .setPathToAndroidManifest( androidManifestFile )
+                .addResourceDirectoriesIfExists( overlayDirectories )
+                .addResourceDirectoryIfExists( resourceDirectory )
+                .addResourceDirectoriesIfExists( dependencyArtifactResDirectoryList )
+                .autoAddOverlay()
+                // NB aapt only accepts a single assets parameter - combinedAssets is a merge of all assets
+                .addRawAssetsDirectoryIfExists( combinedAssets )
+                .renameManifestPackage( renameManifestPackage )
+                .renameInstrumentationTargetPackage( renameInstrumentationTargetPackage )
+                .addExistingPackageToBaseIncludeSet( androidJar )
+                .setOutputApkFile( outputFile )
+                .addConfigurations( configurations )
+                .addExtraArguments( aaptExtraArgs )
+                .setVerbose( aaptVerbose )
+                .setDebugMode( !release );
 
-        if ( StringUtils.isNotBlank( renameManifestPackage ) )
-        {
-            commands.add( "--rename-manifest-package" );
-            commands.add( renameManifestPackage );
-        }
-
-        if ( StringUtils.isNotBlank( renameInstrumentationTargetPackage ) )
-        {
-            commands.add( "--rename-instrumentation-target-package" );
-            commands.add( renameInstrumentationTargetPackage );
-        }
-
-        commands.add( "-I" );
-        commands.add( androidJar.getAbsolutePath() );
-        commands.add( "-F" );
-        commands.add( outputFile.getAbsolutePath() );
-        if ( StringUtils.isNotBlank( configurations ) )
-        {
-            commands.add( "-c" );
-            commands.add( configurations );
-        }
-
-        for ( String aaptExtraArg : aaptExtraArgs )
-        {
-            commands.add( aaptExtraArg );
-        }
-
-        if ( aaptVerbose )
-        {
-            commands.add( "-v" );
-        }
-
-        if ( !release )
-        {
-            getLog().info( "Generating debug apk." );
-            commands.add( "--debug-mode" );
-        }
-        else 
-        {
-            getLog().info( "Generating release apk." );
-        }
-
-        getLog().debug( getAndroidSdk().getAaptPath() + " " + commands.toString() );
+        getLog().debug( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
         try
         {
             executor.setCaptureStdOut( true );
+            List<String> commands = commandBuilder.build();
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
