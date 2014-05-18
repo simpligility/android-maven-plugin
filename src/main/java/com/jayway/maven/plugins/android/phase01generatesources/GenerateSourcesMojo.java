@@ -713,26 +713,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 .setVerbose( aaptVerbose )
                     // We need to generate R.txt for all projects as it needs to be consumed when generating R class.
                     // It also needs to be consumed when packaging aar.
-                .generateRTextFile( targetDirectory );
-
-
-        // If a proguard file is defined then output Proguard options to it.
-        if ( proguardFile != null )
-        {
-            final File parentFolder = proguardFile.getParentFile();
-            if ( parentFolder != null )
-            {
-                parentFolder.mkdirs();
-            }
-            getLog().debug( "Adding proguard file : " + proguardFile );
-            commandBuilder.setProguardOptionsOutputFile( proguardFile );
-        }
-
-        if ( AAR.equals( project.getArtifact().getType() ) )
-        {
-            getLog().debug( "Adding non-constant-id" );
-            commandBuilder.makeResourcesNonConstant();
-        }
+                .generateRTextFile( targetDirectory )
+                // If a proguard file is defined then output Proguard options to it.
+                .setProguardOptionsOutputFile( proguardFile )
+                .makeResourcesNonConstant( AAR.equals( project.getArtifact().getType() ) );
 
         getLog().debug( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
         try

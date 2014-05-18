@@ -57,6 +57,7 @@ public class AaptCommandBuilder
             super( log );
             commands.add( "package" );
         }
+
         /**
          * Make the resources ID non constant.
          *
@@ -68,7 +69,26 @@ public class AaptCommandBuilder
          */
         public AaptPackageCommandBuilder makeResourcesNonConstant()
         {
-            commands.add( "--non-constant-id" );
+            return makeResourcesNonConstant( true );
+        }
+
+        /**
+         * Make the resources ID non constant.
+         *
+         * This is required to make an R java class
+         * that does not contain the final value but is used to make reusable compiled
+         * libraries that need to access resources.
+         *
+         * @param make if true make resources ID non constant, otherwise ignore
+         * @return current instance of {@link AaptPackageCommandBuilder}
+         */
+        public AaptPackageCommandBuilder makeResourcesNonConstant( boolean make )
+        {
+            if ( make )
+            {
+                log.debug( "Adding non-constant-id" );
+                commands.add( "--non-constant-id" );
+            }
             return this;
         }
 
@@ -342,8 +362,17 @@ public class AaptCommandBuilder
          */
         public AaptPackageCommandBuilder setProguardOptionsOutputFile( File outputFile )
         {
-            commands.add( "-F" );
-            commands.add( outputFile.getAbsolutePath() );
+            if ( outputFile != null )
+            {
+                final File parentFolder = outputFile.getParentFile();
+                if ( parentFolder != null )
+                {
+                    parentFolder.mkdirs();
+                }
+                log.debug( "Adding proguard file : " + outputFile );
+                commands.add( "-F" );
+                commands.add( outputFile.getAbsolutePath() );
+            }
             return this;
         }
 
