@@ -8,11 +8,8 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
-import org.apache.maven.shared.dependency.graph.ProjectReferenceKeyGenerator;
 import org.codehaus.plexus.logging.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
@@ -44,12 +41,11 @@ public final class DependencyResolver
     public Set<Artifact> getProjectDependenciesFor( MavenProject project, MavenSession session )
             throws MojoExecutionException
     {
-        final Map<String, MavenProject> reactorProjects = getReactorProjects( session );
         final DependencyNode node;
         try
         {
             // No need to filter our search. We want to resolve all artifacts.
-            node = dependencyGraphBuilder.buildDependencyGraph( project, null, reactorProjects );
+            node = dependencyGraphBuilder.buildDependencyGraph( project, null, session.getProjects() );
         }
         catch ( DependencyGraphBuilderException e )
         {
@@ -59,21 +55,6 @@ public final class DependencyResolver
         final DependencyCollector collector = new DependencyCollector( log, project.getArtifact() );
         collector.visit( node, false );
         return collector.getDependencies();
-    }
-
-    private Map<String, MavenProject> getReactorProjects( MavenSession session )
-    {
-        // NB We could get this from session.getProjectMap() but it doesn't exist in Maven-2.2.1 or 3.0.4
-        final Map<String, MavenProject> reactorProjects = new HashMap<String, MavenProject>();
-        final ProjectReferenceKeyGenerator keyGenerator = new ProjectReferenceKeyGenerator();
-
-        log.debug( "Reactor projects:" );
-        for ( MavenProject project : session.getProjects() )
-        {
-            log.debug( " - " + project );
-            reactorProjects.put( keyGenerator.getProjectReferenceKey( project ), project );
-        }
-        return reactorProjects;
     }
 
     /**
