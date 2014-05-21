@@ -565,6 +565,19 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     }
 
     /**
+     * Provides transitive dependency artifacts only defined types based on {@code types} argument
+     * or all types if {@code types} argument is empty
+     *
+     * @param types artifact types to be selected
+     * @return a {@code List} of all project dependencies. Never {@code null}.
+     *         This should maintain dependency order to comply with library project resource precedence.
+     */
+    protected Set<Artifact> getTransitiveDependencyArtifacts( List<String> filteredScopes, String... types )
+    {
+        return getArtifactResolverHelper().getFilteredArtifacts( filteredScopes, project.getArtifacts(), types );
+    }
+
+    /**
      * Attempts to resolve an {@link Artifact} to a {@link File}.
      *
      * @param artifact to resolve
