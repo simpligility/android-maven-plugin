@@ -114,9 +114,12 @@ public class AaptCommandBuilder
      */
     public AaptCommandBuilder addResourceDirectoriesIfExists( List<File> resourceDirectories )
     {
-        for ( File resourceDirectory : resourceDirectories )
+        if ( resourceDirectories != null ) 
         {
-            addResourceDirectoryIfExists( resourceDirectory );
+            for ( File resourceDirectory : resourceDirectories )
+            {
+                addResourceDirectoryIfExists( resourceDirectory );
+            }
         }
         return this;
     }
@@ -130,9 +133,12 @@ public class AaptCommandBuilder
      */
     public AaptCommandBuilder addResourceDirectoriesIfExists( File[] resourceDirectories )
     {
-        for ( File resourceDirectory : resourceDirectories )
+        if ( resourceDirectories != null ) 
         {
-            addResourceDirectoryIfExists( resourceDirectory );
+            for ( File resourceDirectory : resourceDirectories )
+            {
+                addResourceDirectoryIfExists( resourceDirectory );
+            }
         }
         return this;
     }
@@ -156,7 +162,7 @@ public class AaptCommandBuilder
      */
     public AaptCommandBuilder addRawAssetsDirectoryIfExists( File apklibCombAssets )
     {
-        if ( apklibCombAssets.exists() )
+        if ( apklibCombAssets != null && apklibCombAssets.exists() )
         {
             commands.add( "-A" );
             commands.add( apklibCombAssets.getAbsolutePath() );
@@ -217,9 +223,12 @@ public class AaptCommandBuilder
      */
     public AaptCommandBuilder addExtraArguments( String[] extraArguments )
     {
-        for ( String extraArgument : extraArguments )
+        if ( extraArguments != null )
         {
-            commands.add( extraArgument );
+            for ( String extraArgument : extraArguments )
+            {
+                commands.add( extraArgument );
+            }
         }
         return this;
     }
