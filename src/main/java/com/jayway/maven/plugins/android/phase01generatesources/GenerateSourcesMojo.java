@@ -681,65 +681,29 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         genDirectory.mkdirs();
 
-        final File[] overlayDirectories = getResourceOverlayDirectories();
-        getLog().debug( "Resource overlay folders : " + Arrays.asList( overlayDirectories ) );
+        final AaptCommandBuilder commandBuilder = new AaptCommandBuilder()
+                .packageResources()
+                .makePackageDirectories()
+                .setWhereToOutputResourceConstants( genDirectory )
+                .forceOverwriteExistingFiles()
+                .disablePngCrunching()
+                .generateRIntoPackage( customPackage )
+                .setPathToAndroidManifest( androidManifestFile )
+                .addResourceDirectoryIfExists( resourceDirectory )
+                .addResourceDirectoriesIfExists( getResourceOverlayDirectories() )
+                    // Need to include any AAR or APKLIB dependencies when generating R because if any local
+                    // resources directly reference dependent resources then R generation will crash.
+                .addResourceDirectoriesIfExists( getLibraryResourceFolders() )
+                .autoAddOverlay()
+                .addRawAssetsDirectoryIfExists( combinedAssets )
+                .addExistingPackageToBaseIncludeSet( getAndroidSdk().getAndroidJar() )
+                .addConfigurations( configurations )
+                .addExtraArguments( aaptExtraArgs )
+                .setVerbose( aaptVerbose )
+                    // We need to generate R.txt for all projects as it needs to be consumed when generating R class.
+                    // It also needs to be consumed when packaging aar.
+                .generateRTextFile( targetDirectory );
 
-        final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger( this.getLog() );
-
-        final List<String> commands = new ArrayList<String>();
-        commands.add( "package" );
-
-        commands.add( "-f" );
-        commands.add( "--no-crunch" );
-
-        // inputs
-        commands.add( "-I" );
-        commands.add( getAndroidSdk().getAndroidJar().getAbsolutePath() );
-
-        commands.add( "-M" );
-        commands.add( androidManifestFile.getAbsolutePath() );
-
-        // NB AndroidBuilder only adds a single folder - presumably it contains a merge of all resources.
-        for ( File resOverlayDir : overlayDirectories )
-        {
-            if ( resOverlayDir != null && resOverlayDir.exists() )
-            {
-                getLog().debug( "Adding resource overlay folder : " + resOverlayDir );
-                commands.add( "-S" );
-                commands.add( resOverlayDir.getAbsolutePath() );
-            }
-        }
-        if ( resourceDirectory.exists() )
-        {
-            getLog().debug( "Adding resource folder : " + resourceDirectory );
-            commands.add( "-S" );
-            commands.add( resourceDirectory.getAbsolutePath() );
-        }
-
-        // Need to include any AAR or APKLIB dependencies when generating R because if any local
-        // resources directly reference dependent resources then R generation will crash.
-        addLibraryResourceFolders( commands );
-
-        // NB aapt only accepts a single assets parameter - combinedAssets is a merge of all assets
-        if ( combinedAssets.exists() )
-        {
-            getLog().debug( "Adding assets folder : " + combinedAssets );
-            commands.add( "-A" );
-            commands.add( combinedAssets.getAbsolutePath() );
-        }
-
-        // outputs
-        commands.add( "-m" );
-        commands.add( "-J" );
-        commands.add( genDirectory.getAbsolutePath() );
-
-        // Write the output to an optional location
-        // Used by AndroidBuilder but not by us.
-        // final File optionalOutputLocation = some file;
-        // getLog().debug( "Using default package : " + optionalOutputLocation );
-        // commands.add( "-F" );
-        // commands.add( optionalOutputLocation.getAbsolutePath() );
 
         // If a proguard file is defined then output Proguard options to it.
         if ( proguardFile != null )
@@ -750,55 +714,22 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 parentFolder.mkdirs();
             }
             getLog().debug( "Adding proguard file : " + proguardFile );
-            commands.add( "-G" );
-            commands.add( proguardFile.getAbsolutePath() );
-        }
-
-        if ( StringUtils.isNotBlank( customPackage ) )
-        {
-            getLog().debug( "Adding custom-package : " + customPackage );
-            commands.add( "--custom-package" );
-            commands.add( customPackage );
+            commandBuilder.setProguardOptionsOutputFile( proguardFile );
         }
 
         if ( AAR.equals( project.getArtifact().getType() ) )
         {
             getLog().debug( "Adding non-constant-id" );
-            commands.add( "--non-constant-id" );
+            commandBuilder.makeResourcesNonConstant();
         }
 
-        for ( String aaptExtraArg : aaptExtraArgs )
-        {
-            getLog().debug( "Adding aapt arg : " + aaptExtraArg );
-            commands.add( aaptExtraArg );
-        }
-
-        if ( StringUtils.isNotBlank( configurations ) )
-        {
-            // Should be comma separated list of locales etc.
-            getLog().debug( "Adding resource configurations : " + configurations );
-            commands.add( "-c" );
-            commands.add( configurations );
-        }
-
-        if ( aaptVerbose )
-        {
-            commands.add( "-v" );
-        }
-
-        // We need to generate R.txt for all projects as it needs to be consumed when generating R class.
-        // It also needs to be consumed when packaging aar.
-        commands.add( "--output-text-symbols" );
-        commands.add( targetDirectory.getAbsolutePath() );
-
-        // Allows us to supply multiple -S arguments.
-        commands.add( "--auto-add-overlay" );
-
-        getLog().debug( getAndroidSdk().getAaptPath() + " " + commands.toString() );
+        getLog().debug( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
         try
         {
-            targetDirectory.mkdirs();
+            final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+            executor.setLogger( getLog() );
             executor.setCaptureStdOut( true );
+            final List<String> commands = commandBuilder.build();
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
@@ -806,11 +737,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             throw new MojoExecutionException( "", e );
         }
 
-        ResourceClassGenerator resourceGenerator
-                = new ResourceClassGenerator( this, targetDirectory, genDirectory );
-
-        generateCorrectRJavaForApklibDependencies( resourceGenerator );
-        generateCorrectRJavaForAarDependencies( resourceGenerator );
+        final ResourceClassGenerator resGenerator = new ResourceClassGenerator( this, targetDirectory, genDirectory );
+        generateCorrectRJavaForApklibDependencies( resGenerator );
+        generateCorrectRJavaForAarDependencies( resGenerator );
 
         getLog().info( "Adding R gen folder to compile classpath: " + genDirectory );
         project.addCompileSourceRoot( genDirectory.getAbsolutePath() );
@@ -869,22 +798,23 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
     }
 
-    private void addLibraryResourceFolders( List<String> commands )
+    private List<File> getLibraryResourceFolders()
     {
+        final List<File> resourceFolders = new ArrayList<File>();
         for ( Artifact artifact : getTransitiveDependencyArtifacts() )
         {
             getLog().debug( "Considering dep artifact : " + artifact );
             if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
             {
-                final File apklibResDirectory = getUnpackedLibResourceFolder( artifact );
-                if ( apklibResDirectory.exists() )
+                final File resourceFolder = getUnpackedLibResourceFolder( artifact );
+                if ( resourceFolder.exists() )
                 {
-                    getLog().debug( "Adding apklib or aar resource folder : " + apklibResDirectory );
-                    commands.add( "-S" );
-                    commands.add( apklibResDirectory.getAbsolutePath() );
+                    getLog().debug( "Adding apklib or aar resource folder : " + resourceFolder );
+                    resourceFolders.add( resourceFolder );
                 }
             }
         }
+        return resourceFolders;
     }
      /**
      * Executes aapt to generate the R class for the given apklib.
@@ -933,30 +863,30 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( getLog() );
 
-        AaptCommandBuilder commandBuilder = new AaptCommandBuilder()
+        final AaptCommandBuilder commandBuilder = new AaptCommandBuilder()
                 .packageResources()
                 .makeResourcesNonConstant()
                 .makePackageDirectories()
-                .setWhereToOutputResourceConstants( genDirectory.getAbsolutePath() )
+                .setWhereToOutputResourceConstants( genDirectory )
                 .generateRIntoPackage( extractPackageNameFromAndroidManifest( apklibManifest ) )
-                .setPathToAndroidManifest( apklibManifest.getAbsolutePath() )
+                .setPathToAndroidManifest( apklibManifest )
                 .addResourceDirectoryIfExists( apklibResDir )
                 .addResourceDirectoriesIfExists( dependenciesResDirectories )
                 .autoAddOverlay()
                 .addRawAssetsDirectoryIfExists( apklibCombAssets )
-                .addExistingPackageToBaseIncludeSet( getAndroidSdk().getAndroidJar().getAbsolutePath() )
+                .addExistingPackageToBaseIncludeSet( getAndroidSdk().getAndroidJar() )
                 .addConfigurations( configurations )
                 .addExtraArguments( aaptExtraArgs )
                 .setVerbose( aaptVerbose )
                 // We need to generate R.txt for all projects as it needs to be consumed when generating R class.
                 // It also needs to be consumed when packaging aar.
-                .generateRTextFile( unpackDir.getAbsolutePath() );
+                .generateRTextFile( unpackDir );
 
         getLog().debug( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
         try
         {
             executor.setCaptureStdOut( true );
-            List<String> commands = commandBuilder.build();
+            final List<String> commands = commandBuilder.build();
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
