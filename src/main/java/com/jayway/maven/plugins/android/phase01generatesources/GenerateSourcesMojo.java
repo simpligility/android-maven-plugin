@@ -177,12 +177,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private boolean failOnConflictingLayouts;
 
     /**
-     * Whether to fail the build if one of the dependencies and/or the project have similar package.
+     * Whether to fail the build if one of the dependencies and/or the project have similar package in the 
+     * AndroidManifest.
      *
      * Such scenario generally means that the build will fail with a compilation error due to
-     * missing resources in R file.
+     * missing resources in the R file generated.
      *
-     * This is because R files.
      * @parameter default-value="true"
      */
     private boolean failOnDuplicatePackages;
