@@ -73,14 +73,20 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
             final UnpackedLibHelper helper = new UnpackedLibHelper( artifactResolverHelper, project, log );
 
             final Set<Artifact> artifacts;
+            final ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
             try
             {
+                Thread.currentThread().setContextClassLoader( session.getTopLevelProject().getClassRealm() );
                 artifacts = dependencyResolver.getProjectDependenciesFor( project, session );
             }
             catch ( MojoExecutionException e )
             {
                 log.warn( "Could not resolve all dependencies for " + project, e );
                 continue;
+            }
+            finally
+            {
+                Thread.currentThread().setContextClassLoader( originalClassLoader );
             }
 
             log.debug( "projects deps: : " + artifacts );
