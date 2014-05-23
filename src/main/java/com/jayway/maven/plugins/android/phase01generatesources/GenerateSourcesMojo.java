@@ -219,6 +219,14 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     protected BuildConfigConstant[] buildConfigConstants;
 
     /**
+     * Which dependency scopes should not be included when unpacking dependencies
+     */
+    protected static final List<String> EXCLUDED_DEPENDENCY_SCOPES_FOR_EXTRACTION = Arrays.asList(
+            Artifact.SCOPE_SYSTEM, Artifact.SCOPE_IMPORT
+    );
+
+
+    /**
      * Generates the source.
      *
      * @throws MojoExecutionException if it fails.
@@ -399,7 +407,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
     private void extractLibraryDependencies() throws MojoExecutionException
     {
-        final Collection<Artifact> artifacts = getTransitiveDependencyArtifacts();
+        final Collection<Artifact> artifacts = getTransitiveDependencyArtifacts(
+                EXCLUDED_DEPENDENCY_SCOPES_FOR_EXTRACTION );
+
         getLog().info( "Extracting libs" );
 
         for ( Artifact artifact : artifacts )

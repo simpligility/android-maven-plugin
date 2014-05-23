@@ -62,6 +62,22 @@ public final class ArtifactResolverHelper
      */
     public Set<Artifact> getFilteredArtifacts( Iterable<Artifact> allArtifacts, String... types )
     {
+        return getFilteredArtifacts( EXCLUDED_DEPENDENCY_SCOPES, allArtifacts, types );
+    }
+
+    /**
+     * Filters provided artifacts and selects only defined types based on {@code types} argument
+     * or all types if {@code types} argument is empty.
+     *
+     * @param filteredScopes scopes to be filtered
+     * @param allArtifacts artifacts to be filtered
+     * @param types artifact types to be selected
+     * @return a {@code List} of all project dependencies. Never {@code null}.
+     *      This should maintain dependency order to comply with library project resource precedence.
+     */
+    public Set<Artifact> getFilteredArtifacts( List<String> filteredScopes,
+                                               Iterable<Artifact> allArtifacts, String... types )
+    {
         final List<String> acceptTypeList = Arrays.asList( types );
         boolean acceptAllArtifacts = acceptTypeList.isEmpty();
         final Set<Artifact> results = new LinkedHashSet<Artifact>();
@@ -72,7 +88,7 @@ public final class ArtifactResolverHelper
                 continue;
             }
 
-            if ( EXCLUDED_DEPENDENCY_SCOPES.contains( artifact.getScope() ) )
+            if ( filteredScopes.contains( artifact.getScope() ) )
             {
                 continue;
             }
