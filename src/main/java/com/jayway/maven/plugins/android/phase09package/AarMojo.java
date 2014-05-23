@@ -150,7 +150,7 @@ public class AarMojo extends AbstractAndroidMojo
     /**
      * Creates an appropriate aar/classes.jar that does not include R
      *
-     * @return
+     * @return File which is the AAR classes jar.
      * @throws MojoExecutionException
      */
     protected File createAarClassesJar() throws MojoExecutionException
@@ -178,7 +178,7 @@ public class AarMojo extends AbstractAndroidMojo
     }
 
     /**
-     * @return
+     * @return AAR file.
      * @throws MojoExecutionException
      */
     protected File createAarLibraryFile( File classesJar ) throws MojoExecutionException
@@ -311,9 +311,9 @@ public class AarMojo extends AbstractAndroidMojo
     /**
      * Adds a directory to a {@link JarArchiver} with a directory prefix.
      *
-     * @param zipArchiver
-     * @param directory   The directory to add.
-     * @param prefix      An optional prefix for where in the Jar file the directory's contents should go.
+     * @param zipArchiver   ZipArchiver to use to archive the file.
+     * @param directory     The directory to add.
+     * @param prefix        An optional prefix for where in the Jar file the directory's contents should go.
      */
     protected void addDirectory( ZipArchiver zipArchiver, File directory, String prefix )
     {
@@ -375,32 +375,28 @@ public class AarMojo extends AbstractAndroidMojo
             }
         }
 
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
-        File[] overlayDirectories = getResourceOverlayDirectories();
 
-        File androidJar = getAndroidSdk().getAndroidJar();
         File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_" );
+        final File rDir = new File( new File( project.getBuild().getDirectory(), "generated-sources" ), "r" );
 
-        String rDir = project.getBuild().getDirectory() + File.separator + "generated-sources"
-                + File.separator + "r";
-
-        AaptCommandBuilder commandBuilder = new AaptCommandBuilder()
+        final AaptCommandBuilder commandBuilder = new AaptCommandBuilder()
                 .packageResources()
                 .makePackageDirectories()
                 .forceOverwriteExistingFiles()
-                .setPathToAndroidManifest( androidManifestFile.getAbsolutePath() )
-                .addResourceDirectoriesIfExists( overlayDirectories )
+                .setPathToAndroidManifest( androidManifestFile )
+                .addResourceDirectoriesIfExists( getResourceOverlayDirectories() )
                 .addResourceDirectoryIfExists( resourceDirectory )
                 .addResourceDirectoriesIfExists( dependenciesResDirectories )
                 .autoAddOverlay()
                 .addRawAssetsDirectoryIfExists( combinedAssets )
-                .addExistingPackageToBaseIncludeSet( androidJar.getAbsolutePath() )
-                .setOutputApkFile( outputFile.getAbsolutePath() )
+                .addExistingPackageToBaseIncludeSet( getAndroidSdk().getAndroidJar() )
+                .setOutputApkFile( outputFile )
                 .addConfigurations( configurations )
                 .setWhereToOutputResourceConstants( rDir )
                 .makeResourcesNonConstant()
-                .generateRTextFile( project.getBuild().getDirectory() )
+                .generateRTextFile( new File( project.getBuild().getDirectory() ) )
                 .setVerbose( aaptVerbose );
 
         getLog().debug( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
@@ -408,7 +404,7 @@ public class AarMojo extends AbstractAndroidMojo
         try
         {
             executor.setCaptureStdOut( true );
-            List<String> commands = commandBuilder.build();
+            final List<String> commands = commandBuilder.build();
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
