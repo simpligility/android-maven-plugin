@@ -175,15 +175,7 @@ public final class AaptCommandBuilder
      */
     public AaptCommandBuilder addRawAssetsDirectoryIfExists( File assetsFolder )
     {
-<<<<<<< HEAD
         if ( assetsFolder != null && assetsFolder.exists() )
-=======
-<<<<<<< HEAD
-        if ( apklibCombAssets != null && apklibCombAssets.exists() )
-=======
-        if ( assetsFolder.exists() )
->>>>>>> Switched to AaptCommandBuilder for R generation in GenerateSourcesMojo.
->>>>>>> f3b7733
         {
             commands.add( "-A" );
             commands.add( assetsFolder.getAbsolutePath() );
@@ -245,23 +237,10 @@ public final class AaptCommandBuilder
      */
     public AaptCommandBuilder addExtraArguments( String[] extraArguments )
     {
-<<<<<<< HEAD
         if ( extraArguments != null )
         {
             commands.addAll( Arrays.asList( extraArguments ) );
-=======
-<<<<<<< HEAD
-        if ( extraArguments != null )
-        {
-            for ( String extraArgument : extraArguments )
-            {
-                commands.add( extraArgument );
-            }
->>>>>>> f3b7733
         }
-=======
-        commands.addAll( Arrays.asList( extraArguments ) );
->>>>>>> Switched to AaptCommandBuilder for R generation in GenerateSourcesMojo.
         return this;
     }
 
