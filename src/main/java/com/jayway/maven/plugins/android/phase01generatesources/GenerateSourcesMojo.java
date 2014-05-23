@@ -177,6 +177,17 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private boolean failOnConflictingLayouts;
 
     /**
+     * Whether to fail the build if one of the dependencies and/or the project have similar package.
+     *
+     * Such scenario generally means that the build will fail with a compilation error due to
+     * missing resources in R file.
+     *
+     * This is because R files.
+     * @parameter default-value="true"
+     */
+    private boolean failOnDuplicatePackages;
+
+    /**
      * Override default generated folder containing R.java
      *
      * @parameter property="android.genDirectory" default-value="${project.build.directory}/generated-sources/r"
@@ -508,7 +519,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         Map<String, Set<Artifact>> packageCompareMap = getPackageCompareMap( dependencyArtifacts );
 
-        List<String> messageList = new ArrayList<String>();
+        List<String> duplicatesMessageList = new ArrayList<String>();
         for ( Map.Entry<String, Set<Artifact>> entry: packageCompareMap.entrySet() )
         {
             Set<Artifact> artifacts = entry.getValue();
@@ -517,24 +528,45 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 StringBuilder messageBuilder = new StringBuilder();
                 for ( Artifact item: artifacts )
                 {
-                    if ( messageBuilder.length() > 0 )
-                    {
-                        messageBuilder
-                                .append( ", " );
-                    }
                     messageBuilder
+                            .append( messageBuilder.length() > 0 ? ", " : "    [" )
                             .append( item.getArtifactId() );
                 }
                 messageBuilder
-                        .append( " have similar package: '" )
+                        .append( "] have similar package='" )
                         .append( entry.getKey() )
                         .append( "'" );
-                messageList.add( messageBuilder.toString() );
+                duplicatesMessageList.add( messageBuilder.toString() );
             }
         }
-        if ( messageList.size() > 0 )
+        if ( !duplicatesMessageList.isEmpty() )
         {
-            getLog().warn( "Duplicate packages detected in AndroidManifest.xml file for the next artifacts:" );
+            List<String> messageList = new ArrayList<String>();
+            messageList.add( "" );
+            messageList.add( "Duplicate packages detected in AndroidManifest.xml files" );
+            messageList.add( "" );
+            messageList.add( "Such scenario generally means that the build will fail with a compilation error due to"
+                    + " missing resources in R file." );
+            messageList.add( "You should consider renaming some of the duplicate packages listed below"
+                    + " to avoid the conflict." );
+            messageList.add( "" );
+            messageList.add( "Conflicting artifacts:" );
+            messageList.addAll( duplicatesMessageList );
+            messageList.add( "" );
+
+            if ( failOnDuplicatePackages )
+            {
+                StringBuilder builder = new StringBuilder();
+                for ( String line : messageList )
+                {
+                    builder.append( line );
+                    builder.append( "\n" );
+                }
+                builder.append( "\n" );
+                builder.append( "You can downgrade the failure to a warning " );
+                builder.append( "by setting the 'failOnDuplicatePackages' plugin property to false." );
+                throw new MojoExecutionException( builder.toString() );
+            }
             for ( String messageLine: messageList )
             {
                 getLog().warn( messageLine );
