@@ -12,6 +12,8 @@ import java.util.List;
  * Collates commands used to invoke Aapt.
  *
  * @author Oleg Green
+ * @author William Ferguson
+ * @author Manfred Moser
  */
 public final class AaptCommandBuilder
 {
@@ -124,9 +126,12 @@ public final class AaptCommandBuilder
      */
     public AaptCommandBuilder addResourceDirectoriesIfExists( List<File> resourceDirectories )
     {
-        for ( File resourceDirectory : resourceDirectories )
+        if ( resourceDirectories != null ) 
         {
-            addResourceDirectoryIfExists( resourceDirectory );
+            for ( File resourceDirectory : resourceDirectories )
+            {
+                addResourceDirectoryIfExists( resourceDirectory );
+            }
         }
         return this;
     }
@@ -141,9 +146,12 @@ public final class AaptCommandBuilder
      */
     public AaptCommandBuilder addResourceDirectoriesIfExists( File[] resourceDirectories )
     {
-        for ( File resourceDirectory : resourceDirectories )
+        if ( resourceDirectories != null ) 
         {
-            addResourceDirectoryIfExists( resourceDirectory );
+            for ( File resourceDirectory : resourceDirectories )
+            {
+                addResourceDirectoryIfExists( resourceDirectory );
+            }
         }
         return this;
     }
@@ -167,7 +175,7 @@ public final class AaptCommandBuilder
      */
     public AaptCommandBuilder addRawAssetsDirectoryIfExists( File assetsFolder )
     {
-        if ( assetsFolder.exists() )
+        if ( assetsFolder != null && assetsFolder.exists() )
         {
             commands.add( "-A" );
             commands.add( assetsFolder.getAbsolutePath() );
@@ -229,7 +237,10 @@ public final class AaptCommandBuilder
      */
     public AaptCommandBuilder addExtraArguments( String[] extraArguments )
     {
-        commands.addAll( Arrays.asList( extraArguments ) );
+        if ( extraArguments != null )
+        {
+            commands.addAll( Arrays.asList( extraArguments ) );
+        }
         return this;
     }
 
