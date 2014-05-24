@@ -19,6 +19,7 @@ package com.jayway.maven.plugins.android.phase09package;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.common.AaptCommandBuilder;
 import com.jayway.maven.plugins.android.common.NativeHelper;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import org.apache.commons.io.FileUtils;
@@ -366,63 +367,37 @@ public class ApklibMojo extends AbstractAndroidMojo
         File androidJar = getAndroidSdk().getAndroidJar();
         File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_" );
 
-        List<String> commands = new ArrayList<String>();
-        commands.add( "package" );
-        commands.add( "-f" );
-        commands.add( "-M" );
-        commands.add( androidManifestFile.getAbsolutePath() );
-        for ( File resOverlayDir : overlayDirectories )
-        {
-            if ( resOverlayDir != null && resOverlayDir.exists() )
-            {
-                commands.add( "-S" );
-                commands.add( resOverlayDir.getAbsolutePath() );
-            }
-        }
-        if ( resourceDirectory.exists() )
-        {
-            commands.add( "-S" );
-            commands.add( resourceDirectory.getAbsolutePath() );
-        }
+        List<File> dependencyArtifactResDirectoryList = new ArrayList<File>();
         for ( Artifact libraryArtifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
         {
             final File apklibResDirectory = getUnpackedLibResourceFolder( libraryArtifact );
             if ( apklibResDirectory.exists() )
             {
-                commands.add( "-S" );
-                commands.add( apklibResDirectory.getAbsolutePath() );
+                dependencyArtifactResDirectoryList.add( apklibResDirectory );
             }
         }
-        commands.add( "--auto-add-overlay" );
 
-        // NB aapt only accepts a single assets parameter - combinedAssets is a merge of all assets
-        if ( combinedAssets.exists() )
-        {
-            getLog().debug( "Adding assets folder : " + combinedAssets );
-            commands.add( "-A" );
-            commands.add( combinedAssets.getAbsolutePath() );
-        }
+        AaptCommandBuilder commandBuilder = AaptCommandBuilder
+                .packageResources( getLog() )
+                .forceOverwriteExistingFiles()
+                .setPathToAndroidManifest( androidManifestFile )
+                .addResourceDirectoriesIfExists( overlayDirectories )
+                .addResourceDirectoryIfExists( resourceDirectory )
+                .addResourceDirectoriesIfExists( dependencyArtifactResDirectoryList )
+                .autoAddOverlay()
+                // NB aapt only accepts a single assets parameter - combinedAssets is a merge of all assets
+                .addRawAssetsDirectoryIfExists( combinedAssets )
+                .addExistingPackageToBaseIncludeSet( androidJar )
+                .setOutputApkFile( outputFile )
+                .addConfigurations( configurations )
+                .setVerbose( aaptVerbose );
 
-        commands.add( "-I" );
-        commands.add( androidJar.getAbsolutePath() );
-        commands.add( "-F" );
-        commands.add( outputFile.getAbsolutePath() );
-        if ( StringUtils.isNotBlank( configurations ) )
-        {
-            commands.add( "-c" );
-            commands.add( configurations );
-        }
-
-        if ( aaptVerbose )
-        {
-            commands.add( "-v" );
-        }
-
-        getLog().debug( getAndroidSdk().getAaptPath() + " " + commands.toString() );
+        getLog().debug( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
         getLog().info( "Generating apklib" );
         try
         {
             executor.setCaptureStdOut( true );
+            List<String> commands = commandBuilder.build();
             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
