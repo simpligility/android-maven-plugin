@@ -23,6 +23,7 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.common.AaptCommandBuilder;
+import com.jayway.maven.plugins.android.common.AaptCommandBuilder.AaptPackageCommandBuilder;
 import com.jayway.maven.plugins.android.common.FileRetriever;
 import com.jayway.maven.plugins.android.common.ZipExtractor;
 import com.jayway.maven.plugins.android.configuration.BuildConfigConstant;
@@ -691,8 +692,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         genDirectory.mkdirs();
 
-        final AaptCommandBuilder commandBuilder = new AaptCommandBuilder()
-                .packageResources()
+        final AaptPackageCommandBuilder commandBuilder = AaptCommandBuilder
+                .packageResources( getLog() )
                 .makePackageDirectories()
                 .setWhereToOutputResourceConstants( genDirectory )
                 .forceOverwriteExistingFiles()
@@ -712,26 +713,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 .setVerbose( aaptVerbose )
                     // We need to generate R.txt for all projects as it needs to be consumed when generating R class.
                     // It also needs to be consumed when packaging aar.
-                .generateRTextFile( targetDirectory );
-
-
-        // If a proguard file is defined then output Proguard options to it.
-        if ( proguardFile != null )
-        {
-            final File parentFolder = proguardFile.getParentFile();
-            if ( parentFolder != null )
-            {
-                parentFolder.mkdirs();
-            }
-            getLog().debug( "Adding proguard file : " + proguardFile );
-            commandBuilder.setProguardOptionsOutputFile( proguardFile );
-        }
-
-        if ( AAR.equals( project.getArtifact().getType() ) )
-        {
-            getLog().debug( "Adding non-constant-id" );
-            commandBuilder.makeResourcesNonConstant();
-        }
+                .generateRTextFile( targetDirectory )
+                // If a proguard file is defined then output Proguard options to it.
+                .setProguardOptionsOutputFile( proguardFile )
+                .makeResourcesNonConstant( AAR.equals( project.getArtifact().getType() ) );
 
         getLog().debug( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
         try
@@ -873,8 +858,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( getLog() );
 
-        final AaptCommandBuilder commandBuilder = new AaptCommandBuilder()
-                .packageResources()
+        final AaptCommandBuilder commandBuilder = AaptCommandBuilder
+                .packageResources( getLog() )
                 .makeResourcesNonConstant()
                 .makePackageDirectories()
                 .setWhereToOutputResourceConstants( genDirectory )
