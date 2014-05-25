@@ -119,7 +119,7 @@
     </mailingLists>
 
     <prerequisites>
-        <!--maven>3.1.1</maven-->
+        <maven>3.0.4</maven>
     </prerequisites>
 
     <dependencyManagement>
@@ -201,18 +201,6 @@
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-artifact</artifactId>
-                <version>${maven.api.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-model</artifactId>
-                <version>${maven.api.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-plugin-api</artifactId>
                 <version>${maven.api.version}</version>
             </dependency>
 
@@ -405,23 +393,6 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-artifact</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-model</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-plugin-api</artifactId>
-            <!-- we use a new version of asm and there are conflict, the older 3.x version comes in via sisu -->
-            <exclusions>
-              <exclusion>
-                <artifactId>asm</artifactId>
-                <groupId>asm</groupId>
-              </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
