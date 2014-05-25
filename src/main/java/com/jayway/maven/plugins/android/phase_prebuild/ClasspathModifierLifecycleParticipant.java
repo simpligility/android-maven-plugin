@@ -21,9 +21,9 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
+import org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.Logger;
@@ -86,9 +86,9 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
                 Thread.currentThread().setContextClassLoader( projectClassLoader );
                 artifacts = dependencyResolver.getProjectDependenciesFor( project, session );
             }
-            catch ( MojoExecutionException e )
+            catch ( DependencyGraphBuilderException e )
             {
-                log.warn( "Could not resolve all dependencies for " + project, e );
+                // Nothing to do. The resolution failure will be displayed by the standard resolution mechanism.
                 continue;
             }
             finally
