@@ -259,11 +259,15 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             final String[] relativeAidlFileNames2 = findRelativeAidlFileNames( extractedDependenciesJavaSources );
             final Map<String, String[]> relativeApklibAidlFileNames = new HashMap<String, String[]>();
 
-            for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB ) )
+            if ( !isInstrumentationTest() )
             {
-                final File libSourceFolder = getUnpackedApkLibSourceFolder( artifact );
-                final String[] apklibAidlFiles = findRelativeAidlFileNames( libSourceFolder );
-                relativeApklibAidlFileNames.put( artifact.getId(), apklibAidlFiles );
+                // Only add transitive APKLIB deps if we are building an APK and not an instrumentation test apk.
+                for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB ) )
+                {
+                    final File libSourceFolder = getUnpackedApkLibSourceFolder( artifact );
+                    final String[] apklibAidlFiles = findRelativeAidlFileNames( libSourceFolder );
+                    relativeApklibAidlFileNames.put( artifact.getId(), apklibAidlFiles );
+                }
             }
 
             mergeManifests();
@@ -277,13 +281,18 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             // make sure we compile AIDL for dependencies as well.
             // This is so project A, which depends on project B, can
             // use AIDL info from project B in its own AIDL
-            Map<File, String[]> files = new HashMap<File, String[]>();
+            final Map<File, String[]> files = new HashMap<File, String[]>();
             files.put( aidlSourceDirectory, relativeAidlFileNames1 );
             files.put( extractedDependenciesJavaSources, relativeAidlFileNames2 );
-            for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB ) )
+
+            if ( !isInstrumentationTest() )
             {
-                final File unpackedLibSourceFolder = getUnpackedApkLibSourceFolder( artifact );
-                files.put( unpackedLibSourceFolder, relativeApklibAidlFileNames.get( artifact.getId() ) );
+                // Only add transitive APKLIB deps if we are building an APK and not an instrumentation test apk.
+                for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB ) )
+                {
+                    final File unpackedLibSourceFolder = getUnpackedApkLibSourceFolder( artifact );
+                    files.put( unpackedLibSourceFolder, relativeApklibAidlFileNames.get( artifact.getId() ) );
+                }
             }
             generateAidlFiles( files );
         }
@@ -412,10 +421,14 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         getLog().info( "Extracting libs" );
 
+        // The only library dependencies we want included in an instrumentation test are APK and AARs.
+        // Any APKLIB classes have already been compiled into the APK.
+        final boolean instrumentationTest = isInstrumentationTest();
+
         for ( Artifact artifact : artifacts )
         {
             final String type = artifact.getType();
-            if ( type.equals( APKLIB ) )
+            if ( type.equals( APKLIB ) && !instrumentationTest )
             {
                 getLog().info( "Extracting apklib " + artifact.getArtifactId() + "..." );
                 extractApklib( artifact );

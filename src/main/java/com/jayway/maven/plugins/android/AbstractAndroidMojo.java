@@ -1088,6 +1088,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         return ( String ) instrumentationRunner;
     }
 
+    protected final boolean isInstrumentationTest() throws MojoExecutionException
+    {
+        return extractInstrumentationRunnerFromAndroidManifest( androidManifestFile ) != null;
+    }
+
     /**
      * <p>Returns the Android SDK to use.</p>
      * <p/>
