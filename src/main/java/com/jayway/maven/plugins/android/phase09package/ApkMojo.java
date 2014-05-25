@@ -41,7 +41,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.codehaus.plexus.util.AbstractScanner;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -1046,51 +1045,6 @@ public class ApkMojo extends AbstractAndroidMojo
             throw new MojoExecutionException( "", e );
         }
     }
-
-    private void processApkLibAssets() throws MojoExecutionException
-    {
-        // Next pull APK Lib assets, reverse the order to give precedence to libs higher up the chain
-        List<Artifact> artifactList = new ArrayList<Artifact>( getTransitiveDependencyArtifacts( APKLIB, AAR ) );
-        for ( Artifact artifact : artifactList )
-        {
-            final File apklibAsssetsDirectory = getUnpackedLibAssetsFolder( artifact );
-            if ( apklibAsssetsDirectory.exists() )
-            {
-                try
-                {
-                    getLog().info( "Copying dependency assets files to combined assets directory." );
-                    org.apache.commons.io.FileUtils
-                            .copyDirectory( apklibAsssetsDirectory, combinedAssets, new FileFilter() {
-                                /**
-                                 * Excludes files matching one of the common file to exclude.
-                                 * The default excludes pattern are the ones from
-                                 * {org.codehaus.plexus.util.AbstractScanner#DEFAULTEXCLUDES}
-                                 * @see java.io.FileFilter#accept(java.io.File)
-                                 */
-                                public boolean accept( File file )
-                                {
-                                    for ( String pattern : AbstractScanner.DEFAULTEXCLUDES )
-                                    {
-                                        if ( AbstractScanner.match( pattern, file.getAbsolutePath() ) )
-                                        {
-                                            getLog().debug( "Excluding " + file.getName() + " from asset copy : "
-                                                    + "matching " + pattern );
-                                            return false;
-                                        }
-                                    }
-
-                                    return true;
-                                }
-                            } );
-                }
-                catch ( IOException e )
-                {
-                    throw new MojoExecutionException( "", e );
-                }
-            }
-        }
-    }
-
 
     protected AndroidSigner getAndroidSigner()
     {
