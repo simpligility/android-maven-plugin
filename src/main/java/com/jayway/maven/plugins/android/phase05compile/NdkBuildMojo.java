@@ -64,18 +64,11 @@ public class NdkBuildMojo extends AbstractAndroidMojo
     private String ndkBuildExecutable;
 
     /**
-     * Provides the base folder into which MakeFile will be generated.
-     *
-     * @parameter property="android.ndk.ndk-makefile-directory"
-     *            defaultValue = "${project.build.directory}/ndk-build"
-     */
-    private String ndkBaseMakeFileDirectory;
-
-    /**
      * @parameter property="android.ndk.ndk-build-directory"
+     *            default-value= "${project.build.directory}/ndk-build"
      */
     @PullParameter
-    private String ndkBuildDirectory;
+    private File ndkBuildDirectory;
 
     /**
      * Specifies the classifier with which the artifact should be stored in the repository
@@ -106,15 +99,19 @@ public class NdkBuildMojo extends AbstractAndroidMojo
      * Build folder to place built native libraries into
      *
      * @parameter property="android.ndk.build.ndk-output-directory"
-     * default-value="${project.build.directory}/ndk-libs"
+     *            default-value="${project.build.directory}/ndk-libs"
      */
+    @PullParameter
     private File ndkOutputDirectory;
 
     /**
      * <p>Folder containing native, static libraries compiled and linked by the NDK.</p>
      *
+     * The NDK build executable seems determined to create the native libs in the root folder.
+     * TODO work out how to create them in /target.
+     *
      * @parameter property="android.nativeLibrariesOutputDirectory"
-     *            default-value="${project.build.directory}/obj/local"
+     *            default-value="${basedir}/obj/local"
      */
     private File nativeLibrariesOutputDirectory;
 
@@ -331,9 +328,6 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         final File ndkBuildFile = new File( getAndroidNdk().getNdkBuildPath() );
         NativeHelper.validateNDKVersion( ndkBuildFile.getParentFile() );
 
-        // Validate the makefile - if our packaging type is so (for example) and there are
-        // dependencies on .a files (or shared files for that matter) the makefile should include
-        // the include of our Android Maven plugin generated makefile.
         validateMakefile( project, makefile );
 
         final String[] resolvedNDKArchitectures = NativeHelper.getNdkArchitectures(
@@ -363,7 +357,6 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         throws MojoExecutionException, IOException, ExecutionException
     {
         getLog().debug( "Resolving for NDK architecture : " + architecture );
-        final Preparation preparation = new Preparation().invoke( architecture );
 
         // Start setting up the command line to be executed
         final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
@@ -381,22 +374,16 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         getLog().debug( "resolveArtifacts found " + resolveNativeLibraryArtifacts.size()
             + ": " + resolveNativeLibraryArtifacts.toString() );
 
-        final File makefileDir = new File( ndkBaseMakeFileDirectory, architecture );
-        makefileDir.mkdirs();
-        final File androidMavenMakefile = new File( makefileDir, "android_maven_plugin_makefile.mk" );
-
-        // set the ndk build directory
-        if ( ndkBuildDirectory == null )
-        {
-            ndkBuildDirectory = project.getBasedir().getAbsolutePath();
-        }
+        final File buildFolder = new File( ndkBuildDirectory, architecture );
+        buildFolder.mkdirs();
+        final File androidMavenMakefile = new File( buildFolder, "android_maven_plugin_makefile.mk" );
 
         final MakefileHelper makefileHelper = new MakefileHelper( getLog(),
             getUnpackedLibHelper(), getArtifactResolverHelper(),
             harArtifactHandler, getUnpackedLibsDirectory()
         );
         final MakefileHelper.MakefileHolder makefileHolder = makefileHelper
-            .createMakefileFromArtifacts( new File( ndkBuildDirectory ),
+            .createMakefileFromArtifacts( buildFolder,
                 resolveNativeLibraryArtifacts, architecture, "armeabi",
                 useHeaderArchives );
 
@@ -437,7 +424,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         // Setup the build directory (defaults to the current directory) but may be different depending
         // on user configuration
         commands.add( "-C" );
-        commands.add( ndkBuildDirectory );
+        commands.add( ndkBuildDirectory.getAbsolutePath() );
 
         // If the build should use a custom makefile or not - some validation is done to ensure
         // this exists and all
@@ -473,12 +460,16 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         getLog().info( "Executing NDK " + architecture + " make at : " + ndkBuildDirectory );
 
         executor.setCaptureStdOut( true );
-        executor.executeCommand( ndkBuildPath, commands, project.getBasedir(), true );
+        executor.executeCommand( ndkBuildPath, commands, ndkBuildDirectory, true );
+
+        // Where the NDK build creates the libs.
+        final File nativeLibOutputDirectory = new File( nativeLibrariesOutputDirectory, architecture );
+        nativeLibOutputDirectory.mkdirs();
 
         // Move the built native libs into the packaging folder.
-        // TODO why don't we just create them there to start with?
-        final File destinationDirectory = new File( ndkOutputDirectory.getAbsolutePath(), architecture );
-        FileUtils.copyDirectory( preparation.getNativeLibDirectory(), destinationDirectory );
+        // We don't create them there to start with because the NDK build seems determined to create them in the root.
+        final File destinationDirectory = new File( ndkOutputDirectory, architecture );
+        FileUtils.moveDirectory( nativeLibOutputDirectory, destinationDirectory );
 
         // Attempt to attach the native library if the project is defined as a "pure" native Android library
         // (packaging is 'so' or 'a') or if the plugin has been configured to attach the native library to the build
@@ -497,11 +488,8 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
         // If we created a makefile for the build we should be polite and remove any extracted include
         // directories after we're done
-        if ( makefileHolder != null )
-        {
-            getLog().info( "Cleaning up extracted include directories used for build" );
-            MakefileHelper.cleanupAfterBuild( makefileHolder );
-        }
+        getLog().info( "Cleaning up extracted include directories used for build" );
+        MakefileHelper.cleanupAfterBuild( makefileHolder );
     }
 
     private void configureAdditionalCommands( final List<String> commands )
@@ -741,7 +729,12 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         };
     }
 
-    private void validateMakefile( MavenProject project, String makefile )
+    /**
+     * Validate the makefile - if our packaging type is so (for example) and there are
+     * dependencies on .a files (or shared files for that matter) the makefile should include
+     * the include of our Android Maven plugin generated makefile.
+     */
+    private void validateMakefile( MavenProject project, String file )
     {
         // TODO: actually perform validation
     }
@@ -966,24 +959,6 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             return file.getName().endsWith( Const.ArtifactType.NATIVE_SYMBOL_OBJECT )
                     ? Const.ArtifactType.NATIVE_SYMBOL_OBJECT
                     : Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE;
-        }
-    }
-
-    private class Preparation
-    {
-        private File nativeLibDirectory;
-
-        public File getNativeLibDirectory()
-        {
-            return nativeLibDirectory;
-        }
-
-        public Preparation invoke( String ndkArchitecture )
-        {
-            // This usually points to ${basedir}/obj/local
-            nativeLibDirectory = new File( nativeLibrariesOutputDirectory, ndkArchitecture );
-            nativeLibDirectory.mkdirs();
-            return this;
         }
     }
 }
