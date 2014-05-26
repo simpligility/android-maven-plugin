@@ -282,10 +282,11 @@
                 <version>1.9</version>
             </dependency>
 
+            <!--  using a temporary fork of the apache compoenent until 2.2 is released -->
             <dependency>
-                <groupId>org.apache.maven.shared</groupId>
+                <groupId>com.simpligility.org.apache.maven.shared</groupId>
                 <artifactId>maven-dependency-tree</artifactId>
-                <version>2.2-SNAPSHOT</version>
+                <version>2.2-RC.1</version>
             </dependency>
 
             <!-- test deps -->
