@@ -563,39 +563,30 @@ public class NdkBuildMojo extends AbstractAndroidMojo
     private void attachNativeLib( File destinationDirectory, String architecture )
             throws IOException, MojoExecutionException
     {
-        // Attempt to attach the native library if the project is defined as a "pure" native Android library
-        // (packaging is 'so' or 'a') or if the plugin has been configured to attach the native library to the
-        // build
-        if ( Const.ArtifactType.NATIVE_SYMBOL_OBJECT.equals( project.getPackaging() )
-            || Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( project.getPackaging() )
-            || attachNativeArtifacts )
+        final File nativeArtifactFile;
+        if ( ndkFinalLibraryName == null )
         {
+            nativeArtifactFile = findNativeLibrary( destinationDirectory );
+        }
+        else
+        {
+            nativeArtifactFile = nativeLibraryFromName( destinationDirectory );
+        }
 
-            final File nativeArtifactFile;
-            if ( ndkFinalLibraryName == null )
-            {
-                nativeArtifactFile = findNativeLibrary( destinationDirectory );
-            }
-            else
-            {
-                nativeArtifactFile = nativeLibraryFromName( destinationDirectory );
-            }
+        final String artifactType = resolveArtifactType( nativeArtifactFile );
+        if ( nativeArtifactFile.getName().endsWith( ".so" ) && ! skipStripping )
+        {
+            getLog().debug( "Post processing (stripping) native compiled artifact: " + nativeArtifactFile );
+            invokeNDKStripper( nativeArtifactFile );
+        }
 
-            final String artifactType = resolveArtifactType( nativeArtifactFile );
-            if ( nativeArtifactFile.getName().endsWith( ".so" ) && ! skipStripping )
-            {
-                getLog().debug( "Post processing (stripping) native compiled artifact: " + nativeArtifactFile );
-                invokeNDKStripper( nativeArtifactFile );
-            }
+        getLog().debug( "Adding native compiled artifact: " + nativeArtifactFile );
 
-            getLog().debug( "Adding native compiled artifact: " + nativeArtifactFile );
-
-            final String classifier = ( ndkClassifier == null )
+        final String classifier = ( ndkClassifier == null )
                 ? architecture
                 : architecture + "-" + ndkClassifier;
 
-            projectHelper.attachArtifact( this.project, artifactType, classifier, nativeArtifactFile );
-        }
+        projectHelper.attachArtifact( this.project, artifactType, classifier, nativeArtifactFile );
     }
 
     /**
