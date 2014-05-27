@@ -36,21 +36,13 @@ public final class DependencyResolver
      * @param project   MavenProject for which to return the dependencies.
      * @param session   MavenSession in which to look for reactor dependencies.
      * @return all the dependencies for a project.
-     * @throws MojoExecutionException if the dependency graph can't be built.
+     * @throws DependencyGraphBuilderException if the dependency graph can't be built.
      */
     public Set<Artifact> getProjectDependenciesFor( MavenProject project, MavenSession session )
-            throws MojoExecutionException
+            throws DependencyGraphBuilderException
     {
-        final DependencyNode node;
-        try
-        {
-            // No need to filter our search. We want to resolve all artifacts.
-            node = dependencyGraphBuilder.buildDependencyGraph( project, null, session.getProjects() );
-        }
-        catch ( DependencyGraphBuilderException e )
-        {
-            throw new MojoExecutionException( "Could not resolve project dependency graph", e );
-        }
+        // No need to filter our search. We want to resolve all artifacts.
+        final DependencyNode node = dependencyGraphBuilder.buildDependencyGraph( project, null, session.getProjects() );
 
         final DependencyCollector collector = new DependencyCollector( log, project.getArtifact() );
         collector.visit( node, false );
