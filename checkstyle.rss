@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2008 - 2014 simpligility technologies inc.</copyright>
     <item>
-      <title>File: 100,
-             Errors: 18469,
+      <title>File: 108,
+             Errors: 19060,
              Warnings: 0,
              Infos: 0
       </title>
@@ -195,7 +195,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  388
+                  345
                 </td>
               </tr>
                           <tr>
@@ -242,20 +242,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.configuration.Manifest.java">com/jayway/maven/plugins/android/configuration/Manifest.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  77
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.standalonemojos.RedeployApkMojo.java">com/jayway/maven/plugins/android/standalonemojos/RedeployApkMojo.java</a>
                 </td>
                 <td>
@@ -270,6 +256,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.configuration.Manifest.java">com/jayway/maven/plugins/android/configuration/Manifest.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  77
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.phase08preparepackage.EmmaMojo.java">com/jayway/maven/plugins/android/phase08preparepackage/EmmaMojo.java</a>
                 </td>
                 <td>
@@ -280,6 +280,20 @@ under the License.
                 </td>
                 <td>
                   122
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.phase_prebuild.ClasspathModifierLifecycleParticipant.java">com/jayway/maven/plugins/android/phase_prebuild/ClasspathModifierLifecycleParticipant.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  152
                 </td>
               </tr>
                           <tr>
@@ -354,6 +368,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.standalonemojos.DisconnectMojo.java">com/jayway/maven/plugins/android/standalonemojos/DisconnectMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  34
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.CommandExecutor.java">com/jayway/maven/plugins/android/CommandExecutor.java</a>
                 </td>
                 <td>
@@ -405,7 +433,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  79
+                  63
                 </td>
               </tr>
                           <tr>
@@ -420,20 +448,6 @@ under the License.
                 </td>
                 <td>
                   323
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.common.AetherHelper.java">com/jayway/maven/plugins/android/common/AetherHelper.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  84
                 </td>
               </tr>
                           <tr>
@@ -573,7 +587,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  446
+                  449
                 </td>
               </tr>
                           <tr>
@@ -601,7 +615,21 @@ under the License.
                   0
                 </td>
                 <td>
-                  611
+                  608
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.common.ArtifactResolverHelper.java">com/jayway/maven/plugins/android/common/ArtifactResolverHelper.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  124
                 </td>
               </tr>
                           <tr>
@@ -620,7 +648,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.common.BuildHelper.java">com/jayway/maven/plugins/android/common/BuildHelper.java</a>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.standalonemojos.ConnectMojo.java">com/jayway/maven/plugins/android/standalonemojos/ConnectMojo.java</a>
                 </td>
                 <td>
                   0
@@ -629,7 +657,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  255
+                  34
                 </td>
               </tr>
                           <tr>
@@ -643,7 +671,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  945
+                  947
                 </td>
               </tr>
                           <tr>
@@ -718,6 +746,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.phase01generatesources.ConflictingLayout.java">com/jayway/maven/plugins/android/phase01generatesources/ConflictingLayout.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  23
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.ExecutionException.java">com/jayway/maven/plugins/android/ExecutionException.java</a>
                 </td>
                 <td>
@@ -788,6 +830,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.common.DependencyCollector.java">com/jayway/maven/plugins/android/common/DependencyCollector.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  80
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.standalonemojos.LintMojo.java">com/jayway/maven/plugins/android/standalonemojos/LintMojo.java</a>
                 </td>
                 <td>
@@ -811,7 +867,21 @@ under the License.
                   0
                 </td>
                 <td>
-                  107
+                  104
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.common.FileRetriever.java">com/jayway/maven/plugins/android/common/FileRetriever.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  22
                 </td>
               </tr>
                           <tr>
@@ -825,7 +895,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  965
+                  1150
                 </td>
               </tr>
                           <tr>
@@ -839,7 +909,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  178
+                  180
                 </td>
               </tr>
                           <tr>
@@ -881,7 +951,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  59
+                  58
                 </td>
               </tr>
                           <tr>
@@ -909,7 +979,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  373
+                  348
                 </td>
               </tr>
                           <tr>
@@ -993,7 +1063,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  969
+                  974
                 </td>
               </tr>
                           <tr>
@@ -1021,7 +1091,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  178
+                  189
                 </td>
               </tr>
                           <tr>
@@ -1063,7 +1133,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  107
+                  106
                 </td>
               </tr>
                           <tr>
@@ -1077,7 +1147,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  606
+                  623
                 </td>
               </tr>
                           <tr>
@@ -1105,7 +1175,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  474
+                  487
                 </td>
               </tr>
                           <tr>
@@ -1119,7 +1189,21 @@ under the License.
                   0
                 </td>
                 <td>
-                  929
+                  943
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.standalonemojos.MonkeyRunnerMojo.java">com/jayway/maven/plugins/android/standalonemojos/MonkeyRunnerMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  862
                 </td>
               </tr>
                           <tr>
@@ -1134,20 +1218,6 @@ under the License.
                 </td>
                 <td>
                   78
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.standalonemojos.MonkeyRunnerMojo.java">com/jayway/maven/plugins/android/standalonemojos/MonkeyRunnerMojo.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  860
                 </td>
               </tr>
                           <tr>
@@ -1189,7 +1259,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  276
+                  275
                 </td>
               </tr>
                           <tr>
@@ -1222,6 +1292,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.phase01generatesources.ConflictingLayoutDetector.java">com/jayway/maven/plugins/android/phase01generatesources/ConflictingLayoutDetector.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  54
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.phase09package.ApkMojo.java">com/jayway/maven/plugins/android/phase09package/ApkMojo.java</a>
                 </td>
                 <td>
@@ -1231,21 +1315,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  963
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.phase_prebuild.AarMavenLifecycleParticipant.java">com/jayway/maven/plugins/android/phase_prebuild/AarMavenLifecycleParticipant.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  134
+                  855
                 </td>
               </tr>
                           <tr>
@@ -1330,6 +1400,34 @@ under the License.
                 </td>
                 <td>
                   156
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.common.UnpackedLibHelper.java">com/jayway/maven/plugins/android/common/UnpackedLibHelper.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  174
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.common.AaptCommandBuilder.java">com/jayway/maven/plugins/android/common/AaptCommandBuilder.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  308
                 </td>
               </tr>
                           <tr>
@@ -1442,6 +1540,20 @@ under the License.
                 </td>
                 <td>
                   13
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.common.Const.java">com/jayway/maven/plugins/android/common/Const.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  6
                 </td>
               </tr>
                       </tbody>

@@ -61,7 +61,7 @@
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">     * Skip the zipalign goal execution. Defaults to "true".</em>
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment">     * @parameter expression="${android.zipalign.skip}"</em>
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment">     * @parameter property="android.zipalign.skip"</em>
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment">     * @see com.jayway.maven.plugins.android.configuration.Zipalign#skip</em>
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>      <strong class="jxr_keyword">private</strong> Boolean zipalignSkip;
@@ -71,7 +71,7 @@
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment">     * Activate verbose output for the zipalign goal execution. Defaults to "false".</em>
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">     * @parameter expression="${android.zipalign.verbose}"</em>
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">     * @parameter property="android.zipalign.verbose"</em>
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment">     * @see com.jayway.maven.plugins.android.configuration.Zipalign#verbose</em>
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>      <strong class="jxr_keyword">private</strong> Boolean zipalignVerbose;
@@ -83,7 +83,7 @@
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>  <em class="jxr_javadoccomment">     * The apk file to be zipaligned. Per default the file is taken from build directory (target normally) using the</em>
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  <em class="jxr_javadoccomment">     * build final name as file name and apk as extension.</em>
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>  <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>  <em class="jxr_javadoccomment">     * @parameter expression="${android.zipalign.inputApk}"</em>
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  <em class="jxr_javadoccomment">     * @parameter property="android.zipalign.inputApk"</em>
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>  <em class="jxr_javadoccomment">     * @see com.jayway.maven.plugins.android.configuration.Zipalign#inputApk</em>
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>      <strong class="jxr_keyword">private</strong> String zipalignInputApk;
@@ -94,7 +94,7 @@
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  <em class="jxr_javadoccomment">     * The apk file produced by the zipalign goal. Per default the file is placed into the build directory (target</em>
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  <em class="jxr_javadoccomment">     * normally) using the build final name appended with "-aligned" as file name and apk as extension.</em>
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment">     * @parameter expression="${android.zipalign.outputApk}"</em>
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment">     * @parameter property="android.zipalign.outputApk"</em>
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_javadoccomment">     * @see com.jayway.maven.plugins.android.configuration.Zipalign#outputApk</em>
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>      <strong class="jxr_keyword">private</strong> String zipalignOutputApk;
@@ -166,92 +166,93 @@
 <a class="jxr_linenumber" name="L158" href="#L158">158</a>             {
 <a class="jxr_linenumber" name="L159" href="#L159">159</a>                 getLog().info( <span class="jxr_string">"Running command: "</span> + command );
 <a class="jxr_linenumber" name="L160" href="#L160">160</a>                 getLog().info( <span class="jxr_string">"with parameters: "</span> + parameters );
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>                 executor.executeCommand( command, parameters );
-<a class="jxr_linenumber" name="L162" href="#L162">162</a> 
-<a class="jxr_linenumber" name="L163" href="#L163">163</a>                 <strong class="jxr_keyword">if</strong> ( FileUtils.fileExists( outputApk ) )
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>                 {
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>                     <strong class="jxr_keyword">if</strong> ( outputToSameFile )
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>                     {
-<a class="jxr_linenumber" name="L167" href="#L167">167</a>                         <em class="jxr_comment">// No needs to attach zipaligned apk to artifacts</em>
-<a class="jxr_linenumber" name="L168" href="#L168">168</a>                         <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L169" href="#L169">169</a>                         {
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>                             FileUtils.rename( <strong class="jxr_keyword">new</strong> File( outputApk ),  <strong class="jxr_keyword">new</strong> File( parsedInputApk ) );
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>                         }
-<a class="jxr_linenumber" name="L172" href="#L172">172</a>                         <strong class="jxr_keyword">catch</strong> ( IOException e )
-<a class="jxr_linenumber" name="L173" href="#L173">173</a>                         {
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>                             getLog().error( <span class="jxr_string">"Failed to replace original apk with aligned "</span>
-<a class="jxr_linenumber" name="L175" href="#L175">175</a>                                     + getFullPathWithName( outputApk ), e );
-<a class="jxr_linenumber" name="L176" href="#L176">176</a>                         }
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>                     }
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>                     <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>                     {
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>                         <em class="jxr_comment">// Attach the resulting artifact (Issue 88)</em>
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>                         <em class="jxr_comment">// http://code.google.com/p/maven-android-plugin/issues/detail?id=88</em>
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>                         projectHelper.attachArtifact( project, APK, <span class="jxr_string">"aligned"</span>, <strong class="jxr_keyword">new</strong> File( outputApk ) );
-<a class="jxr_linenumber" name="L183" href="#L183">183</a>                         getLog().info( <span class="jxr_string">"Attach "</span> + getFullPathWithName( outputApk ) + <span class="jxr_string">" to the project"</span> );
-<a class="jxr_linenumber" name="L184" href="#L184">184</a>                     }
-<a class="jxr_linenumber" name="L185" href="#L185">185</a>                 }
-<a class="jxr_linenumber" name="L186" href="#L186">186</a>                 <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L187" href="#L187">187</a>                 {
-<a class="jxr_linenumber" name="L188" href="#L188">188</a>                     getLog().error( <span class="jxr_string">"Cannot attach "</span> + getFullPathWithName( outputApk ) + <span class="jxr_string">" to the project"</span>
-<a class="jxr_linenumber" name="L189" href="#L189">189</a>                             + <span class="jxr_string">" - The file does not exist"</span> );
-<a class="jxr_linenumber" name="L190" href="#L190">190</a>                 }
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>             }
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>             <strong class="jxr_keyword">catch</strong> ( ExecutionException e )
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>             {
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">""</span>, e );
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>             }
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>         }
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>     }
-<a class="jxr_linenumber" name="L198" href="#L198">198</a> 
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>     <strong class="jxr_keyword">private</strong> String getFullPathWithName( String filename )
-<a class="jxr_linenumber" name="L200" href="#L200">200</a>     {
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>         <strong class="jxr_keyword">return</strong> FilenameUtils.getFullPath( filename ) + FilenameUtils.getName( filename );
-<a class="jxr_linenumber" name="L202" href="#L202">202</a>     }
-<a class="jxr_linenumber" name="L203" href="#L203">203</a> 
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> sameOutputAsInput()
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>     {
-<a class="jxr_linenumber" name="L206" href="#L206">206</a>         <strong class="jxr_keyword">return</strong> getFullPathWithName( parsedInputApk ).equals( getFullPathWithName( parsedOutputApk ) );
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>     }
-<a class="jxr_linenumber" name="L208" href="#L208">208</a> 
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>     <em class="jxr_comment">// zipalign doesn't allow output file to be same as input</em>
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>     <strong class="jxr_keyword">private</strong> String getTemporaryOutputApkFilename()
-<a class="jxr_linenumber" name="L211" href="#L211">211</a>     {
-<a class="jxr_linenumber" name="L212" href="#L212">212</a>         <strong class="jxr_keyword">return</strong> parsedOutputApk.substring( 0, parsedOutputApk.lastIndexOf( '.' ) ) + <span class="jxr_string">"-aligned-temp.apk"</span>;
-<a class="jxr_linenumber" name="L213" href="#L213">213</a>     }
-<a class="jxr_linenumber" name="L214" href="#L214">214</a> 
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L216" href="#L216">216</a> <em class="jxr_javadoccomment">     * Gets the apk file location from basedir/target/finalname.apk</em>
-<a class="jxr_linenumber" name="L217" href="#L217">217</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L218" href="#L218">218</a> <em class="jxr_javadoccomment">     * @return absolute path.</em>
-<a class="jxr_linenumber" name="L219" href="#L219">219</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L220" href="#L220">220</a>     <em class="jxr_comment">// used via PullParameter annotation - do not remove</em>
-<a class="jxr_linenumber" name="L221" href="#L221">221</a>     <strong class="jxr_keyword">private</strong> String getInputApkPath()
-<a class="jxr_linenumber" name="L222" href="#L222">222</a>     {
-<a class="jxr_linenumber" name="L223" href="#L223">223</a>         <strong class="jxr_keyword">if</strong> ( apkFile == <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L224" href="#L224">224</a>         {
-<a class="jxr_linenumber" name="L225" href="#L225">225</a>             apkFile = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + <span class="jxr_string">"."</span> + APK );
-<a class="jxr_linenumber" name="L226" href="#L226">226</a>         }
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>         <strong class="jxr_keyword">return</strong> apkFile.getAbsolutePath();
-<a class="jxr_linenumber" name="L228" href="#L228">228</a>     }
-<a class="jxr_linenumber" name="L229" href="#L229">229</a> 
-<a class="jxr_linenumber" name="L230" href="#L230">230</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L231" href="#L231">231</a> <em class="jxr_javadoccomment">     * Gets the apk file location from basedir/target/finalname-aligned.apk. "-aligned" is the inserted string for the</em>
-<a class="jxr_linenumber" name="L232" href="#L232">232</a> <em class="jxr_javadoccomment">     * output file.</em>
-<a class="jxr_linenumber" name="L233" href="#L233">233</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L234" href="#L234">234</a> <em class="jxr_javadoccomment">     * @return absolute path.</em>
-<a class="jxr_linenumber" name="L235" href="#L235">235</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L236" href="#L236">236</a>     <em class="jxr_comment">// used via PullParameter annotation - do not remove</em>
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>     <strong class="jxr_keyword">private</strong> String getOutputApkPath()
-<a class="jxr_linenumber" name="L238" href="#L238">238</a>     {
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>         <strong class="jxr_keyword">if</strong> ( alignedApkFile == <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L240" href="#L240">240</a>         {
-<a class="jxr_linenumber" name="L241" href="#L241">241</a>             alignedApkFile = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory(),
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>                     project.getBuild().getFinalName() + <span class="jxr_string">"-aligned."</span> + APK );
-<a class="jxr_linenumber" name="L243" href="#L243">243</a>         }
-<a class="jxr_linenumber" name="L244" href="#L244">244</a>         <strong class="jxr_keyword">return</strong> alignedApkFile.getAbsolutePath();
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>     }
-<a class="jxr_linenumber" name="L246" href="#L246">246</a> }
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>                 executor.setCaptureStdOut( <strong class="jxr_keyword">true</strong> );
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>                 executor.executeCommand( command, parameters );
+<a class="jxr_linenumber" name="L163" href="#L163">163</a> 
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>                 <strong class="jxr_keyword">if</strong> ( FileUtils.fileExists( outputApk ) )
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>                 {
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>                     <strong class="jxr_keyword">if</strong> ( outputToSameFile )
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>                     {
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>                         <em class="jxr_comment">// No needs to attach zipaligned apk to artifacts</em>
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>                         <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>                         {
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>                             FileUtils.rename( <strong class="jxr_keyword">new</strong> File( outputApk ),  <strong class="jxr_keyword">new</strong> File( parsedInputApk ) );
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>                         }
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>                         <strong class="jxr_keyword">catch</strong> ( IOException e )
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>                         {
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>                             getLog().error( <span class="jxr_string">"Failed to replace original apk with aligned "</span>
+<a class="jxr_linenumber" name="L176" href="#L176">176</a>                                     + getFullPathWithName( outputApk ), e );
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>                         }
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>                     }
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>                     <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>                     {
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>                         <em class="jxr_comment">// Attach the resulting artifact (Issue 88)</em>
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>                         <em class="jxr_comment">// http://code.google.com/p/maven-android-plugin/issues/detail?id=88</em>
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>                         projectHelper.attachArtifact( project, APK, <span class="jxr_string">"aligned"</span>, <strong class="jxr_keyword">new</strong> File( outputApk ) );
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>                         getLog().info( <span class="jxr_string">"Attach "</span> + getFullPathWithName( outputApk ) + <span class="jxr_string">" to the project"</span> );
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>                     }
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>                 }
+<a class="jxr_linenumber" name="L187" href="#L187">187</a>                 <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>                 {
+<a class="jxr_linenumber" name="L189" href="#L189">189</a>                     getLog().error( <span class="jxr_string">"Cannot attach "</span> + getFullPathWithName( outputApk ) + <span class="jxr_string">" to the project"</span>
+<a class="jxr_linenumber" name="L190" href="#L190">190</a>                             + <span class="jxr_string">" - The file does not exist"</span> );
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>                 }
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>             }
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>             <strong class="jxr_keyword">catch</strong> ( ExecutionException e )
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>             {
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">""</span>, e );
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>             }
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>         }
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>     }
+<a class="jxr_linenumber" name="L199" href="#L199">199</a> 
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>     <strong class="jxr_keyword">private</strong> String getFullPathWithName( String filename )
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>     {
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>         <strong class="jxr_keyword">return</strong> FilenameUtils.getFullPath( filename ) + FilenameUtils.getName( filename );
+<a class="jxr_linenumber" name="L203" href="#L203">203</a>     }
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> 
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> sameOutputAsInput()
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>     {
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>         <strong class="jxr_keyword">return</strong> getFullPathWithName( parsedInputApk ).equals( getFullPathWithName( parsedOutputApk ) );
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>     }
+<a class="jxr_linenumber" name="L209" href="#L209">209</a> 
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>     <em class="jxr_comment">// zipalign doesn't allow output file to be same as input</em>
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>     <strong class="jxr_keyword">private</strong> String getTemporaryOutputApkFilename()
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>     {
+<a class="jxr_linenumber" name="L213" href="#L213">213</a>         <strong class="jxr_keyword">return</strong> parsedOutputApk.substring( 0, parsedOutputApk.lastIndexOf( '.' ) ) + <span class="jxr_string">"-aligned-temp.apk"</span>;
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>     }
+<a class="jxr_linenumber" name="L215" href="#L215">215</a> 
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L217" href="#L217">217</a> <em class="jxr_javadoccomment">     * Gets the apk file location from basedir/target/finalname.apk</em>
+<a class="jxr_linenumber" name="L218" href="#L218">218</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L219" href="#L219">219</a> <em class="jxr_javadoccomment">     * @return absolute path.</em>
+<a class="jxr_linenumber" name="L220" href="#L220">220</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>     <em class="jxr_comment">// used via PullParameter annotation - do not remove</em>
+<a class="jxr_linenumber" name="L222" href="#L222">222</a>     <strong class="jxr_keyword">private</strong> String getInputApkPath()
+<a class="jxr_linenumber" name="L223" href="#L223">223</a>     {
+<a class="jxr_linenumber" name="L224" href="#L224">224</a>         <strong class="jxr_keyword">if</strong> ( apkFile == <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>         {
+<a class="jxr_linenumber" name="L226" href="#L226">226</a>             apkFile = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + <span class="jxr_string">"."</span> + APK );
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>         }
+<a class="jxr_linenumber" name="L228" href="#L228">228</a>         <strong class="jxr_keyword">return</strong> apkFile.getAbsolutePath();
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>     }
+<a class="jxr_linenumber" name="L230" href="#L230">230</a> 
+<a class="jxr_linenumber" name="L231" href="#L231">231</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L232" href="#L232">232</a> <em class="jxr_javadoccomment">     * Gets the apk file location from basedir/target/finalname-aligned.apk. "-aligned" is the inserted string for the</em>
+<a class="jxr_linenumber" name="L233" href="#L233">233</a> <em class="jxr_javadoccomment">     * output file.</em>
+<a class="jxr_linenumber" name="L234" href="#L234">234</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L235" href="#L235">235</a> <em class="jxr_javadoccomment">     * @return absolute path.</em>
+<a class="jxr_linenumber" name="L236" href="#L236">236</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L237" href="#L237">237</a>     <em class="jxr_comment">// used via PullParameter annotation - do not remove</em>
+<a class="jxr_linenumber" name="L238" href="#L238">238</a>     <strong class="jxr_keyword">private</strong> String getOutputApkPath()
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>     {
+<a class="jxr_linenumber" name="L240" href="#L240">240</a>         <strong class="jxr_keyword">if</strong> ( alignedApkFile == <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L241" href="#L241">241</a>         {
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>             alignedApkFile = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory(),
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>                     project.getBuild().getFinalName() + <span class="jxr_string">"-aligned."</span> + APK );
+<a class="jxr_linenumber" name="L244" href="#L244">244</a>         }
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>         <strong class="jxr_keyword">return</strong> alignedApkFile.getAbsolutePath();
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>     }
+<a class="jxr_linenumber" name="L247" href="#L247">247</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2008&#x2013;2014 <a href="http://www.simpligility.com">simpligility technologies inc.</a>. All rights reserved.</div>

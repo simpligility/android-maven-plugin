@@ -24,7 +24,7 @@
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">import</strong> com.jayway.maven.plugins.android.AbstractAndroidMojo;
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">import</strong> com.jayway.maven.plugins.android.CommandExecutor;
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> com.jayway.maven.plugins.android.ExecutionException;
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> com.jayway.maven.plugins.android.common.AetherHelper;
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> com.jayway.maven.plugins.android.common.Const;
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> com.jayway.maven.plugins.android.common.NativeHelper;
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> com.jayway.maven.plugins.android.config.PullParameter;
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> com.jayway.maven.plugins.android.configuration.HeaderFilesDirective;
@@ -33,7 +33,7 @@
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.archiver.MavenArchiveConfiguration;
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.archiver.MavenArchiver;
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.artifact.Artifact;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.artifact.factory.ArtifactFactory;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.artifact.handler.ArtifactHandler;
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.plugin.MojoExecutionException;
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.plugin.MojoFailureException;
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.project.MavenProject;
@@ -71,13 +71,13 @@
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment">     * Allows for overriding the default ndk-build executable.</em>
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">     * @parameter expression="${android.ndk.ndk-build-executable}"</em>
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">     * @parameter property="android.ndk.ndk-build-executable"</em>
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>      @PullParameter
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>      <strong class="jxr_keyword">private</strong> String ndkBuildExecutable;
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment">     * @parameter expression="${android.ndk.ndk-build-directory}"</em>
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment">     * @parameter property="android.ndk.ndk-build-directory"</em>
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>      @PullParameter
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>      <strong class="jxr_keyword">private</strong> String ndkBuildDirectory;
@@ -85,7 +85,7 @@
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  <em class="jxr_javadoccomment">     * Specifies the classifier with which the artifact should be stored in the repository</em>
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>  <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>  <em class="jxr_javadoccomment">     * @parameter expression="${android.ndk.build.native-classifier}"</em>
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>  <em class="jxr_javadoccomment">     * @parameter property="android.ndk.build.native-classifier"</em>
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>      @PullParameter
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>      <strong class="jxr_keyword">private</strong> String ndkClassifier;
@@ -93,7 +93,7 @@
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  <em class="jxr_javadoccomment">     * Specifies additional command line parameters to pass to ndk-build</em>
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>  <em class="jxr_javadoccomment">     * @parameter expression="${android.ndk.build.command-line}"</em>
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  <em class="jxr_javadoccomment">     * @parameter property="android.ndk.build.command-line"</em>
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>      @PullParameter
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>      <strong class="jxr_keyword">protected</strong> String ndkBuildAdditionalCommandline;
@@ -104,7 +104,7 @@
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>  <em class="jxr_javadoccomment">     * the ${project.build.directory}/libs/&amp;lt;architecture&amp;gt;.</em>
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>  <em class="jxr_javadoccomment">     * If an APK is built as part of the invocation, the libraries will be included from here.</em>
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>  <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>  <em class="jxr_javadoccomment">     * @parameter expression="${android.ndk.build.clear-native-artifacts}" default-value="false"</em>
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  <em class="jxr_javadoccomment">     * @parameter property="android.ndk.build.clear-native-artifacts" default-value="false"</em>
 <a class="jxr_linenumber" name="L100" href="#L100">100</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L101" href="#L101">101</a>     @PullParameter( defaultValue = <span class="jxr_string">"false"</span> )
 <a class="jxr_linenumber" name="L102" href="#L102">102</a>     <strong class="jxr_keyword">private</strong> Boolean clearNativeArtifacts;
@@ -113,7 +113,7 @@
 <a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment">     * Flag indicating whether the resulting native library should be attached as an artifact to the build.  This</em>
 <a class="jxr_linenumber" name="L106" href="#L106">106</a> <em class="jxr_javadoccomment">     * means the resulting .so is installed into the repository as well as being included in the final APK.</em>
 <a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">     * @parameter expression="${android.ndk.build.attach-native-artifact}" default-value="false"</em>
+<a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">     * @parameter property="android.ndk.build.attach-native-artifact" default-value="false"</em>
 <a class="jxr_linenumber" name="L109" href="#L109">109</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L110" href="#L110">110</a>     @PullParameter( defaultValue = <span class="jxr_string">"false"</span> )
 <a class="jxr_linenumber" name="L111" href="#L111">111</a>     <strong class="jxr_keyword">private</strong> Boolean attachNativeArtifacts;
@@ -121,7 +121,7 @@
 <a class="jxr_linenumber" name="L113" href="#L113">113</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L114" href="#L114">114</a> <em class="jxr_javadoccomment">     * Build folder to place built native libraries into</em>
 <a class="jxr_linenumber" name="L115" href="#L115">115</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L116" href="#L116">116</a> <em class="jxr_javadoccomment">     * @parameter expression="${android.ndk.build.ndk-output-directory}"</em>
+<a class="jxr_linenumber" name="L116" href="#L116">116</a> <em class="jxr_javadoccomment">     * @parameter property="android.ndk.build.ndk-output-directory"</em>
 <a class="jxr_linenumber" name="L117" href="#L117">117</a> <em class="jxr_javadoccomment">     * default-value="${project.build.directory}/ndk-libs"</em>
 <a class="jxr_linenumber" name="L118" href="#L118">118</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L119" href="#L119">119</a>     <strong class="jxr_keyword">private</strong> File ndkOutputDirectory;
@@ -129,14 +129,14 @@
 <a class="jxr_linenumber" name="L121" href="#L121">121</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L122" href="#L122">122</a> <em class="jxr_javadoccomment">     * &lt;p&gt;Folder containing native, static libraries compiled and linked by the NDK.&lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L123" href="#L123">123</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L124" href="#L124">124</a> <em class="jxr_javadoccomment">     * @parameter expression="${android.nativeLibrariesOutputDirectory}" default-value="${project.basedir}/obj/local"</em>
+<a class="jxr_linenumber" name="L124" href="#L124">124</a> <em class="jxr_javadoccomment">     * @parameter property="android.nativeLibrariesOutputDirectory" default-value="${project.basedir}/obj/local"</em>
 <a class="jxr_linenumber" name="L125" href="#L125">125</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L126" href="#L126">126</a>     <strong class="jxr_keyword">private</strong> File nativeLibrariesOutputDirectory;
 <a class="jxr_linenumber" name="L127" href="#L127">127</a> 
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L129" href="#L129">129</a> <em class="jxr_javadoccomment">     * &lt;p&gt;Target to invoke on the native makefile.&lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L130" href="#L130">130</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L131" href="#L131">131</a> <em class="jxr_javadoccomment">     * @parameter expression="${android.nativeTarget}"</em>
+<a class="jxr_linenumber" name="L131" href="#L131">131</a> <em class="jxr_javadoccomment">     * @parameter property="android.nativeTarget"</em>
 <a class="jxr_linenumber" name="L132" href="#L132">132</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>     @PullParameter
 <a class="jxr_linenumber" name="L134" href="#L134">134</a>     <strong class="jxr_keyword">private</strong> String target;
@@ -144,7 +144,7 @@
 <a class="jxr_linenumber" name="L136" href="#L136">136</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L137" href="#L137">137</a> <em class="jxr_javadoccomment">     * Defines the architecture for the NDK build</em>
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L139" href="#L139">139</a> <em class="jxr_javadoccomment">     * @parameter expression="${android.ndk.build.architecture}"</em>
+<a class="jxr_linenumber" name="L139" href="#L139">139</a> <em class="jxr_javadoccomment">     * @parameter property="android.ndk.build.architecture"</em>
 <a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">     * @deprecated Use {@link NdkBuildMojo#ndkArchitectures} instead</em>
 <a class="jxr_linenumber" name="L141" href="#L141">141</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>     @PullParameter
@@ -153,7 +153,7 @@
 <a class="jxr_linenumber" name="L145" href="#L145">145</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L146" href="#L146">146</a> <em class="jxr_javadoccomment">     * Defines the architectures for the NDK build - this is a space separated list (i.e x86 armeabi)</em>
 <a class="jxr_linenumber" name="L147" href="#L147">147</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L148" href="#L148">148</a> <em class="jxr_javadoccomment">     * @parameter expression="${android.ndk.build.architectures}"</em>
+<a class="jxr_linenumber" name="L148" href="#L148">148</a> <em class="jxr_javadoccomment">     * @parameter property="android.ndk.build.architectures"</em>
 <a class="jxr_linenumber" name="L149" href="#L149">149</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L150" href="#L150">150</a>     @PullParameter
 <a class="jxr_linenumber" name="L151" href="#L151">151</a>     <strong class="jxr_keyword">private</strong> String ndkArchitectures;
@@ -171,560 +171,560 @@
 <a class="jxr_linenumber" name="L163" href="#L163">163</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../../../com/jayway/maven/plugins/android/configuration/NDKArchitectureToolchainMappings.html">NDKArchitectureToolchainMappings</a> ndkArchitectureToolchainMappings;
 <a class="jxr_linenumber" name="L164" href="#L164">164</a> 
 <a class="jxr_linenumber" name="L165" href="#L165">165</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L166" href="#L166">166</a> <em class="jxr_javadoccomment">     * @component</em>
-<a class="jxr_linenumber" name="L167" href="#L167">167</a> <em class="jxr_javadoccomment">     * @readonly</em>
-<a class="jxr_linenumber" name="L168" href="#L168">168</a> <em class="jxr_javadoccomment">     * @required</em>
-<a class="jxr_linenumber" name="L169" href="#L169">169</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>     <strong class="jxr_keyword">protected</strong> ArtifactFactory artifactFactory;
-<a class="jxr_linenumber" name="L171" href="#L171">171</a> 
-<a class="jxr_linenumber" name="L172" href="#L172">172</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L173" href="#L173">173</a> <em class="jxr_javadoccomment">     * Flag indicating whether the header files used in the build should be included and attached to the build as</em>
-<a class="jxr_linenumber" name="L174" href="#L174">174</a> <em class="jxr_javadoccomment">     * an additional artifact.</em>
-<a class="jxr_linenumber" name="L175" href="#L175">175</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L176" href="#L176">176</a> <em class="jxr_javadoccomment">     * @parameter expression="${android.ndk.build.attach-header-files}" default-value="true"</em>
-<a class="jxr_linenumber" name="L177" href="#L177">177</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>     @PullParameter( defaultValue = <span class="jxr_string">"true"</span> )
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>     <strong class="jxr_keyword">private</strong> Boolean attachHeaderFiles;
-<a class="jxr_linenumber" name="L180" href="#L180">180</a> 
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L182" href="#L182">182</a> <em class="jxr_javadoccomment">     * Flag indicating whether the make files last LOCAL_SRC_INCLUDES should be used for determing what header</em>
-<a class="jxr_linenumber" name="L183" href="#L183">183</a> <em class="jxr_javadoccomment">     * files to include.  Setting this flag to true, overrides any defined header files directives.</em>
-<a class="jxr_linenumber" name="L184" href="#L184">184</a> <em class="jxr_javadoccomment">     * &lt;strong&gt;Note: &lt;/strong&gt; By setting this flag to true, all header files used in the project will be</em>
-<a class="jxr_linenumber" name="L185" href="#L185">185</a> <em class="jxr_javadoccomment">     * added to the resulting header archive.  This may be undesirable in most cases and is therefore turned off by</em>
-<a class="jxr_linenumber" name="L186" href="#L186">186</a> <em class="jxr_javadoccomment">     * default.</em>
-<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L188" href="#L188">188</a> <em class="jxr_javadoccomment">     * @parameter expression="${android.ndk.build.use-local-src-include-paths}" default-value="false"</em>
-<a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L190" href="#L190">190</a>     @PullParameter( defaultValue = <span class="jxr_string">"false"</span> )
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>     <strong class="jxr_keyword">private</strong> Boolean useLocalSrcIncludePaths;
-<a class="jxr_linenumber" name="L192" href="#L192">192</a> 
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L194" href="#L194">194</a> <em class="jxr_javadoccomment">     * Specifies the set of header files includes/excludes which should be used for bundling the exported header</em>
-<a class="jxr_linenumber" name="L195" href="#L195">195</a> <em class="jxr_javadoccomment">     * files.  The below shows an example of how this can be used.</em>
-<a class="jxr_linenumber" name="L196" href="#L196">196</a> <em class="jxr_javadoccomment">     * &lt;p/&gt;</em>
-<a class="jxr_linenumber" name="L197" href="#L197">197</a> <em class="jxr_javadoccomment">     * &lt;pre&gt;</em>
-<a class="jxr_linenumber" name="L198" href="#L198">198</a> <em class="jxr_javadoccomment">     * &amp;lt;headerFilesDirectives&amp;gt;</em>
-<a class="jxr_linenumber" name="L199" href="#L199">199</a> <em class="jxr_javadoccomment">     *   &amp;lt;headerFilesDirective&amp;gt;</em>
-<a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_javadoccomment">     *     &amp;lt;directory&amp;gt;${basedir}/jni/include&amp;lt;/directory&amp;gt;</em>
-<a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_javadoccomment">     *     &amp;lt;includes&amp;gt;</em>
-<a class="jxr_linenumber" name="L202" href="#L202">202</a> <em class="jxr_javadoccomment">     *       &amp;lt;includes&amp;gt;**\/*.h&amp;lt;/include&amp;gt;</em>
-<a class="jxr_linenumber" name="L203" href="#L203">203</a> <em class="jxr_javadoccomment">     *     &amp;lt;/includes&amp;gt;</em>
-<a class="jxr_linenumber" name="L204" href="#L204">204</a> <em class="jxr_javadoccomment">     *   &amp;lt;headerFilesDirective&amp;gt;</em>
-<a class="jxr_linenumber" name="L205" href="#L205">205</a> <em class="jxr_javadoccomment">     * &amp;lt;/headerFilesDirectives&amp;gt;</em>
-<a class="jxr_linenumber" name="L206" href="#L206">206</a> <em class="jxr_javadoccomment">     * &lt;/pre&gt;</em>
-<a class="jxr_linenumber" name="L207" href="#L207">207</a> <em class="jxr_javadoccomment">     * &lt;br/&gt;</em>
-<a class="jxr_linenumber" name="L208" href="#L208">208</a> <em class="jxr_javadoccomment">     * If no &lt;code&gt;headerFilesDirectives&lt;/code&gt; is specified, the default includes will be defined as shown below:</em>
-<a class="jxr_linenumber" name="L209" href="#L209">209</a> <em class="jxr_javadoccomment">     * &lt;br/&gt;</em>
-<a class="jxr_linenumber" name="L210" href="#L210">210</a> <em class="jxr_javadoccomment">     * &lt;pre&gt;</em>
-<a class="jxr_linenumber" name="L211" href="#L211">211</a> <em class="jxr_javadoccomment">     * &amp;lt;headerFilesDirectives&amp;gt;</em>
-<a class="jxr_linenumber" name="L212" href="#L212">212</a> <em class="jxr_javadoccomment">     *   &amp;lt;headerFilesDirective&amp;gt;</em>
-<a class="jxr_linenumber" name="L213" href="#L213">213</a> <em class="jxr_javadoccomment">     *     &amp;lt;directory&amp;gt;${basedir}/jni&amp;lt;/directory&amp;gt;</em>
-<a class="jxr_linenumber" name="L214" href="#L214">214</a> <em class="jxr_javadoccomment">     *     &amp;lt;includes&amp;gt;</em>
-<a class="jxr_linenumber" name="L215" href="#L215">215</a> <em class="jxr_javadoccomment">     *       &amp;lt;includes&amp;gt;**\/*.h&amp;lt;/include&amp;gt;</em>
-<a class="jxr_linenumber" name="L216" href="#L216">216</a> <em class="jxr_javadoccomment">     *     &amp;lt;/includes&amp;gt;</em>
-<a class="jxr_linenumber" name="L217" href="#L217">217</a> <em class="jxr_javadoccomment">     *     &amp;lt;excludes&amp;gt;</em>
-<a class="jxr_linenumber" name="L218" href="#L218">218</a> <em class="jxr_javadoccomment">     *       &amp;lt;exclude&amp;gt;**\/*.c&amp;lt;/exclude&amp;gt;</em>
-<a class="jxr_linenumber" name="L219" href="#L219">219</a> <em class="jxr_javadoccomment">     *     &amp;lt;/excludes&amp;gt;</em>
-<a class="jxr_linenumber" name="L220" href="#L220">220</a> <em class="jxr_javadoccomment">     *   &amp;lt;headerFilesDirective&amp;gt;</em>
-<a class="jxr_linenumber" name="L221" href="#L221">221</a> <em class="jxr_javadoccomment">     *   [..]</em>
-<a class="jxr_linenumber" name="L222" href="#L222">222</a> <em class="jxr_javadoccomment">     * &amp;lt;/headerFilesDirectives&amp;gt;</em>
-<a class="jxr_linenumber" name="L223" href="#L223">223</a> <em class="jxr_javadoccomment">     * &lt;/pre&gt;</em>
-<a class="jxr_linenumber" name="L224" href="#L224">224</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">     * @parameter</em>
-<a class="jxr_linenumber" name="L226" href="#L226">226</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>     @PullParameter
-<a class="jxr_linenumber" name="L228" href="#L228">228</a>     <strong class="jxr_keyword">private</strong> List&lt;HeaderFilesDirective&gt; headerFilesDirectives;
-<a class="jxr_linenumber" name="L229" href="#L229">229</a> 
+<a class="jxr_linenumber" name="L166" href="#L166">166</a> <em class="jxr_javadoccomment">     * Flag indicating whether the header files used in the build should be included and attached to the build as</em>
+<a class="jxr_linenumber" name="L167" href="#L167">167</a> <em class="jxr_javadoccomment">     * an additional artifact.</em>
+<a class="jxr_linenumber" name="L168" href="#L168">168</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L169" href="#L169">169</a> <em class="jxr_javadoccomment">     * @parameter property="android.ndk.build.attach-header-files" default-value="true"</em>
+<a class="jxr_linenumber" name="L170" href="#L170">170</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>     @PullParameter( defaultValue = <span class="jxr_string">"true"</span> )
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>     <strong class="jxr_keyword">private</strong> Boolean attachHeaderFiles;
+<a class="jxr_linenumber" name="L173" href="#L173">173</a> 
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L175" href="#L175">175</a> <em class="jxr_javadoccomment">     * Flag indicating whether the make files last LOCAL_SRC_INCLUDES should be used for determing what header</em>
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> <em class="jxr_javadoccomment">     * files to include.  Setting this flag to true, overrides any defined header files directives.</em>
+<a class="jxr_linenumber" name="L177" href="#L177">177</a> <em class="jxr_javadoccomment">     * &lt;strong&gt;Note: &lt;/strong&gt; By setting this flag to true, all header files used in the project will be</em>
+<a class="jxr_linenumber" name="L178" href="#L178">178</a> <em class="jxr_javadoccomment">     * added to the resulting header archive.  This may be undesirable in most cases and is therefore turned off by</em>
+<a class="jxr_linenumber" name="L179" href="#L179">179</a> <em class="jxr_javadoccomment">     * default.</em>
+<a class="jxr_linenumber" name="L180" href="#L180">180</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L181" href="#L181">181</a> <em class="jxr_javadoccomment">     * @parameter property="android.ndk.build.use-local-src-include-paths" default-value="false"</em>
+<a class="jxr_linenumber" name="L182" href="#L182">182</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>     @PullParameter( defaultValue = <span class="jxr_string">"false"</span> )
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>     <strong class="jxr_keyword">private</strong> Boolean useLocalSrcIncludePaths;
+<a class="jxr_linenumber" name="L185" href="#L185">185</a> 
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">     * Specifies the set of header files includes/excludes which should be used for bundling the exported header</em>
+<a class="jxr_linenumber" name="L188" href="#L188">188</a> <em class="jxr_javadoccomment">     * files.  The below shows an example of how this can be used.</em>
+<a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">     * &lt;p/&gt;</em>
+<a class="jxr_linenumber" name="L190" href="#L190">190</a> <em class="jxr_javadoccomment">     * &lt;pre&gt;</em>
+<a class="jxr_linenumber" name="L191" href="#L191">191</a> <em class="jxr_javadoccomment">     * &amp;lt;headerFilesDirectives&amp;gt;</em>
+<a class="jxr_linenumber" name="L192" href="#L192">192</a> <em class="jxr_javadoccomment">     *   &amp;lt;headerFilesDirective&amp;gt;</em>
+<a class="jxr_linenumber" name="L193" href="#L193">193</a> <em class="jxr_javadoccomment">     *     &amp;lt;directory&amp;gt;${basedir}/jni/include&amp;lt;/directory&amp;gt;</em>
+<a class="jxr_linenumber" name="L194" href="#L194">194</a> <em class="jxr_javadoccomment">     *     &amp;lt;includes&amp;gt;</em>
+<a class="jxr_linenumber" name="L195" href="#L195">195</a> <em class="jxr_javadoccomment">     *       &amp;lt;includes&amp;gt;**\/*.h&amp;lt;/include&amp;gt;</em>
+<a class="jxr_linenumber" name="L196" href="#L196">196</a> <em class="jxr_javadoccomment">     *     &amp;lt;/includes&amp;gt;</em>
+<a class="jxr_linenumber" name="L197" href="#L197">197</a> <em class="jxr_javadoccomment">     *   &amp;lt;headerFilesDirective&amp;gt;</em>
+<a class="jxr_linenumber" name="L198" href="#L198">198</a> <em class="jxr_javadoccomment">     * &amp;lt;/headerFilesDirectives&amp;gt;</em>
+<a class="jxr_linenumber" name="L199" href="#L199">199</a> <em class="jxr_javadoccomment">     * &lt;/pre&gt;</em>
+<a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_javadoccomment">     * &lt;br/&gt;</em>
+<a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_javadoccomment">     * If no &lt;code&gt;headerFilesDirectives&lt;/code&gt; is specified, the default includes will be defined as shown below:</em>
+<a class="jxr_linenumber" name="L202" href="#L202">202</a> <em class="jxr_javadoccomment">     * &lt;br/&gt;</em>
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> <em class="jxr_javadoccomment">     * &lt;pre&gt;</em>
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> <em class="jxr_javadoccomment">     * &amp;lt;headerFilesDirectives&amp;gt;</em>
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> <em class="jxr_javadoccomment">     *   &amp;lt;headerFilesDirective&amp;gt;</em>
+<a class="jxr_linenumber" name="L206" href="#L206">206</a> <em class="jxr_javadoccomment">     *     &amp;lt;directory&amp;gt;${basedir}/jni&amp;lt;/directory&amp;gt;</em>
+<a class="jxr_linenumber" name="L207" href="#L207">207</a> <em class="jxr_javadoccomment">     *     &amp;lt;includes&amp;gt;</em>
+<a class="jxr_linenumber" name="L208" href="#L208">208</a> <em class="jxr_javadoccomment">     *       &amp;lt;includes&amp;gt;**\/*.h&amp;lt;/include&amp;gt;</em>
+<a class="jxr_linenumber" name="L209" href="#L209">209</a> <em class="jxr_javadoccomment">     *     &amp;lt;/includes&amp;gt;</em>
+<a class="jxr_linenumber" name="L210" href="#L210">210</a> <em class="jxr_javadoccomment">     *     &amp;lt;excludes&amp;gt;</em>
+<a class="jxr_linenumber" name="L211" href="#L211">211</a> <em class="jxr_javadoccomment">     *       &amp;lt;exclude&amp;gt;**\/*.c&amp;lt;/exclude&amp;gt;</em>
+<a class="jxr_linenumber" name="L212" href="#L212">212</a> <em class="jxr_javadoccomment">     *     &amp;lt;/excludes&amp;gt;</em>
+<a class="jxr_linenumber" name="L213" href="#L213">213</a> <em class="jxr_javadoccomment">     *   &amp;lt;headerFilesDirective&amp;gt;</em>
+<a class="jxr_linenumber" name="L214" href="#L214">214</a> <em class="jxr_javadoccomment">     *   [..]</em>
+<a class="jxr_linenumber" name="L215" href="#L215">215</a> <em class="jxr_javadoccomment">     * &amp;lt;/headerFilesDirectives&amp;gt;</em>
+<a class="jxr_linenumber" name="L216" href="#L216">216</a> <em class="jxr_javadoccomment">     * &lt;/pre&gt;</em>
+<a class="jxr_linenumber" name="L217" href="#L217">217</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L218" href="#L218">218</a> <em class="jxr_javadoccomment">     * @parameter</em>
+<a class="jxr_linenumber" name="L219" href="#L219">219</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>     @PullParameter
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>     <strong class="jxr_keyword">private</strong> List&lt;HeaderFilesDirective&gt; headerFilesDirectives;
+<a class="jxr_linenumber" name="L222" href="#L222">222</a> 
+<a class="jxr_linenumber" name="L223" href="#L223">223</a> 
+<a class="jxr_linenumber" name="L224" href="#L224">224</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">     * The Jar archiver.</em>
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L227" href="#L227">227</a> <em class="jxr_javadoccomment">     * @component role="org.codehaus.plexus.archiver.Archiver" roleHint="jar"</em>
+<a class="jxr_linenumber" name="L228" href="#L228">228</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>     <strong class="jxr_keyword">private</strong> JarArchiver jarArchiver;
 <a class="jxr_linenumber" name="L230" href="#L230">230</a> 
 <a class="jxr_linenumber" name="L231" href="#L231">231</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L232" href="#L232">232</a> <em class="jxr_javadoccomment">     * The Jar archiver.</em>
-<a class="jxr_linenumber" name="L233" href="#L233">233</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L234" href="#L234">234</a> <em class="jxr_javadoccomment">     * @component role="org.codehaus.plexus.archiver.Archiver" roleHint="jar"</em>
-<a class="jxr_linenumber" name="L235" href="#L235">235</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L236" href="#L236">236</a>     <strong class="jxr_keyword">private</strong> JarArchiver jarArchiver;
-<a class="jxr_linenumber" name="L237" href="#L237">237</a> 
-<a class="jxr_linenumber" name="L238" href="#L238">238</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">     * Flag indicating whether the header files for native, static library dependencies should be used.  If true,</em>
-<a class="jxr_linenumber" name="L240" href="#L240">240</a> <em class="jxr_javadoccomment">     * the header archive for each statically linked dependency will be resolved.</em>
-<a class="jxr_linenumber" name="L241" href="#L241">241</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L242" href="#L242">242</a> <em class="jxr_javadoccomment">     * @parameter expression="${android.ndk.build.use-header-archives}" default-value="true"</em>
-<a class="jxr_linenumber" name="L243" href="#L243">243</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L244" href="#L244">244</a>     @PullParameter( defaultValue = <span class="jxr_string">"true"</span> )
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>     <strong class="jxr_keyword">private</strong> Boolean useHeaderArchives;
-<a class="jxr_linenumber" name="L246" href="#L246">246</a> 
-<a class="jxr_linenumber" name="L247" href="#L247">247</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L248" href="#L248">248</a> <em class="jxr_javadoccomment">     * Defines additional system properties which should be exported to the ndk-build script.  This</em>
-<a class="jxr_linenumber" name="L249" href="#L249">249</a> <em class="jxr_javadoccomment">     * &lt;br/&gt;</em>
-<a class="jxr_linenumber" name="L250" href="#L250">250</a> <em class="jxr_javadoccomment">     * &lt;pre&gt;</em>
-<a class="jxr_linenumber" name="L251" href="#L251">251</a> <em class="jxr_javadoccomment">     * &amp;lt;systemProperties&amp;gt;</em>
-<a class="jxr_linenumber" name="L252" href="#L252">252</a> <em class="jxr_javadoccomment">     *   &amp;lt;propertyName&amp;gt;propertyValue&amp;lt;/propertyName&amp;gt;</em>
-<a class="jxr_linenumber" name="L253" href="#L253">253</a> <em class="jxr_javadoccomment">     *   &amp;lt;build-target&amp;gt;android&amp;lt;/build-target&amp;gt;</em>
-<a class="jxr_linenumber" name="L254" href="#L254">254</a> <em class="jxr_javadoccomment">     *   [..]</em>
-<a class="jxr_linenumber" name="L255" href="#L255">255</a> <em class="jxr_javadoccomment">     * &amp;lt;/systemProperties&amp;gt;</em>
-<a class="jxr_linenumber" name="L256" href="#L256">256</a> <em class="jxr_javadoccomment">     * &lt;/pre&gt;     *</em>
-<a class="jxr_linenumber" name="L257" href="#L257">257</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L258" href="#L258">258</a> <em class="jxr_javadoccomment">     * @parameter</em>
-<a class="jxr_linenumber" name="L259" href="#L259">259</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>     @PullParameter
-<a class="jxr_linenumber" name="L261" href="#L261">261</a>     <strong class="jxr_keyword">private</strong> Map&lt;String, String&gt; systemProperties;
-<a class="jxr_linenumber" name="L262" href="#L262">262</a> 
-<a class="jxr_linenumber" name="L263" href="#L263">263</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L264" href="#L264">264</a> <em class="jxr_javadoccomment">     * Flag indicating whether warnings should be ignored while compiling.  If true,</em>
-<a class="jxr_linenumber" name="L265" href="#L265">265</a> <em class="jxr_javadoccomment">     * the build will not fail if warning are found during compile.</em>
-<a class="jxr_linenumber" name="L266" href="#L266">266</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L267" href="#L267">267</a> <em class="jxr_javadoccomment">     * @parameter expression="${android.ndk.build.ignore-build-warnings}" default-value="true"</em>
-<a class="jxr_linenumber" name="L268" href="#L268">268</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L269" href="#L269">269</a>     @PullParameter( defaultValue = <span class="jxr_string">"true"</span> )
-<a class="jxr_linenumber" name="L270" href="#L270">270</a>     <strong class="jxr_keyword">private</strong> Boolean ignoreBuildWarnings;
-<a class="jxr_linenumber" name="L271" href="#L271">271</a> 
-<a class="jxr_linenumber" name="L272" href="#L272">272</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L273" href="#L273">273</a> <em class="jxr_javadoccomment">     * Defines the regular expression used to detect whether error/warning output from ndk-build is a minor compile</em>
-<a class="jxr_linenumber" name="L274" href="#L274">274</a> <em class="jxr_javadoccomment">     * warning or is actually an error which should cause the build to fail.</em>
-<a class="jxr_linenumber" name="L275" href="#L275">275</a> <em class="jxr_javadoccomment">     * &lt;p/&gt;</em>
-<a class="jxr_linenumber" name="L276" href="#L276">276</a> <em class="jxr_javadoccomment">     * If the pattern matches, the output from the compiler will &lt;strong&gt;not&lt;/strong&gt; be considered an error and compile</em>
-<a class="jxr_linenumber" name="L277" href="#L277">277</a> <em class="jxr_javadoccomment">     * will be successful.</em>
-<a class="jxr_linenumber" name="L278" href="#L278">278</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L279" href="#L279">279</a> <em class="jxr_javadoccomment">     * @parameter expression="${android.ndk.build.build-warnings-regular-expression}"</em>
-<a class="jxr_linenumber" name="L280" href="#L280">280</a> <em class="jxr_javadoccomment">     * default-value=".*[warning|note]: .*"</em>
-<a class="jxr_linenumber" name="L281" href="#L281">281</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L282" href="#L282">282</a>     @PullParameter( defaultValue = <span class="jxr_string">".*[warning|note]: .*"</span> )
-<a class="jxr_linenumber" name="L283" href="#L283">283</a>     <strong class="jxr_keyword">private</strong> String buildWarningsRegularExpression;
-<a class="jxr_linenumber" name="L284" href="#L284">284</a> 
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L286" href="#L286">286</a> <em class="jxr_javadoccomment">     * @parameter expression="${android.ndk.build.skip-native-library-stripping}" default-value="false"</em>
-<a class="jxr_linenumber" name="L287" href="#L287">287</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>     @PullParameter( defaultValue = <span class="jxr_string">"false"</span> )
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>     <strong class="jxr_keyword">private</strong> Boolean skipStripping;
-<a class="jxr_linenumber" name="L290" href="#L290">290</a> 
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L292" href="#L292">292</a> <em class="jxr_javadoccomment">     * @parameter expression="${android.ndk.build.ndk-toolchain}"</em>
-<a class="jxr_linenumber" name="L293" href="#L293">293</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>     @PullParameter
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>     <strong class="jxr_keyword">private</strong> String ndkToolchain;
-<a class="jxr_linenumber" name="L296" href="#L296">296</a> 
-<a class="jxr_linenumber" name="L297" href="#L297">297</a> 
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L299" href="#L299">299</a> <em class="jxr_javadoccomment">     * Specifies the final name of the library output by the build (this allows </em>
-<a class="jxr_linenumber" name="L300" href="#L300">300</a> <em class="jxr_javadoccomment">     * the pom to override the default artifact name). The value should not</em>
-<a class="jxr_linenumber" name="L301" href="#L301">301</a> <em class="jxr_javadoccomment">     * include the 'lib' prefix or filename extension (e.g. '.so').</em>
-<a class="jxr_linenumber" name="L302" href="#L302">302</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L303" href="#L303">303</a> <em class="jxr_javadoccomment">     * @parameter expression="${android.ndk.build.build.final-library.name}"</em>
-<a class="jxr_linenumber" name="L304" href="#L304">304</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>     @PullParameter
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>     <strong class="jxr_keyword">private</strong> String ndkFinalLibraryName;
-<a class="jxr_linenumber" name="L307" href="#L307">307</a> 
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L309" href="#L309">309</a> <em class="jxr_javadoccomment">     * Specifies the makefile to use for the build (if other than the default Android.mk).</em>
-<a class="jxr_linenumber" name="L310" href="#L310">310</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L311" href="#L311">311</a> <em class="jxr_javadoccomment">     * @parameter</em>
-<a class="jxr_linenumber" name="L312" href="#L312">312</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L313" href="#L313">313</a>     @PullParameter
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>     <strong class="jxr_keyword">private</strong> String makefile;
-<a class="jxr_linenumber" name="L315" href="#L315">315</a> 
-<a class="jxr_linenumber" name="L316" href="#L316">316</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L317" href="#L317">317</a> <em class="jxr_javadoccomment">     * Specifies the application makefile to use for the build (if other than the default Application.mk).</em>
-<a class="jxr_linenumber" name="L318" href="#L318">318</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L319" href="#L319">319</a> <em class="jxr_javadoccomment">     * @parameter</em>
-<a class="jxr_linenumber" name="L320" href="#L320">320</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L321" href="#L321">321</a>     @PullParameter
-<a class="jxr_linenumber" name="L322" href="#L322">322</a>     <strong class="jxr_keyword">private</strong> String applicationMakefile;
-<a class="jxr_linenumber" name="L323" href="#L323">323</a> 
-<a class="jxr_linenumber" name="L324" href="#L324">324</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L325" href="#L325">325</a> <em class="jxr_javadoccomment">     * Flag indicating whether to use the max available jobs for the host machine</em>
-<a class="jxr_linenumber" name="L326" href="#L326">326</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L327" href="#L327">327</a> <em class="jxr_javadoccomment">     * @parameter expression="${android.ndk.build.maxJobs}" default-value="false"</em>
-<a class="jxr_linenumber" name="L328" href="#L328">328</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L329" href="#L329">329</a>     @PullParameter( defaultValue = <span class="jxr_string">"false"</span> )
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>     <strong class="jxr_keyword">private</strong> Boolean maxJobs;
-<a class="jxr_linenumber" name="L331" href="#L331">331</a> 
-<a class="jxr_linenumber" name="L332" href="#L332">332</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L333" href="#L333">333</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L334" href="#L334">334</a> <em class="jxr_javadoccomment">     * @throws MojoExecutionException</em>
-<a class="jxr_linenumber" name="L335" href="#L335">335</a> <em class="jxr_javadoccomment">     * @throws MojoFailureException</em>
-<a class="jxr_linenumber" name="L336" href="#L336">336</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L337" href="#L337">337</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> execute() <strong class="jxr_keyword">throws</strong> MojoExecutionException, MojoFailureException
-<a class="jxr_linenumber" name="L338" href="#L338">338</a>     {
-<a class="jxr_linenumber" name="L339" href="#L339">339</a>         <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L340" href="#L340">340</a>         {
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>             <em class="jxr_comment">// Validate the NDK</em>
-<a class="jxr_linenumber" name="L342" href="#L342">342</a>             <strong class="jxr_keyword">final</strong> File ndkBuildFile = <strong class="jxr_keyword">new</strong> File( getAndroidNdk().getNdkBuildPath() );
-<a class="jxr_linenumber" name="L343" href="#L343">343</a>             NativeHelper.validateNDKVersion( ndkBuildFile.getParentFile() );
-<a class="jxr_linenumber" name="L344" href="#L344">344</a> 
-<a class="jxr_linenumber" name="L345" href="#L345">345</a>             <em class="jxr_comment">// Validate the makefile - if our packaging type is so (for example) and there are</em>
-<a class="jxr_linenumber" name="L346" href="#L346">346</a>             <em class="jxr_comment">// dependencies on .a files (or shared files for that matter) the makefile should include</em>
-<a class="jxr_linenumber" name="L347" href="#L347">347</a>             <em class="jxr_comment">// the include of our Android Maven plugin generated makefile.</em>
-<a class="jxr_linenumber" name="L348" href="#L348">348</a>             validateMakefile( project, makefile );
-<a class="jxr_linenumber" name="L349" href="#L349">349</a> 
-<a class="jxr_linenumber" name="L350" href="#L350">350</a>             String[] resolvedNDKArchitectures = NativeHelper.getNdkArchitectures(
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>                     ndkArchitecture != <strong class="jxr_keyword">null</strong> ? ndkArchitecture : ndkArchitectures, applicationMakefile,
-<a class="jxr_linenumber" name="L352" href="#L352">352</a>                     project.getBasedir() );
-<a class="jxr_linenumber" name="L353" href="#L353">353</a> 
-<a class="jxr_linenumber" name="L354" href="#L354">354</a>             <strong class="jxr_keyword">for</strong> ( String ndkArchitecture : resolvedNDKArchitectures )
-<a class="jxr_linenumber" name="L355" href="#L355">355</a>             {
-<a class="jxr_linenumber" name="L356" href="#L356">356</a>                 <a href="../../../../../../com/jayway/maven/plugins/android/phase05compile/NdkBuildMojo.html">Preparation</a> preparation = <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/phase05compile/NdkBuildMojo.html">Preparation</a>().invoke( ndkArchitecture );
-<a class="jxr_linenumber" name="L357" href="#L357">357</a>                 <strong class="jxr_keyword">boolean</strong> libsDirectoryExists = preparation.isLibsDirectoryExists();
-<a class="jxr_linenumber" name="L358" href="#L358">358</a>                 File directoryToRemove = preparation.getDirectoryToRemove();
-<a class="jxr_linenumber" name="L359" href="#L359">359</a> 
-<a class="jxr_linenumber" name="L360" href="#L360">360</a>                 <em class="jxr_comment">// Start setting up the command line to be executed</em>
-<a class="jxr_linenumber" name="L361" href="#L361">361</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/CommandExecutor.html">CommandExecutor</a> executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>                 <em class="jxr_comment">// Add an error listener to the build - this allows the build to conditionally fail</em>
-<a class="jxr_linenumber" name="L363" href="#L363">363</a>                 <em class="jxr_comment">// depending on a) the output of the build b) whether or not build errors (output on stderr) should be</em>
-<a class="jxr_linenumber" name="L364" href="#L364">364</a>                 <em class="jxr_comment">// ignored and c) whether the pattern matches or not</em>
-<a class="jxr_linenumber" name="L365" href="#L365">365</a>                 executor.setErrorListener( getNdkErrorListener() );
-<a class="jxr_linenumber" name="L366" href="#L366">366</a> 
-<a class="jxr_linenumber" name="L367" href="#L367">367</a>                 <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; nativeLibraryArtifacts = findNativeLibraryDependencies();
-<a class="jxr_linenumber" name="L368" href="#L368">368</a> 
-<a class="jxr_linenumber" name="L369" href="#L369">369</a>                 <em class="jxr_comment">// If there are any static libraries the code needs to link to, include those in the make file</em>
-<a class="jxr_linenumber" name="L370" href="#L370">370</a>                 <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; resolveNativeLibraryArtifacts = <a href="../../../../../../com/jayway/maven/plugins/android/common/AetherHelper.html">AetherHelper</a>
-<a class="jxr_linenumber" name="L371" href="#L371">371</a>                         .resolveArtifacts( nativeLibraryArtifacts, repoSystem, repoSession, projectRepos );
-<a class="jxr_linenumber" name="L372" href="#L372">372</a>                 <strong class="jxr_keyword">if</strong> ( getLog().isDebugEnabled() )
-<a class="jxr_linenumber" name="L373" href="#L373">373</a>                 {
-<a class="jxr_linenumber" name="L374" href="#L374">374</a>                     getLog().debug( <span class="jxr_string">"resolveArtifacts found "</span> + resolveNativeLibraryArtifacts.size()
-<a class="jxr_linenumber" name="L375" href="#L375">375</a>                             + <span class="jxr_string">": "</span> + resolveNativeLibraryArtifacts.toString() );
-<a class="jxr_linenumber" name="L376" href="#L376">376</a>                 }
-<a class="jxr_linenumber" name="L377" href="#L377">377</a> 
-<a class="jxr_linenumber" name="L378" href="#L378">378</a>                 <strong class="jxr_keyword">final</strong> File makefileDir = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory(), NDK_MAKFILE_DIRECTORY );
-<a class="jxr_linenumber" name="L379" href="#L379">379</a>                 makefileDir.mkdirs();
-<a class="jxr_linenumber" name="L380" href="#L380">380</a>                 <strong class="jxr_keyword">final</strong> File androidMavenMakefile = <strong class="jxr_keyword">new</strong> File( makefileDir, <span class="jxr_string">"android_maven_plugin_makefile.mk"</span> );
-<a class="jxr_linenumber" name="L381" href="#L381">381</a> 
-<a class="jxr_linenumber" name="L382" href="#L382">382</a>                 <em class="jxr_comment">// set the ndk build directory</em>
-<a class="jxr_linenumber" name="L383" href="#L383">383</a>                 <strong class="jxr_keyword">if</strong> ( ndkBuildDirectory == <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L384" href="#L384">384</a>                 {
-<a class="jxr_linenumber" name="L385" href="#L385">385</a>                     ndkBuildDirectory = project.getBasedir().getAbsolutePath();
-<a class="jxr_linenumber" name="L386" href="#L386">386</a>                 }
-<a class="jxr_linenumber" name="L387" href="#L387">387</a> 
-<a class="jxr_linenumber" name="L388" href="#L388">388</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/phase05compile/MakefileHelper.html">MakefileHelper</a> makefileHelper = <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/phase05compile/MakefileHelper.html">MakefileHelper</a>( getLog(),
-<a class="jxr_linenumber" name="L389" href="#L389">389</a>                                                                           repoSystem, repoSession, projectRepos,
-<a class="jxr_linenumber" name="L390" href="#L390">390</a>                         getUnpackedLibsDirectory() );
-<a class="jxr_linenumber" name="L391" href="#L391">391</a>                 <strong class="jxr_keyword">final</strong> MakefileHelper.MakefileHolder makefileHolder = makefileHelper
-<a class="jxr_linenumber" name="L392" href="#L392">392</a>                         .createMakefileFromArtifacts( <strong class="jxr_keyword">new</strong> File( ndkBuildDirectory ),
-<a class="jxr_linenumber" name="L393" href="#L393">393</a>                                                       resolveNativeLibraryArtifacts, ndkArchitecture, <span class="jxr_string">"armeabi"</span>,
-<a class="jxr_linenumber" name="L394" href="#L394">394</a>                                                       useHeaderArchives );
-<a class="jxr_linenumber" name="L395" href="#L395">395</a> 
-<a class="jxr_linenumber" name="L396" href="#L396">396</a>                 <strong class="jxr_keyword">final</strong> FileOutputStream output = <strong class="jxr_keyword">new</strong> FileOutputStream( androidMavenMakefile );
-<a class="jxr_linenumber" name="L397" href="#L397">397</a>                 <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L398" href="#L398">398</a>                 {
-<a class="jxr_linenumber" name="L399" href="#L399">399</a>                     IOUtil.copy( makefileHolder.getMakeFile(), output );
-<a class="jxr_linenumber" name="L400" href="#L400">400</a>                 }
-<a class="jxr_linenumber" name="L401" href="#L401">401</a>                 <strong class="jxr_keyword">finally</strong>
-<a class="jxr_linenumber" name="L402" href="#L402">402</a>                 {
-<a class="jxr_linenumber" name="L403" href="#L403">403</a>                     output.close();
-<a class="jxr_linenumber" name="L404" href="#L404">404</a>                 }
-<a class="jxr_linenumber" name="L405" href="#L405">405</a> 
-<a class="jxr_linenumber" name="L406" href="#L406">406</a>                 <em class="jxr_comment">// Add the path to the generated makefile - this is picked up by the build (by an include from the user)</em>
-<a class="jxr_linenumber" name="L407" href="#L407">407</a>                 executor.addEnvironment( <span class="jxr_string">"ANDROID_MAVEN_PLUGIN_MAKEFILE"</span>, androidMavenMakefile.getAbsolutePath() );
-<a class="jxr_linenumber" name="L408" href="#L408">408</a> 
-<a class="jxr_linenumber" name="L409" href="#L409">409</a>                 setupNativeLibraryEnvironment( makefileHelper, executor, resolveNativeLibraryArtifacts,
-<a class="jxr_linenumber" name="L410" href="#L410">410</a>                                                ndkArchitecture );
-<a class="jxr_linenumber" name="L411" href="#L411">411</a> 
-<a class="jxr_linenumber" name="L412" href="#L412">412</a>                 <em class="jxr_comment">// Adds the location of the Makefile capturer file - this file will after the build include</em>
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>                 <em class="jxr_comment">// things like header files, flags etc.  It is processed after the build to retrieve the headers</em>
-<a class="jxr_linenumber" name="L414" href="#L414">414</a>                 <em class="jxr_comment">// and also capture flags etc ...</em>
-<a class="jxr_linenumber" name="L415" href="#L415">415</a>                 <strong class="jxr_keyword">final</strong> File makefileCaptureFile = File.createTempFile( <span class="jxr_string">"android_maven_plugin_makefile_captures"</span>,
-<a class="jxr_linenumber" name="L416" href="#L416">416</a>                                                                       <span class="jxr_string">".tmp"</span> );
-<a class="jxr_linenumber" name="L417" href="#L417">417</a>                 makefileCaptureFile.deleteOnExit();
-<a class="jxr_linenumber" name="L418" href="#L418">418</a>                 executor.addEnvironment( MakefileHelper.MAKEFILE_CAPTURE_FILE, makefileCaptureFile.getAbsolutePath() );
-<a class="jxr_linenumber" name="L419" href="#L419">419</a> 
-<a class="jxr_linenumber" name="L420" href="#L420">420</a>                 <em class="jxr_comment">// Add any defined system properties</em>
-<a class="jxr_linenumber" name="L421" href="#L421">421</a>                 <strong class="jxr_keyword">if</strong> ( systemProperties != <strong class="jxr_keyword">null</strong> &amp;&amp; ! systemProperties.isEmpty() )
-<a class="jxr_linenumber" name="L422" href="#L422">422</a>                 {
-<a class="jxr_linenumber" name="L423" href="#L423">423</a>                     <strong class="jxr_keyword">for</strong> ( Map.Entry&lt;String, String&gt; entry : systemProperties.entrySet() )
-<a class="jxr_linenumber" name="L424" href="#L424">424</a>                     {
-<a class="jxr_linenumber" name="L425" href="#L425">425</a>                         executor.addEnvironment( entry.getKey(), entry.getValue() );
-<a class="jxr_linenumber" name="L426" href="#L426">426</a>                     }
-<a class="jxr_linenumber" name="L427" href="#L427">427</a>                 }
-<a class="jxr_linenumber" name="L428" href="#L428">428</a>                 executor.setLogger( <strong class="jxr_keyword">this</strong>.getLog() );
-<a class="jxr_linenumber" name="L429" href="#L429">429</a>                 <em class="jxr_comment">// Setup the command line for the make</em>
-<a class="jxr_linenumber" name="L430" href="#L430">430</a>                 <strong class="jxr_keyword">final</strong> List&lt;String&gt; commands = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
-<a class="jxr_linenumber" name="L431" href="#L431">431</a>                 <em class="jxr_comment">// Setup the build directory (defaults to the current directory) but may be different depending</em>
-<a class="jxr_linenumber" name="L432" href="#L432">432</a>                 <em class="jxr_comment">// on user configuration</em>
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>                 commands.add( <span class="jxr_string">"-C"</span> );
-<a class="jxr_linenumber" name="L434" href="#L434">434</a>                 commands.add( ndkBuildDirectory );
-<a class="jxr_linenumber" name="L435" href="#L435">435</a> 
-<a class="jxr_linenumber" name="L436" href="#L436">436</a>                 <em class="jxr_comment">// If the build should use a custom makefile or not - some validation is done to ensure</em>
-<a class="jxr_linenumber" name="L437" href="#L437">437</a>                 <em class="jxr_comment">// this exists and all</em>
-<a class="jxr_linenumber" name="L438" href="#L438">438</a>                 <strong class="jxr_keyword">if</strong> ( makefile != <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L439" href="#L439">439</a>                 {
-<a class="jxr_linenumber" name="L440" href="#L440">440</a>                     File makeFile = <strong class="jxr_keyword">new</strong> File( project.getBasedir(), makefile );
-<a class="jxr_linenumber" name="L441" href="#L441">441</a>                     <strong class="jxr_keyword">if</strong> ( ! makeFile.exists() )
-<a class="jxr_linenumber" name="L442" href="#L442">442</a>                     {
-<a class="jxr_linenumber" name="L443" href="#L443">443</a>                         getLog().error( <span class="jxr_string">"Specified makefile "</span> + makeFile + <span class="jxr_string">" does not exist"</span> );
-<a class="jxr_linenumber" name="L444" href="#L444">444</a>                         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"Specified makefile "</span> + makeFile + <span class="jxr_string">" does not exist"</span> );
-<a class="jxr_linenumber" name="L445" href="#L445">445</a>                     }
-<a class="jxr_linenumber" name="L446" href="#L446">446</a>                     commands.add( <span class="jxr_string">"-f"</span> );
-<a class="jxr_linenumber" name="L447" href="#L447">447</a>                     commands.add( makefile );
-<a class="jxr_linenumber" name="L448" href="#L448">448</a>                 }
-<a class="jxr_linenumber" name="L449" href="#L449">449</a> 
-<a class="jxr_linenumber" name="L450" href="#L450">450</a>                 configureApplicationMakefile( commands );
-<a class="jxr_linenumber" name="L451" href="#L451">451</a>                 configureMaxJobs( commands );
-<a class="jxr_linenumber" name="L452" href="#L452">452</a>                 configureNdkToolchain( ndkArchitecture, commands );
-<a class="jxr_linenumber" name="L453" href="#L453">453</a>                 configureAdditionalCommands( commands );
-<a class="jxr_linenumber" name="L454" href="#L454">454</a> 
-<a class="jxr_linenumber" name="L455" href="#L455">455</a>                 <em class="jxr_comment">// If a build target is specified, tag that onto the command line as the</em>
-<a class="jxr_linenumber" name="L456" href="#L456">456</a>                 <em class="jxr_comment">// very last of the parameters</em>
-<a class="jxr_linenumber" name="L457" href="#L457">457</a>                 <strong class="jxr_keyword">if</strong> ( target != <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L458" href="#L458">458</a>                 {
-<a class="jxr_linenumber" name="L459" href="#L459">459</a>                     commands.add( target );
-<a class="jxr_linenumber" name="L460" href="#L460">460</a>                 }
-<a class="jxr_linenumber" name="L461" href="#L461">461</a>                 <strong class="jxr_keyword">else</strong> <em class="jxr_comment">/*if ( "a".equals( project.getPackaging() ) )*/</em>
-<a class="jxr_linenumber" name="L462" href="#L462">462</a>                 {
-<a class="jxr_linenumber" name="L463" href="#L463">463</a>                     commands.add( project.getArtifactId() );
-<a class="jxr_linenumber" name="L464" href="#L464">464</a>                 }
-<a class="jxr_linenumber" name="L465" href="#L465">465</a> 
-<a class="jxr_linenumber" name="L466" href="#L466">466</a>                 <strong class="jxr_keyword">final</strong> String ndkBuildPath = resolveNdkBuildExecutable();
-<a class="jxr_linenumber" name="L467" href="#L467">467</a>                 getLog().debug( ndkBuildPath + <span class="jxr_string">" "</span> + commands.toString() );
-<a class="jxr_linenumber" name="L468" href="#L468">468</a>                 getLog().info( <span class="jxr_string">"Executing NDK make at : "</span> + ndkBuildDirectory );
+<a class="jxr_linenumber" name="L232" href="#L232">232</a> <em class="jxr_javadoccomment">     * @component role="org.apache.maven.artifact.handler.ArtifactHandler" roleHint="har"</em>
+<a class="jxr_linenumber" name="L233" href="#L233">233</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>     <strong class="jxr_keyword">private</strong> ArtifactHandler harArtifactHandler;
+<a class="jxr_linenumber" name="L235" href="#L235">235</a> 
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> <em class="jxr_javadoccomment">     * Flag indicating whether the header files for native, static library dependencies should be used.  If true,</em>
+<a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">     * the header archive for each statically linked dependency will be resolved.</em>
+<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L240" href="#L240">240</a> <em class="jxr_javadoccomment">     * @parameter property="android.ndk.build.use-header-archives" default-value="true"</em>
+<a class="jxr_linenumber" name="L241" href="#L241">241</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>     @PullParameter( defaultValue = <span class="jxr_string">"true"</span> )
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>     <strong class="jxr_keyword">private</strong> Boolean useHeaderArchives;
+<a class="jxr_linenumber" name="L244" href="#L244">244</a> 
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L246" href="#L246">246</a> <em class="jxr_javadoccomment">     * Defines additional system properties which should be exported to the ndk-build script.  This</em>
+<a class="jxr_linenumber" name="L247" href="#L247">247</a> <em class="jxr_javadoccomment">     * &lt;br/&gt;</em>
+<a class="jxr_linenumber" name="L248" href="#L248">248</a> <em class="jxr_javadoccomment">     * &lt;pre&gt;</em>
+<a class="jxr_linenumber" name="L249" href="#L249">249</a> <em class="jxr_javadoccomment">     * &amp;lt;systemProperties&amp;gt;</em>
+<a class="jxr_linenumber" name="L250" href="#L250">250</a> <em class="jxr_javadoccomment">     *   &amp;lt;propertyName&amp;gt;propertyValue&amp;lt;/propertyName&amp;gt;</em>
+<a class="jxr_linenumber" name="L251" href="#L251">251</a> <em class="jxr_javadoccomment">     *   &amp;lt;build-target&amp;gt;android&amp;lt;/build-target&amp;gt;</em>
+<a class="jxr_linenumber" name="L252" href="#L252">252</a> <em class="jxr_javadoccomment">     *   [..]</em>
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> <em class="jxr_javadoccomment">     * &amp;lt;/systemProperties&amp;gt;</em>
+<a class="jxr_linenumber" name="L254" href="#L254">254</a> <em class="jxr_javadoccomment">     * &lt;/pre&gt;     *</em>
+<a class="jxr_linenumber" name="L255" href="#L255">255</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L256" href="#L256">256</a> <em class="jxr_javadoccomment">     * @parameter</em>
+<a class="jxr_linenumber" name="L257" href="#L257">257</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>     @PullParameter
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>     <strong class="jxr_keyword">private</strong> Map&lt;String, String&gt; systemProperties;
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> 
+<a class="jxr_linenumber" name="L261" href="#L261">261</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> <em class="jxr_javadoccomment">     * Flag indicating whether warnings should be ignored while compiling.  If true,</em>
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> <em class="jxr_javadoccomment">     * the build will not fail if warning are found during compile.</em>
+<a class="jxr_linenumber" name="L264" href="#L264">264</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L265" href="#L265">265</a> <em class="jxr_javadoccomment">     * @parameter property="android.ndk.build.ignore-build-warnings" default-value="true"</em>
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L267" href="#L267">267</a>     @PullParameter( defaultValue = <span class="jxr_string">"true"</span> )
+<a class="jxr_linenumber" name="L268" href="#L268">268</a>     <strong class="jxr_keyword">private</strong> Boolean ignoreBuildWarnings;
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> 
+<a class="jxr_linenumber" name="L270" href="#L270">270</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> <em class="jxr_javadoccomment">     * Defines the regular expression used to detect whether error/warning output from ndk-build is a minor compile</em>
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> <em class="jxr_javadoccomment">     * warning or is actually an error which should cause the build to fail.</em>
+<a class="jxr_linenumber" name="L273" href="#L273">273</a> <em class="jxr_javadoccomment">     * &lt;p/&gt;</em>
+<a class="jxr_linenumber" name="L274" href="#L274">274</a> <em class="jxr_javadoccomment">     * If the pattern matches, the output from the compiler will &lt;strong&gt;not&lt;/strong&gt; be considered an error and compile</em>
+<a class="jxr_linenumber" name="L275" href="#L275">275</a> <em class="jxr_javadoccomment">     * will be successful.</em>
+<a class="jxr_linenumber" name="L276" href="#L276">276</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> <em class="jxr_javadoccomment">     * @parameter property="android.ndk.build.build-warnings-regular-expression"</em>
+<a class="jxr_linenumber" name="L278" href="#L278">278</a> <em class="jxr_javadoccomment">     * default-value=".*[warning|note]: .*"</em>
+<a class="jxr_linenumber" name="L279" href="#L279">279</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L280" href="#L280">280</a>     @PullParameter( defaultValue = <span class="jxr_string">".*[warning|note]: .*"</span> )
+<a class="jxr_linenumber" name="L281" href="#L281">281</a>     <strong class="jxr_keyword">private</strong> String buildWarningsRegularExpression;
+<a class="jxr_linenumber" name="L282" href="#L282">282</a> 
+<a class="jxr_linenumber" name="L283" href="#L283">283</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L284" href="#L284">284</a> <em class="jxr_javadoccomment">     * @parameter property="android.ndk.build.skip-native-library-stripping" default-value="false"</em>
+<a class="jxr_linenumber" name="L285" href="#L285">285</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L286" href="#L286">286</a>     @PullParameter( defaultValue = <span class="jxr_string">"false"</span> )
+<a class="jxr_linenumber" name="L287" href="#L287">287</a>     <strong class="jxr_keyword">private</strong> Boolean skipStripping;
+<a class="jxr_linenumber" name="L288" href="#L288">288</a> 
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L290" href="#L290">290</a> <em class="jxr_javadoccomment">     * @parameter property="android.ndk.build.ndk-toolchain"</em>
+<a class="jxr_linenumber" name="L291" href="#L291">291</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>     @PullParameter
+<a class="jxr_linenumber" name="L293" href="#L293">293</a>     <strong class="jxr_keyword">private</strong> String ndkToolchain;
+<a class="jxr_linenumber" name="L294" href="#L294">294</a> 
+<a class="jxr_linenumber" name="L295" href="#L295">295</a> 
+<a class="jxr_linenumber" name="L296" href="#L296">296</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L297" href="#L297">297</a> <em class="jxr_javadoccomment">     * Specifies the final name of the library output by the build (this allows </em>
+<a class="jxr_linenumber" name="L298" href="#L298">298</a> <em class="jxr_javadoccomment">     * the pom to override the default artifact name). The value should not</em>
+<a class="jxr_linenumber" name="L299" href="#L299">299</a> <em class="jxr_javadoccomment">     * include the 'lib' prefix or filename extension (e.g. '.so').</em>
+<a class="jxr_linenumber" name="L300" href="#L300">300</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L301" href="#L301">301</a> <em class="jxr_javadoccomment">     * @parameter property="android.ndk.build.build.final-library.name"</em>
+<a class="jxr_linenumber" name="L302" href="#L302">302</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>     @PullParameter
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>     <strong class="jxr_keyword">private</strong> String ndkFinalLibraryName;
+<a class="jxr_linenumber" name="L305" href="#L305">305</a> 
+<a class="jxr_linenumber" name="L306" href="#L306">306</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L307" href="#L307">307</a> <em class="jxr_javadoccomment">     * Specifies the makefile to use for the build (if other than the default Android.mk).</em>
+<a class="jxr_linenumber" name="L308" href="#L308">308</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L309" href="#L309">309</a> <em class="jxr_javadoccomment">     * @parameter</em>
+<a class="jxr_linenumber" name="L310" href="#L310">310</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>     @PullParameter
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>     <strong class="jxr_keyword">private</strong> String makefile;
+<a class="jxr_linenumber" name="L313" href="#L313">313</a> 
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L315" href="#L315">315</a> <em class="jxr_javadoccomment">     * Specifies the application makefile to use for the build (if other than the default Application.mk).</em>
+<a class="jxr_linenumber" name="L316" href="#L316">316</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L317" href="#L317">317</a> <em class="jxr_javadoccomment">     * @parameter</em>
+<a class="jxr_linenumber" name="L318" href="#L318">318</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L319" href="#L319">319</a>     @PullParameter
+<a class="jxr_linenumber" name="L320" href="#L320">320</a>     <strong class="jxr_keyword">private</strong> String applicationMakefile;
+<a class="jxr_linenumber" name="L321" href="#L321">321</a> 
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> <em class="jxr_javadoccomment">     * Flag indicating whether to use the max available jobs for the host machine</em>
+<a class="jxr_linenumber" name="L324" href="#L324">324</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L325" href="#L325">325</a> <em class="jxr_javadoccomment">     * @parameter property="android.ndk.build.maxJobs" default-value="false"</em>
+<a class="jxr_linenumber" name="L326" href="#L326">326</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L327" href="#L327">327</a>     @PullParameter( defaultValue = <span class="jxr_string">"false"</span> )
+<a class="jxr_linenumber" name="L328" href="#L328">328</a>     <strong class="jxr_keyword">private</strong> Boolean maxJobs;
+<a class="jxr_linenumber" name="L329" href="#L329">329</a> 
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L331" href="#L331">331</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L332" href="#L332">332</a> <em class="jxr_javadoccomment">     * @throws MojoExecutionException</em>
+<a class="jxr_linenumber" name="L333" href="#L333">333</a> <em class="jxr_javadoccomment">     * @throws MojoFailureException</em>
+<a class="jxr_linenumber" name="L334" href="#L334">334</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L335" href="#L335">335</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> execute() <strong class="jxr_keyword">throws</strong> MojoExecutionException, MojoFailureException
+<a class="jxr_linenumber" name="L336" href="#L336">336</a>     {
+<a class="jxr_linenumber" name="L337" href="#L337">337</a>         <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L338" href="#L338">338</a>         {
+<a class="jxr_linenumber" name="L339" href="#L339">339</a>             <em class="jxr_comment">// Validate the NDK</em>
+<a class="jxr_linenumber" name="L340" href="#L340">340</a>             <strong class="jxr_keyword">final</strong> File ndkBuildFile = <strong class="jxr_keyword">new</strong> File( getAndroidNdk().getNdkBuildPath() );
+<a class="jxr_linenumber" name="L341" href="#L341">341</a>             NativeHelper.validateNDKVersion( ndkBuildFile.getParentFile() );
+<a class="jxr_linenumber" name="L342" href="#L342">342</a> 
+<a class="jxr_linenumber" name="L343" href="#L343">343</a>             <em class="jxr_comment">// Validate the makefile - if our packaging type is so (for example) and there are</em>
+<a class="jxr_linenumber" name="L344" href="#L344">344</a>             <em class="jxr_comment">// dependencies on .a files (or shared files for that matter) the makefile should include</em>
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>             <em class="jxr_comment">// the include of our Android Maven plugin generated makefile.</em>
+<a class="jxr_linenumber" name="L346" href="#L346">346</a>             validateMakefile( project, makefile );
+<a class="jxr_linenumber" name="L347" href="#L347">347</a> 
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>             String[] resolvedNDKArchitectures = NativeHelper.getNdkArchitectures(
+<a class="jxr_linenumber" name="L349" href="#L349">349</a>                     ndkArchitecture != <strong class="jxr_keyword">null</strong> ? ndkArchitecture : ndkArchitectures, applicationMakefile,
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>                     project.getBasedir() );
+<a class="jxr_linenumber" name="L351" href="#L351">351</a> 
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>             <strong class="jxr_keyword">for</strong> ( String ndkArchitecture : resolvedNDKArchitectures )
+<a class="jxr_linenumber" name="L353" href="#L353">353</a>             {
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>                 getLog().debug( <span class="jxr_string">"Resolving for NDK architecture : "</span> + ndkArchitecture );
+<a class="jxr_linenumber" name="L355" href="#L355">355</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/phase05compile/NdkBuildMojo.html">Preparation</a> preparation = <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/phase05compile/NdkBuildMojo.html">Preparation</a>().invoke( ndkArchitecture );
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>                 <strong class="jxr_keyword">boolean</strong> libsDirectoryExists = preparation.isLibsDirectoryExists();
+<a class="jxr_linenumber" name="L357" href="#L357">357</a>                 <strong class="jxr_keyword">final</strong> File directoryToRemove = preparation.getDirectoryToRemove();
+<a class="jxr_linenumber" name="L358" href="#L358">358</a> 
+<a class="jxr_linenumber" name="L359" href="#L359">359</a>                 <em class="jxr_comment">// Start setting up the command line to be executed</em>
+<a class="jxr_linenumber" name="L360" href="#L360">360</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/CommandExecutor.html">CommandExecutor</a> executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>                 <em class="jxr_comment">// Add an error listener to the build - this allows the build to conditionally fail</em>
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>                 <em class="jxr_comment">// depending on a) the output of the build b) whether or not build errors (output on stderr) should be</em>
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>                 <em class="jxr_comment">// ignored and c) whether the pattern matches or not</em>
+<a class="jxr_linenumber" name="L364" href="#L364">364</a>                 executor.setErrorListener( getNdkErrorListener() );
+<a class="jxr_linenumber" name="L365" href="#L365">365</a> 
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>                 <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; nativeLibraryArtifacts = findNativeLibraryDependencies();
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> 
+<a class="jxr_linenumber" name="L368" href="#L368">368</a>                 <em class="jxr_comment">// If there are any static libraries the code needs to link to, include those in the make file</em>
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>                 <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; resolveNativeLibraryArtifacts =
+<a class="jxr_linenumber" name="L370" href="#L370">370</a>                         getArtifactResolverHelper().resolveArtifacts( nativeLibraryArtifacts );
+<a class="jxr_linenumber" name="L371" href="#L371">371</a> 
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>                 getLog().debug( <span class="jxr_string">"resolveArtifacts found "</span> + resolveNativeLibraryArtifacts.size()
+<a class="jxr_linenumber" name="L373" href="#L373">373</a>                         + <span class="jxr_string">": "</span> + resolveNativeLibraryArtifacts.toString() );
+<a class="jxr_linenumber" name="L374" href="#L374">374</a> 
+<a class="jxr_linenumber" name="L375" href="#L375">375</a>                 <strong class="jxr_keyword">final</strong> File makefileDir = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory(), NDK_MAKFILE_DIRECTORY );
+<a class="jxr_linenumber" name="L376" href="#L376">376</a>                 makefileDir.mkdirs();
+<a class="jxr_linenumber" name="L377" href="#L377">377</a>                 <strong class="jxr_keyword">final</strong> File androidMavenMakefile = <strong class="jxr_keyword">new</strong> File( makefileDir, <span class="jxr_string">"android_maven_plugin_makefile.mk"</span> );
+<a class="jxr_linenumber" name="L378" href="#L378">378</a> 
+<a class="jxr_linenumber" name="L379" href="#L379">379</a>                 <em class="jxr_comment">// set the ndk build directory</em>
+<a class="jxr_linenumber" name="L380" href="#L380">380</a>                 <strong class="jxr_keyword">if</strong> ( ndkBuildDirectory == <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L381" href="#L381">381</a>                 {
+<a class="jxr_linenumber" name="L382" href="#L382">382</a>                     ndkBuildDirectory = project.getBasedir().getAbsolutePath();
+<a class="jxr_linenumber" name="L383" href="#L383">383</a>                 }
+<a class="jxr_linenumber" name="L384" href="#L384">384</a> 
+<a class="jxr_linenumber" name="L385" href="#L385">385</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/phase05compile/MakefileHelper.html">MakefileHelper</a> makefileHelper = <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/phase05compile/MakefileHelper.html">MakefileHelper</a>( getLog(),
+<a class="jxr_linenumber" name="L386" href="#L386">386</a>                         getUnpackedLibHelper(), getArtifactResolverHelper(),
+<a class="jxr_linenumber" name="L387" href="#L387">387</a>                         harArtifactHandler, getUnpackedLibsDirectory()
+<a class="jxr_linenumber" name="L388" href="#L388">388</a>                 );
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>                 <strong class="jxr_keyword">final</strong> MakefileHelper.MakefileHolder makefileHolder = makefileHelper
+<a class="jxr_linenumber" name="L390" href="#L390">390</a>                         .createMakefileFromArtifacts( <strong class="jxr_keyword">new</strong> File( ndkBuildDirectory ),
+<a class="jxr_linenumber" name="L391" href="#L391">391</a>                                                       resolveNativeLibraryArtifacts, ndkArchitecture, <span class="jxr_string">"armeabi"</span>,
+<a class="jxr_linenumber" name="L392" href="#L392">392</a>                                                       useHeaderArchives );
+<a class="jxr_linenumber" name="L393" href="#L393">393</a> 
+<a class="jxr_linenumber" name="L394" href="#L394">394</a>                 <strong class="jxr_keyword">final</strong> FileOutputStream output = <strong class="jxr_keyword">new</strong> FileOutputStream( androidMavenMakefile );
+<a class="jxr_linenumber" name="L395" href="#L395">395</a>                 <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L396" href="#L396">396</a>                 {
+<a class="jxr_linenumber" name="L397" href="#L397">397</a>                     IOUtil.copy( makefileHolder.getMakeFile(), output );
+<a class="jxr_linenumber" name="L398" href="#L398">398</a>                 }
+<a class="jxr_linenumber" name="L399" href="#L399">399</a>                 <strong class="jxr_keyword">finally</strong>
+<a class="jxr_linenumber" name="L400" href="#L400">400</a>                 {
+<a class="jxr_linenumber" name="L401" href="#L401">401</a>                     output.close();
+<a class="jxr_linenumber" name="L402" href="#L402">402</a>                 }
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> 
+<a class="jxr_linenumber" name="L404" href="#L404">404</a>                 <em class="jxr_comment">// Add the path to the generated makefile - this is picked up by the build (by an include from the user)</em>
+<a class="jxr_linenumber" name="L405" href="#L405">405</a>                 executor.addEnvironment( <span class="jxr_string">"ANDROID_MAVEN_PLUGIN_MAKEFILE"</span>, androidMavenMakefile.getAbsolutePath() );
+<a class="jxr_linenumber" name="L406" href="#L406">406</a> 
+<a class="jxr_linenumber" name="L407" href="#L407">407</a>                 setupNativeLibraryEnvironment( makefileHelper, executor, resolveNativeLibraryArtifacts,
+<a class="jxr_linenumber" name="L408" href="#L408">408</a>                                                ndkArchitecture );
+<a class="jxr_linenumber" name="L409" href="#L409">409</a> 
+<a class="jxr_linenumber" name="L410" href="#L410">410</a>                 <em class="jxr_comment">// Adds the location of the Makefile capturer file - this file will after the build include</em>
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>                 <em class="jxr_comment">// things like header files, flags etc.  It is processed after the build to retrieve the headers</em>
+<a class="jxr_linenumber" name="L412" href="#L412">412</a>                 <em class="jxr_comment">// and also capture flags etc ...</em>
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>                 <strong class="jxr_keyword">final</strong> File makefileCaptureFile = File.createTempFile( <span class="jxr_string">"android_maven_plugin_makefile_captures"</span>,
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>                                                                       <span class="jxr_string">".tmp"</span> );
+<a class="jxr_linenumber" name="L415" href="#L415">415</a>                 makefileCaptureFile.deleteOnExit();
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>                 executor.addEnvironment( MakefileHelper.MAKEFILE_CAPTURE_FILE, makefileCaptureFile.getAbsolutePath() );
+<a class="jxr_linenumber" name="L417" href="#L417">417</a> 
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>                 <em class="jxr_comment">// Add any defined system properties</em>
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>                 <strong class="jxr_keyword">if</strong> ( systemProperties != <strong class="jxr_keyword">null</strong> &amp;&amp; ! systemProperties.isEmpty() )
+<a class="jxr_linenumber" name="L420" href="#L420">420</a>                 {
+<a class="jxr_linenumber" name="L421" href="#L421">421</a>                     <strong class="jxr_keyword">for</strong> ( Map.Entry&lt;String, String&gt; entry : systemProperties.entrySet() )
+<a class="jxr_linenumber" name="L422" href="#L422">422</a>                     {
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>                         executor.addEnvironment( entry.getKey(), entry.getValue() );
+<a class="jxr_linenumber" name="L424" href="#L424">424</a>                     }
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>                 }
+<a class="jxr_linenumber" name="L426" href="#L426">426</a>                 executor.setLogger( <strong class="jxr_keyword">this</strong>.getLog() );
+<a class="jxr_linenumber" name="L427" href="#L427">427</a>                 <em class="jxr_comment">// Setup the command line for the make</em>
+<a class="jxr_linenumber" name="L428" href="#L428">428</a>                 <strong class="jxr_keyword">final</strong> List&lt;String&gt; commands = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
+<a class="jxr_linenumber" name="L429" href="#L429">429</a>                 <em class="jxr_comment">// Setup the build directory (defaults to the current directory) but may be different depending</em>
+<a class="jxr_linenumber" name="L430" href="#L430">430</a>                 <em class="jxr_comment">// on user configuration</em>
+<a class="jxr_linenumber" name="L431" href="#L431">431</a>                 commands.add( <span class="jxr_string">"-C"</span> );
+<a class="jxr_linenumber" name="L432" href="#L432">432</a>                 commands.add( ndkBuildDirectory );
+<a class="jxr_linenumber" name="L433" href="#L433">433</a> 
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>                 <em class="jxr_comment">// If the build should use a custom makefile or not - some validation is done to ensure</em>
+<a class="jxr_linenumber" name="L435" href="#L435">435</a>                 <em class="jxr_comment">// this exists and all</em>
+<a class="jxr_linenumber" name="L436" href="#L436">436</a>                 <strong class="jxr_keyword">if</strong> ( makefile != <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L437" href="#L437">437</a>                 {
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>                     File makeFile = <strong class="jxr_keyword">new</strong> File( project.getBasedir(), makefile );
+<a class="jxr_linenumber" name="L439" href="#L439">439</a>                     <strong class="jxr_keyword">if</strong> ( ! makeFile.exists() )
+<a class="jxr_linenumber" name="L440" href="#L440">440</a>                     {
+<a class="jxr_linenumber" name="L441" href="#L441">441</a>                         getLog().error( <span class="jxr_string">"Specified makefile "</span> + makeFile + <span class="jxr_string">" does not exist"</span> );
+<a class="jxr_linenumber" name="L442" href="#L442">442</a>                         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"Specified makefile "</span> + makeFile + <span class="jxr_string">" does not exist"</span> );
+<a class="jxr_linenumber" name="L443" href="#L443">443</a>                     }
+<a class="jxr_linenumber" name="L444" href="#L444">444</a>                     commands.add( <span class="jxr_string">"-f"</span> );
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>                     commands.add( makefile );
+<a class="jxr_linenumber" name="L446" href="#L446">446</a>                 }
+<a class="jxr_linenumber" name="L447" href="#L447">447</a> 
+<a class="jxr_linenumber" name="L448" href="#L448">448</a>                 configureApplicationMakefile( commands );
+<a class="jxr_linenumber" name="L449" href="#L449">449</a>                 configureMaxJobs( commands );
+<a class="jxr_linenumber" name="L450" href="#L450">450</a>                 configureNdkToolchain( ndkArchitecture, commands );
+<a class="jxr_linenumber" name="L451" href="#L451">451</a>                 configureAdditionalCommands( commands );
+<a class="jxr_linenumber" name="L452" href="#L452">452</a> 
+<a class="jxr_linenumber" name="L453" href="#L453">453</a>                 <em class="jxr_comment">// If a build target is specified, tag that onto the command line as the very last of the parameters</em>
+<a class="jxr_linenumber" name="L454" href="#L454">454</a>                 <strong class="jxr_keyword">if</strong> ( target != <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L455" href="#L455">455</a>                 {
+<a class="jxr_linenumber" name="L456" href="#L456">456</a>                     commands.add( target );
+<a class="jxr_linenumber" name="L457" href="#L457">457</a>                 }
+<a class="jxr_linenumber" name="L458" href="#L458">458</a>                 <strong class="jxr_keyword">else</strong> <em class="jxr_comment">/*if ( Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( project.getPackaging() ) )*/</em>
+<a class="jxr_linenumber" name="L459" href="#L459">459</a>                 {
+<a class="jxr_linenumber" name="L460" href="#L460">460</a>                     commands.add( project.getArtifactId() );
+<a class="jxr_linenumber" name="L461" href="#L461">461</a>                 }
+<a class="jxr_linenumber" name="L462" href="#L462">462</a> 
+<a class="jxr_linenumber" name="L463" href="#L463">463</a>                 <strong class="jxr_keyword">final</strong> String ndkBuildPath = resolveNdkBuildExecutable();
+<a class="jxr_linenumber" name="L464" href="#L464">464</a>                 getLog().debug( ndkBuildPath + <span class="jxr_string">" "</span> + commands.toString() );
+<a class="jxr_linenumber" name="L465" href="#L465">465</a>                 getLog().info( <span class="jxr_string">"Executing NDK "</span> + ndkArchitecture + <span class="jxr_string">" make at : "</span> + ndkBuildDirectory );
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> 
+<a class="jxr_linenumber" name="L467" href="#L467">467</a>                 executor.setCaptureStdOut( <strong class="jxr_keyword">true</strong> );
+<a class="jxr_linenumber" name="L468" href="#L468">468</a>                 executor.executeCommand( ndkBuildPath, commands, project.getBasedir(), <strong class="jxr_keyword">true</strong> );
 <a class="jxr_linenumber" name="L469" href="#L469">469</a> 
-<a class="jxr_linenumber" name="L470" href="#L470">470</a>                 executor.executeCommand( ndkBuildPath, commands, project.getBasedir(), <strong class="jxr_keyword">true</strong> );
-<a class="jxr_linenumber" name="L471" href="#L471">471</a> 
-<a class="jxr_linenumber" name="L472" href="#L472">472</a>                 cleanUp( preparation.getNativeLibDirectory(), ndkArchitecture, libsDirectoryExists, directoryToRemove,
-<a class="jxr_linenumber" name="L473" href="#L473">473</a>                          makefileHolder, makefileCaptureFile );
-<a class="jxr_linenumber" name="L474" href="#L474">474</a>             }
-<a class="jxr_linenumber" name="L475" href="#L475">475</a>         }
-<a class="jxr_linenumber" name="L476" href="#L476">476</a>         <strong class="jxr_keyword">catch</strong> ( MojoExecutionException e )
-<a class="jxr_linenumber" name="L477" href="#L477">477</a>         {
-<a class="jxr_linenumber" name="L478" href="#L478">478</a>             getLog().error( <span class="jxr_string">"Error during build: "</span> + e.getMessage(), e );
-<a class="jxr_linenumber" name="L479" href="#L479">479</a>             <strong class="jxr_keyword">throw</strong> e;
-<a class="jxr_linenumber" name="L480" href="#L480">480</a>         }
-<a class="jxr_linenumber" name="L481" href="#L481">481</a>         <strong class="jxr_keyword">catch</strong> ( Exception e )
-<a class="jxr_linenumber" name="L482" href="#L482">482</a>         {
-<a class="jxr_linenumber" name="L483" href="#L483">483</a>             getLog().error( <span class="jxr_string">"Error while executing: "</span> + e.getMessage() );
-<a class="jxr_linenumber" name="L484" href="#L484">484</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( e.getMessage(), e );
-<a class="jxr_linenumber" name="L485" href="#L485">485</a>         }
+<a class="jxr_linenumber" name="L470" href="#L470">470</a>                 cleanUp( preparation.getNativeLibDirectory(), ndkArchitecture, libsDirectoryExists, directoryToRemove,
+<a class="jxr_linenumber" name="L471" href="#L471">471</a>                          makefileHolder, makefileCaptureFile );
+<a class="jxr_linenumber" name="L472" href="#L472">472</a>             }
+<a class="jxr_linenumber" name="L473" href="#L473">473</a>         }
+<a class="jxr_linenumber" name="L474" href="#L474">474</a>         <strong class="jxr_keyword">catch</strong> ( MojoExecutionException e )
+<a class="jxr_linenumber" name="L475" href="#L475">475</a>         {
+<a class="jxr_linenumber" name="L476" href="#L476">476</a>             getLog().error( <span class="jxr_string">"Error during build: "</span> + e.getMessage(), e );
+<a class="jxr_linenumber" name="L477" href="#L477">477</a>             <strong class="jxr_keyword">throw</strong> e;
+<a class="jxr_linenumber" name="L478" href="#L478">478</a>         }
+<a class="jxr_linenumber" name="L479" href="#L479">479</a>         <strong class="jxr_keyword">catch</strong> ( Exception e )
+<a class="jxr_linenumber" name="L480" href="#L480">480</a>         {
+<a class="jxr_linenumber" name="L481" href="#L481">481</a>             getLog().error( <span class="jxr_string">"Error while executing: "</span> + e.getMessage() );
+<a class="jxr_linenumber" name="L482" href="#L482">482</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( e.getMessage(), e );
+<a class="jxr_linenumber" name="L483" href="#L483">483</a>         }
+<a class="jxr_linenumber" name="L484" href="#L484">484</a> 
+<a class="jxr_linenumber" name="L485" href="#L485">485</a>     }
 <a class="jxr_linenumber" name="L486" href="#L486">486</a> 
-<a class="jxr_linenumber" name="L487" href="#L487">487</a>     }
-<a class="jxr_linenumber" name="L488" href="#L488">488</a> 
-<a class="jxr_linenumber" name="L489" href="#L489">489</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> configureAdditionalCommands( <strong class="jxr_keyword">final</strong> List&lt;String&gt; commands )
-<a class="jxr_linenumber" name="L490" href="#L490">490</a>     {
-<a class="jxr_linenumber" name="L491" href="#L491">491</a>         <em class="jxr_comment">// Anything else on the command line the user wants to add - simply splice it up and</em>
-<a class="jxr_linenumber" name="L492" href="#L492">492</a>         <em class="jxr_comment">// add it one by one to the command line</em>
-<a class="jxr_linenumber" name="L493" href="#L493">493</a>         <strong class="jxr_keyword">if</strong> ( ndkBuildAdditionalCommandline != <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L494" href="#L494">494</a>         {
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>             String[] additionalCommands = ndkBuildAdditionalCommandline.split( <span class="jxr_string">" "</span> );
-<a class="jxr_linenumber" name="L496" href="#L496">496</a>             <strong class="jxr_keyword">for</strong> ( <strong class="jxr_keyword">final</strong> String command : additionalCommands )
-<a class="jxr_linenumber" name="L497" href="#L497">497</a>             {
-<a class="jxr_linenumber" name="L498" href="#L498">498</a>                 commands.add( command );
-<a class="jxr_linenumber" name="L499" href="#L499">499</a>             }
-<a class="jxr_linenumber" name="L500" href="#L500">500</a>         }
-<a class="jxr_linenumber" name="L501" href="#L501">501</a>     }
-<a class="jxr_linenumber" name="L502" href="#L502">502</a> 
-<a class="jxr_linenumber" name="L503" href="#L503">503</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> configureApplicationMakefile( List&lt;String&gt; commands )
-<a class="jxr_linenumber" name="L504" href="#L504">504</a>         <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L505" href="#L505">505</a>     {
-<a class="jxr_linenumber" name="L506" href="#L506">506</a>         <strong class="jxr_keyword">if</strong> ( applicationMakefile != <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L507" href="#L507">507</a>         {
-<a class="jxr_linenumber" name="L508" href="#L508">508</a>             File appMK = <strong class="jxr_keyword">new</strong> File( project.getBasedir(), applicationMakefile );
-<a class="jxr_linenumber" name="L509" href="#L509">509</a>             <strong class="jxr_keyword">if</strong> ( ! appMK.exists() )
-<a class="jxr_linenumber" name="L510" href="#L510">510</a>             {
-<a class="jxr_linenumber" name="L511" href="#L511">511</a>                 getLog().error( <span class="jxr_string">"Specified application makefile "</span> + appMK + <span class="jxr_string">" does not exist"</span> );
-<a class="jxr_linenumber" name="L512" href="#L512">512</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"Specified application makefile "</span> + appMK + <span class="jxr_string">" does not exist"</span> );
-<a class="jxr_linenumber" name="L513" href="#L513">513</a>             }
-<a class="jxr_linenumber" name="L514" href="#L514">514</a>             commands.add( <span class="jxr_string">"NDK_APPLICATION_MK="</span> + applicationMakefile );
-<a class="jxr_linenumber" name="L515" href="#L515">515</a>         }
-<a class="jxr_linenumber" name="L516" href="#L516">516</a>     }
-<a class="jxr_linenumber" name="L517" href="#L517">517</a> 
-<a class="jxr_linenumber" name="L518" href="#L518">518</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> configureMaxJobs( List&lt;String&gt; commands )
-<a class="jxr_linenumber" name="L519" href="#L519">519</a>     {
-<a class="jxr_linenumber" name="L520" href="#L520">520</a>         <strong class="jxr_keyword">if</strong> ( maxJobs )
-<a class="jxr_linenumber" name="L521" href="#L521">521</a>         {
-<a class="jxr_linenumber" name="L522" href="#L522">522</a>             String jobs = String.valueOf( Runtime.getRuntime().availableProcessors() );
-<a class="jxr_linenumber" name="L523" href="#L523">523</a>             getLog().info( <span class="jxr_string">"executing "</span> + jobs + <span class="jxr_string">" parallel jobs"</span> );
-<a class="jxr_linenumber" name="L524" href="#L524">524</a>             commands.add( <span class="jxr_string">"-j"</span> );
-<a class="jxr_linenumber" name="L525" href="#L525">525</a>             commands.add( jobs );
-<a class="jxr_linenumber" name="L526" href="#L526">526</a>         }
-<a class="jxr_linenumber" name="L527" href="#L527">527</a>     }
-<a class="jxr_linenumber" name="L528" href="#L528">528</a> 
-<a class="jxr_linenumber" name="L529" href="#L529">529</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> configureNdkToolchain( String ndkArchitecture, List&lt;String&gt; commands )
-<a class="jxr_linenumber" name="L530" href="#L530">530</a>             <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L531" href="#L531">531</a>     {
-<a class="jxr_linenumber" name="L532" href="#L532">532</a>         <strong class="jxr_keyword">if</strong> ( ndkToolchain != <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L533" href="#L533">533</a>         {
-<a class="jxr_linenumber" name="L534" href="#L534">534</a>             <em class="jxr_comment">// Setup the correct toolchain to use</em>
-<a class="jxr_linenumber" name="L535" href="#L535">535</a>             <em class="jxr_comment">// FIXME: perform a validation that this toolchain exists in the NDK</em>
-<a class="jxr_linenumber" name="L536" href="#L536">536</a>             commands.add( <span class="jxr_string">"NDK_TOOLCHAIN="</span> + ndkToolchain );
-<a class="jxr_linenumber" name="L537" href="#L537">537</a>         }
-<a class="jxr_linenumber" name="L538" href="#L538">538</a>         <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L539" href="#L539">539</a>         {
-<a class="jxr_linenumber" name="L540" href="#L540">540</a>             <em class="jxr_comment">// Resolve the toolchain from the architecture</em>
-<a class="jxr_linenumber" name="L541" href="#L541">541</a>             <em class="jxr_comment">// &lt;ndkArchitectures&gt;</em>
-<a class="jxr_linenumber" name="L542" href="#L542">542</a>             <em class="jxr_comment">//   &lt;x86&gt;x86-4.6&lt;/x86&gt;</em>
-<a class="jxr_linenumber" name="L543" href="#L543">543</a>             <em class="jxr_comment">//   &lt;armeabi&gt;x86-4.6&lt;/armeabi&gt;</em>
-<a class="jxr_linenumber" name="L544" href="#L544">544</a>             <em class="jxr_comment">// &lt;/ndkArchitectures&gt;</em>
-<a class="jxr_linenumber" name="L545" href="#L545">545</a>             <strong class="jxr_keyword">final</strong> String toolchainFromArchitecture = getAndroidNdk().getToolchainFromArchitecture(
-<a class="jxr_linenumber" name="L546" href="#L546">546</a>                     ndkArchitecture, ndkArchitectureToolchainMappings );
-<a class="jxr_linenumber" name="L547" href="#L547">547</a>             getLog().debug( <span class="jxr_string">"Resolved toolchain for "</span> + ndkArchitecture + <span class="jxr_string">" to "</span> + toolchainFromArchitecture );
-<a class="jxr_linenumber" name="L548" href="#L548">548</a>             commands.add( <span class="jxr_string">"NDK_TOOLCHAIN="</span> + toolchainFromArchitecture );
-<a class="jxr_linenumber" name="L549" href="#L549">549</a>             commands.add( <span class="jxr_string">"APP_ABI="</span> + ndkArchitecture );
-<a class="jxr_linenumber" name="L550" href="#L550">550</a> 
-<a class="jxr_linenumber" name="L551" href="#L551">551</a>         }
-<a class="jxr_linenumber" name="L552" href="#L552">552</a>     }
-<a class="jxr_linenumber" name="L553" href="#L553">553</a> 
-<a class="jxr_linenumber" name="L554" href="#L554">554</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> cleanUp( File nativeLibDirectory, String ndkArchitecture, <strong class="jxr_keyword">boolean</strong> libsDirectoryExists,
-<a class="jxr_linenumber" name="L555" href="#L555">555</a>                           File directoryToRemove, MakefileHelper.MakefileHolder makefileHolder,
-<a class="jxr_linenumber" name="L556" href="#L556">556</a>                           File makefileCaptureFile )
-<a class="jxr_linenumber" name="L557" href="#L557">557</a>             <strong class="jxr_keyword">throws</strong> IOException, MojoExecutionException
-<a class="jxr_linenumber" name="L558" href="#L558">558</a>     {
-<a class="jxr_linenumber" name="L559" href="#L559">559</a>         <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L560" href="#L560">560</a>         {
-<a class="jxr_linenumber" name="L561" href="#L561">561</a>             <em class="jxr_comment">// Cleanup libs/armeabi directory if needed - this implies moving any native artifacts into target/libs</em>
-<a class="jxr_linenumber" name="L562" href="#L562">562</a>             <strong class="jxr_keyword">if</strong> ( clearNativeArtifacts )
-<a class="jxr_linenumber" name="L563" href="#L563">563</a>             {
-<a class="jxr_linenumber" name="L564" href="#L564">564</a>                 nativeLibDirectory = cleanUpNativeArtifacts( nativeLibDirectory, ndkArchitecture, libsDirectoryExists );
-<a class="jxr_linenumber" name="L565" href="#L565">565</a>             }
-<a class="jxr_linenumber" name="L566" href="#L566">566</a> 
-<a class="jxr_linenumber" name="L567" href="#L567">567</a>             <em class="jxr_comment">// Attempt to attach the native library if the project is defined as a "pure" native Android library</em>
-<a class="jxr_linenumber" name="L568" href="#L568">568</a>             <em class="jxr_comment">// (packaging is 'so' or 'a') or if the plugin has been configured to attach the native library to the</em>
-<a class="jxr_linenumber" name="L569" href="#L569">569</a>             <em class="jxr_comment">// build</em>
-<a class="jxr_linenumber" name="L570" href="#L570">570</a>             <strong class="jxr_keyword">if</strong> ( <span class="jxr_string">"so"</span>.equals( project.getPackaging() ) || <span class="jxr_string">"a"</span>.equals( project.getPackaging() )
-<a class="jxr_linenumber" name="L571" href="#L571">571</a>                     || attachNativeArtifacts )
-<a class="jxr_linenumber" name="L572" href="#L572">572</a>             {
-<a class="jxr_linenumber" name="L573" href="#L573">573</a> 
-<a class="jxr_linenumber" name="L574" href="#L574">574</a>                 <strong class="jxr_keyword">final</strong> File nativeArtifactFile;
-<a class="jxr_linenumber" name="L575" href="#L575">575</a>                 <strong class="jxr_keyword">if</strong> ( ndkFinalLibraryName == <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L576" href="#L576">576</a>                 {
-<a class="jxr_linenumber" name="L577" href="#L577">577</a>                     nativeArtifactFile = findNativeLibrary( nativeLibDirectory );
-<a class="jxr_linenumber" name="L578" href="#L578">578</a>                 }
-<a class="jxr_linenumber" name="L579" href="#L579">579</a>                 <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L580" href="#L580">580</a>                 {
-<a class="jxr_linenumber" name="L581" href="#L581">581</a>                     nativeArtifactFile = nativeLibraryFromName( nativeLibDirectory );
-<a class="jxr_linenumber" name="L582" href="#L582">582</a>                 }
-<a class="jxr_linenumber" name="L583" href="#L583">583</a> 
-<a class="jxr_linenumber" name="L584" href="#L584">584</a>                 <strong class="jxr_keyword">final</strong> String artifactType = resolveArtifactType( nativeArtifactFile );
-<a class="jxr_linenumber" name="L585" href="#L585">585</a>                 <strong class="jxr_keyword">if</strong> ( nativeArtifactFile.getName().endsWith( <span class="jxr_string">".so"</span> ) &amp;&amp; ! skipStripping )
-<a class="jxr_linenumber" name="L586" href="#L586">586</a>                 {
-<a class="jxr_linenumber" name="L587" href="#L587">587</a>                     getLog().debug( <span class="jxr_string">"Post processing (stripping) native compiled artifact: "</span> + nativeArtifactFile );
-<a class="jxr_linenumber" name="L588" href="#L588">588</a>                     invokeNDKStripper( nativeArtifactFile );
-<a class="jxr_linenumber" name="L589" href="#L589">589</a>                 }
-<a class="jxr_linenumber" name="L590" href="#L590">590</a> 
-<a class="jxr_linenumber" name="L591" href="#L591">591</a>                 getLog().debug( <span class="jxr_string">"Adding native compiled artifact: "</span> + nativeArtifactFile );
-<a class="jxr_linenumber" name="L592" href="#L592">592</a> 
-<a class="jxr_linenumber" name="L593" href="#L593">593</a>                 File fileToAttach = nativeArtifactFile;
-<a class="jxr_linenumber" name="L594" href="#L594">594</a>                 <strong class="jxr_keyword">if</strong> ( ! libsDirectoryExists &amp;&amp; !clearNativeArtifacts )
-<a class="jxr_linenumber" name="L595" href="#L595">595</a>                 {
-<a class="jxr_linenumber" name="L596" href="#L596">596</a>                     <strong class="jxr_keyword">final</strong> String destFileName = ndkArchitecture + File.separator + nativeArtifactFile.getName();
-<a class="jxr_linenumber" name="L597" href="#L597">597</a>                     <strong class="jxr_keyword">final</strong> File destFile = <strong class="jxr_keyword">new</strong> File( ndkOutputDirectory, destFileName );
-<a class="jxr_linenumber" name="L598" href="#L598">598</a>                     <strong class="jxr_keyword">if</strong> ( !destFile.equals( nativeArtifactFile ) )
-<a class="jxr_linenumber" name="L599" href="#L599">599</a>                     {
-<a class="jxr_linenumber" name="L600" href="#L600">600</a>                         getLog().debug( <span class="jxr_string">"Moving native compiled artifact to target directory for preservation"</span> );
-<a class="jxr_linenumber" name="L601" href="#L601">601</a>                         <em class="jxr_comment">// This indicates the output directory was created by the build (us) and that we should really</em>
-<a class="jxr_linenumber" name="L602" href="#L602">602</a>                         <em class="jxr_comment">// move it to the target (needed to preserve the attached artifact once install is invoked)</em>
-<a class="jxr_linenumber" name="L603" href="#L603">603</a>                         <strong class="jxr_keyword">if</strong> ( destFile.exists() )
-<a class="jxr_linenumber" name="L604" href="#L604">604</a>                         {
-<a class="jxr_linenumber" name="L605" href="#L605">605</a>                             destFile.delete();
-<a class="jxr_linenumber" name="L606" href="#L606">606</a>                         }
-<a class="jxr_linenumber" name="L607" href="#L607">607</a>                         getLog().debug( nativeArtifactFile + <span class="jxr_string">" -&gt; "</span> + destFile );
-<a class="jxr_linenumber" name="L608" href="#L608">608</a>                         FileUtils.moveFile( nativeArtifactFile, destFile );
-<a class="jxr_linenumber" name="L609" href="#L609">609</a>                         fileToAttach = destFile;
-<a class="jxr_linenumber" name="L610" href="#L610">610</a>                     }
-<a class="jxr_linenumber" name="L611" href="#L611">611</a>                     <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L612" href="#L612">612</a>                     {
-<a class="jxr_linenumber" name="L613" href="#L613">613</a>                         getLog().debug( <span class="jxr_string">"Not moving native compiled artifact "</span>
-<a class="jxr_linenumber" name="L614" href="#L614">614</a>                             + nativeArtifactFile + <span class="jxr_string">" to target as they point to the same file"</span> );
-<a class="jxr_linenumber" name="L615" href="#L615">615</a>                         fileToAttach = nativeArtifactFile;
-<a class="jxr_linenumber" name="L616" href="#L616">616</a>                     }
-<a class="jxr_linenumber" name="L617" href="#L617">617</a>                 }
-<a class="jxr_linenumber" name="L618" href="#L618">618</a> 
-<a class="jxr_linenumber" name="L619" href="#L619">619</a>                 String classifier = ndkArchitecture;
-<a class="jxr_linenumber" name="L620" href="#L620">620</a>                 <strong class="jxr_keyword">if</strong> ( ndkClassifier != <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L621" href="#L621">621</a>                 {
-<a class="jxr_linenumber" name="L622" href="#L622">622</a>                     classifier += <span class="jxr_string">"-"</span> + ndkClassifier;
-<a class="jxr_linenumber" name="L623" href="#L623">623</a>                 }
-<a class="jxr_linenumber" name="L624" href="#L624">624</a> 
-<a class="jxr_linenumber" name="L625" href="#L625">625</a>                 projectHelper.attachArtifact( <strong class="jxr_keyword">this</strong>.project, artifactType, classifier, fileToAttach );
-<a class="jxr_linenumber" name="L626" href="#L626">626</a>             }
-<a class="jxr_linenumber" name="L627" href="#L627">627</a> 
-<a class="jxr_linenumber" name="L628" href="#L628">628</a>             <em class="jxr_comment">// Process conditionally any of the headers to include into the header archive file</em>
-<a class="jxr_linenumber" name="L629" href="#L629">629</a>             processMakefileCapture( makefileCaptureFile, ndkArchitecture );
-<a class="jxr_linenumber" name="L630" href="#L630">630</a> 
-<a class="jxr_linenumber" name="L631" href="#L631">631</a>         }
-<a class="jxr_linenumber" name="L632" href="#L632">632</a>         <strong class="jxr_keyword">finally</strong>
-<a class="jxr_linenumber" name="L633" href="#L633">633</a>         {
-<a class="jxr_linenumber" name="L634" href="#L634">634</a>             <em class="jxr_comment">// If we created any directories as part of the build, blow those away after we're done</em>
-<a class="jxr_linenumber" name="L635" href="#L635">635</a>             <strong class="jxr_keyword">if</strong> ( ! libsDirectoryExists )
-<a class="jxr_linenumber" name="L636" href="#L636">636</a>             {
-<a class="jxr_linenumber" name="L637" href="#L637">637</a>                 getLog().info( <span class="jxr_string">"Cleaning up native library output directory after build"</span> );
-<a class="jxr_linenumber" name="L638" href="#L638">638</a>                 getLog().debug( <span class="jxr_string">"Removing directory: "</span> + directoryToRemove ); <em class="jxr_comment">// AJE - removes 'obj' directory</em>
-<a class="jxr_linenumber" name="L639" href="#L639">639</a>                 FileUtils.deleteDirectory( directoryToRemove );
-<a class="jxr_linenumber" name="L640" href="#L640">640</a>             }
-<a class="jxr_linenumber" name="L641" href="#L641">641</a> 
-<a class="jxr_linenumber" name="L642" href="#L642">642</a>             <em class="jxr_comment">// If we created a makefile for the build we should be polite and remove any extracted include</em>
-<a class="jxr_linenumber" name="L643" href="#L643">643</a>             <em class="jxr_comment">// directories after we're done</em>
-<a class="jxr_linenumber" name="L644" href="#L644">644</a>             <strong class="jxr_keyword">if</strong> ( makefileHolder != <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L645" href="#L645">645</a>             {
-<a class="jxr_linenumber" name="L646" href="#L646">646</a>                 getLog().info( <span class="jxr_string">"Cleaning up extracted include directories used for build"</span> );
-<a class="jxr_linenumber" name="L647" href="#L647">647</a>                 MakefileHelper.cleanupAfterBuild( makefileHolder );
-<a class="jxr_linenumber" name="L648" href="#L648">648</a>             }
-<a class="jxr_linenumber" name="L649" href="#L649">649</a> 
-<a class="jxr_linenumber" name="L650" href="#L650">650</a>         }
-<a class="jxr_linenumber" name="L651" href="#L651">651</a>     }
-<a class="jxr_linenumber" name="L652" href="#L652">652</a> 
-<a class="jxr_linenumber" name="L653" href="#L653">653</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L654" href="#L654">654</a> <em class="jxr_javadoccomment">     * Search the specified directory for native artifacts that match the artifact Id</em>
-<a class="jxr_linenumber" name="L655" href="#L655">655</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L656" href="#L656">656</a>     <strong class="jxr_keyword">private</strong> File findNativeLibrary( File nativeLibDirectory ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L657" href="#L657">657</a>     {
-<a class="jxr_linenumber" name="L658" href="#L658">658</a>         getLog().info( <span class="jxr_string">"Searching "</span> + nativeLibDirectory + <span class="jxr_string">" for built library"</span> );
-<a class="jxr_linenumber" name="L659" href="#L659">659</a>         File[] files = nativeLibDirectory.listFiles( <strong class="jxr_keyword">new</strong> FilenameFilter()
-<a class="jxr_linenumber" name="L660" href="#L660">660</a>         {
-<a class="jxr_linenumber" name="L661" href="#L661">661</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> accept( <strong class="jxr_keyword">final</strong> File dir, <strong class="jxr_keyword">final</strong> String name )
-<a class="jxr_linenumber" name="L662" href="#L662">662</a>             {
-<a class="jxr_linenumber" name="L663" href="#L663">663</a>                 String libraryName = ndkFinalLibraryName;
-<a class="jxr_linenumber" name="L664" href="#L664">664</a>                 
-<a class="jxr_linenumber" name="L665" href="#L665">665</a>                 <strong class="jxr_keyword">if</strong> ( libraryName == <strong class="jxr_keyword">null</strong> || libraryName.isEmpty() )
-<a class="jxr_linenumber" name="L666" href="#L666">666</a>                 {
-<a class="jxr_linenumber" name="L667" href="#L667">667</a>                     libraryName = project.getArtifactId();
-<a class="jxr_linenumber" name="L668" href="#L668">668</a>                 }
-<a class="jxr_linenumber" name="L669" href="#L669">669</a> 
-<a class="jxr_linenumber" name="L670" href="#L670">670</a>                 <em class="jxr_comment">// FIXME: The following logic won't work for an APKLIB building a static library</em>
-<a class="jxr_linenumber" name="L671" href="#L671">671</a>                 <strong class="jxr_keyword">if</strong> ( <span class="jxr_string">"a"</span>.equals( project.getPackaging() ) )
-<a class="jxr_linenumber" name="L672" href="#L672">672</a>                 {
-<a class="jxr_linenumber" name="L673" href="#L673">673</a>                     <strong class="jxr_keyword">return</strong> name.startsWith(
-<a class="jxr_linenumber" name="L674" href="#L674">674</a>                             <span class="jxr_string">"lib"</span> + libraryName ) &amp;&amp; name.endsWith( <span class="jxr_string">".a"</span> );
-<a class="jxr_linenumber" name="L675" href="#L675">675</a>                 }
-<a class="jxr_linenumber" name="L676" href="#L676">676</a>                 <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L677" href="#L677">677</a>                 {
-<a class="jxr_linenumber" name="L678" href="#L678">678</a>                     <strong class="jxr_keyword">return</strong> name.startsWith(
-<a class="jxr_linenumber" name="L679" href="#L679">679</a>                             <span class="jxr_string">"lib"</span> + libraryName ) &amp;&amp; name.endsWith( <span class="jxr_string">".so"</span> );
-<a class="jxr_linenumber" name="L680" href="#L680">680</a>                 }
-<a class="jxr_linenumber" name="L681" href="#L681">681</a>             }
-<a class="jxr_linenumber" name="L682" href="#L682">682</a>         } );
-<a class="jxr_linenumber" name="L683" href="#L683">683</a>         <em class="jxr_comment">// slight limitation at this stage - we only handle a single .so artifact</em>
-<a class="jxr_linenumber" name="L684" href="#L684">684</a>         <strong class="jxr_keyword">if</strong> ( files == <strong class="jxr_keyword">null</strong> || files.length != 1 )
-<a class="jxr_linenumber" name="L685" href="#L685">685</a>         {
-<a class="jxr_linenumber" name="L686" href="#L686">686</a>             getLog().warn( <span class="jxr_string">"Error while detecting native compile artifacts: "</span>
-<a class="jxr_linenumber" name="L687" href="#L687">687</a>                     + ( files == <strong class="jxr_keyword">null</strong> || files.length == 0
-<a class="jxr_linenumber" name="L688" href="#L688">688</a>                             ? <span class="jxr_string">"None found"</span>
-<a class="jxr_linenumber" name="L689" href="#L689">689</a>                             : <span class="jxr_string">"Found more than 1 artifact"</span> ) );
-<a class="jxr_linenumber" name="L690" href="#L690">690</a>             <strong class="jxr_keyword">if</strong> ( target != <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L691" href="#L691">691</a>             {
-<a class="jxr_linenumber" name="L692" href="#L692">692</a>                 getLog().warn( <span class="jxr_string">"Using the 'target' configuration option to specify the output file name "</span>
-<a class="jxr_linenumber" name="L693" href="#L693">693</a>                         + <span class="jxr_string">"is no longer supported, use 'ndkFinalLibraryName' instead."</span> );
-<a class="jxr_linenumber" name="L694" href="#L694">694</a>             }
-<a class="jxr_linenumber" name="L695" href="#L695">695</a> 
-<a class="jxr_linenumber" name="L696" href="#L696">696</a>             <strong class="jxr_keyword">if</strong> ( files != <strong class="jxr_keyword">null</strong> &amp;&amp; files.length &gt; 1 )
-<a class="jxr_linenumber" name="L697" href="#L697">697</a>             {
-<a class="jxr_linenumber" name="L698" href="#L698">698</a>                 getLog().debug( <span class="jxr_string">"List of files found: "</span> + Arrays.asList( files ) );
-<a class="jxr_linenumber" name="L699" href="#L699">699</a>                 getLog().error(
-<a class="jxr_linenumber" name="L700" href="#L700">700</a>                         <span class="jxr_string">"Currently, only a single, final native library is supported by the build"</span> );
-<a class="jxr_linenumber" name="L701" href="#L701">701</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException(
-<a class="jxr_linenumber" name="L702" href="#L702">702</a>                         <span class="jxr_string">"Currently, only a single, final native library is supported by the build"</span> );
-<a class="jxr_linenumber" name="L703" href="#L703">703</a>             }
-<a class="jxr_linenumber" name="L704" href="#L704">704</a>             <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L705" href="#L705">705</a>             {
-<a class="jxr_linenumber" name="L706" href="#L706">706</a>                 getLog().error( <span class="jxr_string">"No native compiled library found, did the native compile complete "</span>
-<a class="jxr_linenumber" name="L707" href="#L707">707</a>                         + <span class="jxr_string">"successfully?"</span> );
-<a class="jxr_linenumber" name="L708" href="#L708">708</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"No native compiled library found, did the native "</span>
-<a class="jxr_linenumber" name="L709" href="#L709">709</a>                         + <span class="jxr_string">"compile complete successfully?"</span> );
-<a class="jxr_linenumber" name="L710" href="#L710">710</a>             }
-<a class="jxr_linenumber" name="L711" href="#L711">711</a>         }
-<a class="jxr_linenumber" name="L712" href="#L712">712</a>         <strong class="jxr_keyword">return</strong> files[ 0 ];
-<a class="jxr_linenumber" name="L713" href="#L713">713</a>     }
-<a class="jxr_linenumber" name="L714" href="#L714">714</a>     
-<a class="jxr_linenumber" name="L715" href="#L715">715</a>     <strong class="jxr_keyword">private</strong> File nativeLibraryFromName( File nativeLibDirectory ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L716" href="#L716">716</a>     {
-<a class="jxr_linenumber" name="L717" href="#L717">717</a>         <strong class="jxr_keyword">final</strong> File libraryFile;
-<a class="jxr_linenumber" name="L718" href="#L718">718</a>         <em class="jxr_comment">// Find the nativeArtifactFile in the nativeLibDirectory/ndkFinalLibraryName</em>
-<a class="jxr_linenumber" name="L719" href="#L719">719</a>         <strong class="jxr_keyword">if</strong> ( <span class="jxr_string">"so"</span>.equals( project.getPackaging() ) || <span class="jxr_string">"a"</span>.equals( project.getPackaging() ) )
+<a class="jxr_linenumber" name="L487" href="#L487">487</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> configureAdditionalCommands( <strong class="jxr_keyword">final</strong> List&lt;String&gt; commands )
+<a class="jxr_linenumber" name="L488" href="#L488">488</a>     {
+<a class="jxr_linenumber" name="L489" href="#L489">489</a>         <em class="jxr_comment">// Anything else on the command line the user wants to add - simply splice it up and</em>
+<a class="jxr_linenumber" name="L490" href="#L490">490</a>         <em class="jxr_comment">// add it one by one to the command line</em>
+<a class="jxr_linenumber" name="L491" href="#L491">491</a>         <strong class="jxr_keyword">if</strong> ( ndkBuildAdditionalCommandline != <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L492" href="#L492">492</a>         {
+<a class="jxr_linenumber" name="L493" href="#L493">493</a>             String[] additionalCommands = ndkBuildAdditionalCommandline.split( <span class="jxr_string">" "</span> );
+<a class="jxr_linenumber" name="L494" href="#L494">494</a>             <strong class="jxr_keyword">for</strong> ( <strong class="jxr_keyword">final</strong> String command : additionalCommands )
+<a class="jxr_linenumber" name="L495" href="#L495">495</a>             {
+<a class="jxr_linenumber" name="L496" href="#L496">496</a>                 commands.add( command );
+<a class="jxr_linenumber" name="L497" href="#L497">497</a>             }
+<a class="jxr_linenumber" name="L498" href="#L498">498</a>         }
+<a class="jxr_linenumber" name="L499" href="#L499">499</a>     }
+<a class="jxr_linenumber" name="L500" href="#L500">500</a> 
+<a class="jxr_linenumber" name="L501" href="#L501">501</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> configureApplicationMakefile( List&lt;String&gt; commands )
+<a class="jxr_linenumber" name="L502" href="#L502">502</a>         <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L503" href="#L503">503</a>     {
+<a class="jxr_linenumber" name="L504" href="#L504">504</a>         <strong class="jxr_keyword">if</strong> ( applicationMakefile != <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L505" href="#L505">505</a>         {
+<a class="jxr_linenumber" name="L506" href="#L506">506</a>             File appMK = <strong class="jxr_keyword">new</strong> File( project.getBasedir(), applicationMakefile );
+<a class="jxr_linenumber" name="L507" href="#L507">507</a>             <strong class="jxr_keyword">if</strong> ( ! appMK.exists() )
+<a class="jxr_linenumber" name="L508" href="#L508">508</a>             {
+<a class="jxr_linenumber" name="L509" href="#L509">509</a>                 getLog().error( <span class="jxr_string">"Specified application makefile "</span> + appMK + <span class="jxr_string">" does not exist"</span> );
+<a class="jxr_linenumber" name="L510" href="#L510">510</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"Specified application makefile "</span> + appMK + <span class="jxr_string">" does not exist"</span> );
+<a class="jxr_linenumber" name="L511" href="#L511">511</a>             }
+<a class="jxr_linenumber" name="L512" href="#L512">512</a>             commands.add( <span class="jxr_string">"NDK_APPLICATION_MK="</span> + applicationMakefile );
+<a class="jxr_linenumber" name="L513" href="#L513">513</a>         }
+<a class="jxr_linenumber" name="L514" href="#L514">514</a>     }
+<a class="jxr_linenumber" name="L515" href="#L515">515</a> 
+<a class="jxr_linenumber" name="L516" href="#L516">516</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> configureMaxJobs( List&lt;String&gt; commands )
+<a class="jxr_linenumber" name="L517" href="#L517">517</a>     {
+<a class="jxr_linenumber" name="L518" href="#L518">518</a>         <strong class="jxr_keyword">if</strong> ( maxJobs )
+<a class="jxr_linenumber" name="L519" href="#L519">519</a>         {
+<a class="jxr_linenumber" name="L520" href="#L520">520</a>             String jobs = String.valueOf( Runtime.getRuntime().availableProcessors() );
+<a class="jxr_linenumber" name="L521" href="#L521">521</a>             getLog().info( <span class="jxr_string">"executing "</span> + jobs + <span class="jxr_string">" parallel jobs"</span> );
+<a class="jxr_linenumber" name="L522" href="#L522">522</a>             commands.add( <span class="jxr_string">"-j"</span> );
+<a class="jxr_linenumber" name="L523" href="#L523">523</a>             commands.add( jobs );
+<a class="jxr_linenumber" name="L524" href="#L524">524</a>         }
+<a class="jxr_linenumber" name="L525" href="#L525">525</a>     }
+<a class="jxr_linenumber" name="L526" href="#L526">526</a> 
+<a class="jxr_linenumber" name="L527" href="#L527">527</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> configureNdkToolchain( String ndkArchitecture, List&lt;String&gt; commands )
+<a class="jxr_linenumber" name="L528" href="#L528">528</a>             <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L529" href="#L529">529</a>     {
+<a class="jxr_linenumber" name="L530" href="#L530">530</a>         <strong class="jxr_keyword">if</strong> ( ndkToolchain != <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L531" href="#L531">531</a>         {
+<a class="jxr_linenumber" name="L532" href="#L532">532</a>             <em class="jxr_comment">// Setup the correct toolchain to use</em>
+<a class="jxr_linenumber" name="L533" href="#L533">533</a>             <em class="jxr_comment">// FIXME: perform a validation that this toolchain exists in the NDK</em>
+<a class="jxr_linenumber" name="L534" href="#L534">534</a>             commands.add( <span class="jxr_string">"NDK_TOOLCHAIN="</span> + ndkToolchain );
+<a class="jxr_linenumber" name="L535" href="#L535">535</a>         }
+<a class="jxr_linenumber" name="L536" href="#L536">536</a>         <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L537" href="#L537">537</a>         {
+<a class="jxr_linenumber" name="L538" href="#L538">538</a>             <em class="jxr_comment">// Resolve the toolchain from the architecture</em>
+<a class="jxr_linenumber" name="L539" href="#L539">539</a>             <em class="jxr_comment">// &lt;ndkArchitectures&gt;</em>
+<a class="jxr_linenumber" name="L540" href="#L540">540</a>             <em class="jxr_comment">//   &lt;x86&gt;x86-4.6&lt;/x86&gt;</em>
+<a class="jxr_linenumber" name="L541" href="#L541">541</a>             <em class="jxr_comment">//   &lt;armeabi&gt;x86-4.6&lt;/armeabi&gt;</em>
+<a class="jxr_linenumber" name="L542" href="#L542">542</a>             <em class="jxr_comment">// &lt;/ndkArchitectures&gt;</em>
+<a class="jxr_linenumber" name="L543" href="#L543">543</a>             <strong class="jxr_keyword">final</strong> String toolchainFromArchitecture = getAndroidNdk().getToolchainFromArchitecture(
+<a class="jxr_linenumber" name="L544" href="#L544">544</a>                     ndkArchitecture, ndkArchitectureToolchainMappings );
+<a class="jxr_linenumber" name="L545" href="#L545">545</a>             getLog().debug( <span class="jxr_string">"Resolved toolchain for "</span> + ndkArchitecture + <span class="jxr_string">" to "</span> + toolchainFromArchitecture );
+<a class="jxr_linenumber" name="L546" href="#L546">546</a>             commands.add( <span class="jxr_string">"NDK_TOOLCHAIN="</span> + toolchainFromArchitecture );
+<a class="jxr_linenumber" name="L547" href="#L547">547</a>             commands.add( <span class="jxr_string">"APP_ABI="</span> + ndkArchitecture );
+<a class="jxr_linenumber" name="L548" href="#L548">548</a> 
+<a class="jxr_linenumber" name="L549" href="#L549">549</a>         }
+<a class="jxr_linenumber" name="L550" href="#L550">550</a>     }
+<a class="jxr_linenumber" name="L551" href="#L551">551</a> 
+<a class="jxr_linenumber" name="L552" href="#L552">552</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> cleanUp( File nativeLibDirectory, String ndkArchitecture, <strong class="jxr_keyword">boolean</strong> libsDirectoryExists,
+<a class="jxr_linenumber" name="L553" href="#L553">553</a>                           File directoryToRemove, MakefileHelper.MakefileHolder makefileHolder,
+<a class="jxr_linenumber" name="L554" href="#L554">554</a>                           File makefileCaptureFile )
+<a class="jxr_linenumber" name="L555" href="#L555">555</a>             <strong class="jxr_keyword">throws</strong> IOException, MojoExecutionException
+<a class="jxr_linenumber" name="L556" href="#L556">556</a>     {
+<a class="jxr_linenumber" name="L557" href="#L557">557</a>         <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L558" href="#L558">558</a>         {
+<a class="jxr_linenumber" name="L559" href="#L559">559</a>             <em class="jxr_comment">// Cleanup libs/armeabi directory if needed - this implies moving any native artifacts into target/libs</em>
+<a class="jxr_linenumber" name="L560" href="#L560">560</a>             <strong class="jxr_keyword">if</strong> ( clearNativeArtifacts )
+<a class="jxr_linenumber" name="L561" href="#L561">561</a>             {
+<a class="jxr_linenumber" name="L562" href="#L562">562</a>                 nativeLibDirectory = cleanUpNativeArtifacts( nativeLibDirectory, ndkArchitecture, libsDirectoryExists );
+<a class="jxr_linenumber" name="L563" href="#L563">563</a>             }
+<a class="jxr_linenumber" name="L564" href="#L564">564</a> 
+<a class="jxr_linenumber" name="L565" href="#L565">565</a>             <em class="jxr_comment">// Attempt to attach the native library if the project is defined as a "pure" native Android library</em>
+<a class="jxr_linenumber" name="L566" href="#L566">566</a>             <em class="jxr_comment">// (packaging is 'so' or 'a') or if the plugin has been configured to attach the native library to the</em>
+<a class="jxr_linenumber" name="L567" href="#L567">567</a>             <em class="jxr_comment">// build</em>
+<a class="jxr_linenumber" name="L568" href="#L568">568</a>             <strong class="jxr_keyword">if</strong> ( Const.ArtifactType.NATIVE_SYMBOL_OBJECT.equals( project.getPackaging() )
+<a class="jxr_linenumber" name="L569" href="#L569">569</a>                     || Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( project.getPackaging() )
+<a class="jxr_linenumber" name="L570" href="#L570">570</a>                     || attachNativeArtifacts )
+<a class="jxr_linenumber" name="L571" href="#L571">571</a>             {
+<a class="jxr_linenumber" name="L572" href="#L572">572</a> 
+<a class="jxr_linenumber" name="L573" href="#L573">573</a>                 <strong class="jxr_keyword">final</strong> File nativeArtifactFile;
+<a class="jxr_linenumber" name="L574" href="#L574">574</a>                 <strong class="jxr_keyword">if</strong> ( ndkFinalLibraryName == <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L575" href="#L575">575</a>                 {
+<a class="jxr_linenumber" name="L576" href="#L576">576</a>                     nativeArtifactFile = findNativeLibrary( nativeLibDirectory );
+<a class="jxr_linenumber" name="L577" href="#L577">577</a>                 }
+<a class="jxr_linenumber" name="L578" href="#L578">578</a>                 <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L579" href="#L579">579</a>                 {
+<a class="jxr_linenumber" name="L580" href="#L580">580</a>                     nativeArtifactFile = nativeLibraryFromName( nativeLibDirectory );
+<a class="jxr_linenumber" name="L581" href="#L581">581</a>                 }
+<a class="jxr_linenumber" name="L582" href="#L582">582</a> 
+<a class="jxr_linenumber" name="L583" href="#L583">583</a>                 <strong class="jxr_keyword">final</strong> String artifactType = resolveArtifactType( nativeArtifactFile );
+<a class="jxr_linenumber" name="L584" href="#L584">584</a>                 <strong class="jxr_keyword">if</strong> ( nativeArtifactFile.getName().endsWith( <span class="jxr_string">".so"</span> ) &amp;&amp; ! skipStripping )
+<a class="jxr_linenumber" name="L585" href="#L585">585</a>                 {
+<a class="jxr_linenumber" name="L586" href="#L586">586</a>                     getLog().debug( <span class="jxr_string">"Post processing (stripping) native compiled artifact: "</span> + nativeArtifactFile );
+<a class="jxr_linenumber" name="L587" href="#L587">587</a>                     invokeNDKStripper( nativeArtifactFile );
+<a class="jxr_linenumber" name="L588" href="#L588">588</a>                 }
+<a class="jxr_linenumber" name="L589" href="#L589">589</a> 
+<a class="jxr_linenumber" name="L590" href="#L590">590</a>                 getLog().debug( <span class="jxr_string">"Adding native compiled artifact: "</span> + nativeArtifactFile );
+<a class="jxr_linenumber" name="L591" href="#L591">591</a> 
+<a class="jxr_linenumber" name="L592" href="#L592">592</a>                 File fileToAttach = nativeArtifactFile;
+<a class="jxr_linenumber" name="L593" href="#L593">593</a>                 <strong class="jxr_keyword">if</strong> ( ! libsDirectoryExists &amp;&amp; !clearNativeArtifacts )
+<a class="jxr_linenumber" name="L594" href="#L594">594</a>                 {
+<a class="jxr_linenumber" name="L595" href="#L595">595</a>                     <strong class="jxr_keyword">final</strong> String destFileName = ndkArchitecture + File.separator + nativeArtifactFile.getName();
+<a class="jxr_linenumber" name="L596" href="#L596">596</a>                     <strong class="jxr_keyword">final</strong> File destFile = <strong class="jxr_keyword">new</strong> File( ndkOutputDirectory, destFileName );
+<a class="jxr_linenumber" name="L597" href="#L597">597</a>                     <strong class="jxr_keyword">if</strong> ( !destFile.equals( nativeArtifactFile ) )
+<a class="jxr_linenumber" name="L598" href="#L598">598</a>                     {
+<a class="jxr_linenumber" name="L599" href="#L599">599</a>                         getLog().debug( <span class="jxr_string">"Moving native compiled artifact to target directory for preservation"</span> );
+<a class="jxr_linenumber" name="L600" href="#L600">600</a>                         <em class="jxr_comment">// This indicates the output directory was created by the build (us) and that we should really</em>
+<a class="jxr_linenumber" name="L601" href="#L601">601</a>                         <em class="jxr_comment">// move it to the target (needed to preserve the attached artifact once install is invoked)</em>
+<a class="jxr_linenumber" name="L602" href="#L602">602</a>                         <strong class="jxr_keyword">if</strong> ( destFile.exists() )
+<a class="jxr_linenumber" name="L603" href="#L603">603</a>                         {
+<a class="jxr_linenumber" name="L604" href="#L604">604</a>                             destFile.delete();
+<a class="jxr_linenumber" name="L605" href="#L605">605</a>                         }
+<a class="jxr_linenumber" name="L606" href="#L606">606</a>                         getLog().debug( nativeArtifactFile + <span class="jxr_string">" -&gt; "</span> + destFile );
+<a class="jxr_linenumber" name="L607" href="#L607">607</a>                         FileUtils.moveFile( nativeArtifactFile, destFile );
+<a class="jxr_linenumber" name="L608" href="#L608">608</a>                         fileToAttach = destFile;
+<a class="jxr_linenumber" name="L609" href="#L609">609</a>                     }
+<a class="jxr_linenumber" name="L610" href="#L610">610</a>                     <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L611" href="#L611">611</a>                     {
+<a class="jxr_linenumber" name="L612" href="#L612">612</a>                         getLog().debug( <span class="jxr_string">"Not moving native compiled artifact "</span>
+<a class="jxr_linenumber" name="L613" href="#L613">613</a>                             + nativeArtifactFile + <span class="jxr_string">" to target as they point to the same file"</span> );
+<a class="jxr_linenumber" name="L614" href="#L614">614</a>                         fileToAttach = nativeArtifactFile;
+<a class="jxr_linenumber" name="L615" href="#L615">615</a>                     }
+<a class="jxr_linenumber" name="L616" href="#L616">616</a>                 }
+<a class="jxr_linenumber" name="L617" href="#L617">617</a> 
+<a class="jxr_linenumber" name="L618" href="#L618">618</a>                 String classifier = ndkArchitecture;
+<a class="jxr_linenumber" name="L619" href="#L619">619</a>                 <strong class="jxr_keyword">if</strong> ( ndkClassifier != <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L620" href="#L620">620</a>                 {
+<a class="jxr_linenumber" name="L621" href="#L621">621</a>                     classifier += <span class="jxr_string">"-"</span> + ndkClassifier;
+<a class="jxr_linenumber" name="L622" href="#L622">622</a>                 }
+<a class="jxr_linenumber" name="L623" href="#L623">623</a> 
+<a class="jxr_linenumber" name="L624" href="#L624">624</a>                 projectHelper.attachArtifact( <strong class="jxr_keyword">this</strong>.project, artifactType, classifier, fileToAttach );
+<a class="jxr_linenumber" name="L625" href="#L625">625</a>             }
+<a class="jxr_linenumber" name="L626" href="#L626">626</a> 
+<a class="jxr_linenumber" name="L627" href="#L627">627</a>             <em class="jxr_comment">// Process conditionally any of the headers to include into the header archive file</em>
+<a class="jxr_linenumber" name="L628" href="#L628">628</a>             processMakefileCapture( makefileCaptureFile, ndkArchitecture );
+<a class="jxr_linenumber" name="L629" href="#L629">629</a> 
+<a class="jxr_linenumber" name="L630" href="#L630">630</a>         }
+<a class="jxr_linenumber" name="L631" href="#L631">631</a>         <strong class="jxr_keyword">finally</strong>
+<a class="jxr_linenumber" name="L632" href="#L632">632</a>         {
+<a class="jxr_linenumber" name="L633" href="#L633">633</a>             <em class="jxr_comment">// If we created any directories as part of the build, blow those away after we're done</em>
+<a class="jxr_linenumber" name="L634" href="#L634">634</a>             <strong class="jxr_keyword">if</strong> ( ! libsDirectoryExists )
+<a class="jxr_linenumber" name="L635" href="#L635">635</a>             {
+<a class="jxr_linenumber" name="L636" href="#L636">636</a>                 getLog().info( <span class="jxr_string">"Cleaning up native library output directory after build"</span> );
+<a class="jxr_linenumber" name="L637" href="#L637">637</a>                 getLog().debug( <span class="jxr_string">"Removing directory: "</span> + directoryToRemove ); <em class="jxr_comment">// AJE - removes 'obj' directory</em>
+<a class="jxr_linenumber" name="L638" href="#L638">638</a>                 FileUtils.deleteDirectory( directoryToRemove );
+<a class="jxr_linenumber" name="L639" href="#L639">639</a>             }
+<a class="jxr_linenumber" name="L640" href="#L640">640</a> 
+<a class="jxr_linenumber" name="L641" href="#L641">641</a>             <em class="jxr_comment">// If we created a makefile for the build we should be polite and remove any extracted include</em>
+<a class="jxr_linenumber" name="L642" href="#L642">642</a>             <em class="jxr_comment">// directories after we're done</em>
+<a class="jxr_linenumber" name="L643" href="#L643">643</a>             <strong class="jxr_keyword">if</strong> ( makefileHolder != <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L644" href="#L644">644</a>             {
+<a class="jxr_linenumber" name="L645" href="#L645">645</a>                 getLog().info( <span class="jxr_string">"Cleaning up extracted include directories used for build"</span> );
+<a class="jxr_linenumber" name="L646" href="#L646">646</a>                 MakefileHelper.cleanupAfterBuild( makefileHolder );
+<a class="jxr_linenumber" name="L647" href="#L647">647</a>             }
+<a class="jxr_linenumber" name="L648" href="#L648">648</a> 
+<a class="jxr_linenumber" name="L649" href="#L649">649</a>         }
+<a class="jxr_linenumber" name="L650" href="#L650">650</a>     }
+<a class="jxr_linenumber" name="L651" href="#L651">651</a> 
+<a class="jxr_linenumber" name="L652" href="#L652">652</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L653" href="#L653">653</a> <em class="jxr_javadoccomment">     * Search the specified directory for native artifacts that match the artifact Id</em>
+<a class="jxr_linenumber" name="L654" href="#L654">654</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L655" href="#L655">655</a>     <strong class="jxr_keyword">private</strong> File findNativeLibrary( File nativeLibDirectory ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L656" href="#L656">656</a>     {
+<a class="jxr_linenumber" name="L657" href="#L657">657</a>         getLog().info( <span class="jxr_string">"Searching "</span> + nativeLibDirectory + <span class="jxr_string">" for built library"</span> );
+<a class="jxr_linenumber" name="L658" href="#L658">658</a>         File[] files = nativeLibDirectory.listFiles( <strong class="jxr_keyword">new</strong> FilenameFilter()
+<a class="jxr_linenumber" name="L659" href="#L659">659</a>         {
+<a class="jxr_linenumber" name="L660" href="#L660">660</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> accept( <strong class="jxr_keyword">final</strong> File dir, <strong class="jxr_keyword">final</strong> String name )
+<a class="jxr_linenumber" name="L661" href="#L661">661</a>             {
+<a class="jxr_linenumber" name="L662" href="#L662">662</a>                 String libraryName = ndkFinalLibraryName;
+<a class="jxr_linenumber" name="L663" href="#L663">663</a>                 
+<a class="jxr_linenumber" name="L664" href="#L664">664</a>                 <strong class="jxr_keyword">if</strong> ( libraryName == <strong class="jxr_keyword">null</strong> || libraryName.isEmpty() )
+<a class="jxr_linenumber" name="L665" href="#L665">665</a>                 {
+<a class="jxr_linenumber" name="L666" href="#L666">666</a>                     libraryName = project.getArtifactId();
+<a class="jxr_linenumber" name="L667" href="#L667">667</a>                 }
+<a class="jxr_linenumber" name="L668" href="#L668">668</a> 
+<a class="jxr_linenumber" name="L669" href="#L669">669</a>                 <em class="jxr_comment">// FIXME: The following logic won't work for an APKLIB building a static library</em>
+<a class="jxr_linenumber" name="L670" href="#L670">670</a>                 <strong class="jxr_keyword">if</strong> ( Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( project.getPackaging() ) )
+<a class="jxr_linenumber" name="L671" href="#L671">671</a>                 {
+<a class="jxr_linenumber" name="L672" href="#L672">672</a>                     <strong class="jxr_keyword">return</strong> name.startsWith(
+<a class="jxr_linenumber" name="L673" href="#L673">673</a>                             <span class="jxr_string">"lib"</span> + libraryName ) &amp;&amp; name.endsWith( <span class="jxr_string">".a"</span> );
+<a class="jxr_linenumber" name="L674" href="#L674">674</a>                 }
+<a class="jxr_linenumber" name="L675" href="#L675">675</a>                 <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L676" href="#L676">676</a>                 {
+<a class="jxr_linenumber" name="L677" href="#L677">677</a>                     <strong class="jxr_keyword">return</strong> name.startsWith(
+<a class="jxr_linenumber" name="L678" href="#L678">678</a>                             <span class="jxr_string">"lib"</span> + libraryName ) &amp;&amp; name.endsWith( <span class="jxr_string">".so"</span> );
+<a class="jxr_linenumber" name="L679" href="#L679">679</a>                 }
+<a class="jxr_linenumber" name="L680" href="#L680">680</a>             }
+<a class="jxr_linenumber" name="L681" href="#L681">681</a>         } );
+<a class="jxr_linenumber" name="L682" href="#L682">682</a>         <em class="jxr_comment">// slight limitation at this stage - we only handle a single .so artifact</em>
+<a class="jxr_linenumber" name="L683" href="#L683">683</a>         <strong class="jxr_keyword">if</strong> ( files == <strong class="jxr_keyword">null</strong> || files.length != 1 )
+<a class="jxr_linenumber" name="L684" href="#L684">684</a>         {
+<a class="jxr_linenumber" name="L685" href="#L685">685</a>             getLog().warn( <span class="jxr_string">"Error while detecting native compile artifacts: "</span>
+<a class="jxr_linenumber" name="L686" href="#L686">686</a>                     + ( files == <strong class="jxr_keyword">null</strong> || files.length == 0
+<a class="jxr_linenumber" name="L687" href="#L687">687</a>                             ? <span class="jxr_string">"None found"</span>
+<a class="jxr_linenumber" name="L688" href="#L688">688</a>                             : <span class="jxr_string">"Found more than 1 artifact"</span> ) );
+<a class="jxr_linenumber" name="L689" href="#L689">689</a>             <strong class="jxr_keyword">if</strong> ( target != <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L690" href="#L690">690</a>             {
+<a class="jxr_linenumber" name="L691" href="#L691">691</a>                 getLog().warn( <span class="jxr_string">"Using the 'target' configuration option to specify the output file name "</span>
+<a class="jxr_linenumber" name="L692" href="#L692">692</a>                         + <span class="jxr_string">"is no longer supported, use 'ndkFinalLibraryName' instead."</span> );
+<a class="jxr_linenumber" name="L693" href="#L693">693</a>             }
+<a class="jxr_linenumber" name="L694" href="#L694">694</a> 
+<a class="jxr_linenumber" name="L695" href="#L695">695</a>             <strong class="jxr_keyword">if</strong> ( files != <strong class="jxr_keyword">null</strong> &amp;&amp; files.length &gt; 1 )
+<a class="jxr_linenumber" name="L696" href="#L696">696</a>             {
+<a class="jxr_linenumber" name="L697" href="#L697">697</a>                 getLog().debug( <span class="jxr_string">"List of files found: "</span> + Arrays.asList( files ) );
+<a class="jxr_linenumber" name="L698" href="#L698">698</a>                 getLog().error(
+<a class="jxr_linenumber" name="L699" href="#L699">699</a>                         <span class="jxr_string">"Currently, only a single, final native library is supported by the build"</span> );
+<a class="jxr_linenumber" name="L700" href="#L700">700</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException(
+<a class="jxr_linenumber" name="L701" href="#L701">701</a>                         <span class="jxr_string">"Currently, only a single, final native library is supported by the build"</span> );
+<a class="jxr_linenumber" name="L702" href="#L702">702</a>             }
+<a class="jxr_linenumber" name="L703" href="#L703">703</a>             <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L704" href="#L704">704</a>             {
+<a class="jxr_linenumber" name="L705" href="#L705">705</a>                 getLog().error( <span class="jxr_string">"No native compiled library found, did the native compile complete "</span>
+<a class="jxr_linenumber" name="L706" href="#L706">706</a>                         + <span class="jxr_string">"successfully?"</span> );
+<a class="jxr_linenumber" name="L707" href="#L707">707</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"No native compiled library found, did the native "</span>
+<a class="jxr_linenumber" name="L708" href="#L708">708</a>                         + <span class="jxr_string">"compile complete successfully?"</span> );
+<a class="jxr_linenumber" name="L709" href="#L709">709</a>             }
+<a class="jxr_linenumber" name="L710" href="#L710">710</a>         }
+<a class="jxr_linenumber" name="L711" href="#L711">711</a>         <strong class="jxr_keyword">return</strong> files[ 0 ];
+<a class="jxr_linenumber" name="L712" href="#L712">712</a>     }
+<a class="jxr_linenumber" name="L713" href="#L713">713</a>     
+<a class="jxr_linenumber" name="L714" href="#L714">714</a>     <strong class="jxr_keyword">private</strong> File nativeLibraryFromName( File nativeLibDirectory ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L715" href="#L715">715</a>     {
+<a class="jxr_linenumber" name="L716" href="#L716">716</a>         <strong class="jxr_keyword">final</strong> File libraryFile;
+<a class="jxr_linenumber" name="L717" href="#L717">717</a>         <em class="jxr_comment">// Find the nativeArtifactFile in the nativeLibDirectory/ndkFinalLibraryName</em>
+<a class="jxr_linenumber" name="L718" href="#L718">718</a>         <strong class="jxr_keyword">if</strong> ( Const.ArtifactType.NATIVE_SYMBOL_OBJECT.equals( project.getPackaging() )
+<a class="jxr_linenumber" name="L719" href="#L719">719</a>                 || Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( project.getPackaging() ) )
 <a class="jxr_linenumber" name="L720" href="#L720">720</a>         {
 <a class="jxr_linenumber" name="L721" href="#L721">721</a>             libraryFile = <strong class="jxr_keyword">new</strong> File( nativeLibDirectory,
 <a class="jxr_linenumber" name="L722" href="#L722">722</a>                     <span class="jxr_string">"lib"</span> + ndkFinalLibraryName + <span class="jxr_string">"."</span> + project.getPackaging() );
@@ -826,7 +826,7 @@
 <a class="jxr_linenumber" name="L818" href="#L818">818</a>                 }
 <a class="jxr_linenumber" name="L819" href="#L819">819</a>             } );
 <a class="jxr_linenumber" name="L820" href="#L820">820</a>             stripCommandExecutor.setLogger( getLog() );
-<a class="jxr_linenumber" name="L821" href="#L821">821</a> 
+<a class="jxr_linenumber" name="L821" href="#L821">821</a>             stripCommandExecutor.setCaptureStdOut( <strong class="jxr_keyword">true</strong> );
 <a class="jxr_linenumber" name="L822" href="#L822">822</a>             stripCommandExecutor.executeCommand( resolveNdkStripper( file ).getAbsolutePath(),
 <a class="jxr_linenumber" name="L823" href="#L823">823</a>                                                  Arrays.asList( file.getAbsolutePath() ) );
 <a class="jxr_linenumber" name="L824" href="#L824">824</a>         }
@@ -942,105 +942,105 @@
 <a class="jxr_linenumber" name="L934" href="#L934">934</a>                 classifier += <span class="jxr_string">"-"</span> + ndkClassifier;
 <a class="jxr_linenumber" name="L935" href="#L935">935</a>             }
 <a class="jxr_linenumber" name="L936" href="#L936">936</a> 
-<a class="jxr_linenumber" name="L937" href="#L937">937</a>             projectHelper.attachArtifact( project, <span class="jxr_string">"har"</span>, classifier, jarFile );
-<a class="jxr_linenumber" name="L938" href="#L938">938</a> 
-<a class="jxr_linenumber" name="L939" href="#L939">939</a>         }
-<a class="jxr_linenumber" name="L940" href="#L940">940</a>         <strong class="jxr_keyword">catch</strong> ( Exception e )
-<a class="jxr_linenumber" name="L941" href="#L941">941</a>         {
-<a class="jxr_linenumber" name="L942" href="#L942">942</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( e.getMessage() );
-<a class="jxr_linenumber" name="L943" href="#L943">943</a>         }
-<a class="jxr_linenumber" name="L944" href="#L944">944</a>     }
-<a class="jxr_linenumber" name="L945" href="#L945">945</a> 
-<a class="jxr_linenumber" name="L946" href="#L946">946</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> setupNativeLibraryEnvironment( MakefileHelper makefileHelper, CommandExecutor executor,
-<a class="jxr_linenumber" name="L947" href="#L947">947</a>                                                 Set&lt;Artifact&gt; resolveNativeLibraryArtifacts, String ndkArchitecture )
-<a class="jxr_linenumber" name="L948" href="#L948">948</a>     {
-<a class="jxr_linenumber" name="L949" href="#L949">949</a>         <em class="jxr_comment">// Only add the LOCAL_STATIC_LIBRARIES</em>
-<a class="jxr_linenumber" name="L950" href="#L950">950</a>         <strong class="jxr_keyword">if</strong> ( NativeHelper.hasStaticNativeLibraryArtifact( resolveNativeLibraryArtifacts, getUnpackedLibsDirectory(),
-<a class="jxr_linenumber" name="L951" href="#L951">951</a>                                                           ndkArchitecture ) )
-<a class="jxr_linenumber" name="L952" href="#L952">952</a>         {
-<a class="jxr_linenumber" name="L953" href="#L953">953</a>             String staticlibs = makefileHelper.createLibraryList( resolveNativeLibraryArtifacts, 
-<a class="jxr_linenumber" name="L954" href="#L954">954</a>                                                                   ndkArchitecture, 
-<a class="jxr_linenumber" name="L955" href="#L955">955</a>                                                                   <strong class="jxr_keyword">true</strong> ); 
-<a class="jxr_linenumber" name="L956" href="#L956">956</a>             executor.addEnvironment( <span class="jxr_string">"ANDROID_MAVEN_PLUGIN_LOCAL_STATIC_LIBRARIES"</span>, staticlibs );
-<a class="jxr_linenumber" name="L957" href="#L957">957</a>             getLog().debug( <span class="jxr_string">"Set ANDROID_MAVEN_PLUGIN_LOCAL_STATIC_LIBRARIES = "</span> + staticlibs );
-<a class="jxr_linenumber" name="L958" href="#L958">958</a>         }
-<a class="jxr_linenumber" name="L959" href="#L959">959</a> 
-<a class="jxr_linenumber" name="L960" href="#L960">960</a>         <em class="jxr_comment">// Only add the LOCAL_SHARED_LIBRARIES</em>
-<a class="jxr_linenumber" name="L961" href="#L961">961</a>         <strong class="jxr_keyword">if</strong> ( NativeHelper.hasSharedNativeLibraryArtifact( resolveNativeLibraryArtifacts, getUnpackedLibsDirectory(),
-<a class="jxr_linenumber" name="L962" href="#L962">962</a>                                                           ndkArchitecture ) )
-<a class="jxr_linenumber" name="L963" href="#L963">963</a>         {
-<a class="jxr_linenumber" name="L964" href="#L964">964</a>             String sharedlibs = makefileHelper.createLibraryList( resolveNativeLibraryArtifacts, 
-<a class="jxr_linenumber" name="L965" href="#L965">965</a>                                                                   ndkArchitecture, 
-<a class="jxr_linenumber" name="L966" href="#L966">966</a>                                                                   false ); 
-<a class="jxr_linenumber" name="L967" href="#L967">967</a>             executor.addEnvironment( <span class="jxr_string">"ANDROID_MAVEN_PLUGIN_LOCAL_SHARED_LIBRARIES"</span>, sharedlibs );
-<a class="jxr_linenumber" name="L968" href="#L968">968</a>             getLog().debug( <span class="jxr_string">"Set ANDROID_MAVEN_PLUGIN_LOCAL_SHARED_LIBRARIES = "</span> + sharedlibs );
-<a class="jxr_linenumber" name="L969" href="#L969">969</a>         }
-<a class="jxr_linenumber" name="L970" href="#L970">970</a>     }
-<a class="jxr_linenumber" name="L971" href="#L971">971</a>     
-<a class="jxr_linenumber" name="L972" href="#L972">972</a>     <strong class="jxr_keyword">private</strong> Set&lt;Artifact&gt; findNativeLibraryDependencies() <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L973" href="#L973">973</a>     {
-<a class="jxr_linenumber" name="L974" href="#L974">974</a>         <a href="../../../../../../com/jayway/maven/plugins/android/common/NativeHelper.html">NativeHelper</a> nativeHelper = <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/common/NativeHelper.html">NativeHelper</a>( project, projectRepos, repoSession, repoSystem, artifactFactory,
-<a class="jxr_linenumber" name="L975" href="#L975">975</a>                 getLog() );
+<a class="jxr_linenumber" name="L937" href="#L937">937</a>             getLog().debug( <span class="jxr_string">"Attaching 'har' classifier="</span> + classifier + <span class="jxr_string">" file="</span> + jarFile );
+<a class="jxr_linenumber" name="L938" href="#L938">938</a>             projectHelper.attachArtifact( project, Const.ArtifactType.NATIVE_HEADER_ARCHIVE, classifier, jarFile );
+<a class="jxr_linenumber" name="L939" href="#L939">939</a> 
+<a class="jxr_linenumber" name="L940" href="#L940">940</a>         }
+<a class="jxr_linenumber" name="L941" href="#L941">941</a>         <strong class="jxr_keyword">catch</strong> ( Exception e )
+<a class="jxr_linenumber" name="L942" href="#L942">942</a>         {
+<a class="jxr_linenumber" name="L943" href="#L943">943</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( e.getMessage() );
+<a class="jxr_linenumber" name="L944" href="#L944">944</a>         }
+<a class="jxr_linenumber" name="L945" href="#L945">945</a>     }
+<a class="jxr_linenumber" name="L946" href="#L946">946</a> 
+<a class="jxr_linenumber" name="L947" href="#L947">947</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> setupNativeLibraryEnvironment( MakefileHelper makefileHelper, CommandExecutor executor,
+<a class="jxr_linenumber" name="L948" href="#L948">948</a>                                                 Set&lt;Artifact&gt; resolveNativeLibraryArtifacts, String ndkArchitecture )
+<a class="jxr_linenumber" name="L949" href="#L949">949</a>     {
+<a class="jxr_linenumber" name="L950" href="#L950">950</a>         <em class="jxr_comment">// Only add the LOCAL_STATIC_LIBRARIES</em>
+<a class="jxr_linenumber" name="L951" href="#L951">951</a>         <strong class="jxr_keyword">if</strong> ( NativeHelper.hasStaticNativeLibraryArtifact( resolveNativeLibraryArtifacts, getUnpackedLibsDirectory(),
+<a class="jxr_linenumber" name="L952" href="#L952">952</a>                                                           ndkArchitecture ) )
+<a class="jxr_linenumber" name="L953" href="#L953">953</a>         {
+<a class="jxr_linenumber" name="L954" href="#L954">954</a>             String staticlibs = makefileHelper.createLibraryList( resolveNativeLibraryArtifacts, 
+<a class="jxr_linenumber" name="L955" href="#L955">955</a>                                                                   ndkArchitecture, 
+<a class="jxr_linenumber" name="L956" href="#L956">956</a>                                                                   <strong class="jxr_keyword">true</strong> ); 
+<a class="jxr_linenumber" name="L957" href="#L957">957</a>             executor.addEnvironment( <span class="jxr_string">"ANDROID_MAVEN_PLUGIN_LOCAL_STATIC_LIBRARIES"</span>, staticlibs );
+<a class="jxr_linenumber" name="L958" href="#L958">958</a>             getLog().debug( <span class="jxr_string">"Set ANDROID_MAVEN_PLUGIN_LOCAL_STATIC_LIBRARIES = "</span> + staticlibs );
+<a class="jxr_linenumber" name="L959" href="#L959">959</a>         }
+<a class="jxr_linenumber" name="L960" href="#L960">960</a> 
+<a class="jxr_linenumber" name="L961" href="#L961">961</a>         <em class="jxr_comment">// Only add the LOCAL_SHARED_LIBRARIES</em>
+<a class="jxr_linenumber" name="L962" href="#L962">962</a>         <strong class="jxr_keyword">if</strong> ( NativeHelper.hasSharedNativeLibraryArtifact( resolveNativeLibraryArtifacts, getUnpackedLibsDirectory(),
+<a class="jxr_linenumber" name="L963" href="#L963">963</a>                                                           ndkArchitecture ) )
+<a class="jxr_linenumber" name="L964" href="#L964">964</a>         {
+<a class="jxr_linenumber" name="L965" href="#L965">965</a>             String sharedlibs = makefileHelper.createLibraryList( resolveNativeLibraryArtifacts, 
+<a class="jxr_linenumber" name="L966" href="#L966">966</a>                                                                   ndkArchitecture, 
+<a class="jxr_linenumber" name="L967" href="#L967">967</a>                                                                   false ); 
+<a class="jxr_linenumber" name="L968" href="#L968">968</a>             executor.addEnvironment( <span class="jxr_string">"ANDROID_MAVEN_PLUGIN_LOCAL_SHARED_LIBRARIES"</span>, sharedlibs );
+<a class="jxr_linenumber" name="L969" href="#L969">969</a>             getLog().debug( <span class="jxr_string">"Set ANDROID_MAVEN_PLUGIN_LOCAL_SHARED_LIBRARIES = "</span> + sharedlibs );
+<a class="jxr_linenumber" name="L970" href="#L970">970</a>         }
+<a class="jxr_linenumber" name="L971" href="#L971">971</a>     }
+<a class="jxr_linenumber" name="L972" href="#L972">972</a>     
+<a class="jxr_linenumber" name="L973" href="#L973">973</a>     <strong class="jxr_keyword">private</strong> Set&lt;Artifact&gt; findNativeLibraryDependencies() <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L974" href="#L974">974</a>     {
+<a class="jxr_linenumber" name="L975" href="#L975">975</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/common/NativeHelper.html">NativeHelper</a> nativeHelper = getNativeHelper();
 <a class="jxr_linenumber" name="L976" href="#L976">976</a>         <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; staticLibraryArtifacts = nativeHelper
-<a class="jxr_linenumber" name="L977" href="#L977">977</a>                 .getNativeDependenciesArtifacts( getUnpackedLibsDirectory(), false );
+<a class="jxr_linenumber" name="L977" href="#L977">977</a>                 .getNativeDependenciesArtifacts( <strong class="jxr_keyword">this</strong>, getUnpackedLibsDirectory(), false );
 <a class="jxr_linenumber" name="L978" href="#L978">978</a>         <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; sharedLibraryArtifacts = nativeHelper
-<a class="jxr_linenumber" name="L979" href="#L979">979</a>                 .getNativeDependenciesArtifacts( getUnpackedLibsDirectory(), <strong class="jxr_keyword">true</strong> );
+<a class="jxr_linenumber" name="L979" href="#L979">979</a>                 .getNativeDependenciesArtifacts( <strong class="jxr_keyword">this</strong>, getUnpackedLibsDirectory(), <strong class="jxr_keyword">true</strong> );
 <a class="jxr_linenumber" name="L980" href="#L980">980</a>         
 <a class="jxr_linenumber" name="L981" href="#L981">981</a>         <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; mergedArtifacts = <strong class="jxr_keyword">new</strong> LinkedHashSet&lt;Artifact&gt;();
 <a class="jxr_linenumber" name="L982" href="#L982">982</a>         filterNativeDependencies( mergedArtifacts, staticLibraryArtifacts );
 <a class="jxr_linenumber" name="L983" href="#L983">983</a>         filterNativeDependencies( mergedArtifacts, sharedLibraryArtifacts );
 <a class="jxr_linenumber" name="L984" href="#L984">984</a> 
-<a class="jxr_linenumber" name="L985" href="#L985">985</a>         <strong class="jxr_keyword">if</strong> ( getLog().isDebugEnabled() )
-<a class="jxr_linenumber" name="L986" href="#L986">986</a>         {
-<a class="jxr_linenumber" name="L987" href="#L987">987</a>             getLog().debug( <span class="jxr_string">"findNativeLibraryDependencies found "</span> + mergedArtifacts.size() 
-<a class="jxr_linenumber" name="L988" href="#L988">988</a>                     + <span class="jxr_string">": "</span> + mergedArtifacts.toString() );
-<a class="jxr_linenumber" name="L989" href="#L989">989</a>         }
-<a class="jxr_linenumber" name="L990" href="#L990">990</a>         
-<a class="jxr_linenumber" name="L991" href="#L991">991</a>         <strong class="jxr_keyword">return</strong> mergedArtifacts;
-<a class="jxr_linenumber" name="L992" href="#L992">992</a>     }
-<a class="jxr_linenumber" name="L993" href="#L993">993</a> 
-<a class="jxr_linenumber" name="L994" href="#L994">994</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L995" href="#L995">995</a> <em class="jxr_javadoccomment">     * Selectively add artifacts from source to target excluding any whose groupId and artifactId match</em>
-<a class="jxr_linenumber" name="L996" href="#L996">996</a> <em class="jxr_javadoccomment">     * the current build.</em>
-<a class="jxr_linenumber" name="L997" href="#L997">997</a> <em class="jxr_javadoccomment">     * Introduced to work around an issue when the ndk-build is executed twice by maven for example when</em>
-<a class="jxr_linenumber" name="L998" href="#L998">998</a> <em class="jxr_javadoccomment">     * invoking maven 'install site'. In this case the artifacts attached by the first invocation are</em>
-<a class="jxr_linenumber" name="L999" href="#L999">999</a> <em class="jxr_javadoccomment">     * found but are not valid dependencies and must be excluded.</em>
-<a class="jxr_linenumber" name="L1000" href="#L1000">1000</a> <em class="jxr_javadoccomment">     * @param target artifact Set to copy in to</em>
-<a class="jxr_linenumber" name="L1001" href="#L1001">1001</a> <em class="jxr_javadoccomment">     * @param source artifact Set to filter</em>
-<a class="jxr_linenumber" name="L1002" href="#L1002">1002</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1003" href="#L1003">1003</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> filterNativeDependencies( Set&lt;Artifact&gt; target, Set&lt;Artifact&gt; source )
-<a class="jxr_linenumber" name="L1004" href="#L1004">1004</a>     {
-<a class="jxr_linenumber" name="L1005" href="#L1005">1005</a>         <strong class="jxr_keyword">for</strong> ( Artifact a : source )
-<a class="jxr_linenumber" name="L1006" href="#L1006">1006</a>         {
-<a class="jxr_linenumber" name="L1007" href="#L1007">1007</a>             <strong class="jxr_keyword">if</strong> ( project.getGroupId().equals( a.getGroupId() ) 
-<a class="jxr_linenumber" name="L1008" href="#L1008">1008</a>                     &amp;&amp; project.getArtifactId().equals( a.getArtifactId() ) )
-<a class="jxr_linenumber" name="L1009" href="#L1009">1009</a>             {
-<a class="jxr_linenumber" name="L1010" href="#L1010">1010</a>                 getLog().warn( <span class="jxr_string">"Excluding native dependency attached by this build"</span> );
-<a class="jxr_linenumber" name="L1011" href="#L1011">1011</a>             }
-<a class="jxr_linenumber" name="L1012" href="#L1012">1012</a>             <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L1013" href="#L1013">1013</a>             {
-<a class="jxr_linenumber" name="L1014" href="#L1014">1014</a>                 target.add( a );
-<a class="jxr_linenumber" name="L1015" href="#L1015">1015</a>             }
-<a class="jxr_linenumber" name="L1016" href="#L1016">1016</a>         }
-<a class="jxr_linenumber" name="L1017" href="#L1017">1017</a>     }
-<a class="jxr_linenumber" name="L1018" href="#L1018">1018</a> 
-<a class="jxr_linenumber" name="L1019" href="#L1019">1019</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1020" href="#L1020">1020</a> <em class="jxr_javadoccomment">     * Resolve the artifact type from the current project and the specified file.  If the project packaging is</em>
-<a class="jxr_linenumber" name="L1021" href="#L1021">1021</a> <em class="jxr_javadoccomment">     * either 'a' or 'so' it will use the packaging, otherwise it checks the file for the extension</em>
-<a class="jxr_linenumber" name="L1022" href="#L1022">1022</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a> <em class="jxr_javadoccomment">     * @param file The file being added as an artifact</em>
-<a class="jxr_linenumber" name="L1024" href="#L1024">1024</a> <em class="jxr_javadoccomment">     * @return The artifact type (so or a)</em>
-<a class="jxr_linenumber" name="L1025" href="#L1025">1025</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1026" href="#L1026">1026</a>     <strong class="jxr_keyword">private</strong> String resolveArtifactType( File file )
-<a class="jxr_linenumber" name="L1027" href="#L1027">1027</a>     {
-<a class="jxr_linenumber" name="L1028" href="#L1028">1028</a>         <strong class="jxr_keyword">if</strong> ( <span class="jxr_string">"so"</span>.equals( project.getPackaging() ) || <span class="jxr_string">"a"</span>.equals( project.getPackaging() ) )
-<a class="jxr_linenumber" name="L1029" href="#L1029">1029</a>         {
-<a class="jxr_linenumber" name="L1030" href="#L1030">1030</a>             <strong class="jxr_keyword">return</strong> project.getPackaging();
-<a class="jxr_linenumber" name="L1031" href="#L1031">1031</a>         }
-<a class="jxr_linenumber" name="L1032" href="#L1032">1032</a>         <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L1033" href="#L1033">1033</a>         {
-<a class="jxr_linenumber" name="L1034" href="#L1034">1034</a>             <em class="jxr_comment">// At this point, the file (as found by our filtering previously will end with either 'so' or 'a'</em>
-<a class="jxr_linenumber" name="L1035" href="#L1035">1035</a>             <strong class="jxr_keyword">return</strong> file.getName().endsWith( <span class="jxr_string">"so"</span> ) ? <span class="jxr_string">"so"</span> : <span class="jxr_string">"a"</span>;
+<a class="jxr_linenumber" name="L985" href="#L985">985</a>         getLog().debug( <span class="jxr_string">"findNativeLibraryDependencies found "</span> + mergedArtifacts.size()
+<a class="jxr_linenumber" name="L986" href="#L986">986</a>                 + <span class="jxr_string">": "</span> + mergedArtifacts.toString() );
+<a class="jxr_linenumber" name="L987" href="#L987">987</a> 
+<a class="jxr_linenumber" name="L988" href="#L988">988</a>         <strong class="jxr_keyword">return</strong> mergedArtifacts;
+<a class="jxr_linenumber" name="L989" href="#L989">989</a>     }
+<a class="jxr_linenumber" name="L990" href="#L990">990</a> 
+<a class="jxr_linenumber" name="L991" href="#L991">991</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L992" href="#L992">992</a> <em class="jxr_javadoccomment">     * Selectively add artifacts from source to target excluding any whose groupId and artifactId match</em>
+<a class="jxr_linenumber" name="L993" href="#L993">993</a> <em class="jxr_javadoccomment">     * the current build.</em>
+<a class="jxr_linenumber" name="L994" href="#L994">994</a> <em class="jxr_javadoccomment">     * Introduced to work around an issue when the ndk-build is executed twice by maven for example when</em>
+<a class="jxr_linenumber" name="L995" href="#L995">995</a> <em class="jxr_javadoccomment">     * invoking maven 'install site'. In this case the artifacts attached by the first invocation are</em>
+<a class="jxr_linenumber" name="L996" href="#L996">996</a> <em class="jxr_javadoccomment">     * found but are not valid dependencies and must be excluded.</em>
+<a class="jxr_linenumber" name="L997" href="#L997">997</a> <em class="jxr_javadoccomment">     * @param target artifact Set to copy in to</em>
+<a class="jxr_linenumber" name="L998" href="#L998">998</a> <em class="jxr_javadoccomment">     * @param source artifact Set to filter</em>
+<a class="jxr_linenumber" name="L999" href="#L999">999</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1000" href="#L1000">1000</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> filterNativeDependencies( Set&lt;Artifact&gt; target, Set&lt;Artifact&gt; source )
+<a class="jxr_linenumber" name="L1001" href="#L1001">1001</a>     {
+<a class="jxr_linenumber" name="L1002" href="#L1002">1002</a>         <strong class="jxr_keyword">for</strong> ( Artifact a : source )
+<a class="jxr_linenumber" name="L1003" href="#L1003">1003</a>         {
+<a class="jxr_linenumber" name="L1004" href="#L1004">1004</a>             <strong class="jxr_keyword">if</strong> ( project.getGroupId().equals( a.getGroupId() ) 
+<a class="jxr_linenumber" name="L1005" href="#L1005">1005</a>                     &amp;&amp; project.getArtifactId().equals( a.getArtifactId() ) )
+<a class="jxr_linenumber" name="L1006" href="#L1006">1006</a>             {
+<a class="jxr_linenumber" name="L1007" href="#L1007">1007</a>                 getLog().warn( <span class="jxr_string">"Excluding native dependency attached by this build"</span> );
+<a class="jxr_linenumber" name="L1008" href="#L1008">1008</a>             }
+<a class="jxr_linenumber" name="L1009" href="#L1009">1009</a>             <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L1010" href="#L1010">1010</a>             {
+<a class="jxr_linenumber" name="L1011" href="#L1011">1011</a>                 target.add( a );
+<a class="jxr_linenumber" name="L1012" href="#L1012">1012</a>             }
+<a class="jxr_linenumber" name="L1013" href="#L1013">1013</a>         }
+<a class="jxr_linenumber" name="L1014" href="#L1014">1014</a>     }
+<a class="jxr_linenumber" name="L1015" href="#L1015">1015</a> 
+<a class="jxr_linenumber" name="L1016" href="#L1016">1016</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1017" href="#L1017">1017</a> <em class="jxr_javadoccomment">     * Resolve the artifact type from the current project and the specified file.  If the project packaging is</em>
+<a class="jxr_linenumber" name="L1018" href="#L1018">1018</a> <em class="jxr_javadoccomment">     * either 'a' or 'so' it will use the packaging, otherwise it checks the file for the extension</em>
+<a class="jxr_linenumber" name="L1019" href="#L1019">1019</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1020" href="#L1020">1020</a> <em class="jxr_javadoccomment">     * @param file The file being added as an artifact</em>
+<a class="jxr_linenumber" name="L1021" href="#L1021">1021</a> <em class="jxr_javadoccomment">     * @return The artifact type (so or a)</em>
+<a class="jxr_linenumber" name="L1022" href="#L1022">1022</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a>     <strong class="jxr_keyword">private</strong> String resolveArtifactType( File file )
+<a class="jxr_linenumber" name="L1024" href="#L1024">1024</a>     {
+<a class="jxr_linenumber" name="L1025" href="#L1025">1025</a>         <strong class="jxr_keyword">if</strong> ( Const.ArtifactType.NATIVE_SYMBOL_OBJECT.equals( project.getPackaging() )
+<a class="jxr_linenumber" name="L1026" href="#L1026">1026</a>                 || Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( project.getPackaging() ) )
+<a class="jxr_linenumber" name="L1027" href="#L1027">1027</a>         {
+<a class="jxr_linenumber" name="L1028" href="#L1028">1028</a>             <strong class="jxr_keyword">return</strong> project.getPackaging();
+<a class="jxr_linenumber" name="L1029" href="#L1029">1029</a>         }
+<a class="jxr_linenumber" name="L1030" href="#L1030">1030</a>         <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L1031" href="#L1031">1031</a>         {
+<a class="jxr_linenumber" name="L1032" href="#L1032">1032</a>             <em class="jxr_comment">// At this point, the file (as found by our filtering previously will end with either 'so' or 'a'</em>
+<a class="jxr_linenumber" name="L1033" href="#L1033">1033</a>             <strong class="jxr_keyword">return</strong> file.getName().endsWith( Const.ArtifactType.NATIVE_SYMBOL_OBJECT )
+<a class="jxr_linenumber" name="L1034" href="#L1034">1034</a>                     ? Const.ArtifactType.NATIVE_SYMBOL_OBJECT
+<a class="jxr_linenumber" name="L1035" href="#L1035">1035</a>                     : Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE;
 <a class="jxr_linenumber" name="L1036" href="#L1036">1036</a>         }
 <a class="jxr_linenumber" name="L1037" href="#L1037">1037</a>     }
 <a class="jxr_linenumber" name="L1038" href="#L1038">1038</a> 
