@@ -370,7 +370,7 @@ public class AaptCommandBuilder
                     parentFolder.mkdirs();
                 }
                 log.debug( "Adding proguard file : " + outputFile );
-                commands.add( "-F" );
+                commands.add( "-G" );
                 commands.add( outputFile.getAbsolutePath() );
             }
             return this;
@@ -386,8 +386,11 @@ public class AaptCommandBuilder
          */
         public AaptPackageCommandBuilder renameManifestPackage( String manifestPackage )
         {
-            commands.add( "--rename-manifest-package" );
-            commands.add( manifestPackage );
+            if ( StringUtils.isNotBlank( manifestPackage ) )
+            {
+                commands.add( "--rename-manifest-package" );
+                commands.add( manifestPackage );
+            }
             return this;
         }
 
@@ -401,8 +404,11 @@ public class AaptCommandBuilder
          */
         public AaptPackageCommandBuilder renameInstrumentationTargetPackage( String instrumentationPackage )
         {
-            commands.add( "--rename-instrumentation-target-package" );
-            commands.add( instrumentationPackage );
+            if ( StringUtils.isNotBlank( instrumentationPackage ) )
+            {
+                commands.add( "--rename-instrumentation-target-package" );
+                commands.add( instrumentationPackage );
+            }
             return this;
         }
 
