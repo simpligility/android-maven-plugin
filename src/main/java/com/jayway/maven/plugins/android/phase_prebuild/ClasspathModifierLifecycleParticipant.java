@@ -21,9 +21,9 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
+import org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.Logger;
@@ -56,7 +56,7 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
     public void afterProjectsRead( MavenSession session ) throws MavenExecutionException
     {
         log.debug( "" );
-        log.debug( "AMLP afterProjectsRead" );
+        log.debug( "ClasspathModifierLifecycleParticipant#afterProjectsRead - start" );
         log.debug( "" );
 
         log.debug( "CurrentProject=" + session.getCurrentProject() );
@@ -73,15 +73,22 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
             final UnpackedLibHelper helper = new UnpackedLibHelper( artifactResolverHelper, project, log );
 
             final Set<Artifact> artifacts;
+
+            // If there is an extension ClassRealm loaded for this project then use that
+            // as the ContextClassLoader so that Wagon extensions can be used to resolves dependencies.
+            final ClassLoader projectClassLoader = ( project.getClassRealm() != null )
+                    ? project.getClassRealm()
+                    : Thread.currentThread().getContextClassLoader();
+
             final ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
             try
             {
-                Thread.currentThread().setContextClassLoader( session.getTopLevelProject().getClassRealm() );
+                Thread.currentThread().setContextClassLoader( projectClassLoader );
                 artifacts = dependencyResolver.getProjectDependenciesFor( project, session );
             }
-            catch ( MojoExecutionException e )
+            catch ( DependencyGraphBuilderException e )
             {
-                log.warn( "Could not resolve all dependencies for " + project, e );
+                // Nothing to do. The resolution failure will be displayed by the standard resolution mechanism.
                 continue;
             }
             finally
@@ -109,6 +116,8 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
                 }
             }
         }
+        log.debug( "" );
+        log.debug( "ClasspathModifierLifecycleParticipant#afterProjectsRead - finish" );
     }
 
     /**
