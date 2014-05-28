@@ -151,6 +151,14 @@ public class ApkMojo extends AbstractAndroidMojo
     private String classifier;
 
     /**
+     * The apk file produced by the apk goal. Per default the file is placed into the build directory (target
+     * normally) using the build final name and apk as extension.
+     *
+     * @parameter property="android.outputApk" default-value="${project.build.directory}/${project.build.finalName}.apk"
+     */
+    private String outputApk;
+    
+    /**
      * <p>Additional source directories that contain resources to be packaged into the apk.</p>
      * <p>These are not source directories, that contain java classes to be compiled.
      * It corresponds to the -df option of the apkbuilder program. It allows you to specify directories,
@@ -298,7 +306,7 @@ public class ApkMojo extends AbstractAndroidMojo
         }
         
         // Initialize apk build configuration
-        File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + "." + APK );
+        File outputFile = new File( outputApk );
         final boolean signWithDebugKeyStore = getAndroidSigner().isSignWithDebugKeyStore();
 
         if ( getAndroidSigner().shouldCreateBothSignedAndUnsignedApk() )
