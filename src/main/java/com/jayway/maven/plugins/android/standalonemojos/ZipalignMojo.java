@@ -104,6 +104,13 @@ public class ZipalignMojo extends AbstractAndroidMojo
     private File alignedApkFile;
 
     /**
+     * <p>Classifier to add to the artifact generated. </p>
+     *
+     * @parameter default="aligned"
+     */
+    private String classifier;
+
+    /**
      * Execute the mojo by parsing the confign and actually doing the zipalign.
      *
      * @throws MojoExecutionException
@@ -180,8 +187,8 @@ public class ZipalignMojo extends AbstractAndroidMojo
                     {
                         // Attach the resulting artifact (Issue 88)
                         // http://code.google.com/p/maven-android-plugin/issues/detail?id=88
-                        projectHelper.attachArtifact( project, APK, "aligned", new File( outputApk ) );
-                        getLog().info( "Attach " + getFullPathWithName( outputApk ) + " to the project" );
+                        projectHelper.attachArtifact( project, APK, classifier, new File( outputApk ) );
+                        getLog().info( "Attach " + getFullPathWithName( outputApk )  + " as '" + classifier + "' to the project" );
                     }
                 }
                 else
