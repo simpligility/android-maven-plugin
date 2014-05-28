@@ -106,8 +106,9 @@ public class ZipalignMojo extends AbstractAndroidMojo
     /**
      * <p>Classifier to add to the artifact generated. </p>
      *
-     * @parameter default="aligned"
+     * @parameter default-value="aligned"
      */
+    @PullParameter( defaultValue = "aligned" )
     private String classifier;
 
     /**
