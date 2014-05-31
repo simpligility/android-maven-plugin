@@ -107,14 +107,13 @@ public class NativeHelper
                 ApklibMojo.NATIVE_LIBRARIES_FOLDER + File.separator + ndkArchitecture );
         if ( libsFolder.exists() )
         {
-            File[] libFiles = libsFolder.listFiles( new FilenameFilter()
+            return libsFolder.listFiles( new FilenameFilter()
             {
                 public boolean accept( final File dir, final String name )
                 {
                     return name.startsWith( "lib" ) && name.endsWith( ( staticLibrary ? ".a" : ".so" ) );
                 }
             } );
-            return libFiles;
         }
         return null;
     }
@@ -131,9 +130,6 @@ public class NativeHelper
         // Note: The result of project.getDependencyArtifacts() can be an UnmodifiableSet so we 
         //       have created our own above and add to that.
         allArtifacts.addAll( project.getDependencyArtifacts() );
-
-        // Add all attached artifacts as well - this could come from the NDK mojo for example
-        allArtifacts.addAll( project.getAttachedArtifacts() );
 
         // Add all transitive artifacts as well
         // this allows armeabi classifier -> apklib -> apklib -> apk chaining to only include armeabi in APK
@@ -166,7 +162,7 @@ public class NativeHelper
                     if ( APKLIB.equals( type ) )
                     {
                         // Check if the artifact contains a libs folder - if so, include it in the list
-                        File libsFolder = null;
+                        final File libsFolder;
                         if ( mojo != null )
                         {
                             libsFolder = mojo.getUnpackedLibNativesFolder( artifact );
