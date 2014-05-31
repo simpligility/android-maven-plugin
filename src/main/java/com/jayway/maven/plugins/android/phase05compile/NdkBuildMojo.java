@@ -99,16 +99,6 @@ public class NdkBuildMojo extends AbstractAndroidMojo
     private Boolean attachNativeArtifacts;
 
     /**
-     * Build folder to place built native libraries into
-     *
-     * @parameter property="android.ndk.build.ndk-output-directory"
-     *            default-value="${project.build.directory}/ndk-libs"
-     * @readonly
-     */
-    @PullParameter
-    private File ndkOutputDirectory;
-
-    /**
      * <p>Folder containing native, static libraries compiled and linked by the NDK.</p>
      *
      * The NDK build executable seems determined to create the native libs in the root folder.
