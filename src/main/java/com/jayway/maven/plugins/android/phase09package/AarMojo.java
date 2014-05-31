@@ -59,14 +59,6 @@ public class AarMojo extends AbstractAndroidMojo
     public static final String NATIVE_LIBRARIES_FOLDER = "libs";
 
     /**
-     * Build folder to place built native libraries into
-     *
-     * @parameter property="android.ndk.build.ndk-output-directory"
-     * default-value="${project.build.directory}/ndk-libs"
-     */
-    private File ndkOutputDirectory;
-
-    /**
      * <p>Classifier to add to the artifact generated. If given, the artifact will be an attachment instead.</p>
      *
      * @parameter
@@ -257,10 +249,10 @@ public class AarMojo extends AbstractAndroidMojo
                 String[] ndkArchitectures = NativeHelper.getNdkArchitectures( ndkArchitecture,
                                                                               applicationMakefile,
                                                                               project.getBasedir() );
-                for ( String ndkArchitecture : ndkArchitectures )
+                for ( String architecture : ndkArchitectures )
                 {
-                    final File ndkLibsDirectory = new File( ndkOutputDirectory, ndkArchitecture );
-                    addSharedLibraries( zipArchiver, ndkLibsDirectory, ndkArchitecture );
+                    final File ndkLibsDirectory = new File( ndkOutputDirectory, architecture );
+                    addSharedLibraries( zipArchiver, ndkLibsDirectory, architecture );
 
                     // Add native library dependencies
                     // FIXME: Remove as causes duplicate libraries when building final APK if this set includes
@@ -272,10 +264,10 @@ public class AarMojo extends AbstractAndroidMojo
                     for ( Artifact libraryArtifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
                     {
                         final File apklibLibsDirectory = new File(
-                                getUnpackedLibNativesFolder( libraryArtifact ), ndkArchitecture );
+                                getUnpackedLibNativesFolder( libraryArtifact ), architecture );
                         if ( apklibLibsDirectory.exists() )
                         {
-                            addSharedLibraries( zipArchiver, apklibLibsDirectory, ndkArchitecture );
+                            addSharedLibraries( zipArchiver, apklibLibsDirectory, architecture );
                         }
                     }
                 }
@@ -332,9 +324,9 @@ public class AarMojo extends AbstractAndroidMojo
      *
      * @param zipArchiver The jarArchiver to add files to
      * @param directory   The directory to scan for .so files
-     * @param ndkArchitecture      The prefix for where in the jar the .so files will go.
+     * @param architecture      The prefix for where in the jar the .so files will go.
      */
-    protected void addSharedLibraries( ZipArchiver zipArchiver, File directory, String ndkArchitecture )
+    protected void addSharedLibraries( ZipArchiver zipArchiver, File directory, String architecture )
     {
         getLog().debug( "Searching for shared libraries in " + directory );
         File[] libFiles = directory.listFiles( new FilenameFilter()
@@ -349,7 +341,7 @@ public class AarMojo extends AbstractAndroidMojo
         {
             for ( File libFile : libFiles )
             {
-                String dest = "libs/" + ndkArchitecture + "/" + libFile.getName();
+                String dest = "libs/" + architecture + "/" + libFile.getName();
                 getLog().debug( "Adding " + libFile + " as " + dest );
                 zipArchiver.addFile( libFile, dest );
             }

@@ -177,6 +177,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected File nativeLibrariesDirectory;
 
+    /**
+     * Folder in which the ndk libraries are collected ready for packaging.
+     *
+     * @parameter default-value="${project.build.directory}/ndk-libs"
+     * @readonly
+     */
+    protected File ndkOutputDirectory;
+
 
     /**
      * The android resources overlay directory. This will be overridden
@@ -594,8 +602,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * Initialize the Android Debug Bridge and wait for it to start. Does not reinitialize it if it has
      * already been initialized (that would through and IllegalStateException...). Synchronized sine
      * the init call in the library is also synchronized .. just in case.
-     *
-     * @return
      */
     protected AndroidDebugBridge initAndroidDebugBridge() throws MojoExecutionException
     {
@@ -617,8 +623,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * Run a wait loop until adb is connected or trials run out. This method seems to work more reliably then using a
      * listener.
-     *
-     * @param adb
      */
     private void waitUntilConnected( AndroidDebugBridge adb )
     {
@@ -644,9 +648,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     /**
      * Wait for the Android Debug Bridge to return an initial device list.
-     *
-     * @param androidDebugBridge
-     * @throws MojoExecutionException
      */
     protected void waitForInitialDeviceList( final AndroidDebugBridge androidDebugBridge ) throws MojoExecutionException
     {
@@ -1037,12 +1038,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         return extractPackageNameFromAndroidManifest( manifest );
     }
 
-    /**
-     *
-     * @param manifestFile
-     * @return
-     * @throws MojoExecutionException
-     */
     protected String extractPackageNameFromAndroidManifest( File manifestFile )
     {
         return VariantConfiguration.getManifestPackage( manifestFile );
@@ -1059,23 +1054,23 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * Attempts to find the instrumentation test runner from inside the AndroidManifest.xml file.
      *
-     * @param androidManifestFile the AndroidManifest.xml file to inspect.
+     * @param manifestFile the AndroidManifest.xml file to inspect.
      * @return the instrumentation test runner declared in AndroidManifest.xml, or {@code null} if it is not declared.
      * @throws MojoExecutionException
      */
-    protected String extractInstrumentationRunnerFromAndroidManifest( File androidManifestFile )
+    protected String extractInstrumentationRunnerFromAndroidManifest( File manifestFile )
             throws MojoExecutionException
     {
         final URL xmlURL;
         try
         {
-            xmlURL = androidManifestFile.toURI().toURL();
+            xmlURL = manifestFile.toURI().toURL();
         }
         catch ( MalformedURLException e )
         {
             throw new MojoExecutionException(
                     "Error while trying to figure out instrumentation runner from inside AndroidManifest.xml file "
-                            + androidManifestFile, e );
+                            + manifestFile, e );
         }
         final DocumentContainer documentContainer = new DocumentContainer( xmlURL );
         final Object instrumentationRunner;
@@ -1174,11 +1169,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         return new AndroidSdk( chosenSdkPath, chosenSdkPlatform );
     }
 
-    /**
-     *
-     * @return
-     * @throws MojoExecutionException
-     */
     private String getAndroidHomeOrThrow() throws MojoExecutionException
     {
         final String androidHome = System.getenv( ENV_ANDROID_HOME );
@@ -1258,7 +1248,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected AndroidNdk getAndroidNdk() throws MojoExecutionException
     {
-        File chosenNdkPath = null;
+        File chosenNdkPath;
         // There is no <ndk> tag in the pom.
         if ( ndkPath != null )
         {
@@ -1278,11 +1268,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     }
 
 
-    /**
-     *
-     * @return
-     * @throws MojoExecutionException
-     */
     private String getAndroidNdkHomeOrThrow() throws MojoExecutionException
     {
         final String androidHome = System.getenv( ENV_ANDROID_NDK_HOME );
@@ -1297,8 +1282,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     }
 
     /**
-     * Get the resource directories if defined or the resource directory
-     * @return
+     * @return the resource directories if defined or the resource directory.
      */
     public File[] getResourceOverlayDirectories()
     {

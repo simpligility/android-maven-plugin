@@ -60,14 +60,6 @@ public class ApklibMojo extends AbstractAndroidMojo
     public static final String NATIVE_LIBRARIES_FOLDER = "libs";
     
     /**
-     * Build folder to place built native libraries into
-     *
-     * @parameter property="android.ndk.build.ndk-output-directory"
-     * default-value="${project.build.directory}/ndk-libs"
-     */
-    private File ndkOutputDirectory;
-    
-    /**
      * <p>Classifier to add to the artifact generated. If given, the artifact will be an attachment instead.</p>
      *
      * @parameter
@@ -139,12 +131,7 @@ public class ApklibMojo extends AbstractAndroidMojo
         }
     }
 
-    /**
-     *
-     * @return
-     * @throws MojoExecutionException
-     */
-    protected File createApkLibraryFile() throws MojoExecutionException
+    private File createApkLibraryFile() throws MojoExecutionException
     {
         final File apklibrary = new File( project.getBuild().getDirectory(),
                 project.getBuild().getFinalName() + "." + APKLIB );
@@ -210,10 +197,10 @@ public class ApklibMojo extends AbstractAndroidMojo
                 String[] ndkArchitectures = NativeHelper.getNdkArchitectures( ndkArchitecture,
                                                                               applicationMakefile,
                                                                               project.getBasedir() );
-                for ( String ndkArchitecture : ndkArchitectures )
+                for ( String architecture : ndkArchitectures )
                 {
-                    final File ndkLibsDirectory = new File( ndkOutputDirectory, ndkArchitecture );
-                    addSharedLibraries( jarArchiver, ndkLibsDirectory, ndkArchitecture );
+                    final File ndkLibsDirectory = new File( ndkOutputDirectory, architecture );
+                    addSharedLibraries( jarArchiver, ndkLibsDirectory, architecture );
                 
                     // Add native library dependencies
                     // FIXME: Remove as causes duplicate libraries when building final APK if this set includes
@@ -328,9 +315,9 @@ public class ApklibMojo extends AbstractAndroidMojo
      * 
      * @param jarArchiver The jarArchiver to add files to
      * @param directory   The directory to scan for .so files
-     * @param ndkArchitecture      The prefix for where in the jar the .so files will go.
+     * @param architecture      The prefix for where in the jar the .so files will go.
      */
-    protected void addSharedLibraries( JarArchiver jarArchiver, File directory, String ndkArchitecture )
+    protected void addSharedLibraries( JarArchiver jarArchiver, File directory, String architecture )
     {
         getLog().debug( "Searching for shared libraries in " + directory );
         File[] libFiles = directory.listFiles( new FilenameFilter()
@@ -345,7 +332,7 @@ public class ApklibMojo extends AbstractAndroidMojo
         {
             for ( File libFile : libFiles )
             {
-                String dest = "libs/" + ndkArchitecture + "/" + libFile.getName();
+                String dest = "libs/" + architecture + "/" + libFile.getName();
                 getLog().debug( "Adding " + libFile + " as " + dest );
                 jarArchiver.addFile( libFile, dest );
             }
