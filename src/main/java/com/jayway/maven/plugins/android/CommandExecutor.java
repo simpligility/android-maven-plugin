@@ -99,9 +99,7 @@ public interface CommandExecutor
     int getResult();
 
     /**
-     * Get the process id for the executed command.
-     * 
-     * @return
+     * @return the process id for the executed command.
      */
     long getPid();
 
@@ -121,9 +119,6 @@ public interface CommandExecutor
 
     /**
      * Adds an environment variable with the specified name and value to the executor.
-     * 
-     * @param name
-     * @param value
      */
     void addEnvironment( String name, String value );
 
@@ -236,6 +231,7 @@ public interface CommandExecutor
                 }
                 try
                 {
+                    logger.debug( "ANDROID-040-000: Executing command: Commandline = " + commandline );
                     result = CommandLineUtils.executeCommandLine( commandline, stdOut, stdErr );
                     if ( logger != null )
                     {

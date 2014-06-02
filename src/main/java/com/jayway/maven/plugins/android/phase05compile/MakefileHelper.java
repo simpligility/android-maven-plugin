@@ -2,7 +2,6 @@ package com.jayway.maven.plugins.android.phase05compile;
 
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.ArtifactResolverHelper;
-import com.jayway.maven.plugins.android.common.UnpackedLibHelper;
 import com.jayway.maven.plugins.android.common.Const;
 import com.jayway.maven.plugins.android.common.JarHelper;
 import com.jayway.maven.plugins.android.common.NativeHelper;
@@ -35,9 +34,6 @@ public class MakefileHelper
 {
     public static final String MAKEFILE_CAPTURE_FILE = "ANDROID_MAVEN_PLUGIN_LOCAL_C_INCLUDES_FILE";
     
-    public static final boolean IS_WINDOWS = System.getProperty( "os.name" ).toLowerCase().indexOf( "windows" ) >= 0;
-    public static final String WINDOWS_DRIVE_ROOT_REGEX = "[a-zA-Z]:\\\\";
-
     /**
      * Holder for the result of creating a makefile.  This in particular keep tracks of all directories created
      * for extracted header files.
@@ -65,7 +61,6 @@ public class MakefileHelper
     }
 
     private final Log log;
-    private final UnpackedLibHelper unpackedLibHelper;
     private final ArtifactResolverHelper artifactResolverHelper;
     private final ArtifactHandler harArtifactHandler;
     private final File unpackedApkLibsDirectory;
@@ -73,16 +68,14 @@ public class MakefileHelper
     /**
      * Initialize the MakefileHelper by storing the supplied parameters to local variables.
      * @param log                       Log to which to write log output.
-     * @param unpackedLibHelper               UnpackedLibHelper to use to resolve any artifacts.
      * @param artifactResolverHelper    ArtifactResolverHelper to use to resolve the artifacts.
      * @param harHandler                ArtifactHandler for har files.
      * @param unpackedApkLibsDirectory  Folder in which apklibs are unpacked.
      */
-    public MakefileHelper( Log log, UnpackedLibHelper unpackedLibHelper, ArtifactResolverHelper artifactResolverHelper,
+    public MakefileHelper( Log log, ArtifactResolverHelper artifactResolverHelper,
                            ArtifactHandler harHandler, File unpackedApkLibsDirectory )
     {
         this.log = log;
-        this.unpackedLibHelper = unpackedLibHelper;
         this.artifactResolverHelper = artifactResolverHelper;
         this.harArtifactHandler = harHandler;
         this.unpackedApkLibsDirectory = unpackedApkLibsDirectory;
@@ -92,7 +85,7 @@ public class MakefileHelper
      * Cleans up all include directories created in the temp directory during the build.
      *
      * @param makefileHolder The holder produced by the
-     * {@link MakefileHelper#createMakefileFromArtifacts(File, Set, String, String, boolean)}
+     * {@link MakefileHelper#createMakefileFromArtifacts(Set, String, String, boolean)}
      */
     public static void cleanupAfterBuild( MakefileHolder makefileHolder )
     {
@@ -117,13 +110,12 @@ public class MakefileHelper
     /**
      * Creates an Android Makefile based on the specified set of static library dependency artifacts.
      *
-     * @param outputDir         Directory to resolve artifact locations relative to.  Makefiles contain relative paths
      * @param artifacts         The list of (static library) dependency artifacts to create the Makefile from
      * @param useHeaderArchives If true, the Makefile should include a LOCAL_EXPORT_C_INCLUDES statement, pointing to
      *                          the location where the header archive was expanded
      * @return The created Makefile
      */
-    public MakefileHolder createMakefileFromArtifacts( File outputDir, Set<Artifact> artifacts,
+    public MakefileHolder createMakefileFromArtifacts( Set<Artifact> artifacts,
                                                               String ndkArchitecture, String defaultNDKArchitecture,
                                                               boolean useHeaderArchives )
             throws IOException, MojoExecutionException
@@ -175,7 +167,7 @@ public class MakefileHelper
                 makeFile.append( artifact.getArtifactId() );
                 makeFile.append( '\n' );
 
-                final boolean apklibStatic = addLibraryDetails( makeFile, outputDir, artifact, ndkArchitecture );
+                final boolean apklibStatic = addLibraryDetails( makeFile, artifact, ndkArchitecture );
 
                 if ( useHeaderArchives )
                 {
@@ -224,8 +216,7 @@ public class MakefileHelper
                                 } );
 
                         makeFile.append( "LOCAL_EXPORT_C_INCLUDES := " );
-                        final String str = includeDir.getAbsolutePath();
-                        makeFile.append( str );
+                        makeFile.append( includeDir.getAbsolutePath() );
                         makeFile.append( '\n' );
                         
                         if ( log.isDebugEnabled() )
@@ -259,7 +250,7 @@ public class MakefileHelper
         return new MakefileHolder( includeDirectories, makeFile.toString() );
     }
 
-    private boolean addLibraryDetails( StringBuilder makeFile, File outputDir,
+    private boolean addLibraryDetails( StringBuilder makeFile,
                                        Artifact artifact, String ndkArchitecture ) throws IOException
     {
         boolean apklibStatic = false;
@@ -277,7 +268,7 @@ public class MakefileHelper
             {
                 int libIdx = findApklibNativeLibrary( staticLibs, artifact.getArtifactId() );
                 apklibStatic = true;
-                addLibraryDetails( makeFile, outputDir, staticLibs[libIdx], "" );
+                addLibraryDetails( makeFile, staticLibs[libIdx], "" );
             }
             else
             {
@@ -288,25 +279,22 @@ public class MakefileHelper
                     throw new IOException( "Failed to find any library file in APKLIB" );
                 }
                 int libIdx = findApklibNativeLibrary( sharedLibs, artifact.getArtifactId() );
-                addLibraryDetails( makeFile, outputDir, sharedLibs[libIdx], "" );
+                addLibraryDetails( makeFile, sharedLibs[libIdx], "" );
             }
         }
         else
         {
-            addLibraryDetails( makeFile, outputDir, artifact.getFile(), artifact.getArtifactId() );
+            addLibraryDetails( makeFile, artifact.getFile(), artifact.getArtifactId() );
         }
 
         return apklibStatic;
     }
 
-    private void addLibraryDetails( StringBuilder makeFile, File outputDir, File libFile, String outputName )
+    private void addLibraryDetails( StringBuilder makeFile, File libFile, String outputName )
         throws IOException
     {
-        String localPath = resolveRelativePath( outputDir, libFile );
-        localPath = localPath.substring( 0, localPath.indexOf( libFile.getName() ) - 1 );
-
         makeFile.append( "LOCAL_PATH := " );
-        makeFile.append( localPath );
+        makeFile.append( libFile.getParentFile().getAbsolutePath() );
         makeFile.append( '\n' );
         makeFile.append( "LOCAL_SRC_FILES := " );
         makeFile.append( libFile.getName() );
@@ -367,125 +355,6 @@ public class MakefileHelper
             }
         }
         return libIdx;
-    }
-    
-    /**
-     * Resolves the relative path of the specified artifact
-     *
-     * @param outputDirectory typically the parent directory of the directory containing the makefile
-     * @param file
-     * @return
-     */
-    protected static String resolveRelativePath( File outputDirectory, File file ) throws IOException
-    {
-        String resolvedPath = file.getCanonicalPath();
-        
-        String strOutputDirectoryPath = outputDirectory.getCanonicalPath();
-        String strFilePath = file.getCanonicalPath();
-        //System.out.println( "Resolving " + strFilePath + " against " + strOutputDirectoryPath );
-
-        if ( strFilePath.startsWith( strOutputDirectoryPath ) )
-        {
-            // Simple case where file is in a subdirectory of outputDirectory
-            resolvedPath =  strFilePath.substring( strOutputDirectoryPath.length() + 1 );
-        }
-        else
-        {
-            // Look for commonality in paths
-            List<String> outputDirectoryPathParts = splitPath( outputDirectory.getCanonicalFile() );
-            List<String> filePathParts = splitPath( file.getCanonicalFile() );
-            int commonDepth = 0;
-            int maxCommonDepth = Math.min( outputDirectoryPathParts.size(), filePathParts.size() );
-            for ( int i = 0; 
-                    ( i < maxCommonDepth ) 
-                    && outputDirectoryPathParts.get( i ).equals( filePathParts.get( i ) ); 
-                    i++ )
-            {
-                commonDepth++;
-            }
-            // If there is a common root build a relative path between the common roots
-            if ( commonDepth > 0 )
-            {
-                final StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append( ".." );
-                for ( int i = 0; i < outputDirectoryPathParts.size() - commonDepth - 1; i++ )
-                {
-                    stringBuilder.append( File.separator );
-                    stringBuilder.append( ".." );
-                }
-                for ( int i = commonDepth; i < filePathParts.size(); i++ )
-                {
-                    stringBuilder.append( File.separator );
-                    stringBuilder.append( filePathParts.get( i ) );
-                }
-                resolvedPath = stringBuilder.toString();
-            }
-            else
-            {
-                if ( IS_WINDOWS )
-                {
-                    // Windows has no common root directory, cannot resolve a path
-                    // across drives so ...
-                    throw new IOException( "Unable to resolve relative path across windows drives" );
-                }
-
-                // no intersection between paths so calculate a path via the root directory
-                final StringBuilder stringBuilder = new StringBuilder();
-                
-                File depthCheck = outputDirectory.getParentFile();
-                while ( depthCheck != null )
-                {
-                    if ( stringBuilder.length() > 0 )
-                    {
-                        stringBuilder.append( File.separator );
-                    }
-                    stringBuilder.append( ".." );
-                    depthCheck = depthCheck.getParentFile();
-                }
-    
-                resolvedPath = stringBuilder.toString() + strFilePath;
-            }
-        }
-
-        //System.out.println( "resolvedPath = " + resolvedPath );
-        return resolvedPath;
-    }
-
-    /**
-     * Method to split the path components of a file into a List
-     * @param f the file to split
-     * @return a new list containing the components of the path as strings
-     */
-    protected static List<String> splitPath( File f )
-    {
-        List<String> result;
-        File parent = f.getParentFile();
-        if ( parent == null )
-        {
-            result = new ArrayList<String>();
-            if ( f.getName().length() > 0 )
-            {
-                // We're at the root but have a name so we have a relative path
-                // for which we need to add the first component to the list
-                result.add( f.getName() );
-            }
-            else if ( IS_WINDOWS ) 
-            {
-                String strF = f.toString();
-                if ( strF.matches( WINDOWS_DRIVE_ROOT_REGEX ) )
-                {
-                    // We're on windows and the path is <Drive>:\ so we
-                    // add the <Drive>: to the list
-                    result.add( strF.substring( 0, strF.length() - 1 ).toUpperCase() );
-                }
-            }
-        }
-        else
-        {
-            result = splitPath( parent );
-            result.add( f.getName() );
-        }
-        return result;
     }
 
     /**

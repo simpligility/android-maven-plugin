@@ -59,12 +59,12 @@ public class NativeHelperTest {
     {
         String[] versions = {"r4", "r5", "r5b", "r5c", "r6", "r6b"};
 
-        for (int i = 0; i < versions.length; i++) {
-            String version = versions[i];
+        for ( final String version : versions ) {
             try {
                 NativeHelper.validateNDKVersion(7,version);
                 Assert.fail("Version should fail: " + version);
             } catch (MojoExecutionException e) {
+                // as expected
             }
         }
     }
@@ -74,8 +74,7 @@ public class NativeHelperTest {
     {
         String[] versions = {"r7", "r8a", "r8z", "r10", "r19b", "r25", "r100", "r100b"};
 
-        for (int i = 0; i < versions.length; i++) {
-            String version = versions[i];
+        for ( final String version : versions ) {
             try {
                 NativeHelper.validateNDKVersion(7, version);
             } catch (MojoExecutionException e) {
@@ -102,7 +101,7 @@ public class NativeHelperTest {
 
         Set<Artifact> nativeDependencies = nativeHelper.getNativeDependenciesArtifacts( null, apklibDir.getRoot(), true);
 
-        assertFalse("Excluded native dependencies, but shouldn't", nativeDependencies.isEmpty());
+        assertTrue("Included attached native artifacts, but shouldn't", nativeDependencies.isEmpty());
     }
 
     @Test
