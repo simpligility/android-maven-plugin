@@ -76,6 +76,9 @@ public final class DependencyResolver
         final DependencyNode node;
         try
         {
+            // FIXME this is a problem for a project that has moduleA and moduleB AND the resources of moduleB also has dep on moduleA.
+            // In that scenario the resource generation for moduleB will fail because moduleA was listed against the project first.
+            // We really need to be getting the DependencyGraph for the artifact itself.
             node = dependencyGraphBuilder.buildDependencyGraph( project, filter );
         }
         catch ( DependencyGraphBuilderException e )
