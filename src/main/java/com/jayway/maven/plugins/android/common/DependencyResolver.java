@@ -1,6 +1,7 @@
 package com.jayway.maven.plugins.android.common;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -8,8 +9,12 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
+import org.apache.maven.shared.runtime.DefaultMavenRuntime;
+import org.apache.maven.shared.runtime.MavenRuntimeException;
 import org.codehaus.plexus.logging.Logger;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.Set;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
@@ -54,12 +59,12 @@ public final class DependencyResolver
      *
      * The project is searched until artifact is found and then the library dependencies are looked for recursively.
      *
-     * @param project   MavenProject that contains the artifact.
+     * @param resolverHelper  ArtifactResolverHelper to use to find the POM for the Artifact.
      * @param artifact  Artifact for whom to get the dependencies.
      * @return Set of APK, APKLIB and AAR dependencies.
      * @throws org.apache.maven.plugin.MojoExecutionException if it couldn't resolve any of the dependencies.
      */
-    public Set<Artifact> getLibraryDependenciesFor( MavenProject project, final Artifact artifact )
+    public Set<Artifact> getLibraryDependenciesFor( ArtifactResolverHelper resolverHelper, final Artifact artifact )
             throws MojoExecutionException
     {
         // Set a filter that should only return interesting artifacts.
@@ -76,9 +81,8 @@ public final class DependencyResolver
         final DependencyNode node;
         try
         {
-            // FIXME this is a problem for a project that has moduleA and moduleB AND the resources of moduleB also has dep on moduleA.
-            // In that scenario the resource generation for moduleB will fail because moduleA was listed against the project first.
-            // We really need to be getting the DependencyGraph for the artifact itself.
+            // Get the MavenProject for the Artifact so that we can resolve the dependencies for the project.
+            final MavenProject project = getMavenProjectForArtifact( resolverHelper, artifact );
             node = dependencyGraphBuilder.buildDependencyGraph( project, filter );
         }
         catch ( DependencyGraphBuilderException e )
@@ -89,5 +93,36 @@ public final class DependencyResolver
         final DependencyCollector collector = new DependencyCollector( log, artifact );
         collector.visit( node, false );
         return collector.getDependencies();
+    }
+
+    private MavenProject getMavenProjectForArtifact( ArtifactResolverHelper resolverHelper, Artifact artifact )
+            throws MojoExecutionException
+    {
+        // Create POM Artifact from current Artifact
+        final Artifact pomArtifact = new DefaultArtifact(
+                artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
+                artifact.getScope(), "pom", null, artifact.getArtifactHandler()
+        );
+        log.debug( "POM artifact : " + pomArtifact );
+
+        // TODO Resolve path to POM Artifact - this isn't working. It is finding apklib in sibling module (not POM).
+        final File pomArtifactFile = resolverHelper.resolveArtifactToFile( pomArtifact );
+        log.debug( "POM artifact file : " + pomArtifactFile );
+
+        try
+        {
+            final DefaultMavenRuntime mavenRuntime = new DefaultMavenRuntime();
+            final MavenProject project = mavenRuntime.getProject( pomArtifactFile.toURI().toURL() );
+            log.debug( "Resolved artifact project : " + project );
+            return project;
+        }
+        catch ( MalformedURLException e )
+        {
+            throw new MojoExecutionException( "Could not resolve artifact POM : " + pomArtifactFile, e );
+        }
+        catch ( MavenRuntimeException e )
+        {
+            throw new MojoExecutionException( "Could not resolve artifact Project : " + pomArtifactFile, e );
+        }
     }
 }

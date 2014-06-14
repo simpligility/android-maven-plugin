@@ -839,7 +839,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         final File apklibResDir = new File( unpackDir, "res" );
 
         List<File> dependenciesResDirectories = new ArrayList<File>();
-        final Set<Artifact> apklibDeps = getDependencyResolver().getLibraryDependenciesFor( project, apklibArtifact );
+        final Set<Artifact> apklibDeps = getDependencyResolver()
+                .getLibraryDependenciesFor( getArtifactResolverHelper(), apklibArtifact );
         getLog().debug( "apklib=" + apklibArtifact + "  dependencies=" + apklibDeps );
         for ( Artifact dependency : apklibDeps )
         {
