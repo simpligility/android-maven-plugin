@@ -270,11 +270,18 @@
                 <version>1.9</version>
             </dependency>
 
-            <!--  using a temporary fork of the apache compoenent until 2.2 is released -->
+            <!--  using a temporary fork of the apache component until 2.2 is released -->
             <dependency>
                 <groupId>com.simpligility.org.apache.maven.shared</groupId>
                 <artifactId>maven-dependency-tree</artifactId>
                 <version>2.2-RC.1</version>
+            </dependency>
+
+            <!-- Required for DefaultMavenRuntime in DependencyResolver -->
+            <dependency>
+                <groupId>org.apache.maven.shared</groupId>
+                <artifactId>maven-runtime</artifactId>
+                <version>1.0-alpha-3</version>
             </dependency>
 
             <!-- test deps -->
@@ -456,6 +463,12 @@
         <dependency>
             <groupId>com.simpligility.org.apache.maven.shared</groupId>
             <artifactId>maven-dependency-tree</artifactId>
+        </dependency>
+
+        <!-- Required for DefaultMavenRuntime in DependencyResolver -->
+        <dependency>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-runtime</artifactId>
         </dependency>
 
         <!-- test deps -->

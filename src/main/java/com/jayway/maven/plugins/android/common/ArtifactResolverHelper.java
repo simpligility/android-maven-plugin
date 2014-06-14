@@ -21,6 +21,7 @@ import org.codehaus.plexus.logging.Logger;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +42,13 @@ public final class ArtifactResolverHelper
     private final Logger log;
     private final List<ArtifactRepository> remoteArtifactRepositories;
 
+    /**
+     * Creates an ArtifactResolver that has no remote repositories to resolve against.
+     */
+    public ArtifactResolverHelper( ArtifactResolver artifactResolver, Logger log )
+    {
+        this( artifactResolver, log, Collections.<ArtifactRepository>emptyList() );
+    }
 
     public ArtifactResolverHelper( ArtifactResolver artifactResolver, Logger log,
                                   final List<ArtifactRepository> remoteArtifactRepositories )
