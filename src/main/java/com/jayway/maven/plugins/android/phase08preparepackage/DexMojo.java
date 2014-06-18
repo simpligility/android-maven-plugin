@@ -162,8 +162,8 @@ public class DexMojo extends AbstractAndroidMojo
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
 
-        File outputFile = new File( project.getBuild().getDirectory() + File.separator + "classes.dex" );
-
+//        File outputFile = new File( project.getBuild().getDirectory() + File.separator + "classes.dex" );
+        File outputFile = new File( project.getBuild().getDirectory() + File.separator + "classes.jar" );
         parseConfiguration();
 
         if ( generateApk )
@@ -422,7 +422,6 @@ public class DexMojo extends AbstractAndroidMojo
         final List< String > commands = dexDefaultCommands();
         final Set< File > inputFiles = getDexInputFiles();
         Set< File > filteredFiles = inputFiles;
-
         if ( parsedPreDex )
         {
             filteredFiles = preDex( executor, inputFiles );
@@ -448,7 +447,8 @@ public class DexMojo extends AbstractAndroidMojo
         {
             commands.add( "--force-jumbo" );
         }
-
+        commands.add( "--multi-dex" );
+        commands.add( "--main-dex-list=/Users/kgriffin/dev/classes.txt" );
         for ( File inputFile : filteredFiles )
         {
             commands.add( inputFile.getAbsolutePath() );

@@ -41,9 +41,22 @@ public class Dex
      * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#forceJumbo}
      */
     private Boolean forceJumbo;
-
-
-
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#multiDex}
+     */
+    private Boolean multiDex;
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#multiDexOutputType}
+     */
+    private MultiDexOutputType multiDexOutputType;
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#multiDexOutputExtension}
+     */
+    private String multiDexOutputExtension;
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#multiDexClassFileLocation}
+     */
+    private String multiDexClassFileLocation;
 
     public String[] getJvmArguments()
     {
@@ -83,5 +96,17 @@ public class Dex
     public Boolean isForceJumbo()
     {
         return forceJumbo;
+    }
+
+    public Boolean isMultiDex() {
+        return multiDex;
+    }
+
+    public MultiDexOutputType getMultiDexOutputType() {
+        return multiDexOutputType;
+    }
+
+    public String getMultiDexClassFileLocation() {
+        return multiDexClassFileLocation;
     }
 }
