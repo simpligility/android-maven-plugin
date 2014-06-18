@@ -325,7 +325,7 @@ public class ApkMojo extends AbstractAndroidMojo
 
     void createApkFile( File outputFile, boolean signWithDebugKeyStore ) throws MojoExecutionException
     {
-        File dexFile = new File( project.getBuild().getDirectory(), "classes.dex" );
+        File dexFile = new File( project.getBuild().getDirectory(), "classes.jar" );
         File zipArchive = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_" );
         ArrayList<File> sourceFolders = new ArrayList<File>();
         if ( sourceDirectories != null )
