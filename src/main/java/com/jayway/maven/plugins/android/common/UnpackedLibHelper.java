@@ -110,6 +110,12 @@ public final class UnpackedLibHelper
         }
     }
 
+    public File getArtifactToFile( Artifact artifact ) throws MojoExecutionException
+    {
+        final File artifactFile = artifactResolverHelper.resolveArtifactToFile( artifact );
+        return artifactFile;
+    }
+
     public File getUnpackedLibsFolder()
     {
         return unpackedLibsDirectory;
