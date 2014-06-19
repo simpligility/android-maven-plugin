@@ -98,19 +98,23 @@ public class Dex
         return forceJumbo;
     }
 
-    public Boolean isMultiDex() {
+    public Boolean isMultiDex()
+    {
         return multiDex;
     }
 
-    public String getMainDexList() {
+    public String getMainDexList()
+    {
         return mainDexList;
     }
 
-    public Boolean isMinimalMainDex() {
+    public Boolean isMinimalMainDex()
+    {
         return minimalMainDex;
     }
 
-    public String getOutput() {
+    public String getOutput()
+    {
         return output;
     }
 }
