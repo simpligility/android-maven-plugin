@@ -71,7 +71,7 @@ public class DexMojo extends AbstractAndroidMojo
      *   &lt;preDexLibLocation&gt;path to predexed libraries, defaults to target/dexedLibs&lt;/preDexLibLocation&gt;
      *   &lt;incremental&gt;true|false&lt;/incremental&gt;
      *   &lt;multiDex&gt;true|false&lt;/multiDex&gt;
-     *   &lt;output&gt;true|false&lt;/output&gt;
+     *   &lt;output&gt;Name of output file to contain multiple dex files&lt;/output&gt;
      *   &lt;mainDexList&gt;path to class list file&lt;/mainDexList&gt;
      *   &lt;minimalMainDex&gt;true|false&lt;/minimalMainDex&gt;
      * &lt;/dex&gt;
@@ -155,7 +155,7 @@ public class DexMojo extends AbstractAndroidMojo
     private boolean dexMultiDex;
 
     /**
-     * The type of output file for multi dex, archive or directory
+     * Full path to class list to multi dex
      *
      * @parameter property="android.dex.maindexlist"
      * @optional
@@ -171,7 +171,8 @@ public class DexMojo extends AbstractAndroidMojo
     private boolean dexMinimalMainDex;
 
     /**
-     * Something
+     * Name of output for multi dex.
+     * Can be an archive (zip|jar|apk) or a directory
      *
      * @parameter property="android.dex.output" default-value="classes.dex"
      * @optional
@@ -388,7 +389,8 @@ public class DexMojo extends AbstractAndroidMojo
             {
                 parsedMinimalMainDex = dex.isMinimalMainDex();
             }
-            if ( dex.getOutput() == null ) {
+            if ( dex.getOutput() == null )
+            {
                 parsedOutput = project.getBuild().getDirectory() + File.separator + "classes.dex";
             }
             else
