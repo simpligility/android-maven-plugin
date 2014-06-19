@@ -46,17 +46,17 @@ public class Dex
      */
     private Boolean multiDex;
     /**
-     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#multiDexOutputType}
+     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#mainDexList}
      */
-    private MultiDexOutputType multiDexOutputType;
+    private String mainDexList;
     /**
-     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#multiDexOutputExtension}
+     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#minimalMainDex}
      */
-    private String multiDexOutputExtension;
+    private Boolean minimalMainDex;
     /**
-     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#multiDexClassFileLocation}
+     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#output}
      */
-    private String multiDexClassFileLocation;
+    private String output;
 
     public String[] getJvmArguments()
     {
@@ -102,11 +102,15 @@ public class Dex
         return multiDex;
     }
 
-    public MultiDexOutputType getMultiDexOutputType() {
-        return multiDexOutputType;
+    public String getMainDexList() {
+        return mainDexList;
     }
 
-    public String getMultiDexClassFileLocation() {
-        return multiDexClassFileLocation;
+    public Boolean isMinimalMainDex() {
+        return minimalMainDex;
+    }
+
+    public String getOutput() {
+        return output;
     }
 }
