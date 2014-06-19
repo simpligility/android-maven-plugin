@@ -525,7 +525,6 @@ public class DexMojo extends AbstractAndroidMojo
                 commands.add( "--minimal-main-dex" );
             }
         }
-        System.out.println( "output " + outputFile.getAbsolutePath() );
         commands.add( "--output=" + outputFile.getAbsolutePath() );
         for ( File inputFile : filteredFiles )
         {
