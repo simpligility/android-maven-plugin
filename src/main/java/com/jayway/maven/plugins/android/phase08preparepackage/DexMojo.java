@@ -71,7 +71,6 @@ public class DexMojo extends AbstractAndroidMojo
      *   &lt;preDexLibLocation&gt;path to predexed libraries, defaults to target/dexedLibs&lt;/preDexLibLocation&gt;
      *   &lt;incremental&gt;true|false&lt;/incremental&gt;
      *   &lt;multiDex&gt;true|false&lt;/multiDex&gt;
-     *   &lt;output&gt;Name of output file to contain multiple dex files&lt;/output&gt;
      *   &lt;mainDexList&gt;path to class list file&lt;/mainDexList&gt;
      *   &lt;minimalMainDex&gt;true|false&lt;/minimalMainDex&gt;
      * &lt;/dex&gt;
