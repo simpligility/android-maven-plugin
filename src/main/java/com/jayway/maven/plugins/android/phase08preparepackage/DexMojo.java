@@ -170,15 +170,6 @@ public class DexMojo extends AbstractAndroidMojo
      */
     private boolean dexMinimalMainDex;
 
-    /**
-     * Name of output for multi dex.
-     * Can be an archive (zip|jar|apk) or a directory
-     *
-     * @parameter property="android.dex.output" default-value="classes.dex"
-     * @optional
-     */
-    private boolean dexOutput;
-
     private String[] parsedJvmArguments;
     private boolean parsedCoreLibrary;
     private boolean parsedNoLocals;
@@ -190,7 +181,6 @@ public class DexMojo extends AbstractAndroidMojo
     private boolean parsedMultiDex;
     private String parsedMainDexList;
     private boolean parsedMinimalMainDex;
-    private String parsedOutput;
 
     /**
      * @throws MojoExecutionException
@@ -203,10 +193,16 @@ public class DexMojo extends AbstractAndroidMojo
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
 
-//        File outputFile = new File( project.getBuild().getDirectory() + File.separator + "classes.dex" );
         parseConfiguration();
-        File outputFile = new File( parsedOutput );
-
+        File outputFile;
+        if ( parsedMultiDex )
+        {
+            outputFile = new File( project.getBuild().getDirectory(), "classes.zip" );
+        }
+        else
+        {
+            outputFile = new File( project.getBuild().getDirectory(), "classes.dex" );
+        }
         if ( generateApk )
         {
             runDex( executor, outputFile );
@@ -389,14 +385,6 @@ public class DexMojo extends AbstractAndroidMojo
             {
                 parsedMinimalMainDex = dex.isMinimalMainDex();
             }
-            if ( dex.getOutput() == null )
-            {
-                parsedOutput = project.getBuild().getDirectory() + File.separator + "classes.dex";
-            }
-            else
-            {
-                parsedOutput = project.getBuild().getDirectory() + File.separator + dex.getOutput();
-            }
         }
         else
         {
@@ -514,7 +502,6 @@ public class DexMojo extends AbstractAndroidMojo
         {
             commands.add( "--incremental" );
         }
-        commands.add( "--output=" + parsedOutput );
         if ( parsedNoLocals )
         {
             commands.add( "--no-locals" );
@@ -526,7 +513,11 @@ public class DexMojo extends AbstractAndroidMojo
         if ( parsedMultiDex )
         {
             commands.add( "--multi-dex" );
-            if ( parsedMainDexList != null )
+            if ( parsedMainDexList == null )
+            {
+                throw new MojoExecutionException( "Missing main dex list." );
+            }
+            else
             {
                 commands.add( "--main-dex-list=" + parsedMainDexList );
             }
@@ -535,6 +526,8 @@ public class DexMojo extends AbstractAndroidMojo
                 commands.add( "--minimal-main-dex" );
             }
         }
+        System.out.println( "output " + outputFile.getAbsolutePath() );
+        commands.add( "--output=" + outputFile.getAbsolutePath() );
         for ( File inputFile : filteredFiles )
         {
             commands.add( inputFile.getAbsolutePath() );

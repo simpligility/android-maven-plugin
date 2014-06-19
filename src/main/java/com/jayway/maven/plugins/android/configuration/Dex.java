@@ -53,10 +53,6 @@ public class Dex
      * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#minimalMainDex}
      */
     private Boolean minimalMainDex;
-    /**
-     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#output}
-     */
-    private String output;
 
     public String[] getJvmArguments()
     {
@@ -113,8 +109,4 @@ public class Dex
         return minimalMainDex;
     }
 
-    public String getOutput()
-    {
-        return output;
-    }
 }
