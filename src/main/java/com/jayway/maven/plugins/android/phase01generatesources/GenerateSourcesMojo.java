@@ -27,6 +27,7 @@ import com.jayway.maven.plugins.android.common.AaptCommandBuilder.AaptPackageCom
 import com.jayway.maven.plugins.android.common.FileRetriever;
 import com.jayway.maven.plugins.android.common.ZipExtractor;
 import com.jayway.maven.plugins.android.configuration.BuildConfigConstant;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -40,15 +41,6 @@ import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.w3c.dom.Document;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -62,6 +54,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
@@ -89,14 +91,14 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * <p>
      * Override default merging. You must have SDK Tools r20+
      * </p>
-     * 
+     *
      * <p>
      * <b>IMPORTANT:</b> The resource plugin needs to be disabled for the
      * <code>process-resources</code> phase, so the "default-resources"
      * execution must be added. Without this the non-merged manifest will get
      * re-copied to the build directory.
      * </p>
-     * 
+     *
      * <p>
      * The <code>androidManifestFile</code> should also be configured to pull
      * from the build directory so that later phases will pull the merged
@@ -105,7 +107,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * <p>
      * Example POM Setup:
      * </p>
-     * 
+     *
      * <pre>
      * &lt;build&gt;
      *     ...
@@ -147,7 +149,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * You can filter the pre-merged APK manifest. One important note about Eclipse, Eclipse will
      * replace the merged manifest with a filtered pre-merged version when the project is refreshed.
      * If you want to review the filtered merged version then you will need to open it outside Eclipse
-     * without refreshing the project in Eclipse. 
+     * without refreshing the project in Eclipse.
      * </p>
      * <pre>
      * &lt;resources&gt;
@@ -161,7 +163,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      *     &lt;/resource&gt;
      * &lt;/resources&gt;
      * </pre>
-     * 
+     *
      * @parameter property="android.mergeManifests" default-value="false"
      */
     protected boolean mergeManifests;
@@ -178,7 +180,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private boolean failOnConflictingLayouts;
 
     /**
-     * Whether to fail the build if one of the dependencies and/or the project have similar package in the 
+     * Whether to fail the build if one of the dependencies and/or the project have similar package in the
      * AndroidManifest.
      *
      * Such scenario generally means that the build will fail with a compilation error due to
@@ -202,10 +204,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * default-value="${project.build.directory}/generated-sources/aidl"
      */
     protected File genDirectoryAidl;
-    
+
     /**
      * The directory containing the aidl files.
-     * 
+     *
      * @parameter property="android.aidlSourceDirectory"
      * default-value="${project.build.sourceDirectory}"
      */
@@ -475,7 +477,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      */
     private void extractAarLib( Artifact aarArtifact ) throws MojoExecutionException
     {
-        getUnpackedLibHelper().extractAarLib( aarArtifact );
+        final File aarFile = getArtifactResolverHelper().resolveArtifactToFile( aarArtifact );
+        if ( !aarFile.isDirectory() )
+        {
+            getUnpackedLibHelper().extractAarLib( aarArtifact );
+        }
 
         // Copy the assets to the the combinedAssets folder, but only if an APK build.
         // Ie we only want to package assets that we own.
@@ -483,17 +489,35 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         if ( isAPKBuild() )
         {
             copyFolder( getUnpackedLibAssetsFolder( aarArtifact ), combinedAssets );
-        }
-
-        // Aar lib resources should only be included if we are building an apk.
-        // So we need to extract them into a folder that we then add to the resource classpath.
-        if ( isAPKBuild() )
-        {
+            // Aar lib resources should only be included if we are building an apk.
+            // So we need to extract them into a folder that we then add to the resource classpath.
             // Extract the resources from the AAR classes and add them as a resource path to the project.
-            final File aarClassesJar = getUnpackedAarClassesJar( aarArtifact );
             final ZipExtractor extractor = new ZipExtractor( getLog() );
             final File javaResourcesFolder = getUnpackedAarJavaResourcesFolder( aarArtifact );
-            extractor.extract( aarClassesJar, javaResourcesFolder, ".class" );
+            // If the AAR referenced is another project then there is no classes
+            // jar to extract and we get an exception from the zip lib. Instead
+            // copy the classes directly.
+            if ( !aarFile.isDirectory() )
+            {
+              final File aarClassesJar = getUnpackedAarClassesJar( aarArtifact );
+              extractor.extract( aarClassesJar, javaResourcesFolder, ".class" );
+              getLog().debug( "Extracted AAR classes jar: " + aarFile );
+            }
+            else
+            {
+              try
+              {
+                FileUtils.copyDirectory( aarFile, javaResourcesFolder );
+              }
+              catch ( IOException copyEx )
+              {
+                throw new MojoExecutionException(
+                    "Could not copy AAR classes from " + aarFile
+                    + " to " + javaResourcesFolder, copyEx
+                );
+              }
+              getLog().debug( "Copied AAR classes from project: " + aarFile );
+            }
             projectHelper.addResource( project, javaResourcesFolder.getAbsolutePath(), null, null );
             getLog().debug( "Added AAR resources to resource classpath : " + javaResourcesFolder );
         }
