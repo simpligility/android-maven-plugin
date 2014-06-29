@@ -975,6 +975,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             if ( skipBuildConfigGeneration( artifact ) )
             {
+                getLog().info( "Skip BuildConfig.java generation for "
+                        + artifact.getGroupId() + " " + artifact.getArtifactId() );
                 continue;
             }
 
@@ -988,7 +990,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     {
         if ( artifact.getType().equals( AAR ) )
         {
-            if ( isBuildConfigPresent( artifact ) )
+            String depPackageName = extractPackageNameFromAndroidArtifact( artifact );
+
+            if ( isBuildConfigPresent( artifact, depPackageName ) )
             {
                 return true;
             }
@@ -998,7 +1002,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
             for ( Artifact transitiveArtifact : transitiveDep )
             {
-                if ( isBuildConfigPresent( transitiveArtifact ) )
+                if ( isBuildConfigPresent( transitiveArtifact, depPackageName ) )
                 {
                     return true;
                 }
@@ -1009,20 +1013,19 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
     private boolean isBuildConfigPresent( Artifact artifact ) throws MojoExecutionException
     {
+        String depPackageName = extractPackageNameFromAndroidArtifact( artifact );
+
+        return isBuildConfigPresent( artifact, depPackageName );
+    }
+
+    private boolean isBuildConfigPresent( Artifact artifact, String packageName ) throws MojoExecutionException
+    {
         try
         {
-            String depPackageName = extractPackageNameFromAndroidArtifact( artifact );
-
             JarFile jar = new JarFile( getUnpackedAarClassesJar( artifact ) );
-            JarEntry entry = jar.getJarEntry( depPackageName.replace( '.', '/' ) + "/BuildConfig.class" );
+            JarEntry entry = jar.getJarEntry( packageName.replace( '.', '/' ) + "/BuildConfig.class" );
 
-            if ( entry != null )
-            {
-                getLog().info( "Skip BuildConfig.java generation for "
-                        + artifact.getGroupId() + " " + artifact.getArtifactId() );
-                return true;
-            }
-            return false;
+            return (entry != null);
         }
         catch ( IOException e )
         {
