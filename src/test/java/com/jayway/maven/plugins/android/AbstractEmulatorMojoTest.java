@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 import static org.powermock.api.easymock.PowerMock.createMock;
 import static org.powermock.api.easymock.PowerMock.mockStatic;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -20,18 +21,20 @@ import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.TimeoutException;
 
 @RunWith( PowerMockRunner.class )
 @PrepareForTest(
 { AndroidDebugBridge.class, CommandExecutor.Factory.class } )
 public class AbstractEmulatorMojoTest
 {
-
     private static final String AVD_NAME = "emulator";
-    private static final int WAIT = 500;
-    private AbstractEmulatorMojo abstractEmulatorMojo;
+    private static final long DEFAULT_TIMEOUT = 500;
+    private AbstractEmulatorMojoToTest abstractEmulatorMojo;
     private CommandExecutor mockExecutor;
     private AndroidDebugBridge mockAndroidDebugBridge;
 
@@ -52,22 +55,14 @@ public class AbstractEmulatorMojoTest
     }
 
     @Test
-    public void testStartAndroidEmulatorSuccessfully() throws MojoExecutionException, ExecutionException
-    {
-        boolean onlineAtSecondTry = true;
-        IDevice emulatorDevice = withEmulatorDevice( onlineAtSecondTry );
-        withConnectedDebugBridge( emulatorDevice );
-
-        abstractEmulatorMojo.startAndroidEmulator();
-
-        verify( mockExecutor );
-    }
-
-    @Test
     public void testStartAndroidEmulatorWithTimeoutToConnect() throws MojoExecutionException, ExecutionException
     {
         boolean onlineAtSecondTry = false;
-        IDevice emulatorDevice = withEmulatorDevice( onlineAtSecondTry );
+        int extraBootStatusPollCycles = -1;//ignored
+        abstractEmulatorMojo.setWait( DEFAULT_TIMEOUT );
+
+        IDevice emulatorDevice = withEmulatorDevice( onlineAtSecondTry, extraBootStatusPollCycles );
+
         withConnectedDebugBridge( emulatorDevice );
 
         try
@@ -79,17 +74,153 @@ public class AbstractEmulatorMojoTest
         {
             verify( mockExecutor );
         }
-
     }
 
-    private IDevice withEmulatorDevice( boolean onlineAtSecondTry )
+    @Test
+    public void testStartAndroidEmulatorAlreadyBooted() throws MojoExecutionException, ExecutionException
+    {
+        boolean onlineAtSecondTry = true;
+        int extraBootStatusPollCycles = 0;
+        abstractEmulatorMojo.setWait( DEFAULT_TIMEOUT );
+
+        IDevice emulatorDevice = withEmulatorDevice( onlineAtSecondTry, extraBootStatusPollCycles );
+        withConnectedDebugBridge( emulatorDevice );
+
+        abstractEmulatorMojo.startAndroidEmulator();
+
+        verify( mockExecutor );
+    }
+
+    @Test
+    public void testStartAndroidEmulatorWithOngoingBoot() throws MojoExecutionException, ExecutionException
+    {
+        boolean onlineAtSecondTry = true;
+        int extraBootStatusPollCycles = 1;
+        abstractEmulatorMojo.setWait( extraBootStatusPollCycles * 5000 + 500 );
+
+        IDevice emulatorDevice = withEmulatorDevice( onlineAtSecondTry, extraBootStatusPollCycles );
+        withConnectedDebugBridge( emulatorDevice );
+
+        abstractEmulatorMojo.startAndroidEmulator();
+
+        verify( mockExecutor );
+    }
+
+    @Test
+    public void testStartAndroidEmulatorWithBootTimeout() throws MojoExecutionException, ExecutionException
+    {
+        boolean onlineAtSecondTry = true;
+        int extraBootStatusPollCycles = -1;
+        abstractEmulatorMojo.setWait( DEFAULT_TIMEOUT );
+
+        IDevice emulatorDevice = withEmulatorDevice( onlineAtSecondTry, extraBootStatusPollCycles );
+        withConnectedDebugBridge( emulatorDevice );
+
+        try
+        {
+            abstractEmulatorMojo.startAndroidEmulator();
+            fail();
+        }
+        catch ( MojoExecutionException e )
+        {
+            verify( mockExecutor );
+        }
+    }
+
+    /**
+     * @param onlineAtSecondTry
+     * @param extraBootStatusPollCycles < 0 to simulate 'stuck in boot animation'
+     * @return
+     */
+    private IDevice withEmulatorDevice( boolean onlineAtSecondTry, int extraBootStatusPollCycles )
     {
         IDevice emulatorDevice = createMock( IDevice.class );
         expect( emulatorDevice.getAvdName() ).andReturn( AVD_NAME ).atLeastOnce();
         expect( emulatorDevice.isEmulator() ).andReturn( true ).atLeastOnce();
         if ( onlineAtSecondTry )
         {
-            expect( emulatorDevice.isOnline() ).andReturn( false ).andReturn( true );
+            try
+            {
+                expect( emulatorDevice.isOnline() ).andReturn( false ).andReturn( true );
+
+                if ( extraBootStatusPollCycles < 0 )
+                {
+                    //Simulate 'stuck in boot animation'
+                    expect( emulatorDevice.getPropertySync( "dev.bootcomplete" ) )
+                            .andReturn( null ).atLeastOnce();
+                    expect( emulatorDevice.getPropertySync( "sys.boot_completed" ) )
+                            .andReturn( null ).atLeastOnce();
+                    expect( emulatorDevice.getPropertySync( "init.svc.bootanim" ) )
+                            .andReturn( null ).once()
+                            .andReturn( "running" ).atLeastOnce(); //never changes to "stopped"
+                }
+                else if ( extraBootStatusPollCycles == 0 )
+                {
+                    //Simulate 'already booted'
+                    expect( emulatorDevice.getPropertySync( "dev.bootcomplete" ) )
+                            .andReturn( "1" ).once(); //to be cached
+                    expect( emulatorDevice.getPropertySync( "sys.boot_completed" ) )
+                            .andReturn( "1" ).once(); //to be cached
+                    expect( emulatorDevice.getPropertySync( "init.svc.bootanim" ) )
+                            .andReturn( "stopped" ).once(); //to be cached
+                }
+                else if ( extraBootStatusPollCycles == 1 )
+                {
+                    //Simulate 'almost booted (1 extra poll)'
+                    expect( emulatorDevice.getPropertySync( "dev.bootcomplete" ) )
+                            .andReturn( null ).once()
+                            .andReturn( "1" ).once(); //to be cached
+                    expect( emulatorDevice.getPropertySync( "sys.boot_completed" ) )
+                            .andReturn( null ).once()
+                            .andReturn( "1" ).once(); //to be cached
+                    expect( emulatorDevice.getPropertySync( "init.svc.bootanim" ) )
+                            .andReturn( "running" ).once()
+                            .andReturn( "stopped" ).once(); //to be cached
+                }
+                else if( extraBootStatusPollCycles >=3 )
+                {
+                    //Simulate 'almost booted (>=3 extra polls)'
+                    expect( emulatorDevice.getPropertySync( "dev.bootcomplete" ) )
+                            .andReturn( null ).times( extraBootStatusPollCycles - 1 )
+                            .andReturn( "1" ).once(); //to be cached
+                    expect( emulatorDevice.getPropertySync( "sys.boot_completed" ) )
+                            .andReturn( null ).times( extraBootStatusPollCycles - 1 )
+                            .andReturn( "1" ).once(); //to be cached
+                    expect( emulatorDevice.getPropertySync( "init.svc.bootanim" ) )
+                            .andReturn( null ).times( extraBootStatusPollCycles / 2 )
+                            .andReturn( "running" ).times( extraBootStatusPollCycles / 2 + extraBootStatusPollCycles % 2 )
+                            .andReturn( "stopped" ).once(); //to be cached
+                }
+                else if( extraBootStatusPollCycles >=2 )
+                {
+                    //Simulate 'almost booted (>=2 extra polls)'
+                    expect( emulatorDevice.getPropertySync( "dev.bootcomplete" ) )
+                            .andReturn( null ).times( extraBootStatusPollCycles - 1 )
+                            .andReturn( "1" ).once(); //to be cached
+                    expect( emulatorDevice.getPropertySync( "sys.boot_completed" ) )
+                            .andReturn( null ).times( extraBootStatusPollCycles - 1 )
+                            .andReturn( "1" ).once(); //to be cached
+                    expect( emulatorDevice.getPropertySync( "init.svc.bootanim" ) )
+                            .andReturn( "running" ).times( extraBootStatusPollCycles -1 )
+                            .andReturn( "stopped" ).once(); //to be cached
+                }
+            }
+            catch ( TimeoutException e)
+            {
+                throw new RuntimeException( "Unexpected checked exception during mock setup", e );
+            }
+            catch ( AdbCommandRejectedException e)
+            {
+                throw new RuntimeException( "Unexpected checked exception during mock setup", e );
+            }
+            catch ( ShellCommandUnresponsiveException e)
+            {
+                throw new RuntimeException( "Unexpected checked exception during mock setup", e );
+            }
+            catch ( IOException e )
+            {
+                throw new RuntimeException( "Unexpected checked exception during mock setup", e );
+            }
         }
         else
         {
@@ -110,9 +241,21 @@ public class AbstractEmulatorMojoTest
 
     private class AbstractEmulatorMojoToTest extends AbstractEmulatorMojo
     {
+        private long wait = DEFAULT_TIMEOUT;
+
+        public long getWait()
+        {
+            return wait;
+        }
+
+        public void setWait( long wait )
+        {
+            this.wait = wait;
+        }
 
         @Override
-        protected AndroidSdk getAndroidSdk() {
+        protected AndroidSdk getAndroidSdk()
+        {
             return new SdkTestSupport().getSdk_with_platform_default();
         }
 
@@ -136,7 +279,7 @@ public class AbstractEmulatorMojoTest
         @Override
         String determineWait()
         {
-            return String.valueOf( WAIT );
+            return String.valueOf( wait );
         }
     }
 
