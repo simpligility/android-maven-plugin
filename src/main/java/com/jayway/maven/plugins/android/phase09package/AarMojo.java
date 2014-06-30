@@ -371,7 +371,6 @@ public class AarMojo extends AbstractAndroidMojo
         executor.setLogger( this.getLog() );
 
         File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_" );
-        final File rDir = new File( new File( project.getBuild().getDirectory(), "generated-sources" ), "r" );
 
         final AaptCommandBuilder commandBuilder = AaptCommandBuilder
                 .packageResources( getLog() )
@@ -386,7 +385,7 @@ public class AarMojo extends AbstractAndroidMojo
                 .addExistingPackageToBaseIncludeSet( getAndroidSdk().getAndroidJar() )
                 .setOutputApkFile( outputFile )
                 .addConfigurations( configurations )
-                .setWhereToOutputResourceConstants( rDir )
+                .setResourceConstantsFolder( genDirectory )
                 .makeResourcesNonConstant()
                 .generateRTextFile( new File( project.getBuild().getDirectory() ) )
                 .setVerbose( aaptVerbose );

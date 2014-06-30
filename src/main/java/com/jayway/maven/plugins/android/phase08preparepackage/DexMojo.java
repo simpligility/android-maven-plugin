@@ -70,6 +70,9 @@ public class DexMojo extends AbstractAndroidMojo
      *   &lt;preDex&gt;true|false&lt;/preDex&gt;
      *   &lt;preDexLibLocation&gt;path to predexed libraries, defaults to target/dexedLibs&lt;/preDexLibLocation&gt;
      *   &lt;incremental&gt;true|false&lt;/incremental&gt;
+     *   &lt;multiDex&gt;true|false&lt;/multiDex&gt;
+     *   &lt;mainDexList&gt;path to class list file&lt;/mainDexList&gt;
+     *   &lt;minimalMainDex&gt;true|false&lt;/minimalMainDex&gt;
      * &lt;/dex&gt;
      * </pre>
      * <p/>
@@ -142,6 +145,30 @@ public class DexMojo extends AbstractAndroidMojo
      */
     private File obfuscatedJar;
 
+    /**
+     * Decides whether to pass the --multi-dex flag to dx.
+     *
+     * @parameter property="android.dex.multidex" default-value="false"
+     * @optional
+     */
+    private boolean dexMultiDex;
+
+    /**
+     * Full path to class list to multi dex
+     *
+     * @parameter property="android.dex.maindexlist"
+     * @optional
+     */
+    private String dexMainDexList;
+
+    /**
+     * Decides whether to pass the --minimal-main-dex flag to dx.
+     *
+     * @parameter property="android.dex.minimalmaindex" default-value="false"
+     * @optional
+     */
+    private boolean dexMinimalMainDex;
+
     private String[] parsedJvmArguments;
     private boolean parsedCoreLibrary;
     private boolean parsedNoLocals;
@@ -150,6 +177,9 @@ public class DexMojo extends AbstractAndroidMojo
     private boolean parsedForceJumbo;
     private String parsedPreDexLibLocation;
     private boolean parsedIncremental;
+    private boolean parsedMultiDex;
+    private String parsedMainDexList;
+    private boolean parsedMinimalMainDex;
 
     /**
      * @throws MojoExecutionException
@@ -162,10 +192,16 @@ public class DexMojo extends AbstractAndroidMojo
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
 
-        File outputFile = new File( project.getBuild().getDirectory() + File.separator + "classes.dex" );
-
         parseConfiguration();
-
+        File outputFile;
+        if ( parsedMultiDex )
+        {
+            outputFile = new File( project.getBuild().getDirectory(), "classes.zip" );
+        }
+        else
+        {
+            outputFile = new File( project.getBuild().getDirectory(), "classes.dex" );
+        }
         if ( generateApk )
         {
             runDex( executor, outputFile );
@@ -324,6 +360,30 @@ public class DexMojo extends AbstractAndroidMojo
             {
                 parsedForceJumbo = dex.isForceJumbo();
             }
+            if ( dex.isMultiDex() == null )
+            {
+                parsedMultiDex = dexMultiDex;
+            }
+            else
+            {
+                parsedMultiDex = dex.isMultiDex();
+            }
+            if ( dex.getMainDexList() == null )
+            {
+                parsedMainDexList = dexMainDexList;
+            }
+            else
+            {
+                parsedMainDexList = dex.getMainDexList();
+            }
+            if ( dex.isMinimalMainDex() == null )
+            {
+                parsedMinimalMainDex = dexMinimalMainDex;
+            }
+            else
+            {
+                parsedMinimalMainDex = dex.isMinimalMainDex();
+            }
         }
         else
         {
@@ -335,6 +395,9 @@ public class DexMojo extends AbstractAndroidMojo
             parsedPreDexLibLocation = dexPreDexLibLocation;
             parsedIncremental = dexIncremental;
             parsedForceJumbo = dexForceJumbo;
+            parsedMultiDex = dexMultiDex;
+            parsedMainDexList = dexMainDexList;
+            parsedMinimalMainDex = dexMinimalMainDex;
         }
     }
 
@@ -422,7 +485,6 @@ public class DexMojo extends AbstractAndroidMojo
         final List< String > commands = dexDefaultCommands();
         final Set< File > inputFiles = getDexInputFiles();
         Set< File > filteredFiles = inputFiles;
-
         if ( parsedPreDex )
         {
             filteredFiles = preDex( executor, inputFiles );
@@ -439,7 +501,6 @@ public class DexMojo extends AbstractAndroidMojo
         {
             commands.add( "--incremental" );
         }
-        commands.add( "--output=" + outputFile.getAbsolutePath() );
         if ( parsedNoLocals )
         {
             commands.add( "--no-locals" );
@@ -448,7 +509,23 @@ public class DexMojo extends AbstractAndroidMojo
         {
             commands.add( "--force-jumbo" );
         }
-
+        if ( parsedMultiDex )
+        {
+            commands.add( "--multi-dex" );
+            if ( parsedMainDexList == null )
+            {
+                throw new MojoExecutionException( "Missing main dex list." );
+            }
+            else
+            {
+                commands.add( "--main-dex-list=" + parsedMainDexList );
+            }
+            if ( parsedMinimalMainDex )
+            {
+                commands.add( "--minimal-main-dex" );
+            }
+        }
+        commands.add( "--output=" + outputFile.getAbsolutePath() );
         for ( File inputFile : filteredFiles )
         {
             commands.add( inputFile.getAbsolutePath() );
