@@ -41,9 +41,18 @@ public class Dex
      * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#forceJumbo}
      */
     private Boolean forceJumbo;
-
-
-
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#multiDex}
+     */
+    private Boolean multiDex;
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#mainDexList}
+     */
+    private String mainDexList;
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.phase08preparepackage.DexMojo#minimalMainDex}
+     */
+    private Boolean minimalMainDex;
 
     public String[] getJvmArguments()
     {
@@ -84,4 +93,20 @@ public class Dex
     {
         return forceJumbo;
     }
+
+    public Boolean isMultiDex()
+    {
+        return multiDex;
+    }
+
+    public String getMainDexList()
+    {
+        return mainDexList;
+    }
+
+    public Boolean isMinimalMainDex()
+    {
+        return minimalMainDex;
+    }
+
 }
