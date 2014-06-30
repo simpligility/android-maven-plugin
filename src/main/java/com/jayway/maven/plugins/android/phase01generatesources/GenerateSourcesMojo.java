@@ -189,13 +189,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private boolean failOnDuplicatePackages;
 
     /**
-     * Override default generated folder containing R.java
-     *
-     * @parameter property="android.genDirectory" default-value="${project.build.directory}/generated-sources/r"
-     */
-    protected File genDirectory;
-
-    /**
      * Override default generated folder containing aidl classes
      *
      * @parameter property="android.genDirectoryAidl"
@@ -708,7 +701,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         final AaptPackageCommandBuilder commandBuilder = AaptCommandBuilder
                 .packageResources( getLog() )
                 .makePackageDirectories()
-                .setWhereToOutputResourceConstants( genDirectory )
+                .setResourceConstantsFolder( genDirectory )
                 .forceOverwriteExistingFiles()
                 .disablePngCrunching()
                 .generateRIntoPackage( customPackage )
@@ -875,7 +868,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 .packageResources( getLog() )
                 .makeResourcesNonConstant()
                 .makePackageDirectories()
-                .setWhereToOutputResourceConstants( genDirectory )
+                .setResourceConstantsFolder( genDirectory )
                 .generateRIntoPackage( extractPackageNameFromAndroidManifest( apklibManifest ) )
                 .setPathToAndroidManifest( apklibManifest )
                 .addResourceDirectoryIfExists( apklibResDir )

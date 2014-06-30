@@ -171,6 +171,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File resourceDirectory;
 
     /**
+     * Override default generated folder containing R.java
+     *
+     * @parameter property="android.genDirectory" default-value="${project.build.directory}/generated-sources/r"
+     */
+    protected File genDirectory;
+
+    /**
      * <p>Root folder containing native libraries to include in the application package.</p>
      *
      * @parameter property="android.nativeLibrariesDirectory" default-value="${project.basedir}/libs"
