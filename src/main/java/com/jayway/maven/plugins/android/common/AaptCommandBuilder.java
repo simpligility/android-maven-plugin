@@ -93,7 +93,7 @@ public class AaptCommandBuilder
         }
 
         /**
-         * Make package directories under location specified by {@link #setWhereToOutputResourceConstants}.
+         * Make package directories under location specified by {@link #setResourceConstantsFolder}.
          *
          * @return current instance of {@link AaptCommandBuilder}
          */
@@ -104,12 +104,12 @@ public class AaptCommandBuilder
         }
 
         /**
-         * Specify where to output R java resource constant definitions.
+         * Specify where the R java resource constant definitions should be generated or found.
          *
-         * @param path path where to output R.java
+         * @param path path to resource constants folder.
          * @return current instance of {@link AaptCommandBuilder}
          */
-        public AaptPackageCommandBuilder setWhereToOutputResourceConstants( File path )
+        public AaptPackageCommandBuilder setResourceConstantsFolder( File path )
         {
             commands.add( "-J" );
             commands.add( path.getAbsolutePath() );
