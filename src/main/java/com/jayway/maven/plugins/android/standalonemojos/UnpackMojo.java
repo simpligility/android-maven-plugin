@@ -29,6 +29,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,38 +46,31 @@ import java.util.jar.JarFile;
  *
  * @author hugo.josefson@jayway.com
  * @author Manfred Moser
- * @goal unpack
- * @requiresDependencyResolution compile
  */
+@Mojo( name = "unpack", requiresDependencyResolution = ResolutionScope.COMPILE )
 public class UnpackMojo extends AbstractAndroidMojo
 {
     /**
      * If true, the library will be unpacked only when outputDirectory doesn't
      * exist, i.e, a clean build for most cases.
      *
-     * @parameter property="android.lazyLibraryUnpack" default-value="false"
      * @deprecated use ${android.unpack.lazy}
      */
     @Deprecated
+    @Parameter( property = "android.lazyLibraryUnpack" )
     private boolean lazyLibraryUnpack;
 
     @PullParameter( defaultValueGetterMethod = "getDefaultMetaInf" )
     private MetaInf unpackMetaInf;
 
-    /**
-     * @parameter property="android.unpack.lazy"
-     */
+    @Parameter( property = "android.unpack.lazy" )
     @PullParameter( defaultValueGetterMethod = "getLazyLibraryUnpack" )
     private Boolean unpackLazy;
 
-    /**
-     * @parameter alias="metaInf"
-     */
+    @Parameter( alias = "metaInf" )
     private MetaInf pluginMetaInf;
 
-    /**
-     * @parameter
-     */
+    @Parameter
     @ConfigPojo( prefix = "unpack" )
     private Unpack unpack;
 

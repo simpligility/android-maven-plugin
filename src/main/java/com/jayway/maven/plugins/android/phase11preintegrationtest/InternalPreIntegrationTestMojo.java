@@ -19,6 +19,8 @@ package com.jayway.maven.plugins.android.phase11preintegrationtest;
 import com.jayway.maven.plugins.android.AbstractInstrumentationMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
 
 /**
  * Internal. Do not use.<br/>
@@ -26,9 +28,8 @@ import org.apache.maven.plugin.MojoFailureException;
  * call goals in this phase; and if so, calls <code>android:deploy-dependencies</code> and <code>android:deploy</code>.
  *
  * @author hugo.josefson@jayway.com
- * @goal internal-pre-integration-test
- * @phase pre-integration-test
  */
+@Mojo( name = "internal-pre-integration-test", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST )
 public class InternalPreIntegrationTestMojo extends AbstractInstrumentationMojo
 {
 

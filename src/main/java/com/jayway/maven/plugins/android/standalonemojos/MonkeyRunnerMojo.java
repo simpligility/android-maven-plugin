@@ -39,6 +39,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.interpolation.os.Os;
 import org.codehaus.plexus.util.cli.shell.BourneShell;
@@ -83,43 +85,34 @@ import static com.android.ddmlib.testrunner.ITestRunListener.TestFailure.ERROR;
  * @see <a href="http://developer.android.com/tools/help/monkey.html">Monkey docs by Google</a>
  * @see <a href="http://stackoverflow.com/q/3968064/693752">Stack Over Flow thread for parsing monkey output.</a>
  * @author Stéphane Nicolas <snicolas@octo.com>
- * @goal monkeyrunner
- * @requiresProject true
  */
 @SuppressWarnings( "unused" )
+@Mojo( name = "monkeyrunner" )
 public class MonkeyRunnerMojo extends AbstractAndroidMojo
 {
     /**
      * -Dmaven.test.skip is commonly used with Maven to skip tests. We honor it.
-     * 
-     * @parameter property="maven.test.skip" default-value=false
-     * @readonly
      */
+    @Parameter( property = "maven.test.skip", defaultValue = "false", readonly = true )
     private boolean mavenTestSkip;
 
     /**
      * -DskipTests is commonly used with Maven to skip tests. We honor it too.
-     * 
-     * @parameter property="skipTests" default-value=false
-     * @readonly
      */
+    @Parameter( property = "skipTests", defaultValue = "false", readonly = true )
     private boolean mavenSkipTests;
     /**
      * -Dmaven.test.failure.ignore is commonly used with Maven to prevent failure of build when (some) tests fail. We
      * honor it too.
-     * 
-     * @parameter property="maven.test.failure.ignore" default-value=false
-     * @readonly
      */
+    @Parameter( property = "maven.test.failure.ignore", defaultValue = "false", readonly = true )
     private boolean mavenTestFailureIgnore;
 
     /**
      * -Dmaven.test.failure.ignore is commonly used with Maven to prevent failure of build when (some) tests fail. We
      * honor it too.
-     * 
-     * @parameter property="testFailureIgnore" default-value=false
-     * @readonly
      */
+    @Parameter( property = "testFailureIgnore", defaultValue = "false", readonly = true )
     private boolean mavenIgnoreTestFailure;
 
     /**
@@ -142,18 +135,16 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
      * 
      * Alternatively to the plugin configuration values can also be configured as properties on the command line as
      * android.lint.* or in pom or settings file as properties like lint*.
-     * 
-     * @parameter
      */
+    @Parameter
     @ConfigPojo
     private MonkeyRunner monkeyrunner;
 
     /**
      * Enables or disables monkey runner test goal. If <code>true</code> it will be skipped; if <code>false</code>, it
      * will be run. Defaults to true.
-     * 
-     * @parameter property="android.monkeyrunner.skip"
      */
+    @Parameter( property = "android.monkeyrunner.skip" )
     private Boolean monkeyRunnerSkip;
 
     @PullParameter( defaultValue = "true" )
@@ -165,9 +156,8 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
      * with plugins</a>. You can add as many plugins as you want.
      * 
      * Defaults to no plugins.
-     * 
-     * @parameter property="android.monkeyrunner.plugins"
      */
+    @Parameter( property = "android.monkeyrunner.plugins" )
     private String[] monkeyPlugins;
 
     @PullParameter( defaultValueGetterMethod = "getPlugins" )
@@ -188,9 +178,8 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
      *   [..]
      * &lt;/programs&gt;
      * </pre>
-     * 
-     * @parameter
      */
+    @Parameter
     @PullParameter( required = false, defaultValueGetterMethod = "getPrograms" )
     private List< Program > parsedPrograms;
 
@@ -211,11 +200,9 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
      * logged in the file and the system log with full stack traces and other details available.
      * 
      * Defaults to false.
-     * 
-     * @optional
-     * @parameter property="android.monkeyrunner.createReport"
-     * 
+     *
      */
+    @Parameter( property = "android.monkeyrunner.createReport" )
     private Boolean monkeyCreateReport;
 
     @PullParameter( defaultValue = "false" )
@@ -227,12 +214,8 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
      * multiple devices. In that case, monkey runner scripts have to be modified to take the new parameter into account.
      * Follow that <a href="http://stackoverflow.com/a/13460438/693752">thread on stack over flow to learn more about
      * it</a>.
-     * 
-     * Defaults to false.
-     * 
-     * @parameter property="android.monkeyrunner.injectDeviceSerialNumberIntoScript"
-     * 
      */
+    @Parameter( property = "android.monkeyrunner.injectDeviceSerialNumberIntoScript" )
     private Boolean monkeyInjectDeviceSerialNumberIntoScript;
 
     @PullParameter( defaultValue = "false" )

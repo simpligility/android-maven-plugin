@@ -11,6 +11,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -44,10 +47,8 @@ import java.util.Properties;
  * @author joakim@erdfelt.com
  * @author nic.strong@gmail.com
  * @author Manfred Moser <manfred@simpligility.com>
- * @goal manifest-update
- * @requiresProject true
- * @phase process-resources
  */
+@Mojo( name = "manifest-update", defaultPhase = LifecyclePhase.PROCESS_RESOURCES )
 public class ManifestUpdateMojo extends AbstractAndroidMojo
 {
     // basic attributes
@@ -160,60 +161,53 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      * "android." in front of the property name for command line usage. All parameters follow a
      * manifest.* naming convention.
      * <p/>
-     *
-     * @parameter
      */
+    @Parameter
     private Manifest manifest;
 
     /**
      * Update the <code>android:versionName</code> with the specified parameter. If left empty it
      * will use the version number of the project. Exposed via the project property
      * <code>android.manifest.versionName</code>.
-     *
-     * @parameter property="android.manifest.versionName" default-value="${project.version}"
      */
+    @Parameter( property = "android.manifest.versionName", defaultValue = "${project.version}" )
     protected String manifestVersionName;
 
     /**
      * Update the <code>android:versionCode</code> attribute with the specified parameter. Exposed via
      * the project property <code>android.manifest.versionCode</code>.
-     *
-     * @parameter property="android.manifest.versionCode"
      */
+    @Parameter( property = "android.manifest.versionCode" )
     protected Integer manifestVersionCode;
 
     /**
      * Auto increment the <code>android:versionCode</code> attribute with each build. The value is
      * exposed via the project property <code>android.manifest.versionCodeAutoIncrement</code> and
      * the resulting value as <code>android.manifest.versionCode</code>.
-     *
-     * @parameter property="android.manifest.versionCodeAutoIncrement" default-value="false"
      */
+    @Parameter( property = "android.manifest.versionCodeAutoIncrement", defaultValue = "false" )
     private Boolean manifestVersionCodeAutoIncrement = false;
 
     /**
      * Update the <code>android:icon</code> attribute with the specified parameter. Exposed via
      * the project property <code>android.manifest.appIcon</code>.
-     * 
-     * @parameter property="android.manifest.applicationIcon" 
      */
+    @Parameter( property = "android.manifest.applicationIcon" )
     private String manifestApplicationIcon;
 
     /**
      * Update the <code>android:label</code> attribute with the specified parameter. Exposed via
      * the project property <code>android.manifest.appLabel</code>.
-     * 
-     * @parameter property="android.manifest.applicationLabel" 
      */
-    private String manifestApplicationLabel;    
+    @Parameter( property = "android.manifest.applicationLabel" )
+    private String manifestApplicationLabel;
 
     /**
      * Update the <code>android:theme</code> attribute with the specified parameter. Exposed via
      * the project property <code>android.manifest.applicationTheme</code>.
-     * 
-     * @parameter property="android.manifest.applicationTheme" 
      */
-    private String manifestApplicationTheme;    
+    @Parameter( property = "android.manifest.applicationTheme" )
+    private String manifestApplicationTheme;
     
     /**
      * Update the <code>android:versionCode</code> attribute automatically from the project version
@@ -226,43 +220,33 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      * The maximum values for the version increment and version minor values are 999,
      * the version major should be no larger than 2000.  Any other suffixes do not
      * participate in the version code generation.
-     *
-     * @parameter property="android.manifest.versionCodeUpdateFromVersion" default-value="false"
      */
+    @Parameter( property = "android.manifest.versionCodeUpdateFromVersion", defaultValue = "false" )
     protected Boolean manifestVersionCodeUpdateFromVersion = false;
 
     /**
      * Update the <code>android:sharedUserId</code> attribute with the specified parameter. If
      * specified, exposes the project property <code>android.manifest.sharedUserId</code>.
-     *
-     * @parameter property="android.manifest.sharedUserId"
      */
+    @Parameter( property = "android.manifest.sharedUserId" )
     protected String manifestSharedUserId;
 
     /**
      * Update the <code>android:debuggable</code> attribute with the specified parameter. Exposed via
      * the project property <code>android.manifest.debuggable</code>.
-     *
-     * @parameter property="android.manifest.debuggable"
      */
+    @Parameter( property = "android.manifest.debuggable" )
     protected Boolean manifestDebuggable;
 
     /**
      * For a given provider (named by <code>android:name</code> update the <code>android:authorities</code>
      * attribute for the provider. Exposed via the project property <code>android.manifest.providerAuthorities</code>.
-     *
-     * @parameter property="android.manifest.providerAuthorities"
      */
+    @Parameter( property = "android.manifest.providerAuthorities" )
     protected Properties manifestProviderAuthorities;
 
-    /**
-     *
-     */
     protected SupportsScreens manifestSupportsScreens;
 
-    /**
-     *
-     */
     protected List<CompatibleScreen> manifestCompatibleScreens;
 
     /**
@@ -287,13 +271,11 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
 
     /**
      * The modified <code>AndroidManifest.xml</code> file.
-     *
-     * @parameter property="android.manifestFile" default-value="${project.basedir}/AndroidManifest.xml"
      */
+    @Parameter( property = "android.manifestFile", defaultValue = "${project.basedir}/AndroidManifest.xml" )
     protected File updatedManifestFile;
 
     /**
-     *
      * @throws MojoExecutionException
      * @throws MojoFailureException
      */

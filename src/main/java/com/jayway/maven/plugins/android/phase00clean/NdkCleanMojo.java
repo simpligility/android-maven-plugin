@@ -3,6 +3,9 @@ package com.jayway.maven.plugins.android.phase00clean;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
@@ -10,44 +13,38 @@ import java.io.IOException;
 
 /**
  * @author Johan Lindquist <johanlindquist@gmail.com>
- * @goal clean
- * @requiresProject true
- * @requiresOnline false
- * @phase clean
  */
+@Mojo(
+        name = "clean",
+        defaultPhase = LifecyclePhase.CLEAN,
+        requiresOnline = true // TODO Why?
+)
 public class NdkCleanMojo extends AbstractMojo
 {
 
-    /**
-     * @parameter property="android.nativeBuildLibsOutputDirectory" default-value="${project.basedir}/libs"
-     */
+    @Parameter( property = "android.nativeBuildLibsOutputDirectory", defaultValue = "${project.basedir}/libs" )
     File ndkBuildLibsOutputDirectory;
 
-    /**
-     * @parameter property="android.nativeBuildObjOutputDirectory" default-value="${project.basedir}/obj"
-     */
+    @Parameter( property = "android.nativeBuildObjOutputDirectory", defaultValue = "${project.basedir}/obj" )
     File ndkBuildObjOutputDirectory;
 
     /**
      * Forces the clean process to be skipped.
-     *
-     * @parameter property="android.nativeBuildSkipClean" default-value="false"
      */
+    @Parameter( property = "android.nativeBuildSkipClean", defaultValue = "false" )
     boolean skipClean = false;
 
     /**
      * Specifies whether the deletion of the libs/ folder structure should be skipped.  This is by default set to
      * skip (true) to avoid unwanted deletions of libraries already present in this structure.
-     *
-     * @parameter property="android.nativeBuildSkipCleanLibsOutputDirectory" default-value="true"
      */
+    @Parameter( property = "android.nativeBuildSkipCleanLibsOutputDirectory", defaultValue = "true" )
     boolean skipBuildLibsOutputDirectory = true;
 
     /**
      * Specifies whether the obj/ build folder structure should be deleted.
-     *
-     * @parameter property="android.nativeBuildSkipCleanLibsOutputDirectory" default-value="false"
      */
+    @Parameter( property = "android.nativeBuildSkipCleanLibsOutputDirectory", defaultValue = "false" )
     boolean skipBuildObjsOutputDirectory = false;
 
     @Override

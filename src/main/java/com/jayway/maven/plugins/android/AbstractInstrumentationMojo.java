@@ -32,6 +32,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -73,38 +74,30 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
     /**
      * -Dmaven.test.skip is commonly used with Maven to skip tests. We honor it too.
-     *
-     * @parameter property="maven.test.skip" default-value=false
-     * @readonly
      */
+    @Parameter( property = "maven.test.skip", defaultValue = "false", readonly = true )
     private boolean mavenTestSkip;
 
     /**
      * -DskipTests is commonly used with Maven to skip tests. We honor it too.
-     *
-     * @parameter property="skipTests" default-value=false
-     * @readonly
      */
+    @Parameter( property = "skipTests", defaultValue = "false", readonly = true )
     private boolean mavenSkipTests;
 
     /**
      * -Dmaven.test.failure.ignore is commonly used with Maven to ignore test failures. We honor it too.
      * Ignore or not tests failures. If <code>true</code> they will be ignored; if
      * <code>false</code>, they will not. Default value is <code>false</code>.
-     *
-     * @parameter property="maven.test.failure.ignore" default-value=false required=false
-     * @readonly
      */
+    @Parameter( property = "maven.test.failure.ignore", defaultValue = "false", readonly = true )
     private boolean mavenIgnoreTestFailure;
 
     /**
      * -Dmaven.test.error.ignore is commonly used with Maven to ignore test errors. We honor it too.
      * Ignore or not tests errors. If <code>true</code> they will be ignored; if
      * <code>false</code>, they will not. Default value is <code>false</code>.
-     *
-     * @parameter property="maven.test.error.ignore" default-value=false required=false
-     * @readonly
      */
+    @Parameter( property = "maven.test.error.ignore", defaultValue = "false", readonly = true )
     private boolean mavenIgnoreTestError;
 
     /**
@@ -132,72 +125,55 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      *   &lt;/instrumentationArgs&gt;
      * &lt;/test&gt;
      * </pre>
-     *
-     * @parameter
      */
+    @Parameter
     private Test test;
-
 
     /**
      * Enables or disables integration test related goals. If <code>true</code> they will be skipped; if
      * <code>false</code>, they will be run. If <code>auto</code>, they will run if any of the classes inherit from any
      * class in <code>junit.framework.**</code> or <code>android.test.**</code>.
-     *
-     * @parameter property="android.test.skip" default-value="auto"
      */
+    @Parameter( property = "android.test.skip", defaultValue = "auto" )
     private String testSkip;
 
     /**
      * Package name of the apk we wish to instrument. If not specified, it is inferred from
      * <code>AndroidManifest.xml</code>.
-     *
-     * @optional
-     * @parameter property="android.test.instrumentationPackage"
      */
+    @Parameter( property = "android.test.instrumentationPackage" )
     private String testInstrumentationPackage;
 
     /**
      * Class name of test runner. If not specified, it is inferred from <code>AndroidManifest.xml</code>.
-     *
-     * @optional
-     * @parameter property="android.test.instrumentationRunner"
      */
+    @Parameter( property = "android.test.instrumentationRunner" )
     private String testInstrumentationRunner;
 
     /**
      * Enable debug causing the test runner to wait until debugger is
      * connected with the Android debug bridge (adb).
-     *
-     * @optional
-     * @parameter default-value=false property="android.test.debug"
      */
+    @Parameter( property = "android.test.debug", defaultValue = "false" )
     private Boolean testDebug;
 
-
     /**
-     * Enable or disable code coverage for this instrumentation test
-     * run.
-     *
-     * @optional
-     * @parameter default-value=false property="android.test.coverage"
+     * Enable or disable code coverage for this instrumentation test run.
      */
+    @Parameter( property = "android.test.coverage", defaultValue = "false" )
     private Boolean testCoverage;
 
     /**
      * Location on device into which coverage should be stored (blank for
      * Android default /data/data/your.package.here/files/coverage.ec).
-     *
-     * @optional
-     * @parameter default-value= property="android.test.coverageFile"
      */
+    @Parameter( property = "android.test.coverageFile" )
     private String testCoverageFile;
 
     /**
      * Enable this flag to run a log only and not execute the tests.
-     *
-     * @optional
-     * @parameter default-value=false property="android.test.logonly"
      */
+    @Parameter( property = "android.test.logonly", defaultValue = "false" )
     private Boolean testLogOnly;
 
     /**
@@ -205,10 +181,9 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * the Android instrumentation testing SmallTest, MediumTest and
      * LargeTest annotations. Use "small", "medium" or "large" as values.
      *
-     * @optional
-     * @parameter property="android.test.testsize"
      * @see com.android.ddmlib.testrunner.IRemoteAndroidTestRunner
      */
+    @Parameter( property = "android.test.testsize" )
     private String testTestSize;
 
     /**
@@ -232,10 +207,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * TestCase for each test method. Errors and failures are logged
      * in the file and the system log with full stack traces and other
      * details available.
-     *
-     * @optional
-     * @parameter default-value=true property="android.test.createreport"
      */
+    @Parameter( property = "android.test.createreport", defaultValue = "true" )
     private Boolean testCreateReport;
 
     /**
@@ -246,10 +219,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * &lt;/packages&gt;
      * </pre>
      * or as e.g. -Dandroid.test.packages=package1,package2
-     *
-     * @optional
-     * @parameter property="android.test.packages"
      */
+    @Parameter( property = "android.test.packages" )
     protected List<String> testPackages;
 
     /**
@@ -260,10 +231,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * &lt;/classes&gt;
      * </pre>
      * or as e.g. -Dandroid.test.classes=class1,class2
-     *
-     * @optional
-     * @parameter property="android.test.classes"
      */
+    @Parameter( property = "android.test.classes" )
     protected List<String> testClasses;
 
 
@@ -275,10 +244,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * &lt;/annotations&gt;
      * </pre>
      * or as e.g. -Dandroid.test.annotations=annotation1,annotation2
-     *
-     * @optional
-     * @parameter property="android.test.annotations"
      */
+    @Parameter( property = "android.test.annotations" )
     protected List<String> testAnnotations;
 
     /**
@@ -289,10 +256,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * &lt;/excludeAnnotations&gt;
      * </pre>
      * or as e.g. -Dandroid.test.excludeAnnotations=annotation1,annotation2
-     *
-     * @optional
-     * @parameter property="android.test.excludeAnnotations"
      */
+    @Parameter( property = "android.test.excludeAnnotations" )
     protected List<String> testExcludeAnnotations;
 
     /**
@@ -304,10 +269,8 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * &lt;/instrumentationArgs&gt;
      * </pre>
      * or as e.g. -Dandroid.test.instrumentationArgs="key1 value1","key2 'value with spaces'"
-     *
-     * @optional
-     * @parameter property="android.test.instrumentationArgs"
      */
+    @Parameter( property = "android.test.instrumentationArgs" )
     protected List<String> testInstrumentationArgs;
 
     private boolean classesExists;

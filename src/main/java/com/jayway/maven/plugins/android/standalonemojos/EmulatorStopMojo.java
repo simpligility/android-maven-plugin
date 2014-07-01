@@ -3,14 +3,14 @@ package com.jayway.maven.plugins.android.standalonemojos;
 import com.jayway.maven.plugins.android.AbstractEmulatorMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
 
 /**
  * EmulatorStartMojo can stop the Android Emulator with a specified Android Virtual Device (avd).
  *
  * @author Manfred Moser <manfred@simpligility.com>
- * @goal emulator-stop
- * @requiresProject false
  */
+@Mojo( name = "emulator-stop", requiresProject = false )
 public class EmulatorStopMojo extends AbstractEmulatorMojo
 {
 
