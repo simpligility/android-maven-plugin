@@ -824,7 +824,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
         return resourceFolders;
     }
-     /**
+
+    /**
      * Executes aapt to generate the R class for the given apklib.
      *
      * @param apklibArtifact    apklib for which to generate the R class.
@@ -1011,6 +1012,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         return false;
     }
 
+    /**
+     * Check if given artifact includes a matching BuildConfig class
+     * 
+     * @throws MojoExecutionException
+     */
     private boolean isBuildConfigPresent( Artifact artifact ) throws MojoExecutionException
     {
         String depPackageName = extractPackageNameFromAndroidArtifact( artifact );
@@ -1018,6 +1024,13 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         return isBuildConfigPresent( artifact, depPackageName );
     }
 
+    /**
+     * Check whether the artifact includes a BuildConfig located in a given package.
+     * 
+     * @param artifact an AAR artifact to look for BuildConfig in
+     * @param packageName BuildConfig package name
+     * @throws MojoExecutionException
+     */
     private boolean isBuildConfigPresent( Artifact artifact, String packageName ) throws MojoExecutionException
     {
         try
