@@ -23,6 +23,7 @@ import org.apache.maven.plugin.MojoFailureException;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
+import org.apache.maven.plugins.annotations.Mojo;
 
 /**
  * Undeploys the apk(s) of the current project(s) to all attached devices and emulators.
@@ -33,14 +34,11 @@ import com.jayway.maven.plugins.android.common.AndroidExtension;
  *
  * @author hugo.josefson@jayway.com
  * @author Manfred Moser <manfred@simpligility.com>
- *
- * @goal undeploy
- * @requiresProject true
  */
+@Mojo( name = "undeploy" )
 public class UndeployMojo extends AbstractAndroidMojo
 {
     /**
-     *
      * @throws MojoExecutionException
      * @throws MojoFailureException
      */

@@ -19,6 +19,9 @@ package com.jayway.maven.plugins.android.standalonemojos;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
  * Deploys the apk(s) of the current project(s) to all attached devices and emulators.
@@ -30,12 +33,12 @@ import org.apache.maven.plugin.MojoFailureException;
  *
  * @author hugo.josefson@jayway.com
  * @author Manfred Moser <manfred@simpligility.com>
- * 
- * @goal deploy
- * @requiresProject true
- * @phase pre-integration-test
- * @requiresDependencyResolution runtime
  */
+@Mojo(
+        name = "deploy",
+        defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST,
+        requiresDependencyResolution = ResolutionScope.RUNTIME
+)
 public class DeployMojo extends AbstractAndroidMojo
 {
     /**

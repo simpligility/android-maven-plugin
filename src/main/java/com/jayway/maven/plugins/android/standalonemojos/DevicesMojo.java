@@ -6,6 +6,7 @@ import com.jayway.maven.plugins.android.DeviceCallback;
 import com.jayway.maven.plugins.android.common.DeviceHelper;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
 
 /**
  * DevicesMojo lists all attached devices and emulators found with the android debug bridge. It uses the same
@@ -16,9 +17,8 @@ import org.apache.maven.plugin.MojoFailureException;
  * android.device paramter into account.
  *
  * @author Manfred Moser <manfred@simpligility.com>
- * @goal devices
- * @requiresProject false
  */
+@Mojo( name = "devices", requiresProject = false )
 public class DevicesMojo extends AbstractAndroidMojo
 {
     /**

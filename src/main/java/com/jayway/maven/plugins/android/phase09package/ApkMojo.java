@@ -41,6 +41,10 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -76,10 +80,8 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
  * <code>&lt;sign&gt;&lt;debug&gt;false&lt;/debug&gt;&lt;/sign&gt;</code>.
  *
  * @author hugo.josefson@jayway.com
- * @goal apk
- * @phase package
- * @requiresDependencyResolution compile
  */
+@Mojo( name = "apk", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE )
 public class ApkMojo extends AbstractAndroidMojo
 {
 
@@ -101,19 +103,16 @@ public class ApkMojo extends AbstractAndroidMojo
      * <a href="http://code.google.com/p/maven-android-plugin/issues/detail?id=2">Issue 2</a>.)
      * </ul></p>
      * <p>Can also be configured from command-line with parameter <code>-Dandroid.sign.debug</code>.</p>
-     *
-     * @parameter
      */
+    @Parameter
     private Sign sign;
 
     /**
      * <p>Parameter designed to pick up <code>-Dandroid.sign.debug</code> in case there is no pom with a
      * <code>&lt;sign&gt;</code> configuration tag.</p>
      * <p>Corresponds to {@link com.jayway.maven.plugins.android.configuration.Sign#debug}.</p>
-     *
-     * @parameter property="android.sign.debug" default-value="auto"
-     * @readonly
      */
+    @Parameter( property = "android.sign.debug", defaultValue = "auto", readonly = true )
     private String signDebug;
 
     /**
@@ -121,10 +120,9 @@ public class ApkMojo extends AbstractAndroidMojo
      * This value will be passed on to the aapt parameter --rename-instrumentation-target-package.
      * Look to aapt for more help on this. </p>
      *
-     * @parameter property="android.renameInstrumentationTargetPackage"
-     *
      * TODO pass this into AaptExecutor
      */
+    @Parameter( property = "android.renameInstrumentationTargetPackage" )
     private String renameInstrumentationTargetPackage;
 
     /**
@@ -132,16 +130,14 @@ public class ApkMojo extends AbstractAndroidMojo
      * the content of all embedded dependencies and checks they are no duplicates inside those dependencies. Indeed,
      * Android does not support duplicates, and all dependencies are inlined in the APK. If duplicates files are found,
      * the resource is kept in the first dependency and removes from others.
-     *
-     * @parameter property="android.extractDuplicates" default-value="false"
      */
+    @Parameter( property = "android.extractDuplicates", defaultValue = "false" )
     private boolean extractDuplicates;
 
     /**
      * <p>Classifier to add to the artifact generated. If given, the artifact will be an attachment instead.</p>
-     *
-     * @parameter
      */
+    @Parameter
     private String classifier;
 
     /**
@@ -159,9 +155,8 @@ public class ApkMojo extends AbstractAndroidMojo
      *   ...
      * &lt;/configuration&gt;
      * </pre>
-     *
-     * @parameter property="android.sourceDirectories" default-value=""
      */
+    @Parameter( property = "android.sourceDirectories" )
     private File[] sourceDirectories;
 
     /**
@@ -192,7 +187,6 @@ public class ApkMojo extends AbstractAndroidMojo
      * See also <a href="http://code.google.com/p/maven-android-plugin/issues/detail?id=97">Issue 97</a>
      * </p>
      *
-     * @parameter property="android.apk.metaIncludes"
      * @deprecated in favour of apk.metaInf
      */
     @PullParameter
@@ -201,30 +195,24 @@ public class ApkMojo extends AbstractAndroidMojo
     @PullParameter( defaultValueGetterMethod = "getDefaultMetaInf" )
     private MetaInf apkMetaInf;
 
-    /**
-     * @parameter alias="metaInf"
-     */
+    @Parameter( alias = "metaInf" )
     private MetaInf pluginMetaInf;
 
     /**
      * Defines whether or not the APK is being produced in debug mode or not.
-     *
-     * @parameter property="android.apk.debug"
      */
+    @Parameter( property = "android.apk.debug" )
     @PullParameter( defaultValue = "false" )
     private Boolean apkDebug;
 
-    /**
-     * @parameter property="android.nativeToolchain"
-     */
+    @Parameter( property = "android.nativeToolchain" )
     @PullParameter( defaultValue = "arm-linux-androideabi-4.4.3" )
     private String apkNativeToolchain;
 
     /**
      * Specifies the final name of the library output by the build (this allows
-     *
-     * @parameter property="android.ndk.build.build.final-library.name"
      */
+    @Parameter( property = "android.ndk.build.build.final-library.name" )
     private String ndkFinalLibraryName;
 
     /**
@@ -233,17 +221,16 @@ public class ApkMojo extends AbstractAndroidMojo
      * resulting APK.
      * 
      * The patterns are standard Java regexes.
-     * 
-     * @parameter
      */
+    @Parameter
     private String[] excludeJarResources;
+
     private Pattern[] excludeJarResourcesPatterns;
     
     /**
      * Embedded configuration of this mojo.
-     *
-     * @parameter
      */
+    @Parameter
     @ConfigPojo( prefix = "apk" )
     private Apk apk;
 
@@ -253,13 +240,11 @@ public class ApkMojo extends AbstractAndroidMojo
      * <p>Default hardware architecture for native library dependencies (with {@code &lt;type>so&lt;/type>})
      * without a classifier.</p>
      * <p>Valid values currently include {@code armeabi}, {@code armeabi-v7a}, {@code mips} and {@code x86}.</p>
-     *
-     * @parameter property="android.nativeLibrariesDependenciesHardwareArchitectureDefault" default-value="armeabi"
      */
+    @Parameter( property = "android.nativeLibrariesDependenciesHardwareArchitectureDefault", defaultValue = "armeabi" )
     private String nativeLibrariesDependenciesHardwareArchitectureDefault;
 
     /**
-     *
      * @throws MojoExecutionException
      * @throws MojoFailureException
      */

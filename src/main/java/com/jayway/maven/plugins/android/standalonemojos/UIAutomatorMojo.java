@@ -44,6 +44,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -86,43 +88,35 @@ import com.jayway.maven.plugins.android.configuration.UIAutomator;
  * @see <a href="http://developer.android.com/tools/testing/testing_ui.html">Android UI testing doc</a>
  * @see <a href="http://developer.android.com/tools/help/uiautomator/index.html">UI Automator manual page</a>
  * @author Stéphane Nicolas <snicolas@octo.com>
- * @goal uiautomator
- * @requiresProject false
  */
 @SuppressWarnings( "unused" )
+@Mojo( name = "uiautomator", requiresProject = false )
 public class UIAutomatorMojo extends AbstractAndroidMojo
 {
     /**
      * -Dmaven.test.skip is commonly used with Maven to skip tests. We honor it.
-     * 
-     * @parameter property="maven.test.skip" default-value=false
-     * @readonly
      */
+    @Parameter( property = "maven.test.skip", defaultValue = "false", readonly = true )
     private boolean mavenTestSkip;
 
     /**
      * -DskipTests is commonly used with Maven to skip tests. We honor it too.
-     * 
-     * @parameter property="skipTests" default-value=false
-     * @readonly
      */
+    @Parameter( property = "skipTests", defaultValue = "false", readonly = true )
     private boolean mavenSkipTests;
+
     /**
      * -Dmaven.test.failure.ignore is commonly used with Maven to prevent failure of build when (some) tests fail. We
      * honor it too. Builds will still fail if tests can't complete or throw an exception.
-     * 
-     * @parameter property="maven.test.failure.ignore" default-value=false
-     * @readonly
      */
+    @Parameter( property = "maven.test.failure.ignore", defaultValue = "false", readonly = true )
     private boolean mavenTestFailureIgnore;
 
     /**
      * -Dmaven.test.failure.ignore is commonly used with Maven to prevent failure of build when (some) tests fail. We
      * honor it too. Builds will still fail if tests can't complete or throw an exception.
-     * 
-     * @parameter property="testFailureIgnore" default-value=false
-     * @readonly
      */
+    @Parameter( property = "testFailureIgnore", defaultValue = "false", readonly = true )
     private boolean mavenIgnoreTestFailure;
 
     /**
@@ -155,18 +149,16 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      * 
      * Alternatively to the plugin configuration values can also be configured as properties on the command line as
      * android.lint.* or in pom or settings file as properties like lint*.
-     * 
-     * @parameter
      */
+    @Parameter
     @ConfigPojo
     private UIAutomator uiautomator;
 
     /**
      * Enables or disables uiautomator test goal. If <code>true</code> it will be skipped; if <code>false</code>, it
      * will be run.
-     * 
-     * @parameter property="android.uiautomator.skip"
      */
+    @Parameter( property = "android.uiautomator.skip" )
     private Boolean uiautomatorSkip;
 
     @PullParameter( defaultValue = "true" )
@@ -174,9 +166,8 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
 
     /**
      * Jar file that will be run during ui uiautomator tests.
-     * 
-     * @parameter property="android.uiautomator.jarFile"
      */
+    @Parameter( property = "android.uiautomator.jarFile" )
     private String uiautomatorJarFile;
 
     @PullParameter( defaultValueGetterMethod = "getJarFile" )
@@ -189,10 +180,8 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      * <li>package_name.class_name
      * <li>package_name.class_name#method_name
      * </ul>
-     * 
-     * @parameter property="android.uiautomator.testClassOrMethod"
-     * 
      */
+    @Parameter( property = "android.uiautomator.testClassOrMethod" )
     private String[] uiautomatorTestClassOrMethods;
 
     @PullParameter( required = false, defaultValueGetterMethod = "getTestClassOrMethods" )
@@ -201,10 +190,8 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
     /**
      * Decides whether to run the test to completion on the device even if its parent process is terminated (for
      * example, if the device is disconnected).
-     * 
-     * @parameter property="android.uiautomator.noHup"
-     * 
      */
+    @Parameter( property = "android.uiautomator.noHup" )
     private Boolean uiautomatorNoHup;
 
     @PullParameter( defaultValue = "false" )
@@ -212,10 +199,8 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
 
     /**
      * Decides whether to wait for debugger to connect before starting.
-     * 
-     * @parameter property="android.uiautomator.debug"
-     * 
      */
+    @Parameter( property = "android.uiautomator.debug" )
     private Boolean uiautomatorDebug = false;
 
     @PullParameter( defaultValue = "false" )
@@ -223,10 +208,8 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
 
     /**
      * Decides whether to use a dump file or not.
-     * 
-     * @parameter property="android.uiautomator.useDump"
-     * 
      */
+    @Parameter( property = "android.uiautomator.useDump" )
     private Boolean uiautomatorUseDump;
 
     @PullParameter( defaultValue = "false" )
@@ -235,10 +218,8 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
     /**
      * Generate an XML file with a dump of the current UI hierarchy. If a filepath is not specified, by default, the
      * generated dump file is stored on the device in this location /storage/sdcard0/window_dump.xml.
-     * 
-     * @parameter property="android.uiautomator.dumpFilePath"
-     * 
      */
+    @Parameter( property = "android.uiautomator.dumpFilePath" )
     private String uiautomatorDumpFilePath;
 
     @PullParameter( required = false, defaultValue = "/storage/sdcard0/window_dump.xml" )
@@ -259,13 +240,8 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      * <br />
      * The file contains a single TestSuite for all tests and a TestCase for each test method. Errors and failures are
      * logged in the file and the system log with full stack traces and other details available.
-     * 
-     * Defaults to false.
-     * 
-     * @optional
-     * @parameter property="android.uiautomator.createReport"
-     * 
      */
+    @Parameter( property = "android.uiautomator.createReport" )
     private Boolean uiautomatorCreateReport;
 
     @PullParameter( defaultValue = "false" )
@@ -276,10 +252,8 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      * the name of the report will be TEST-deviceid-mySpecialReport.xml
      *
      * Defaults to null. Hence, in the default case, the name of the report will be TEST-deviceid.xml.
-     *
-     * @optional
-     * @parameter property="android.uiautomator.reportSuffix"
      */
+    @Parameter( property = "android.uiautomator.reportSuffix" )
     private String uiautomatorReportSuffix;
 
     @PullParameter( required = false, defaultValueGetterMethod = "getReportSuffix" )
@@ -288,10 +262,8 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
     /**
      * Decides whether or not to take screenshots when tests execution results in failure or error. Screenshots use the
      * utiliy screencap that is usually available within emulator/devices with SDK >= 16.
-     * 
-     * @parameter property="android.uiautomator.takeScreenshotOnFailure"
-     * 
      */
+    @Parameter( property = "android.uiautomator.takeScreenshotOnFailure" )
     private Boolean uiautomatorTakeScreenshotOnFailure;
 
     @PullParameter( defaultValue = "false" )
@@ -300,10 +272,8 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
     /**
      * Location of the screenshots on device. This value is only taken into account if takeScreenshotOnFailure = true.
      * If a filepath is not specified, by default, the screenshots will be located at /sdcard/uiautomator-screenshots/.
-     * 
-     * @parameter property="android.uiautomator.screenshotsPathOnDevice"
-     * 
      */
+    @Parameter( property = "android.uiautomator.screenshotsPathOnDevice" )
     private String uiautomatorScreenshotsPathOnDevice;
 
     @PullParameter( required = false, defaultValue = "/sdcard/uiautomator-screenshots/" )
@@ -323,10 +293,8 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
      * <p>And run it with:</p>
      * <p><code>&gt; mvn &lt;goal&gt; "-DUIAkey=value"</code></p>
      * <p>would become <code>"-e key value"</code> as it would be runned from adb</p>
-     * 
-     * @parameter property="android.uiautomator.propertiesKeyPrefix"
-     * 
      */
+    @Parameter( property = "android.uiautomator.propertiesKeyPrefix" )
     private String uiautomatorPropertiesKeyPrefix;
 
     @PullParameter( required = false, defaultValueGetterMethod = "getPropertiesKeyPrefix" )

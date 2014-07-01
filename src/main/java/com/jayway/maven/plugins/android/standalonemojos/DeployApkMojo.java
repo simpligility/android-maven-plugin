@@ -22,9 +22,10 @@ import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.DeployApk;
 import com.jayway.maven.plugins.android.configuration.ValidationResponse;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
 
@@ -35,10 +36,8 @@ import java.io.File;
  * projects and as standalone execution on the command line. <br/>
  *
  * @author Manfred Moser <manfred@simpligility.com>
- * 
- * @goal deploy-apk
- * @requiresProject false
  */
+@Mojo( name = "deploy-apk", requiresProject = false )
 public class DeployApkMojo extends AbstractAndroidMojo
 {
     /**
@@ -49,19 +48,12 @@ public class DeployApkMojo extends AbstractAndroidMojo
      *    &lt;filename&gt;yourapk.apke&lt;/filename&gt;
      * &lt;/deployapk&gt;
      * </pre>
-     * 
-     * @parameter
      */
-    /**
-     * @parameter
-     */
+    @Parameter
     @ConfigPojo
     protected DeployApk deployapk;
 
-    /**
-     * @parameter property="android.deployapk.filename"
-     * @optional
-    */
+    @Parameter( property = "android.deployapk.filename" )
     private File deployapkFilename;
 
     @PullParameter

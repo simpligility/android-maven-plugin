@@ -25,6 +25,7 @@ import com.jayway.maven.plugins.android.common.DeviceHelper;
 import com.jayway.maven.plugins.android.configuration.Emulator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -105,32 +106,30 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      * or configure as properties  on the command line as android.emulator.avd, android.emulator.wait,
      * android.emulator.options and android.emulator.executable or in pom or settings file as emulator.avd,
      * emulator.wait and emulator.options.
-     *
-     * @parameter
      */
+    @Parameter
     private Emulator emulator;
 
     /**
      * Name of the Android Virtual Device (emulatorAvd) that will be started by the emulator. Default value is "Default"
      *
-     * @parameter property="android.emulator.avd"
      * @see com.jayway.maven.plugins.android.configuration.Emulator#avd
      */
+    @Parameter( property = "android.emulator.avd" )
     private String emulatorAvd;
 
     /**
      * Unlock the emulator after it is started.
-     * 
-     * @parameter property="android.emulatorUnlock" default-value=false
      */
+    @Parameter( property = "android.emulatorUnlock", defaultValue = "false" )
     private boolean emulatorUnlock;
 
     /**
      * Wait time for the emulator start up.
      *
-     * @parameter property="android.emulator.wait"
      * @see com.jayway.maven.plugins.android.configuration.Emulator#wait
      */
+    @Parameter( property = "android.emulator.wait" )
     private String emulatorWait;
 
     /**
@@ -138,18 +137,18 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      * options desired to the invocation of the emulator. Use emulator -help for more details. An example would be
      * "-no-skin".
      *
-     * @parameter property="android.emulator.options"
      * @see com.jayway.maven.plugins.android.configuration.Emulator#options
      */
+    @Parameter( property = "android.emulator.options" )
     private String emulatorOptions;
 
 
     /**
      * Override default emulator executable. Default uses just "emulator".
      *
-     * @parameter property="android.emulator.executable"
      * @see com.jayway.maven.plugins.android.configuration.Emulator#executable
      */
+    @Parameter( property = "android.emulator.executable" )
     private String emulatorExecutable;
 
     /**

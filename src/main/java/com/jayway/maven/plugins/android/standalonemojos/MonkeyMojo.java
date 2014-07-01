@@ -43,6 +43,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -75,43 +77,35 @@ import com.jayway.maven.plugins.android.configuration.Monkey;
  * @see <a href="http://developer.android.com/tools/help/monkey.html">Monkey docs by Google</a>
  * @see <a href="http://stackoverflow.com/q/3968064/693752">Stack Over Flow thread for parsing monkey output.</a>
  * @author Stéphane Nicolas <snicolas@octo.com>
- * @goal monkey
- * @requiresProject true
  */
 @SuppressWarnings( "unused" )
+@Mojo( name = "monkey" )
 public class MonkeyMojo extends AbstractAndroidMojo
 {
     /**
      * -Dmaven.test.skip is commonly used with Maven to skip tests. We honor it.
-     * 
-     * @parameter property="maven.test.skip" default-value=false
-     * @readonly
      */
+    @Parameter( property = "maven.test.skip", defaultValue = "false", readonly = true )
     private boolean mavenTestSkip;
 
     /**
      * -DskipTests is commonly used with Maven to skip tests. We honor it too.
-     * 
-     * @parameter property="skipTests" default-value=false
-     * @readonly
      */
+    @Parameter( property = "skipTests", defaultValue = "false", readonly = true )
     private boolean mavenSkipTests;
+
     /**
      * -Dmaven.test.failure.ignore is commonly used with Maven to prevent failure of build when (some) tests fail. We
      * honor it too.
-     * 
-     * @parameter property="maven.test.failure.ignore" default-value=false
-     * @readonly
      */
+    @Parameter( property = "maven.test.failure.ignore", defaultValue = "false", readonly = true )
     private boolean mavenTestFailureIgnore;
 
     /**
      * -Dmaven.test.failure.ignore is commonly used with Maven to prevent failure of build when (some) tests fail. We
      * honor it too.
-     * 
-     * @parameter property="testFailureIgnore" default-value=false
-     * @readonly
      */
+    @Parameter( property = "testFailureIgnore", defaultValue = "false", readonly = true )
     private boolean mavenIgnoreTestFailure;
 
     /**
@@ -162,18 +156,16 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * 
      * Alternatively to the plugin configuration values can also be configured as properties on the command line as
      * android.lint.* or in pom or settings file as properties like lint*.
-     * 
-     * @parameter
      */
+    @Parameter
     @ConfigPojo
     private Monkey monkey;
 
     /**
      * Enables or disables monkey test goal. If <code>true</code> it will be skipped; if <code>false</code>, it will be
      * run. Defaults to true.
-     * 
-     * @parameter property="android.monkey.skip"
      */
+    @Parameter( property = "android.monkey.skip" )
     private Boolean monkeySkip;
 
     @PullParameter( defaultValue = "true" )
@@ -181,9 +173,8 @@ public class MonkeyMojo extends AbstractAndroidMojo
 
     /**
      * Number of generated events. Defaults to 1000.
-     * 
-     * @parameter property="android.monkey.eventCount"
      */
+    @Parameter( property = "android.monkey.eventCount" )
     private Integer monkeyEventCount;
 
     @PullParameter( required = true, defaultValue = "1000" )
@@ -192,118 +183,97 @@ public class MonkeyMojo extends AbstractAndroidMojo
     /**
      * Seed value for pseudo-random number generator. If you re-run the Monkey with the same seed value, it will
      * generate the same sequence of events.
-     * 
-     * Defaults to null.
-     * 
-     * @parameter property="android.monkey.seed"
      */
+    @Parameter( property = "android.monkey.seed" )
     private Long monkeySeed;
 
     @PullParameter( required = false, defaultValueGetterMethod = "getSeed" )
     private Long parsedSeed;
+
     /**
      * Inserts a fixed delay between events. You can use this option to slow down the Monkey. If not specified, there is
      * no delay and the events are generated as rapidly as possible.
-     * 
-     * Defaults to null.
-     * 
-     * @parameter property="android.monkey.throttle"
      */
+    @Parameter( property = "android.monkey.throttle" )
     private Long monkeyThrottle;
 
     @PullParameter( required = false, defaultValueGetterMethod = "getThrottle" )
     private Long parsedThrottle;
+
     /**
      * Adjust percentage of touch events. (Touch events are a down-up event in a single place on the screen.)
-     * 
-     * Defaults to null.
-     * 
-     * @parameter property="android.monkey.percentTouch"
      */
+    @Parameter( property = "android.monkey.percentTouch" )
     private Integer monkeyPercentTouch;
 
     @PullParameter( required = false, defaultValueGetterMethod = "getPercentTouch" )
     private Integer parsedPercentTouch;
+
     /**
      * Adjust percentage of motion events. (Motion events consist of a down event somewhere on the screen, a series of
      * pseudo-random movements, and an up event.)
-     * 
-     * Defaults to null.
-     * 
-     * @parameter property="android.monkey.percentMotion"
      */
+    @Parameter( property = "android.monkey.percentMotion" )
     private Integer monkeyPercentMotion;
 
     @PullParameter( required = false, defaultValueGetterMethod = "getPercentMotion" )
     private Integer parsedPercentMotion;
+
     /**
      * Adjust percentage of trackball events. (Trackball events consist of one or more random movements, sometimes
      * followed by a click.)
-     * 
-     * Defaults to null.
-     * 
-     * @parameter property="android.monkey.percentTrackball"
      */
+    @Parameter( property = "android.monkey.percentTrackball" )
     private Integer monkeyPercentTrackball;
 
     @PullParameter( required = false, defaultValueGetterMethod = "getPercentTrackball" )
     private Integer parsedPercentTrackball;
+
     /**
      * Adjust percentage of "basic" navigation events. (Navigation events consist of up/down/left/right, as input from a
      * directional input device.)
-     * 
-     * Defaults to null.
-     * 
-     * @parameter property="android.monkey.percentNav"
      */
+    @Parameter( property = "android.monkey.percentNav" )
     private Integer monkeyPercentNav;
 
     @PullParameter( required = false, defaultValueGetterMethod = "getPercentNav" )
     private Integer parsedPercentNav;
+
     /**
      * Adjust percentage of "major" navigation events. (These are navigation events that will typically cause actions
      * within your UI, such as the center button in a 5-way pad, the back key, or the menu key.)
-     * 
-     * Defaults to null.
-     * 
-     * @parameter property="android.monkey.percentMajorNav"
      */
+    @Parameter( property = "android.monkey.percentMajorNav" )
     private Integer monkeyPercentMajorNav;
 
     @PullParameter( required = false, defaultValueGetterMethod = "getPercentMajorNav" )
     private Integer parsedPercentMajorNav;
+
     /**
      * Adjust percentage of "system" key events. (These are keys that are generally reserved for use by the system, such
      * as Home, Back, Start Call, End Call, or Volume controls.) Defaults to null.
-     * 
-     * Defaults to null.
-     * 
-     * @parameter property="android.monkey.percentSyskeys"
      */
+    @Parameter( property = "android.monkey.percentSyskeys" )
     private Integer monkeyPercentSyskeys;
 
     @PullParameter( required = false, defaultValueGetterMethod = "getPercentSyskeys" )
     private Integer parsedPercentSyskeys;
+
     /**
      * Adjust percentage of activity launches. At random intervals, the Monkey will issue a startActivity() call, as a
      * way of maximizing coverage of all activities within your package.
-     * 
-     * Defaults to null.
-     * 
-     * @parameter property="android.monkey.percentAppswitch"
      */
+    @Parameter( property = "android.monkey.percentAppswitch" )
     private Integer monkeyPercentAppswitch;
 
     @PullParameter( required = false, defaultValueGetterMethod = "getPercentAppswitch" )
     private Integer parsedPercentAppswitch;
+
     /**
      * Adjust percentage of other types of events. This is a catch-all for all other types of events such as keypresses,
      * other less-used buttons on the device, and so forth.
-     * 
-     * Defaults to null.
-     * 
-     * @parameter property="android.monkey.percentAnyevent"
      */
+    @Parameter( property = "android.monkey.percentAnyevent" )
     private Integer monkeyPercentAnyEvent;
 
     @PullParameter( required = false, defaultValueGetterMethod = "getPercentAnyevent" )
@@ -314,11 +284,8 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * those packages. If your application requires access to activities in other packages (e.g. to select a contact)
      * you'll need to specify those packages as well. If you don't specify any packages, the Monkey will allow the
      * system to launch activities in all packages.
-     * 
-     * Defaults to Null.
-     * 
-     * @parameter property="android.monkey.packages"
      */
+    @Parameter( property = "android.monkey.packages" )
     private String[] monkeyPackages;
 
     @PullParameter( required = false, defaultValueGetterMethod = "getPackages" )
@@ -328,25 +295,20 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * If you specify one or more categories this way, the Monkey will only allow the system to visit activities that
      * are listed with one of the specified categories. If you don't specify any categories, the Monkey will select
      * activities listed with the category Intent.CATEGORY_LAUNCHER or Intent.CATEGORY_MONKEY.
-     * 
-     * Defaults to null.
-     * 
-     * @parameter property="android.monkey.categories"
      */
+    @Parameter( property = "android.monkey.categories" )
     private String[] monkeyCategories;
 
     @PullParameter( required = false, defaultValueGetterMethod = "getCategories" )
     private String[] parsedCategories;
+
     /**
      * When specified, the Monkey will perform the initial launch into a test activity, but will not generate any
      * further events. For best results, combine with -v, one or more package constraints, and a non-zero throttle to
      * keep the Monkey running for 30 seconds or more. This provides an environment in which you can monitor package
      * transitions invoked by your application.
-     * 
-     * Defaults to false.
-     * 
-     * @parameter property="android.monkey.debugNoEvents"
      */
+    @Parameter( property = "android.monkey.debugNoEvents" )
     private Boolean monkeyDebugNoEvents;
 
     @PullParameter( defaultValue = "false" )
@@ -356,11 +318,8 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * If set, this option will generate profiling reports immediately before and after the Monkey event sequence. This
      * will generate large (~5Mb) files in data/misc, so use with care. See Traceview for more information on trace
      * files.
-     * 
-     * Defaults to false.
-     * 
-     * @parameter property="android.monkey.Hprof"
      */
+    @Parameter( property = "android.monkey.Hprof" )
     private Boolean monkeyHprof;
 
     @PullParameter( defaultValue = "false" )
@@ -371,41 +330,39 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * you specify this option, the Monkey will continue to send events to the system, until the count is completed.
      * Settings this option is different to setting testFailureIgnore or maven.test.failure.ignore to true, it will
      * impact monkey run but not the result of the maven build.
-     * 
-     * Defaults to false.
-     * 
-     * @parameter property="android.monkey.ignoreCrashes"
      */
+    @Parameter( property = "android.monkey.ignoreCrashes" )
     private Boolean monkeyIgnoreCrashes;
 
     @PullParameter( defaultValue = "false" )
     private Boolean parsedIgnoreCrashes;
+
     /**
      * Normally, the Monkey will stop when the application experiences any type of timeout error such as a
      * "Application Not Responding" dialog. If you specify this option, the Monkey will continue to send events to the
      * system, until the count is completed.
-     * 
+     *
      * Defaults to false.
-     * 
-     * @parameter property="android.monkey.IgnoreTimeouts"
      */
+    @Parameter( property = "android.monkey.IgnoreTimeouts" )
     private Boolean monkeyIgnoreTimeouts;
 
     @PullParameter( defaultValue = "false" )
     private Boolean parsedIgnoreTimeouts;
+
     /**
      * Normally, the Monkey will stop when the application experiences any type of permissions error, for example if it
      * attempts to launch an activity that requires certain permissions. If you specify this option, the Monkey will
      * continue to send events to the system, until the count is completed. *
      * 
      * Defaults to false.
-     * 
-     * @parameter property="android.monkey.IgnoreSecurityExceptions"
      */
+    @Parameter( property = "android.monkey.IgnoreSecurityExceptions" )
     private Boolean monkeyIgnoreSecurityExceptions;
 
     @PullParameter( defaultValue = "false" )
     private Boolean parsedIgnoreSecurityExceptions;
+
     /**
      * Normally, when the Monkey stops due to an error, the application that failed will be left running. When this
      * option is set, it will signal the system to stop the process in which the error occurred. Note, under a normal
@@ -413,25 +370,25 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * state after the final event.
      * 
      * Defaults to false.
-     * 
-     * @parameter property="android.monkey.KillProcessAfterError"
      */
+    @Parameter( property = "android.monkey.KillProcessAfterError" )
     private Boolean monkeyKillProcessAfterError;
 
     @PullParameter( defaultValue = "false" )
     private Boolean parsedKillProcessAfterError;
+
     /**
      * Watches for and reports crashes occurring in the Android system native code. If --kill-process-after-error is
      * set, the system will stop.
      * 
      * Defaults to false.
-     * 
-     * @parameter property="android.monkey.MonitorNativeCrashes"
      */
+    @Parameter( property = "android.monkey.MonitorNativeCrashes" )
     private Boolean monkeyMonitorNativeCrashes;
 
     @PullParameter( defaultValue = "false" )
     private Boolean parsedMonitorNativeCrashes;
+
     /**
      * Create a junit xml format compatible output file containing the test results for each device the instrumentation
      * tests run on. <br />
@@ -449,11 +406,8 @@ public class MonkeyMojo extends AbstractAndroidMojo
      * logged in the file and the system log with full stack traces and other details available.
      * 
      * Defaults to false.
-     * 
-     * @optional
-     * @parameter property="android.monkey.createReport"
-     * 
      */
+    @Parameter( property = "android.monkey.createReport" )
     private Boolean monkeyCreateReport;
 
     @PullParameter( defaultValue = "false" )

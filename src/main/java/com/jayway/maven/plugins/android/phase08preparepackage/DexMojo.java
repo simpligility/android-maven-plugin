@@ -28,6 +28,10 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
@@ -47,10 +51,12 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
  * Converts compiled Java classes to the Android dex format.
  * 
  * @author hugo.josefson@jayway.com
- * @goal dex
- * @phase prepare-package
- * @requiresDependencyResolution compile
  */
+@Mojo(
+        name = "dex",
+        defaultPhase = LifecyclePhase.PREPARE_PACKAGE,
+        requiresDependencyResolution = ResolutionScope.COMPILE
+)
 public class DexMojo extends AbstractAndroidMojo
 {
 
@@ -77,96 +83,83 @@ public class DexMojo extends AbstractAndroidMojo
      * </pre>
      * <p/>
      * or via properties dex.* or command line parameters android.dex.*
-     * 
-     * @parameter
      */
+    @Parameter
     private Dex dex;
+
     /**
      * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build.
-     * 
-     * @parameter property="android.dex.jvmArguments" default-value="-Xmx1024M"
-     * @optional
      */
+    @Parameter( property = "android.dex.jvmArguments", defaultValue = "-Xmx1024M" )
     private String[] dexJvmArguments;
 
     /**
      * Decides whether to pass the --core-library flag to dx.
-     * 
-     * @parameter property="android.dex.coreLibrary" default-value="false"
      */
+    @Parameter( property = "android.dex.coreLibrary", defaultValue = "false" )
     private boolean dexCoreLibrary;
 
     /**
      * Decides whether to pass the --no-locals flag to dx.
-     * 
-     * @parameter property="android.dex.noLocals" default-value="false"
      */
+    @Parameter( property = "android.dex.noLocals", defaultValue = "false" )
     private boolean dexNoLocals;
 
     /**
      * Decides whether to pass the --no-optimize flag to dx.
-     * 
-     * @parameter property="android.dex.optimize" default-value="true"
      */
+    @Parameter( property = "android.dex.optimize", defaultValue = "true" )
     private boolean dexOptimize;
 
     /**
      * Decides whether to predex the jars.
-     * 
-     * @parameter property="android.dex.predex" default-value="false"
      */
+    @Parameter( property = "android.dex.predex", defaultValue = "false" )
     private boolean dexPreDex;
     
     /**
      * Decides whether to use force jumbo mode.
-     * 
-     * @parameter property="android.dex.forcejumbo" default-value="false"
      */
+    @Parameter( property = "android.dex.forcejumbo", defaultValue = "false" )
     private boolean dexForceJumbo;
 
     /**
      * Path to predexed libraries.
-     * 
-     * @parameter property="android.dex.dexPreDexLibLocation" default-value=
-     *            "${project.build.directory}${file.separator}dexedLibs"
      */
+    @Parameter(
+            property = "android.dex.dexPreDexLibLocation",
+            defaultValue = "${project.build.directory}${file.separator}dexedLibs"
+    )
     private String dexPreDexLibLocation;
 
     /**
      * Decides whether to pass the --incremental flag to dx.
-     *
-     * @parameter property="android.dex.incremental" default-value="false"
      */
+    @Parameter( property = "android.dex.incremental", defaultValue = "false" )
     private boolean dexIncremental;
 
     /**
-     * The name of the obfuscated JAR
-     * @parameter property="android.proguard.obfuscatedJar"
+     * The name of the obfuscated JAR.
      */
+    @Parameter( property = "android.proguard.obfuscatedJar" )
     private File obfuscatedJar;
 
     /**
      * Decides whether to pass the --multi-dex flag to dx.
-     *
-     * @parameter property="android.dex.multidex" default-value="false"
-     * @optional
      */
+    @Parameter( property = "android.dex.multidex", defaultValue = "false" )
     private boolean dexMultiDex;
 
     /**
      * Full path to class list to multi dex
-     *
-     * @parameter property="android.dex.maindexlist"
-     * @optional
      */
+    @Parameter( property = "android.dex.maindexlist" )
     private String dexMainDexList;
 
     /**
      * Decides whether to pass the --minimal-main-dex flag to dx.
-     *
-     * @parameter property="android.dex.minimalmaindex" default-value="false"
-     * @optional
      */
+    @Parameter( property = "android.dex.minimalmaindex", defaultValue = "false" )
     private boolean dexMinimalMainDex;
 
     private String[] parsedJvmArguments;

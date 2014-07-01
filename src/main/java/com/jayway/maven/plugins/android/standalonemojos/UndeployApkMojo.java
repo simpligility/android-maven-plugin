@@ -26,6 +26,8 @@ import com.jayway.maven.plugins.android.configuration.ValidationResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
 
@@ -37,10 +39,8 @@ import java.io.File;
  * standalone execution on the command line.<br/>
  *
  * @author Manfred Moser <manfred@simpligility.com>
- * 
- * @goal undeploy-apk
- * @requiresProject false
  */
+@Mojo( name = "undeploy-apk", requiresProject = false )
 public class UndeployApkMojo extends AbstractAndroidMojo
 {
     /**
@@ -58,26 +58,19 @@ public class UndeployApkMojo extends AbstractAndroidMojo
     @ConfigPojo
     protected DeployApk deployapk;
 
-    /**
-     * @parameter property="android.deployapk.filename"
-     * @optional
-    */
+    @Parameter( property = "android.deployapk.filename" )
     private File deployapkFilename;
 
     @PullParameter
     private File parsedFilename;
 
-    /**
-     * @parameter property="android.deployapk.packagename"
-     * @optional
-    */
+    @Parameter( property = "android.deployapk.packagename" )
     private String deployapkPackagename;
 
     @PullParameter
     private String parsedPackagename;
 
     /**
-     *
      * @throws MojoExecutionException
      * @throws MojoFailureException
      */

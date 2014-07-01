@@ -32,6 +32,8 @@ import com.jayway.maven.plugins.android.configuration.Push;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,10 +45,9 @@ import java.util.Map;
  * Copy file to all the attached (or specified) devices/emulators.
  *
  * @author Manfred Moser <manfred@simpligility.com>
- * @goal push
- * @requiresProject false
  */
 @SuppressWarnings( "unused" )
+@Mojo( name = "push", requiresProject = false )
 public class PushMojo extends AbstractAndroidMojo
 {
 
@@ -69,9 +70,8 @@ public class PushMojo extends AbstractAndroidMojo
      * <code>-Dandroid.push.source=path</code>
      * and
      * <code>-Dandroid.push.destination=path</code>.</p>
-     *
-     * @parameter
      */
+    @Parameter
     @ConfigPojo
     private Push push;
 
@@ -80,9 +80,8 @@ public class PushMojo extends AbstractAndroidMojo
      * device either as absolute path or relative to the execution folder.
      * <p/>
      * If you specify a directory, all containing files will be pushed recursively.
-     *
-     * @parameter property="android.push.source"
      */
+    @Parameter( property = "android.push.source" )
     private String pushSource;
 
     @PullParameter( required = true )
@@ -93,9 +92,8 @@ public class PushMojo extends AbstractAndroidMojo
      * If the last character is a "/" it will be assumed that the original
      * base filename should be preserved and a target directory is specified.
      * This works analogous if the source is a directory.
-     *
-     * @parameter property="android.push.destination"
      */
+    @Parameter( property = "android.push.destination" )
     private String pushDestination;
 
     @PullParameter( required = true )
