@@ -170,7 +170,7 @@ public final class ArtifactResolverHelper
         }
 
         final Artifact resolvedArtifact = resolutionResult.getArtifacts().iterator().next();
-        log.debug( "Resolved :" + artifact );
+        log.debug( "Resolved : " + resolvedArtifact );
         return resolvedArtifact;
     }
 }
