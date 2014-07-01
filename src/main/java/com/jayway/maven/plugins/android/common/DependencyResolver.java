@@ -1,20 +1,19 @@
 package com.jayway.maven.plugins.android.common;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
+import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
+import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
-import org.apache.maven.shared.runtime.DefaultMavenRuntime;
-import org.apache.maven.shared.runtime.MavenRuntimeException;
 import org.codehaus.plexus.logging.Logger;
 
-import java.io.File;
-import java.net.MalformedURLException;
+import java.util.HashSet;
 import java.util.Set;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
@@ -59,12 +58,15 @@ public final class DependencyResolver
      *
      * The project is searched until artifact is found and then the library dependencies are looked for recursively.
      *
-     * @param resolverHelper  ArtifactResolverHelper to use to find the POM for the Artifact.
-     * @param artifact  Artifact for whom to get the dependencies.
+     * @param session           MavenSession in which to resolve the artifacts.
+     * @param repositorySystem  RepositorySystem with which to resolve the artifacts.
+     * @param artifact          Artifact for whom to get the dependencies.
      * @return Set of APK, APKLIB and AAR dependencies.
      * @throws org.apache.maven.plugin.MojoExecutionException if it couldn't resolve any of the dependencies.
      */
-    public Set<Artifact> getLibraryDependenciesFor( ArtifactResolverHelper resolverHelper, final Artifact artifact )
+    public Set<Artifact> getLibraryDependenciesFor( MavenSession session,
+                                                    RepositorySystem repositorySystem,
+                                                    Artifact artifact )
             throws MojoExecutionException
     {
         // Set a filter that should only return interesting artifacts.
@@ -78,51 +80,29 @@ public final class DependencyResolver
             }
         };
 
-        final DependencyNode node;
-        try
+        log.debug( "MavenSession = " + session + "  repositorySystem = " + repositorySystem );
+
+        final ArtifactResolutionRequest request = new ArtifactResolutionRequest();
+        request.setArtifact( artifact );
+        request.setResolveRoot( true );
+        request.setResolveTransitively( true );
+        request.setServers( session.getRequest().getServers() );
+        request.setMirrors( session.getRequest().getMirrors() );
+        request.setProxies( session.getRequest().getProxies() );
+        request.setLocalRepository( session.getLocalRepository() );
+        request.setRemoteRepositories( session.getRequest().getRemoteRepositories() );
+
+        final ArtifactResolutionResult result = repositorySystem.resolve( request );
+
+        final Set<Artifact> libraryDeps = new HashSet<Artifact>();
+        for ( final Artifact depArtifact : result.getArtifacts() )
         {
-            // Get the MavenProject for the Artifact so that we can resolve the dependencies for the project.
-            final MavenProject project = getMavenProjectForArtifact( resolverHelper, artifact );
-            node = dependencyGraphBuilder.buildDependencyGraph( project, filter );
-        }
-        catch ( DependencyGraphBuilderException e )
-        {
-            throw new MojoExecutionException( "Could not resolve project dependency graph", e );
+            if ( filter.include( depArtifact ) )
+            {
+                libraryDeps.add( depArtifact );
+            }
         }
 
-        final DependencyCollector collector = new DependencyCollector( log, artifact );
-        collector.visit( node, false );
-        return collector.getDependencies();
-    }
-
-    private MavenProject getMavenProjectForArtifact( ArtifactResolverHelper resolverHelper, Artifact artifact )
-            throws MojoExecutionException
-    {
-        // Create POM Artifact from current Artifact
-        final Artifact pomArtifact = new DefaultArtifact(
-                artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
-                artifact.getScope(), "pom", null, artifact.getArtifactHandler()
-        );
-        log.debug( "POM artifact : " + pomArtifact );
-
-        // TODO Resolve path to POM Artifact - this isn't working. It is finding apklib in sibling module (not POM).
-        final File pomArtifactFile = resolverHelper.resolveArtifactToFile( pomArtifact );
-        log.debug( "POM artifact file : " + pomArtifactFile );
-
-        try
-        {
-            final DefaultMavenRuntime mavenRuntime = new DefaultMavenRuntime();
-            final MavenProject project = mavenRuntime.getProject( pomArtifactFile.toURI().toURL() );
-            log.debug( "Resolved artifact project : " + project );
-            return project;
-        }
-        catch ( MalformedURLException e )
-        {
-            throw new MojoExecutionException( "Could not resolve artifact POM : " + pomArtifactFile, e );
-        }
-        catch ( MavenRuntimeException e )
-        {
-            throw new MojoExecutionException( "Could not resolve artifact Project : " + pomArtifactFile, e );
-        }
+        return libraryDeps;
     }
 }

@@ -31,12 +31,15 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.repository.RepositorySystem;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
@@ -209,6 +212,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      */
     @Parameter( property = "android.buildConfigConstants", readonly = true )
     protected BuildConfigConstant[] buildConfigConstants;
+
+    @Component
+    private MavenSession mavenSession;
+
+    @Component
+    private RepositorySystem repositorySystem;
 
     /**
      * Which dependency scopes should not be included when unpacking dependencies
@@ -831,7 +840,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         List<File> dependenciesResDirectories = new ArrayList<File>();
         final Set<Artifact> apklibDeps = getDependencyResolver()
-                .getLibraryDependenciesFor( getArtifactResolverHelper(), apklibArtifact );
+                .getLibraryDependenciesFor( mavenSession, repositorySystem, apklibArtifact );
         getLog().debug( "apklib=" + apklibArtifact + "  dependencies=" + apklibDeps );
         for ( Artifact dependency : apklibDeps )
         {
