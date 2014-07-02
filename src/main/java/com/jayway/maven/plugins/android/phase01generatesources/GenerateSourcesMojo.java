@@ -763,12 +763,18 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     {
         getLog().debug( "" );
         getLog().debug( "#generateCorrectRJavaFoApklibDeps" );
+
         // Generate R.java for apklibs
         // Compatibility with Apklib which isn't present in AndroidBuilder
-        generateApkLibRs();
+        getLog().debug( "Generating Rs for apklib deps of project " + project.getArtifact() );
+        final Set<Artifact> apklibDependencies = getTransitiveDependencyArtifacts( APKLIB );
+        for ( final Artifact artifact : apklibDependencies )
+        {
+            getLog().debug( "Generating apklib R.java for " + artifact.getArtifactId() + "..." );
+            generateRForApkLibDependency( artifact );
+        }
 
         // Generate corrected R.java for APKLIB dependencies, but only if this is an APK build.
-        final Set<Artifact> apklibDependencies = getTransitiveDependencyArtifacts( APKLIB );
         if ( !apklibDependencies.isEmpty() && APK.equals( project.getArtifact().getType() ) )
         {
             // Generate R.java for each APKLIB based on R.txt
@@ -793,16 +799,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             // Generate R.java for each AAR based on R.txt
             getLog().debug( "Generating R file for AAR dependencies" );
             resourceGenerator.generateLibraryRs( aarLibraries, "aar" );
-        }
-    }
-
-    private void generateApkLibRs() throws MojoExecutionException
-    {
-        getLog().debug( "Generating Rs for apklib deps of project " + project.getArtifact() );
-        for ( final Artifact artifact : getTransitiveDependencyArtifacts( APKLIB ) )
-        {
-            getLog().debug( "Generating apklib R.java for " + artifact.getArtifactId() + "..." );
-            generateRForApkLibDependency( artifact );
         }
     }
 
