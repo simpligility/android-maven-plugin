@@ -11,6 +11,10 @@
 package com.jayway.maven.plugins.android.common;
 
 import com.android.SdkConstants;
+import com.google.common.io.PatternFilenameFilter;
+import com.jayway.maven.plugins.android.phase09package.AarMojo;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -21,7 +25,9 @@ import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 
 import java.io.File;
+import java.io.IOException;
 
+import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
 
 /**
@@ -95,6 +101,7 @@ public final class UnpackedLibHelper
                 return new ConsoleLogger( log.getThreshold(), "dependencies-unarchiver" );
             }
         };
+
         final File aarDirectory = getUnpackedLibFolder( aarArtifact );
         aarDirectory.mkdirs();
         unArchiver.setDestDirectory( aarDirectory );
@@ -107,6 +114,30 @@ public final class UnpackedLibHelper
         {
             throw new MojoExecutionException( "ArchiverException while extracting " + aarDirectory.getAbsolutePath()
                     + ". Message: " + e.getLocalizedMessage(), e );
+        }
+
+        // Move native libraries from libs to jni folder for legacy AARs
+        final File jniFolder = new File( aarDirectory, AarMojo.NATIVE_LIBRARIES_FOLDER );
+        final File libsFolder = new File( aarDirectory, "libs" );
+        if ( !jniFolder.exists() && libsFolder.isDirectory() && libsFolder.exists() )
+        {
+            String[] natives = libsFolder.list( new PatternFilenameFilter( "^.*(?<!(?i)\\.jar)$" ) );
+            if ( natives.length > 0 )
+            {
+                log.debug( "Moving AAR native libraries from libs to jni folder" );
+                for ( String nativeLibPath : natives )
+                {
+                    try
+                    {
+                        FileUtils.moveToDirectory( new File( nativeLibPath ), jniFolder, true );
+                    }
+                    catch ( IOException e )
+                    {
+                        throw new MojoExecutionException(
+                                "Could not move native libraries from " + libsFolder, e );
+                    }
+                }
+            }
         }
     }
 
@@ -147,10 +178,18 @@ public final class UnpackedLibHelper
     /**
      * @param artifact  Android dependency that is being referenced.
      * @return Folder where the unpacked native libraries are located.
+     * @see http://tools.android.com/tech-docs/new-build-system/aar-format
      */
     public File getUnpackedLibNativesFolder( Artifact artifact )
     {
-        return new File( getUnpackedLibFolder( artifact ), "libs" );
+        if ( AAR.equals( artifact.getType() ) )
+        {
+            return new File( getUnpackedLibFolder( artifact ), "jni" );
+        }
+        else
+        {
+            return new File( getUnpackedLibFolder( artifact ), "libs" );
+        }
     }
 
     public File getJarFileForApk( Artifact artifact )
