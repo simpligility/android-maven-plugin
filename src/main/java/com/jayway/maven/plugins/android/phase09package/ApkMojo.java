@@ -727,7 +727,7 @@ public class ApkMojo extends AbstractAndroidMojo
         {
             if ( APKLIB.equals( resolvedArtifact.getType() ) || AAR.equals( resolvedArtifact.getType() ) )
             {
-                // If the artifact if an AAR or APKLIB then add their native libs folder to the result.
+                // If the artifact is an AAR or APKLIB then add their native libs folder to the result.
                 final File folder = getUnpackedLibNativesFolder( resolvedArtifact );
                 getLog().debug( "Adding native library folder " + folder );
                 natives.add( folder );

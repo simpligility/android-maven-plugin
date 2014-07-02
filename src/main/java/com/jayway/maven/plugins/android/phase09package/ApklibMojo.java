@@ -332,7 +332,7 @@ public class ApklibMojo extends AbstractAndroidMojo
         {
             for ( File libFile : libFiles )
             {
-                String dest = "libs/" + architecture + "/" + libFile.getName();
+                String dest = NATIVE_LIBRARIES_FOLDER + "/" + architecture + "/" + libFile.getName();
                 getLog().debug( "Adding " + libFile + " as " + dest );
                 jarArchiver.addFile( libFile, dest );
             }
