@@ -1038,7 +1038,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             JarFile jar = new JarFile( getUnpackedAarClassesJar( artifact ) );
             JarEntry entry = jar.getJarEntry( packageName.replace( '.', '/' ) + "/BuildConfig.class" );
 
-            return (entry != null);
+            return ( entry != null );
         }
         catch ( IOException e )
         {
