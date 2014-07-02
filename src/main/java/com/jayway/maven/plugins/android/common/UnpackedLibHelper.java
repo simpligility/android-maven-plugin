@@ -13,6 +13,7 @@ package com.jayway.maven.plugins.android.common;
 import com.android.SdkConstants;
 import com.google.common.io.PatternFilenameFilter;
 import com.jayway.maven.plugins.android.phase09package.AarMojo;
+import com.jayway.maven.plugins.android.phase09package.ApklibMojo;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
@@ -116,9 +117,10 @@ public final class UnpackedLibHelper
                     + ". Message: " + e.getLocalizedMessage(), e );
         }
 
-        // Move native libraries from libs to jni folder for legacy AARs
+        // Move native libraries from libs to jni folder for legacy AARs.
+        // This ensures backward compatibility with older AARs where libs are in "libs" folder.
         final File jniFolder = new File( aarDirectory, AarMojo.NATIVE_LIBRARIES_FOLDER );
-        final File libsFolder = new File( aarDirectory, "libs" );
+        final File libsFolder = new File( aarDirectory, ApklibMojo.NATIVE_LIBRARIES_FOLDER );
         if ( !jniFolder.exists() && libsFolder.isDirectory() && libsFolder.exists() )
         {
             String[] natives = libsFolder.list( new PatternFilenameFilter( "^.*(?<!(?i)\\.jar)$" ) );
@@ -129,7 +131,7 @@ public final class UnpackedLibHelper
                 {
                     try
                     {
-                        FileUtils.moveToDirectory( new File( nativeLibPath ), jniFolder, true );
+                        FileUtils.moveToDirectory( new File( libsFolder, nativeLibPath ), jniFolder, true );
                     }
                     catch ( IOException e )
                     {
@@ -184,11 +186,11 @@ public final class UnpackedLibHelper
     {
         if ( AAR.equals( artifact.getType() ) )
         {
-            return new File( getUnpackedLibFolder( artifact ), "jni" );
+            return new File( getUnpackedLibFolder( artifact ), AarMojo.NATIVE_LIBRARIES_FOLDER );
         }
         else
         {
-            return new File( getUnpackedLibFolder( artifact ), "libs" );
+            return new File( getUnpackedLibFolder( artifact ), ApklibMojo.NATIVE_LIBRARIES_FOLDER );
         }
     }
 
