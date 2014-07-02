@@ -84,8 +84,8 @@ public final class DependencyResolver
 
         final ArtifactResolutionRequest request = new ArtifactResolutionRequest();
         request.setArtifact( artifact );
-        request.setResolveRoot( true );
-        request.setResolveTransitively( true );
+        request.setResolveRoot( false );        // Don't include source artifact in result
+        request.setResolveTransitively( true ); // Include direct plus transitive dependencies.
         request.setServers( session.getRequest().getServers() );
         request.setMirrors( session.getRequest().getMirrors() );
         request.setProxies( session.getRequest().getProxies() );
