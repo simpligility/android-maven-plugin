@@ -970,6 +970,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
         generateBuildConfigForPackage( packageName );
 
+        // Skip BuildConfig generation for dependencies if this is not an APK project
+        if ( !project.getPackaging().equals( APK ) )
+        {
+            return;
+        }
+
         // Generate the BuildConfig for any APKLIB and some AAR dependencies.
         // Need to generate for AAR, because some old AARs like ActionBarSherlock do not have BuildConfig (or R)
         for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
@@ -1049,6 +1055,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
     private void generateBuildConfigForPackage( String packageName ) throws MojoExecutionException
     {
+        getLog().debug( "Creating BuildConfig for " + packageName );
+
         File outputFolder = new File( genDirectory, packageName.replace( ".", File.separator ) );
         outputFolder.mkdirs();
 
@@ -1073,7 +1081,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                        .append( ";\n" );
         }
         buildConfig.append( "}\n" );
-
 
         File outputFile = new File( outputFolder, "BuildConfig.java" );
         try
