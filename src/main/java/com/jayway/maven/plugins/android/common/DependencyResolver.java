@@ -90,7 +90,7 @@ public final class DependencyResolver
         request.setMirrors( session.getRequest().getMirrors() );
         request.setProxies( session.getRequest().getProxies() );
         request.setLocalRepository( session.getLocalRepository() );
-        request.setRemoteRepositories( session.getRequest().getRemoteRepositories() );
+        request.setRemoteRepositories( session.getCurrentProject().getRemoteArtifactRepositories() );
 
         final ArtifactResolutionResult result = repositorySystem.resolve( request );
 
