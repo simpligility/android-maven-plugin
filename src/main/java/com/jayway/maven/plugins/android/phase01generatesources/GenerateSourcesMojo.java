@@ -820,7 +820,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
         return resourceFolders;
     }
-     /**
+
+    /**
      * Executes aapt to generate the R class for the given apklib.
      *
      * @param apklibArtifact    apklib for which to generate the R class.
@@ -966,12 +967,20 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
         generateBuildConfigForPackage( packageName );
 
+        // Skip BuildConfig generation for dependencies if this is not an APK project
+        if ( !project.getPackaging().equals( APK ) )
+        {
+            return;
+        }
+
         // Generate the BuildConfig for any APKLIB and some AAR dependencies.
         // Need to generate for AAR, because some old AARs like ActionBarSherlock do not have BuildConfig (or R)
         for ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
         {
             if ( skipBuildConfigGeneration( artifact ) )
             {
+                getLog().info( "Skip BuildConfig.java generation for "
+                        + artifact.getGroupId() + " " + artifact.getArtifactId() );
                 continue;
             }
 
@@ -985,7 +994,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     {
         if ( artifact.getType().equals( AAR ) )
         {
-            if ( isBuildConfigPresent( artifact ) )
+            String depPackageName = extractPackageNameFromAndroidArtifact( artifact );
+
+            if ( isBuildConfigPresent( artifact, depPackageName ) )
             {
                 return true;
             }
@@ -995,7 +1006,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
             for ( Artifact transitiveArtifact : transitiveDep )
             {
-                if ( isBuildConfigPresent( transitiveArtifact ) )
+                if ( isBuildConfigPresent( transitiveArtifact, depPackageName ) )
                 {
                     return true;
                 }
@@ -1004,22 +1015,33 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         return false;
     }
 
+    /**
+     * Check if given artifact includes a matching BuildConfig class
+     * 
+     * @throws MojoExecutionException
+     */
     private boolean isBuildConfigPresent( Artifact artifact ) throws MojoExecutionException
+    {
+        String depPackageName = extractPackageNameFromAndroidArtifact( artifact );
+
+        return isBuildConfigPresent( artifact, depPackageName );
+    }
+
+    /**
+     * Check whether the artifact includes a BuildConfig located in a given package.
+     * 
+     * @param artifact an AAR artifact to look for BuildConfig in
+     * @param packageName BuildConfig package name
+     * @throws MojoExecutionException
+     */
+    private boolean isBuildConfigPresent( Artifact artifact, String packageName ) throws MojoExecutionException
     {
         try
         {
-            String depPackageName = extractPackageNameFromAndroidArtifact( artifact );
-
             JarFile jar = new JarFile( getUnpackedAarClassesJar( artifact ) );
-            JarEntry entry = jar.getJarEntry( depPackageName.replace( '.', '/' ) + "/BuildConfig.class" );
+            JarEntry entry = jar.getJarEntry( packageName.replace( '.', '/' ) + "/BuildConfig.class" );
 
-            if ( entry != null )
-            {
-                getLog().info( "Skip BuildConfig.java generation for "
-                        + artifact.getGroupId() + " " + artifact.getArtifactId() );
-                return true;
-            }
-            return false;
+            return ( entry != null );
         }
         catch ( IOException e )
         {
@@ -1030,6 +1052,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
     private void generateBuildConfigForPackage( String packageName ) throws MojoExecutionException
     {
+        getLog().debug( "Creating BuildConfig for " + packageName );
+
         File outputFolder = new File( genDirectory, packageName.replace( ".", File.separator ) );
         outputFolder.mkdirs();
 
@@ -1054,7 +1078,6 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                        .append( ";\n" );
         }
         buildConfig.append( "}\n" );
-
 
         File outputFile = new File( outputFolder, "BuildConfig.java" );
         try
