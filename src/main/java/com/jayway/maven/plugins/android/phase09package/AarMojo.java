@@ -58,10 +58,11 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
 public class AarMojo extends AbstractAndroidMojo
 {
     /**
-     * The name of the top level folder in the APKLIB where native libraries are found.
-     * NOTE: This is inconsistent with APK where the folder is called "lib"
+     * The name of the top level folder in the AAR where native libraries are found.
+     * NOTE: This is inconsistent with APK where the folder is called "lib", and does not match APKLIB
+     * layout either, where the folder is called "libs".
      */
-    public static final String NATIVE_LIBRARIES_FOLDER = "libs";
+    public static final String NATIVE_LIBRARIES_FOLDER = "jni";
 
     /**
      * <p>Classifier to add to the artifact generated. If given, the artifact will be an attachment instead.</p>
@@ -232,7 +233,6 @@ public class AarMojo extends AbstractAndroidMojo
 
     private void addNativeLibraries( final ZipArchiver zipArchiver ) throws MojoExecutionException
     {
-
         try
         {
             if ( nativeLibrariesDirectory.exists() )
@@ -319,7 +319,7 @@ public class AarMojo extends AbstractAndroidMojo
     }
 
     /**
-     * Adds all shared libraries (.so) to a {@link JarArchiver} under 'libs'.
+     * Adds all shared libraries (.so) to a {@link JarArchiver} under 'jni'.
      *
      * @param zipArchiver The jarArchiver to add files to
      * @param directory   The directory to scan for .so files
@@ -340,7 +340,7 @@ public class AarMojo extends AbstractAndroidMojo
         {
             for ( File libFile : libFiles )
             {
-                String dest = "libs/" + architecture + "/" + libFile.getName();
+                String dest = NATIVE_LIBRARIES_FOLDER + "/" + architecture + "/" + libFile.getName();
                 getLog().debug( "Adding " + libFile + " as " + dest );
                 zipArchiver.addFile( libFile, dest );
             }
