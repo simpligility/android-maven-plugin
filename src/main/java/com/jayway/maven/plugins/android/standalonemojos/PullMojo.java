@@ -35,6 +35,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,9 +46,8 @@ import java.io.IOException;
  * devices/emulators.
  *
  * @author Manfred Moser <manfred@simpligility.com>
- * @goal pull
- * @requiresProject false
  */
+@Mojo( name = "pull", requiresProject = false )
 public class PullMojo extends AbstractAndroidMojo
 {
 
@@ -67,17 +68,15 @@ public class PullMojo extends AbstractAndroidMojo
      * </pre>
      * or from command-line with parameter <code>-Dandroid.pull.source=path</code>
      * and <code>-Dandroid.pull.destination=path</code>.</p>
-     *
-     * @parameter
      */
+    @Parameter
     @ConfigPojo
     private Pull pull;
 
     /**
      * The path of the source file or directory on the emulator/device.
-     *
-     * @parameter property="android.pull.source"
      */
+    @Parameter( property = "android.pull.source" )
     private String pullSource;
 
     @PullParameter( required = true )
@@ -95,9 +94,8 @@ public class PullMojo extends AbstractAndroidMojo
      * the type of source).
      * <p/>
      * Any missing directories will be created.
-     *
-     * @parameter property="android.pull.destination"
      */
+    @Parameter( property = "android.pull.destination" )
     private String pullDestination;
 
     @PullParameter( required = true )

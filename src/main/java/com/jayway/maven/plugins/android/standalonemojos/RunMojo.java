@@ -29,6 +29,8 @@ import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.Run;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -82,10 +84,10 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
  *
  * @author Lorenzo Villani <lorenzo@villani.me>
  * @author Manfred Mosr <manfred@simpligility.com>
- * @goal run
  * @see "http://developer.android.com/guide/topics/fundamentals.html"
  * @see "http://developer.android.com/guide/topics/intents/intents-filters.html"
  */
+@Mojo( name = "run" )
 public class RunMojo extends AbstractAndroidMojo
 {
 
@@ -104,18 +106,16 @@ public class RunMojo extends AbstractAndroidMojo
      * &lt;/properties&gt;
      * </pre>
      * or from command-line with parameter <code>-Dandroid.run.debug=true</code>.</p>
-     *
-     * @parameter
      */
+    @Parameter
     @ConfigPojo
     private Run run;
 
     /**
      * Debug parameter for the the run goal. If true, the device or emulator will pause execution of the process at
      * startup to wait for a debugger to connect. Also see the "run" parameter documentation. Default value is false.
-     *
-     * @parameter property="android.run.debug"
      */
+    @Parameter( property = "android.run.debug" )
     protected Boolean runDebug;
 
     /* the value for the debug flag after parsing pom and parameter */

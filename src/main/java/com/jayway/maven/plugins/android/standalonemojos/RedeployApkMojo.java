@@ -23,9 +23,10 @@ import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.DeployApk;
 import com.jayway.maven.plugins.android.configuration.ValidationResponse;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
 
@@ -37,10 +38,8 @@ import java.io.File;
  * as standalone execution on the command line.<br/>
  *
  * @author Manfred Moser <manfred@simpligility.com>
- * 
- * @goal redeploy-apk
- * @requiresProject false
  */
+@Mojo( name = "redeploy-apk", requiresProject = false )
 public class RedeployApkMojo extends AbstractAndroidMojo
 {
     /**
@@ -51,16 +50,12 @@ public class RedeployApkMojo extends AbstractAndroidMojo
      *    &lt;filename&gt;yourapk.apke&lt;/filename&gt;
      * &lt;/deployapk&gt;
      * </pre>
-     * 
-     * @parameter
      */
+    @Parameter
     @ConfigPojo
     protected DeployApk deployapk;
 
-    /**
-     * @parameter property="android.deployapk.filename"
-     * @optional
-    */
+    @Parameter( property = "android.deployapk.filename" )
     private File deployapkFilename;
 
     @PullParameter

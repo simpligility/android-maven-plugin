@@ -5,6 +5,7 @@ import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +14,8 @@ import java.util.List;
  * Disconnect external IP addresses from the ADB server.
  *
  * @author demey.emmanuel@gmail.com
- * @goal disconnect
- * @requiresProject false
  */
+@Mojo( name = "disconnect", requiresProject = false )
 public class DisconnectMojo extends AbstractAndroidMojo
 {
     @Override

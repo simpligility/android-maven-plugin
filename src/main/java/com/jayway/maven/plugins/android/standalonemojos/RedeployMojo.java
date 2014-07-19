@@ -24,6 +24,8 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
  * Undeploys and the deploys (= redeploys) the apk(s) of the current project(s) to all
@@ -32,11 +34,8 @@ import org.apache.maven.plugin.MojoFailureException;
  *
  * @author clement.escoffier@akquinet.de
  * @author Manfred Moser <manfred@simpligility.com>
- * 
- * @goal redeploy
- * @requiresProject true
- * @requiresDependencyResolution runtime
  */
+@Mojo( name = "redeploy", requiresDependencyResolution = ResolutionScope.RUNTIME )
 public class RedeployMojo extends AbstractAndroidMojo
 {
 

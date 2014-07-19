@@ -28,6 +28,10 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
@@ -47,10 +51,8 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
  * apklib files do not generate deployable artifacts.
  *
  * @author nmaiorana@gmail.com
- * @goal apklib
- * @phase package
- * @requiresDependencyResolution compile
  */
+@Mojo( name = "apklib", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE )
 public class ApklibMojo extends AbstractAndroidMojo
 {
     /**
@@ -61,39 +63,34 @@ public class ApklibMojo extends AbstractAndroidMojo
     
     /**
      * <p>Classifier to add to the artifact generated. If given, the artifact will be an attachment instead.</p>
-     *
-     * @parameter
      */
+    @Parameter
     private String classifier;
 
     /**
      * Specifies the application makefile to use for the build (if other than the default Application.mk).
-     *
-     * @parameter
      */
+    @Parameter
     @PullParameter
     private String applicationMakefile;
 
     /**
      * Defines the architecture for the NDK build
-     *
-     * @parameter property="android.ndk.build.architecture"
      */
+    @Parameter( property = "android.ndk.build.architecture" )
     @PullParameter
     private String ndkArchitecture;
 
     /**
      * Specifies the classifier with which the artifact should be stored in the repository
-     *
-     * @parameter property="android.ndk.build.native-classifier"
      */
+    @Parameter( property = "android.ndk.build.native-classifier" )
     @PullParameter
     private String ndkClassifier;
     
     private List<String> sourceFolders = new ArrayList<String>();
 
     /**
-     *
      * @throws MojoExecutionException
      * @throws MojoFailureException
      */

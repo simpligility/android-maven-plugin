@@ -16,6 +16,8 @@ import com.jayway.maven.plugins.android.config.ConfigHandler;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.Lint;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 /**
  * LintMojo can run the lint command against the project. Implements parsing parameters from pom or command line
@@ -25,10 +27,9 @@ import com.jayway.maven.plugins.android.configuration.Lint;
  * 
  * @author Stéphane Nicolas <snicolas@octo.com>
  * @author Manfred Moser <manfred@simpligility.com>
- * @goal lint
- * @requiresProject false
  */
 @SuppressWarnings( "unused" )
+@Mojo( name = "lint", requiresProject = false )
 public class LintMojo extends AbstractAndroidMojo
 {
 
@@ -76,18 +77,17 @@ public class LintMojo extends AbstractAndroidMojo
      * 
      * Alternatively to the plugin configuration values can also be configured as properties on the command line as 
      * android.lint.* or in pom or settings file as properties like lint*.
-     * 
-     * @parameter
      */
+    @Parameter
     @ConfigPojo
     private Lint lint;
 
     /**
      * Fail build on lint errors. Defaults to "false".
      * 
-     * @parameter property="android.lint.failOnError"
      * @see com.jayway.maven.plugins.android.configuration.Lint#failOnError
      */
+    @Parameter( property = "android.lint.failOnError" )
     private Boolean lintFailOnError;
 
     @PullParameter( defaultValue = "false" )
@@ -96,9 +96,9 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * Skip the lint goal execution. Defaults to "true".
      * 
-     * @parameter property="android.lint.skip"
      * @see com.jayway.maven.plugins.android.configuration.Lint#skip
      */
+    @Parameter( property = "android.lint.skip" )
     private Boolean lintSkip;
 
     @PullParameter( defaultValue = "true" )
@@ -111,9 +111,9 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * Only check for errors and ignore warnings. Defaults to "false".
      * 
-     * @parameter property="android.lint.ignoreWarning"
      * @see com.jayway.maven.plugins.android.configuration.Lint#ignoreWarnings
      */
+    @Parameter( property = "android.lint.ignoreWarning" )
     private Boolean lintIgnoreWarnings;
 
     @PullParameter( defaultValue = "false" )
@@ -122,9 +122,9 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * Check all warnings, including those off by default. Defaults to "false".
      * 
-     * @parameter property="android.lint.warnAll"
      * @see com.jayway.maven.plugins.android.configuration.Lint#warnAll
      */
+    @Parameter( property = "android.lint.warnAll" )
     private Boolean lintWarnAll;
 
     @PullParameter( defaultValue = "false" )
@@ -133,9 +133,9 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * Report all warnings as errors. Defaults to "false".
      * 
-     * @parameter property="android.lint.warningsAsErrors"
      * @see com.jayway.maven.plugins.android.configuration.Lint#warningsAsErrors
      */
+    @Parameter( property = "android.lint.warningsAsErrors" )
     private Boolean lintWarningsAsErrors;
 
     @PullParameter( defaultValue = "false" )
@@ -146,9 +146,9 @@ public class LintMojo extends AbstractAndroidMojo
      * config file will be used. To use the commonly used lint.xml in the project root set the parameter to 
      * "${project.basedir}/lint.xml".
      * 
-     * @parameter property="android.lint.config"
      * @see com.jayway.maven.plugins.android.configuration.Lint#config
      */
+    @Parameter( property = "android.lint.config" )
     private String lintConfig;
 
     @PullParameter( defaultValue = "null" )
@@ -161,9 +161,9 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * Use full paths in the error output. Defaults to "false".
      * 
-     * @parameter property="android.lint.fullPath"
      * @see com.jayway.maven.plugins.android.configuration.Lint#fullPath
      */
+    @Parameter( property = "android.lint.fullPath" )
     private Boolean lintFullPath;
 
     @PullParameter( defaultValue = "false" )
@@ -172,9 +172,9 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * Do not truncate long messages, lists of alternate locations, etc. Defaults to "true".
      * 
-     * @parameter property="android.lint.showAll"
      * @see com.jayway.maven.plugins.android.configuration.Lint#showAll
      */
+    @Parameter( property = "android.lint.showAll" )
     private Boolean lintShowAll;
 
     @PullParameter( defaultValue = "true" )
@@ -184,9 +184,9 @@ public class LintMojo extends AbstractAndroidMojo
      * Do not include the source file lines with errors in the output. By default, the error output includes snippets of
      * source code on the line containing the error, but this flag turns it off. Defaults to "false".
      * 
-     * @parameter property="android.lint.disableSourceLines"
      * @see com.jayway.maven.plugins.android.configuration.Lint#disableSourceLines
      */
+    @Parameter( property = "android.lint.disableSourceLines" )
     private Boolean lintDisableSourceLines;
 
     @PullParameter( defaultValue = "false" )
@@ -197,9 +197,9 @@ public class LintMojo extends AbstractAndroidMojo
      * list of path prefixes to corresponding URL prefixes, such as C:\temp\Proj1=http://buildserver/sources/temp/Proj1.
      * To turn off linking to files, use --url none. Defaults to "none".
      * 
-     * @parameter property="android.lint.url"
      * @see com.jayway.maven.plugins.android.configuration.Lint#url
      */
+    @Parameter( property = "android.lint.url" )
     private String lintUrl;
 
     @PullParameter( defaultValue = "none" )
@@ -208,9 +208,9 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * Enable the creation of a HTML report. Defaults to "false".
      * 
-     * @parameter property="android.lint.enableHtml"
      * @see com.jayway.maven.plugins.android.configuration.Lint#enableHtml
      */
+    @Parameter( property = "android.lint.enableHtml" )
     private Boolean lintEnableHtml;
 
     @PullParameter( defaultValue = "false" )
@@ -220,9 +220,9 @@ public class LintMojo extends AbstractAndroidMojo
      * Path for the HTML report. If the filename is a directory (or a new filename without an extension), lint will
      * create a separate report for each scanned project. Defaults to ${project.build.directory}/lint/lint-html/.
      * 
-     * @parameter property="android.lint.htmlOutputPath"
      * @see com.jayway.maven.plugins.android.configuration.Lint#htmlOutputPath
      */
+    @Parameter( property = "android.lint.htmlOutputPath" )
     private String lintHtmlOutputPath;
 
     @PullParameter( defaultValueGetterMethod = "getHtmlOutputPath" )
@@ -231,9 +231,9 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * Enable the creation of a simple HTML report. Defaults to "false".
      * 
-     * @parameter property="android.lint.enableSimpleHtml"
      * @see com.jayway.maven.plugins.android.configuration.Lint#enableSimpleHtml
      */
+    @Parameter( property = "android.lint.enableSimpleHtml" )
     private Boolean lintEnableSimpleHtml;
 
     @PullParameter( defaultValue = "false" )
@@ -243,9 +243,9 @@ public class LintMojo extends AbstractAndroidMojo
      * Create a simple HTML report. If the filename is a directory (or a new filename without an extension), lint will
      * create a separate report for each scanned project. Defaults to ${project.build.directory}/lint/lint-simple-html/.
      * 
-     * @parameter property="android.lint.simpleHtmlOutputPath"
-     * @see com.jayway.maven.plugins.android.configuration.Lint#simpleHtml
+     * @see com.jayway.maven.plugins.android.configuration.Lint#simpleHtmlOutputPath
      */
+    @Parameter( property = "android.lint.simpleHtmlOutputPath" )
     private String lintSimpleHtmlOutputPath;
 
     @PullParameter( defaultValueGetterMethod = "getSimpleHtmlOutputPath" )
@@ -254,9 +254,9 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * Enable the creation of a XML report. Defaults to "true".
      * 
-     * @parameter property="android.lint.enableXml"
      * @see com.jayway.maven.plugins.android.configuration.Lint#enableXml
      */
+    @Parameter( property = "android.lint.enableXml" )
     private Boolean lintEnableXml;
 
     @PullParameter( defaultValue = "true" )
@@ -266,9 +266,9 @@ public class LintMojo extends AbstractAndroidMojo
      * Create an XML report. If the filename is a directory (or a new filename without an extension), lint will create a
      * separate report for each scanned project. Defaults to ${project.build.directory}/lint/lint-results.xml.
      * 
-     * @parameter property="android.lint.xmlOutputPath"
      * @see com.jayway.maven.plugins.android.configuration.Lint#xmlOutputPath
      */
+    @Parameter( property = "android.lint.xmlOutputPath" )
     private String lintXmlOutputPath;
 
     @PullParameter( defaultValueGetterMethod = "getXmlOutputPath" )
@@ -281,9 +281,9 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * Enable including sources into lint analysis. Defaults to "true".
      * 
-     * @parameter property="android.lint.enableSources"
      * @see com.jayway.maven.plugins.android.configuration.Lint#enableSources
      */
+    @Parameter( property = "android.lint.enableSources" )
     private Boolean lintEnableSource;
 
     @PullParameter( defaultValue = "true" )
@@ -293,10 +293,9 @@ public class LintMojo extends AbstractAndroidMojo
      * Add the given folder (or path) as a source directory for the project. Only valid when running lint on a single
      * project. Defaults to ${project.build.sourceDirectory}.
      * 
-     * @parameter property="android.lint.sources"
      * @see com.jayway.maven.plugins.android.configuration.Lint#sources
-     * 
      */
+    @Parameter( property = "android.lint.sources" )
     private String lintSources;
 
     @PullParameter( defaultValueGetterMethod = "getSources" )
@@ -305,10 +304,10 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * Enable including classpath into lint analysis. Defaults to "false".
      * 
-     * @parameter property="android.lint.enableSources"
      * @see com.jayway.maven.plugins.android.configuration.Lint#enableClasspath
      * @see com.jayway.maven.plugins.android.configuration.Lint#classpath
      */
+    @Parameter( property = "android.lint.enableSources" )
     private Boolean lintEnableClasspath;
 
     @PullParameter( defaultValue = "false" )
@@ -319,10 +318,9 @@ public class LintMojo extends AbstractAndroidMojo
      * a single project. Defaults to ${project.build.outputDirectory}. Consequently, the lint output depends on the
      * phase during which this goal is executed, whether project has been compiled or not.
      * 
-     * @parameter property="android.lint.classpath"
      * @see com.jayway.maven.plugins.android.configuration.Lint#classpath
-     * 
      */
+    @Parameter( property = "android.lint.classpath" )
     private String lintClasspath;
 
     @PullParameter( defaultValueGetterMethod = "getClasspath" )
@@ -331,10 +329,10 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * Enable including libraries into lint analysis. Defaults to "false".
      * 
-     * @parameter property="android.lint.enableSources"
      * @see com.jayway.maven.plugins.android.configuration.Lint#enableLibraries
      * @see com.jayway.maven.plugins.android.configuration.Lint#libraries
      */
+    @Parameter( property = "android.lint.enableSources" )
     private Boolean lintEnableLibraries;
 
     @PullParameter( defaultValue = "false" )
@@ -345,10 +343,9 @@ public class LintMojo extends AbstractAndroidMojo
      * single project. Defaults to all non provided resolved artifacts. Consequently, the lint output depends on the
      * phase during which this goal is executed, whether project's dependencies have been resolved or not.
      * 
-     * @parameter property="android.lint.libraries"
-     * @see com.jayway.maven.plugins.android.configuration.Lint#lintLibraries
-     * 
+     * @see com.jayway.maven.plugins.android.configuration.Lint#libraries
      */
+    @Parameter( property = "android.lint.libraries" )
     private String lintLibraries;
 
     @PullParameter( defaultValueGetterMethod = "getLibraries" )
