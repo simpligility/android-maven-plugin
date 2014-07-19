@@ -37,6 +37,7 @@ import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -246,8 +247,26 @@ public class DexMojo extends AbstractAndroidMojo
                 }
                 else if ( artifact.getType().equals( APKLIB ) )
                 {
-                    // No classes in an APKLIB to dex.
-                    // Any potential classes will have already bee compiled to target/classes
+                    // jar files under 'libs' in an APKLIB to dex.
+                    final File unpackLibFolder = getUnpackedLibHelper().getUnpackedLibFolder( artifact );
+                    getLog().debug( "Unpacked Lib folder: " + unpackLibFolder );
+                    final File unpackLibLibsFolder = new File( unpackLibFolder, "libs" );
+                    File[] libJarFiles = unpackLibLibsFolder.listFiles( new FilenameFilter()
+                    {
+                        public boolean accept( final File dir, final String name )
+                        {
+                            return name.endsWith( ".jar" );
+                        }
+                    } );
+
+                    if ( libJarFiles != null )
+                    {
+                        for ( File jarFile : libJarFiles )
+                        {
+                            getLog().debug( "Adding dex inputs:" + jarFile );
+                            inputs.add( jarFile.getAbsoluteFile() );
+                        }
+                    }
                     continue;
                 }
                 else if ( artifact.getType().equals( AAR ) )
