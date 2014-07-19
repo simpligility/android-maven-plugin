@@ -17,7 +17,6 @@ import com.jayway.maven.plugins.android.common.UnpackedLibHelper;
 import org.apache.maven.AbstractMavenLifecycleParticipant;
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
@@ -30,7 +29,6 @@ import org.codehaus.plexus.logging.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -62,8 +60,7 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
         log.debug( "CurrentProject=" + session.getCurrentProject() );
         final List<MavenProject> projects = session.getProjects();
         final DependencyResolver dependencyResolver = new DependencyResolver( log, dependencyGraphBuilder );
-        final ArtifactResolverHelper artifactResolverHelper = new ArtifactResolverHelper( artifactResolver, log,
-                Collections.<ArtifactRepository>emptyList() );
+        final ArtifactResolverHelper artifactResolverHelper = new ArtifactResolverHelper( artifactResolver, log );
 
         for ( MavenProject project : projects )
         {

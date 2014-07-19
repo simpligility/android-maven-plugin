@@ -19,6 +19,8 @@ package com.jayway.maven.plugins.android.standalonemojos;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
  * Deploys all directly declared dependencies of <code>&lt;type&gt;apk&lt;/type&gt;</code> in this project's pom.<br/>
@@ -28,9 +30,8 @@ import org.apache.maven.plugin.MojoFailureException;
  * with instrumentation tests.
  *
  * @author hugo.josefson@jayway.com
- * @goal deploy-dependencies
- * @requiresDependencyResolution runtime
  */
+@Mojo( name = "deploy-dependencies", requiresDependencyResolution = ResolutionScope.RUNTIME )
 public class DeployDependenciesMojo extends AbstractAndroidMojo
 {
 

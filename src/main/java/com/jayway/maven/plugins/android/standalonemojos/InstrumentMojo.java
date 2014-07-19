@@ -19,13 +19,14 @@ package com.jayway.maven.plugins.android.standalonemojos;
 import com.jayway.maven.plugins.android.AbstractInstrumentationMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
 
 /**
  * Runs the instrumentation apk on device.
  *
  * @author hugo.josefson@jayway.com
- * @goal instrument
  */
+@Mojo( name = "instrument" )
 public class InstrumentMojo extends AbstractInstrumentationMojo
 {
 

@@ -12,6 +12,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.codehaus.plexus.interpolation.os.Os;
 
 import java.io.File;
@@ -33,10 +37,12 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
  * @author Matthias Kaeppler
  * @author Manfred Moser
  * @author Michal Harakal
- * @goal proguard
- * @phase process-classes
- * @requiresDependencyResolution compile
  */
+@Mojo(
+        name = "proguard",
+        defaultPhase = LifecyclePhase.PROCESS_CLASSES,
+        requiresDependencyResolution = ResolutionScope.COMPILE
+)
 public class ProguardMojo extends AbstractAndroidMojo
 {
 
@@ -69,18 +75,15 @@ public class ProguardMojo extends AbstractAndroidMojo
      * All parameters can be overridden in profiles or the the proguard* properties. Default values apply and are
      * documented with these properties.
      * </p>
-     *
-     * @parameter
      */
     @ConfigPojo
+    @Parameter
     protected Proguard proguard;
 
     /**
      * Whether ProGuard is enabled or not. Defaults to true.
-     *
-     * @parameter property=android.proguard.skip"
-     * @optional
      */
+    @Parameter( property = "android.proguard.skip" )
     private Boolean proguardSkip;
 
     @PullParameter( defaultValue = "true" )
@@ -88,10 +91,9 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     /**
      * Path to the ProGuard configuration file (relative to project root). Defaults to "proguard.cfg"
-     *
-     * @parameter property="android.proguard.config"
-     * @optional
      */
+    // TODO remove this unused field
+    @Parameter( property = "android.proguard.config" )
     private File proguardConfig;
 
     @PullParameter( defaultValue = "${project.basedir}/proguard.cfg" )
@@ -99,21 +101,19 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     /**
      * Additional ProGuard configuration files (relative to project root).
-     *
-     * @parameter property="android.proguard.configs"
-     * @optional
      */
+    // TODO remove this unused field
+    @Parameter( property = "android.proguard.configs" )
     private String[] proguardConfigs;
 
+    // TODO remove this field that always equates to an empty array.
     @PullParameter( defaultValueGetterMethod = "getDefaultProguardConfigs" )
     private String[] parsedConfigs;
 
     /**
      * Additional ProGuard options
-     *
-     * @parameter property="android.proguard.options"
-     * @optional
      */
+    @Parameter( property = "android.proguard.options" )
     private String[] proguardOptions;
 
     @PullParameter( defaultValueGetterMethod = "getDefaultProguardOptions" )
@@ -139,10 +139,8 @@ public class ProguardMojo extends AbstractAndroidMojo
      * </pre>
      * <p/>
      * which will download and use Proguard 4.7 as deployed to the Central Repository.
-     *
-     * @parameter property="android.proguard.proguardJarPath"
-     * @optional
      */
+    @Parameter( property = "android.proguard.proguardJarPath" )
     private String proguardProguardJarPath;
 
     @PullParameter( defaultValueGetterMethod = "getProguardJarPath" )
@@ -169,28 +167,24 @@ public class ProguardMojo extends AbstractAndroidMojo
      * <p/>
      * Output directory is defined relatively so it could be also outside of the target directory.
      * <p/>
-     *
-     * @parameter property="android.proguard.outputDirectory"
-     * @optional
      */
+    @Parameter( property = "android.proguard.outputDirectory" )
     private File outputDirectory;
 
     @PullParameter( defaultValue = "${project.build.directory}/proguard" )
     private File parsedOutputDirectory;
 
-    /**
-     * @parameter property="android.proguard.obfuscatedJar" 
-     *            default-value="${project.build.directory}/${project.build.finalName}_obfuscated.jar"
-     */
+    @Parameter(
+            property = "android.proguard.obfuscatedJar",
+            defaultValue = "${project.build.directory}/${project.build.finalName}_obfuscated.jar"
+    )
     private String obfuscatedJar;
 
     /**
      * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build.
      * Defaults to "-Xmx512M".
-     *
-     * @parameter property="android.proguard.jvmArguments"
-     * @optional
      */
+    @Parameter( property = "android.proguard.jvmArguments" )
     private String[] proguardJvmArguments;
 
     @PullParameter( defaultValueGetterMethod = "getDefaultJvmArguments" )
@@ -198,10 +192,8 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     /**
      * If set to true will add a filter to remove META-INF/maven/* files. Defaults to false.
-     *
-     * @parameter property="android.proguard.filterMavenDescriptor"
-     * @optional
      */
+    @Parameter( property = "android.proguard.filterMavenDescriptor" )
     private Boolean proguardFilterMavenDescriptor;
 
     @PullParameter( defaultValue = "true" )
@@ -209,10 +201,8 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     /**
      * If set to true will add a filter to remove META-INF/MANIFEST.MF files.  Defaults to false.
-     *
-     * @parameter property="android.proguard.filterManifest"
-     * @optional
      */
+    @Parameter( property = "android.proguard.filterManifest" )
     private Boolean proguardFilterManifest;
 
     @PullParameter( defaultValue = "true" )
@@ -220,9 +210,9 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     /**
      * If set to true JDK jars will be included as library jars and corresponding filters
-     * will be applied to android.jar.  Defaults to true.
-     * @parameter property="android.proguard.includeJdkLibs"
+     * will be applied to android.jar.
      */
+    @Parameter( property = "android.proguard.includeJdkLibs" )
     private Boolean includeJdkLibs;
 
     @PullParameter( defaultValue = "true" )
@@ -230,8 +220,8 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     /**
      * If set to true the mapping.txt file will be attached as artifact of type <code>map</code>
-     * @parameter property="android.proguard.attachMap"
      */
+    @Parameter( property = "android.proguard.attachMap" )
     private Boolean attachMap;
 
     @PullParameter( defaultValue = "false" )
@@ -239,11 +229,8 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     /**
      * The plugin dependencies.
-     *
-     * @parameter default-value="${plugin.artifacts}"
-     * @required
-     * @readonly
      */
+    @Parameter( defaultValue = "${plugin.artifacts}", required = true, readonly = true )
     protected List< Artifact > pluginDependencies;
 
     private static final Collection< String > ANDROID_LIBRARY_EXCLUDED_FILTER = Arrays
@@ -751,6 +738,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      * @return
      * @see #parsedConfigs
      */
+    // TODO remove this unnecessary method.
     private String[] getDefaultProguardConfigs()
     {
         return new String[0];

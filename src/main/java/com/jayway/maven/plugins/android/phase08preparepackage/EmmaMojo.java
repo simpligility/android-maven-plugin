@@ -5,6 +5,10 @@ import java.util.ArrayList;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.codehaus.plexus.util.StringUtils;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
@@ -16,10 +20,12 @@ import com.vladium.emma.instr.InstrProcessor.OutMode;
  * After compiled Java classes use emma tool
  * 
  * @author mariusz@saramak.eu
- * @goal emma
- * @phase prepare-package
- * @requiresDependencyResolution compile
  */
+@Mojo(
+        name = "emma",
+        defaultPhase = LifecyclePhase.PREPARE_PACKAGE,
+        requiresDependencyResolution = ResolutionScope.COMPILE
+)
 public class EmmaMojo extends AbstractAndroidMojo
 {
 
@@ -41,36 +47,34 @@ public class EmmaMojo extends AbstractAndroidMojo
      * </pre>
      * <p/>
      * or via properties emma.* or command line parameters android.emma.*
-     * 
-     * @parameter
      */
+    @Parameter
     private Emma emma;
     /**
      * Decides whether to enable or not enable emma.
      * 
      * @parameter property="android.emma.enable" default-value="false"
      */
+    @Parameter( property = "android.emma.enable", defaultValue = "false" )
     private boolean emmaEnable;
+
     /**
      * Configure directory where compiled classes are.
-     * 
-     * @parameter property="android.emma.classFolders" default-value="${project.build.directory}/classes/"
      */
+    @Parameter( property = "android.emma.classFolders", defaultValue = "${project.build.directory}/classes/" )
     private String emmaClassFolders;
+
     /**
      * Path of the emma meta data file (.em).
-     * 
-     * @parameter property="android.emma.outputMetaFile"
-     *            default-value="${project.build.directory}/emma/coverage.em"
      */
+    @Parameter( property = "android.emma.outputMetaFile", defaultValue = "${project.build.directory}/emma/coverage.em" )
     private File emmaOutputMetaFile;
 
     /**
      * Emma filter. Refer to the <a href="http://emma.sourceforge.net/reference/ch02s06s02.html">emma syntax for
      * filters</a>.
-     * 
-     * @parameter property="android.emma.filters"
      */
+    @Parameter( property = "android.emma.filters" )
     private String emmaFilters;
 
     private boolean parsedEnable;
