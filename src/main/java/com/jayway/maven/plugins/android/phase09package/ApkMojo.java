@@ -422,8 +422,17 @@ public class ApkMojo extends AbstractAndroidMojo
                     continue;
                 }
             }
-
-            zos.putNextEntry( new ZipEntry( zn ) );
+            final ZipEntry ne;
+            if ( ze.getMethod() == ZipEntry.STORED )
+            {
+                ne = new ZipEntry( ze );
+            }
+            else
+            {
+                ne = new ZipEntry( zn );
+            }
+            
+            zos.putNextEntry( ne );
 
             InputStream is = zin.getInputStream( ze );
 
