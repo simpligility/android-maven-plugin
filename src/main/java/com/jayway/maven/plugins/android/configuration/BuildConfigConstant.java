@@ -1,5 +1,7 @@
 package com.jayway.maven.plugins.android.configuration;
 
+import org.apache.maven.plugins.annotations.Parameter;
+
 /**
  * Configuration for a custom BuildConfig constant.
  *
@@ -10,28 +12,22 @@ public class BuildConfigConstant
     /**
      * Name of the constant.
      * Eg.: SERVER_URL, etc
-     *
-     * @parameter property="android.buildConfigConstants[].name"
-     * @required
      */
+    @Parameter ( property = "android.buildConfigConstants[].name" , required = true )
     private String name;
 
     /**
      * Type of the value.
      * Eg.: String, int, com.mypackage.MyType, etc
-     *
-     * @parameter property="android.buildConfigConstants[].type"
-     * @required
      */
+    @Parameter ( property = "android.buildConfigConstants[].type", required = true )
     private String type;
 
     /**
      * Value of the constant.
      * Eg.: MyString, 123, new com.mypackage.MyType(), etc
-     *
-     * @parameter property="android.buildConfigConstants[].value"
-     * @required
      */
+    @Parameter ( property = "android.buildConfigConstants[].value" , required = true )
     private String value;
 
     public String getType()

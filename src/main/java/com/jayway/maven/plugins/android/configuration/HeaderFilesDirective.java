@@ -1,5 +1,7 @@
 package com.jayway.maven.plugins.android.configuration;
 
+import org.apache.maven.plugins.annotations.Parameter;
+
 /**
  * @author Johan Lindquist
  */
@@ -18,17 +20,16 @@ public class HeaderFilesDirective
      * &nbsp;&lt;include>**&#47;*.h&lt;/include><br/>
      * &lt;/includes><br/>
      * </code>
-     *
-     * @parameter
      */
+    @Parameter
     private String[] includes;
 
     /**
      * A list of &lt;include> elements specifying the files (usually C/C++ header files) that should be excluded from
      * the header archive.
      *
-     * @parameter
      */
+    @Parameter
     private String[] excludes;
 
     public String getDirectory()

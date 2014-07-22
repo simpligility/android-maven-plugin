@@ -15,6 +15,8 @@
  */
 package com.jayway.maven.plugins.android.configuration;
 
+import org.apache.maven.plugins.annotations.Parameter;
+
 /**
  * Configuration for signing. Only receives config parameter values, and there is no logic in here. Logic is in
  * {@link com.jayway.maven.plugins.android.AndroidSigner}.
@@ -33,9 +35,8 @@ public class Sign
      * other keystores is not yet implemented. See
      * <a href="http://code.google.com/p/maven-android-plugin/issues/detail?id=2">Issue 2</a>.)
      * </ul>
-     *
-     * @parameter property="android.sign.debug" default-value="auto"
      */
+    @Parameter (  property = "android.sign.debug", defaultValue = "auto" )
     private String debug;
 
     public String getDebug()

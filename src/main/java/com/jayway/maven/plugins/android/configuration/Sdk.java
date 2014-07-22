@@ -17,6 +17,8 @@ package com.jayway.maven.plugins.android.configuration;
 
 import java.io.File;
 
+import org.apache.maven.plugins.annotations.Parameter;
+
 /**
  * Configuration for an Android SDK. Only receives config parameter values, and there is no logic in here. Logic is in
  * {@link com.jayway.maven.plugins.android.AndroidSdk}.
@@ -28,10 +30,8 @@ public class Sdk
 
     /**
      * Directory of the installed Android SDK, for example <code>/opt/android-sdk-linux_x86-1.5_r1</code>
-     *
-     * @parameter property="android.sdk.path"
-     * @required
      */
+    @Parameter ( property = "android.sdk.path", required = true )
     private File path;
 
     /**
@@ -39,9 +39,8 @@ public class Sdk
      * <code>platforms</code>. Defaults to the highest available one if not set.</p>
      * <p>Note: this parameter is just the version number, without <code>"android-"</code> in the
      * beginning.</p>
-     *
-     * @parameter property="android.sdk.platform"
      */
+    @Parameter ( property = "android.sdk.platform" )
     private String platform;
 
     public File getPath()
