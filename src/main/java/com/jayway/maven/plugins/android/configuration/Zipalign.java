@@ -24,6 +24,8 @@ public class Zipalign
      * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ZipalignMojo#zipalignOutputApk}
      */
     private String outputApk;
+    
+    private String classifier;
 
 
     public Boolean isSkip()
@@ -45,4 +47,10 @@ public class Zipalign
     {
         return outputApk;
     }
+    
+    public String getClassifier() 
+    {
+        return classifier;
+    }
+    
 }
