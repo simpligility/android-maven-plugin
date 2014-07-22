@@ -81,7 +81,9 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
  *
  * @author hugo.josefson@jayway.com
  */
-@Mojo( name = "apk", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE )
+@Mojo( name = "apk", 
+       defaultPhase = LifecyclePhase.PACKAGE, 
+       requiresDependencyResolution = ResolutionScope.COMPILE )
 public class ApkMojo extends AbstractAndroidMojo
 {
 
@@ -144,7 +146,8 @@ public class ApkMojo extends AbstractAndroidMojo
      * The apk file produced by the apk goal. Per default the file is placed into the build directory (target
      * normally) using the build final name and apk as extension.
      */
-    @Parameter( property = "android.outputApk", defaultValue = "${project.build.directory}/${project.build.finalName}.apk" )
+    @Parameter( property = "android.outputApk", 
+                defaultValue = "${project.build.directory}/${project.build.finalName}.apk" )
     private String outputApk;
     
     /**

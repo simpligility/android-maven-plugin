@@ -52,10 +52,9 @@ public class UndeployApkMojo extends AbstractAndroidMojo
      *    &lt;packagename&gt;com.yourcompany.app&lt;/packagename&gt;
      * &lt;/deployapk&gt;
      * </pre>
-     * 
-     * @parameter
      */
     @ConfigPojo
+    @Parameter
     protected DeployApk deployapk;
 
     @Parameter( property = "android.deployapk.filename" )
