@@ -52,8 +52,6 @@ public class EmmaMojo extends AbstractAndroidMojo
     private Emma emma;
     /**
      * Decides whether to enable or not enable emma.
-     * 
-     * @parameter property="android.emma.enable" default-value="false"
      */
     @Parameter( property = "android.emma.enable", defaultValue = "false" )
     private boolean emmaEnable;
