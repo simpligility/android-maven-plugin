@@ -143,9 +143,8 @@ public class ApkMojo extends AbstractAndroidMojo
     /**
      * The apk file produced by the apk goal. Per default the file is placed into the build directory (target
      * normally) using the build final name and apk as extension.
-     *
-     * @parameter property="android.outputApk" default-value="${project.build.directory}/${project.build.finalName}.apk"
      */
+    @Parameter( property = "android.outputApk", defaultValue = "${project.build.directory}/${project.build.finalName}.apk" )
     private String outputApk;
     
     /**
