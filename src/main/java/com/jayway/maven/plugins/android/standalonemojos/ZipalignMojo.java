@@ -107,11 +107,12 @@ public class ZipalignMojo extends AbstractAndroidMojo
 
     /**
      * <p>Classifier to add to the artifact generated. </p>
-     *
-     * @parameter default-value="aligned"
      */
+    @Parameter ( property = "android.zipalign.classifier" )
+    private String zipalignClassifier;
+    
     @PullParameter( defaultValue = "aligned" )
-    private String classifier;
+    private String parsedClassifier;
 
     /**
      * Execute the mojo by parsing the confign and actually doing the zipalign.
@@ -139,6 +140,7 @@ public class ZipalignMojo extends AbstractAndroidMojo
         getLog().debug( "verbose:" + parsedVerbose );
         getLog().debug( "inputApk:" + parsedInputApk );
         getLog().debug( "outputApk:" + parsedOutputApk );
+        getLog().debug( "classifier:" + parsedClassifier );
 
         if ( parsedSkip )
         {
@@ -190,9 +192,9 @@ public class ZipalignMojo extends AbstractAndroidMojo
                     {
                         // Attach the resulting artifact (Issue 88)
                         // http://code.google.com/p/maven-android-plugin/issues/detail?id=88
-                        projectHelper.attachArtifact( project, APK, classifier, new File( outputApk ) );
+                        projectHelper.attachArtifact( project, APK, parsedClassifier, new File( outputApk ) );
                         getLog().info( "Attach " + getFullPathWithName( outputApk )  + " as '"
-                                + classifier + "' to the project" );
+                                + parsedClassifier + "' to the project" );
                     }
                 }
                 else
