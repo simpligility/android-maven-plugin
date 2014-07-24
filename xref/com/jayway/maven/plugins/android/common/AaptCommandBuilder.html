@@ -101,7 +101,7 @@
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>          }
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>  
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>          <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>  <em class="jxr_javadoccomment">         * Make package directories under location specified by {@link #setWhereToOutputResourceConstants}.</em>
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>  <em class="jxr_javadoccomment">         * Make package directories under location specified by {@link #setResourceConstantsFolder}.</em>
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>  <em class="jxr_javadoccomment">         *</em>
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>  <em class="jxr_javadoccomment">         * @return current instance of {@link AaptCommandBuilder}</em>
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>  <em class="jxr_javadoccomment">         */</em>
@@ -112,12 +112,12 @@
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>         }
 <a class="jxr_linenumber" name="L105" href="#L105">105</a> 
 <a class="jxr_linenumber" name="L106" href="#L106">106</a>         <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">         * Specify where to output R java resource constant definitions.</em>
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">         * Specify where the R java resource constant definitions should be generated or found.</em>
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">         *</em>
-<a class="jxr_linenumber" name="L109" href="#L109">109</a> <em class="jxr_javadoccomment">         * @param path path where to output R.java</em>
+<a class="jxr_linenumber" name="L109" href="#L109">109</a> <em class="jxr_javadoccomment">         * @param path path to resource constants folder.</em>
 <a class="jxr_linenumber" name="L110" href="#L110">110</a> <em class="jxr_javadoccomment">         * @return current instance of {@link AaptCommandBuilder}</em>
 <a class="jxr_linenumber" name="L111" href="#L111">111</a> <em class="jxr_javadoccomment">         */</em>
-<a class="jxr_linenumber" name="L112" href="#L112">112</a>         <strong class="jxr_keyword">public</strong> <a href="../../../../../../com/jayway/maven/plugins/android/common/AaptCommandBuilder.html">AaptPackageCommandBuilder</a> setWhereToOutputResourceConstants( File path )
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>         <strong class="jxr_keyword">public</strong> <a href="../../../../../../com/jayway/maven/plugins/android/common/AaptCommandBuilder.html">AaptPackageCommandBuilder</a> setResourceConstantsFolder( File path )
 <a class="jxr_linenumber" name="L113" href="#L113">113</a>         {
 <a class="jxr_linenumber" name="L114" href="#L114">114</a>             commands.add( <span class="jxr_string">"-J"</span> );
 <a class="jxr_linenumber" name="L115" href="#L115">115</a>             commands.add( path.getAbsolutePath() );

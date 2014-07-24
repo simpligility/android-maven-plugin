@@ -11,14 +11,14 @@
 <a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> com.jayway.maven.plugins.android.AbstractEmulatorMojo;
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.apache.maven.plugin.MojoExecutionException;
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> org.apache.maven.plugin.MojoFailureException;
-<a class="jxr_linenumber" name="L6" href="#L6">6</a>   
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_javadoccomment"> * EmulatorStartMojo can stop the Android Emulator with a specified Android Virtual Device (avd).</em>
-<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_javadoccomment"> * @author Manfred Moser &lt;manfred@simpligility.com&gt;</em>
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_javadoccomment"> * @goal emulator-stop</em>
-<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_javadoccomment"> * @requiresProject false</em>
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> org.apache.maven.plugins.annotations.Mojo;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_javadoccomment"> * EmulatorStartMojo can stop the Android Emulator with a specified Android Virtual Device (avd).</em>
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_javadoccomment"> * @author Manfred Moser &lt;manfred@simpligility.com&gt;</em>
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  @Mojo( name = <span class="jxr_string">"emulator-stop"</span>, requiresProject = false )
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../com/jayway/maven/plugins/android/standalonemojos/EmulatorStopMojo.html">EmulatorStopMojo</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../../com/jayway/maven/plugins/android/AbstractEmulatorMojo.html">AbstractEmulatorMojo</a>
 <a class="jxr_linenumber" name="L15" href="#L15">15</a>  {
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  

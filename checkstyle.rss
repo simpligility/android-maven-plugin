@@ -26,8 +26,8 @@ under the License.
     <copyright>&#169;2008 - 2014 simpligility technologies inc.</copyright>
     <item>
       <title>File: 108,
-             Errors: 19060,
-             Warnings: 0,
+             Errors: 0,
+             Warnings: 14,
              Infos: 0
       </title>
             <link>http://code.google.com/p/maven-android-plugin/checkstyle.html</link>
@@ -55,7 +55,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  76
+                  0
                 </td>
               </tr>
                           <tr>
@@ -69,7 +69,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  99
+                  0
                 </td>
               </tr>
                           <tr>
@@ -83,7 +83,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  8
+                  0
                 </td>
               </tr>
                           <tr>
@@ -97,7 +97,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  6
+                  0
                 </td>
               </tr>
                           <tr>
@@ -111,7 +111,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  13
+                  0
                 </td>
               </tr>
                           <tr>
@@ -125,7 +125,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  8
+                  0
                 </td>
               </tr>
                           <tr>
@@ -139,7 +139,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  33
+                  0
                 </td>
               </tr>
                           <tr>
@@ -153,7 +153,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  114
+                  0
                 </td>
               </tr>
                           <tr>
@@ -167,7 +167,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  96
+                  0
                 </td>
               </tr>
                           <tr>
@@ -181,7 +181,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  34
+                  0
                 </td>
               </tr>
                           <tr>
@@ -195,7 +195,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  345
+                  0
                 </td>
               </tr>
                           <tr>
@@ -209,7 +209,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  23
+                  0
                 </td>
               </tr>
                           <tr>
@@ -223,7 +223,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  8
+                  0
                 </td>
               </tr>
                           <tr>
@@ -237,7 +237,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  840
+                  0
                 </td>
               </tr>
                           <tr>
@@ -251,7 +251,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  46
+                  0
                 </td>
               </tr>
                           <tr>
@@ -265,7 +265,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  77
+                  0
                 </td>
               </tr>
                           <tr>
@@ -279,7 +279,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  122
+                  0
                 </td>
               </tr>
                           <tr>
@@ -293,7 +293,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  152
+                  0
                 </td>
               </tr>
                           <tr>
@@ -307,7 +307,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  68
+                  0
                 </td>
               </tr>
                           <tr>
@@ -321,7 +321,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  40
+                  0
                 </td>
               </tr>
                           <tr>
@@ -335,7 +335,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  58
+                  0
                 </td>
               </tr>
                           <tr>
@@ -349,7 +349,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  6
+                  0
                 </td>
               </tr>
                           <tr>
@@ -363,7 +363,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  73
+                  0
                 </td>
               </tr>
                           <tr>
@@ -377,7 +377,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  34
+                  0
                 </td>
               </tr>
                           <tr>
@@ -391,7 +391,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  310
+                  0
                 </td>
               </tr>
                           <tr>
@@ -405,7 +405,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  905
+                  0
                 </td>
               </tr>
                           <tr>
@@ -419,7 +419,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  12
+                  0
                 </td>
               </tr>
                           <tr>
@@ -433,7 +433,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  63
+                  0
                 </td>
               </tr>
                           <tr>
@@ -444,10 +444,10 @@ under the License.
                   0
                 </td>
                 <td>
-                  0
+                  1
                 </td>
                 <td>
-                  323
+                  0
                 </td>
               </tr>
                           <tr>
@@ -461,7 +461,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  223
+                  0
                 </td>
               </tr>
                           <tr>
@@ -475,7 +475,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  71
+                  0
                 </td>
               </tr>
                           <tr>
@@ -486,10 +486,10 @@ under the License.
                   0
                 </td>
                 <td>
-                  0
+                  1
                 </td>
                 <td>
-                  528
+                  0
                 </td>
               </tr>
                           <tr>
@@ -503,7 +503,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  92
+                  0
                 </td>
               </tr>
                           <tr>
@@ -517,7 +517,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  8
+                  0
                 </td>
               </tr>
                           <tr>
@@ -531,7 +531,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  12
+                  0
                 </td>
               </tr>
                           <tr>
@@ -545,7 +545,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  65
+                  0
                 </td>
               </tr>
                           <tr>
@@ -559,7 +559,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  7
+                  0
                 </td>
               </tr>
                           <tr>
@@ -573,7 +573,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  8
+                  0
                 </td>
               </tr>
                           <tr>
@@ -587,7 +587,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  449
+                  0
                 </td>
               </tr>
                           <tr>
@@ -601,7 +601,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  19
+                  0
                 </td>
               </tr>
                           <tr>
@@ -615,7 +615,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  608
+                  0
                 </td>
               </tr>
                           <tr>
@@ -629,7 +629,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  124
+                  0
                 </td>
               </tr>
                           <tr>
@@ -643,7 +643,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  34
+                  0
                 </td>
               </tr>
                           <tr>
@@ -657,7 +657,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  34
+                  0
                 </td>
               </tr>
                           <tr>
@@ -671,7 +671,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  947
+                  0
                 </td>
               </tr>
                           <tr>
@@ -685,7 +685,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  43
+                  0
                 </td>
               </tr>
                           <tr>
@@ -699,7 +699,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  65
+                  0
                 </td>
               </tr>
                           <tr>
@@ -713,7 +713,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  20
+                  0
                 </td>
               </tr>
                           <tr>
@@ -727,7 +727,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  45
+                  0
                 </td>
               </tr>
                           <tr>
@@ -738,10 +738,10 @@ under the License.
                   0
                 </td>
                 <td>
-                  0
+                  1
                 </td>
                 <td>
-                  566
+                  0
                 </td>
               </tr>
                           <tr>
@@ -755,7 +755,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  23
+                  0
                 </td>
               </tr>
                           <tr>
@@ -769,7 +769,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  26
+                  0
                 </td>
               </tr>
                           <tr>
@@ -783,7 +783,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  13
+                  0
                 </td>
               </tr>
                           <tr>
@@ -797,7 +797,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  75
+                  0
                 </td>
               </tr>
                           <tr>
@@ -811,7 +811,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  60
+                  0
                 </td>
               </tr>
                           <tr>
@@ -825,7 +825,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  15
+                  0
                 </td>
               </tr>
                           <tr>
@@ -839,7 +839,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  80
+                  0
                 </td>
               </tr>
                           <tr>
@@ -853,7 +853,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  450
+                  0
                 </td>
               </tr>
                           <tr>
@@ -867,7 +867,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  104
+                  0
                 </td>
               </tr>
                           <tr>
@@ -881,7 +881,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  22
+                  0
                 </td>
               </tr>
                           <tr>
@@ -895,7 +895,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  1150
+                  0
                 </td>
               </tr>
                           <tr>
@@ -909,7 +909,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  180
+                  0
                 </td>
               </tr>
                           <tr>
@@ -923,7 +923,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  7
+                  0
                 </td>
               </tr>
                           <tr>
@@ -937,7 +937,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  42
+                  0
                 </td>
               </tr>
                           <tr>
@@ -951,7 +951,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  58
+                  0
                 </td>
               </tr>
                           <tr>
@@ -962,10 +962,10 @@ under the License.
                   0
                 </td>
                 <td>
-                  0
+                  2
                 </td>
                 <td>
-                  125
+                  0
                 </td>
               </tr>
                           <tr>
@@ -979,7 +979,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  348
+                  0
                 </td>
               </tr>
                           <tr>
@@ -993,7 +993,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  96
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1007,7 +1007,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  23
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1021,7 +1021,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  240
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1035,7 +1035,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  36
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1049,7 +1049,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  29
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1063,7 +1063,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  974
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1077,7 +1077,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  43
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1091,7 +1091,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  189
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1102,10 +1102,10 @@ under the License.
                   0
                 </td>
                 <td>
-                  0
+                  2
                 </td>
                 <td>
-                  898
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1119,7 +1119,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  46
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1133,7 +1133,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  106
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1147,7 +1147,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  623
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1161,7 +1161,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  93
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1175,7 +1175,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  487
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1186,10 +1186,10 @@ under the License.
                   0
                 </td>
                 <td>
-                  0
+                  4
                 </td>
                 <td>
-                  943
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1200,10 +1200,10 @@ under the License.
                   0
                 </td>
                 <td>
-                  0
+                  3
                 </td>
                 <td>
-                  862
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1217,7 +1217,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  78
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1231,7 +1231,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  111
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1245,7 +1245,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  9
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1259,7 +1259,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  275
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1273,7 +1273,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  20
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1287,7 +1287,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  40
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1301,7 +1301,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  54
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1315,7 +1315,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  855
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1329,7 +1329,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  61
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1343,7 +1343,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  10
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1357,7 +1357,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  7
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1371,7 +1371,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  61
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1385,7 +1385,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  8
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1399,7 +1399,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  156
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1413,7 +1413,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  174
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1427,7 +1427,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  308
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1441,7 +1441,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  10
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1455,7 +1455,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  21
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1469,7 +1469,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  11
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1483,7 +1483,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  6
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1497,7 +1497,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  34
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1511,7 +1511,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  293
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1525,7 +1525,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  13
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1539,7 +1539,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  13
+                  0
                 </td>
               </tr>
                           <tr>
@@ -1553,7 +1553,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  6
+                  0
                 </td>
               </tr>
                       </tbody>

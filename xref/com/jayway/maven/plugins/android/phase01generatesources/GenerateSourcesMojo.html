@@ -39,193 +39,193 @@
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.io.IOUtils;
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.lang.StringUtils;
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.artifact.Artifact;
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.plugin.MojoExecutionException;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.plugin.MojoFailureException;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> org.codehaus.plexus.archiver.ArchiverException;
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> org.codehaus.plexus.archiver.UnArchiver;
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> org.codehaus.plexus.archiver.zip.ZipUnArchiver;
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> org.codehaus.plexus.logging.Logger;
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> org.codehaus.plexus.logging.console.ConsoleLogger;
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> org.w3c.dom.Document;
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> javax.xml.parsers.DocumentBuilder;
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> javax.xml.parsers.DocumentBuilderFactory;
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> javax.xml.transform.OutputKeys;
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> javax.xml.transform.Result;
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> javax.xml.transform.Source;
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> javax.xml.transform.Transformer;
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> javax.xml.transform.TransformerFactory;
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> javax.xml.transform.dom.DOMSource;
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">import</strong> javax.xml.transform.stream.StreamResult;
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> java.io.File;
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <strong class="jxr_keyword">import</strong> java.io.FileWriter;
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <strong class="jxr_keyword">import</strong> java.util.Arrays;
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <strong class="jxr_keyword">import</strong> java.util.Collection;
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <strong class="jxr_keyword">import</strong> java.util.HashMap;
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <strong class="jxr_keyword">import</strong> java.util.HashSet;
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <strong class="jxr_keyword">import</strong> java.util.List;
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <strong class="jxr_keyword">import</strong> java.util.jar.JarEntry;
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <strong class="jxr_keyword">import</strong> java.util.jar.JarFile;
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> com.jayway.maven.plugins.android.common.AndroidExtension.APK;
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> com.jayway.maven.plugins.android.common.AndroidExtension.APKSOURCES;
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment"> * Generates &lt;code&gt;R.java&lt;/code&gt; based on resources specified by the &lt;code&gt;resources&lt;/code&gt; configuration parameter.</em>
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  <em class="jxr_javadoccomment"> * Generates java files based on aidl files.</em>
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>  <em class="jxr_javadoccomment"> * @author hugo.josefson@jayway.com</em>
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>  <em class="jxr_javadoccomment"> * @author Manfred Moser &lt;manfred@simpligility.com&gt;</em>
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>  <em class="jxr_javadoccomment"> * @author William Ferguson &lt;william.ferguson@xandar.com.au&gt;</em>
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>  <em class="jxr_javadoccomment"> * @author Malachi de AElfweald malachid@gmail.com</em>
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>  <em class="jxr_javadoccomment"> * @goal generate-sources</em>
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>  <em class="jxr_javadoccomment"> * @phase generate-sources</em>
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>  <em class="jxr_javadoccomment"> * @requiresProject true</em>
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>  <em class="jxr_javadoccomment"> * @requiresDependencyResolution compile</em>
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../com/jayway/maven/plugins/android/phase01generatesources/GenerateSourcesMojo.html">GenerateSourcesMojo</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../../com/jayway/maven/plugins/android/AbstractAndroidMojo.html">AbstractAndroidMojo</a>
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>  {
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>  
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_javadoccomment">     * Override default merging. You must have SDK Tools r20+</em>
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>  <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>  <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>  <em class="jxr_javadoccomment">     * &lt;b&gt;IMPORTANT:&lt;/b&gt; The resource plugin needs to be disabled for the</em>
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>  <em class="jxr_javadoccomment">     * &lt;code&gt;process-resources&lt;/code&gt; phase, so the "default-resources"</em>
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>  <em class="jxr_javadoccomment">     * execution must be added. Without this the non-merged manifest will get</em>
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>  <em class="jxr_javadoccomment">     * re-copied to the build directory.</em>
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.execution.MavenSession;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.plugin.MojoExecutionException;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.plugin.MojoFailureException;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.plugins.annotations.Component;
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.plugins.annotations.LifecyclePhase;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.plugins.annotations.Mojo;
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.plugins.annotations.Parameter;
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.plugins.annotations.ResolutionScope;
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.repository.RepositorySystem;
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> org.codehaus.plexus.archiver.ArchiverException;
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> org.codehaus.plexus.archiver.UnArchiver;
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> org.codehaus.plexus.archiver.zip.ZipUnArchiver;
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> org.codehaus.plexus.logging.Logger;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> org.codehaus.plexus.logging.console.ConsoleLogger;
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> org.w3c.dom.Document;
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> javax.xml.parsers.DocumentBuilder;
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">import</strong> javax.xml.parsers.DocumentBuilderFactory;
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> javax.xml.transform.OutputKeys;
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <strong class="jxr_keyword">import</strong> javax.xml.transform.Result;
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <strong class="jxr_keyword">import</strong> javax.xml.transform.Source;
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <strong class="jxr_keyword">import</strong> javax.xml.transform.Transformer;
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <strong class="jxr_keyword">import</strong> javax.xml.transform.TransformerFactory;
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <strong class="jxr_keyword">import</strong> javax.xml.transform.dom.DOMSource;
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <strong class="jxr_keyword">import</strong> javax.xml.transform.stream.StreamResult;
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <strong class="jxr_keyword">import</strong> java.io.File;
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <strong class="jxr_keyword">import</strong> java.io.FileWriter;
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <strong class="jxr_keyword">import</strong> java.util.Arrays;
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <strong class="jxr_keyword">import</strong> java.util.Collection;
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <strong class="jxr_keyword">import</strong> java.util.HashMap;
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <strong class="jxr_keyword">import</strong> java.util.HashSet;
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  <strong class="jxr_keyword">import</strong> java.util.jar.JarEntry;
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <strong class="jxr_keyword">import</strong> java.util.jar.JarFile;
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> com.jayway.maven.plugins.android.common.AndroidExtension.APK;
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> com.jayway.maven.plugins.android.common.AndroidExtension.APKSOURCES;
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  <em class="jxr_javadoccomment"> * Generates &lt;code&gt;R.java&lt;/code&gt; based on resources specified by the &lt;code&gt;resources&lt;/code&gt; configuration parameter.</em>
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>  <em class="jxr_javadoccomment"> * Generates java files based on aidl files.</em>
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>  <em class="jxr_javadoccomment"> * @author hugo.josefson@jayway.com</em>
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>  <em class="jxr_javadoccomment"> * @author Manfred Moser &lt;manfred@simpligility.com&gt;</em>
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>  <em class="jxr_javadoccomment"> * @author William Ferguson &lt;william.ferguson@xandar.com.au&gt;</em>
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>  <em class="jxr_javadoccomment"> * @author Malachi de AElfweald malachid@gmail.com</em>
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  @Mojo(
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>          name = <span class="jxr_string">"generate-sources"</span>,
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>          defaultPhase = LifecyclePhase.GENERATE_SOURCES,
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>          requiresDependencyResolution = ResolutionScope.COMPILE
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>  )
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../com/jayway/maven/plugins/android/phase01generatesources/GenerateSourcesMojo.html">GenerateSourcesMojo</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../../com/jayway/maven/plugins/android/AbstractAndroidMojo.html">AbstractAndroidMojo</a>
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>  {
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>  <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>  <em class="jxr_javadoccomment">     * Override default merging. You must have SDK Tools r20+</em>
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>  <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>  <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L100" href="#L100">100</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L101" href="#L101">101</a> <em class="jxr_javadoccomment">     * The &lt;code&gt;androidManifestFile&lt;/code&gt; should also be configured to pull</em>
-<a class="jxr_linenumber" name="L102" href="#L102">102</a> <em class="jxr_javadoccomment">     * from the build directory so that later phases will pull the merged</em>
-<a class="jxr_linenumber" name="L103" href="#L103">103</a> <em class="jxr_javadoccomment">     * manifest file.</em>
-<a class="jxr_linenumber" name="L104" href="#L104">104</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L106" href="#L106">106</a> <em class="jxr_javadoccomment">     * Example POM Setup:</em>
-<a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L109" href="#L109">109</a> <em class="jxr_javadoccomment">     * &lt;pre&gt;</em>
-<a class="jxr_linenumber" name="L110" href="#L110">110</a> <em class="jxr_javadoccomment">     * &amp;lt;build&amp;gt;</em>
-<a class="jxr_linenumber" name="L111" href="#L111">111</a> <em class="jxr_javadoccomment">     *     ...</em>
-<a class="jxr_linenumber" name="L112" href="#L112">112</a> <em class="jxr_javadoccomment">     *     &amp;lt;plugins&amp;gt;</em>
-<a class="jxr_linenumber" name="L113" href="#L113">113</a> <em class="jxr_javadoccomment">     *         ...</em>
-<a class="jxr_linenumber" name="L114" href="#L114">114</a> <em class="jxr_javadoccomment">     *         &amp;lt;plugin&amp;gt;</em>
-<a class="jxr_linenumber" name="L115" href="#L115">115</a> <em class="jxr_javadoccomment">     *             &amp;lt;artifactId&amp;gt;maven-resources-plugin&amp;lt;/artifactId&amp;gt;</em>
-<a class="jxr_linenumber" name="L116" href="#L116">116</a> <em class="jxr_javadoccomment">     *             &amp;lt;version&amp;gt;2.6&amp;lt;/version&amp;gt;</em>
-<a class="jxr_linenumber" name="L117" href="#L117">117</a> <em class="jxr_javadoccomment">     *             &amp;lt;executions&amp;gt;</em>
-<a class="jxr_linenumber" name="L118" href="#L118">118</a> <em class="jxr_javadoccomment">     *                 &amp;lt;execution&amp;gt;</em>
-<a class="jxr_linenumber" name="L119" href="#L119">119</a> <em class="jxr_javadoccomment">     *                     &amp;lt;phase&amp;gt;initialize&amp;lt;/phase&amp;gt;</em>
-<a class="jxr_linenumber" name="L120" href="#L120">120</a> <em class="jxr_javadoccomment">     *                     &amp;lt;goals&amp;gt;</em>
-<a class="jxr_linenumber" name="L121" href="#L121">121</a> <em class="jxr_javadoccomment">     *                         &amp;lt;goal&amp;gt;resources&amp;lt;/goal&amp;gt;</em>
-<a class="jxr_linenumber" name="L122" href="#L122">122</a> <em class="jxr_javadoccomment">     *                     &amp;lt;/goals&amp;gt;</em>
-<a class="jxr_linenumber" name="L123" href="#L123">123</a> <em class="jxr_javadoccomment">     *                 &amp;lt;/execution&amp;gt;</em>
-<a class="jxr_linenumber" name="L124" href="#L124">124</a> <em class="jxr_javadoccomment">     *                 &lt;b&gt;&amp;lt;execution&amp;gt;</em>
-<a class="jxr_linenumber" name="L125" href="#L125">125</a> <em class="jxr_javadoccomment">     *                     &amp;lt;id&amp;gt;default-resources&amp;lt;/id&amp;gt;</em>
-<a class="jxr_linenumber" name="L126" href="#L126">126</a> <em class="jxr_javadoccomment">     *                     &amp;lt;phase&amp;gt;DISABLED&amp;lt;/phase&amp;gt;</em>
-<a class="jxr_linenumber" name="L127" href="#L127">127</a> <em class="jxr_javadoccomment">     *                 &amp;lt;/execution&amp;gt;&lt;/b&gt;</em>
-<a class="jxr_linenumber" name="L128" href="#L128">128</a> <em class="jxr_javadoccomment">     *             &amp;lt;/executions&amp;gt;</em>
-<a class="jxr_linenumber" name="L129" href="#L129">129</a> <em class="jxr_javadoccomment">     *         &amp;lt;/plugin&amp;gt;</em>
-<a class="jxr_linenumber" name="L130" href="#L130">130</a> <em class="jxr_javadoccomment">     *         &amp;lt;plugin&amp;gt;</em>
-<a class="jxr_linenumber" name="L131" href="#L131">131</a> <em class="jxr_javadoccomment">     *             &amp;lt;groupId&amp;gt;com.jayway.maven.plugins.android.generation2&amp;lt;/groupId&amp;gt;</em>
-<a class="jxr_linenumber" name="L132" href="#L132">132</a> <em class="jxr_javadoccomment">     *             &amp;lt;artifactId&amp;gt;android-maven-plugin&amp;lt;/artifactId&amp;gt;</em>
-<a class="jxr_linenumber" name="L133" href="#L133">133</a> <em class="jxr_javadoccomment">     *             &amp;lt;configuration&amp;gt;</em>
-<a class="jxr_linenumber" name="L134" href="#L134">134</a> <em class="jxr_javadoccomment">     *                 &lt;b&gt;&amp;lt;androidManifestFile&amp;gt;</em>
-<a class="jxr_linenumber" name="L135" href="#L135">135</a> <em class="jxr_javadoccomment">     *                     ${project.build.directory}/AndroidManifest.xml</em>
-<a class="jxr_linenumber" name="L136" href="#L136">136</a> <em class="jxr_javadoccomment">     *                 &amp;lt;/androidManifestFile&amp;gt;</em>
-<a class="jxr_linenumber" name="L137" href="#L137">137</a> <em class="jxr_javadoccomment">     *                 &amp;lt;mergeManifests&amp;gt;true&amp;lt;/mergeManifests&amp;gt;&lt;/b&gt;</em>
-<a class="jxr_linenumber" name="L138" href="#L138">138</a> <em class="jxr_javadoccomment">     *             &amp;lt;/configuration&amp;gt;</em>
-<a class="jxr_linenumber" name="L139" href="#L139">139</a> <em class="jxr_javadoccomment">     *             &amp;lt;extensions&amp;gt;true&amp;lt;/extensions&amp;gt;</em>
-<a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">     *         &amp;lt;/plugin&amp;gt;</em>
-<a class="jxr_linenumber" name="L141" href="#L141">141</a> <em class="jxr_javadoccomment">     *         ...</em>
-<a class="jxr_linenumber" name="L142" href="#L142">142</a> <em class="jxr_javadoccomment">     *     &amp;lt;/plugins&amp;gt;</em>
-<a class="jxr_linenumber" name="L143" href="#L143">143</a> <em class="jxr_javadoccomment">     *     ...</em>
-<a class="jxr_linenumber" name="L144" href="#L144">144</a> <em class="jxr_javadoccomment">     * &amp;lt;/build&amp;gt;</em>
-<a class="jxr_linenumber" name="L145" href="#L145">145</a> <em class="jxr_javadoccomment">     * &lt;/pre&gt;</em>
-<a class="jxr_linenumber" name="L146" href="#L146">146</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L147" href="#L147">147</a> <em class="jxr_javadoccomment">     * You can filter the pre-merged APK manifest. One important note about Eclipse, Eclipse will</em>
-<a class="jxr_linenumber" name="L148" href="#L148">148</a> <em class="jxr_javadoccomment">     * replace the merged manifest with a filtered pre-merged version when the project is refreshed.</em>
-<a class="jxr_linenumber" name="L149" href="#L149">149</a> <em class="jxr_javadoccomment">     * If you want to review the filtered merged version then you will need to open it outside Eclipse</em>
-<a class="jxr_linenumber" name="L150" href="#L150">150</a> <em class="jxr_javadoccomment">     * without refreshing the project in Eclipse. </em>
-<a class="jxr_linenumber" name="L151" href="#L151">151</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L152" href="#L152">152</a> <em class="jxr_javadoccomment">     * &lt;pre&gt;</em>
-<a class="jxr_linenumber" name="L153" href="#L153">153</a> <em class="jxr_javadoccomment">     * &amp;lt;resources&amp;gt;</em>
-<a class="jxr_linenumber" name="L154" href="#L154">154</a> <em class="jxr_javadoccomment">     *     &amp;lt;resource&amp;gt;</em>
-<a class="jxr_linenumber" name="L155" href="#L155">155</a> <em class="jxr_javadoccomment">     *         &amp;lt;targetPath&amp;gt;${project.build.directory}&amp;lt;/targetPath&amp;gt;</em>
-<a class="jxr_linenumber" name="L156" href="#L156">156</a> <em class="jxr_javadoccomment">     *         &amp;lt;filtering&amp;gt;true&amp;lt;/filtering&amp;gt;</em>
-<a class="jxr_linenumber" name="L157" href="#L157">157</a> <em class="jxr_javadoccomment">     *         &amp;lt;directory&amp;gt;${basedir}&amp;lt;/directory&amp;gt;</em>
-<a class="jxr_linenumber" name="L158" href="#L158">158</a> <em class="jxr_javadoccomment">     *         &amp;lt;includes&amp;gt;</em>
-<a class="jxr_linenumber" name="L159" href="#L159">159</a> <em class="jxr_javadoccomment">     *             &amp;lt;include&amp;gt;AndroidManifest.xml&amp;lt;/include&amp;gt;</em>
-<a class="jxr_linenumber" name="L160" href="#L160">160</a> <em class="jxr_javadoccomment">     *         &amp;lt;/includes&amp;gt;</em>
-<a class="jxr_linenumber" name="L161" href="#L161">161</a> <em class="jxr_javadoccomment">     *     &amp;lt;/resource&amp;gt;</em>
-<a class="jxr_linenumber" name="L162" href="#L162">162</a> <em class="jxr_javadoccomment">     * &amp;lt;/resources&amp;gt;</em>
-<a class="jxr_linenumber" name="L163" href="#L163">163</a> <em class="jxr_javadoccomment">     * &lt;/pre&gt;</em>
-<a class="jxr_linenumber" name="L164" href="#L164">164</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L165" href="#L165">165</a> <em class="jxr_javadoccomment">     * @parameter property="android.mergeManifests" default-value="false"</em>
-<a class="jxr_linenumber" name="L166" href="#L166">166</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L167" href="#L167">167</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> mergeManifests;
-<a class="jxr_linenumber" name="L168" href="#L168">168</a> 
-<a class="jxr_linenumber" name="L169" href="#L169">169</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L170" href="#L170">170</a> <em class="jxr_javadoccomment">     * Whether to fail the build if one of the dependencies and/or the project duplicate a layout file.</em>
-<a class="jxr_linenumber" name="L171" href="#L171">171</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L172" href="#L172">172</a> <em class="jxr_javadoccomment">     * Such a scenario generally means that the build will fail with a compilation error due to missing resource files.</em>
-<a class="jxr_linenumber" name="L173" href="#L173">173</a> <em class="jxr_javadoccomment">     * This is because any Ids contained in the duplicate layout files can never be generated by aapt, as appt</em>
-<a class="jxr_linenumber" name="L174" href="#L174">174</a> <em class="jxr_javadoccomment">     * only picks up the first resource file it finds in its path.</em>
-<a class="jxr_linenumber" name="L175" href="#L175">175</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L176" href="#L176">176</a> <em class="jxr_javadoccomment">     * @parameter default-value="true"</em>
-<a class="jxr_linenumber" name="L177" href="#L177">177</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> failOnConflictingLayouts;
-<a class="jxr_linenumber" name="L179" href="#L179">179</a> 
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L181" href="#L181">181</a> <em class="jxr_javadoccomment">     * Whether to fail the build if one of the dependencies and/or the project have similar package in the </em>
-<a class="jxr_linenumber" name="L182" href="#L182">182</a> <em class="jxr_javadoccomment">     * AndroidManifest.</em>
-<a class="jxr_linenumber" name="L183" href="#L183">183</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L184" href="#L184">184</a> <em class="jxr_javadoccomment">     * Such scenario generally means that the build will fail with a compilation error due to</em>
-<a class="jxr_linenumber" name="L185" href="#L185">185</a> <em class="jxr_javadoccomment">     * missing resources in the R file generated.</em>
-<a class="jxr_linenumber" name="L186" href="#L186">186</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">     * @parameter default-value="true"</em>
-<a class="jxr_linenumber" name="L188" href="#L188">188</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L189" href="#L189">189</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> failOnDuplicatePackages;
-<a class="jxr_linenumber" name="L190" href="#L190">190</a> 
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L192" href="#L192">192</a> <em class="jxr_javadoccomment">     * Override default generated folder containing R.java</em>
-<a class="jxr_linenumber" name="L193" href="#L193">193</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L194" href="#L194">194</a> <em class="jxr_javadoccomment">     * @parameter property="android.genDirectory" default-value="${project.build.directory}/generated-sources/r"</em>
-<a class="jxr_linenumber" name="L195" href="#L195">195</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>     <strong class="jxr_keyword">protected</strong> File genDirectory;
-<a class="jxr_linenumber" name="L197" href="#L197">197</a> 
-<a class="jxr_linenumber" name="L198" href="#L198">198</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L199" href="#L199">199</a> <em class="jxr_javadoccomment">     * Override default generated folder containing aidl classes</em>
-<a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_javadoccomment">     * @parameter property="android.genDirectoryAidl"</em>
-<a class="jxr_linenumber" name="L202" href="#L202">202</a> <em class="jxr_javadoccomment">     * default-value="${project.build.directory}/generated-sources/aidl"</em>
-<a class="jxr_linenumber" name="L203" href="#L203">203</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>     <strong class="jxr_keyword">protected</strong> File genDirectoryAidl;
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>     
-<a class="jxr_linenumber" name="L206" href="#L206">206</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L207" href="#L207">207</a> <em class="jxr_javadoccomment">     * The directory containing the aidl files.</em>
-<a class="jxr_linenumber" name="L208" href="#L208">208</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L209" href="#L209">209</a> <em class="jxr_javadoccomment">     * @parameter property="android.aidlSourceDirectory"</em>
-<a class="jxr_linenumber" name="L210" href="#L210">210</a> <em class="jxr_javadoccomment">     * default-value="${project.build.sourceDirectory}"</em>
-<a class="jxr_linenumber" name="L211" href="#L211">211</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L212" href="#L212">212</a>     <strong class="jxr_keyword">protected</strong> File aidlSourceDirectory;
-<a class="jxr_linenumber" name="L213" href="#L213">213</a> 
-<a class="jxr_linenumber" name="L214" href="#L214">214</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L215" href="#L215">215</a> <em class="jxr_javadoccomment">     * &lt;p&gt;Parameter designed to generate custom BuildConfig constants</em>
-<a class="jxr_linenumber" name="L216" href="#L216">216</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L217" href="#L217">217</a> <em class="jxr_javadoccomment">     * @parameter property="android.buildConfigConstants"</em>
-<a class="jxr_linenumber" name="L218" href="#L218">218</a> <em class="jxr_javadoccomment">     * @readonly</em>
-<a class="jxr_linenumber" name="L219" href="#L219">219</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L220" href="#L220">220</a>     <strong class="jxr_keyword">protected</strong> <a href="../../../../../../com/jayway/maven/plugins/android/configuration/BuildConfigConstant.html">BuildConfigConstant</a>[] buildConfigConstants;
+<a class="jxr_linenumber" name="L101" href="#L101">101</a> <em class="jxr_javadoccomment">     * &lt;b&gt;IMPORTANT:&lt;/b&gt; The resource plugin needs to be disabled for the</em>
+<a class="jxr_linenumber" name="L102" href="#L102">102</a> <em class="jxr_javadoccomment">     * &lt;code&gt;process-resources&lt;/code&gt; phase, so the "default-resources"</em>
+<a class="jxr_linenumber" name="L103" href="#L103">103</a> <em class="jxr_javadoccomment">     * execution must be added. Without this the non-merged manifest will get</em>
+<a class="jxr_linenumber" name="L104" href="#L104">104</a> <em class="jxr_javadoccomment">     * re-copied to the build directory.</em>
+<a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">     * The &lt;code&gt;androidManifestFile&lt;/code&gt; should also be configured to pull</em>
+<a class="jxr_linenumber" name="L109" href="#L109">109</a> <em class="jxr_javadoccomment">     * from the build directory so that later phases will pull the merged</em>
+<a class="jxr_linenumber" name="L110" href="#L110">110</a> <em class="jxr_javadoccomment">     * manifest file.</em>
+<a class="jxr_linenumber" name="L111" href="#L111">111</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L112" href="#L112">112</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L113" href="#L113">113</a> <em class="jxr_javadoccomment">     * Example POM Setup:</em>
+<a class="jxr_linenumber" name="L114" href="#L114">114</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L115" href="#L115">115</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L116" href="#L116">116</a> <em class="jxr_javadoccomment">     * &lt;pre&gt;</em>
+<a class="jxr_linenumber" name="L117" href="#L117">117</a> <em class="jxr_javadoccomment">     * &amp;lt;build&amp;gt;</em>
+<a class="jxr_linenumber" name="L118" href="#L118">118</a> <em class="jxr_javadoccomment">     *     ...</em>
+<a class="jxr_linenumber" name="L119" href="#L119">119</a> <em class="jxr_javadoccomment">     *     &amp;lt;plugins&amp;gt;</em>
+<a class="jxr_linenumber" name="L120" href="#L120">120</a> <em class="jxr_javadoccomment">     *         ...</em>
+<a class="jxr_linenumber" name="L121" href="#L121">121</a> <em class="jxr_javadoccomment">     *         &amp;lt;plugin&amp;gt;</em>
+<a class="jxr_linenumber" name="L122" href="#L122">122</a> <em class="jxr_javadoccomment">     *             &amp;lt;artifactId&amp;gt;maven-resources-plugin&amp;lt;/artifactId&amp;gt;</em>
+<a class="jxr_linenumber" name="L123" href="#L123">123</a> <em class="jxr_javadoccomment">     *             &amp;lt;version&amp;gt;2.6&amp;lt;/version&amp;gt;</em>
+<a class="jxr_linenumber" name="L124" href="#L124">124</a> <em class="jxr_javadoccomment">     *             &amp;lt;executions&amp;gt;</em>
+<a class="jxr_linenumber" name="L125" href="#L125">125</a> <em class="jxr_javadoccomment">     *                 &amp;lt;execution&amp;gt;</em>
+<a class="jxr_linenumber" name="L126" href="#L126">126</a> <em class="jxr_javadoccomment">     *                     &amp;lt;phase&amp;gt;initialize&amp;lt;/phase&amp;gt;</em>
+<a class="jxr_linenumber" name="L127" href="#L127">127</a> <em class="jxr_javadoccomment">     *                     &amp;lt;goals&amp;gt;</em>
+<a class="jxr_linenumber" name="L128" href="#L128">128</a> <em class="jxr_javadoccomment">     *                         &amp;lt;goal&amp;gt;resources&amp;lt;/goal&amp;gt;</em>
+<a class="jxr_linenumber" name="L129" href="#L129">129</a> <em class="jxr_javadoccomment">     *                     &amp;lt;/goals&amp;gt;</em>
+<a class="jxr_linenumber" name="L130" href="#L130">130</a> <em class="jxr_javadoccomment">     *                 &amp;lt;/execution&amp;gt;</em>
+<a class="jxr_linenumber" name="L131" href="#L131">131</a> <em class="jxr_javadoccomment">     *                 &lt;b&gt;&amp;lt;execution&amp;gt;</em>
+<a class="jxr_linenumber" name="L132" href="#L132">132</a> <em class="jxr_javadoccomment">     *                     &amp;lt;id&amp;gt;default-resources&amp;lt;/id&amp;gt;</em>
+<a class="jxr_linenumber" name="L133" href="#L133">133</a> <em class="jxr_javadoccomment">     *                     &amp;lt;phase&amp;gt;DISABLED&amp;lt;/phase&amp;gt;</em>
+<a class="jxr_linenumber" name="L134" href="#L134">134</a> <em class="jxr_javadoccomment">     *                 &amp;lt;/execution&amp;gt;&lt;/b&gt;</em>
+<a class="jxr_linenumber" name="L135" href="#L135">135</a> <em class="jxr_javadoccomment">     *             &amp;lt;/executions&amp;gt;</em>
+<a class="jxr_linenumber" name="L136" href="#L136">136</a> <em class="jxr_javadoccomment">     *         &amp;lt;/plugin&amp;gt;</em>
+<a class="jxr_linenumber" name="L137" href="#L137">137</a> <em class="jxr_javadoccomment">     *         &amp;lt;plugin&amp;gt;</em>
+<a class="jxr_linenumber" name="L138" href="#L138">138</a> <em class="jxr_javadoccomment">     *             &amp;lt;groupId&amp;gt;com.jayway.maven.plugins.android.generation2&amp;lt;/groupId&amp;gt;</em>
+<a class="jxr_linenumber" name="L139" href="#L139">139</a> <em class="jxr_javadoccomment">     *             &amp;lt;artifactId&amp;gt;android-maven-plugin&amp;lt;/artifactId&amp;gt;</em>
+<a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">     *             &amp;lt;configuration&amp;gt;</em>
+<a class="jxr_linenumber" name="L141" href="#L141">141</a> <em class="jxr_javadoccomment">     *                 &lt;b&gt;&amp;lt;androidManifestFile&amp;gt;</em>
+<a class="jxr_linenumber" name="L142" href="#L142">142</a> <em class="jxr_javadoccomment">     *                     ${project.build.directory}/AndroidManifest.xml</em>
+<a class="jxr_linenumber" name="L143" href="#L143">143</a> <em class="jxr_javadoccomment">     *                 &amp;lt;/androidManifestFile&amp;gt;</em>
+<a class="jxr_linenumber" name="L144" href="#L144">144</a> <em class="jxr_javadoccomment">     *                 &amp;lt;mergeManifests&amp;gt;true&amp;lt;/mergeManifests&amp;gt;&lt;/b&gt;</em>
+<a class="jxr_linenumber" name="L145" href="#L145">145</a> <em class="jxr_javadoccomment">     *             &amp;lt;/configuration&amp;gt;</em>
+<a class="jxr_linenumber" name="L146" href="#L146">146</a> <em class="jxr_javadoccomment">     *             &amp;lt;extensions&amp;gt;true&amp;lt;/extensions&amp;gt;</em>
+<a class="jxr_linenumber" name="L147" href="#L147">147</a> <em class="jxr_javadoccomment">     *         &amp;lt;/plugin&amp;gt;</em>
+<a class="jxr_linenumber" name="L148" href="#L148">148</a> <em class="jxr_javadoccomment">     *         ...</em>
+<a class="jxr_linenumber" name="L149" href="#L149">149</a> <em class="jxr_javadoccomment">     *     &amp;lt;/plugins&amp;gt;</em>
+<a class="jxr_linenumber" name="L150" href="#L150">150</a> <em class="jxr_javadoccomment">     *     ...</em>
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> <em class="jxr_javadoccomment">     * &amp;lt;/build&amp;gt;</em>
+<a class="jxr_linenumber" name="L152" href="#L152">152</a> <em class="jxr_javadoccomment">     * &lt;/pre&gt;</em>
+<a class="jxr_linenumber" name="L153" href="#L153">153</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L154" href="#L154">154</a> <em class="jxr_javadoccomment">     * You can filter the pre-merged APK manifest. One important note about Eclipse, Eclipse will</em>
+<a class="jxr_linenumber" name="L155" href="#L155">155</a> <em class="jxr_javadoccomment">     * replace the merged manifest with a filtered pre-merged version when the project is refreshed.</em>
+<a class="jxr_linenumber" name="L156" href="#L156">156</a> <em class="jxr_javadoccomment">     * If you want to review the filtered merged version then you will need to open it outside Eclipse</em>
+<a class="jxr_linenumber" name="L157" href="#L157">157</a> <em class="jxr_javadoccomment">     * without refreshing the project in Eclipse. </em>
+<a class="jxr_linenumber" name="L158" href="#L158">158</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L159" href="#L159">159</a> <em class="jxr_javadoccomment">     * &lt;pre&gt;</em>
+<a class="jxr_linenumber" name="L160" href="#L160">160</a> <em class="jxr_javadoccomment">     * &amp;lt;resources&amp;gt;</em>
+<a class="jxr_linenumber" name="L161" href="#L161">161</a> <em class="jxr_javadoccomment">     *     &amp;lt;resource&amp;gt;</em>
+<a class="jxr_linenumber" name="L162" href="#L162">162</a> <em class="jxr_javadoccomment">     *         &amp;lt;targetPath&amp;gt;${project.build.directory}&amp;lt;/targetPath&amp;gt;</em>
+<a class="jxr_linenumber" name="L163" href="#L163">163</a> <em class="jxr_javadoccomment">     *         &amp;lt;filtering&amp;gt;true&amp;lt;/filtering&amp;gt;</em>
+<a class="jxr_linenumber" name="L164" href="#L164">164</a> <em class="jxr_javadoccomment">     *         &amp;lt;directory&amp;gt;${basedir}&amp;lt;/directory&amp;gt;</em>
+<a class="jxr_linenumber" name="L165" href="#L165">165</a> <em class="jxr_javadoccomment">     *         &amp;lt;includes&amp;gt;</em>
+<a class="jxr_linenumber" name="L166" href="#L166">166</a> <em class="jxr_javadoccomment">     *             &amp;lt;include&amp;gt;AndroidManifest.xml&amp;lt;/include&amp;gt;</em>
+<a class="jxr_linenumber" name="L167" href="#L167">167</a> <em class="jxr_javadoccomment">     *         &amp;lt;/includes&amp;gt;</em>
+<a class="jxr_linenumber" name="L168" href="#L168">168</a> <em class="jxr_javadoccomment">     *     &amp;lt;/resource&amp;gt;</em>
+<a class="jxr_linenumber" name="L169" href="#L169">169</a> <em class="jxr_javadoccomment">     * &amp;lt;/resources&amp;gt;</em>
+<a class="jxr_linenumber" name="L170" href="#L170">170</a> <em class="jxr_javadoccomment">     * &lt;/pre&gt;</em>
+<a class="jxr_linenumber" name="L171" href="#L171">171</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>     @Parameter( property = <span class="jxr_string">"android.mergeManifests"</span>, defaultValue = <span class="jxr_string">"false"</span> )
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> mergeManifests;
+<a class="jxr_linenumber" name="L174" href="#L174">174</a> 
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> <em class="jxr_javadoccomment">     * Whether to fail the build if one of the dependencies and/or the project duplicate a layout file.</em>
+<a class="jxr_linenumber" name="L177" href="#L177">177</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L178" href="#L178">178</a> <em class="jxr_javadoccomment">     * Such a scenario generally means that the build will fail with a compilation error due to missing resource files.</em>
+<a class="jxr_linenumber" name="L179" href="#L179">179</a> <em class="jxr_javadoccomment">     * This is because any Ids contained in the duplicate layout files can never be generated by aapt, as appt</em>
+<a class="jxr_linenumber" name="L180" href="#L180">180</a> <em class="jxr_javadoccomment">     * only picks up the first resource file it finds in its path.</em>
+<a class="jxr_linenumber" name="L181" href="#L181">181</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>     @Parameter( defaultValue = <span class="jxr_string">"true"</span> )
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> failOnConflictingLayouts;
+<a class="jxr_linenumber" name="L184" href="#L184">184</a> 
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L186" href="#L186">186</a> <em class="jxr_javadoccomment">     * Whether to fail the build if one of the dependencies and/or the project have similar package in the </em>
+<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">     * AndroidManifest.</em>
+<a class="jxr_linenumber" name="L188" href="#L188">188</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">     * Such scenario generally means that the build will fail with a compilation error due to</em>
+<a class="jxr_linenumber" name="L190" href="#L190">190</a> <em class="jxr_javadoccomment">     * missing resources in the R file generated.</em>
+<a class="jxr_linenumber" name="L191" href="#L191">191</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>     @Parameter( defaultValue = <span class="jxr_string">"true"</span> )
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> failOnDuplicatePackages;
+<a class="jxr_linenumber" name="L194" href="#L194">194</a> 
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L196" href="#L196">196</a> <em class="jxr_javadoccomment">     * Override default generated folder containing aidl classes</em>
+<a class="jxr_linenumber" name="L197" href="#L197">197</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>     @Parameter(
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>             property = <span class="jxr_string">"android.genDirectoryAidl"</span>,
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>             defaultValue = <span class="jxr_string">"${project.build.directory}/generated-sources/aidl"</span>
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>     )
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>     <strong class="jxr_keyword">protected</strong> File genDirectoryAidl;
+<a class="jxr_linenumber" name="L203" href="#L203">203</a>     
+<a class="jxr_linenumber" name="L204" href="#L204">204</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> <em class="jxr_javadoccomment">     * The directory containing the aidl files.</em>
+<a class="jxr_linenumber" name="L206" href="#L206">206</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>     @Parameter( property = <span class="jxr_string">"android.aidlSourceDirectory"</span>, defaultValue = <span class="jxr_string">"${project.build.sourceDirectory}"</span> )
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>     <strong class="jxr_keyword">protected</strong> File aidlSourceDirectory;
+<a class="jxr_linenumber" name="L209" href="#L209">209</a> 
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L211" href="#L211">211</a> <em class="jxr_javadoccomment">     * &lt;p&gt;Parameter designed to generate custom BuildConfig constants</em>
+<a class="jxr_linenumber" name="L212" href="#L212">212</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L213" href="#L213">213</a>     @Parameter( property = <span class="jxr_string">"android.buildConfigConstants"</span>, readonly = <strong class="jxr_keyword">true</strong> )
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>     <strong class="jxr_keyword">protected</strong> <a href="../../../../../../com/jayway/maven/plugins/android/configuration/BuildConfigConstant.html">BuildConfigConstant</a>[] buildConfigConstants;
+<a class="jxr_linenumber" name="L215" href="#L215">215</a> 
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>     @Component
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>     <strong class="jxr_keyword">private</strong> MavenSession mavenSession;
+<a class="jxr_linenumber" name="L218" href="#L218">218</a> 
+<a class="jxr_linenumber" name="L219" href="#L219">219</a>     @Component
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>     <strong class="jxr_keyword">private</strong> RepositorySystem repositorySystem;
 <a class="jxr_linenumber" name="L221" href="#L221">221</a> 
 <a class="jxr_linenumber" name="L222" href="#L222">222</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L223" href="#L223">223</a> <em class="jxr_javadoccomment">     * Which dependency scopes should not be included when unpacking dependencies</em>
@@ -716,7 +716,7 @@
 <a class="jxr_linenumber" name="L708" href="#L708">708</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/common/AaptCommandBuilder.html">AaptPackageCommandBuilder</a> commandBuilder = <a href="../../../../../../com/jayway/maven/plugins/android/common/AaptCommandBuilder.html">AaptCommandBuilder</a>
 <a class="jxr_linenumber" name="L709" href="#L709">709</a>                 .packageResources( getLog() )
 <a class="jxr_linenumber" name="L710" href="#L710">710</a>                 .makePackageDirectories()
-<a class="jxr_linenumber" name="L711" href="#L711">711</a>                 .setWhereToOutputResourceConstants( genDirectory )
+<a class="jxr_linenumber" name="L711" href="#L711">711</a>                 .setResourceConstantsFolder( genDirectory )
 <a class="jxr_linenumber" name="L712" href="#L712">712</a>                 .forceOverwriteExistingFiles()
 <a class="jxr_linenumber" name="L713" href="#L713">713</a>                 .disablePngCrunching()
 <a class="jxr_linenumber" name="L714" href="#L714">714</a>                 .generateRIntoPackage( customPackage )
@@ -771,397 +771,417 @@
 <a class="jxr_linenumber" name="L763" href="#L763">763</a>     {
 <a class="jxr_linenumber" name="L764" href="#L764">764</a>         getLog().debug( <span class="jxr_string">""</span> );
 <a class="jxr_linenumber" name="L765" href="#L765">765</a>         getLog().debug( <span class="jxr_string">"#generateCorrectRJavaFoApklibDeps"</span> );
-<a class="jxr_linenumber" name="L766" href="#L766">766</a>         <em class="jxr_comment">// Generate R.java for apklibs</em>
-<a class="jxr_linenumber" name="L767" href="#L767">767</a>         <em class="jxr_comment">// Compatibility with Apklib which isn't present in AndroidBuilder</em>
-<a class="jxr_linenumber" name="L768" href="#L768">768</a>         generateApkLibRs();
-<a class="jxr_linenumber" name="L769" href="#L769">769</a> 
-<a class="jxr_linenumber" name="L770" href="#L770">770</a>         <em class="jxr_comment">// Generate corrected R.java for APKLIB dependencies, but only if this is an APK build.</em>
-<a class="jxr_linenumber" name="L771" href="#L771">771</a>         <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; apklibDependencies = getTransitiveDependencyArtifacts( APKLIB );
-<a class="jxr_linenumber" name="L772" href="#L772">772</a>         <strong class="jxr_keyword">if</strong> ( !apklibDependencies.isEmpty() &amp;&amp; APK.equals( project.getArtifact().getType() ) )
-<a class="jxr_linenumber" name="L773" href="#L773">773</a>         {
-<a class="jxr_linenumber" name="L774" href="#L774">774</a>             <em class="jxr_comment">// Generate R.java for each APKLIB based on R.txt</em>
-<a class="jxr_linenumber" name="L775" href="#L775">775</a>             getLog().debug( <span class="jxr_string">""</span> );
-<a class="jxr_linenumber" name="L776" href="#L776">776</a>             getLog().debug( <span class="jxr_string">"Rewriting R files for APKLIB dependencies : "</span> + apklibDependencies );
-<a class="jxr_linenumber" name="L777" href="#L777">777</a>             resourceGenerator.generateLibraryRs( apklibDependencies, <span class="jxr_string">"apklib"</span> );
-<a class="jxr_linenumber" name="L778" href="#L778">778</a>         }
-<a class="jxr_linenumber" name="L779" href="#L779">779</a>     }
-<a class="jxr_linenumber" name="L780" href="#L780">780</a> 
-<a class="jxr_linenumber" name="L781" href="#L781">781</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L782" href="#L782">782</a> <em class="jxr_javadoccomment">     * Generate correct R.java for aar dependencies of a current project</em>
-<a class="jxr_linenumber" name="L783" href="#L783">783</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L784" href="#L784">784</a> <em class="jxr_javadoccomment">     * @throws MojoExecutionException</em>
-<a class="jxr_linenumber" name="L785" href="#L785">785</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L786" href="#L786">786</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> generateCorrectRJavaForAarDependencies( ResourceClassGenerator resourceGenerator )
-<a class="jxr_linenumber" name="L787" href="#L787">787</a>             <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L788" href="#L788">788</a>     {
-<a class="jxr_linenumber" name="L789" href="#L789">789</a>         <em class="jxr_comment">// Generate corrected R.java for AAR dependencies.</em>
-<a class="jxr_linenumber" name="L790" href="#L790">790</a>         <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; aarLibraries = getTransitiveDependencyArtifacts( AAR );
-<a class="jxr_linenumber" name="L791" href="#L791">791</a>         <strong class="jxr_keyword">if</strong> ( !aarLibraries.isEmpty() )
-<a class="jxr_linenumber" name="L792" href="#L792">792</a>         {
-<a class="jxr_linenumber" name="L793" href="#L793">793</a>             <em class="jxr_comment">// Generate R.java for each AAR based on R.txt</em>
-<a class="jxr_linenumber" name="L794" href="#L794">794</a>             getLog().debug( <span class="jxr_string">"Generating R file for AAR dependencies"</span> );
-<a class="jxr_linenumber" name="L795" href="#L795">795</a>             resourceGenerator.generateLibraryRs( aarLibraries, <span class="jxr_string">"aar"</span> );
-<a class="jxr_linenumber" name="L796" href="#L796">796</a>         }
-<a class="jxr_linenumber" name="L797" href="#L797">797</a>     }
-<a class="jxr_linenumber" name="L798" href="#L798">798</a> 
-<a class="jxr_linenumber" name="L799" href="#L799">799</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> generateApkLibRs() <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L800" href="#L800">800</a>     {
-<a class="jxr_linenumber" name="L801" href="#L801">801</a>         getLog().debug( <span class="jxr_string">"Generating Rs for apklib deps of project "</span> + project.getArtifact() );
-<a class="jxr_linenumber" name="L802" href="#L802">802</a>         <strong class="jxr_keyword">for</strong> ( <strong class="jxr_keyword">final</strong> Artifact artifact : getTransitiveDependencyArtifacts( APKLIB ) )
-<a class="jxr_linenumber" name="L803" href="#L803">803</a>         {
-<a class="jxr_linenumber" name="L804" href="#L804">804</a>             getLog().debug( <span class="jxr_string">"Generating apklib R.java for "</span> + artifact.getArtifactId() + <span class="jxr_string">"..."</span> );
-<a class="jxr_linenumber" name="L805" href="#L805">805</a>             generateRForApkLibDependency( artifact );
-<a class="jxr_linenumber" name="L806" href="#L806">806</a>         }
-<a class="jxr_linenumber" name="L807" href="#L807">807</a>     }
-<a class="jxr_linenumber" name="L808" href="#L808">808</a> 
-<a class="jxr_linenumber" name="L809" href="#L809">809</a>     <strong class="jxr_keyword">private</strong> List&lt;File&gt; getLibraryResourceFolders()
-<a class="jxr_linenumber" name="L810" href="#L810">810</a>     {
-<a class="jxr_linenumber" name="L811" href="#L811">811</a>         <strong class="jxr_keyword">final</strong> List&lt;File&gt; resourceFolders = <strong class="jxr_keyword">new</strong> ArrayList&lt;File&gt;();
-<a class="jxr_linenumber" name="L812" href="#L812">812</a>         <strong class="jxr_keyword">for</strong> ( Artifact artifact : getTransitiveDependencyArtifacts() )
-<a class="jxr_linenumber" name="L813" href="#L813">813</a>         {
-<a class="jxr_linenumber" name="L814" href="#L814">814</a>             getLog().debug( <span class="jxr_string">"Considering dep artifact : "</span> + artifact );
-<a class="jxr_linenumber" name="L815" href="#L815">815</a>             <strong class="jxr_keyword">if</strong> ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
-<a class="jxr_linenumber" name="L816" href="#L816">816</a>             {
-<a class="jxr_linenumber" name="L817" href="#L817">817</a>                 <strong class="jxr_keyword">final</strong> File resourceFolder = getUnpackedLibResourceFolder( artifact );
-<a class="jxr_linenumber" name="L818" href="#L818">818</a>                 <strong class="jxr_keyword">if</strong> ( resourceFolder.exists() )
-<a class="jxr_linenumber" name="L819" href="#L819">819</a>                 {
-<a class="jxr_linenumber" name="L820" href="#L820">820</a>                     getLog().debug( <span class="jxr_string">"Adding apklib or aar resource folder : "</span> + resourceFolder );
-<a class="jxr_linenumber" name="L821" href="#L821">821</a>                     resourceFolders.add( resourceFolder );
-<a class="jxr_linenumber" name="L822" href="#L822">822</a>                 }
-<a class="jxr_linenumber" name="L823" href="#L823">823</a>             }
-<a class="jxr_linenumber" name="L824" href="#L824">824</a>         }
-<a class="jxr_linenumber" name="L825" href="#L825">825</a>         <strong class="jxr_keyword">return</strong> resourceFolders;
-<a class="jxr_linenumber" name="L826" href="#L826">826</a>     }
-<a class="jxr_linenumber" name="L827" href="#L827">827</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L828" href="#L828">828</a> <em class="jxr_javadoccomment">     * Executes aapt to generate the R class for the given apklib.</em>
-<a class="jxr_linenumber" name="L829" href="#L829">829</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L830" href="#L830">830</a> <em class="jxr_javadoccomment">     * @param apklibArtifact    apklib for which to generate the R class.</em>
-<a class="jxr_linenumber" name="L831" href="#L831">831</a> <em class="jxr_javadoccomment">     * @throws MojoExecutionException if it fails.</em>
-<a class="jxr_linenumber" name="L832" href="#L832">832</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L833" href="#L833">833</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> generateRForApkLibDependency( Artifact apklibArtifact ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L834" href="#L834">834</a>     {
-<a class="jxr_linenumber" name="L835" href="#L835">835</a>         <strong class="jxr_keyword">final</strong> File unpackDir = getUnpackedLibFolder( apklibArtifact );
-<a class="jxr_linenumber" name="L836" href="#L836">836</a>         getLog().debug( <span class="jxr_string">"Generating incomplete R file for apklib: "</span> + apklibArtifact.getGroupId()
-<a class="jxr_linenumber" name="L837" href="#L837">837</a>                 + <span class="jxr_string">":"</span> + apklibArtifact.getArtifactId() );
-<a class="jxr_linenumber" name="L838" href="#L838">838</a>         <strong class="jxr_keyword">final</strong> File apklibManifest = <strong class="jxr_keyword">new</strong> File( unpackDir, <span class="jxr_string">"AndroidManifest.xml"</span> );
-<a class="jxr_linenumber" name="L839" href="#L839">839</a>         <strong class="jxr_keyword">final</strong> File apklibResDir = <strong class="jxr_keyword">new</strong> File( unpackDir, <span class="jxr_string">"res"</span> );
-<a class="jxr_linenumber" name="L840" href="#L840">840</a> 
-<a class="jxr_linenumber" name="L841" href="#L841">841</a>         List&lt;File&gt; dependenciesResDirectories = <strong class="jxr_keyword">new</strong> ArrayList&lt;File&gt;();
-<a class="jxr_linenumber" name="L842" href="#L842">842</a>         <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; apklibDeps = getDependencyResolver().getLibraryDependenciesFor( project, apklibArtifact );
-<a class="jxr_linenumber" name="L843" href="#L843">843</a>         getLog().debug( <span class="jxr_string">"apklib="</span> + apklibArtifact + <span class="jxr_string">"  dependencies="</span> + apklibDeps );
-<a class="jxr_linenumber" name="L844" href="#L844">844</a>         <strong class="jxr_keyword">for</strong> ( Artifact dependency : apklibDeps )
-<a class="jxr_linenumber" name="L845" href="#L845">845</a>         {
-<a class="jxr_linenumber" name="L846" href="#L846">846</a>             <em class="jxr_comment">// Add in the resources that are dependencies of the apklib.</em>
-<a class="jxr_linenumber" name="L847" href="#L847">847</a>             <strong class="jxr_keyword">final</strong> String extension = dependency.getType();
-<a class="jxr_linenumber" name="L848" href="#L848">848</a>             <strong class="jxr_keyword">final</strong> File dependencyResDir = getUnpackedLibResourceFolder( dependency );
-<a class="jxr_linenumber" name="L849" href="#L849">849</a>             <strong class="jxr_keyword">if</strong> ( ( extension.equals( APKLIB ) || extension.equals( AAR ) ) &amp;&amp; dependencyResDir.exists() )
-<a class="jxr_linenumber" name="L850" href="#L850">850</a>             {
-<a class="jxr_linenumber" name="L851" href="#L851">851</a>                 dependenciesResDirectories.add( dependencyResDir );
-<a class="jxr_linenumber" name="L852" href="#L852">852</a>             }
-<a class="jxr_linenumber" name="L853" href="#L853">853</a>         }
-<a class="jxr_linenumber" name="L854" href="#L854">854</a> 
-<a class="jxr_linenumber" name="L855" href="#L855">855</a>         <em class="jxr_comment">// Create combinedAssets for this apklib dependency - can't have multiple -A args</em>
-<a class="jxr_linenumber" name="L856" href="#L856">856</a>         <strong class="jxr_keyword">final</strong> File apklibCombAssets = <strong class="jxr_keyword">new</strong> File( getUnpackedLibFolder( apklibArtifact ), <span class="jxr_string">"combined-assets"</span> );
-<a class="jxr_linenumber" name="L857" href="#L857">857</a>         <strong class="jxr_keyword">for</strong> ( Artifact dependency : apklibDeps )
-<a class="jxr_linenumber" name="L858" href="#L858">858</a>         {
-<a class="jxr_linenumber" name="L859" href="#L859">859</a>             <em class="jxr_comment">// Accumulate assets for dependencies of the apklib (if they exist).</em>
-<a class="jxr_linenumber" name="L860" href="#L860">860</a>             <strong class="jxr_keyword">final</strong> String extension = dependency.getType();
-<a class="jxr_linenumber" name="L861" href="#L861">861</a>             <strong class="jxr_keyword">final</strong> File dependencyAssetsDir = getUnpackedLibAssetsFolder( dependency );
-<a class="jxr_linenumber" name="L862" href="#L862">862</a>             <strong class="jxr_keyword">if</strong> ( ( extension.equals( APKLIB ) || extension.equals( AAR ) ) )
-<a class="jxr_linenumber" name="L863" href="#L863">863</a>             {
-<a class="jxr_linenumber" name="L864" href="#L864">864</a>                 copyFolder( dependencyAssetsDir, apklibCombAssets );
-<a class="jxr_linenumber" name="L865" href="#L865">865</a>             }
-<a class="jxr_linenumber" name="L866" href="#L866">866</a>         }
-<a class="jxr_linenumber" name="L867" href="#L867">867</a>         <em class="jxr_comment">// Overlay the apklib dependency assets (if they exist)</em>
-<a class="jxr_linenumber" name="L868" href="#L868">868</a>         <strong class="jxr_keyword">final</strong> File apkLibAssetsDir = getUnpackedLibAssetsFolder( apklibArtifact );
-<a class="jxr_linenumber" name="L869" href="#L869">869</a>         copyFolder( apkLibAssetsDir, apklibCombAssets );
-<a class="jxr_linenumber" name="L870" href="#L870">870</a> 
-<a class="jxr_linenumber" name="L871" href="#L871">871</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/CommandExecutor.html">CommandExecutor</a> executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-<a class="jxr_linenumber" name="L872" href="#L872">872</a>         executor.setLogger( getLog() );
-<a class="jxr_linenumber" name="L873" href="#L873">873</a> 
-<a class="jxr_linenumber" name="L874" href="#L874">874</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/common/AaptCommandBuilder.html">AaptCommandBuilder</a> commandBuilder = <a href="../../../../../../com/jayway/maven/plugins/android/common/AaptCommandBuilder.html">AaptCommandBuilder</a>
-<a class="jxr_linenumber" name="L875" href="#L875">875</a>                 .packageResources( getLog() )
-<a class="jxr_linenumber" name="L876" href="#L876">876</a>                 .makeResourcesNonConstant()
-<a class="jxr_linenumber" name="L877" href="#L877">877</a>                 .makePackageDirectories()
-<a class="jxr_linenumber" name="L878" href="#L878">878</a>                 .setWhereToOutputResourceConstants( genDirectory )
-<a class="jxr_linenumber" name="L879" href="#L879">879</a>                 .generateRIntoPackage( extractPackageNameFromAndroidManifest( apklibManifest ) )
-<a class="jxr_linenumber" name="L880" href="#L880">880</a>                 .setPathToAndroidManifest( apklibManifest )
-<a class="jxr_linenumber" name="L881" href="#L881">881</a>                 .addResourceDirectoryIfExists( apklibResDir )
-<a class="jxr_linenumber" name="L882" href="#L882">882</a>                 .addResourceDirectoriesIfExists( dependenciesResDirectories )
-<a class="jxr_linenumber" name="L883" href="#L883">883</a>                 .autoAddOverlay()
-<a class="jxr_linenumber" name="L884" href="#L884">884</a>                 .addRawAssetsDirectoryIfExists( apklibCombAssets )
-<a class="jxr_linenumber" name="L885" href="#L885">885</a>                 .addExistingPackageToBaseIncludeSet( getAndroidSdk().getAndroidJar() )
-<a class="jxr_linenumber" name="L886" href="#L886">886</a>                 .addConfigurations( configurations )
-<a class="jxr_linenumber" name="L887" href="#L887">887</a>                 .addExtraArguments( aaptExtraArgs )
-<a class="jxr_linenumber" name="L888" href="#L888">888</a>                 .setVerbose( aaptVerbose )
-<a class="jxr_linenumber" name="L889" href="#L889">889</a>                 <em class="jxr_comment">// We need to generate R.txt for all projects as it needs to be consumed when generating R class.</em>
-<a class="jxr_linenumber" name="L890" href="#L890">890</a>                 <em class="jxr_comment">// It also needs to be consumed when packaging aar.</em>
-<a class="jxr_linenumber" name="L891" href="#L891">891</a>                 .generateRTextFile( unpackDir );
-<a class="jxr_linenumber" name="L892" href="#L892">892</a> 
-<a class="jxr_linenumber" name="L893" href="#L893">893</a>         getLog().debug( getAndroidSdk().getAaptPath() + <span class="jxr_string">" "</span> + commandBuilder.toString() );
-<a class="jxr_linenumber" name="L894" href="#L894">894</a>         <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L895" href="#L895">895</a>         {
-<a class="jxr_linenumber" name="L896" href="#L896">896</a>             executor.setCaptureStdOut( <strong class="jxr_keyword">true</strong> );
-<a class="jxr_linenumber" name="L897" href="#L897">897</a>             <strong class="jxr_keyword">final</strong> List&lt;String&gt; commands = commandBuilder.build();
-<a class="jxr_linenumber" name="L898" href="#L898">898</a>             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
-<a class="jxr_linenumber" name="L899" href="#L899">899</a>         }
-<a class="jxr_linenumber" name="L900" href="#L900">900</a>         <strong class="jxr_keyword">catch</strong> ( ExecutionException e )
-<a class="jxr_linenumber" name="L901" href="#L901">901</a>         {
-<a class="jxr_linenumber" name="L902" href="#L902">902</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">""</span>, e );
-<a class="jxr_linenumber" name="L903" href="#L903">903</a>         }
-<a class="jxr_linenumber" name="L904" href="#L904">904</a>     }
-<a class="jxr_linenumber" name="L905" href="#L905">905</a> 
-<a class="jxr_linenumber" name="L906" href="#L906">906</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> mergeManifests() <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L907" href="#L907">907</a>     {
-<a class="jxr_linenumber" name="L908" href="#L908">908</a>         getLog().debug( <span class="jxr_string">"mergeManifests: "</span> + mergeManifests );
-<a class="jxr_linenumber" name="L909" href="#L909">909</a> 
-<a class="jxr_linenumber" name="L910" href="#L910">910</a>         <strong class="jxr_keyword">if</strong> ( !mergeManifests )
-<a class="jxr_linenumber" name="L911" href="#L911">911</a>         {
-<a class="jxr_linenumber" name="L912" href="#L912">912</a>             getLog().debug( <span class="jxr_string">"Manifest merging disabled. Using project manifest only"</span> );
-<a class="jxr_linenumber" name="L913" href="#L913">913</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L914" href="#L914">914</a>         }
-<a class="jxr_linenumber" name="L915" href="#L915">915</a> 
-<a class="jxr_linenumber" name="L916" href="#L916">916</a>         getLog().info( <span class="jxr_string">"Getting manifests of dependent apklibs"</span> );
-<a class="jxr_linenumber" name="L917" href="#L917">917</a>         List&lt;File&gt; libManifests = <strong class="jxr_keyword">new</strong> ArrayList&lt;File&gt;();
-<a class="jxr_linenumber" name="L918" href="#L918">918</a>         <strong class="jxr_keyword">for</strong> ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
-<a class="jxr_linenumber" name="L919" href="#L919">919</a>         {
-<a class="jxr_linenumber" name="L920" href="#L920">920</a>             <strong class="jxr_keyword">final</strong> File libManifest = <strong class="jxr_keyword">new</strong> File( getUnpackedLibFolder( artifact ), <span class="jxr_string">"AndroidManifest.xml"</span> );
-<a class="jxr_linenumber" name="L921" href="#L921">921</a>             <strong class="jxr_keyword">if</strong> ( !libManifest.exists() )
-<a class="jxr_linenumber" name="L922" href="#L922">922</a>             {
-<a class="jxr_linenumber" name="L923" href="#L923">923</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( artifact.getArtifactId() + <span class="jxr_string">" is missing AndroidManifest.xml"</span> );
-<a class="jxr_linenumber" name="L924" href="#L924">924</a>             }
-<a class="jxr_linenumber" name="L925" href="#L925">925</a> 
-<a class="jxr_linenumber" name="L926" href="#L926">926</a>             libManifests.add( libManifest );
-<a class="jxr_linenumber" name="L927" href="#L927">927</a>         }
-<a class="jxr_linenumber" name="L928" href="#L928">928</a> 
-<a class="jxr_linenumber" name="L929" href="#L929">929</a>         <strong class="jxr_keyword">if</strong> ( !libManifests.isEmpty() )
-<a class="jxr_linenumber" name="L930" href="#L930">930</a>         {
-<a class="jxr_linenumber" name="L931" href="#L931">931</a>             <strong class="jxr_keyword">final</strong> File mergedManifest = <strong class="jxr_keyword">new</strong> File( androidManifestFile.getParent(), <span class="jxr_string">"AndroidManifest-merged.xml"</span> );
-<a class="jxr_linenumber" name="L932" href="#L932">932</a>             <strong class="jxr_keyword">final</strong> StdLogger stdLogger = <strong class="jxr_keyword">new</strong> StdLogger( StdLogger.Level.VERBOSE );
-<a class="jxr_linenumber" name="L933" href="#L933">933</a>             <strong class="jxr_keyword">final</strong> ManifestMerger merger = <strong class="jxr_keyword">new</strong> ManifestMerger( MergerLog.wrapSdkLog( stdLogger ), <strong class="jxr_keyword">null</strong> );
+<a class="jxr_linenumber" name="L766" href="#L766">766</a> 
+<a class="jxr_linenumber" name="L767" href="#L767">767</a>         <em class="jxr_comment">// Generate R.java for apklibs</em>
+<a class="jxr_linenumber" name="L768" href="#L768">768</a>         <em class="jxr_comment">// Compatibility with Apklib which isn't present in AndroidBuilder</em>
+<a class="jxr_linenumber" name="L769" href="#L769">769</a>         getLog().debug( <span class="jxr_string">"Generating Rs for apklib deps of project "</span> + project.getArtifact() );
+<a class="jxr_linenumber" name="L770" href="#L770">770</a>         <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; apklibDependencies = getTransitiveDependencyArtifacts( APKLIB );
+<a class="jxr_linenumber" name="L771" href="#L771">771</a>         <strong class="jxr_keyword">for</strong> ( <strong class="jxr_keyword">final</strong> Artifact artifact : apklibDependencies )
+<a class="jxr_linenumber" name="L772" href="#L772">772</a>         {
+<a class="jxr_linenumber" name="L773" href="#L773">773</a>             getLog().debug( <span class="jxr_string">"Generating apklib R.java for "</span> + artifact.getArtifactId() + <span class="jxr_string">"..."</span> );
+<a class="jxr_linenumber" name="L774" href="#L774">774</a>             generateRForApkLibDependency( artifact );
+<a class="jxr_linenumber" name="L775" href="#L775">775</a>         }
+<a class="jxr_linenumber" name="L776" href="#L776">776</a> 
+<a class="jxr_linenumber" name="L777" href="#L777">777</a>         <em class="jxr_comment">// Generate corrected R.java for APKLIB dependencies, but only if this is an APK build.</em>
+<a class="jxr_linenumber" name="L778" href="#L778">778</a>         <strong class="jxr_keyword">if</strong> ( !apklibDependencies.isEmpty() &amp;&amp; APK.equals( project.getArtifact().getType() ) )
+<a class="jxr_linenumber" name="L779" href="#L779">779</a>         {
+<a class="jxr_linenumber" name="L780" href="#L780">780</a>             <em class="jxr_comment">// Generate R.java for each APKLIB based on R.txt</em>
+<a class="jxr_linenumber" name="L781" href="#L781">781</a>             getLog().debug( <span class="jxr_string">""</span> );
+<a class="jxr_linenumber" name="L782" href="#L782">782</a>             getLog().debug( <span class="jxr_string">"Rewriting R files for APKLIB dependencies : "</span> + apklibDependencies );
+<a class="jxr_linenumber" name="L783" href="#L783">783</a>             resourceGenerator.generateLibraryRs( apklibDependencies, <span class="jxr_string">"apklib"</span> );
+<a class="jxr_linenumber" name="L784" href="#L784">784</a>         }
+<a class="jxr_linenumber" name="L785" href="#L785">785</a>     }
+<a class="jxr_linenumber" name="L786" href="#L786">786</a> 
+<a class="jxr_linenumber" name="L787" href="#L787">787</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L788" href="#L788">788</a> <em class="jxr_javadoccomment">     * Generate correct R.java for aar dependencies of a current project</em>
+<a class="jxr_linenumber" name="L789" href="#L789">789</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L790" href="#L790">790</a> <em class="jxr_javadoccomment">     * @throws MojoExecutionException</em>
+<a class="jxr_linenumber" name="L791" href="#L791">791</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L792" href="#L792">792</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> generateCorrectRJavaForAarDependencies( ResourceClassGenerator resourceGenerator )
+<a class="jxr_linenumber" name="L793" href="#L793">793</a>             <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L794" href="#L794">794</a>     {
+<a class="jxr_linenumber" name="L795" href="#L795">795</a>         <em class="jxr_comment">// Generate corrected R.java for AAR dependencies.</em>
+<a class="jxr_linenumber" name="L796" href="#L796">796</a>         <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; aarLibraries = getTransitiveDependencyArtifacts( AAR );
+<a class="jxr_linenumber" name="L797" href="#L797">797</a>         <strong class="jxr_keyword">if</strong> ( !aarLibraries.isEmpty() )
+<a class="jxr_linenumber" name="L798" href="#L798">798</a>         {
+<a class="jxr_linenumber" name="L799" href="#L799">799</a>             <em class="jxr_comment">// Generate R.java for each AAR based on R.txt</em>
+<a class="jxr_linenumber" name="L800" href="#L800">800</a>             getLog().debug( <span class="jxr_string">"Generating R file for AAR dependencies"</span> );
+<a class="jxr_linenumber" name="L801" href="#L801">801</a>             resourceGenerator.generateLibraryRs( aarLibraries, <span class="jxr_string">"aar"</span> );
+<a class="jxr_linenumber" name="L802" href="#L802">802</a>         }
+<a class="jxr_linenumber" name="L803" href="#L803">803</a>     }
+<a class="jxr_linenumber" name="L804" href="#L804">804</a> 
+<a class="jxr_linenumber" name="L805" href="#L805">805</a>     <strong class="jxr_keyword">private</strong> List&lt;File&gt; getLibraryResourceFolders()
+<a class="jxr_linenumber" name="L806" href="#L806">806</a>     {
+<a class="jxr_linenumber" name="L807" href="#L807">807</a>         <strong class="jxr_keyword">final</strong> List&lt;File&gt; resourceFolders = <strong class="jxr_keyword">new</strong> ArrayList&lt;File&gt;();
+<a class="jxr_linenumber" name="L808" href="#L808">808</a>         <strong class="jxr_keyword">for</strong> ( Artifact artifact : getTransitiveDependencyArtifacts() )
+<a class="jxr_linenumber" name="L809" href="#L809">809</a>         {
+<a class="jxr_linenumber" name="L810" href="#L810">810</a>             getLog().debug( <span class="jxr_string">"Considering dep artifact : "</span> + artifact );
+<a class="jxr_linenumber" name="L811" href="#L811">811</a>             <strong class="jxr_keyword">if</strong> ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
+<a class="jxr_linenumber" name="L812" href="#L812">812</a>             {
+<a class="jxr_linenumber" name="L813" href="#L813">813</a>                 <strong class="jxr_keyword">final</strong> File resourceFolder = getUnpackedLibResourceFolder( artifact );
+<a class="jxr_linenumber" name="L814" href="#L814">814</a>                 <strong class="jxr_keyword">if</strong> ( resourceFolder.exists() )
+<a class="jxr_linenumber" name="L815" href="#L815">815</a>                 {
+<a class="jxr_linenumber" name="L816" href="#L816">816</a>                     getLog().debug( <span class="jxr_string">"Adding apklib or aar resource folder : "</span> + resourceFolder );
+<a class="jxr_linenumber" name="L817" href="#L817">817</a>                     resourceFolders.add( resourceFolder );
+<a class="jxr_linenumber" name="L818" href="#L818">818</a>                 }
+<a class="jxr_linenumber" name="L819" href="#L819">819</a>             }
+<a class="jxr_linenumber" name="L820" href="#L820">820</a>         }
+<a class="jxr_linenumber" name="L821" href="#L821">821</a>         <strong class="jxr_keyword">return</strong> resourceFolders;
+<a class="jxr_linenumber" name="L822" href="#L822">822</a>     }
+<a class="jxr_linenumber" name="L823" href="#L823">823</a> 
+<a class="jxr_linenumber" name="L824" href="#L824">824</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L825" href="#L825">825</a> <em class="jxr_javadoccomment">     * Executes aapt to generate the R class for the given apklib.</em>
+<a class="jxr_linenumber" name="L826" href="#L826">826</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L827" href="#L827">827</a> <em class="jxr_javadoccomment">     * @param apklibArtifact    apklib for which to generate the R class.</em>
+<a class="jxr_linenumber" name="L828" href="#L828">828</a> <em class="jxr_javadoccomment">     * @throws MojoExecutionException if it fails.</em>
+<a class="jxr_linenumber" name="L829" href="#L829">829</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L830" href="#L830">830</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> generateRForApkLibDependency( Artifact apklibArtifact ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L831" href="#L831">831</a>     {
+<a class="jxr_linenumber" name="L832" href="#L832">832</a>         <strong class="jxr_keyword">final</strong> File unpackDir = getUnpackedLibFolder( apklibArtifact );
+<a class="jxr_linenumber" name="L833" href="#L833">833</a>         getLog().debug( <span class="jxr_string">"Generating incomplete R file for apklib: "</span> + apklibArtifact.getGroupId()
+<a class="jxr_linenumber" name="L834" href="#L834">834</a>                 + <span class="jxr_string">":"</span> + apklibArtifact.getArtifactId() );
+<a class="jxr_linenumber" name="L835" href="#L835">835</a>         <strong class="jxr_keyword">final</strong> File apklibManifest = <strong class="jxr_keyword">new</strong> File( unpackDir, <span class="jxr_string">"AndroidManifest.xml"</span> );
+<a class="jxr_linenumber" name="L836" href="#L836">836</a>         <strong class="jxr_keyword">final</strong> File apklibResDir = <strong class="jxr_keyword">new</strong> File( unpackDir, <span class="jxr_string">"res"</span> );
+<a class="jxr_linenumber" name="L837" href="#L837">837</a> 
+<a class="jxr_linenumber" name="L838" href="#L838">838</a>         List&lt;File&gt; dependenciesResDirectories = <strong class="jxr_keyword">new</strong> ArrayList&lt;File&gt;();
+<a class="jxr_linenumber" name="L839" href="#L839">839</a>         <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; apklibDeps = getDependencyResolver()
+<a class="jxr_linenumber" name="L840" href="#L840">840</a>                 .getLibraryDependenciesFor( mavenSession, repositorySystem, apklibArtifact );
+<a class="jxr_linenumber" name="L841" href="#L841">841</a>         getLog().debug( <span class="jxr_string">"apklib="</span> + apklibArtifact + <span class="jxr_string">"  dependencies="</span> + apklibDeps );
+<a class="jxr_linenumber" name="L842" href="#L842">842</a>         <strong class="jxr_keyword">for</strong> ( Artifact dependency : apklibDeps )
+<a class="jxr_linenumber" name="L843" href="#L843">843</a>         {
+<a class="jxr_linenumber" name="L844" href="#L844">844</a>             <em class="jxr_comment">// Add in the resources that are dependencies of the apklib.</em>
+<a class="jxr_linenumber" name="L845" href="#L845">845</a>             <strong class="jxr_keyword">final</strong> String extension = dependency.getType();
+<a class="jxr_linenumber" name="L846" href="#L846">846</a>             <strong class="jxr_keyword">final</strong> File dependencyResDir = getUnpackedLibResourceFolder( dependency );
+<a class="jxr_linenumber" name="L847" href="#L847">847</a>             <strong class="jxr_keyword">if</strong> ( ( extension.equals( APKLIB ) || extension.equals( AAR ) ) &amp;&amp; dependencyResDir.exists() )
+<a class="jxr_linenumber" name="L848" href="#L848">848</a>             {
+<a class="jxr_linenumber" name="L849" href="#L849">849</a>                 dependenciesResDirectories.add( dependencyResDir );
+<a class="jxr_linenumber" name="L850" href="#L850">850</a>             }
+<a class="jxr_linenumber" name="L851" href="#L851">851</a>         }
+<a class="jxr_linenumber" name="L852" href="#L852">852</a> 
+<a class="jxr_linenumber" name="L853" href="#L853">853</a>         <em class="jxr_comment">// Create combinedAssets for this apklib dependency - can't have multiple -A args</em>
+<a class="jxr_linenumber" name="L854" href="#L854">854</a>         <strong class="jxr_keyword">final</strong> File apklibCombAssets = <strong class="jxr_keyword">new</strong> File( getUnpackedLibFolder( apklibArtifact ), <span class="jxr_string">"combined-assets"</span> );
+<a class="jxr_linenumber" name="L855" href="#L855">855</a>         <strong class="jxr_keyword">for</strong> ( Artifact dependency : apklibDeps )
+<a class="jxr_linenumber" name="L856" href="#L856">856</a>         {
+<a class="jxr_linenumber" name="L857" href="#L857">857</a>             <em class="jxr_comment">// Accumulate assets for dependencies of the apklib (if they exist).</em>
+<a class="jxr_linenumber" name="L858" href="#L858">858</a>             <strong class="jxr_keyword">final</strong> String extension = dependency.getType();
+<a class="jxr_linenumber" name="L859" href="#L859">859</a>             <strong class="jxr_keyword">final</strong> File dependencyAssetsDir = getUnpackedLibAssetsFolder( dependency );
+<a class="jxr_linenumber" name="L860" href="#L860">860</a>             <strong class="jxr_keyword">if</strong> ( ( extension.equals( APKLIB ) || extension.equals( AAR ) ) )
+<a class="jxr_linenumber" name="L861" href="#L861">861</a>             {
+<a class="jxr_linenumber" name="L862" href="#L862">862</a>                 copyFolder( dependencyAssetsDir, apklibCombAssets );
+<a class="jxr_linenumber" name="L863" href="#L863">863</a>             }
+<a class="jxr_linenumber" name="L864" href="#L864">864</a>         }
+<a class="jxr_linenumber" name="L865" href="#L865">865</a>         <em class="jxr_comment">// Overlay the apklib dependency assets (if they exist)</em>
+<a class="jxr_linenumber" name="L866" href="#L866">866</a>         <strong class="jxr_keyword">final</strong> File apkLibAssetsDir = getUnpackedLibAssetsFolder( apklibArtifact );
+<a class="jxr_linenumber" name="L867" href="#L867">867</a>         copyFolder( apkLibAssetsDir, apklibCombAssets );
+<a class="jxr_linenumber" name="L868" href="#L868">868</a> 
+<a class="jxr_linenumber" name="L869" href="#L869">869</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/CommandExecutor.html">CommandExecutor</a> executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+<a class="jxr_linenumber" name="L870" href="#L870">870</a>         executor.setLogger( getLog() );
+<a class="jxr_linenumber" name="L871" href="#L871">871</a> 
+<a class="jxr_linenumber" name="L872" href="#L872">872</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/common/AaptCommandBuilder.html">AaptCommandBuilder</a> commandBuilder = <a href="../../../../../../com/jayway/maven/plugins/android/common/AaptCommandBuilder.html">AaptCommandBuilder</a>
+<a class="jxr_linenumber" name="L873" href="#L873">873</a>                 .packageResources( getLog() )
+<a class="jxr_linenumber" name="L874" href="#L874">874</a>                 .makeResourcesNonConstant()
+<a class="jxr_linenumber" name="L875" href="#L875">875</a>                 .makePackageDirectories()
+<a class="jxr_linenumber" name="L876" href="#L876">876</a>                 .setResourceConstantsFolder( genDirectory )
+<a class="jxr_linenumber" name="L877" href="#L877">877</a>                 .generateRIntoPackage( extractPackageNameFromAndroidManifest( apklibManifest ) )
+<a class="jxr_linenumber" name="L878" href="#L878">878</a>                 .setPathToAndroidManifest( apklibManifest )
+<a class="jxr_linenumber" name="L879" href="#L879">879</a>                 .addResourceDirectoryIfExists( apklibResDir )
+<a class="jxr_linenumber" name="L880" href="#L880">880</a>                 .addResourceDirectoriesIfExists( dependenciesResDirectories )
+<a class="jxr_linenumber" name="L881" href="#L881">881</a>                 .autoAddOverlay()
+<a class="jxr_linenumber" name="L882" href="#L882">882</a>                 .addRawAssetsDirectoryIfExists( apklibCombAssets )
+<a class="jxr_linenumber" name="L883" href="#L883">883</a>                 .addExistingPackageToBaseIncludeSet( getAndroidSdk().getAndroidJar() )
+<a class="jxr_linenumber" name="L884" href="#L884">884</a>                 .addConfigurations( configurations )
+<a class="jxr_linenumber" name="L885" href="#L885">885</a>                 .addExtraArguments( aaptExtraArgs )
+<a class="jxr_linenumber" name="L886" href="#L886">886</a>                 .setVerbose( aaptVerbose )
+<a class="jxr_linenumber" name="L887" href="#L887">887</a>                 <em class="jxr_comment">// We need to generate R.txt for all projects as it needs to be consumed when generating R class.</em>
+<a class="jxr_linenumber" name="L888" href="#L888">888</a>                 <em class="jxr_comment">// It also needs to be consumed when packaging aar.</em>
+<a class="jxr_linenumber" name="L889" href="#L889">889</a>                 .generateRTextFile( unpackDir );
+<a class="jxr_linenumber" name="L890" href="#L890">890</a> 
+<a class="jxr_linenumber" name="L891" href="#L891">891</a>         getLog().debug( getAndroidSdk().getAaptPath() + <span class="jxr_string">" "</span> + commandBuilder.toString() );
+<a class="jxr_linenumber" name="L892" href="#L892">892</a>         <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L893" href="#L893">893</a>         {
+<a class="jxr_linenumber" name="L894" href="#L894">894</a>             executor.setCaptureStdOut( <strong class="jxr_keyword">true</strong> );
+<a class="jxr_linenumber" name="L895" href="#L895">895</a>             <strong class="jxr_keyword">final</strong> List&lt;String&gt; commands = commandBuilder.build();
+<a class="jxr_linenumber" name="L896" href="#L896">896</a>             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
+<a class="jxr_linenumber" name="L897" href="#L897">897</a>         }
+<a class="jxr_linenumber" name="L898" href="#L898">898</a>         <strong class="jxr_keyword">catch</strong> ( ExecutionException e )
+<a class="jxr_linenumber" name="L899" href="#L899">899</a>         {
+<a class="jxr_linenumber" name="L900" href="#L900">900</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">""</span>, e );
+<a class="jxr_linenumber" name="L901" href="#L901">901</a>         }
+<a class="jxr_linenumber" name="L902" href="#L902">902</a>     }
+<a class="jxr_linenumber" name="L903" href="#L903">903</a> 
+<a class="jxr_linenumber" name="L904" href="#L904">904</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> mergeManifests() <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L905" href="#L905">905</a>     {
+<a class="jxr_linenumber" name="L906" href="#L906">906</a>         getLog().debug( <span class="jxr_string">"mergeManifests: "</span> + mergeManifests );
+<a class="jxr_linenumber" name="L907" href="#L907">907</a> 
+<a class="jxr_linenumber" name="L908" href="#L908">908</a>         <strong class="jxr_keyword">if</strong> ( !mergeManifests )
+<a class="jxr_linenumber" name="L909" href="#L909">909</a>         {
+<a class="jxr_linenumber" name="L910" href="#L910">910</a>             getLog().debug( <span class="jxr_string">"Manifest merging disabled. Using project manifest only"</span> );
+<a class="jxr_linenumber" name="L911" href="#L911">911</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L912" href="#L912">912</a>         }
+<a class="jxr_linenumber" name="L913" href="#L913">913</a> 
+<a class="jxr_linenumber" name="L914" href="#L914">914</a>         getLog().info( <span class="jxr_string">"Getting manifests of dependent apklibs"</span> );
+<a class="jxr_linenumber" name="L915" href="#L915">915</a>         List&lt;File&gt; libManifests = <strong class="jxr_keyword">new</strong> ArrayList&lt;File&gt;();
+<a class="jxr_linenumber" name="L916" href="#L916">916</a>         <strong class="jxr_keyword">for</strong> ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
+<a class="jxr_linenumber" name="L917" href="#L917">917</a>         {
+<a class="jxr_linenumber" name="L918" href="#L918">918</a>             <strong class="jxr_keyword">final</strong> File libManifest = <strong class="jxr_keyword">new</strong> File( getUnpackedLibFolder( artifact ), <span class="jxr_string">"AndroidManifest.xml"</span> );
+<a class="jxr_linenumber" name="L919" href="#L919">919</a>             <strong class="jxr_keyword">if</strong> ( !libManifest.exists() )
+<a class="jxr_linenumber" name="L920" href="#L920">920</a>             {
+<a class="jxr_linenumber" name="L921" href="#L921">921</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( artifact.getArtifactId() + <span class="jxr_string">" is missing AndroidManifest.xml"</span> );
+<a class="jxr_linenumber" name="L922" href="#L922">922</a>             }
+<a class="jxr_linenumber" name="L923" href="#L923">923</a> 
+<a class="jxr_linenumber" name="L924" href="#L924">924</a>             libManifests.add( libManifest );
+<a class="jxr_linenumber" name="L925" href="#L925">925</a>         }
+<a class="jxr_linenumber" name="L926" href="#L926">926</a> 
+<a class="jxr_linenumber" name="L927" href="#L927">927</a>         <strong class="jxr_keyword">if</strong> ( !libManifests.isEmpty() )
+<a class="jxr_linenumber" name="L928" href="#L928">928</a>         {
+<a class="jxr_linenumber" name="L929" href="#L929">929</a>             <strong class="jxr_keyword">final</strong> File mergedManifest = <strong class="jxr_keyword">new</strong> File( androidManifestFile.getParent(), <span class="jxr_string">"AndroidManifest-merged.xml"</span> );
+<a class="jxr_linenumber" name="L930" href="#L930">930</a>             <strong class="jxr_keyword">final</strong> StdLogger stdLogger = <strong class="jxr_keyword">new</strong> StdLogger( StdLogger.Level.VERBOSE );
+<a class="jxr_linenumber" name="L931" href="#L931">931</a>             <strong class="jxr_keyword">final</strong> ManifestMerger merger = <strong class="jxr_keyword">new</strong> ManifestMerger( MergerLog.wrapSdkLog( stdLogger ), <strong class="jxr_keyword">null</strong> );
+<a class="jxr_linenumber" name="L932" href="#L932">932</a> 
+<a class="jxr_linenumber" name="L933" href="#L933">933</a>             getLog().info( <span class="jxr_string">"Merging manifests of dependent apklibs"</span> );
 <a class="jxr_linenumber" name="L934" href="#L934">934</a> 
-<a class="jxr_linenumber" name="L935" href="#L935">935</a>             getLog().info( <span class="jxr_string">"Merging manifests of dependent apklibs"</span> );
-<a class="jxr_linenumber" name="L936" href="#L936">936</a> 
-<a class="jxr_linenumber" name="L937" href="#L937">937</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> mergeSuccess = merger.process( mergedManifest, androidManifestFile,
-<a class="jxr_linenumber" name="L938" href="#L938">938</a>                 libManifests.toArray( <strong class="jxr_keyword">new</strong> File[libManifests.size()] ),  <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong> );
-<a class="jxr_linenumber" name="L939" href="#L939">939</a> 
-<a class="jxr_linenumber" name="L940" href="#L940">940</a>             <strong class="jxr_keyword">if</strong> ( mergeSuccess )
-<a class="jxr_linenumber" name="L941" href="#L941">941</a>             {
-<a class="jxr_linenumber" name="L942" href="#L942">942</a>                 <em class="jxr_comment">// Replace the original manifest file with the merged one so that</em>
-<a class="jxr_linenumber" name="L943" href="#L943">943</a>                 <em class="jxr_comment">// the rest of the build will pick it up.</em>
-<a class="jxr_linenumber" name="L944" href="#L944">944</a>                 androidManifestFile.delete();
-<a class="jxr_linenumber" name="L945" href="#L945">945</a>                 mergedManifest.renameTo( androidManifestFile );
-<a class="jxr_linenumber" name="L946" href="#L946">946</a>                 getLog().info( <span class="jxr_string">"Done Merging Manifests of APKLIBs"</span> );
-<a class="jxr_linenumber" name="L947" href="#L947">947</a>             }
-<a class="jxr_linenumber" name="L948" href="#L948">948</a>             <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L949" href="#L949">949</a>             {
-<a class="jxr_linenumber" name="L950" href="#L950">950</a>                 getLog().error( <span class="jxr_string">"Manifests were not merged!"</span> );
-<a class="jxr_linenumber" name="L951" href="#L951">951</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"Manifests were not merged!"</span> );
-<a class="jxr_linenumber" name="L952" href="#L952">952</a>             }
-<a class="jxr_linenumber" name="L953" href="#L953">953</a>         }
-<a class="jxr_linenumber" name="L954" href="#L954">954</a>         <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L955" href="#L955">955</a>         {
-<a class="jxr_linenumber" name="L956" href="#L956">956</a>             getLog().info( <span class="jxr_string">"No APKLIB manifests found. Using project manifest only."</span> );
-<a class="jxr_linenumber" name="L957" href="#L957">957</a>         }
-<a class="jxr_linenumber" name="L958" href="#L958">958</a>     }
-<a class="jxr_linenumber" name="L959" href="#L959">959</a> 
-<a class="jxr_linenumber" name="L960" href="#L960">960</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> generateBuildConfig() <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L961" href="#L961">961</a>     {
-<a class="jxr_linenumber" name="L962" href="#L962">962</a>         getLog().debug( <span class="jxr_string">"Generating BuildConfig file"</span> );
-<a class="jxr_linenumber" name="L963" href="#L963">963</a> 
-<a class="jxr_linenumber" name="L964" href="#L964">964</a>         <em class="jxr_comment">// Create the BuildConfig for our package.</em>
-<a class="jxr_linenumber" name="L965" href="#L965">965</a>         String packageName = extractPackageNameFromAndroidManifest( androidManifestFile );
-<a class="jxr_linenumber" name="L966" href="#L966">966</a>         <strong class="jxr_keyword">if</strong> ( StringUtils.isNotBlank( customPackage ) )
-<a class="jxr_linenumber" name="L967" href="#L967">967</a>         {
-<a class="jxr_linenumber" name="L968" href="#L968">968</a>             packageName = customPackage;
-<a class="jxr_linenumber" name="L969" href="#L969">969</a>         }
-<a class="jxr_linenumber" name="L970" href="#L970">970</a>         generateBuildConfigForPackage( packageName );
-<a class="jxr_linenumber" name="L971" href="#L971">971</a> 
-<a class="jxr_linenumber" name="L972" href="#L972">972</a>         <em class="jxr_comment">// Generate the BuildConfig for any APKLIB and some AAR dependencies.</em>
-<a class="jxr_linenumber" name="L973" href="#L973">973</a>         <em class="jxr_comment">// Need to generate for AAR, because some old AARs like ActionBarSherlock do not have BuildConfig (or R)</em>
-<a class="jxr_linenumber" name="L974" href="#L974">974</a>         <strong class="jxr_keyword">for</strong> ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
-<a class="jxr_linenumber" name="L975" href="#L975">975</a>         {
-<a class="jxr_linenumber" name="L976" href="#L976">976</a>             <strong class="jxr_keyword">if</strong> ( skipBuildConfigGeneration( artifact ) )
-<a class="jxr_linenumber" name="L977" href="#L977">977</a>             {
-<a class="jxr_linenumber" name="L978" href="#L978">978</a>                 <strong class="jxr_keyword">continue</strong>;
-<a class="jxr_linenumber" name="L979" href="#L979">979</a>             }
-<a class="jxr_linenumber" name="L980" href="#L980">980</a> 
-<a class="jxr_linenumber" name="L981" href="#L981">981</a>             <strong class="jxr_keyword">final</strong> String depPackageName = extractPackageNameFromAndroidArtifact( artifact );
-<a class="jxr_linenumber" name="L982" href="#L982">982</a> 
-<a class="jxr_linenumber" name="L983" href="#L983">983</a>             generateBuildConfigForPackage( depPackageName );
-<a class="jxr_linenumber" name="L984" href="#L984">984</a>         }
-<a class="jxr_linenumber" name="L985" href="#L985">985</a>     }
+<a class="jxr_linenumber" name="L935" href="#L935">935</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> mergeSuccess = merger.process( mergedManifest, androidManifestFile,
+<a class="jxr_linenumber" name="L936" href="#L936">936</a>                 libManifests.toArray( <strong class="jxr_keyword">new</strong> File[libManifests.size()] ),  <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong> );
+<a class="jxr_linenumber" name="L937" href="#L937">937</a> 
+<a class="jxr_linenumber" name="L938" href="#L938">938</a>             <strong class="jxr_keyword">if</strong> ( mergeSuccess )
+<a class="jxr_linenumber" name="L939" href="#L939">939</a>             {
+<a class="jxr_linenumber" name="L940" href="#L940">940</a>                 <em class="jxr_comment">// Replace the original manifest file with the merged one so that</em>
+<a class="jxr_linenumber" name="L941" href="#L941">941</a>                 <em class="jxr_comment">// the rest of the build will pick it up.</em>
+<a class="jxr_linenumber" name="L942" href="#L942">942</a>                 androidManifestFile.delete();
+<a class="jxr_linenumber" name="L943" href="#L943">943</a>                 mergedManifest.renameTo( androidManifestFile );
+<a class="jxr_linenumber" name="L944" href="#L944">944</a>                 getLog().info( <span class="jxr_string">"Done Merging Manifests of APKLIBs"</span> );
+<a class="jxr_linenumber" name="L945" href="#L945">945</a>             }
+<a class="jxr_linenumber" name="L946" href="#L946">946</a>             <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L947" href="#L947">947</a>             {
+<a class="jxr_linenumber" name="L948" href="#L948">948</a>                 getLog().error( <span class="jxr_string">"Manifests were not merged!"</span> );
+<a class="jxr_linenumber" name="L949" href="#L949">949</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"Manifests were not merged!"</span> );
+<a class="jxr_linenumber" name="L950" href="#L950">950</a>             }
+<a class="jxr_linenumber" name="L951" href="#L951">951</a>         }
+<a class="jxr_linenumber" name="L952" href="#L952">952</a>         <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L953" href="#L953">953</a>         {
+<a class="jxr_linenumber" name="L954" href="#L954">954</a>             getLog().info( <span class="jxr_string">"No APKLIB manifests found. Using project manifest only."</span> );
+<a class="jxr_linenumber" name="L955" href="#L955">955</a>         }
+<a class="jxr_linenumber" name="L956" href="#L956">956</a>     }
+<a class="jxr_linenumber" name="L957" href="#L957">957</a> 
+<a class="jxr_linenumber" name="L958" href="#L958">958</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> generateBuildConfig() <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L959" href="#L959">959</a>     {
+<a class="jxr_linenumber" name="L960" href="#L960">960</a>         getLog().debug( <span class="jxr_string">"Generating BuildConfig file"</span> );
+<a class="jxr_linenumber" name="L961" href="#L961">961</a> 
+<a class="jxr_linenumber" name="L962" href="#L962">962</a>         <em class="jxr_comment">// Create the BuildConfig for our package.</em>
+<a class="jxr_linenumber" name="L963" href="#L963">963</a>         String packageName = extractPackageNameFromAndroidManifest( androidManifestFile );
+<a class="jxr_linenumber" name="L964" href="#L964">964</a>         <strong class="jxr_keyword">if</strong> ( StringUtils.isNotBlank( customPackage ) )
+<a class="jxr_linenumber" name="L965" href="#L965">965</a>         {
+<a class="jxr_linenumber" name="L966" href="#L966">966</a>             packageName = customPackage;
+<a class="jxr_linenumber" name="L967" href="#L967">967</a>         }
+<a class="jxr_linenumber" name="L968" href="#L968">968</a>         generateBuildConfigForPackage( packageName );
+<a class="jxr_linenumber" name="L969" href="#L969">969</a> 
+<a class="jxr_linenumber" name="L970" href="#L970">970</a>         <em class="jxr_comment">// Skip BuildConfig generation for dependencies if this is not an APK project</em>
+<a class="jxr_linenumber" name="L971" href="#L971">971</a>         <strong class="jxr_keyword">if</strong> ( !project.getPackaging().equals( APK ) )
+<a class="jxr_linenumber" name="L972" href="#L972">972</a>         {
+<a class="jxr_linenumber" name="L973" href="#L973">973</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L974" href="#L974">974</a>         }
+<a class="jxr_linenumber" name="L975" href="#L975">975</a> 
+<a class="jxr_linenumber" name="L976" href="#L976">976</a>         <em class="jxr_comment">// Generate the BuildConfig for any APKLIB and some AAR dependencies.</em>
+<a class="jxr_linenumber" name="L977" href="#L977">977</a>         <em class="jxr_comment">// Need to generate for AAR, because some old AARs like ActionBarSherlock do not have BuildConfig (or R)</em>
+<a class="jxr_linenumber" name="L978" href="#L978">978</a>         <strong class="jxr_keyword">for</strong> ( Artifact artifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
+<a class="jxr_linenumber" name="L979" href="#L979">979</a>         {
+<a class="jxr_linenumber" name="L980" href="#L980">980</a>             <strong class="jxr_keyword">if</strong> ( skipBuildConfigGeneration( artifact ) )
+<a class="jxr_linenumber" name="L981" href="#L981">981</a>             {
+<a class="jxr_linenumber" name="L982" href="#L982">982</a>                 getLog().info( <span class="jxr_string">"Skip BuildConfig.java generation for "</span>
+<a class="jxr_linenumber" name="L983" href="#L983">983</a>                         + artifact.getGroupId() + <span class="jxr_string">" "</span> + artifact.getArtifactId() );
+<a class="jxr_linenumber" name="L984" href="#L984">984</a>                 <strong class="jxr_keyword">continue</strong>;
+<a class="jxr_linenumber" name="L985" href="#L985">985</a>             }
 <a class="jxr_linenumber" name="L986" href="#L986">986</a> 
-<a class="jxr_linenumber" name="L987" href="#L987">987</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> skipBuildConfigGeneration( Artifact artifact ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L988" href="#L988">988</a>     {
-<a class="jxr_linenumber" name="L989" href="#L989">989</a>         <strong class="jxr_keyword">if</strong> ( artifact.getType().equals( AAR ) )
-<a class="jxr_linenumber" name="L990" href="#L990">990</a>         {
-<a class="jxr_linenumber" name="L991" href="#L991">991</a>             <strong class="jxr_keyword">if</strong> ( isBuildConfigPresent( artifact ) )
-<a class="jxr_linenumber" name="L992" href="#L992">992</a>             {
-<a class="jxr_linenumber" name="L993" href="#L993">993</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L994" href="#L994">994</a>             }
-<a class="jxr_linenumber" name="L995" href="#L995">995</a> 
-<a class="jxr_linenumber" name="L996" href="#L996">996</a>             Set&lt; Artifact &gt; transitiveDep = getArtifactResolverHelper()
-<a class="jxr_linenumber" name="L997" href="#L997">997</a>                     .getFilteredArtifacts( project.getArtifacts(), AAR );
+<a class="jxr_linenumber" name="L987" href="#L987">987</a>             <strong class="jxr_keyword">final</strong> String depPackageName = extractPackageNameFromAndroidArtifact( artifact );
+<a class="jxr_linenumber" name="L988" href="#L988">988</a> 
+<a class="jxr_linenumber" name="L989" href="#L989">989</a>             generateBuildConfigForPackage( depPackageName );
+<a class="jxr_linenumber" name="L990" href="#L990">990</a>         }
+<a class="jxr_linenumber" name="L991" href="#L991">991</a>     }
+<a class="jxr_linenumber" name="L992" href="#L992">992</a> 
+<a class="jxr_linenumber" name="L993" href="#L993">993</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> skipBuildConfigGeneration( Artifact artifact ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L994" href="#L994">994</a>     {
+<a class="jxr_linenumber" name="L995" href="#L995">995</a>         <strong class="jxr_keyword">if</strong> ( artifact.getType().equals( AAR ) )
+<a class="jxr_linenumber" name="L996" href="#L996">996</a>         {
+<a class="jxr_linenumber" name="L997" href="#L997">997</a>             String depPackageName = extractPackageNameFromAndroidArtifact( artifact );
 <a class="jxr_linenumber" name="L998" href="#L998">998</a> 
-<a class="jxr_linenumber" name="L999" href="#L999">999</a>             <strong class="jxr_keyword">for</strong> ( Artifact transitiveArtifact : transitiveDep )
+<a class="jxr_linenumber" name="L999" href="#L999">999</a>             <strong class="jxr_keyword">if</strong> ( isBuildConfigPresent( artifact, depPackageName ) )
 <a class="jxr_linenumber" name="L1000" href="#L1000">1000</a>             {
-<a class="jxr_linenumber" name="L1001" href="#L1001">1001</a>                 <strong class="jxr_keyword">if</strong> ( isBuildConfigPresent( transitiveArtifact ) )
-<a class="jxr_linenumber" name="L1002" href="#L1002">1002</a>                 {
-<a class="jxr_linenumber" name="L1003" href="#L1003">1003</a>                     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L1004" href="#L1004">1004</a>                 }
-<a class="jxr_linenumber" name="L1005" href="#L1005">1005</a>             }
-<a class="jxr_linenumber" name="L1006" href="#L1006">1006</a>         }
-<a class="jxr_linenumber" name="L1007" href="#L1007">1007</a>         <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L1008" href="#L1008">1008</a>     }
-<a class="jxr_linenumber" name="L1009" href="#L1009">1009</a> 
-<a class="jxr_linenumber" name="L1010" href="#L1010">1010</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isBuildConfigPresent( Artifact artifact ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L1011" href="#L1011">1011</a>     {
-<a class="jxr_linenumber" name="L1012" href="#L1012">1012</a>         <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L1013" href="#L1013">1013</a>         {
-<a class="jxr_linenumber" name="L1014" href="#L1014">1014</a>             String depPackageName = extractPackageNameFromAndroidArtifact( artifact );
-<a class="jxr_linenumber" name="L1015" href="#L1015">1015</a> 
-<a class="jxr_linenumber" name="L1016" href="#L1016">1016</a>             JarFile jar = <strong class="jxr_keyword">new</strong> JarFile( getUnpackedAarClassesJar( artifact ) );
-<a class="jxr_linenumber" name="L1017" href="#L1017">1017</a>             JarEntry entry = jar.getJarEntry( depPackageName.replace( '.', '/' ) + <span class="jxr_string">"/BuildConfig.class"</span> );
-<a class="jxr_linenumber" name="L1018" href="#L1018">1018</a> 
-<a class="jxr_linenumber" name="L1019" href="#L1019">1019</a>             <strong class="jxr_keyword">if</strong> ( entry != <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L1020" href="#L1020">1020</a>             {
-<a class="jxr_linenumber" name="L1021" href="#L1021">1021</a>                 getLog().info( <span class="jxr_string">"Skip BuildConfig.java generation for "</span>
-<a class="jxr_linenumber" name="L1022" href="#L1022">1022</a>                         + artifact.getGroupId() + <span class="jxr_string">" "</span> + artifact.getArtifactId() );
-<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L1024" href="#L1024">1024</a>             }
-<a class="jxr_linenumber" name="L1025" href="#L1025">1025</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L1026" href="#L1026">1026</a>         }
-<a class="jxr_linenumber" name="L1027" href="#L1027">1027</a>         <strong class="jxr_keyword">catch</strong> ( IOException e )
-<a class="jxr_linenumber" name="L1028" href="#L1028">1028</a>         {
-<a class="jxr_linenumber" name="L1029" href="#L1029">1029</a>             getLog().error( <span class="jxr_string">"Error generating BuildConfig "</span>, e );
-<a class="jxr_linenumber" name="L1030" href="#L1030">1030</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"Error generating BuildConfig"</span>, e );
-<a class="jxr_linenumber" name="L1031" href="#L1031">1031</a>         }
-<a class="jxr_linenumber" name="L1032" href="#L1032">1032</a>     }
-<a class="jxr_linenumber" name="L1033" href="#L1033">1033</a> 
-<a class="jxr_linenumber" name="L1034" href="#L1034">1034</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> generateBuildConfigForPackage( String packageName ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L1035" href="#L1035">1035</a>     {
-<a class="jxr_linenumber" name="L1036" href="#L1036">1036</a>         File outputFolder = <strong class="jxr_keyword">new</strong> File( genDirectory, packageName.replace( <span class="jxr_string">"."</span>, File.separator ) );
-<a class="jxr_linenumber" name="L1037" href="#L1037">1037</a>         outputFolder.mkdirs();
-<a class="jxr_linenumber" name="L1038" href="#L1038">1038</a> 
-<a class="jxr_linenumber" name="L1039" href="#L1039">1039</a>         StringBuilder buildConfig = <strong class="jxr_keyword">new</strong> StringBuilder();
-<a class="jxr_linenumber" name="L1040" href="#L1040">1040</a>         buildConfig.append( <span class="jxr_string">"package "</span> ).append( packageName ).append( <span class="jxr_string">";\n\n"</span> );
-<a class="jxr_linenumber" name="L1041" href="#L1041">1041</a>         buildConfig.append( <span class="jxr_string">"public final class BuildConfig {\n"</span> );
-<a class="jxr_linenumber" name="L1042" href="#L1042">1042</a>         buildConfig.append( <span class="jxr_string">"  public static final boolean DEBUG = "</span> ).append( !release ).append( <span class="jxr_string">";\n"</span> );
-<a class="jxr_linenumber" name="L1043" href="#L1043">1043</a>         <strong class="jxr_keyword">for</strong> ( BuildConfigConstant constant : buildConfigConstants )
-<a class="jxr_linenumber" name="L1044" href="#L1044">1044</a>         {
-<a class="jxr_linenumber" name="L1045" href="#L1045">1045</a>             String value = constant.getValue();
-<a class="jxr_linenumber" name="L1046" href="#L1046">1046</a>             <strong class="jxr_keyword">if</strong> ( <span class="jxr_string">"String"</span>.equals( constant.getType() ) )
-<a class="jxr_linenumber" name="L1047" href="#L1047">1047</a>             {
-<a class="jxr_linenumber" name="L1048" href="#L1048">1048</a>                 value = <span class="jxr_string">"\&quot;"</span> + value + <span class="jxr_string">"\&quot;"</span>;
-<a class="jxr_linenumber" name="L1049" href="#L1049">1049</a>             }
-<a class="jxr_linenumber" name="L1050" href="#L1050">1050</a> 
-<a class="jxr_linenumber" name="L1051" href="#L1051">1051</a>             buildConfig.append( <span class="jxr_string">"  public static final "</span> )
-<a class="jxr_linenumber" name="L1052" href="#L1052">1052</a>                        .append( constant.getType() )
-<a class="jxr_linenumber" name="L1053" href="#L1053">1053</a>                        .append( <span class="jxr_string">" "</span> )
-<a class="jxr_linenumber" name="L1054" href="#L1054">1054</a>                        .append( constant.getName() )
-<a class="jxr_linenumber" name="L1055" href="#L1055">1055</a>                        .append( <span class="jxr_string">" = "</span> )
-<a class="jxr_linenumber" name="L1056" href="#L1056">1056</a>                        .append( value )
-<a class="jxr_linenumber" name="L1057" href="#L1057">1057</a>                        .append( <span class="jxr_string">";\n"</span> );
-<a class="jxr_linenumber" name="L1058" href="#L1058">1058</a>         }
-<a class="jxr_linenumber" name="L1059" href="#L1059">1059</a>         buildConfig.append( <span class="jxr_string">"}\n"</span> );
-<a class="jxr_linenumber" name="L1060" href="#L1060">1060</a> 
-<a class="jxr_linenumber" name="L1061" href="#L1061">1061</a> 
-<a class="jxr_linenumber" name="L1062" href="#L1062">1062</a>         File outputFile = <strong class="jxr_keyword">new</strong> File( outputFolder, <span class="jxr_string">"BuildConfig.java"</span> );
-<a class="jxr_linenumber" name="L1063" href="#L1063">1063</a>         <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L1064" href="#L1064">1064</a>         {
-<a class="jxr_linenumber" name="L1065" href="#L1065">1065</a>             FileUtils.writeStringToFile( outputFile, buildConfig.toString() );
-<a class="jxr_linenumber" name="L1066" href="#L1066">1066</a>         }
-<a class="jxr_linenumber" name="L1067" href="#L1067">1067</a>         <strong class="jxr_keyword">catch</strong> ( IOException e )
-<a class="jxr_linenumber" name="L1068" href="#L1068">1068</a>         {
-<a class="jxr_linenumber" name="L1069" href="#L1069">1069</a>             getLog().error( <span class="jxr_string">"Error generating BuildConfig "</span>, e );
-<a class="jxr_linenumber" name="L1070" href="#L1070">1070</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"Error generating BuildConfig"</span>, e );
-<a class="jxr_linenumber" name="L1071" href="#L1071">1071</a>         }
-<a class="jxr_linenumber" name="L1072" href="#L1072">1072</a>     }
-<a class="jxr_linenumber" name="L1073" href="#L1073">1073</a> 
-<a class="jxr_linenumber" name="L1074" href="#L1074">1074</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1075" href="#L1075">1075</a> <em class="jxr_javadoccomment">     * Given a map of source directories to list of AIDL (relative) filenames within each,</em>
-<a class="jxr_linenumber" name="L1076" href="#L1076">1076</a> <em class="jxr_javadoccomment">     * runs the AIDL compiler for each, such that all source directories are available to</em>
-<a class="jxr_linenumber" name="L1077" href="#L1077">1077</a> <em class="jxr_javadoccomment">     * the AIDL compiler.</em>
-<a class="jxr_linenumber" name="L1078" href="#L1078">1078</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1079" href="#L1079">1079</a> <em class="jxr_javadoccomment">     * @param files Map of source directory File instances to the relative paths to all AIDL files within</em>
-<a class="jxr_linenumber" name="L1080" href="#L1080">1080</a> <em class="jxr_javadoccomment">     * @throws MojoExecutionException If the AIDL compiler fails</em>
-<a class="jxr_linenumber" name="L1081" href="#L1081">1081</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1082" href="#L1082">1082</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> generateAidlFiles( Map&lt;File <em class="jxr_comment">/*sourceDirectory*/</em>, String[] <em class="jxr_comment">/*relativeAidlFileNames*/</em>&gt; files )
-<a class="jxr_linenumber" name="L1083" href="#L1083">1083</a>             <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L1084" href="#L1084">1084</a>     {
-<a class="jxr_linenumber" name="L1085" href="#L1085">1085</a>         List&lt;String&gt; protoCommands = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
-<a class="jxr_linenumber" name="L1086" href="#L1086">1086</a>         protoCommands.add( <span class="jxr_string">"-p"</span> + getAndroidSdk().getPathForFrameworkAidl() );
-<a class="jxr_linenumber" name="L1087" href="#L1087">1087</a> 
-<a class="jxr_linenumber" name="L1088" href="#L1088">1088</a>         genDirectoryAidl.mkdirs();
-<a class="jxr_linenumber" name="L1089" href="#L1089">1089</a>         getLog().info( <span class="jxr_string">"Adding AIDL gen folder to compile classpath: "</span> + genDirectoryAidl );
-<a class="jxr_linenumber" name="L1090" href="#L1090">1090</a>         project.addCompileSourceRoot( genDirectoryAidl.getPath() );
-<a class="jxr_linenumber" name="L1091" href="#L1091">1091</a>         Set&lt;File&gt; sourceDirs = files.keySet();
-<a class="jxr_linenumber" name="L1092" href="#L1092">1092</a>         <strong class="jxr_keyword">for</strong> ( File sourceDir : sourceDirs )
-<a class="jxr_linenumber" name="L1093" href="#L1093">1093</a>         {
-<a class="jxr_linenumber" name="L1094" href="#L1094">1094</a>             protoCommands.add( <span class="jxr_string">"-I"</span> + sourceDir );
-<a class="jxr_linenumber" name="L1095" href="#L1095">1095</a>         }
-<a class="jxr_linenumber" name="L1096" href="#L1096">1096</a>         <strong class="jxr_keyword">for</strong> ( File sourceDir : sourceDirs )
-<a class="jxr_linenumber" name="L1097" href="#L1097">1097</a>         {
-<a class="jxr_linenumber" name="L1098" href="#L1098">1098</a>             <strong class="jxr_keyword">for</strong> ( String relativeAidlFileName : files.get( sourceDir ) )
-<a class="jxr_linenumber" name="L1099" href="#L1099">1099</a>             {
-<a class="jxr_linenumber" name="L1100" href="#L1100">1100</a>                 File targetDirectory = <strong class="jxr_keyword">new</strong> File( genDirectoryAidl, <strong class="jxr_keyword">new</strong> File( relativeAidlFileName ).getParent() );
-<a class="jxr_linenumber" name="L1101" href="#L1101">1101</a>                 targetDirectory.mkdirs();
-<a class="jxr_linenumber" name="L1102" href="#L1102">1102</a> 
-<a class="jxr_linenumber" name="L1103" href="#L1103">1103</a>                 <strong class="jxr_keyword">final</strong> String shortAidlFileName = <strong class="jxr_keyword">new</strong> File( relativeAidlFileName ).getName();
-<a class="jxr_linenumber" name="L1104" href="#L1104">1104</a>                 <strong class="jxr_keyword">final</strong> String shortJavaFileName = shortAidlFileName.substring( 0, shortAidlFileName.lastIndexOf( <span class="jxr_string">"."</span> ) )
-<a class="jxr_linenumber" name="L1105" href="#L1105">1105</a>                                                  + <span class="jxr_string">".java"</span>;
-<a class="jxr_linenumber" name="L1106" href="#L1106">1106</a>                 <strong class="jxr_keyword">final</strong> File aidlFileInSourceDirectory = <strong class="jxr_keyword">new</strong> File( sourceDir, relativeAidlFileName );
+<a class="jxr_linenumber" name="L1001" href="#L1001">1001</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L1002" href="#L1002">1002</a>             }
+<a class="jxr_linenumber" name="L1003" href="#L1003">1003</a> 
+<a class="jxr_linenumber" name="L1004" href="#L1004">1004</a>             Set&lt; Artifact &gt; transitiveDep = getArtifactResolverHelper()
+<a class="jxr_linenumber" name="L1005" href="#L1005">1005</a>                     .getFilteredArtifacts( project.getArtifacts(), AAR );
+<a class="jxr_linenumber" name="L1006" href="#L1006">1006</a> 
+<a class="jxr_linenumber" name="L1007" href="#L1007">1007</a>             <strong class="jxr_keyword">for</strong> ( Artifact transitiveArtifact : transitiveDep )
+<a class="jxr_linenumber" name="L1008" href="#L1008">1008</a>             {
+<a class="jxr_linenumber" name="L1009" href="#L1009">1009</a>                 <strong class="jxr_keyword">if</strong> ( isBuildConfigPresent( transitiveArtifact, depPackageName ) )
+<a class="jxr_linenumber" name="L1010" href="#L1010">1010</a>                 {
+<a class="jxr_linenumber" name="L1011" href="#L1011">1011</a>                     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L1012" href="#L1012">1012</a>                 }
+<a class="jxr_linenumber" name="L1013" href="#L1013">1013</a>             }
+<a class="jxr_linenumber" name="L1014" href="#L1014">1014</a>         }
+<a class="jxr_linenumber" name="L1015" href="#L1015">1015</a>         <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L1016" href="#L1016">1016</a>     }
+<a class="jxr_linenumber" name="L1017" href="#L1017">1017</a> 
+<a class="jxr_linenumber" name="L1018" href="#L1018">1018</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1019" href="#L1019">1019</a> <em class="jxr_javadoccomment">     * Check if given artifact includes a matching BuildConfig class</em>
+<a class="jxr_linenumber" name="L1020" href="#L1020">1020</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1021" href="#L1021">1021</a> <em class="jxr_javadoccomment">     * @throws MojoExecutionException</em>
+<a class="jxr_linenumber" name="L1022" href="#L1022">1022</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isBuildConfigPresent( Artifact artifact ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L1024" href="#L1024">1024</a>     {
+<a class="jxr_linenumber" name="L1025" href="#L1025">1025</a>         String depPackageName = extractPackageNameFromAndroidArtifact( artifact );
+<a class="jxr_linenumber" name="L1026" href="#L1026">1026</a> 
+<a class="jxr_linenumber" name="L1027" href="#L1027">1027</a>         <strong class="jxr_keyword">return</strong> isBuildConfigPresent( artifact, depPackageName );
+<a class="jxr_linenumber" name="L1028" href="#L1028">1028</a>     }
+<a class="jxr_linenumber" name="L1029" href="#L1029">1029</a> 
+<a class="jxr_linenumber" name="L1030" href="#L1030">1030</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1031" href="#L1031">1031</a> <em class="jxr_javadoccomment">     * Check whether the artifact includes a BuildConfig located in a given package.</em>
+<a class="jxr_linenumber" name="L1032" href="#L1032">1032</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1033" href="#L1033">1033</a> <em class="jxr_javadoccomment">     * @param artifact an AAR artifact to look for BuildConfig in</em>
+<a class="jxr_linenumber" name="L1034" href="#L1034">1034</a> <em class="jxr_javadoccomment">     * @param packageName BuildConfig package name</em>
+<a class="jxr_linenumber" name="L1035" href="#L1035">1035</a> <em class="jxr_javadoccomment">     * @throws MojoExecutionException</em>
+<a class="jxr_linenumber" name="L1036" href="#L1036">1036</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1037" href="#L1037">1037</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isBuildConfigPresent( Artifact artifact, String packageName ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L1038" href="#L1038">1038</a>     {
+<a class="jxr_linenumber" name="L1039" href="#L1039">1039</a>         <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L1040" href="#L1040">1040</a>         {
+<a class="jxr_linenumber" name="L1041" href="#L1041">1041</a>             JarFile jar = <strong class="jxr_keyword">new</strong> JarFile( getUnpackedAarClassesJar( artifact ) );
+<a class="jxr_linenumber" name="L1042" href="#L1042">1042</a>             JarEntry entry = jar.getJarEntry( packageName.replace( '.', '/' ) + <span class="jxr_string">"/BuildConfig.class"</span> );
+<a class="jxr_linenumber" name="L1043" href="#L1043">1043</a> 
+<a class="jxr_linenumber" name="L1044" href="#L1044">1044</a>             <strong class="jxr_keyword">return</strong> ( entry != <strong class="jxr_keyword">null</strong> );
+<a class="jxr_linenumber" name="L1045" href="#L1045">1045</a>         }
+<a class="jxr_linenumber" name="L1046" href="#L1046">1046</a>         <strong class="jxr_keyword">catch</strong> ( IOException e )
+<a class="jxr_linenumber" name="L1047" href="#L1047">1047</a>         {
+<a class="jxr_linenumber" name="L1048" href="#L1048">1048</a>             getLog().error( <span class="jxr_string">"Error generating BuildConfig "</span>, e );
+<a class="jxr_linenumber" name="L1049" href="#L1049">1049</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"Error generating BuildConfig"</span>, e );
+<a class="jxr_linenumber" name="L1050" href="#L1050">1050</a>         }
+<a class="jxr_linenumber" name="L1051" href="#L1051">1051</a>     }
+<a class="jxr_linenumber" name="L1052" href="#L1052">1052</a> 
+<a class="jxr_linenumber" name="L1053" href="#L1053">1053</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> generateBuildConfigForPackage( String packageName ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L1054" href="#L1054">1054</a>     {
+<a class="jxr_linenumber" name="L1055" href="#L1055">1055</a>         getLog().debug( <span class="jxr_string">"Creating BuildConfig for "</span> + packageName );
+<a class="jxr_linenumber" name="L1056" href="#L1056">1056</a> 
+<a class="jxr_linenumber" name="L1057" href="#L1057">1057</a>         File outputFolder = <strong class="jxr_keyword">new</strong> File( genDirectory, packageName.replace( <span class="jxr_string">"."</span>, File.separator ) );
+<a class="jxr_linenumber" name="L1058" href="#L1058">1058</a>         outputFolder.mkdirs();
+<a class="jxr_linenumber" name="L1059" href="#L1059">1059</a> 
+<a class="jxr_linenumber" name="L1060" href="#L1060">1060</a>         StringBuilder buildConfig = <strong class="jxr_keyword">new</strong> StringBuilder();
+<a class="jxr_linenumber" name="L1061" href="#L1061">1061</a>         buildConfig.append( <span class="jxr_string">"package "</span> ).append( packageName ).append( <span class="jxr_string">";\n\n"</span> );
+<a class="jxr_linenumber" name="L1062" href="#L1062">1062</a>         buildConfig.append( <span class="jxr_string">"public final class BuildConfig {\n"</span> );
+<a class="jxr_linenumber" name="L1063" href="#L1063">1063</a>         buildConfig.append( <span class="jxr_string">"  public static final boolean DEBUG = "</span> ).append( !release ).append( <span class="jxr_string">";\n"</span> );
+<a class="jxr_linenumber" name="L1064" href="#L1064">1064</a>         <strong class="jxr_keyword">for</strong> ( BuildConfigConstant constant : buildConfigConstants )
+<a class="jxr_linenumber" name="L1065" href="#L1065">1065</a>         {
+<a class="jxr_linenumber" name="L1066" href="#L1066">1066</a>             String value = constant.getValue();
+<a class="jxr_linenumber" name="L1067" href="#L1067">1067</a>             <strong class="jxr_keyword">if</strong> ( <span class="jxr_string">"String"</span>.equals( constant.getType() ) )
+<a class="jxr_linenumber" name="L1068" href="#L1068">1068</a>             {
+<a class="jxr_linenumber" name="L1069" href="#L1069">1069</a>                 value = <span class="jxr_string">"\&quot;"</span> + value + <span class="jxr_string">"\&quot;"</span>;
+<a class="jxr_linenumber" name="L1070" href="#L1070">1070</a>             }
+<a class="jxr_linenumber" name="L1071" href="#L1071">1071</a> 
+<a class="jxr_linenumber" name="L1072" href="#L1072">1072</a>             buildConfig.append( <span class="jxr_string">"  public static final "</span> )
+<a class="jxr_linenumber" name="L1073" href="#L1073">1073</a>                        .append( constant.getType() )
+<a class="jxr_linenumber" name="L1074" href="#L1074">1074</a>                        .append( <span class="jxr_string">" "</span> )
+<a class="jxr_linenumber" name="L1075" href="#L1075">1075</a>                        .append( constant.getName() )
+<a class="jxr_linenumber" name="L1076" href="#L1076">1076</a>                        .append( <span class="jxr_string">" = "</span> )
+<a class="jxr_linenumber" name="L1077" href="#L1077">1077</a>                        .append( value )
+<a class="jxr_linenumber" name="L1078" href="#L1078">1078</a>                        .append( <span class="jxr_string">";\n"</span> );
+<a class="jxr_linenumber" name="L1079" href="#L1079">1079</a>         }
+<a class="jxr_linenumber" name="L1080" href="#L1080">1080</a>         buildConfig.append( <span class="jxr_string">"}\n"</span> );
+<a class="jxr_linenumber" name="L1081" href="#L1081">1081</a> 
+<a class="jxr_linenumber" name="L1082" href="#L1082">1082</a>         File outputFile = <strong class="jxr_keyword">new</strong> File( outputFolder, <span class="jxr_string">"BuildConfig.java"</span> );
+<a class="jxr_linenumber" name="L1083" href="#L1083">1083</a>         <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L1084" href="#L1084">1084</a>         {
+<a class="jxr_linenumber" name="L1085" href="#L1085">1085</a>             FileUtils.writeStringToFile( outputFile, buildConfig.toString() );
+<a class="jxr_linenumber" name="L1086" href="#L1086">1086</a>         }
+<a class="jxr_linenumber" name="L1087" href="#L1087">1087</a>         <strong class="jxr_keyword">catch</strong> ( IOException e )
+<a class="jxr_linenumber" name="L1088" href="#L1088">1088</a>         {
+<a class="jxr_linenumber" name="L1089" href="#L1089">1089</a>             getLog().error( <span class="jxr_string">"Error generating BuildConfig "</span>, e );
+<a class="jxr_linenumber" name="L1090" href="#L1090">1090</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"Error generating BuildConfig"</span>, e );
+<a class="jxr_linenumber" name="L1091" href="#L1091">1091</a>         }
+<a class="jxr_linenumber" name="L1092" href="#L1092">1092</a>     }
+<a class="jxr_linenumber" name="L1093" href="#L1093">1093</a> 
+<a class="jxr_linenumber" name="L1094" href="#L1094">1094</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1095" href="#L1095">1095</a> <em class="jxr_javadoccomment">     * Given a map of source directories to list of AIDL (relative) filenames within each,</em>
+<a class="jxr_linenumber" name="L1096" href="#L1096">1096</a> <em class="jxr_javadoccomment">     * runs the AIDL compiler for each, such that all source directories are available to</em>
+<a class="jxr_linenumber" name="L1097" href="#L1097">1097</a> <em class="jxr_javadoccomment">     * the AIDL compiler.</em>
+<a class="jxr_linenumber" name="L1098" href="#L1098">1098</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1099" href="#L1099">1099</a> <em class="jxr_javadoccomment">     * @param files Map of source directory File instances to the relative paths to all AIDL files within</em>
+<a class="jxr_linenumber" name="L1100" href="#L1100">1100</a> <em class="jxr_javadoccomment">     * @throws MojoExecutionException If the AIDL compiler fails</em>
+<a class="jxr_linenumber" name="L1101" href="#L1101">1101</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1102" href="#L1102">1102</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> generateAidlFiles( Map&lt;File <em class="jxr_comment">/*sourceDirectory*/</em>, String[] <em class="jxr_comment">/*relativeAidlFileNames*/</em>&gt; files )
+<a class="jxr_linenumber" name="L1103" href="#L1103">1103</a>             <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L1104" href="#L1104">1104</a>     {
+<a class="jxr_linenumber" name="L1105" href="#L1105">1105</a>         List&lt;String&gt; protoCommands = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
+<a class="jxr_linenumber" name="L1106" href="#L1106">1106</a>         protoCommands.add( <span class="jxr_string">"-p"</span> + getAndroidSdk().getPathForFrameworkAidl() );
 <a class="jxr_linenumber" name="L1107" href="#L1107">1107</a> 
-<a class="jxr_linenumber" name="L1108" href="#L1108">1108</a>                 List&lt;String&gt; commands = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;( protoCommands );
-<a class="jxr_linenumber" name="L1109" href="#L1109">1109</a>                 commands.add( aidlFileInSourceDirectory.getAbsolutePath() );
-<a class="jxr_linenumber" name="L1110" href="#L1110">1110</a>                 commands.add( <strong class="jxr_keyword">new</strong> File( targetDirectory, shortJavaFileName ).getAbsolutePath() );
-<a class="jxr_linenumber" name="L1111" href="#L1111">1111</a>                 <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L1112" href="#L1112">1112</a>                 {
-<a class="jxr_linenumber" name="L1113" href="#L1113">1113</a>                     <a href="../../../../../../com/jayway/maven/plugins/android/CommandExecutor.html">CommandExecutor</a> executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-<a class="jxr_linenumber" name="L1114" href="#L1114">1114</a>                     executor.setLogger( <strong class="jxr_keyword">this</strong>.getLog() );
-<a class="jxr_linenumber" name="L1115" href="#L1115">1115</a>                     executor.setCaptureStdOut( <strong class="jxr_keyword">true</strong> );
-<a class="jxr_linenumber" name="L1116" href="#L1116">1116</a>                     executor.executeCommand( getAndroidSdk().getAidlPath(), commands, project.getBasedir(),
-<a class="jxr_linenumber" name="L1117" href="#L1117">1117</a>                             false );
-<a class="jxr_linenumber" name="L1118" href="#L1118">1118</a>                 }
-<a class="jxr_linenumber" name="L1119" href="#L1119">1119</a>                 <strong class="jxr_keyword">catch</strong> ( ExecutionException e )
-<a class="jxr_linenumber" name="L1120" href="#L1120">1120</a>                 {
-<a class="jxr_linenumber" name="L1121" href="#L1121">1121</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">""</span>, e );
-<a class="jxr_linenumber" name="L1122" href="#L1122">1122</a>                 }
-<a class="jxr_linenumber" name="L1123" href="#L1123">1123</a>             }
-<a class="jxr_linenumber" name="L1124" href="#L1124">1124</a>         }
-<a class="jxr_linenumber" name="L1125" href="#L1125">1125</a>     }
-<a class="jxr_linenumber" name="L1126" href="#L1126">1126</a> 
-<a class="jxr_linenumber" name="L1127" href="#L1127">1127</a>     <strong class="jxr_keyword">private</strong> String[] findRelativeAidlFileNames( File sourceDirectory )
-<a class="jxr_linenumber" name="L1128" href="#L1128">1128</a>     {
-<a class="jxr_linenumber" name="L1129" href="#L1129">1129</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/common/FileRetriever.html">FileRetriever</a> retriever = <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/common/FileRetriever.html">FileRetriever</a>( <span class="jxr_string">"**/*.aidl"</span> );
-<a class="jxr_linenumber" name="L1130" href="#L1130">1130</a>         <strong class="jxr_keyword">final</strong> String[] relativeAidlFileNames = retriever.getFileNames( sourceDirectory );
-<a class="jxr_linenumber" name="L1131" href="#L1131">1131</a>         <strong class="jxr_keyword">if</strong> ( relativeAidlFileNames.length == 0 )
-<a class="jxr_linenumber" name="L1132" href="#L1132">1132</a>         {
-<a class="jxr_linenumber" name="L1133" href="#L1133">1133</a>             getLog().debug( <span class="jxr_string">"ANDROID-904-002: No aidl files found"</span> );
-<a class="jxr_linenumber" name="L1134" href="#L1134">1134</a>         }
-<a class="jxr_linenumber" name="L1135" href="#L1135">1135</a>         <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L1136" href="#L1136">1136</a>         {
-<a class="jxr_linenumber" name="L1137" href="#L1137">1137</a>             getLog().info( <span class="jxr_string">"ANDROID-904-002: Found aidl files: Count = "</span> + relativeAidlFileNames.length );
-<a class="jxr_linenumber" name="L1138" href="#L1138">1138</a>         }
-<a class="jxr_linenumber" name="L1139" href="#L1139">1139</a>         <strong class="jxr_keyword">return</strong> relativeAidlFileNames;
-<a class="jxr_linenumber" name="L1140" href="#L1140">1140</a>     }
-<a class="jxr_linenumber" name="L1141" href="#L1141">1141</a> 
-<a class="jxr_linenumber" name="L1142" href="#L1142">1142</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1143" href="#L1143">1143</a> <em class="jxr_javadoccomment">     * @return true if the pom type is APK, APKLIB, or APKSOURCES</em>
-<a class="jxr_linenumber" name="L1144" href="#L1144">1144</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1145" href="#L1145">1145</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isCurrentProjectAndroid()
-<a class="jxr_linenumber" name="L1146" href="#L1146">1146</a>     {
-<a class="jxr_linenumber" name="L1147" href="#L1147">1147</a>         Set&lt;String&gt; androidArtifacts = <strong class="jxr_keyword">new</strong> HashSet&lt;String&gt;()
-<a class="jxr_linenumber" name="L1148" href="#L1148">1148</a>         {
-<a class="jxr_linenumber" name="L1149" href="#L1149">1149</a>             {
-<a class="jxr_linenumber" name="L1150" href="#L1150">1150</a>                 addAll( Arrays.asList( APK, APKLIB, APKSOURCES, AAR ) );
-<a class="jxr_linenumber" name="L1151" href="#L1151">1151</a>             }
-<a class="jxr_linenumber" name="L1152" href="#L1152">1152</a>         };
-<a class="jxr_linenumber" name="L1153" href="#L1153">1153</a>         <strong class="jxr_keyword">return</strong> androidArtifacts.contains( project.getArtifact().getType() );
-<a class="jxr_linenumber" name="L1154" href="#L1154">1154</a>     }
-<a class="jxr_linenumber" name="L1155" href="#L1155">1155</a> 
-<a class="jxr_linenumber" name="L1156" href="#L1156">1156</a> }
+<a class="jxr_linenumber" name="L1108" href="#L1108">1108</a>         genDirectoryAidl.mkdirs();
+<a class="jxr_linenumber" name="L1109" href="#L1109">1109</a>         getLog().info( <span class="jxr_string">"Adding AIDL gen folder to compile classpath: "</span> + genDirectoryAidl );
+<a class="jxr_linenumber" name="L1110" href="#L1110">1110</a>         project.addCompileSourceRoot( genDirectoryAidl.getPath() );
+<a class="jxr_linenumber" name="L1111" href="#L1111">1111</a>         Set&lt;File&gt; sourceDirs = files.keySet();
+<a class="jxr_linenumber" name="L1112" href="#L1112">1112</a>         <strong class="jxr_keyword">for</strong> ( File sourceDir : sourceDirs )
+<a class="jxr_linenumber" name="L1113" href="#L1113">1113</a>         {
+<a class="jxr_linenumber" name="L1114" href="#L1114">1114</a>             protoCommands.add( <span class="jxr_string">"-I"</span> + sourceDir );
+<a class="jxr_linenumber" name="L1115" href="#L1115">1115</a>         }
+<a class="jxr_linenumber" name="L1116" href="#L1116">1116</a>         <strong class="jxr_keyword">for</strong> ( File sourceDir : sourceDirs )
+<a class="jxr_linenumber" name="L1117" href="#L1117">1117</a>         {
+<a class="jxr_linenumber" name="L1118" href="#L1118">1118</a>             <strong class="jxr_keyword">for</strong> ( String relativeAidlFileName : files.get( sourceDir ) )
+<a class="jxr_linenumber" name="L1119" href="#L1119">1119</a>             {
+<a class="jxr_linenumber" name="L1120" href="#L1120">1120</a>                 File targetDirectory = <strong class="jxr_keyword">new</strong> File( genDirectoryAidl, <strong class="jxr_keyword">new</strong> File( relativeAidlFileName ).getParent() );
+<a class="jxr_linenumber" name="L1121" href="#L1121">1121</a>                 targetDirectory.mkdirs();
+<a class="jxr_linenumber" name="L1122" href="#L1122">1122</a> 
+<a class="jxr_linenumber" name="L1123" href="#L1123">1123</a>                 <strong class="jxr_keyword">final</strong> String shortAidlFileName = <strong class="jxr_keyword">new</strong> File( relativeAidlFileName ).getName();
+<a class="jxr_linenumber" name="L1124" href="#L1124">1124</a>                 <strong class="jxr_keyword">final</strong> String shortJavaFileName = shortAidlFileName.substring( 0, shortAidlFileName.lastIndexOf( <span class="jxr_string">"."</span> ) )
+<a class="jxr_linenumber" name="L1125" href="#L1125">1125</a>                                                  + <span class="jxr_string">".java"</span>;
+<a class="jxr_linenumber" name="L1126" href="#L1126">1126</a>                 <strong class="jxr_keyword">final</strong> File aidlFileInSourceDirectory = <strong class="jxr_keyword">new</strong> File( sourceDir, relativeAidlFileName );
+<a class="jxr_linenumber" name="L1127" href="#L1127">1127</a> 
+<a class="jxr_linenumber" name="L1128" href="#L1128">1128</a>                 List&lt;String&gt; commands = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;( protoCommands );
+<a class="jxr_linenumber" name="L1129" href="#L1129">1129</a>                 commands.add( aidlFileInSourceDirectory.getAbsolutePath() );
+<a class="jxr_linenumber" name="L1130" href="#L1130">1130</a>                 commands.add( <strong class="jxr_keyword">new</strong> File( targetDirectory, shortJavaFileName ).getAbsolutePath() );
+<a class="jxr_linenumber" name="L1131" href="#L1131">1131</a>                 <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L1132" href="#L1132">1132</a>                 {
+<a class="jxr_linenumber" name="L1133" href="#L1133">1133</a>                     <a href="../../../../../../com/jayway/maven/plugins/android/CommandExecutor.html">CommandExecutor</a> executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+<a class="jxr_linenumber" name="L1134" href="#L1134">1134</a>                     executor.setLogger( <strong class="jxr_keyword">this</strong>.getLog() );
+<a class="jxr_linenumber" name="L1135" href="#L1135">1135</a>                     executor.setCaptureStdOut( <strong class="jxr_keyword">true</strong> );
+<a class="jxr_linenumber" name="L1136" href="#L1136">1136</a>                     executor.executeCommand( getAndroidSdk().getAidlPath(), commands, project.getBasedir(),
+<a class="jxr_linenumber" name="L1137" href="#L1137">1137</a>                             false );
+<a class="jxr_linenumber" name="L1138" href="#L1138">1138</a>                 }
+<a class="jxr_linenumber" name="L1139" href="#L1139">1139</a>                 <strong class="jxr_keyword">catch</strong> ( ExecutionException e )
+<a class="jxr_linenumber" name="L1140" href="#L1140">1140</a>                 {
+<a class="jxr_linenumber" name="L1141" href="#L1141">1141</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">""</span>, e );
+<a class="jxr_linenumber" name="L1142" href="#L1142">1142</a>                 }
+<a class="jxr_linenumber" name="L1143" href="#L1143">1143</a>             }
+<a class="jxr_linenumber" name="L1144" href="#L1144">1144</a>         }
+<a class="jxr_linenumber" name="L1145" href="#L1145">1145</a>     }
+<a class="jxr_linenumber" name="L1146" href="#L1146">1146</a> 
+<a class="jxr_linenumber" name="L1147" href="#L1147">1147</a>     <strong class="jxr_keyword">private</strong> String[] findRelativeAidlFileNames( File sourceDirectory )
+<a class="jxr_linenumber" name="L1148" href="#L1148">1148</a>     {
+<a class="jxr_linenumber" name="L1149" href="#L1149">1149</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/common/FileRetriever.html">FileRetriever</a> retriever = <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/common/FileRetriever.html">FileRetriever</a>( <span class="jxr_string">"**/*.aidl"</span> );
+<a class="jxr_linenumber" name="L1150" href="#L1150">1150</a>         <strong class="jxr_keyword">final</strong> String[] relativeAidlFileNames = retriever.getFileNames( sourceDirectory );
+<a class="jxr_linenumber" name="L1151" href="#L1151">1151</a>         <strong class="jxr_keyword">if</strong> ( relativeAidlFileNames.length == 0 )
+<a class="jxr_linenumber" name="L1152" href="#L1152">1152</a>         {
+<a class="jxr_linenumber" name="L1153" href="#L1153">1153</a>             getLog().debug( <span class="jxr_string">"ANDROID-904-002: No aidl files found"</span> );
+<a class="jxr_linenumber" name="L1154" href="#L1154">1154</a>         }
+<a class="jxr_linenumber" name="L1155" href="#L1155">1155</a>         <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L1156" href="#L1156">1156</a>         {
+<a class="jxr_linenumber" name="L1157" href="#L1157">1157</a>             getLog().info( <span class="jxr_string">"ANDROID-904-002: Found aidl files: Count = "</span> + relativeAidlFileNames.length );
+<a class="jxr_linenumber" name="L1158" href="#L1158">1158</a>         }
+<a class="jxr_linenumber" name="L1159" href="#L1159">1159</a>         <strong class="jxr_keyword">return</strong> relativeAidlFileNames;
+<a class="jxr_linenumber" name="L1160" href="#L1160">1160</a>     }
+<a class="jxr_linenumber" name="L1161" href="#L1161">1161</a> 
+<a class="jxr_linenumber" name="L1162" href="#L1162">1162</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1163" href="#L1163">1163</a> <em class="jxr_javadoccomment">     * @return true if the pom type is APK, APKLIB, or APKSOURCES</em>
+<a class="jxr_linenumber" name="L1164" href="#L1164">1164</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1165" href="#L1165">1165</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isCurrentProjectAndroid()
+<a class="jxr_linenumber" name="L1166" href="#L1166">1166</a>     {
+<a class="jxr_linenumber" name="L1167" href="#L1167">1167</a>         Set&lt;String&gt; androidArtifacts = <strong class="jxr_keyword">new</strong> HashSet&lt;String&gt;()
+<a class="jxr_linenumber" name="L1168" href="#L1168">1168</a>         {
+<a class="jxr_linenumber" name="L1169" href="#L1169">1169</a>             {
+<a class="jxr_linenumber" name="L1170" href="#L1170">1170</a>                 addAll( Arrays.asList( APK, APKLIB, APKSOURCES, AAR ) );
+<a class="jxr_linenumber" name="L1171" href="#L1171">1171</a>             }
+<a class="jxr_linenumber" name="L1172" href="#L1172">1172</a>         };
+<a class="jxr_linenumber" name="L1173" href="#L1173">1173</a>         <strong class="jxr_keyword">return</strong> androidArtifacts.contains( project.getArtifact().getType() );
+<a class="jxr_linenumber" name="L1174" href="#L1174">1174</a>     }
+<a class="jxr_linenumber" name="L1175" href="#L1175">1175</a> 
+<a class="jxr_linenumber" name="L1176" href="#L1176">1176</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2008&#x2013;2014 <a href="http://www.simpligility.com">simpligility technologies inc.</a>. All rights reserved.</div>
