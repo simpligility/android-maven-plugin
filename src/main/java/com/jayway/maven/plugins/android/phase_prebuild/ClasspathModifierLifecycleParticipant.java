@@ -71,6 +71,11 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
             log.debug( "" );
             log.debug( "project=" + project.getArtifact() );
 
+            if ( ! AndroidExtension.isAndroidPackaging( project.getPackaging() ) )
+            {
+                continue; // do not modify classpath if not an android project.
+            }
+
             final UnpackedLibHelper helper = new UnpackedLibHelper( artifactResolverHelper, project, log );
 
             final Set<Artifact> artifacts;
