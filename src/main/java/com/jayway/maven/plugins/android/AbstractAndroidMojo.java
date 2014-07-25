@@ -670,11 +670,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                 {
                     getLog().debug( "Detected apk dependency " + artifact + ". Will resolve and deploy to device..." );
                     final File targetApkFile = resolveArtifactToFile( artifact );
-                    if ( undeployBeforeDeploy )
-                    {
-                        getLog().debug( "Attempting undeploy of " + targetApkFile + " from device..." );
-                        undeployApk( targetApkFile );
-                    }
                     getLog().debug( "Deploying " + targetApkFile + " to device..." );
                     deployApk( targetApkFile );
                 }
