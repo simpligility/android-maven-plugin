@@ -7,9 +7,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Assert;
+import org.junit.Ignore;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojoTestCase;
 
+@Ignore("This test has to be migrated to be an IntegrationTest using AbstractAndroidMojoIntegrationTest") 
 public class ManifestUpdateMojoTest extends AbstractAndroidMojoTestCase<ManifestUpdateMojo> {
     @Override
     public String getPluginGoalName() {

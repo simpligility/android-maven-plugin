@@ -6,6 +6,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -14,6 +15,7 @@ import org.junit.runners.Parameterized.Parameters;
 import com.jayway.maven.plugins.android.AbstractAndroidMojoTestCase;
 import com.jayway.maven.plugins.android.config.ConfigHandler;
 
+@Ignore("This test has to be migrated to be an IntegrationTest using AbstractAndroidMojoIntegrationTest") 
 @RunWith( Parameterized.class )
 public class ApkMojoTest
 extends AbstractAndroidMojoTestCase<ApkMojo>

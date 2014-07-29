@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -58,6 +59,7 @@ import com.jayway.maven.plugins.android.phase12integrationtest.InternalIntegrati
  * @author Erik Ogenvik
  * 
  */
+@Ignore("This test has to be migrated to be an IntegrationTest using AbstractAndroidMojoIntegrationTest") 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ RemoteAndroidTestRunner.class, AbstractAndroidMojo.class })
 public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase<InternalIntegrationTestMojo> {

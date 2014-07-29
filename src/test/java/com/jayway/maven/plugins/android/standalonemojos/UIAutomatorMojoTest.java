@@ -6,6 +6,7 @@ import java.util.Arrays;
 import org.apache.maven.model.Build;
 import org.apache.maven.project.MavenProject;
 import org.easymock.EasyMock;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -23,6 +24,7 @@ import com.jayway.maven.plugins.android.config.ConfigHandler;
  * @author Stéphane Nicolas <snicolas@octo.com>
  * 
  */
+@Ignore("This test has to be migrated to be an IntegrationTest using AbstractAndroidMojoIntegrationTest") 
 @RunWith( PowerMockRunner.class )
 @PrepareForTest(
 { CommandExecutor.Factory.class, ConfigHandler.class } )

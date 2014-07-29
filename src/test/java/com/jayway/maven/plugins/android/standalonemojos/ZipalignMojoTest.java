@@ -4,12 +4,14 @@ import com.jayway.maven.plugins.android.AbstractAndroidMojoTestCase;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.config.ConfigHandler;
+
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.FileUtils;
 import org.easymock.Capture;
 import org.easymock.EasyMock;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -25,6 +27,7 @@ import java.util.List;
 /**
  * User: Eugen
  */
+@Ignore("This test has to be migrated to be an IntegrationTest using AbstractAndroidMojoIntegrationTest") 
 @RunWith ( PowerMockRunner.class )
 @PrepareForTest (
         { CommandExecutor.Factory.class, FileUtils.class, ZipalignMojo.class } )
