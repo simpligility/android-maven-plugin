@@ -54,6 +54,12 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
     @Requirement
     private Logger log;
 
+    protected boolean includeLibsJarsForApklib = false;
+
+    protected boolean includeLibsJarsForAar = true;
+
+    private boolean addedJarFromLibs = false;
+
     @Override
     public void afterProjectsRead( MavenSession session ) throws MavenExecutionException
     {
@@ -112,8 +118,12 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
                     // Create a placeholder classes.jar and add it to the compile classpath.
                     // It will replaced with the real classes.jar by GenerateSourcesMojo.
                     addClassesToClasspath( helper, project, artifact );
-                    // Add jar files in 'libs' into classpath.
-                    addLibsJarsToClassPath( helper, project, artifact );
+
+                    if ( includeLibsJarsForAar )
+                    {
+                        // Add jar files in 'libs' into classpath.
+                        addLibsJarsToClassPath( helper, project, artifact );
+                    }
                 }
                 else if ( type.equals( AndroidExtension.APK ) )
                 {
@@ -122,12 +132,19 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
                     // The placeholder will be replaced with the real APK jar later.
                     addClassesToClasspath( helper, project, artifact );
                 }
-                else if ( type.equals( AndroidExtension.APKLIB ) )
+                else if ( type.equals( AndroidExtension.APKLIB ) && includeLibsJarsForApklib )
                 {
                     // Add jar files in 'libs' into classpath.
                     addLibsJarsToClassPath( helper, project, artifact );
                 }
             }
+        }
+
+        if ( addedJarFromLibs )
+        {
+            log.warn( "Transitive dependencies should really be provided by Maven dependency management. "
+                    + "We suggest you to ask the above providers to package their component properly. "
+                    + "Things may break at compile and/or runtime due to multiple copies of incompatible libraries." );
         }
         log.debug( "" );
         log.debug( "ClasspathModifierLifecycleParticipant#afterProjectsRead - finish" );
@@ -154,7 +171,7 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
                  if ( Pattern.matches( "^libs/.+\\.jar$", entryName ) )
                  {
                      final File libsJarFile = new File( unpackLibFolder, entryName );
-                     log.debug( "Adding jar to classpath: " + libsJarFile );
+                     log.warn( "Adding jar from libs folder to classpath: " + libsJarFile );
 
                      // In order to satisfy the LifecycleDependencyResolver on execution up to a phase that
                      // has a Mojo requiring dependency resolution I need to create a dummy classesJar here.
@@ -168,7 +185,8 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
                      final Dependency dependency =
                             createSystemScopeDependency( artifact, libsJarFile, libsJarFile.getName() );
 
-                      project.getModel().addDependency( dependency );
+                     project.getModel().addDependency( dependency );
+                     addedJarFromLibs = true;
                  }
              }
          }
