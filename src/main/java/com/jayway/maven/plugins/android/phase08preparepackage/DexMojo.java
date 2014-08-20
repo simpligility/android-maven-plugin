@@ -36,14 +36,19 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
 
-import java.io.*;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.jayway.maven.plugins.android.common.AndroidExtension.*;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
 
 /**
  * Converts compiled Java classes to the Android dex format.
@@ -58,6 +63,8 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.*;
 public class DexMojo extends AbstractAndroidMojo
 {
 
+    private static final String DEX = ".dex";
+    private static final String CLASSES = "classes";
     /**
      * Configuration for the dex command execution. It can be configured in the plugin configuration like so
      *
@@ -187,7 +194,7 @@ public class DexMojo extends AbstractAndroidMojo
         File outputFile;
         if ( parsedMultiDex )
         {
-            outputFile = new File( project.getBuild().getDirectory());
+            outputFile = new File( project.getBuild().getDirectory() );
         }
         else
         {
@@ -197,17 +204,18 @@ public class DexMojo extends AbstractAndroidMojo
         {
             runDex( executor, outputFile );
 
-            if( parsedMultiDex )
+            if ( parsedMultiDex )
             {
 
-                File assets = new File(project.getBuild().getDirectory(), "generated-sources"+File.separator+"combined-assets");
+                File assets = new File( project.getBuild().getDirectory(),
+                        "generated-sources" + File.separator + "combined-assets" );
 
-                if (!assets.exists() && !assets.mkdirs())
+                if ( !assets.exists() && !assets.mkdirs() )
                 {
-                    throw new IllegalStateException("Unable to create combined-assets directory");
+                    throw new IllegalStateException( "Unable to create combined-assets directory" );
                 }
-                int i=2;
-                while (copyAdditionalDex(outputFile, i, assets))
+                int i = 2;
+                while ( copyAdditionalDex( outputFile, i, assets ) )
                 {
                    i++;
                 }
@@ -230,24 +238,22 @@ public class DexMojo extends AbstractAndroidMojo
         }
     }
 
-    private boolean copyAdditionalDex(File outputFile, int dexIndex, File assets)
+    private boolean copyAdditionalDex( File outputFile, int dexIndex, File assets ) throws MojoExecutionException
     {
-        File secondDexFile = new File(outputFile, "classes"+dexIndex+".dex");
-        if(secondDexFile.exists())
+        File secondDexFile = new File( outputFile, CLASSES + dexIndex + DEX );
+        if ( secondDexFile.exists() )
         {
-            File copiedSecondDexFile = new File(assets,"classes"+dexIndex+".dex");
+            File copiedSecondDexFile = new File( assets, CLASSES + dexIndex + DEX );
 
             try
             {
-                FileOutputStream secondDexOutStream = new FileOutputStream(copiedSecondDexFile);
-                Files.copy(secondDexFile.toPath(), secondDexOutStream);
+                Files.move( secondDexFile.toPath(), copiedSecondDexFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
 
-            } catch (FileNotFoundException e)
+            }
+            catch ( IOException e )
             {
-                e.printStackTrace();
-            } catch (IOException e)
-            {
-                e.printStackTrace();
+                throw new MojoExecutionException( "IOException while moving classes" + dexIndex + ".dex to "
+                        + "combined-assets directory", e );
             }
             return true;
         }
