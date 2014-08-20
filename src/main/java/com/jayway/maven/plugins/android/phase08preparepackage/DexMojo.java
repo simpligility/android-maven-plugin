@@ -36,21 +36,18 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
-import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
-import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.*;
 
 /**
  * Converts compiled Java classes to the Android dex format.
- * 
+ *
  * @author hugo.josefson@jayway.com
  */
 @Mojo(
@@ -63,7 +60,7 @@ public class DexMojo extends AbstractAndroidMojo
 
     /**
      * Configuration for the dex command execution. It can be configured in the plugin configuration like so
-     * 
+     *
      * <pre>
      * &lt;dex&gt;
      *   &lt;jvmArguments&gt;
@@ -117,7 +114,7 @@ public class DexMojo extends AbstractAndroidMojo
      */
     @Parameter( property = "android.dex.predex", defaultValue = "false" )
     private boolean dexPreDex;
-    
+
     /**
      * Decides whether to use force jumbo mode.
      */
@@ -190,7 +187,7 @@ public class DexMojo extends AbstractAndroidMojo
         File outputFile;
         if ( parsedMultiDex )
         {
-            outputFile = new File( project.getBuild().getDirectory(), "classes.zip" );
+            outputFile = new File( project.getBuild().getDirectory());
         }
         else
         {
@@ -199,6 +196,23 @@ public class DexMojo extends AbstractAndroidMojo
         if ( generateApk )
         {
             runDex( executor, outputFile );
+
+            if( parsedMultiDex )
+            {
+
+                File assets = new File(project.getBuild().getDirectory(), "generated-sources"+File.separator+"combined-assets");
+
+                if (!assets.exists() && !assets.mkdirs())
+                {
+                    throw new IllegalStateException("Unable to create combined-assets directory");
+                }
+                int i=2;
+                while (copyAdditionalDex(outputFile, i, assets))
+                {
+                   i++;
+                }
+
+            }
         }
 
         if ( attachJar )
@@ -216,9 +230,33 @@ public class DexMojo extends AbstractAndroidMojo
         }
     }
 
+    private boolean copyAdditionalDex(File outputFile, int dexIndex, File assets)
+    {
+        File secondDexFile = new File(outputFile, "classes"+dexIndex+".dex");
+        if(secondDexFile.exists())
+        {
+            File copiedSecondDexFile = new File(assets,"classes"+dexIndex+".dex");
+
+            try
+            {
+                FileOutputStream secondDexOutStream = new FileOutputStream(copiedSecondDexFile);
+                Files.copy(secondDexFile.toPath(), secondDexOutStream);
+
+            } catch (FileNotFoundException e)
+            {
+                e.printStackTrace();
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Gets the input files for dex. This is a combination of directories and jar files.
-     * 
+     *
      * @return
      */
     private Set< File > getDexInputFiles() throws MojoExecutionException
@@ -559,7 +597,7 @@ public class DexMojo extends AbstractAndroidMojo
 
     /**
      * Figure out the full path to the current java executable.
-     * 
+     *
      * @return the full path to the current java executable.
      */
     private static File getJavaExecutable()
@@ -605,7 +643,7 @@ public class DexMojo extends AbstractAndroidMojo
 
     /**
      * Makes sure the string ends with "/"
-     * 
+     *
      * @param prefix
      *            any string, or null.
      * @return the prefix with a "/" at the end, never null.
@@ -622,7 +660,7 @@ public class DexMojo extends AbstractAndroidMojo
 
     /**
      * Adds a directory to a {@link JarArchiver} with a directory prefix.
-     * 
+     *
      * @param jarArchiver
      * @param directory
      *            The directory to add.
@@ -654,7 +692,7 @@ public class DexMojo extends AbstractAndroidMojo
 
     /**
      * Adds a Java Resources directory (typically "src/main/resources") to a {@link JarArchiver}.
-     * 
+     *
      * @param jarArchiver
      * @param javaResource
      *            The Java resource to add.
