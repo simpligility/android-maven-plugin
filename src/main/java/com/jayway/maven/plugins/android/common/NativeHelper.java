@@ -231,7 +231,9 @@ public class NativeHelper
         {
             if ( ! Artifact.SCOPE_PROVIDED.equals( dependency.getScope() ) && ! dependency.isOptional() )
             {
-                transitiveArtifacts.addAll( processTransitiveDependencies( dependency, sharedLibraries ) );
+                final Set<Artifact> transArtifactsFor = processTransitiveDependencies( dependency, sharedLibraries );
+                log.debug( "Found transitive dependencies for : " + dependency + " transDeps : " + transArtifactsFor );
+                transitiveArtifacts.addAll( transArtifactsFor );
             }
         }
 
@@ -242,8 +244,6 @@ public class NativeHelper
     private Set<Artifact> processTransitiveDependencies( Dependency dependency, boolean sharedLibraries )
             throws MojoExecutionException
     {
-        log.debug( "Processing transitive dependencies for : " + dependency );
-
         try
         {
             final Set<Artifact> artifacts = new LinkedHashSet<Artifact>();
@@ -280,7 +280,6 @@ public class NativeHelper
             for ( final DependencyNode dep : dependencies )
             {
                 final boolean isNativeLibrary = isNativeLibrary( sharedLibraries, dep.getArtifact().getType() );
-                log.debug( "Processing library : " + dep.getArtifact() + " isNative=" + isNativeLibrary );
                 if ( isNativeLibrary )
                 {
                     artifacts.add( dep.getArtifact() );
