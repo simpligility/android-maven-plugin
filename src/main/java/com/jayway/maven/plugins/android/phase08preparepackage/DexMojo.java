@@ -37,7 +37,6 @@ import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -243,38 +242,16 @@ public class DexMojo extends AbstractAndroidMojo
                         || artifact.getType().equals( Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE ) )
                 {
                     // Ignore native dependencies - no need for dexer to see those
-                    continue;
                 }
                 else if ( artifact.getType().equals( APKLIB ) )
                 {
-                    // jar files under 'libs' in an APKLIB to dex.
-                    final File unpackLibFolder = getUnpackedLibHelper().getUnpackedLibFolder( artifact );
-                    getLog().debug( "Unpacked Lib folder: " + unpackLibFolder );
-                    final File unpackLibLibsFolder = new File( unpackLibFolder, "libs" );
-                    File[] libJarFiles = unpackLibLibsFolder.listFiles( new FilenameFilter()
-                    {
-                        public boolean accept( final File dir, final String name )
-                        {
-                            return name.endsWith( ".jar" );
-                        }
-                    } );
-
-                    if ( libJarFiles != null )
-                    {
-                        for ( File jarFile : libJarFiles )
-                        {
-                            getLog().debug( "Adding dex inputs:" + jarFile );
-                            inputs.add( jarFile.getAbsoluteFile() );
-                        }
-                    }
-                    continue;
+                    // Any jars in the libs folder should now be
+                    // automatically included because they will be a transitive dependency.
                 }
                 else if ( artifact.getType().equals( AAR ) )
                 {
-                    // We need to get the aar classes, not the aar itself.
-                    final File jar = getUnpackedAarClassesJar( artifact );
-                    getLog().debug( "Adding dex input : " + jar );
-                    inputs.add( jar.getAbsoluteFile() );
+                    // The Aar classes.jar should now be automatically included
+                    // because it will be a transitive dependency. As should any jars in the libs folder.
                 }
                 else if ( artifact.getType().equals( APK ) )
                 {
