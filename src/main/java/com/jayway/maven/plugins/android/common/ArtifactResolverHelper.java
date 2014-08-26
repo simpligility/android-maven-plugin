@@ -35,7 +35,7 @@ public final class ArtifactResolverHelper
      * Which dependency scopes should not be included when unpacking dependencies into the apk.
      */
     protected static final List<String> EXCLUDED_DEPENDENCY_SCOPES = Arrays.asList(
-            Artifact.SCOPE_PROVIDED, Artifact.SCOPE_SYSTEM, Artifact.SCOPE_IMPORT
+            Artifact.SCOPE_PROVIDED, Artifact.SCOPE_IMPORT
     );
 
     private final ArtifactResolver artifactResolver;
