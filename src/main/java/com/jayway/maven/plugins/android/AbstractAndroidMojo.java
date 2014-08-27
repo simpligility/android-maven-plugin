@@ -50,6 +50,7 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 
 import java.io.File;
@@ -67,7 +68,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
@@ -138,6 +141,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     @Component
     protected MojoExecution execution;
+
+    /**
+     */
+    @Component
+    protected RepositorySystem repositorySystem;
 
     /**
      * The java sources directory.
@@ -412,12 +420,23 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * </p>
      * <p/>
      * <p>It is useful to keep this set to <code>true</code> at all times, because if an apk with the same package was
-     * previously signed with a different keystore, and deployed to the device, deployment will fail becuase your
+     * previously signed with a different keystore, and deployed to the device, deployment will fail because your
      * keystore is different.</p>
      */
     @Parameter( property = "android.undeployBeforeDeploy", defaultValue = "false" )
     protected boolean undeployBeforeDeploy;
 
+    /**
+     * <p>Whether to produce a warning if there is an aar artifact in project dependency tree, which in turn has
+     * a direct or transitive dependency on apklib artifact. The case of aar library including or building on top of
+     * an apklib has been deprecated and may not be supported in the future versions of this plugin. Traversing
+     * the dependency graph is performed for all project dependencies.</p>
+     * <p/>
+     * <p>It is recommended to keep this set to <code>true</code> to catch possible errors as soon as possible.</p>
+     */
+    @Parameter( defaultValue = "true" )
+    protected boolean warnOnApklibDependency;
+    
     /**
      * <p>Whether to attach the normal .jar file to the build, so it can be depended on by for example integration-tests
      * which may then access {@code R.java} from this project.</p>
@@ -476,15 +495,17 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      *
      */
     private static final Object ADB_LOCK = new Object();
+
     /**
      *
      */
     private static boolean adbInitialized = false;
 
-    @SuppressWarnings( "unused" )
-    @Component
+    /**
+     * Dependency graph builder component.
+     */
+    @Component( hint = "default" )
     protected DependencyGraphBuilder dependencyGraphBuilder;
-
 
     protected final DependencyResolver getDependencyResolver()
     {
@@ -508,11 +529,23 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected Set<Artifact> getDirectDependencyArtifacts()
     {
         final Set<Artifact> allArtifacts = project.getDependencyArtifacts();
-        return getArtifactResolverHelper().getFilteredArtifacts( allArtifacts );
+        Set<Artifact> deps = getArtifactResolverHelper().getFilteredArtifacts( allArtifacts );
+        if ( project.getPackaging().equals( AAR ) )
+        {
+            for ( Artifact dependency : deps )
+            {
+                if ( warnOnApklibDependency && dependency.getType().equals( APKLIB ) )
+                {
+                    getLog().warn( "Found a deprecated APKLIB dependency " + dependency.getId() );
+                    // TODO remove this APKLIB artifact from list of dependencies
+                }
+            }
+        }
+        return deps;
     }
 
     /**
-     * Provides transitive dependency artifacts only defined types based on {@code types} argument
+     * Provides transitive dependency artifacts having types defined by {@code types} argument
      * or all types if {@code types} argument is empty
      *
      * @param types artifact types to be selected
@@ -522,7 +555,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected Set<Artifact> getTransitiveDependencyArtifacts( String... types )
     {
-        return getArtifactResolverHelper().getFilteredArtifacts( project.getArtifacts(), types );
+        Set<Artifact> deps = getArtifactResolverHelper().getFilteredArtifacts( project.getArtifacts(), types );
+        return getValidTransitiveDependencies( deps );
     }
 
     /**
@@ -535,7 +569,54 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected Set<Artifact> getTransitiveDependencyArtifacts( List<String> filteredScopes, String... types )
     {
-        return getArtifactResolverHelper().getFilteredArtifacts( filteredScopes, project.getArtifacts(), types );
+        Set<Artifact> deps = getArtifactResolverHelper().getFilteredArtifacts( filteredScopes,
+                project.getArtifacts(), types );
+        return getValidTransitiveDependencies( deps );
+    }
+
+    /**
+     * Traverses the list of dependencies looking for unsupported or deprecated artifact combinations.
+     * If a potentially dangerous kind of inheritance is found, produces a warning. Future plugin versions
+     * may default to isolating and ignoring of all offending direct or transitive dependencies. 
+     *
+     * @param dependencies pre-filtered project dependencies
+     * @return a {@code List} of valid and supported project dependencies.
+     */
+    protected Set<Artifact> getValidTransitiveDependencies( Set<Artifact> dependencies )
+    {
+        // exit immediately if corresponding warnings are suppressed
+        if ( !warnOnApklibDependency )
+        {
+            return dependencies;
+        }
+        final DependencyResolver dependencyResolver = getDependencyResolver();
+        for ( Artifact aarDep : dependencies )
+        {
+            if ( !aarDep.getType().equals( AAR ) )
+            {
+                continue;
+            }
+            try
+            {
+                final Set<Artifact> transitiveDeps = dependencyResolver
+                        .getLibraryDependenciesFor( session, repositorySystem, aarDep );
+                for ( Artifact apklibDep : transitiveDeps )
+                {
+                    if ( warnOnApklibDependency && apklibDep.getType().equals( APKLIB ) )
+                    {
+                        getLog().warn( "Found a deprecated transitive APKLIB dependency " + apklibDep.getId()
+                                + ". Check if there is a newer version of " + aarDep.getId() );
+                        // TODO remove the APKLIB artifact from list of dependencies
+                    }
+                }
+            }
+            catch ( MojoExecutionException e )
+            {
+                // log the error, then advance to next dependency
+                getLog().error( "Failed to resolve dependencies for " + aarDep.getId(), e );
+            }
+        }
+        return dependencies;
     }
 
     /**
