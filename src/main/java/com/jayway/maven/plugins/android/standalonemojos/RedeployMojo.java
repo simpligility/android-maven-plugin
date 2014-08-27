@@ -17,8 +17,6 @@
  */
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
-
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 
 import org.apache.commons.lang.StringUtils;
@@ -41,7 +39,7 @@ public class RedeployMojo extends AbstractAndroidMojo
 
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        if ( project.getPackaging().equals( APK ) )
+        if ( checkPackaging() )
         {
             String packageToUndeploy = renameManifestPackage != null
                     ? renameManifestPackage
