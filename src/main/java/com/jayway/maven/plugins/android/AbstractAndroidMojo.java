@@ -690,7 +690,11 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected final boolean checkPackaging()
     {
-        return project.getPackaging().equals( APK );
+        if ( project.getPackaging().equals( APK ) ) 
+        {
+            return true;
+        }
+        return "false".equals( project.getProperties().get( "checkAPK" ) );
     }
 
     /**
