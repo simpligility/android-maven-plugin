@@ -681,6 +681,17 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
             }
         }
     }
+    
+    /** 
+     * Verifies whether packaging of this project is OK for executing
+     * advanced tasks like deployment, execution, etc.
+     * 
+     * @return true if this project seems to be "Android" ready
+     */
+    protected final boolean checkPackaging()
+    {
+        return project.getPackaging().equals( APK );
+    }
 
     /**
      * Deploy the apk built with the current projects to all attached devices and emulators. 
@@ -691,7 +702,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected void deployBuiltApk() throws MojoExecutionException, MojoFailureException
     {
-        if ( project.getPackaging().equals( APK ) )
+        if ( checkPackaging() )
         {
             File apkFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + "." + APK );
             deployApk( apkFile );
