@@ -690,9 +690,20 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected final boolean checkPackaging()
     {
-        return project.getPackaging().equals( APK );
+        if ( project.getPackaging().equals( APK ) )
+        {
+            return true;
+        }
+        for ( Artifact a : project.getAttachedArtifacts() ) 
+        {
+            if ( APK.equals( a.getClassifier() ) )
+            {
+                return true;
+            }
+        }
+        return false;
     }
-
+    
     /**
      * Deploy the apk built with the current projects to all attached devices and emulators. 
      * Skips other projects in a multi-module build without terminating.
