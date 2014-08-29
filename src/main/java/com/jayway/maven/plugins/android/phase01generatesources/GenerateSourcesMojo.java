@@ -180,7 +180,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * <p>It is recommended to keep this set to <code>true</code> to catch possible issues as soon as possible.</p>
      */
     @Parameter( defaultValue = "true" )
-    protected boolean warnOnApklibDependency;
+    protected boolean warnOnApklibDependencies;
 
     /**
      * Whether to fail the build if one of the dependencies and/or the project duplicate a layout file.
@@ -224,16 +224,16 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     protected BuildConfigConstant[] buildConfigConstants;
 
     /**
+     */
+    @Component
+    private RepositorySystem repositorySystem;
+
+    /**
      * Which dependency scopes should not be included when unpacking dependencies
      */
     protected static final List<String> EXCLUDED_DEPENDENCY_SCOPES_FOR_EXTRACTION = Arrays.asList(
             Artifact.SCOPE_SYSTEM, Artifact.SCOPE_IMPORT
     );
-
-    /**
-     */
-    @Component
-    protected RepositorySystem repositorySystem;
 
     /**
      * Generates the sources.
@@ -256,7 +256,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             copyManifest();
 
             // Check for a deprecated AAR > APKLIB artifact combination
-            if ( warnOnApklibDependency )
+            if ( warnOnApklibDependencies )
             {
                 checkForApklibDependencies();
             }
