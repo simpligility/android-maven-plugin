@@ -571,9 +571,8 @@ public class ProguardMojo extends AbstractAndroidMojo
             }
             else if ( AAR.equals( artifact.getType() ) )
             {
-                final File aarClassesJar = getUnpackedAarClassesJar( artifact );
-                getLog().debug( "Including aar dependency as input jar : " + artifact );
-                inJars.add( createProguardInput( aarClassesJar.getAbsolutePath(), globalInJarExcludes ) );
+                // The Aar classes.jar should now be automatically included
+                // because it will be a transitive dependency. As should any jars in the libs folder.
             }
             else
             {
@@ -747,9 +746,9 @@ public class ProguardMojo extends AbstractAndroidMojo
     /**
      * Get the default ProGuard options.
      *
-     * @return
      * @see #parsedOptions
      */
+    @SuppressWarnings( "unused" ) // Provides default value for parsedOptions attribute
     private String[] getDefaultProguardOptions()
     {
         return new String[0];
