@@ -480,6 +480,7 @@ public class ApkMojo extends AbstractAndroidMojo
 
         for ( Artifact artifact : getRelevantCompileArtifacts() )
         {
+            getLog().debug( "Found artifact for APK :" + artifact );
             if ( extractDuplicates )
             {
                 try
@@ -497,6 +498,7 @@ public class ApkMojo extends AbstractAndroidMojo
         // Check duplicates.
         if ( extractDuplicates )
         {
+            getLog().debug( "Extracting duplicates" );
             List<String> duplicates = new ArrayList<String>();
             List<File> jarToModify = new ArrayList<File>();
             for ( String s : jars.keySet() )
@@ -519,25 +521,20 @@ public class ApkMojo extends AbstractAndroidMojo
             // Rebuild jars.
             for ( File file : jarToModify )
             {
-                File newJar;
-                newJar = removeDuplicatesFromJar( file, duplicates );
-                int index = jarFiles.indexOf( file );
+                final File newJar = removeDuplicatesFromJar( file, duplicates );
+                getLog().debug( "Removed duplicates from " + newJar );
                 if ( newJar != null )
                 {
+                    final int index = jarFiles.indexOf( file );
                     jarFiles.set( index, newJar );
                 }
-
             }
         }
         
-        String debugKeyStore;
-        ApkBuilder apkBuilder; 
-        try 
+        try
         {
-            debugKeyStore = ApkBuilder.getDebugKeystore();
-            apkBuilder = 
-                    new ApkBuilder( outputFile, zipArchive, dexFile, 
-                            ( signWithDebugKeyStore ) ? debugKeyStore : null, null );
+            final String debugKeyStore = signWithDebugKeyStore ? ApkBuilder.getDebugKeystore() : null;
+            final ApkBuilder apkBuilder = new ApkBuilder( outputFile, zipArchive, dexFile, debugKeyStore, null );
             if ( apkDebug )
             {
                 apkBuilder.setDebugMode( true );
@@ -545,6 +542,7 @@ public class ApkMojo extends AbstractAndroidMojo
 
             for ( File sourceFolder : sourceFolders )
             {
+                getLog().debug( "Adding source folder : " + sourceFolder );
                 apkBuilder.addSourceFolder( sourceFolder );
             }
      
@@ -571,7 +569,7 @@ public class ApkMojo extends AbstractAndroidMojo
                         }
                     }
                 }
-    
+
                 if ( excluded )
                 {
                     continue;
@@ -579,7 +577,8 @@ public class ApkMojo extends AbstractAndroidMojo
                 
                 if ( jarFile.isDirectory() )
                 {
-                    String[] filenames = jarFile.list( new FilenameFilter()
+                    getLog().debug( "Adding resources from jar folder : " + jarFile );
+                    final String[] filenames = jarFile.list( new FilenameFilter()
                     {
                         public boolean accept( File dir, String name )
                         {
@@ -589,17 +588,21 @@ public class ApkMojo extends AbstractAndroidMojo
     
                     for ( String filename : filenames )
                     {
-                        apkBuilder.addResourcesFromJar( new File( jarFile, filename ) );
+                        final File innerJar = new File( jarFile, filename );
+                        getLog().debug( "Adding resources from innerJar : " + innerJar );
+                        apkBuilder.addResourcesFromJar( innerJar );
                     }
                 }
                 else
                 {
+                    getLog().debug( "Adding resources from : " + jarFile );
                     apkBuilder.addResourcesFromJar( jarFile );
                 }
             }
 
             for ( File nativeFolder : nativeFolders )
             {
+                getLog().debug( "Adding native library : " + nativeFolder );
                 apkBuilder.addNativeLibraries( nativeFolder );
             }
             apkBuilder.sealApk();

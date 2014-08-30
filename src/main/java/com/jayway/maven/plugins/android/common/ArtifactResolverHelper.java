@@ -32,9 +32,9 @@ import java.util.Set;
 public final class ArtifactResolverHelper
 {
     /**
-     * Which dependency scopes should not be included when unpacking dependencies into the apk.
+     * Which dependency scopes should be excluded when packing dependencies into the apk.
      */
-    protected static final List<String> EXCLUDED_DEPENDENCY_SCOPES = Arrays.asList(
+    public static final List<String> EXCLUDE_NON_PACKAGED_SCOPES = Arrays.asList(
             Artifact.SCOPE_PROVIDED, Artifact.SCOPE_IMPORT
     );
 
@@ -70,7 +70,7 @@ public final class ArtifactResolverHelper
      */
     public Set<Artifact> getFilteredArtifacts( Iterable<Artifact> allArtifacts, String... types )
     {
-        return getFilteredArtifacts( EXCLUDED_DEPENDENCY_SCOPES, allArtifacts, types );
+        return getFilteredArtifacts( EXCLUDE_NON_PACKAGED_SCOPES, allArtifacts, types );
     }
 
     /**
