@@ -142,9 +142,10 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
 
         if ( addedJarFromLibs )
         {
-            log.warn(           "Transitive dependencies should really be provided by Maven dependency management.\n"
-                    + "          We suggest you to ask the above providers to package their component properly.\n"
-                    + "          Things may break at compile and/or runtime due to multiple copies of incompatible libraries." );
+            log.warn(
+                    "Transitive dependencies should really be provided by Maven dependency management.\n"
+        + "          We suggest you to ask the above providers to package their component properly.\n"
+        + "          Things may break at compile and/or runtime due to multiple copies of incompatible libraries." );
         }
         log.debug( "" );
         log.debug( "ClasspathModifierLifecycleParticipant#afterProjectsRead - finish" );
