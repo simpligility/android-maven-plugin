@@ -89,24 +89,9 @@ public class ProguardMojo extends AbstractAndroidMojo
     @PullParameter( defaultValue = "true" )
     private Boolean parsedSkip;
 
-    /**
-     * Path to the ProGuard configuration file (relative to project root). Defaults to "proguard.cfg"
-     */
-    // TODO remove this unused field
-    @Parameter( property = "android.proguard.config" )
-    private File proguardConfig;
-
     @PullParameter( defaultValue = "${project.basedir}/proguard.cfg" )
     private File parsedConfig;
 
-    /**
-     * Additional ProGuard configuration files (relative to project root).
-     */
-    // TODO remove this unused field
-    @Parameter( property = "android.proguard.configs" )
-    private String[] proguardConfigs;
-
-    // TODO remove this field that always equates to an empty array.
     @PullParameter( defaultValueGetterMethod = "getDefaultProguardConfigs" )
     private String[] parsedConfigs;
 
@@ -445,8 +430,6 @@ public class ProguardMojo extends AbstractAndroidMojo
     /**
      * Convert the jvm arguments in parsedJvmArguments as populated by the config in format as needed by the java
      * command. Also preserve backwards compatibility in terms of dashes required or not..
-     *
-     * @param commands
      */
     private void collectJvmArguments( List< String > commands )
     {
@@ -470,7 +453,7 @@ public class ProguardMojo extends AbstractAndroidMojo
     {
         // commons-logging breaks everything horribly, so we skip it from the program
         // dependencies and declare it to be a library dependency instead
-        skipArtifact( "commons-logging", "commons-logging", "[1.0,)", true );
+        skipArtifact( "commons-logging", "commons-logging", true );
 
         final List< ProGuardInput > inJars = getProgramInputFiles();
         for ( final ProGuardInput injar : inJars )
@@ -501,7 +484,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         return new File( javaHome + slash + "bin" + slash + "java" );
     }
 
-    private void skipArtifact( String groupId, String artifactId, String versionRangeSpec, boolean shiftToLibraries )
+    private void skipArtifact( String groupId, String artifactId, boolean shiftToLibraries )
             throws MojoExecutionException
     {
         final ArtifactPrototype artifact = new ArtifactPrototype( groupId, artifactId );
@@ -571,14 +554,12 @@ public class ProguardMojo extends AbstractAndroidMojo
             }
             else if ( AAR.equals( artifact.getType() ) )
             {
-                final File aarClassesJar = getUnpackedAarClassesJar( artifact );
-                getLog().debug( "Including aar dependency as input jar : " + artifact );
-                inJars.add( createProguardInput( aarClassesJar.getAbsolutePath(), globalInJarExcludes ) );
+                // The Aar classes.jar should now be automatically included
+                // because it will be a transitive dependency. As should any jars in the libs folder.
             }
             else
             {
                 getLog().debug( "Excluding dependency as input jar : " + artifact );
-                continue;
             }
         }
 
@@ -667,10 +648,8 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     /**
      * Get the path to the proguard jar.
-     *
-     * @return
-     * @throws MojoExecutionException
      */
+    @SuppressWarnings( "unused" ) // NB Used to populate the parsedProguardJarPath attribute via reflection.
     private String getProguardJarPath() throws MojoExecutionException
     {
         String proguardJarPath = getProguardJarPathFromDependencies();
@@ -724,9 +703,9 @@ public class ProguardMojo extends AbstractAndroidMojo
     /**
      * Get the default JVM arguments for the proguard invocation.
      *
-     * @return
      * @see #parsedJvmArguments
      */
+    @SuppressWarnings( "unused" ) // Provides default value for parsedJvmArguments attribute
     private String[] getDefaultJvmArguments()
     {
         return new String[] { "-Xmx512M" };
@@ -735,10 +714,9 @@ public class ProguardMojo extends AbstractAndroidMojo
     /**
      * Get the default ProGuard config files.
      *
-     * @return
      * @see #parsedConfigs
      */
-    // TODO remove this unnecessary method.
+    @SuppressWarnings( "unused" ) // Provides default value for parsedConfigs attribute
     private String[] getDefaultProguardConfigs()
     {
         return new String[0];
@@ -747,9 +725,9 @@ public class ProguardMojo extends AbstractAndroidMojo
     /**
      * Get the default ProGuard options.
      *
-     * @return
      * @see #parsedOptions
      */
+    @SuppressWarnings( "unused" ) // Provides default value for parsedOptions attribute
     private String[] getDefaultProguardOptions()
     {
         return new String[0];
