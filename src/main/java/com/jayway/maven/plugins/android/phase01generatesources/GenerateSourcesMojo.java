@@ -960,7 +960,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         generateBuildConfigForPackage( packageName );
 
         // Skip BuildConfig generation for dependencies if this is not an APK project
-        if ( !project.getPackaging().equals( APK ) )
+        if ( !checkPackaging() )
         {
             return;
         }

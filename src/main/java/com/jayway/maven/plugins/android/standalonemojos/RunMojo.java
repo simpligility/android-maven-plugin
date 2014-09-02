@@ -45,8 +45,6 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 
-import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
-
 /**
  * Runs the first Activity shown in the top-level launcher as determined by its Intent filters.
  * <p>
@@ -164,7 +162,7 @@ public class RunMojo extends AbstractAndroidMojo
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        if ( project.getPackaging().equals( APK ) )
+        if ( checkPackaging() )
         {
             try
             {
