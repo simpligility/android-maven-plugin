@@ -25,7 +25,6 @@ import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.common.AaptCommandBuilder;
 import com.jayway.maven.plugins.android.common.AaptCommandBuilder.AaptPackageCommandBuilder;
 import com.jayway.maven.plugins.android.common.FileRetriever;
-import com.jayway.maven.plugins.android.common.ZipExtractor;
 import com.jayway.maven.plugins.android.configuration.BuildConfigConstant;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -489,13 +488,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         // So we need to extract them into a folder that we then add to the resource classpath.
         if ( isAPKBuild() )
         {
-            // Extract the resources from the AAR classes and add them as a resource path to the project.
-            final File aarClassesJar = getUnpackedAarClassesJar( aarArtifact );
-            final ZipExtractor extractor = new ZipExtractor( getLog() );
-            final File javaResourcesFolder = getUnpackedAarJavaResourcesFolder( aarArtifact );
-            extractor.extract( aarClassesJar, javaResourcesFolder, ".class" );
-            projectHelper.addResource( project, javaResourcesFolder.getAbsolutePath(), null, null );
-            getLog().debug( "Added AAR resources to resource classpath : " + javaResourcesFolder );
+            // (If we are including SYSTEM_SCOPE artifacts when considering resources for APK packaging)
+            // then adding the AAR resources to the project would have them added twice.
+            getLog().debug( "Not adding AAR resources to resource classpath : " + aarArtifact );
         }
     }
 
@@ -805,17 +800,14 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private List<File> getLibraryResourceFolders()
     {
         final List<File> resourceFolders = new ArrayList<File>();
-        for ( Artifact artifact : getTransitiveDependencyArtifacts() )
+        for ( Artifact artifact : getTransitiveDependencyArtifacts( AAR, APKLIB ) )
         {
             getLog().debug( "Considering dep artifact : " + artifact );
-            if ( artifact.getType().equals( APKLIB ) || artifact.getType().equals( AAR ) )
+            final File resourceFolder = getUnpackedLibResourceFolder( artifact );
+            if ( resourceFolder.exists() )
             {
-                final File resourceFolder = getUnpackedLibResourceFolder( artifact );
-                if ( resourceFolder.exists() )
-                {
-                    getLog().debug( "Adding apklib or aar resource folder : " + resourceFolder );
-                    resourceFolders.add( resourceFolder );
-                }
+                getLog().debug( "Adding apklib or aar resource folder : " + resourceFolder );
+                resourceFolders.add( resourceFolder );
             }
         }
         return resourceFolders;
