@@ -554,7 +554,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         final Set<Artifact> allArtifacts = project.getArtifacts();
         Set<Artifact> dependencyArtifacts = getArtifactResolverHelper().getFilteredArtifacts( allArtifacts );
 
-        boolean found = false;
+        boolean foundApklib = false;
 
         for ( Artifact artifact : dependencyArtifacts )
         {
@@ -562,7 +562,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             if ( type.equals( APKLIB ) && isAarBuild )
             {
                 getLog().warn( "Detected APKLIB transitive dependency: " + artifact.getId() );
-                found = true;
+                foundApklib = true;
             }
             else if ( type.equals( AAR ) )
             {
@@ -574,17 +574,17 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                     {
                         getLog().warn( "Detected " + artifact.getId() + " that depends on APKLIB: "
                                 + dependency.getId() );
-                        found = true;
+                        foundApklib = true;
                     }
                 }
             }
         }
 
-        if ( found )
+        if ( foundApklib )
         {
-            getLog().info( "AAR libraries should not depend or include APKLIB artifacts, as APKLIBs have "
-                    + "been deprecated and the combination of the two may yield unexpected results. Check problematic "
-                    + "AAR libraries for newer versions that may have already been upgraded to use AAR artifacts." );
+            getLog().warn( "AAR libraries should not depend or include APKLIB artifacts.\n"
+                + "APKLIBs have been deprecated and the combination of the two may yield unexpected results.\n"
+                + "Check the problematic AAR libraries for newer versions that use AAR packaging." );
         }
     }
 
