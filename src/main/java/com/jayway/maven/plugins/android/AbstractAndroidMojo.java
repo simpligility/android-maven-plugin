@@ -412,7 +412,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * </p>
      * <p/>
      * <p>It is useful to keep this set to <code>true</code> at all times, because if an apk with the same package was
-     * previously signed with a different keystore, and deployed to the device, deployment will fail becuase your
+     * previously signed with a different keystore, and deployed to the device, deployment will fail because your
      * keystore is different.</p>
      */
     @Parameter( property = "android.undeployBeforeDeploy", defaultValue = "false" )
@@ -476,15 +476,17 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      *
      */
     private static final Object ADB_LOCK = new Object();
+
     /**
      *
      */
     private static boolean adbInitialized = false;
 
-    @SuppressWarnings( "unused" )
-    @Component
+    /**
+     * Dependency graph builder component.
+     */
+    @Component( hint = "default" )
     protected DependencyGraphBuilder dependencyGraphBuilder;
-
 
     protected final DependencyResolver getDependencyResolver()
     {
@@ -512,7 +514,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     }
 
     /**
-     * Provides transitive dependency artifacts only defined types based on {@code types} argument
+     * Provides transitive dependency artifacts having types defined by {@code types} argument
      * or all types if {@code types} argument is empty
      *
      * @param types artifact types to be selected

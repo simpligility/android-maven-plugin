@@ -24,13 +24,13 @@ import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.common.AaptCommandBuilder;
 import com.jayway.maven.plugins.android.common.AaptCommandBuilder.AaptPackageCommandBuilder;
+import com.jayway.maven.plugins.android.common.DependencyResolver;
 import com.jayway.maven.plugins.android.common.FileRetriever;
 import com.jayway.maven.plugins.android.configuration.BuildConfigConstant;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
@@ -90,7 +90,6 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APKSOURCE
 )
 public class GenerateSourcesMojo extends AbstractAndroidMojo
 {
-
     /**
      * <p>
      * Override default merging. You must have SDK Tools r20+
@@ -172,6 +171,17 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     protected boolean mergeManifests;
 
     /**
+     * <p>Whether to produce a warning if there is an aar dependency that has an apklib artifact in its dependency
+     * tree. The combination of aar library including or depending on an apklib has been deprecated and may not be
+     * supported by future plugin versions. Traversing the dependency graph is done for all project dependencies
+     * present in build classpath.</p>
+     * <p/>
+     * <p>It is recommended to keep this set to <code>true</code> to catch possible issues as soon as possible.</p>
+     */
+    @Parameter( defaultValue = "true" )
+    protected boolean warnOnApklibDependencies;
+
+    /**
      * Whether to fail the build if one of the dependencies and/or the project duplicate a layout file.
      *
      * Such a scenario generally means that the build will fail with a compilation error due to missing resource files.
@@ -212,9 +222,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     @Parameter( property = "android.buildConfigConstants", readonly = true )
     protected BuildConfigConstant[] buildConfigConstants;
 
-    @Component
-    private MavenSession mavenSession;
-
+    /**
+     */
     @Component
     private RepositorySystem repositorySystem;
 
@@ -225,18 +234,16 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             Artifact.SCOPE_SYSTEM, Artifact.SCOPE_IMPORT
     );
 
-
     /**
-     * Generates the source.
+     * Generates the sources.
      *
      * @throws MojoExecutionException if it fails.
      * @throws MojoFailureException if it fails.
      */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-
         // If the current POM isn't an Android-related POM, then don't do
-        // anything.  This helps work with multi-module projects.
+        // anything. This helps work with multi-module projects.
         if ( ! isCurrentProjectAndroid() )
         {
             return;
@@ -246,6 +253,13 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             targetDirectory.mkdirs();
             copyManifest();
+
+            // Check for a deprecated AAR > APKLIB artifact combination
+            if ( warnOnApklibDependencies )
+            {
+                checkForApklibDependencies();
+            }
+
             // TODO Do we really want to continue supporting APKSOURCES? How long has it been deprecated
             extractSourceDependencies();
 
@@ -385,6 +399,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
     }
 
+    /**
+     * @deprecated Support <code>APKSOURCES</code> artifacts has been deprecated. Use APKLIB instead.
+     */
+    @Deprecated
     private void extractApksources( File apksourcesFile ) throws MojoExecutionException
     {
         if ( apksourcesFile.isDirectory() )
@@ -517,6 +535,57 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
         getLog().debug( "Copied APK classes jar into compile classpath : " + unpackedClassesJar );
 
+    }
+
+    /**
+     * Traverses the list of project dependencies looking for &quot;AAR depends on APKLIB&quot; artifact combination
+     * that has been deprecated. For each occurrence of an AAR artifact with APKLIB direct or transitive dependency,
+     * produces a warning message to inform the user. Future plugin versions may default to skipping or not handling
+     * unsupported artifacts during build lifecycle.
+     *
+     * @throws MojoExecutionException
+     */
+    private void checkForApklibDependencies() throws MojoExecutionException
+    {
+        final boolean isAarBuild = project.getPackaging().equals( AAR );
+
+        final DependencyResolver dependencyResolver = getDependencyResolver();
+
+        final Set<Artifact> allArtifacts = project.getArtifacts();
+        Set<Artifact> dependencyArtifacts = getArtifactResolverHelper().getFilteredArtifacts( allArtifacts );
+
+        boolean found = false;
+
+        for ( Artifact artifact : dependencyArtifacts )
+        {
+            final String type = artifact.getType();
+            if ( type.equals( APKLIB ) && isAarBuild )
+            {
+                getLog().warn( "Detected APKLIB transitive dependency: " + artifact.getId() );
+                found = true;
+            }
+            else if ( type.equals( AAR ) )
+            {
+                final Set<Artifact> dependencies = dependencyResolver
+                        .getLibraryDependenciesFor( session, repositorySystem, artifact );
+                for ( Artifact dependency : dependencies )
+                {
+                    if ( dependency.getType().equals( APKLIB ) )
+                    {
+                        getLog().warn( "Detected " + artifact.getId() + " that depends on APKLIB: "
+                                + dependency.getId() );
+                        found = true;
+                    }
+                }
+            }
+        }
+
+        if ( found )
+        {
+            getLog().info( "AAR libraries should not depend or include APKLIB artifacts, as APKLIBs have "
+                    + "been deprecated and the combination of the two may yield unexpected results. Check problematic "
+                    + "AAR libraries for newer versions that may have already been upgraded to use AAR artifacts." );
+        }
     }
 
     /**
@@ -829,7 +898,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         List<File> dependenciesResDirectories = new ArrayList<File>();
         final Set<Artifact> apklibDeps = getDependencyResolver()
-                .getLibraryDependenciesFor( mavenSession, repositorySystem, apklibArtifact );
+                .getLibraryDependenciesFor( this.session, this.repositorySystem, apklibArtifact );
         getLog().debug( "apklib=" + apklibArtifact + "  dependencies=" + apklibDeps );
         for ( Artifact dependency : apklibDeps )
         {
