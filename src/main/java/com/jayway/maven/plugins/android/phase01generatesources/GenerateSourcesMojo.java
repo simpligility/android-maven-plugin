@@ -228,6 +228,36 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private RepositorySystem repositorySystem;
 
     /**
+     * Pre AMP-4 AndroidManifest file.
+     */
+    @Parameter( readonly = true, defaultValue = "${project.basedir}/AndroidManifest.xml" )
+    private File androidManifestFilePre4;
+
+    /**
+     * Pre AMP-4 android resources folder.
+     */
+    @Parameter( readonly = true, defaultValue = "${project.basedir}/res" )
+    private File resourceDirectoryPre4;
+
+    /**
+     * Pre AMP-4 android assets directory.
+     */
+    @Parameter( readonly = true, defaultValue = "${project.basedir}/assets" )
+    private File assetsDirectoryPre4;
+
+    /**
+     * Pre AMP-4 native libraries folder.
+     */
+    @Parameter( readonly = true, defaultValue = "${project.basedir}/libs" )
+    private File nativeLibrariesDirectoryPre4;
+
+    /**
+     * If any pre AMP-4 files/folders exist and have NOT been explicitly configured then fail the build.
+     */
+    @Parameter( defaultValue = "true" )
+    private boolean failOnPreAmp4Folders;
+
+    /**
      * Which dependency scopes should not be included when unpacking dependencies
      */
     protected static final List<String> EXCLUDED_DEPENDENCY_SCOPES_FOR_EXTRACTION = Arrays.asList(
@@ -248,6 +278,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             return;
         }
+
+        validateFolders();
 
         try
         {
@@ -314,6 +346,50 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             getLog().error( "Error when generating sources.", e );
             throw e;
+        }
+    }
+
+    /**
+     * Performs some level of validation on the configured files and folders in light of the change
+     * to AndroidStudio style folder structures instead of the original  Android + maven structures.
+     *
+     * Essentially we will be noisy if we see an artifact that looks like pre AMP-4
+     * and is not explicitly configured.
+     */
+    private void validateFolders() throws MojoExecutionException
+    {
+        boolean hasPreAmp4Folders = false;
+        if ( androidManifestFilePre4.exists() && !androidManifestFilePre4.equals( androidManifestFile ) )
+        {
+            getLog().warn( "Pre AMP-4 AndroidManifest file found but not configured : " + androidManifestFilePre4 );
+            hasPreAmp4Folders = true;
+        }
+        if ( resourceDirectoryPre4.exists() && !resourceDirectoryPre4.equals( resourceDirectory ) )
+        {
+            getLog().warn( "Pre AMP-4 Android resource folder found but not configured : " + resourceDirectoryPre4 );
+            hasPreAmp4Folders = true;
+        }
+        if ( assetsDirectoryPre4.exists() && !assetsDirectoryPre4.equals( assetsDirectory ) )
+        {
+            getLog().warn( "Pre AMP-4 assets folder found but not configured : " + assetsDirectoryPre4 );
+            hasPreAmp4Folders = true;
+        }
+        if ( nativeLibrariesDirectoryPre4.exists() && !nativeLibrariesDirectoryPre4.equals( nativeLibrariesDirectory ) )
+        {
+            getLog().warn( "Pre AMP-4 native libs folder found but not configured : " + nativeLibrariesDirectoryPre4 );
+            hasPreAmp4Folders = true;
+        }
+
+        if ( hasPreAmp4Folders && failOnPreAmp4Folders )
+        {
+            throw new MojoExecutionException(
+                "\n\nYou have pre AMP-4 files or folders in your project that are not referenced in your POM. Either:\n"
+                + "- Delete any unused pre AMP-4 files/folders\n"
+                + "- Restructure your project to follow the AMP-4 folder layout\n"
+                + "- Explicitly configure those files or folders that you want to retain in the pre AMP-4 layout\n"
+                + "- Specify <failOnPreAmp4Folder>false</failOnPreAmp4Folder> in the AMP config\n"
+                + " \n"
+            );
         }
     }
 

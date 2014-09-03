@@ -154,7 +154,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * The android resources directory.
      */
-    @Parameter( defaultValue = "${project.basedir}/res" )
+    @Parameter( defaultValue = "${project.basedir}/src/main/res" )
     protected File resourceDirectory;
 
     /**
@@ -166,7 +166,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * <p>Root folder containing native libraries to include in the application package.</p>
      */
-    @Parameter( property = "android.nativeLibrariesDirectory", defaultValue = "${project.basedir}/libs" )
+    @Parameter( property = "android.nativeLibrariesDirectory", defaultValue = "${project.basedir}/src/main/libs" )
     protected File nativeLibrariesDirectory;
 
     /**
@@ -193,7 +193,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * The android assets directory.
      */
-    @Parameter( defaultValue = "${project.basedir}/assets" )
+    @Parameter( defaultValue = "${project.basedir}/src/main/assets" )
     protected File assetsDirectory;
 
     /**
@@ -205,7 +205,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * The <code>AndroidManifest.xml</code> file.
      */
-    @Parameter( property = "android.manifestFile", defaultValue = "${project.basedir}/AndroidManifest.xml" )
+    @Parameter( property = "android.manifestFile", defaultValue = "${project.basedir}/src/main/AndroidManifest.xml" )
     protected File androidManifestFile;
 
     /**
