@@ -45,7 +45,7 @@ public final class UnpackedLibHelper
     public UnpackedLibHelper( ArtifactResolverHelper artifactResolverHelper, MavenProject project, Logger log )
     {
         this.artifactResolverHelper = artifactResolverHelper;
-        final File targetFolder = new File( project.getBasedir(), project.getBuild().getDirectory() );
+        final File targetFolder = new File( project.getBuild().getDirectory() );
         this.unpackedLibsDirectory = new File( targetFolder, "unpacked-libs" );
         this.log = log;
     }
