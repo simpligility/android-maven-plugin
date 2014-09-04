@@ -252,10 +252,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private File nativeLibrariesDirectoryPre4;
 
     /**
-     * If any pre AMP-4 files/folders exist and have NOT been explicitly configured then fail the build.
+     * If any non-standard files/folders exist and have NOT been explicitly configured then fail the build.
      */
     @Parameter( defaultValue = "true" )
-    private boolean failOnPreAmp4Folders;
+    private boolean failOnNonStandardStructure;
 
     /**
      * Which dependency scopes should not be included when unpacking dependencies
@@ -358,37 +358,46 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      */
     private void validateFolders() throws MojoExecutionException
     {
-        boolean hasPreAmp4Folders = false;
+        boolean hasNonStandardStructure = false;
         if ( androidManifestFilePre4.exists() && !androidManifestFilePre4.equals( androidManifestFile ) )
         {
-            getLog().warn( "Pre AMP-4 AndroidManifest file found but not configured : " + androidManifestFilePre4 );
-            hasPreAmp4Folders = true;
+            getLog().warn( "Non-standard location of AndroidManifest file found but not configured:\n " 
+                + androidManifestFilePre4 + "\nMove to the standard location src/main/AndroidManifest.xml\n"
+                + "Or configure androidManifesteFile. \n" );
+            hasNonStandardStructure = true;
         }
         if ( resourceDirectoryPre4.exists() && !resourceDirectoryPre4.equals( resourceDirectory ) )
         {
-            getLog().warn( "Pre AMP-4 Android resource folder found but not configured : " + resourceDirectoryPre4 );
-            hasPreAmp4Folders = true;
+            getLog().warn( "Non-standard location of Android resource folder found but not configured:\n " 
+                + resourceDirectoryPre4 + "\nMove to the standard location src/main/res/\n"
+                + "Or configure resourceDirectory. \n" );
+            hasNonStandardStructure = true;
         }
         if ( assetsDirectoryPre4.exists() && !assetsDirectoryPre4.equals( assetsDirectory ) )
         {
-            getLog().warn( "Pre AMP-4 assets folder found but not configured : " + assetsDirectoryPre4 );
-            hasPreAmp4Folders = true;
+            getLog().warn( "Non-standard location assets folder found but not configured:\n " 
+                + assetsDirectoryPre4 + "\nMove to the standard location src/main/assets/\n"
+                + "Or configure assetsDirectory. \n" );
+            hasNonStandardStructure = true;
         }
         if ( nativeLibrariesDirectoryPre4.exists() && !nativeLibrariesDirectoryPre4.equals( nativeLibrariesDirectory ) )
         {
-            getLog().warn( "Pre AMP-4 native libs folder found but not configured : " + nativeLibrariesDirectoryPre4 );
-            hasPreAmp4Folders = true;
+            getLog().warn( "Non-standard location native libs folder found but not configured:\n " 
+                + nativeLibrariesDirectoryPre4 + "\nMove to the standard location src/main/libs/\n"
+                + "Or configure nativeLibrariesDirectory. \n" );
+            hasNonStandardStructure = true;
         }
 
-        if ( hasPreAmp4Folders && failOnPreAmp4Folders )
+        if ( hasNonStandardStructure && failOnNonStandardStructure )
         {
             throw new MojoExecutionException(
-                "\n\nYou have pre AMP-4 files or folders in your project that are not referenced in your POM. Either:\n"
-                + "- Delete any unused pre AMP-4 files/folders\n"
-                + "- Restructure your project to follow the AMP-4 folder layout\n"
-                + "- Explicitly configure those files or folders that you want to retain in the pre AMP-4 layout\n"
-                + "- Specify <failOnPreAmp4Folder>false</failOnPreAmp4Folder> in the AMP config\n"
-                + " \n"
+                "\n\nFound files or folders in non-standard locations in the project!\n"
+                + "....This might be side-effect of a migration to Android Maven Plugin 4+.\n"
+                + "....Please observe the warnings for specific files and folders above.\n"
+                + "....Ideally you should restructure your project.\n"
+                + "....Alternatively add explicit configuration overrides for files or folders.\n"
+                + "....Finally you could set failOnNonStandardStructure to false, potentially "
+                + "resulting in other failures.\n\n\n"
             );
         }
     }
