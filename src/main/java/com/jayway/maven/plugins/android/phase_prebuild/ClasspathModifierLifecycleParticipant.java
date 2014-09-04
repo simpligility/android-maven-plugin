@@ -13,6 +13,7 @@ package com.jayway.maven.plugins.android.phase_prebuild;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.ArtifactResolverHelper;
 import com.jayway.maven.plugins.android.common.DependencyResolver;
+import com.jayway.maven.plugins.android.common.PomConfigurationHelper;
 import com.jayway.maven.plugins.android.common.UnpackedLibHelper;
 import org.apache.maven.AbstractMavenLifecycleParticipant;
 import org.apache.maven.MavenExecutionException;
@@ -45,6 +46,7 @@ import java.util.zip.ZipFile;
 @Component( role = AbstractMavenLifecycleParticipant.class, hint = "default" )
 public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLifecycleParticipant
 {
+
     @Requirement
     private ArtifactResolver artifactResolver;
 
@@ -53,11 +55,7 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
 
     @Requirement
     private Logger log;
-
-    protected boolean includeLibsJarsForApklib = false;
-
-    protected boolean includeLibsJarsForAar = true;
-
+    
     private boolean addedJarFromLibs = false;
 
     @Override
@@ -72,10 +70,14 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
         final DependencyResolver dependencyResolver = new DependencyResolver( log, dependencyGraphBuilder );
         final ArtifactResolverHelper artifactResolverHelper = new ArtifactResolverHelper( artifactResolver, log );
 
+        final PomConfigurationHelper configuration = new PomConfigurationHelper();
+        
         for ( MavenProject project : projects )
         {
             log.debug( "" );
             log.debug( "project=" + project.getArtifact() );
+
+            configuration.retrievePluginConfiguration( project );
 
             if ( ! AndroidExtension.isAndroidPackaging( project.getPackaging() ) )
             {
@@ -119,7 +121,7 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
                     // It will replaced with the real classes.jar by GenerateSourcesMojo.
                     addClassesToClasspath( helper, project, artifact );
 
-                    if ( includeLibsJarsForAar )
+                    if ( configuration.includeLibsJarsForAar() )
                     {
                         // Add jar files in 'libs' into classpath.
                         addLibsJarsToClassPath( helper, project, artifact );
@@ -132,7 +134,7 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
                     // The placeholder will be replaced with the real APK jar later.
                     addClassesToClasspath( helper, project, artifact );
                 }
-                else if ( type.equals( AndroidExtension.APKLIB ) && includeLibsJarsForApklib )
+                else if ( type.equals( AndroidExtension.APKLIB ) && configuration.includeLibsJarsForApklib() )
                 {
                     // Add jar files in 'libs' into classpath.
                     addLibsJarsToClassPath( helper, project, artifact );
