@@ -279,7 +279,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             return;
         }
 
-        validateFolders();
+        validateStandardLocations();
 
         try
         {
@@ -351,38 +351,38 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
     /**
      * Performs some level of validation on the configured files and folders in light of the change
-     * to AndroidStudio style folder structures instead of the original  Android + maven structures.
+     * to AndroidStudio/Gradle style folder structures instead of the original Ant/Eclipse structures.
      *
-     * Essentially we will be noisy if we see an artifact that looks like pre AMP-4
-     * and is not explicitly configured.
+     * Essentially we will be noisy if we see an artifact that looks like before 
+     * Android Maven Plugin 4 and is not explicitly configured.
      */
-    private void validateFolders() throws MojoExecutionException
+    private void validateStandardLocations() throws MojoExecutionException
     {
         boolean hasNonStandardStructure = false;
         if ( androidManifestFilePre4.exists() && !androidManifestFilePre4.equals( androidManifestFile ) )
         {
-            getLog().warn( "Non-standard location of AndroidManifest file found but not configured:\n " 
+            getLog().warn( "Non-standard location of AndroidManifest.xml file found, but not configured:\n " 
                 + androidManifestFilePre4 + "\nMove to the standard location src/main/AndroidManifest.xml\n"
                 + "Or configure androidManifesteFile. \n" );
             hasNonStandardStructure = true;
         }
         if ( resourceDirectoryPre4.exists() && !resourceDirectoryPre4.equals( resourceDirectory ) )
         {
-            getLog().warn( "Non-standard location of Android resource folder found but not configured:\n " 
+            getLog().warn( "Non-standard location of Android res folder found, but not configured:\n " 
                 + resourceDirectoryPre4 + "\nMove to the standard location src/main/res/\n"
                 + "Or configure resourceDirectory. \n" );
             hasNonStandardStructure = true;
         }
         if ( assetsDirectoryPre4.exists() && !assetsDirectoryPre4.equals( assetsDirectory ) )
         {
-            getLog().warn( "Non-standard location assets folder found but not configured:\n " 
+            getLog().warn( "Non-standard location assets folder found, but not configured:\n " 
                 + assetsDirectoryPre4 + "\nMove to the standard location src/main/assets/\n"
                 + "Or configure assetsDirectory. \n" );
             hasNonStandardStructure = true;
         }
         if ( nativeLibrariesDirectoryPre4.exists() && !nativeLibrariesDirectoryPre4.equals( nativeLibrariesDirectory ) )
         {
-            getLog().warn( "Non-standard location native libs folder found but not configured:\n " 
+            getLog().warn( "Non-standard location native libs folder found, but not configured:\n " 
                 + nativeLibrariesDirectoryPre4 + "\nMove to the standard location src/main/libs/\n"
                 + "Or configure nativeLibrariesDirectory. \n" );
             hasNonStandardStructure = true;
@@ -392,7 +392,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             throw new MojoExecutionException(
                 "\n\nFound files or folders in non-standard locations in the project!\n"
-                + "....This might be side-effect of a migration to Android Maven Plugin 4+.\n"
+                + "....This might be a side-effect of a migration to Android Maven Plugin 4+.\n"
                 + "....Please observe the warnings for specific files and folders above.\n"
                 + "....Ideally you should restructure your project.\n"
                 + "....Alternatively add explicit configuration overrides for files or folders.\n"
