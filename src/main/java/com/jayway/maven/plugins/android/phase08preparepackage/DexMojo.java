@@ -38,8 +38,6 @@ import org.codehaus.plexus.archiver.util.DefaultFileSet;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -246,8 +244,7 @@ public class DexMojo extends AbstractAndroidMojo
 
             try
             {
-                Files.move( secondDexFile.toPath(), copiedSecondDexFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
-
+                FileUtils.moveFile( secondDexFile, copiedSecondDexFile );
             }
             catch ( IOException e )
             {
