@@ -54,6 +54,9 @@ public class Dex
      */
     private Boolean minimalMainDex;
 
+    private String dexArguments;
+
+
     public String[] getJvmArguments()
     {
         return jvmArguments;
@@ -109,4 +112,8 @@ public class Dex
         return minimalMainDex;
     }
 
+    public String getDexArguments()
+    {
+        return dexArguments;
+    }
 }
