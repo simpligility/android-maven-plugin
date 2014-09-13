@@ -164,6 +164,12 @@ public class DexMojo extends AbstractAndroidMojo
     @Parameter( property = "android.dex.minimalmaindex", defaultValue = "false" )
     private boolean dexMinimalMainDex;
 
+    /**
+     * Additional command line parameters passed to dx.
+     */
+    @Parameter( property = "android.dex.dexarguments" )
+    private String dexArguments;
+
     private String[] parsedJvmArguments;
     private boolean parsedCoreLibrary;
     private boolean parsedNoLocals;
@@ -175,6 +181,7 @@ public class DexMojo extends AbstractAndroidMojo
     private boolean parsedMultiDex;
     private String parsedMainDexList;
     private boolean parsedMinimalMainDex;
+    private String parsedDexArguments;
 
     /**
      * @throws MojoExecutionException
@@ -414,6 +421,15 @@ public class DexMojo extends AbstractAndroidMojo
             {
                 parsedMinimalMainDex = dex.isMinimalMainDex();
             }
+            if ( dex.getDexArguments() == null )
+            {
+                parsedDexArguments = dexArguments;
+            }
+            else
+            {
+                parsedDexArguments = dex.getDexArguments();
+            }
+
         }
         else
         {
@@ -428,6 +444,7 @@ public class DexMojo extends AbstractAndroidMojo
             parsedMultiDex = dexMultiDex;
             parsedMainDexList = dexMainDexList;
             parsedMinimalMainDex = dexMinimalMainDex;
+            parsedDexArguments = dexArguments;
         }
     }
 
@@ -553,6 +570,10 @@ public class DexMojo extends AbstractAndroidMojo
             if ( parsedMinimalMainDex )
             {
                 commands.add( "--minimal-main-dex" );
+            }
+            if ( parsedDexArguments != null )
+            {
+               commands.add( parsedDexArguments );
             }
         }
         commands.add( "--output=" + outputFile.getAbsolutePath() );
