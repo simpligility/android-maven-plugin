@@ -42,10 +42,18 @@ import java.util.zip.ZipFile;
 
 /**
  * Adds classes from AAR and APK dependencies to the project compile classpath.
+ * 
+ * @author William Ferguson
+ * @author Benoit Billington
+ * @author Manfred Moser
  */
 @Component( role = AbstractMavenLifecycleParticipant.class, hint = "default" )
 public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLifecycleParticipant
 {
+    private static final String INCLUDE_FROM_APLIK_PARAM = "includeLibsJarsFromApklib";
+    private static final String INCLUDE_FROM_AAR_PARAM = "includeLibsJarsFromAar";
+    private static final boolean INLCUDE_FROM_APKLIB_DEFAULT = false;
+    private static final boolean INLCUDE_FROM_AAR_DEFAULT = false;
 
     @Requirement
     private ArtifactResolver artifactResolver;
@@ -57,7 +65,7 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
     private Logger log;
     
     private boolean addedJarFromLibs = false;
-
+    
     @Override
     public void afterProjectsRead( MavenSession session ) throws MavenExecutionException
     {
@@ -70,14 +78,10 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
         final DependencyResolver dependencyResolver = new DependencyResolver( log, dependencyGraphBuilder );
         final ArtifactResolverHelper artifactResolverHelper = new ArtifactResolverHelper( artifactResolver, log );
 
-        final PomConfigurationHelper configuration = new PomConfigurationHelper();
-        
         for ( MavenProject project : projects )
         {
             log.debug( "" );
             log.debug( "project=" + project.getArtifact() );
-
-            configuration.retrievePluginConfiguration( project );
 
             if ( ! AndroidExtension.isAndroidPackaging( project.getPackaging() ) )
             {
@@ -110,6 +114,13 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
                 Thread.currentThread().setContextClassLoader( originalClassLoader );
             }
 
+            boolean includeFromAar = PomConfigurationHelper.getPluginConfigParameter( 
+                project, INCLUDE_FROM_AAR_PARAM, INLCUDE_FROM_AAR_DEFAULT ); 
+            log.debug( INCLUDE_FROM_AAR_PARAM + " set to " + includeFromAar );
+            boolean includeFromApklib = PomConfigurationHelper.getPluginConfigParameter(
+                project, INCLUDE_FROM_APLIK_PARAM, INLCUDE_FROM_APKLIB_DEFAULT );
+            log.debug( INCLUDE_FROM_APLIK_PARAM + " set to " + includeFromApklib );
+
             log.debug( "projects deps: : " + artifacts );
             for ( Artifact artifact : artifacts )
             {
@@ -120,8 +131,7 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
                     // Create a placeholder classes.jar and add it to the compile classpath.
                     // It will replaced with the real classes.jar by GenerateSourcesMojo.
                     addClassesToClasspath( helper, project, artifact );
-
-                    if ( configuration.includeLibsJarsForAar() )
+                    if ( includeFromAar )
                     {
                         // Add jar files in 'libs' into classpath.
                         addLibsJarsToClassPath( helper, project, artifact );
@@ -134,10 +144,13 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
                     // The placeholder will be replaced with the real APK jar later.
                     addClassesToClasspath( helper, project, artifact );
                 }
-                else if ( type.equals( AndroidExtension.APKLIB ) && configuration.includeLibsJarsForApklib() )
+                else if ( type.equals( AndroidExtension.APKLIB ) )
                 {
-                    // Add jar files in 'libs' into classpath.
-                    addLibsJarsToClassPath( helper, project, artifact );
+                    if ( includeFromApklib ) 
+                    {
+                      // Add jar files in 'libs' into classpath.
+                      addLibsJarsToClassPath( helper, project, artifact );
+                    }
                 }
             }
         }

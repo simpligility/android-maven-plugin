@@ -1,59 +1,45 @@
 package com.jayway.maven.plugins.android.common;
 
 import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.model.Plugin;
 
+import com.jayway.maven.plugins.android.PluginInfo;
+
 /**
- * Resolves the aar and apklib dependencies for an Artifact.
+ * A helper class to access plugin configuration from the pom.
  *
  * @author Benoit Billington
+ * @author Manfred Moser
  */
 public final class PomConfigurationHelper
 {
-    private static final String INCLUDE_LIBS_JARS_AAR_CONFIG_ELEMENT = "includeLibsJarsForAarlib";
-    private static final String INCLUDE_LIBS_JARS_APKLIB_CONFIG_ELEMENT = "includeLibsJarsForApklib";
-    private static final String AMP = "android-maven-plugin";
-
-    private boolean includeLibsJarsForApklib = false;
-
-    private boolean includeLibsJarsForAar = false;
-    
-    public PomConfigurationHelper()
+    public static String getPluginConfigParameter ( MavenProject project, String parameter, String defaultValue )
     {
-    }
-
-    public void retrievePluginConfiguration( MavenProject project )
-    {
+        String value = null;
         for ( Plugin plugin : project.getBuild().getPlugins() )
         {
-            if ( plugin.getArtifactId().equals( AMP ) )
+            if ( plugin.getArtifactId().equals( PluginInfo.getArtifactId() ) )
             {
                 Xpp3Dom configuration = getMojoConfiguration( plugin );
-                if ( configuration != null && configuration.getChild( INCLUDE_LIBS_JARS_AAR_CONFIG_ELEMENT ) != null )
+                if ( configuration != null && configuration.getChild( parameter ) != null )
                 {
-                    includeLibsJarsForAar = Boolean.valueOf(
-                        configuration.getChild( INCLUDE_LIBS_JARS_AAR_CONFIG_ELEMENT ).getValue() );
-                }
-                else
-                {
-                    includeLibsJarsForAar = false;
-                }
-                if ( configuration != null 
-                    && configuration.getChild( INCLUDE_LIBS_JARS_APKLIB_CONFIG_ELEMENT ) != null )
-                {
-                    includeLibsJarsForApklib = Boolean.valueOf( 
-                        configuration.getChild( INCLUDE_LIBS_JARS_APKLIB_CONFIG_ELEMENT ).getValue() );
-                }
-                else
-                {
-                    includeLibsJarsForApklib = false;
+                  value = configuration.getChild( parameter ).getValue() ;
                 }
             }
         }
+        // if we got nothing, fall back to the default value
+        return ( StringUtils.isEmpty( value ) ) ? defaultValue : value;
+    }
+
+    public static boolean getPluginConfigParameter ( MavenProject project, String parameter, boolean defaultValue )
+    {
+        String value = getPluginConfigParameter( project, parameter, Boolean.toString( defaultValue ) );
+        return Boolean.valueOf( value );
     }
     
-    private Xpp3Dom getMojoConfiguration( Plugin plugin )
+    private static Xpp3Dom getMojoConfiguration( Plugin plugin )
     {
         //
         // We need to look in the configuration element, and then look for configuration elements
@@ -68,15 +54,5 @@ public final class PomConfigurationHelper
             }
         }
         return configuration;
-    }
-
-    public boolean includeLibsJarsForApklib()
-    {
-        return includeLibsJarsForApklib;
-    }
-
-    public boolean includeLibsJarsForAar()
-    {
-        return includeLibsJarsForAar;
     }
 }
