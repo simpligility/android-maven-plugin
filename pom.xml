@@ -542,6 +542,15 @@
     </dependencies>
 
     <build>
+        <resources>
+          <resource>
+            <directory>${project.basedir}/src/main/resources</directory>
+          </resource>
+          <resource>
+            <directory>${project.basedir}/src/main/filtered-resources</directory>
+            <filtering>true</filtering>
+          </resource>
+        </resources>
         <pluginManagement>
             <plugins>
                 <plugin>
