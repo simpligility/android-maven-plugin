@@ -2,16 +2,11 @@ package com.jayway.maven.plugins.android;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 public class PluginInfoTest {
-
-  @Test
-  public void confirmPropertiesRead() 
-  {
-    assertNotNull( PluginInfo.getProperties() );
-  }
   
   @Test
   public void confirmGroupId()
@@ -34,6 +29,7 @@ public class PluginInfoTest {
   @Test
   public void confirmGav()
   {
-    assertNotNull( PluginInfo.getGAV() );
+    assertTrue( PluginInfo.getGAV()
+        .startsWith( "com.jayway.maven.plugins.android.generation2:android-maven-plugin:" ) );
   }
 }

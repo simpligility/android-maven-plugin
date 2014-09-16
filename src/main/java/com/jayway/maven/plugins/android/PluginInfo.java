@@ -44,6 +44,10 @@ public class PluginInfo
     }
   }
   
+  /**
+   * Get the Maven GAV string of the plugin.
+   * @return
+   */
   public static String getGAV()
   {
     StringBuilder builder = new StringBuilder()
@@ -53,11 +57,6 @@ public class PluginInfo
       .append( COLON )
       .append( version );
       return builder.toString();
-  }
-  
-  public static Properties getProperties()
-  {
-    return prop;
   }
   
   public static String getGroupId() 
