@@ -50,10 +50,20 @@ import java.util.zip.ZipFile;
 @Component( role = AbstractMavenLifecycleParticipant.class, hint = "default" )
 public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLifecycleParticipant
 {
-    private static final String INCLUDE_FROM_APLIK_PARAM = "includeLibsJarsFromApklib";
+    /** 
+     * Mojo configuration parameter to determine if jar files found inside an apklib are 
+     * pulled onto the classpath and into the resulting apk, defaults to false
+     * @see INCLUDE_FROM_APKLIB_DEFAULT
+     */
+    private static final String INCLUDE_FROM_APKLIK_PARAM = "includeLibsJarsFromApklib";
+    /** 
+     * Mojo configuration parameter to determine if jar files found inside an aar are 
+     * pulled onto the classpath and into the resulting apk, defaults to false
+     * @see INCLUDE_FROM_AAR_DEFAULT
+     */
     private static final String INCLUDE_FROM_AAR_PARAM = "includeLibsJarsFromAar";
-    private static final boolean INLCUDE_FROM_APKLIB_DEFAULT = false;
-    private static final boolean INLCUDE_FROM_AAR_DEFAULT = false;
+    private static final boolean INCLUDE_FROM_APKLIB_DEFAULT = false;
+    private static final boolean INCLUDE_FROM_AAR_DEFAULT = false;
 
     @Requirement
     private ArtifactResolver artifactResolver;
@@ -115,11 +125,11 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
             }
 
             boolean includeFromAar = PomConfigurationHelper.getPluginConfigParameter( 
-                project, INCLUDE_FROM_AAR_PARAM, INLCUDE_FROM_AAR_DEFAULT ); 
+                project, INCLUDE_FROM_AAR_PARAM, INCLUDE_FROM_AAR_DEFAULT ); 
             log.debug( INCLUDE_FROM_AAR_PARAM + " set to " + includeFromAar );
             boolean includeFromApklib = PomConfigurationHelper.getPluginConfigParameter(
-                project, INCLUDE_FROM_APLIK_PARAM, INLCUDE_FROM_APKLIB_DEFAULT );
-            log.debug( INCLUDE_FROM_APLIK_PARAM + " set to " + includeFromApklib );
+                project, INCLUDE_FROM_APKLIK_PARAM, INCLUDE_FROM_APKLIB_DEFAULT );
+            log.debug( INCLUDE_FROM_APKLIK_PARAM + " set to " + includeFromApklib );
 
             log.debug( "projects deps: : " + artifacts );
             for ( Artifact artifact : artifacts )
