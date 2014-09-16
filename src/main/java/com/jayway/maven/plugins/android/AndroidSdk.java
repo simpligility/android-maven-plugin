@@ -193,7 +193,7 @@ public class AndroidSdk
      */
     public String getZipalignPath()
     {
-        return getPathForTool( SdkConstants.FN_ZIPALIGN );
+        return getPathForBuildTool( BuildToolInfo.PathId.ZIP_ALIGN );
     }
 
     /**
