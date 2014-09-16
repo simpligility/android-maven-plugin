@@ -16,7 +16,7 @@
  */
 package com.jayway.maven.plugins.android;
 
-import com.android.builder.VariantConfiguration;
+import com.android.builder.core.VariantConfiguration;
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.DdmPreferences;
 import com.android.ddmlib.IDevice;

@@ -1,6 +1,6 @@
 package com.jayway.maven.plugins.android.phase01generatesources;
 
-import com.android.builder.VariantConfiguration;
+import com.android.builder.core.VariantConfiguration;
 import com.android.builder.internal.SymbolLoader;
 import com.android.builder.internal.SymbolWriter;
 import com.android.utils.ILogger;

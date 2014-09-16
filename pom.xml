@@ -59,12 +59,8 @@
         <powermock.version>1.5.2</powermock.version>
 
         <!-- Attention - make sure that the tools version is the versions of the transitive dependencies of the builder version -->
-        <!--  upgrade to 0.8.1 and 22.5.1 currently not possible since there are dependency conflicts between lint and maven-plugin-api 
-        with regards to guava that break the test execution, see DependencyHierarchy analysis in Eclipse, need to investigate more -->
-<!--         <android.builder.version>0.8.1</android.builder.version> -->
-<!--         <android.tools.version>22.5.1</android.tools.version> -->
-        <android.builder.version>0.7.3</android.builder.version>
-        <android.tools.version>22.4.2</android.tools.version>
+        <android.builder.version>0.12.2</android.builder.version>
+        <android.tools.version>23.0.2</android.tools.version>
     </properties>
 
     <scm>

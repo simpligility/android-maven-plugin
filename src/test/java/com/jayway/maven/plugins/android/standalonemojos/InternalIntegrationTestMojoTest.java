@@ -330,6 +330,12 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
                             AdbCommandRejectedException, IOException,
                             ShellCommandUnresponsiveException {
                     }
+
+                    @Override
+                    public boolean supportsFeature(HardwareFeature arg0) {
+                      // TODO Auto-generated method stub
+                      return false;
+                    }
                     
                     
                 });
