@@ -30,7 +30,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(MavenJUnitTestRunner.class)
-@MavenInstallations({"target/maven-installation/apache-maven-3.2.3"})
 @MavenVersions({"3.0.5", "3.2.3"})
 public class ZipalignMojoIntegrationTest {
   
@@ -40,7 +39,7 @@ public class ZipalignMojoIntegrationTest {
   public final MavenRuntime verifier;
   
   public ZipalignMojoIntegrationTest(MavenRuntimeBuilder builder) throws Exception {
-    this.verifier = builder.withCliOptions("-X").build();
+    this.verifier = builder.build();
   }
   
   
@@ -55,14 +54,13 @@ public class ZipalignMojoIntegrationTest {
     MavenExecutionResult result = verifier
           .forProject(basedir)
           // switch on debug logging
-          // .withCliOptions("-X") // somehow this is not on the classpath, must have old version or so
+          .withCliOptions("-X") // somehow this is not on the classpath, must have old version or so
           //.execute("compile");
     .execute("com.jayway.maven.plugins.android.generation2:android-maven-plugin:zipalign");
-
+    
     result.assertErrorFreeLog();
 
     result.assertLogText("Skipping zipalign on jar"); 
-
     //TestResources.assertFilesPresent(basedir, "target/sample/sample.txt");
   }
 
