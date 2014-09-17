@@ -44,6 +44,9 @@
         <maven-plugin-plugin.version>3.2</maven-plugin-plugin.version>
         <maven.api.version>3.0.5</maven.api.version>
 
+        <!-- currently not working .. 
+        upgrade pending new release, for local dev use 1.9.0-SNAPSHOT 
+        from http://repository.takari.io:8081/nexus/content/repositories/snapshots/-->
         <takari.plugin.testing.version>1.8.1</takari.plugin.testing.version>
         <easymock.version>3.2</easymock.version>
         <powermock.version>1.5.2</powermock.version>
@@ -264,11 +267,10 @@
                 <version>1.9</version>
             </dependency>
 
-            <!--  using a temporary fork of the apache component until 2.2 is released -->
             <dependency>
-                <groupId>com.simpligility.org.apache.maven.shared</groupId>
+                <groupId>org.apache.maven.shared</groupId>
                 <artifactId>maven-dependency-tree</artifactId>
-                <version>2.2-RC.1</version>
+                <version>2.2</version>
             </dependency>
 
             <!-- Required for DefaultMavenRuntime in DependencyResolver -->
