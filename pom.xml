@@ -463,7 +463,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.simpligility.org.apache.maven.shared</groupId>
+            <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-dependency-tree</artifactId>
         </dependency>
 
