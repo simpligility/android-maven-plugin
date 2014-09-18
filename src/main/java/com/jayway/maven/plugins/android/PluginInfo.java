@@ -73,4 +73,17 @@ public class PluginInfo
   {
     return version;
   }
+
+  public static String getQualifiedGoal( String goal )
+  {
+    StringBuilder builder = new StringBuilder()
+      .append( groupId )
+      .append( COLON )
+      .append( artifactId )
+      .append( COLON )
+      .append( version )
+      .append( COLON )
+      .append( goal );
+    return builder.toString();
+  }
 }
