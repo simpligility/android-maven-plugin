@@ -29,6 +29,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import com.jayway.maven.plugins.android.PluginInfo;
+
 @RunWith(MavenJUnitTestRunner.class)
 @MavenVersions({"3.0.5", "3.2.3"})
 public class ZipalignMojoIntegrationTest {
@@ -42,26 +44,19 @@ public class ZipalignMojoIntegrationTest {
     this.verifier = builder.build();
   }
   
-  
   @Test
-  public void testBasic() throws Exception {
-    File basedir = resources.getBasedir("non-android-project");
+  public void skipOnNonAndroidProject() throws Exception {
+    File basedir = resources.getBasedir( "non-android-project" );
 
-//    File basedir = new File("target/verifier/", getClass().getSimpleName() + "/" + "testVerifier");
-//    basedir.mkdirs();
-    
-    
     MavenExecutionResult result = verifier
           .forProject(basedir)
           // switch on debug logging
-          .withCliOptions("-X") // somehow this is not on the classpath, must have old version or so
-          //.execute("compile");
-    .execute("com.jayway.maven.plugins.android.generation2:android-maven-plugin:zipalign");
+          // .withCliOptions("-X") 
+    .execute(PluginInfo.getQualifiedGoal( "zipalign" ) );
     
     result.assertErrorFreeLog();
 
-    result.assertLogText("Skipping zipalign on jar"); 
-    //TestResources.assertFilesPresent(basedir, "target/sample/sample.txt");
+    result.assertLogText( "Skipping zipalign on jar" ); 
   }
 
 }
