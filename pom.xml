@@ -44,10 +44,7 @@
         <maven-plugin-plugin.version>3.2</maven-plugin-plugin.version>
         <maven.api.version>3.0.5</maven.api.version>
 
-        <!-- currently not working .. 
-        upgrade pending new release, for local dev use 1.9.0-SNAPSHOT 
-        from http://repository.takari.io:8081/nexus/content/repositories/snapshots/-->
-        <takari.plugin.testing.version>1.8.1</takari.plugin.testing.version>
+        <takari.plugin.testing.version>1.8.2</takari.plugin.testing.version>
         <easymock.version>3.2</easymock.version>
         <powermock.version>1.5.2</powermock.version>
         
@@ -600,6 +597,11 @@
                                     <version>[3.2.1,)</version>
                                     <message>Check for Maven version &gt;=3.0.4 failed. Upgrade your Maven installation to be able to build this project.</message>
                                 </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>[1.7.0,)</version>
+                                    <message>Java 7 or higher is required to build the Android Maven Plugin.</message>
+                                    <!--  because the takari-plugin-testing needs Java 7 -->
+                                </requireJavaVersion>
                             </rules>
                         </configuration>
                     </execution>
