@@ -25,7 +25,7 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2008 - 2014 simpligility technologies inc.</copyright>
     <item>
-      <title>File: 108,
+      <title>File: 111,
              Errors: 0,
              Warnings: 14,
              Infos: 0
@@ -411,6 +411,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.phase12integrationtest.InternalIntegrationTestMojo.java">com/jayway/maven/plugins/android/phase12integrationtest/InternalIntegrationTestMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.common.PomConfigurationHelper.java">com/jayway/maven/plugins/android/common/PomConfigurationHelper.java</a>
                 </td>
                 <td>
                   0
@@ -1068,6 +1082,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.plugin.properties">com/jayway/maven/plugins/android/plugin.properties</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.configuration.Proguard.java">com/jayway/maven/plugins/android/configuration/Proguard.java</a>
                 </td>
                 <td>
@@ -1503,6 +1531,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.config.ConfigHandler.java">com/jayway/maven/plugins/android/config/ConfigHandler.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://code.google.com/p/maven-android-plugin/checkstyle.html#com.jayway.maven.plugins.android.PluginInfo.java">com/jayway/maven/plugins/android/PluginInfo.java</a>
                 </td>
                 <td>
                   0

@@ -40,10 +40,10 @@
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../com/jayway/maven/plugins/android/common/ArtifactResolverHelper.html">ArtifactResolverHelper</a>
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  {
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment">     * Which dependency scopes should not be included when unpacking dependencies into the apk.</em>
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment">     * Which dependency scopes should be excluded when packing dependencies into the apk.</em>
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> List&lt;String&gt; EXCLUDED_DEPENDENCY_SCOPES = Arrays.asList(
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>              Artifact.SCOPE_PROVIDED, Artifact.SCOPE_SYSTEM, Artifact.SCOPE_IMPORT
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> List&lt;String&gt; EXCLUDE_NON_PACKAGED_SCOPES = Arrays.asList(
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>              Artifact.SCOPE_PROVIDED, Artifact.SCOPE_IMPORT
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>      );
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> ArtifactResolver artifactResolver;
@@ -78,7 +78,7 @@
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>      <strong class="jxr_keyword">public</strong> Set&lt;Artifact&gt; getFilteredArtifacts( Iterable&lt;Artifact&gt; allArtifacts, String... types )
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>      {
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          <strong class="jxr_keyword">return</strong> getFilteredArtifacts( EXCLUDED_DEPENDENCY_SCOPES, allArtifacts, types );
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          <strong class="jxr_keyword">return</strong> getFilteredArtifacts( EXCLUDE_NON_PACKAGED_SCOPES, allArtifacts, types );
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>      }
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>  
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>      <em class="jxr_javadoccomment">/**</em>
