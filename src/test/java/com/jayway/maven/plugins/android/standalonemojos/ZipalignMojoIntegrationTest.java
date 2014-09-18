@@ -17,7 +17,6 @@ package com.jayway.maven.plugins.android.standalonemojos;
 
 import io.takari.maven.testing.TestResources;
 import io.takari.maven.testing.executor.MavenExecutionResult;
-import io.takari.maven.testing.executor.MavenInstallations;
 import io.takari.maven.testing.executor.MavenRuntime;
 import io.takari.maven.testing.executor.MavenVersions;
 import io.takari.maven.testing.executor.MavenRuntime.MavenRuntimeBuilder;
@@ -38,21 +37,21 @@ public class ZipalignMojoIntegrationTest {
   @Rule
   public final TestResources resources = new TestResources();
   
-  public final MavenRuntime verifier;
+  public final MavenRuntime mavenRuntime;
   
   public ZipalignMojoIntegrationTest(MavenRuntimeBuilder builder) throws Exception {
-    this.verifier = builder.build();
+    this.mavenRuntime = builder.build();
   }
   
   @Test
   public void skipOnNonAndroidProject() throws Exception {
     File basedir = resources.getBasedir( "non-android-project" );
 
-    MavenExecutionResult result = verifier
+    MavenExecutionResult result = mavenRuntime
           .forProject(basedir)
           // switch on debug logging
           // .withCliOptions("-X") 
-    .execute(PluginInfo.getQualifiedGoal( "zipalign" ) );
+          .execute(PluginInfo.getQualifiedGoal( "zipalign" ) );
     
     result.assertErrorFreeLog();
 

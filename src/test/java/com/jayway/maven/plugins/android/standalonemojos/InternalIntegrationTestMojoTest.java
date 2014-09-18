@@ -338,6 +338,18 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
                       // TODO Auto-generated method stub
                       return false;
                     }
+
+                    @Override
+                    public List<String> getAbis() {
+                      // TODO Auto-generated method stub
+                      return null;
+                    }
+
+                    @Override
+                    public int getDensity() {
+                      // TODO Auto-generated method stub
+                      return 0;
+                    }
                     
                     
                 });
