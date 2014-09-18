@@ -105,8 +105,8 @@
     </mailingLists>
 
     <prerequisites>
-        <!--  this is only for building the plugin from source, not for using it -->
-        <maven>3.2.1</maven>
+        <!--  define the version need to run this plugin -->
+        <maven>3.0.5</maven>
     </prerequisites>
 
     <dependencyManagement>
