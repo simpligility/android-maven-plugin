@@ -111,6 +111,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- workaround to avoid site and animalsniffer failure due to invalid old icu4j class file -->
+            <dependency>
+                <groupId>com.ibm.icu</groupId>
+                <artifactId>icu4j</artifactId>
+                <version>3.4.4</version>
+            </dependency>
+
             <!-- managing archiver explicitly to 2.3 since 2.2 as found in maven-archiver causes issues
             with excessive logging -->
             <dependency>
@@ -844,6 +851,7 @@
                         <!-- deploy the site to github pages -->
                         <groupId>com.github.github</groupId>
                         <artifactId>site-maven-plugin</artifactId>
+                        <version>0.10-SNAPSHOT</version>
                         <configuration>
                             <server>github</server> <!--  the id of the server with the passwords in settings.xml -->
                             <message>Creating site for ${project.version}</message>
