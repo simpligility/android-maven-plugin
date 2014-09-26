@@ -49,8 +49,8 @@
         <powermock.version>1.5.2</powermock.version>
         
         <!-- Attention - make sure that the tools version is the versions of the transitive dependencies of the builder version -->
-        <android.builder.version>0.13.1</android.builder.version>
-        <android.tools.version>23.1.1</android.tools.version>
+        <android.builder.version>0.13.2</android.builder.version>
+        <android.tools.version>23.1.2</android.tools.version>
     </properties>
 
     <scm>
