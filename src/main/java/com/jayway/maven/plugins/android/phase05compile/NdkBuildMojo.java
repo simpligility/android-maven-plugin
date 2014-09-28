@@ -802,7 +802,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             mavenArchiver.setArchiver( jarArchiver );
 
             final File jarFile = new File( new File( project.getBuild().getDirectory() ),
-                    project.getBuild().getFinalName() + ".har" );
+                    finalName + ".har" );
 
             mavenArchiver.setOutputFile( jarFile );
 

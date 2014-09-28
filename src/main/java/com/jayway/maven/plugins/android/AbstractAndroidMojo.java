@@ -471,6 +471,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     @Parameter( property = "android.includeLibsJarsForAar", defaultValue = "false" )
     protected boolean includeLibsJarsForAar;
+    
+    @Parameter( defaultValue = "${project.build.finalName}", readonly = true )
+    protected String finalName;
 
     /**
      *
@@ -703,7 +706,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     {
         if ( project.getPackaging().equals( APK ) )
         {
-            File apkFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + "." + APK );
+            File apkFile = new File( project.getBuild().getDirectory(), finalName + "." + APK );
             deployApk( apkFile );
         }
         else 

@@ -230,7 +230,7 @@ public class DexMojo extends AbstractAndroidMojo
         if ( attachJar )
         {
             File jarFile = new File( project.getBuild().getDirectory() + File.separator
-                    + project.getBuild().getFinalName() + ".jar" );
+                    + finalName + ".jar" );
             projectHelper.attachArtifact( project, "jar", project.getArtifact().getClassifier(), jarFile );
         }
 
@@ -614,7 +614,7 @@ public class DexMojo extends AbstractAndroidMojo
      */
     protected File createApkSourcesFile() throws MojoExecutionException
     {
-        final File apksources = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName()
+        final File apksources = new File( project.getBuild().getDirectory(), finalName
                 + ".apksources" );
         FileUtils.deleteQuietly( apksources );
 

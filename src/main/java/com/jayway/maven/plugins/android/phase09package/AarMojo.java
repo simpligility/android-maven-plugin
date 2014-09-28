@@ -148,7 +148,7 @@ public class AarMojo extends AbstractAndroidMojo
     protected File createAarClassesJar() throws MojoExecutionException
     {
         final File classesJar = new File( project.getBuild().getDirectory(),
-                project.getBuild().getFinalName() + ".aar.classes.jar" );
+                finalName + ".aar.classes.jar" );
         try
         {
             JarArchiver jarArchiver = new JarArchiver();
@@ -176,7 +176,7 @@ public class AarMojo extends AbstractAndroidMojo
     protected File createAarLibraryFile( File classesJar ) throws MojoExecutionException
     {
         final File aarLibrary = new File( project.getBuild().getDirectory(),
-                project.getBuild().getFinalName() + "." + AAR );
+                finalName + "." + AAR );
         FileUtils.deleteQuietly( aarLibrary );
 
         try
@@ -369,7 +369,7 @@ public class AarMojo extends AbstractAndroidMojo
         final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
 
-        File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_" );
+        File outputFile = new File( project.getBuild().getDirectory(), finalName + ".ap_" );
 
         final AaptCommandBuilder commandBuilder = AaptCommandBuilder
                 .packageResources( getLog() )

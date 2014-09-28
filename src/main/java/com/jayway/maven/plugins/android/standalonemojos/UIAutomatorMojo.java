@@ -419,7 +419,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
         if ( parsedJarFile == null )
         {
             File jarFilePath = new File( project.getBuild().getDirectory() + File.separator
-                    + project.getBuild().getFinalName() + ".jar" );
+                    + finalName + ".jar" );
             return jarFilePath.getName();
         }
         return parsedJarFile;
