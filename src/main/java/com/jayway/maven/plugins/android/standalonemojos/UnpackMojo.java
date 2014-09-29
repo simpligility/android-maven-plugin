@@ -89,7 +89,7 @@ public class UnpackMojo extends AbstractAndroidMojo
 
     private File unpackClasses() throws MojoExecutionException
     {
-        File outputDirectory = new File( project.getBuild().getDirectory(), "android-classes" );
+        File outputDirectory = new File( targetDirectory, "android-classes" );
         if ( lazyLibraryUnpack && outputDirectory.exists() )
         {
             getLog().info( "skip library unpacking due to lazyLibraryUnpack policy" );

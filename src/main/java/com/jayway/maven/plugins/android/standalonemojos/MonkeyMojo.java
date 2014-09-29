@@ -988,7 +988,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
             FileWriter writer = null;
             try
             {
-                String directory = new StringBuilder().append( project.getBuild().getDirectory() )
+                String directory = new StringBuilder().append( targetDirectory )
                         .append( "/surefire-reports" ).toString();
 
                 FileUtils.forceMkdir( new File( directory ) );

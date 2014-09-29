@@ -96,7 +96,7 @@ public class ApklibMojo extends AbstractAndroidMojo
      */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        String out = project.getBuild().getDirectory();
+        String out = targetDirectory.getPath();
         for ( String src : project.getCompileSourceRoots() )
         {
             if ( !src.startsWith( out ) ) 
@@ -122,7 +122,7 @@ public class ApklibMojo extends AbstractAndroidMojo
 
         if ( attachJar )
         {
-            final File jarFile = new File( project.getBuild().getDirectory(),
+            final File jarFile = new File( targetDirectory,
                     finalName + ".jar" );
             projectHelper.attachArtifact( project, "jar", project.getArtifact().getClassifier(), jarFile );
         }
@@ -130,7 +130,7 @@ public class ApklibMojo extends AbstractAndroidMojo
 
     private File createApkLibraryFile() throws MojoExecutionException
     {
-        final File apklibrary = new File( project.getBuild().getDirectory(),
+        final File apklibrary = new File( targetDirectory,
                 finalName + "." + APKLIB );
         FileUtils.deleteQuietly( apklibrary );
 
@@ -349,7 +349,7 @@ public class ApklibMojo extends AbstractAndroidMojo
         File[] overlayDirectories = getResourceOverlayDirectories();
 
         File androidJar = getAndroidSdk().getAndroidJar();
-        File outputFile = new File( project.getBuild().getDirectory(), finalName + ".ap_" );
+        File outputFile = new File( targetDirectory, finalName + ".ap_" );
 
         List<File> dependencyArtifactResDirectoryList = new ArrayList<File>();
         for ( Artifact libraryArtifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )

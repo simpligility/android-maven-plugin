@@ -709,7 +709,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     {
         if ( project.getPackaging().equals( APK ) )
         {
-            File apkFile = new File( project.getBuild().getDirectory(), finalName + "." + APK );
+            File apkFile = new File( targetDirectory, finalName + "." + APK );
             deployApk( apkFile );
         }
         else 

@@ -418,7 +418,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
     {
         if ( parsedJarFile == null )
         {
-            File jarFilePath = new File( project.getBuild().getDirectory() + File.separator
+            File jarFilePath = new File( targetDirectory + File.separator
                     + finalName + ".jar" );
             return jarFilePath.getName();
         }
@@ -898,7 +898,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
             FileWriter writer = null;
             try
             {
-                String directory = new StringBuilder().append( project.getBuild().getDirectory() )
+                String directory = new StringBuilder().append( targetDirectory )
                         .append( "/surefire-reports" ).toString();
 
                 FileUtils.forceMkdir( new File( directory ) );

@@ -156,14 +156,14 @@ public class EmmaMojo extends AbstractAndroidMojo
 
     private String getDefaultMetaDataFile()
     {
-        File outputFolder = new File( project.getBuild().getDirectory() + File.separator + EMMA_FOLDER_NAME
+        File outputFolder = new File( targetDirectory + File.separator + EMMA_FOLDER_NAME
                 + File.separator + COVERAGE_METADATA_NAME );
         return outputFolder.getAbsolutePath();
     }
 
     private String[] getDefaultCompiledFolders()
     {
-        File sourceJavaFolder = new File( project.getBuild().getDirectory() + File.separator + CLASSES_FOLDER_NAME
+        File sourceJavaFolder = new File( targetDirectory + File.separator + CLASSES_FOLDER_NAME
                 + File.separator );
         return new String[]
         { sourceJavaFolder.getAbsolutePath() };

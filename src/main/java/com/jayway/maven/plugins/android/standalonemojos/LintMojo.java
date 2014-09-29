@@ -516,7 +516,7 @@ public class LintMojo extends AbstractAndroidMojo
     {
         if ( parsedHtmlOutputPath == null )
         {
-            File reportPath = new File( project.getBuild().getDirectory(), "lint-results/lint-results-html" );
+            File reportPath = new File( targetDirectory, "lint-results/lint-results-html" );
             createReportDirIfNeeded( reportPath );
             return reportPath.getAbsolutePath();
         }
@@ -528,7 +528,7 @@ public class LintMojo extends AbstractAndroidMojo
     {
         if ( parsedSimpleHtmlOutputPath == null )
         {
-            File reportPath = new File( project.getBuild().getDirectory(), "lint-results/lint-results-simple-html" );
+            File reportPath = new File( targetDirectory, "lint-results/lint-results-simple-html" );
             createReportDirIfNeeded( reportPath );
             return reportPath.getAbsolutePath();
         }
@@ -542,7 +542,7 @@ public class LintMojo extends AbstractAndroidMojo
 
         if ( parsedXmlOutputPath == null )
         {
-            File reportPath = new File( project.getBuild().getDirectory(), "lint-results/lint-results.xml" );
+            File reportPath = new File( targetDirectory, "lint-results/lint-results.xml" );
             createReportDirIfNeeded( reportPath );
             return reportPath.getAbsolutePath();
         }

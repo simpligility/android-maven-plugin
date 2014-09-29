@@ -236,7 +236,7 @@ public class ZipalignMojo extends AbstractAndroidMojo
     {
         if ( apkFile == null )
         {
-            apkFile = new File( project.getBuild().getDirectory(), finalName + "." + APK );
+            apkFile = new File( targetDirectory, finalName + "." + APK );
         }
         return apkFile.getAbsolutePath();
     }
@@ -252,7 +252,7 @@ public class ZipalignMojo extends AbstractAndroidMojo
     {
         if ( alignedApkFile == null )
         {
-            alignedApkFile = new File( project.getBuild().getDirectory(),
+            alignedApkFile = new File( targetDirectory,
                     finalName + "-aligned." + APK );
         }
         return alignedApkFile.getAbsolutePath();
