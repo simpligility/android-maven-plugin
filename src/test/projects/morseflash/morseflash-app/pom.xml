@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.simpligility.android.morse</groupId>
+    <artifactId>morseflash-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>morseflash-app</artifactId>
+  <packaging>apk</packaging>
+
+  <name>MorseFlash - App</name>
+
+  <properties>
+    <environment>development</environment>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.simpligility.android.morse</groupId>
+      <artifactId>morseflash-library</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.android</groupId>
+      <artifactId>android</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.android</groupId>
+      <artifactId>android-test</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>${project.artifactId}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+						<!-- use the copy resources instead of resources, which adds it to 
+							the eclipse buildpath -->
+            <phase>initialize</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/src/main/res</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/src/templates/res</directory>
+                  <targetPath>${project.basedir}/src/main/res</targetPath>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+        <artifactId>android-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <id>alignApk</id>
+            <phase>package</phase>
+            <goals>
+              <goal>zipalign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>development</id>
+			<!-- using this since activeByDefault does not work well with multiple 
+				profiles -->
+      <activation>
+        <property>
+          <name>environment</name>
+          <value>!production</value>
+        </property>
+      </activation>
+      <properties>
+        <deployment.stage>In Development</deployment.stage>
+      </properties>
+    </profile>
+    <profile>
+      <id>production</id>
+      <properties>
+        <deployment.stage>In Production</deployment.stage>
+      </properties>
+    </profile>
+    <profile>
+      <id>release</id>
+			<!-- via this activation the profile is automatically used when the release 
+				is done with the maven release plugin -->
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jarsigner-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>signing</id>
+                <goals>
+                  <goal>sign</goal>
+                  <goal>verify</goal>
+                </goals>
+                <phase>package</phase>
+                <inherited>true</inherited>
+                <configuration>
+                  <removeExistingSignatures>true</removeExistingSignatures>
+                  <archiveDirectory/>
+                  <includes>
+                    <include>${project.build.directory}/${project.artifactId}.apk</include>
+                  </includes>
+                  <keystore>${sign.keystore}</keystore>
+                  <alias>${sign.alias}</alias>
+                  <storepass>${sign.storepass}</storepass>
+                  <keypass>${sign.keypass}</keypass>
+                  <verbose>true</verbose>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+					<!-- the signed apk then needs to be zipaligned and we activate proguard 
+						and we run the manifest update -->
+          <plugin>
+            <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+            <artifactId>android-maven-plugin</artifactId>
+            <inherited>true</inherited>
+            <configuration>
+              <release>false</release>
+              <sign>
+                <debug>false</debug>
+              </sign>
+              <zipalign>
+                <skip>false</skip>
+                <verbose>true</verbose>
+                <inputApk>${project.build.directory}/${project.artifactId}.apk</inputApk>
+                <outputApk>${project.build.directory}/${project.artifactId}-signed-aligned.apk
+                </outputApk>
+              </zipalign>
+              <manifest>
+                <debuggable>false</debuggable>
+                <versionCodeAutoIncrement>true</versionCodeAutoIncrement>
+              </manifest>
+              <proguard>
+                <skip>false</skip>
+              </proguard>
+            </configuration>
+            <executions>
+              <execution>
+                <id>manifestUpdate</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>manifest-update</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>alignApk</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>zipalign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${project.build.directory}/${project.artifactId}-signed-aligned.apk</file>
+                  <type>apk</type>
+                  <classifier>signed-aligned</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/proguard/mapping.txt</file>
+                  <type>map</type>
+                  <classifier>release</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+            <executions>
+              <execution>
+                <id>attach-signed-aligned</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>attach-artifact</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

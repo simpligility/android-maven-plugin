@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.simpligility.android.morse</groupId>
+  <artifactId>morseflash-parent</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>MorseFlash - Parent</name>
+
+  <properties>
+    <server_schema>http</server_schema>
+    <!-- at test time this will be overridden with snapshot version -->
+    <it-plugin.version>4.0.0-rc.1</it-plugin.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.10</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.android</groupId>
+        <artifactId>android</artifactId>
+        <version>4.1.1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.android</groupId>
+        <artifactId>android-test</artifactId>
+        <version>4.1.1.4</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-jarsigner-plugin</artifactId>
+          <version>1.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>2.5</version>
+          <configuration>
+            <encoding>UTF-8</encoding>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+          <artifactId>android-maven-plugin</artifactId>
+          <version>${it-plugin.version}</version>
+          <configuration>
+            <sdk>
+              <platform>19</platform>
+            </sdk>
+            <emulator>
+              <avd>23</avd>
+              <wait>10000</wait>
+              <!--<options>-no-skin</options> -->
+            </emulator>
+            <zipalign>
+              <verbose>true</verbose>
+            </zipalign>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>1.5</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <profiles>
+    <profile>
+			<!-- the standard profile runs the instrumentation tests -->
+      <id>standard</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>morseflash-lib</module>
+        <module>morseflash-app</module>
+        <module>morseflash-instrumentation</module>
+      </modules>
+      <properties>
+        <!-- when i will try to enter this address the app will start :) -->
+        <!-- for development i want to use my local host -->
+        <!-- server schema is defined globally for all profiles but can be overridden
+            here for the local profile -->
+        <!-- this properties are good for all the maven modules -->
+        <server_host>192.168.1.12</server_host>
+        <server_path></server_path>
+      </properties>
+    </profile>
+    <profile>
+      <!-- the release profile does sign, proguard, zipalign ... but does not 
+           run instrumentation tests -->
+      <id>release</id>
+      <!-- via this activation the profile is automatically used when the release 
+          is done with the maven release plugin -->
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <modules>
+        <module>morse-lib</module>
+        <module>morseflash-app</module>
+      </modules>
+      <properties>
+       <!-- when i will try to enter this address the app will start :) -->
+       <!-- for release i want to use my git -->
+       <!-- server schema is defined globally for all profiles but can be overridden
+            here for the local profile -->
+        <!-- this properties are good for all the maven modules -->
+        <server_host>github.com</server_host>
+        <server_path>/jayway/maven-android-plugin-samples</server_path>
+      </properties>
+    </profile>
+  </profiles>
+</project>
