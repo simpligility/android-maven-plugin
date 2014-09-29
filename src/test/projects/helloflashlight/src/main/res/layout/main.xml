@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout android:id="@+id/Table"
+        android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+        android:stretchColumns="0,1,2,3,4"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+<TableRow android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+<Button android:id="@+id/ButtonRed" android:text="@string/ButtonRed" />
+<Button android:id="@+id/ButtonGreen" android:text="@string/ButtonGreen" />
+<Button android:id="@+id/ButtonBlue" android:text="@string/ButtonBlue" />
+<Button android:id="@+id/ButtonBlack" android:text="@string/ButtonBlack" />
+<Button android:id="@+id/ButtonWhite" android:text="@string/ButtonWhite" />
+</TableRow>
+</TableLayout>
+

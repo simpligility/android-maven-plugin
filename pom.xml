@@ -686,7 +686,6 @@
                 <configuration>
                     <!-- prevent PermGen OOM in site build -->
                     <argLine>-Xmx512m -XX:MaxPermSize=128m</argLine>
-                    <skip>false</skip>
                 </configuration>
             </plugin>
 
@@ -842,7 +841,27 @@
         </plugins>
     </reporting>
 
-    <profiles>
+  <profiles>
+    <profile>
+      <id>it</id>
+      <!-- the integration tests require a device or emulator attached via ADB -->
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
         <profile>
             <id>official-release</id>
             <build>
