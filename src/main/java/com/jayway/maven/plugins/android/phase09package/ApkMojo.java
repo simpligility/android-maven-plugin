@@ -295,7 +295,7 @@ public class ApkMojo extends AbstractAndroidMojo
             getLog().info( "Creating debug key signed apk file " + outputFile );
             createApkFile( outputFile, true );
             final File unsignedOutputFile = new File( project.getBuild().getDirectory(),
-                    project.getBuild().getFinalName() + "-unsigned." + APK );
+                    finalName + "-unsigned." + APK );
             getLog().info( "Creating additional unsigned apk file " + unsignedOutputFile );
             createApkFile( unsignedOutputFile, false );
             projectHelper.attachArtifact( project, unsignedOutputFile,
@@ -327,7 +327,7 @@ public class ApkMojo extends AbstractAndroidMojo
             dexFile = new File( project.getBuild().getDirectory(), "classes.zip" );
         }
 
-        File zipArchive = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_" );
+        File zipArchive = new File( project.getBuild().getDirectory(), finalName + ".ap_" );
         ArrayList<File> sourceFolders = new ArrayList<File>();
         if ( sourceDirectories != null )
         {
@@ -883,7 +883,7 @@ public class ApkMojo extends AbstractAndroidMojo
         File[] overlayDirectories = getResourceOverlayDirectories();
 
         File androidJar = getAndroidSdk().getAndroidJar();
-        File outputFile = new File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + ".ap_" );
+        File outputFile = new File( project.getBuild().getDirectory(), finalName + ".ap_" );
 
         List<File> dependencyArtifactResDirectoryList = new ArrayList<File>();
         for ( Artifact libraryArtifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
