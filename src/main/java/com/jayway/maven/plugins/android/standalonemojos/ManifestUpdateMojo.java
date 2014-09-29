@@ -272,7 +272,7 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     /**
      * The modified <code>AndroidManifest.xml</code> file.
      */
-    @Parameter( property = "android.manifestFile", defaultValue = "${project.basedir}/AndroidManifest.xml" )
+    @Parameter( property = "android.manifestFile", defaultValue = "${project.basedir}/src/main/AndroidManifest.xml" )
     protected File updatedManifestFile;
 
     /**
