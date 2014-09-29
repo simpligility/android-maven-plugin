@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="deployment">In Development</string>
+	<string name="server_host">192.168.1.12</string>
+	<string name="server_path"></string>
+	<string name="server_schema">http</string>
+</resources>

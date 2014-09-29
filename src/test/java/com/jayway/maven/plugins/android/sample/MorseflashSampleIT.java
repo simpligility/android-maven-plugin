@@ -32,14 +32,14 @@ import com.jayway.maven.plugins.android.PluginInfo;
 
 @RunWith(MavenJUnitTestRunner.class)
 @MavenVersions({"3.2.3"})
-public class HelloFlashLightSampleIT {
+public class MorseflashSampleIT {
   
   @Rule
   public final TestResources resources = new TestResources();
   
   public final MavenRuntime mavenRuntime;
   
-  public HelloFlashLightSampleIT(MavenRuntimeBuilder builder) throws Exception {
+  public MorseflashSampleIT(MavenRuntimeBuilder builder) throws Exception {
     this.mavenRuntime = builder.build();
   }
   
@@ -52,8 +52,6 @@ public class HelloFlashLightSampleIT {
               "install" );
     
     result.assertErrorFreeLog();
-//    result.assertLogText( "Successfully installed" );
-//    result.assertLogText( "Attempting to start com.simpligility.android.helloflashlight/com.simpligility.android.helloflashlight.HelloFlashlight" );
   }
 
 }

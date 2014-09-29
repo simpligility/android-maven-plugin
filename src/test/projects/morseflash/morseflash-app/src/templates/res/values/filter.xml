@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="deployment">${deployment.stage}</string>
+	<string name="server_host">${server_host}</string>
+	<string name="server_path">${server_path}</string>
+	<string name="server_schema">${server_schema}</string>
+</resources>
