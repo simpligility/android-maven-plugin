@@ -52,6 +52,7 @@ public class MorseflashSampleIT {
               "install" );
     
     result.assertErrorFreeLog();
+    result.assertLogText( "Running instrumentation tests in com.simpligility.android.morseflash.tests" );
   }
 
 }

@@ -45,15 +45,16 @@ public class HelloFlashLightSampleIT {
   
   @Test
   public void buildDeployAndRun() throws Exception {
-    File basedir = resources.getBasedir( "morseflash" );
+    File basedir = resources.getBasedir( "helloflashlight" );
     MavenExecutionResult result = mavenRuntime
           .forProject(basedir)
           .execute( "clean", PluginInfo.getQualifiedGoal( "undeploy" ), 
-              "install" );
+              "install", PluginInfo.getQualifiedGoal( "deploy" ),
+              PluginInfo.getQualifiedGoal( "run" ) );
     
     result.assertErrorFreeLog();
-//    result.assertLogText( "Successfully installed" );
-//    result.assertLogText( "Attempting to start com.simpligility.android.helloflashlight/com.simpligility.android.helloflashlight.HelloFlashlight" );
+    result.assertLogText( "Successfully installed" );
+    result.assertLogText( "Attempting to start com.simpligility.android.helloflashlight/com.simpligility.android.helloflashlight.HelloFlashlight" );
   }
 
 }
