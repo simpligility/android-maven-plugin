@@ -113,7 +113,7 @@ public class AarMojo extends AbstractAndroidMojo
      */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        String out = project.getBuild().getDirectory();
+        String out = targetDirectory.getPath();
         for ( String src : project.getCompileSourceRoots() )
         {
             if ( !src.startsWith( out ) )
@@ -147,7 +147,7 @@ public class AarMojo extends AbstractAndroidMojo
      */
     protected File createAarClassesJar() throws MojoExecutionException
     {
-        final File classesJar = new File( project.getBuild().getDirectory(),
+        final File classesJar = new File( targetDirectory,
                 finalName + ".aar.classes.jar" );
         try
         {
@@ -175,7 +175,7 @@ public class AarMojo extends AbstractAndroidMojo
      */
     protected File createAarLibraryFile( File classesJar ) throws MojoExecutionException
     {
-        final File aarLibrary = new File( project.getBuild().getDirectory(),
+        final File aarLibrary = new File( targetDirectory,
                 finalName + "." + AAR );
         FileUtils.deleteQuietly( aarLibrary );
 
@@ -219,7 +219,7 @@ public class AarMojo extends AbstractAndroidMojo
 
     private void addR( ZipArchiver zipArchiver ) throws MojoExecutionException
     {
-        final File rFile = new File( project.getBuild().getDirectory() + "/R.txt" );
+        final File rFile = new File( targetDirectory + "/R.txt" );
         if ( rFile.exists() )
         {
             zipArchiver.addFile( rFile, "R.txt" );
@@ -369,7 +369,7 @@ public class AarMojo extends AbstractAndroidMojo
         final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
 
-        File outputFile = new File( project.getBuild().getDirectory(), finalName + ".ap_" );
+        File outputFile = new File( targetDirectory, finalName + ".ap_" );
 
         final AaptCommandBuilder commandBuilder = AaptCommandBuilder
                 .packageResources( getLog() )
@@ -386,7 +386,7 @@ public class AarMojo extends AbstractAndroidMojo
                 .addConfigurations( configurations )
                 .setResourceConstantsFolder( genDirectory )
                 .makeResourcesNonConstant()
-                .generateRTextFile( new File( project.getBuild().getDirectory() ) )
+                .generateRTextFile( targetDirectory )
                 .setVerbose( aaptVerbose );
 
         getLog().debug( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );

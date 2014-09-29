@@ -198,11 +198,11 @@ public class DexMojo extends AbstractAndroidMojo
         File outputFile;
         if ( parsedMultiDex )
         {
-            outputFile = new File( project.getBuild().getDirectory() );
+            outputFile = targetDirectory;
         }
         else
         {
-            outputFile = new File( project.getBuild().getDirectory(), "classes.dex" );
+            outputFile = new File( targetDirectory, "classes.dex" );
         }
         if ( generateApk )
         {
@@ -211,7 +211,7 @@ public class DexMojo extends AbstractAndroidMojo
             if ( parsedMultiDex )
             {
 
-                File assets = new File( project.getBuild().getDirectory(),
+                File assets = new File( targetDirectory,
                         "generated-sources" + File.separator + "combined-assets" );
 
                 if ( !assets.exists() && !assets.mkdirs() )
@@ -229,7 +229,7 @@ public class DexMojo extends AbstractAndroidMojo
 
         if ( attachJar )
         {
-            File jarFile = new File( project.getBuild().getDirectory() + File.separator
+            File jarFile = new File( targetDirectory + File.separator
                     + finalName + ".jar" );
             projectHelper.attachArtifact( project, "jar", project.getArtifact().getClassifier(), jarFile );
         }
@@ -614,7 +614,7 @@ public class DexMojo extends AbstractAndroidMojo
      */
     protected File createApkSourcesFile() throws MojoExecutionException
     {
-        final File apksources = new File( project.getBuild().getDirectory(), finalName
+        final File apksources = new File( targetDirectory, finalName
                 + ".apksources" );
         FileUtils.deleteQuietly( apksources );
 

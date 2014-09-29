@@ -150,6 +150,12 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     @Parameter( defaultValue = "${project.build.directory}", readonly = true )
     protected File targetDirectory;
+    
+    /**
+     * The final name of the artifact.
+     */
+    @Parameter( defaultValue = "${project.build.finalName}", readonly = true )
+    protected String finalName;
 
     /**
      * The android resources directory.
@@ -471,9 +477,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     @Parameter( property = "android.includeLibsJarsForAar", defaultValue = "false" )
     protected boolean includeLibsJarsForAar;
-    
-    @Parameter( defaultValue = "${project.build.finalName}", readonly = true )
-    protected String finalName;
 
     /**
      *
@@ -706,7 +709,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     {
         if ( project.getPackaging().equals( APK ) )
         {
-            File apkFile = new File( project.getBuild().getDirectory(), finalName + "." + APK );
+            File apkFile = new File( targetDirectory, finalName + "." + APK );
             deployApk( apkFile );
         }
         else 
