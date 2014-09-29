@@ -562,7 +562,7 @@ public class LintMojo extends AbstractAndroidMojo
     {
         if ( parsedSources == null )
         {
-            parsedSources = new File( project.getBuild().getSourceDirectory() ).getAbsolutePath();
+            parsedSources = sourceDirectory.getAbsolutePath();
         }
         return parsedSources;
     }
