@@ -282,7 +282,7 @@ public class DexMojo extends AbstractAndroidMojo
         {
             getLog().debug( "Using non-obfuscated input" );
             // no proguard, use original config
-            inputs.add( new File( project.getBuild().getOutputDirectory() ) );
+            inputs.add( projectOutputDirectory );
             getLog().debug( "Adding dex input : " + project.getBuild().getOutputDirectory() );
             for ( Artifact artifact : getTransitiveDependencyArtifacts() )
             {

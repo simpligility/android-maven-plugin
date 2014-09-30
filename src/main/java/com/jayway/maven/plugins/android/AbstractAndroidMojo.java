@@ -146,10 +146,16 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File sourceDirectory;
 
     /**
-     * The java target directory. Ie target/classes.
+     * The project build directory. Ie target.
      */
     @Parameter( defaultValue = "${project.build.directory}", readonly = true )
     protected File targetDirectory;
+    
+    /**
+     * The output directory. Ie target/classes.
+     */
+    @Parameter( defaultValue = "${project.build.outputDirectory}", readonly = true )
+    protected File projectOutputDirectory;
     
     /**
      * The final name of the artifact.

@@ -614,7 +614,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                 getLog().info( "No InstrumentationRunner found - skipping tests" );
                 return false;
             }
-            return AndroidTestFinder.containsAndroidTests( new File( project.getBuild().getOutputDirectory() ) );
+            return AndroidTestFinder.containsAndroidTests( projectOutputDirectory );
         }
 
         throw new MojoFailureException( "android.test.skip must be configured as 'true', 'false' or 'auto'." );

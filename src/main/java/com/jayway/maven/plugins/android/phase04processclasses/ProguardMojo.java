@@ -536,7 +536,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         }
 
         // we first add the application's own class files
-        inJars.add( createProguardInput( project.getBuild().getOutputDirectory() ) );
+        inJars.add( createProguardInput( projectOutputDirectory.getAbsolutePath() ) );
 
         // we then add all its dependencies (incl. transitive ones), unless they're blacklisted
         for ( Artifact artifact : getTransitiveDependencyArtifacts() )
