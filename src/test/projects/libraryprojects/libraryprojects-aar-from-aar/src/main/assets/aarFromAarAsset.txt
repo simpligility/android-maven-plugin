@@ -1,0 +1,1 @@
+libraryprojects-aar-from-aar Android asset

@@ -1,0 +1,1 @@
+libraryprojects-apklib-from-apklib Java resource

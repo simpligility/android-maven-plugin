@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                              http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.jayway.maven.plugins.android.generation2.samples</groupId>
+  <artifactId>native-parent</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>Android NDK - Aggregator</name>
+  <properties>
+    <!-- at test time this will be overridden with snapshot version -->
+    <it-plugin.version>4.0.0-rc.1</it-plugin.version>
+  </properties>
+
+  <modules>
+    <module>java-with-native-dependency</module>
+    <module>java-with-native-dependency-x86-only</module>
+    <module>java-with-native-statically-linked-dependency</module>
+    <module>java-with-native-library</module>
+    <module>java-transient-dependency</module>
+    <module>native-code</module>
+    <module>native-static-lib</module>
+    <module>native-code-including-static-lib</module>
+    <module>mixed-java-native-code</module>
+    <module>native-apklib</module>
+    <module>java-with-native-apklib-dependency</module>
+<!--     <module>mixed-java-native-with-apklib-dependency</module> -->
+    <module>transient-apklib-with-native</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.google.android</groupId>
+        <artifactId>android</artifactId>
+        <version>4.1.1.4</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+          <artifactId>android-maven-plugin</artifactId>
+          <version>${it-plugin.version}</version>
+          <configuration>
+            <sdk>
+              <platform>19</platform>
+            </sdk>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>

@@ -1,0 +1,1 @@
+libraryprojects-aar1 Java resource
