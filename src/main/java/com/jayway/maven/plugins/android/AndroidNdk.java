@@ -27,6 +27,7 @@ import java.util.List;
  * Represents an Android NDK.
  *
  * @author Johan Lindquist <johanlindquist@gmail.com>
+ * @author Manfred Moser <manfred@simpligility.com>
  */
 public class AndroidNdk
 {
@@ -41,19 +42,19 @@ public class AndroidNdk
     /**
      * Arm toolchain implementations.
      */
-    public static final String[] ARM_TOOLCHAIN = {  "arm-linux-androideabi-4.7", "arm-linux-androideabi-4.6",
-                                                     "arm-linux-androideabi-4.4.3" };
+    public static final String[] ARM_TOOLCHAIN = {  "arm-linux-androideabi-4.9", "arm-linux-androideabi-4.8",
+            "arm-linux-androideabi-4.7", "arm-linux-androideabi-4.6", "arm-linux-androideabi-4.4.3" };
 
     /**
      * x86 toolchain implementations.
      */
-    public static final String[] X86_TOOLCHAIN = { "x86-4.7", "x86-4.6", "x86-4.4.3" };
+    public static final String[] X86_TOOLCHAIN = { "x86-4.9", "x86-4.8", "x86-4.7", "x86-4.6", "x86-4.4.3" };
 
     /**
      * Mips toolchain implementations.
      */
-    public static final String[] MIPS_TOOLCHAIN = { "mipsel-linux-android-4.7", "mipsel-linux-android-4.6",
-                                                     "mipsel-linux-android-4.4.3" };
+    public static final String[] MIPS_TOOLCHAIN = { "mipsel-linux-android-4.9", "mipsel-linux-android-4.8",
+            "mipsel-linux-android-4.7", "mipsel-linux-android-4.6", "mipsel-linux-android-4.4.3" };
 
     /**
      * Possible locations for the gdbserver file.
@@ -275,7 +276,7 @@ public class AndroidNdk
             {
                 return ndkArchitectureToolchainMappings.getArmeabi();
             }
-            return AndroidNdk.ARM_TOOLCHAIN[1];
+            return AndroidNdk.ARM_TOOLCHAIN[0];
         }
         else if ( ndkArchitecture.startsWith( "x86" ) )
         {
@@ -283,7 +284,7 @@ public class AndroidNdk
             {
                 return ndkArchitectureToolchainMappings.getX86();
             }
-            return AndroidNdk.X86_TOOLCHAIN[1];
+            return AndroidNdk.X86_TOOLCHAIN[0];
         }
         else if ( ndkArchitecture.startsWith( "mips" ) )
         {
@@ -291,7 +292,7 @@ public class AndroidNdk
             {
                 return ndkArchitectureToolchainMappings.getMips();
             }
-            return AndroidNdk.MIPS_TOOLCHAIN[1];
+            return AndroidNdk.MIPS_TOOLCHAIN[0];
         }
 
         //  if we got here, throw an error
@@ -299,3 +300,4 @@ public class AndroidNdk
                 + " does not exist, please double check the setup" );
     }
 }
+
