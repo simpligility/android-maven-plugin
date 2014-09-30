@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (C) 2009 Jayway AB
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.jayway.maven.plugins.android.generation2.samples.apidemos-android-16</groupId>
+    <artifactId>apidemos-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>apidemos-tests</artifactId>
+  <packaging>apk</packaging>
+
+  <name>Android SDK ApiDemos - Instrumentation Test</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.google.android</groupId>
+      <artifactId>android</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.android</groupId>
+      <artifactId>android-test</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+            <!-- the target apk, which we will test. will automatically be deployed to device in pre-integration-test
+            phase. -->
+      <groupId>com.jayway.maven.plugins.android.generation2.samples.apidemos-android-16</groupId>
+      <artifactId>apidemos-application</artifactId>
+      <version>${project.version}</version>
+      <type>apk</type>
+    </dependency>
+
+    <dependency>
+            <!-- optional: compile time dependency, in this case so that we can read from the R.java for example. -->
+      <groupId>com.jayway.maven.plugins.android.generation2.samples.apidemos-android-16</groupId>
+      <artifactId>apidemos-application</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <type>jar</type>
+    </dependency>
+  </dependencies>
+
+  <build>
+        <!--<finalName>${project.artifactId}</finalName>-->
+    <plugins>
+      <plugin>
+        <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+        <artifactId>android-maven-plugin</artifactId>
+        <configuration>
+          <test>
+                        <!--<skip>true|false|auto</skip>-->
+                        <!--<instrumentationPackage>packageName</instrumentationPackage>-->
+                        <!--<instrumentationRunner>className</instrumentationRunner>-->
+                        <!--<debug>true|false</debug>-->
+                        <!--<coverage>true|false</coverage>-->
+                        <!--<logonly>true|false</logonly>  avd-->
+                        <!--<testsize>small|medium|large</testsize>-->
+            <testSize>small</testSize>
+            <createReport>true</createReport>
+                        <!--<classes>-->
+                            <!--<class>your.package.name.YourTestClass</class>-->
+                        <!--</classes>-->
+                        <!--<packages>-->
+                            <!--<package>your.package.name</package>-->
+                        <!--</packages>-->
+          </test>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>emma</id>
+      <dependencies>
+        <dependency>
+          <groupId>emma</groupId>
+          <artifactId>emma</artifactId>
+          <type>jar</type>
+          <scope>compile</scope>
+          <version>2.1.5320</version>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>properties-maven-plugin</artifactId>
+            <version>1.0-alpha-1</version>
+            <executions>
+              <execution>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>read-project-properties</goal>
+                </goals>
+                <configuration>
+                  <files>
+                    <file>project.properties</file>
+                  </files>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+            <artifactId>android-maven-plugin</artifactId>
+            <configuration>
+              <test>
+                <coverage>true</coverage>
+                <createReport>true</createReport>
+              </test>
+            </configuration>
+            <extensions>true</extensions>
+                        <!-- -->
+            <executions>
+              <execution>
+                <id>pull-coverage</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>pull</goal>
+                </goals>
+                <configuration>
+                  <pullSource>/data/data/com.example.android.apis/files/coverage.ec</pullSource>
+                  <pullDestination>${tested.project.dir}/target/emma/coverage.ec</pullDestination>
+                </configuration>
+              </execution>
+            </executions>
+
+          </plugin>
+        </plugins>
+      </build>
+      <reporting>
+        <plugins>
+          <plugin>
+            <groupId>org.sonatype.maven.plugin</groupId>
+            <artifactId>emma4it-maven-plugin</artifactId>
+            <version>1.3</version>
+            <configuration>
+              <metadatas>${tested.project.dir}/target/emma/coverage.em,${tested.project.dir}/src/
+              </metadatas>
+              <instrumentations>${tested.project.dir}/target/emma/coverage.ec</instrumentations>
+              <reportDirectory>${tested.project.dir}/target/emma/</reportDirectory>
+              <baseDirectory>{tested.project.dir}/target/</baseDirectory>
+              <formats>xml,html</formats>
+            </configuration>
+          </plugin>
+        </plugins>
+      </reporting>
+    </profile>
+  </profiles>
+</project>
