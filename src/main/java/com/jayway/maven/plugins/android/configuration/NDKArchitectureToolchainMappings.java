@@ -7,9 +7,9 @@ import com.jayway.maven.plugins.android.AndroidNdk;
  */
 public class NDKArchitectureToolchainMappings
 {
-    String x86 = AndroidNdk.X86_TOOLCHAIN[1];
-    String armeabi = AndroidNdk.ARM_TOOLCHAIN[1];
-    String mips = AndroidNdk.ARM_TOOLCHAIN[1];
+    String x86 = AndroidNdk.X86_TOOLCHAIN[0];
+    String armeabi = AndroidNdk.ARM_TOOLCHAIN[0];
+    String mips = AndroidNdk.ARM_TOOLCHAIN[0];
 
     public String getArmeabi()
     {
