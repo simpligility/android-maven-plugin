@@ -35,10 +35,7 @@ before_install:
   # Create and start emulator
   - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
   - emulator -avd test -no-skin -no-audio -no-window &
-
-script: mvn clean install -Dandroid.device=test
-
-after_script:
+  
   # Install Android NDK
   # Note: There is now a difference between Target architecture and Platform architecture. What SHOULD they be?
   - NDK_ARCH=""  
@@ -52,7 +49,6 @@ after_script:
   - tar xjf ${FILE}
   - export ANDROID_NDK_HOME=$PWD/android-ndk-r10b
 
-  # Run the samples.
-  - mkdir target
-  - git clone git://github.com/jayway/maven-android-plugin-samples.git target/maven-android-plugin-samples
-  - mvn android:undeploy clean install -B -f target/maven-android-plugin-samples/pom.xml -Dandroid.device=test
+script: mvn clean install -Dandroid.device=test -P it
+
+after_script:
