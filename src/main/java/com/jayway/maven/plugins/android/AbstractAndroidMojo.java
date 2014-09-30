@@ -32,6 +32,7 @@ import com.jayway.maven.plugins.android.common.UnpackedLibHelper;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.configuration.Ndk;
 import com.jayway.maven.plugins.android.configuration.Sdk;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.jxpath.JXPathContext;
@@ -42,6 +43,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -156,6 +158,12 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     @Parameter( defaultValue = "${project.build.outputDirectory}", readonly = true )
     protected File projectOutputDirectory;
+    
+    /**
+     * The project resources. By default a list containing src/main/resources.
+     */
+    @Parameter( defaultValue = "${project.build.resources}", readonly = true )
+    protected List<Resource> resources;
     
     /**
      * The final name of the artifact.
