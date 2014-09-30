@@ -1,0 +1,13 @@
+= Android Maven Plugin
+
+The Android Maven Plugin is used to build applications for the Android operating system.
+
+Further information is available on
+
+* http://code.google.com/p/maven-android-plugin/[the project site]
+
+* http://www.sonatype.com/books/mvnref-book/reference/android-dev.html[Android Development with Apache Maven] in the book http://www.sonatype.com/Support/Books/Maven-The-Complete-Reference[Maven: The Complete Reference]
+
+* Plugin Documentation/Goals on this site
+
+* via the "help" goal of the plugin itself

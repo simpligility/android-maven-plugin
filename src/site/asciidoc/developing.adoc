@@ -1,0 +1,11 @@
+= Developing
+
+----
+mvn clean install
+----
+
+----
+mvn clean install -P it
+----
+
+

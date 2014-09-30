@@ -678,6 +678,15 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
+                <!--  careful with upgrades, e.g. 3.4 does not work with asciidoctor (yet?) -->
+                <version>3.3</version>
+                  <dependencies>
+                      <dependency>
+                          <groupId>org.asciidoctor</groupId>
+                          <artifactId>asciidoctor-maven-plugin</artifactId>
+                          <version>1.5.0</version>
+                      </dependency>
+                  </dependencies>
             </plugin>
 
             <plugin>
