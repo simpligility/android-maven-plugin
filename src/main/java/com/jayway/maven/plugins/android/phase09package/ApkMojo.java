@@ -476,7 +476,7 @@ public class ApkMojo extends AbstractAndroidMojo
                                       boolean signWithDebugKeyStore ) throws MojoExecutionException
     {
         getLog().debug( "Building APK with internal APKBuilder" );
-        sourceFolders.add( new File( project.getBuild().getOutputDirectory() ) );
+        sourceFolders.add( projectOutputDirectory );
 
         for ( Artifact artifact : getRelevantCompileArtifacts() )
         {
@@ -625,7 +625,7 @@ public class ApkMojo extends AbstractAndroidMojo
 
     private File removeDuplicatesFromJar( File in, List<String> duplicates )
     {
-        String target = project.getBuild().getOutputDirectory();
+        String target = projectOutputDirectory.getAbsolutePath();
         File tmp = new File( target, "unpacked-embedded-jars" );
         tmp.mkdirs();
         File out = new File( tmp, in.getName() );

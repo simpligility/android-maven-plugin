@@ -153,7 +153,7 @@ public class AarMojo extends AbstractAndroidMojo
         {
             JarArchiver jarArchiver = new JarArchiver();
             jarArchiver.setDestFile( classesJar );
-            jarArchiver.addDirectory( new File( project.getBuild().getOutputDirectory() ),
+            jarArchiver.addDirectory( projectOutputDirectory,
                     classesJarIncludes,
                     classesJarExcludes );
             jarArchiver.createArchive();

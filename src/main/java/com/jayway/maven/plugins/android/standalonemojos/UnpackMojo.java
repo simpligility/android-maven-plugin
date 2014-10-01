@@ -141,8 +141,7 @@ public class UnpackMojo extends AbstractAndroidMojo
 
         try
         {
-            File sourceDirectory = new File( project.getBuild().getOutputDirectory() );
-            FileUtils.copyDirectory( sourceDirectory, outputDirectory );
+            FileUtils.copyDirectory( projectOutputDirectory, outputDirectory );
         }
         catch ( IOException e )
         {

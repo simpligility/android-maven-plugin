@@ -157,7 +157,7 @@ public class ApklibMojo extends AbstractAndroidMojo
                 }
             }
 
-            addJavaResources( jarArchiver, project.getBuild().getResources(), "src" );
+            addJavaResources( jarArchiver, resources, "src" );
 
             // Lastly, add any native libraries
             addNativeLibraries( jarArchiver );
