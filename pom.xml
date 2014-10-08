@@ -44,7 +44,7 @@
         <maven-plugin-plugin.version>3.2</maven-plugin-plugin.version>
         <maven.api.version>3.0.5</maven.api.version>
 
-        <takari.plugin.testing.version>1.8.2</takari.plugin.testing.version>
+        <takari.plugin.testing.version>1.8.3</takari.plugin.testing.version>
         <easymock.version>3.2</easymock.version>
         <powermock.version>1.5.2</powermock.version>
         
