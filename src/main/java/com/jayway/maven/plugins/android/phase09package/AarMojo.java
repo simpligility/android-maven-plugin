@@ -214,77 +214,89 @@ public class AarMojo extends AbstractAndroidMojo
         return aarLibrary;
     }
 
-    private File generateMergedResourcesDirectory() throws MojoExecutionException {
-        final File mergerOutputDirectory = new File(targetDirectory, "mergerOutput");
-        final File destinationDirectory = new File(targetDirectory, "mergedResources");
+    private File generateMergedResourcesDirectory() throws MojoExecutionException
+    {
+        final File mergerOutputDirectory = new File( targetDirectory, "mergerOutput" );
+        final File destinationDirectory = new File( targetDirectory, "mergedResources" );
         final ResourceMerger merger = new ResourceMerger();
 
-        try {
-            FileUtils.deleteDirectory(destinationDirectory);
+        try
+        {
+            FileUtils.deleteDirectory( destinationDirectory );
 
             final List<File> allResourceDirectories = getAllResourcesDirectories();
-            final List<ResourceSet> resourceSets = convertToResourceSets(allResourceDirectories);
+            final List<ResourceSet> resourceSets = convertToResourceSets( allResourceDirectories );
 
-            addResourceSetsToMerger(merger, resourceSets);
-            writeMergeResources(merger, destinationDirectory, mergerOutputDirectory);
+            addResourceSetsToMerger( merger, resourceSets );
+            writeMergeResources( merger, destinationDirectory, mergerOutputDirectory );
 
             return destinationDirectory;
-        } catch ( MergingException e ) {
-            merger.cleanBlob(mergerOutputDirectory);
+        }
+        catch ( MergingException e )
+        {
+            merger.cleanBlob( mergerOutputDirectory );
 
             throw new MojoExecutionException( "MergingException while creating ." + AAR + " file.", e );
-        } catch ( IOException e ) {
+        }
+        catch ( IOException e )
+        {
             throw new MojoExecutionException( "IOException while creating ." + AAR + " file.", e );
         }
     }
 
-    private void writeMergeResources(ResourceMerger merger, File destinationDir, File mergerOutputDirectory)
-            throws MergingException {
+    private void writeMergeResources( ResourceMerger merger, File destinationDir, File mergerOutputDirectory )
+            throws MergingException
+    {
 
-        MergedResourceWriter writer = new MergedResourceWriter(destinationDir, null);
-        writer.setInsertSourceMarkers(true);
+        MergedResourceWriter writer = new MergedResourceWriter( destinationDir, null );
+        writer.setInsertSourceMarkers( true );
 
-        merger.mergeData(writer, false /*doCleanUp*/);
+        merger.mergeData( writer, false /*doCleanUp*/ );
 
-        merger.writeBlobTo(mergerOutputDirectory, writer);
+        merger.writeBlobTo( mergerOutputDirectory, writer );
     }
 
-    private void addResourceSetsToMerger(ResourceMerger merger, List<ResourceSet> resourceSets)
-            throws MergingException {
+    private void addResourceSetsToMerger( ResourceMerger merger, List<ResourceSet> resourceSets )
+            throws MergingException
+    {
 
-        for (ResourceSet resourceSet : resourceSets) {
-            resourceSet.loadFromFiles(new MavenAndroidLogger(getLog()));
-            merger.addDataSet(resourceSet);
+        for ( ResourceSet resourceSet : resourceSets )
+        {
+            resourceSet.loadFromFiles( new MavenAndroidLogger( getLog() ) );
+            merger.addDataSet( resourceSet );
         }
     }
 
-    private List<File> getAllResourcesDirectories() {
+    private List<File> getAllResourcesDirectories()
+    {
         final File[] overlayDirectories = getResourceOverlayDirectories();
-        final List<File> allResourceDirectories = new ArrayList<File>(overlayDirectories.length + 1);
+        final List<File> allResourceDirectories = new ArrayList<File>( overlayDirectories.length + 1 );
 
-        allResourceDirectories.add(resourceDirectory);
-        allResourceDirectories.addAll(Arrays.asList(overlayDirectories));
+        allResourceDirectories.add( resourceDirectory );
+        allResourceDirectories.addAll( Arrays.asList( overlayDirectories ) );
 
         return allResourceDirectories;
     }
 
-    private List<ResourceSet> convertToResourceSets(List<File> resourceDirectories) {
-        List<ResourceSet> resourceSets = new ArrayList<ResourceSet>(resourceDirectories.size());
+    private List<ResourceSet> convertToResourceSets( List<File> resourceDirectories )
+    {
+        List<ResourceSet> resourceSets = new ArrayList<ResourceSet>( resourceDirectories.size() );
 
         for ( final File resourceDirectory : resourceDirectories )
         {
             if ( resourceDirectory != null && resourceDirectory.exists() )
             {
-                resourceSets.add(convertToResourceSet(resourceDirectory));
+                resourceSets.add( convertToResourceSet( resourceDirectory ) );
             }
         }
 
         return resourceSets;
     }
 
-    private ResourceSet convertToResourceSet(File resourceDirectory) {
-        ResourceSet resourceSet = new ResourceSet(resourceDirectory.getName());
-        resourceSet.addSource(resourceDirectory);
+    private ResourceSet convertToResourceSet( File resourceDirectory )
+    {
+        ResourceSet resourceSet = new ResourceSet( resourceDirectory.getName() );
+        resourceSet.addSource( resourceDirectory );
 
         return resourceSet;
     }
@@ -386,7 +398,7 @@ public class AarMojo extends AbstractAndroidMojo
             fileSet.setPrefix( endWithSlash( prefix ) );
             fileSet.setDirectory( directory );
             zipArchiver.addFileSet( fileSet );
-            getLog().debug("Added files from " + directory);
+            getLog().debug( "Added files from " + directory );
         }
     }
 
