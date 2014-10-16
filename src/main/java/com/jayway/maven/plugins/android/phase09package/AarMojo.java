@@ -249,7 +249,7 @@ public class AarMojo extends AbstractAndroidMojo
     {
 
         MergedResourceWriter writer = new MergedResourceWriter( destinationDir, null );
-        writer.setInsertSourceMarkers( true );
+        writer.setInsertSourceMarkers( false );
 
         merger.mergeData( writer, false /*doCleanUp*/ );
 
