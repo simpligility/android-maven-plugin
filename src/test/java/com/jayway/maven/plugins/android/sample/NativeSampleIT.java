@@ -47,9 +47,9 @@ public class NativeSampleIT {
   public void buildDeployAndRun() throws Exception {
     File basedir = resources.getBasedir( "native" );
     MavenExecutionResult result = mavenRuntime
-          .forProject(basedir)
+          .forProject(basedir).withCliOption( "-X" )
           .execute( "clean", "install" );
-    
+
     result.assertErrorFreeLog();
   }
 
