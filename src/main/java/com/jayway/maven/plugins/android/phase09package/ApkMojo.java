@@ -598,6 +598,8 @@ public class ApkMojo extends AbstractAndroidMojo
                 }
             }
 
+            addSecondaryDexes( dexFile, apkBuilder );
+
             for ( File nativeFolder : nativeFolders )
             {
                 apkBuilder.addNativeLibraries( nativeFolder );
@@ -617,6 +619,21 @@ public class ApkMojo extends AbstractAndroidMojo
         catch ( SealedApkException e )
         {
             throw new MojoExecutionException( e.getMessage() );
+        }
+    }
+
+    private void addSecondaryDexes( File dexFile, ApkBuilder apkBuilder ) throws ApkCreationException,
+            SealedApkException, DuplicateFileException
+    {
+        int dexNumber = 2;
+        String dexFileName = "classes" + dexNumber + ".dex";
+        File secondDexFile = new File( dexFile.getParentFile(), dexFileName );
+        while ( secondDexFile.exists() )
+        {
+            apkBuilder.addFile( secondDexFile, dexFileName );
+            dexNumber++;
+            dexFileName = "classes" + dexNumber + ".dex";
+            secondDexFile = new File( dexFile.getParentFile(), dexFileName );
         }
     }
 
