@@ -24,14 +24,12 @@ import io.takari.maven.testing.executor.junit.MavenJUnitTestRunner;
 
 import java.io.File;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.jayway.maven.plugins.android.PluginInfo;
 
-@Ignore("Test doesnt seem to work anymore now. Not sure what happened.")
 @RunWith(MavenJUnitTestRunner.class)
 @MavenVersions({"3.2.3"})
 public class NativeSampleIT {
@@ -49,9 +47,9 @@ public class NativeSampleIT {
   public void buildDeployAndRun() throws Exception {
     File basedir = resources.getBasedir( "native" );
     MavenExecutionResult result = mavenRuntime
-          .forProject(basedir)
+          .forProject(basedir).withCliOption( "-X" )
           .execute( "clean", "install" );
-    
+
     result.assertErrorFreeLog();
   }
 

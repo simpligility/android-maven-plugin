@@ -38,9 +38,9 @@ before_install:
   
   # Install Android NDK
   # Note: There is now a difference between Target architecture and Platform architecture. What SHOULD they be?
-  - NDK_ARCH=""  
-  - NDK_PLAT=""  
-  - if [ `uname -m` = x86_64 ]; then NDK_ARCH=_64; NDK_PLAT=64; fi
+  - NDK_ARCH=""
+  - NDK_PLAT="32"
+  - if [ `uname -m` = x86_64 ]; then NDK_ARCH=_64; NDK_PLAT=32; fi
   - FILE="android-ndk${NDK_PLAT}-r10b-linux-x86${NDK_ARCH}.tar.bz2"
   - wget http://dl.google.com/android/ndk/${FILE}
   - tar xjf ${FILE}
