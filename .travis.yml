@@ -41,7 +41,7 @@ before_install:
   - NDK_ARCH=""
   - NDK_PLAT="32"
   - if [ `uname -m` = x86_64 ]; then NDK_ARCH=_64; NDK_PLAT=32; fi
-  - FILE="android-ndk${NDK_PLAT}-r10b-linux-x86${NDK_ARCH}.tar.bz2"
+  - FILE="android-ndk${NDK_PLAT}-r10c-linux-x86${NDK_ARCH}.tar.bz2"
   - wget http://dl.google.com/android/ndk/${FILE}
   - tar xjf ${FILE}
   - export ANDROID_NDK_HOME=$PWD/android-ndk-r10b
