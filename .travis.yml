@@ -43,7 +43,7 @@ before_install:
   - FILE="android-ndk-r10c-linux-x86${NDK_ARCH}.bin"
   - wget http://dl.google.com/android/ndk/${FILE}
   - chmod a+x ${FILE}
-  - ./${FILE}
+  - ./${FILE} > nul
   - export ANDROID_NDK_HOME=$PWD/android-ndk-r10c
 
 # setting install to true to avoid unnecessary build
