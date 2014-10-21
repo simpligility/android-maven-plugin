@@ -553,7 +553,7 @@
                             but with header check disabled, using the license plugin for that instead -->
                         <configLocation>src/conf/maven_checks.xml</configLocation>
                         <enableRulesSummary>false</enableRulesSummary>
-                        <excludes>HelpMojo.java</excludes>
+                        <excludes>*HelpMojo*</excludes>
                     </configuration>
                 </plugin>
                 <plugin>
