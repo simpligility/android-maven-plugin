@@ -481,18 +481,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     private NativeHelper nativeHelper;
 
     /**
-     * <p>Include jars stored in the libs folder of an apklib as dependencies.</p>
-     */
-    @Parameter( property = "android.includeLibsJarsForApklib", defaultValue = "false" )
-    protected boolean includeLibsJarsForApklib;
-
-    /**
-     * <p>Include jars stored in the libs folder of an aar as dependencies.</p>
-     */
-    @Parameter( property = "android.includeLibsJarsForAar", defaultValue = "false" )
-    protected boolean includeLibsJarsForAar;
-
-    /**
      *
      */
     private static final Object ADB_LOCK = new Object();
