@@ -260,15 +260,19 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * <p>Include jars stored in the libs folder of an apklib as dependencies.
      * Do not delete or change name as it is used in the LifeCycleParticipant.</p>
+     * 
+     * @see ClasspathModifierLifecycleParticipant
      */
-    @Parameter( property = "android.includeLibsJarsFromApklib", defaultValue = "false" )
+    @Parameter( defaultValue = "false" )
     private boolean includeLibsJarsFromApklib;
  
     /**
      * <p>Include jars stored in the libs folder of an aar as dependencies.
      * Do not delete or change name as it is used in the LifeCycleParticipant.</p>
+     * 
+     * @see ClasspathModifierLifecycleParticipant
      */
-    @Parameter( property = "android.includeLibsJarsFromAar", defaultValue = "false" )
+    @Parameter( defaultValue = "false" )
     private boolean includeLibsJarsFromAar;
 
     /**
