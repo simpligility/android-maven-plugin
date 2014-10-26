@@ -36,15 +36,27 @@ before_install:
   - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
   - emulator -avd test -no-skin -no-audio -no-window &
   
-  # Install Android NDK
+  # Install Android NDK 10c (not working so commented out for now)
+  # Note: There is now a difference between Target architecture and Platform architecture. What SHOULD they be?
+  #- NDK_ARCH=""
+  #- if [ `uname -m` = x86_64 ]; then NDK_ARCH=_64; fi
+  #- FILE="android-ndk-r10c-linux-x86${NDK_ARCH}.bin"
+  #- wget http://dl.google.com/android/ndk/${FILE}
+  #- chmod a+x ${FILE}
+  #- ./${FILE} > nul
+  #- export ANDROID_NDK_HOME=$PWD/android-ndk-r10c
+  
+   # Install Android NDK 10b
   # Note: There is now a difference between Target architecture and Platform architecture. What SHOULD they be?
   - NDK_ARCH=""
-  - if [ `uname -m` = x86_64 ]; then NDK_ARCH=_64; fi
-  - FILE="android-ndk-r10c-linux-x86${NDK_ARCH}.bin"
+  - NDK_PLAT="32"
+  - if [ `uname -m` = x86_64 ]; then NDK_ARCH=_64; NDK_PLAT=32; fi
+  - FILE="android-ndk${NDK_PLAT}-r10b-linux-x86${NDK_ARCH}.tar.bz2"
   - wget http://dl.google.com/android/ndk/${FILE}
-  - chmod a+x ${FILE}
-  - ./${FILE} > nul
-  - export ANDROID_NDK_HOME=$PWD/android-ndk-r10c
+  - tar xjf ${FILE}
+  - export ANDROID_NDK_HOME=$PWD/android-ndk-r10b
+  
+  
 
 # setting install to true to avoid unnecessary build
 install: true
