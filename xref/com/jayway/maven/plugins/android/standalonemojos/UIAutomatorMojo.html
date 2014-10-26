@@ -426,8 +426,8 @@
 <a class="jxr_linenumber" name="L418" href="#L418">418</a>     {
 <a class="jxr_linenumber" name="L419" href="#L419">419</a>         <strong class="jxr_keyword">if</strong> ( parsedJarFile == <strong class="jxr_keyword">null</strong> )
 <a class="jxr_linenumber" name="L420" href="#L420">420</a>         {
-<a class="jxr_linenumber" name="L421" href="#L421">421</a>             File jarFilePath = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory() + File.separator
-<a class="jxr_linenumber" name="L422" href="#L422">422</a>                     + project.getBuild().getFinalName() + <span class="jxr_string">".jar"</span> );
+<a class="jxr_linenumber" name="L421" href="#L421">421</a>             File jarFilePath = <strong class="jxr_keyword">new</strong> File( targetDirectory + File.separator
+<a class="jxr_linenumber" name="L422" href="#L422">422</a>                     + finalName + <span class="jxr_string">".jar"</span> );
 <a class="jxr_linenumber" name="L423" href="#L423">423</a>             <strong class="jxr_keyword">return</strong> jarFilePath.getName();
 <a class="jxr_linenumber" name="L424" href="#L424">424</a>         }
 <a class="jxr_linenumber" name="L425" href="#L425">425</a>         <strong class="jxr_keyword">return</strong> parsedJarFile;
@@ -906,7 +906,7 @@
 <a class="jxr_linenumber" name="L898" href="#L898">898</a>             FileWriter writer = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L899" href="#L899">899</a>             <strong class="jxr_keyword">try</strong>
 <a class="jxr_linenumber" name="L900" href="#L900">900</a>             {
-<a class="jxr_linenumber" name="L901" href="#L901">901</a>                 String directory = <strong class="jxr_keyword">new</strong> StringBuilder().append( project.getBuild().getDirectory() )
+<a class="jxr_linenumber" name="L901" href="#L901">901</a>                 String directory = <strong class="jxr_keyword">new</strong> StringBuilder().append( targetDirectory )
 <a class="jxr_linenumber" name="L902" href="#L902">902</a>                         .append( <span class="jxr_string">"/surefire-reports"</span> ).toString();
 <a class="jxr_linenumber" name="L903" href="#L903">903</a> 
 <a class="jxr_linenumber" name="L904" href="#L904">904</a>                 FileUtils.forceMkdir( <strong class="jxr_keyword">new</strong> File( directory ) );

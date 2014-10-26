@@ -622,7 +622,7 @@
 <a class="jxr_linenumber" name="L614" href="#L614">614</a>                 getLog().info( <span class="jxr_string">"No InstrumentationRunner found - skipping tests"</span> );
 <a class="jxr_linenumber" name="L615" href="#L615">615</a>                 <strong class="jxr_keyword">return</strong> false;
 <a class="jxr_linenumber" name="L616" href="#L616">616</a>             }
-<a class="jxr_linenumber" name="L617" href="#L617">617</a>             <strong class="jxr_keyword">return</strong> AndroidTestFinder.containsAndroidTests( <strong class="jxr_keyword">new</strong> File( project.getBuild().getOutputDirectory() ) );
+<a class="jxr_linenumber" name="L617" href="#L617">617</a>             <strong class="jxr_keyword">return</strong> AndroidTestFinder.containsAndroidTests( projectOutputDirectory );
 <a class="jxr_linenumber" name="L618" href="#L618">618</a>         }
 <a class="jxr_linenumber" name="L619" href="#L619">619</a> 
 <a class="jxr_linenumber" name="L620" href="#L620">620</a>         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoFailureException( <span class="jxr_string">"android.test.skip must be configured as 'true', 'false' or 'auto'."</span> );
@@ -1050,7 +1050,7 @@
 <a class="jxr_linenumber" name="L1042" href="#L1042">1042</a>             FileWriter writer = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L1043" href="#L1043">1043</a>             <strong class="jxr_keyword">try</strong>
 <a class="jxr_linenumber" name="L1044" href="#L1044">1044</a>             {
-<a class="jxr_linenumber" name="L1045" href="#L1045">1045</a>                 String directory = <strong class="jxr_keyword">new</strong> StringBuilder().append( project.getBuild().getDirectory() )
+<a class="jxr_linenumber" name="L1045" href="#L1045">1045</a>                 String directory = <strong class="jxr_keyword">new</strong> StringBuilder().append( targetDirectory )
 <a class="jxr_linenumber" name="L1046" href="#L1046">1046</a>                         .append( <span class="jxr_string">"/surefire-reports"</span> ).toString();
 <a class="jxr_linenumber" name="L1047" href="#L1047">1047</a> 
 <a class="jxr_linenumber" name="L1048" href="#L1048">1048</a>                 FileUtils.forceMkdir( <strong class="jxr_keyword">new</strong> File( directory ) );

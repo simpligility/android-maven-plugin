@@ -164,14 +164,14 @@
 <a class="jxr_linenumber" name="L156" href="#L156">156</a> 
 <a class="jxr_linenumber" name="L157" href="#L157">157</a>     <strong class="jxr_keyword">private</strong> String getDefaultMetaDataFile()
 <a class="jxr_linenumber" name="L158" href="#L158">158</a>     {
-<a class="jxr_linenumber" name="L159" href="#L159">159</a>         File outputFolder = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory() + File.separator + EMMA_FOLDER_NAME
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>         File outputFolder = <strong class="jxr_keyword">new</strong> File( targetDirectory + File.separator + EMMA_FOLDER_NAME
 <a class="jxr_linenumber" name="L160" href="#L160">160</a>                 + File.separator + COVERAGE_METADATA_NAME );
 <a class="jxr_linenumber" name="L161" href="#L161">161</a>         <strong class="jxr_keyword">return</strong> outputFolder.getAbsolutePath();
 <a class="jxr_linenumber" name="L162" href="#L162">162</a>     }
 <a class="jxr_linenumber" name="L163" href="#L163">163</a> 
 <a class="jxr_linenumber" name="L164" href="#L164">164</a>     <strong class="jxr_keyword">private</strong> String[] getDefaultCompiledFolders()
 <a class="jxr_linenumber" name="L165" href="#L165">165</a>     {
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>         File sourceJavaFolder = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory() + File.separator + CLASSES_FOLDER_NAME
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>         File sourceJavaFolder = <strong class="jxr_keyword">new</strong> File( targetDirectory + File.separator + CLASSES_FOLDER_NAME
 <a class="jxr_linenumber" name="L167" href="#L167">167</a>                 + File.separator );
 <a class="jxr_linenumber" name="L168" href="#L168">168</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> String[]
 <a class="jxr_linenumber" name="L169" href="#L169">169</a>         { sourceJavaFolder.getAbsolutePath() };

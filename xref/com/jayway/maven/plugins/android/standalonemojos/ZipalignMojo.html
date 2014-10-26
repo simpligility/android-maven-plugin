@@ -244,7 +244,7 @@
 <a class="jxr_linenumber" name="L236" href="#L236">236</a>     {
 <a class="jxr_linenumber" name="L237" href="#L237">237</a>         <strong class="jxr_keyword">if</strong> ( apkFile == <strong class="jxr_keyword">null</strong> )
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>         {
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>             apkFile = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory(), project.getBuild().getFinalName() + <span class="jxr_string">"."</span> + APK );
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>             apkFile = <strong class="jxr_keyword">new</strong> File( targetDirectory, finalName + <span class="jxr_string">"."</span> + APK );
 <a class="jxr_linenumber" name="L240" href="#L240">240</a>         }
 <a class="jxr_linenumber" name="L241" href="#L241">241</a>         <strong class="jxr_keyword">return</strong> apkFile.getAbsolutePath();
 <a class="jxr_linenumber" name="L242" href="#L242">242</a>     }
@@ -260,8 +260,8 @@
 <a class="jxr_linenumber" name="L252" href="#L252">252</a>     {
 <a class="jxr_linenumber" name="L253" href="#L253">253</a>         <strong class="jxr_keyword">if</strong> ( alignedApkFile == <strong class="jxr_keyword">null</strong> )
 <a class="jxr_linenumber" name="L254" href="#L254">254</a>         {
-<a class="jxr_linenumber" name="L255" href="#L255">255</a>             alignedApkFile = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory(),
-<a class="jxr_linenumber" name="L256" href="#L256">256</a>                     project.getBuild().getFinalName() + <span class="jxr_string">"-aligned."</span> + APK );
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>             alignedApkFile = <strong class="jxr_keyword">new</strong> File( targetDirectory,
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>                     finalName + <span class="jxr_string">"-aligned."</span> + APK );
 <a class="jxr_linenumber" name="L257" href="#L257">257</a>         }
 <a class="jxr_linenumber" name="L258" href="#L258">258</a>         <strong class="jxr_keyword">return</strong> alignedApkFile.getAbsolutePath();
 <a class="jxr_linenumber" name="L259" href="#L259">259</a>     }

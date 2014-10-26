@@ -934,7 +934,7 @@
 <a class="jxr_linenumber" name="L926" href="#L926">926</a>             FileWriter writer = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L927" href="#L927">927</a>             <strong class="jxr_keyword">try</strong>
 <a class="jxr_linenumber" name="L928" href="#L928">928</a>             {
-<a class="jxr_linenumber" name="L929" href="#L929">929</a>                 String directory = <strong class="jxr_keyword">new</strong> StringBuilder().append( project.getBuild().getDirectory() )
+<a class="jxr_linenumber" name="L929" href="#L929">929</a>                 String directory = <strong class="jxr_keyword">new</strong> StringBuilder().append( targetDirectory )
 <a class="jxr_linenumber" name="L930" href="#L930">930</a>                         .append( <span class="jxr_string">"/surefire-reports"</span> ).toString();
 <a class="jxr_linenumber" name="L931" href="#L931">931</a> 
 <a class="jxr_linenumber" name="L932" href="#L932">932</a>                 FileUtils.forceMkdir( <strong class="jxr_keyword">new</strong> File( directory ) );

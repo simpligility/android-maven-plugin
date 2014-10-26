@@ -544,7 +544,7 @@
 <a class="jxr_linenumber" name="L536" href="#L536">536</a>         }
 <a class="jxr_linenumber" name="L537" href="#L537">537</a> 
 <a class="jxr_linenumber" name="L538" href="#L538">538</a>         <em class="jxr_comment">// we first add the application's own class files</em>
-<a class="jxr_linenumber" name="L539" href="#L539">539</a>         inJars.add( createProguardInput( project.getBuild().getOutputDirectory() ) );
+<a class="jxr_linenumber" name="L539" href="#L539">539</a>         inJars.add( createProguardInput( projectOutputDirectory.getAbsolutePath() ) );
 <a class="jxr_linenumber" name="L540" href="#L540">540</a> 
 <a class="jxr_linenumber" name="L541" href="#L541">541</a>         <em class="jxr_comment">// we then add all its dependencies (incl. transitive ones), unless they're blacklisted</em>
 <a class="jxr_linenumber" name="L542" href="#L542">542</a>         <strong class="jxr_keyword">for</strong> ( Artifact artifact : getTransitiveDependencyArtifacts() )

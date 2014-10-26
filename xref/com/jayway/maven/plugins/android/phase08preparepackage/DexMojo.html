@@ -206,11 +206,11 @@
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>         File outputFile;
 <a class="jxr_linenumber" name="L199" href="#L199">199</a>         <strong class="jxr_keyword">if</strong> ( parsedMultiDex )
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>         {
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>             outputFile = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory() );
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>             outputFile = targetDirectory;
 <a class="jxr_linenumber" name="L202" href="#L202">202</a>         }
 <a class="jxr_linenumber" name="L203" href="#L203">203</a>         <strong class="jxr_keyword">else</strong>
 <a class="jxr_linenumber" name="L204" href="#L204">204</a>         {
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>             outputFile = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory(), <span class="jxr_string">"classes.dex"</span> );
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>             outputFile = <strong class="jxr_keyword">new</strong> File( targetDirectory, <span class="jxr_string">"classes.dex"</span> );
 <a class="jxr_linenumber" name="L206" href="#L206">206</a>         }
 <a class="jxr_linenumber" name="L207" href="#L207">207</a>         <strong class="jxr_keyword">if</strong> ( generateApk )
 <a class="jxr_linenumber" name="L208" href="#L208">208</a>         {
@@ -219,7 +219,7 @@
 <a class="jxr_linenumber" name="L211" href="#L211">211</a>             <strong class="jxr_keyword">if</strong> ( parsedMultiDex )
 <a class="jxr_linenumber" name="L212" href="#L212">212</a>             {
 <a class="jxr_linenumber" name="L213" href="#L213">213</a> 
-<a class="jxr_linenumber" name="L214" href="#L214">214</a>                 File assets = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory(),
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>                 File assets = <strong class="jxr_keyword">new</strong> File( targetDirectory,
 <a class="jxr_linenumber" name="L215" href="#L215">215</a>                         <span class="jxr_string">"generated-sources"</span> + File.separator + <span class="jxr_string">"combined-assets"</span> );
 <a class="jxr_linenumber" name="L216" href="#L216">216</a> 
 <a class="jxr_linenumber" name="L217" href="#L217">217</a>                 <strong class="jxr_keyword">if</strong> ( !assets.exists() &amp;&amp; !assets.mkdirs() )
@@ -237,8 +237,8 @@
 <a class="jxr_linenumber" name="L229" href="#L229">229</a> 
 <a class="jxr_linenumber" name="L230" href="#L230">230</a>         <strong class="jxr_keyword">if</strong> ( attachJar )
 <a class="jxr_linenumber" name="L231" href="#L231">231</a>         {
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>             File jarFile = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory() + File.separator
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>                     + project.getBuild().getFinalName() + <span class="jxr_string">".jar"</span> );
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>             File jarFile = <strong class="jxr_keyword">new</strong> File( targetDirectory + File.separator
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>                     + finalName + <span class="jxr_string">".jar"</span> );
 <a class="jxr_linenumber" name="L234" href="#L234">234</a>             projectHelper.attachArtifact( project, <span class="jxr_string">"jar"</span>, project.getArtifact().getClassifier(), jarFile );
 <a class="jxr_linenumber" name="L235" href="#L235">235</a>         }
 <a class="jxr_linenumber" name="L236" href="#L236">236</a> 
@@ -290,7 +290,7 @@
 <a class="jxr_linenumber" name="L282" href="#L282">282</a>         {
 <a class="jxr_linenumber" name="L283" href="#L283">283</a>             getLog().debug( <span class="jxr_string">"Using non-obfuscated input"</span> );
 <a class="jxr_linenumber" name="L284" href="#L284">284</a>             <em class="jxr_comment">// no proguard, use original config</em>
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>             inputs.add( <strong class="jxr_keyword">new</strong> File( project.getBuild().getOutputDirectory() ) );
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>             inputs.add( projectOutputDirectory );
 <a class="jxr_linenumber" name="L286" href="#L286">286</a>             getLog().debug( <span class="jxr_string">"Adding dex input : "</span> + project.getBuild().getOutputDirectory() );
 <a class="jxr_linenumber" name="L287" href="#L287">287</a>             <strong class="jxr_keyword">for</strong> ( Artifact artifact : getTransitiveDependencyArtifacts() )
 <a class="jxr_linenumber" name="L288" href="#L288">288</a>             {
@@ -622,7 +622,7 @@
 <a class="jxr_linenumber" name="L614" href="#L614">614</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L615" href="#L615">615</a>     <strong class="jxr_keyword">protected</strong> File createApkSourcesFile() <strong class="jxr_keyword">throws</strong> MojoExecutionException
 <a class="jxr_linenumber" name="L616" href="#L616">616</a>     {
-<a class="jxr_linenumber" name="L617" href="#L617">617</a>         <strong class="jxr_keyword">final</strong> File apksources = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory(), project.getBuild().getFinalName()
+<a class="jxr_linenumber" name="L617" href="#L617">617</a>         <strong class="jxr_keyword">final</strong> File apksources = <strong class="jxr_keyword">new</strong> File( targetDirectory, finalName
 <a class="jxr_linenumber" name="L618" href="#L618">618</a>                 + <span class="jxr_string">".apksources"</span> );
 <a class="jxr_linenumber" name="L619" href="#L619">619</a>         FileUtils.deleteQuietly( apksources );
 <a class="jxr_linenumber" name="L620" href="#L620">620</a> 
@@ -634,7 +634,7 @@
 <a class="jxr_linenumber" name="L626" href="#L626">626</a>             addDirectory( jarArchiver, assetsDirectory, <span class="jxr_string">"assets"</span> );
 <a class="jxr_linenumber" name="L627" href="#L627">627</a>             addDirectory( jarArchiver, resourceDirectory, <span class="jxr_string">"res"</span> );
 <a class="jxr_linenumber" name="L628" href="#L628">628</a>             addDirectory( jarArchiver, sourceDirectory, <span class="jxr_string">"src/main/java"</span> );
-<a class="jxr_linenumber" name="L629" href="#L629">629</a>             addJavaResources( jarArchiver, project.getBuild().getResources() );
+<a class="jxr_linenumber" name="L629" href="#L629">629</a>             addJavaResources( jarArchiver, resources );
 <a class="jxr_linenumber" name="L630" href="#L630">630</a> 
 <a class="jxr_linenumber" name="L631" href="#L631">631</a>             jarArchiver.createArchive();
 <a class="jxr_linenumber" name="L632" href="#L632">632</a>         }

@@ -524,7 +524,7 @@
 <a class="jxr_linenumber" name="L516" href="#L516">516</a>     {
 <a class="jxr_linenumber" name="L517" href="#L517">517</a>         <strong class="jxr_keyword">if</strong> ( parsedHtmlOutputPath == <strong class="jxr_keyword">null</strong> )
 <a class="jxr_linenumber" name="L518" href="#L518">518</a>         {
-<a class="jxr_linenumber" name="L519" href="#L519">519</a>             File reportPath = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory(), <span class="jxr_string">"lint-results/lint-results-html"</span> );
+<a class="jxr_linenumber" name="L519" href="#L519">519</a>             File reportPath = <strong class="jxr_keyword">new</strong> File( targetDirectory, <span class="jxr_string">"lint-results/lint-results-html"</span> );
 <a class="jxr_linenumber" name="L520" href="#L520">520</a>             createReportDirIfNeeded( reportPath );
 <a class="jxr_linenumber" name="L521" href="#L521">521</a>             <strong class="jxr_keyword">return</strong> reportPath.getAbsolutePath();
 <a class="jxr_linenumber" name="L522" href="#L522">522</a>         }
@@ -536,7 +536,7 @@
 <a class="jxr_linenumber" name="L528" href="#L528">528</a>     {
 <a class="jxr_linenumber" name="L529" href="#L529">529</a>         <strong class="jxr_keyword">if</strong> ( parsedSimpleHtmlOutputPath == <strong class="jxr_keyword">null</strong> )
 <a class="jxr_linenumber" name="L530" href="#L530">530</a>         {
-<a class="jxr_linenumber" name="L531" href="#L531">531</a>             File reportPath = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory(), <span class="jxr_string">"lint-results/lint-results-simple-html"</span> );
+<a class="jxr_linenumber" name="L531" href="#L531">531</a>             File reportPath = <strong class="jxr_keyword">new</strong> File( targetDirectory, <span class="jxr_string">"lint-results/lint-results-simple-html"</span> );
 <a class="jxr_linenumber" name="L532" href="#L532">532</a>             createReportDirIfNeeded( reportPath );
 <a class="jxr_linenumber" name="L533" href="#L533">533</a>             <strong class="jxr_keyword">return</strong> reportPath.getAbsolutePath();
 <a class="jxr_linenumber" name="L534" href="#L534">534</a>         }
@@ -550,7 +550,7 @@
 <a class="jxr_linenumber" name="L542" href="#L542">542</a> 
 <a class="jxr_linenumber" name="L543" href="#L543">543</a>         <strong class="jxr_keyword">if</strong> ( parsedXmlOutputPath == <strong class="jxr_keyword">null</strong> )
 <a class="jxr_linenumber" name="L544" href="#L544">544</a>         {
-<a class="jxr_linenumber" name="L545" href="#L545">545</a>             File reportPath = <strong class="jxr_keyword">new</strong> File( project.getBuild().getDirectory(), <span class="jxr_string">"lint-results/lint-results.xml"</span> );
+<a class="jxr_linenumber" name="L545" href="#L545">545</a>             File reportPath = <strong class="jxr_keyword">new</strong> File( targetDirectory, <span class="jxr_string">"lint-results/lint-results.xml"</span> );
 <a class="jxr_linenumber" name="L546" href="#L546">546</a>             createReportDirIfNeeded( reportPath );
 <a class="jxr_linenumber" name="L547" href="#L547">547</a>             <strong class="jxr_keyword">return</strong> reportPath.getAbsolutePath();
 <a class="jxr_linenumber" name="L548" href="#L548">548</a>         }
@@ -570,7 +570,7 @@
 <a class="jxr_linenumber" name="L562" href="#L562">562</a>     {
 <a class="jxr_linenumber" name="L563" href="#L563">563</a>         <strong class="jxr_keyword">if</strong> ( parsedSources == <strong class="jxr_keyword">null</strong> )
 <a class="jxr_linenumber" name="L564" href="#L564">564</a>         {
-<a class="jxr_linenumber" name="L565" href="#L565">565</a>             parsedSources = <strong class="jxr_keyword">new</strong> File( project.getBuild().getSourceDirectory() ).getAbsolutePath();
+<a class="jxr_linenumber" name="L565" href="#L565">565</a>             parsedSources = sourceDirectory.getAbsolutePath();
 <a class="jxr_linenumber" name="L566" href="#L566">566</a>         }
 <a class="jxr_linenumber" name="L567" href="#L567">567</a>         <strong class="jxr_keyword">return</strong> parsedSources;
 <a class="jxr_linenumber" name="L568" href="#L568">568</a>     }
@@ -580,7 +580,7 @@
 <a class="jxr_linenumber" name="L572" href="#L572">572</a>     {
 <a class="jxr_linenumber" name="L573" href="#L573">573</a>         <strong class="jxr_keyword">if</strong> ( parsedClasspath == <strong class="jxr_keyword">null</strong> )
 <a class="jxr_linenumber" name="L574" href="#L574">574</a>         {
-<a class="jxr_linenumber" name="L575" href="#L575">575</a>             parsedClasspath = <strong class="jxr_keyword">new</strong> File( project.getBuild().getOutputDirectory() ).getAbsolutePath();
+<a class="jxr_linenumber" name="L575" href="#L575">575</a>             parsedClasspath = projectOutputDirectory.getAbsolutePath();
 <a class="jxr_linenumber" name="L576" href="#L576">576</a>         }
 <a class="jxr_linenumber" name="L577" href="#L577">577</a>         <strong class="jxr_keyword">return</strong> parsedClasspath;
 <a class="jxr_linenumber" name="L578" href="#L578">578</a>     }
