@@ -71,10 +71,6 @@
     </ciManagement>
 
     <distributionManagement>
-        <relocation>
-            <groupId>com.simpligility.maven.plugins</groupId>
-            <message>The plugin groupId changed to com.simpligility.maven.plugins.</message>
-        </relocation>
         <snapshotRepository>
             <id>ossrh</id>
             <name>Jayway OpenSource SNAPSHOTs on Sonatype.org</name>
