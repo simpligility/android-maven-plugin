@@ -53,10 +53,10 @@
 
         <!-- Project dependencies -->
         <dependency>
-            <groupId>android</groupId>
-            <artifactId>android</artifactId>
-            <scope>provided</scope>
-            <version>4.4.2_r4</version>
+          <groupId>com.google.android</groupId>
+          <artifactId>android</artifactId>
+          <version>4.1.1.4</version>
+          <scope>provided</scope>
         </dependency>
 
     </dependencies>
