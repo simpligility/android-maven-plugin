@@ -43,7 +43,8 @@
         </plugin>
 
         <plugin>
-          <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+          <groupId>com.simpligility.maven.plugins</groupId>
+
           <artifactId>android-maven-plugin</artifactId>
           <version>${it-plugin.version}</version>
           <configuration>
@@ -77,7 +78,8 @@
               <pluginExecutions>
                 <pluginExecution>
                   <pluginExecutionFilter>
-                    <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                    <groupId>com.simpligility.maven.plugins</groupId>
+
                     <artifactId>android-maven-plugin</artifactId>
                     <versionRange>[3.2.0,)</versionRange>
                     <goals>

@@ -68,7 +68,8 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+        <groupId>com.simpligility.maven.plugins</groupId>
+
         <artifactId>android-maven-plugin</artifactId>
         <extensions>true</extensions>
         <executions>
@@ -147,7 +148,8 @@
 					<!-- the signed apk then needs to be zipaligned and we activate proguard 
 						and we run the manifest update -->
           <plugin>
-            <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+            <groupId>com.simpligility.maven.plugins</groupId>
+
             <artifactId>android-maven-plugin</artifactId>
             <inherited>true</inherited>
             <configuration>
