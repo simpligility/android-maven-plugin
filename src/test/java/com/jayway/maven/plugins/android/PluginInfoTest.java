@@ -11,7 +11,7 @@ public class PluginInfoTest {
   @Test
   public void confirmGroupId()
   {
-    assertEquals( "com.jayway.maven.plugins.android.generation2", PluginInfo.getGroupId() );
+    assertEquals( "com.simpligility.maven.plugins", PluginInfo.getGroupId() );
   }
 
   @Test
@@ -30,6 +30,6 @@ public class PluginInfoTest {
   public void confirmGav()
   {
     assertTrue( PluginInfo.getGAV()
-        .startsWith( "com.jayway.maven.plugins.android.generation2:android-maven-plugin:" ) );
+        .startsWith( "com.simpligility.maven.plugins:android-maven-plugin:" ) );
   }
 }
