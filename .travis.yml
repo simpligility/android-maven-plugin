@@ -15,11 +15,11 @@ before_install:
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
 
   # Maven 3.2.3
-  - wget http://www.us.apache.org/dist/maven/maven-3/3.2.3/binaries/apache-maven-3.2.3-bin.tar.gz
-  - tar xvf apache-maven-3.2.3-bin.tar.gz > /dev/null
-  - export MVN_HOME=`pwd`/apache-maven-3.2.3
-  - export PATH=${MVN_HOME}/bin/:${PATH}
-  - mvn --version
+  #- wget http://www.us.apache.org/dist/maven/maven-3/3.2.3/binaries/apache-maven-3.2.3-bin.tar.gz
+  #- tar xvf apache-maven-3.2.3-bin.tar.gz > /dev/null
+  #- export MVN_HOME=`pwd`/apache-maven-3.2.3
+  #- export PATH=${MVN_HOME}/bin/:${PATH}
+  #- mvn --version
 
   # Install required components.
   # For a full list, run `android list sdk -a --extended`
