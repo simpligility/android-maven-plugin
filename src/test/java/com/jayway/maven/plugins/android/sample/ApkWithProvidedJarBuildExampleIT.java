@@ -1,6 +1,4 @@
 /*
- * JBoss, Home of Professional Open Source
- * Copyright Red Hat, Inc., 
  * Copyright (C) 2014 simpligility technologies inc.,
  * and individual contributors
  *
@@ -15,6 +13,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 
+ * Contributors : 
+ * JBoss, Home of Professional Open Source
  */
 package com.jayway.maven.plugins.android.sample;
 
