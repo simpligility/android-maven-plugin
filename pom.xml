@@ -601,7 +601,7 @@
               <rules>
                 <requireMavenVersion>
                   <version>[3.2.1,)</version>
-                  <message>Check for Maven version &gt;=3.0.4 failed.
+                  <message>Check for Maven version &gt;=3.2.1 failed.
                     Upgrade your Maven installation to be able to build
                     this project.</message>
                 </requireMavenVersion>
