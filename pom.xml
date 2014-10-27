@@ -48,27 +48,30 @@
   </properties>
 
   <scm>
-    <url>http://github.com/jayway/maven-android-plugin/tree/${scm.branch}</url>
-    <connection>scm:git:git://github.com/jayway/maven-android-plugin.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/jayway/maven-android-plugin.git</developerConnection>
+    <url>http://github.com/simpligility/android-maven-plugin/tree/${scm.branch}</url>
+    <connection>scm:git:git://github.com/simpligility/android-maven-plugin.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/simpligility/android-maven-plugin.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
   <issueManagement>
     <system>Google Code Issue Tracking</system>
-    <url>http://code.google.com/p/maven-android-plugin/issues/list</url>
+    <url>https://github.com/simpligility/android-maven-plugin/issues</url>
   </issueManagement>
 
   <ciManagement>
     <system>Travis</system>
-    <url>https://travis-ci.org/jayway/maven-android-plugin</url>
+    <url>https://travis-ci.org/simpligility/android-maven-plugin</url>
   </ciManagement>
 
   <distributionManagement>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
     <snapshotRepository>
       <id>ossrh</id>
-      <name>Jayway OpenSource SNAPSHOTs on Sonatype.org</name>
-      <url>http://oss.sonatype.org/content/repositories/jayway-snapshots/</url>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
 
@@ -706,7 +709,8 @@
         <configuration>
           <serverId>ossrh</serverId>
           <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-          <stagingProfileId>26a4c760b261ca</stagingProfileId>
+          <stagingProfileId>42b61fb4c62700</stagingProfileId>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
       </plugin>
 
