@@ -406,7 +406,7 @@
 <a class="jxr_linenumber" name="L398" href="#L398">398</a>         <em class="jxr_comment">// Setup the build directory (defaults to the current directory) but may be different depending</em>
 <a class="jxr_linenumber" name="L399" href="#L399">399</a>         <em class="jxr_comment">// on user configuration</em>
 <a class="jxr_linenumber" name="L400" href="#L400">400</a>         commands.add( <span class="jxr_string">"-C"</span> );
-<a class="jxr_linenumber" name="L401" href="#L401">401</a>         commands.add( ndkBuildDirectory.getAbsolutePath() );
+<a class="jxr_linenumber" name="L401" href="#L401">401</a>         commands.add( project.getBasedir().getAbsolutePath() );
 <a class="jxr_linenumber" name="L402" href="#L402">402</a> 
 <a class="jxr_linenumber" name="L403" href="#L403">403</a>         <em class="jxr_comment">// If the build should use a custom makefile or not - some validation is done to ensure</em>
 <a class="jxr_linenumber" name="L404" href="#L404">404</a>         <em class="jxr_comment">// this exists and all</em>

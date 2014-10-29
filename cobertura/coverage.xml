@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
 
-<coverage line-rate="0.0772538780525265" branch-rate="0.05712219812002892" lines-covered="503" lines-valid="6511" branches-covered="158" branches-valid="2766" complexity="2.9384133611691023" version="2.0.3" timestamp="1414306462652">
+<coverage line-rate="0.0772538780525265" branch-rate="0.05712219812002892" lines-covered="503" lines-valid="6511" branches-covered="158" branches-valid="2766" complexity="2.9384133611691023" version="2.0.3" timestamp="1414563432452">
 	<sources>
-		<source>/Volumes/mac-data/dev/github/jayway/maven-android-plugin/target/checkout/target/generated-sources/annotations</source>
 		<source>--source</source>
-		<source>/Volumes/mac-data/dev/github/jayway/maven-android-plugin/target/checkout/target/generated-sources/plugin</source>
-		<source>/Volumes/mac-data/dev/github/jayway/maven-android-plugin/target/checkout/src/main/java</source>
+		<source>/Volumes/mac-data/dev/github/simpligility/android-maven-plugin/target/checkout/target/generated-sources/annotations</source>
+		<source>/Volumes/mac-data/dev/github/simpligility/android-maven-plugin/target/checkout/src/main/java</source>
+		<source>/Volumes/mac-data/dev/github/simpligility/android-maven-plugin/target/checkout/target/generated-sources/plugin</source>
 	</sources>
 	<packages>
 		<package name="com.android.ddmlib.testrunner" line-rate="0.0" branch-rate="0.0" complexity="2.240740740740741">
