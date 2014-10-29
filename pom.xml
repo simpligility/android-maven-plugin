@@ -7,8 +7,7 @@
   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
   OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
   the specific language governing permissions and limitations under the License. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <!-- the progressive-company-super-pom manages all plugin versions for 
@@ -21,7 +20,7 @@
 
   <groupId>com.simpligility.maven.plugins</groupId>
   <artifactId>android-maven-plugin</artifactId>
-  <version>4.0.0-SNAPSHOT</version>
+  <version>4.0.0-rc.3</version>
   <packaging>maven-plugin</packaging>
 
   <name>Android Maven Plugin - android-maven-plugin</name>
@@ -50,7 +49,7 @@
     <url>http://github.com/simpligility/android-maven-plugin/tree/${scm.branch}</url>
     <connection>scm:git:git://github.com/simpligility/android-maven-plugin.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/simpligility/android-maven-plugin.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>4.0.0-rc.3</tag>
   </scm>
 
   <issueManagement>
