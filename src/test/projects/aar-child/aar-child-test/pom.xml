@@ -30,6 +30,14 @@
     </parent>
     
     <dependencies>
+        
+        <!-- Project dependencies -->
+        <dependency>
+            <groupId>com.google.android</groupId>
+            <artifactId>android-test</artifactId>
+            <version>4.1.1.4</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.jboss.aerogear</groupId>
             <artifactId>aar-child-library</artifactId>
@@ -48,7 +56,7 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                <groupId>com.simpligility.maven.plugins</groupId>
                 <artifactId>android-maven-plugin</artifactId>
                 <configuration>
                     <test>            
