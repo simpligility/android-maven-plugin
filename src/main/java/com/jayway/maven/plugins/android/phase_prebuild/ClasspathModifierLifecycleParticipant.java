@@ -264,7 +264,7 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
         String artifactId = artifact.getArtifactId();
         if ( suffix != null )
         {
-            artifactId = "_" + suffix;
+            artifactId += "_" + suffix;
         }
         final Dependency dependency = new Dependency();
         dependency.setGroupId( artifact.getGroupId() );
