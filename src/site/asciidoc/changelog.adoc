@@ -1,0 +1,16 @@
+= Changelog
+
+== 4.0.0 - upcoming
+
+
+
+== 4.0.0-rc.3 - released 2014-10-28
+
+* Migrated complete project to new git repo at https://github.com/simpligility/android-maven-plugin
+** contributed by Manfred Moser http://www.simpligility.com
+* Adapted codebase to new groupId "com.simpligility.maven.plugins
+** contributed by Manfred Moser http://www.simpligility.com
+
+== 4.0.0-rc.2 and older release notes
+
+can be found on the old project site on the https://code.google.com/p/maven-android-plugin/wiki/Changelog[changelog wiki page]. 
