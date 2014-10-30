@@ -16,8 +16,11 @@ the http://tools.android.com[Android SDK].
 
 === Latest and greatest documentation
 
-* https://github.com/simpligility/android-maven-plugin/blob/master/src/site/asciidoc/contributing.adoc[Contributing] 
 * https://github.com/simpligility/android-maven-plugin/blob/master/src/site/asciidoc/changelog.adoc[Changelog]
+* https://github.com/simpligility/android-maven-plugin/blob/master/src/site/asciidoc/contributing.adoc[Contributing] 
+* https://github.com/simpligility/android-maven-plugin/blob/master/src/site/asciidoc/developing.adoc[Developing] 
+* https://github.com/simpligility/android-maven-plugin/blob/master/src/site/asciidoc/examples.adoc[Examples]
+* https://github.com/simpligility/android-maven-plugin/blob/master/src/site/asciidoc/releasing.adoc[Releasing]
 
 === Contributions
 

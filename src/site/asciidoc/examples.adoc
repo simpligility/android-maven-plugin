@@ -1,5 +1,10 @@
 = Examples
 
+All the examples are located in 'src/test/projects' of the plugin codebase. They are all standalone Maven projects 
+that can be copied into a separate location and used as a basis or inspiration for your own projects.
+
+The are also built as part of the integration tests and the tests that run those builds are all named '*SampleIT.java'.
+
 == HelloFlashLight
 
 == MorseFlash

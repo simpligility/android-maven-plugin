@@ -1,11 +1,49 @@
 = Developing
 
+If you want to help on the actual codebase of the Android Maven Plugin, here is what you need
+
+== Pre-requisites
+
+* Android SDK installed
+* Apache Maven installed - (3.2+1 or higher as enforced during the build
+* Optionally for better testing,debugging support Eclipse with M2e and Maven Development Tools
+* Optionally git or svn to get the code from github, unless you download the source as zip
+* An Android device or emulator connected via ADB for full build
+
+== Getting the code
+
+You can just get the code from github as usual from the site https://github.com/simpligility/android-maven-plugin/
+
+----
+git clone git@github.com:simpligility/android-maven-plugin.git
+----
+ 
+
+== Building
+
+The usual Maven invocations apply. A full build is done with
+
 ----
 mvn clean install
 ----
 
+To truly verify everything you also need to connect a device via ADB and run the integration tests
+
 ----
 mvn clean install -P it
 ----
+
+
+== Using 
+
+Once you have build the plugin, you can use the respective version (x.y.z-SNASPHOT) in your own projects by updating the 
+version in the pom files there.
+
+If you invoke the plugin outside a Maven project specify the version like so e.g.
+
+----
+mvn com.simpligility.maven.plugins:android-maven-plugin:4.0.0-SNAPSHOT:undeploy -Dandroid.package=com.simplgility.android.helloflashlight
+----
+
 
 
