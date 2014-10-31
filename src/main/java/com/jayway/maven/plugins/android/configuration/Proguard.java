@@ -27,6 +27,7 @@ public class Proguard
     private String[] jvmArguments;
     private Boolean filterMavenDescriptor;
     private Boolean filterManifest;
+    private String customFilter;
     private Boolean includeJdkLibs;
     private String[] options;
     private Boolean attachMap;
@@ -64,6 +65,11 @@ public class Proguard
     public Boolean isFilterMavenDescriptor()
     {
         return filterMavenDescriptor;
+    }
+    
+    public String getCustomFilter()
+    {
+        return customFilter;
     }
 
     public Boolean isFilterManifest()

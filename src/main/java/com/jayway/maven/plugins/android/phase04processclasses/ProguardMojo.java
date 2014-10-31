@@ -62,6 +62,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      *    &lt;proguardJarPath&gt;someAbsolutePathToProguardJar&lt;/proguardJarPath&gt;
      *    &lt;filterMavenDescriptor&gt;true|false&lt;/filterMavenDescriptor&gt;
      *    &lt;filterManifest&gt;true|false&lt;/filterManifest&gt;
+     *    &lt;customFilter&gt;filter1,filter2&lt;/customFilter&gt;
      *    &lt;jvmArguments&gt;
      *     &lt;jvmArgument&gt;-Xms256m&lt;/jvmArgument&gt;
      *     &lt;jvmArgument&gt;-Xmx512m&lt;/jvmArgument&gt;
@@ -192,6 +193,17 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     @PullParameter( defaultValue = "true" )
     private Boolean parsedFilterManifest;
+    
+    /**
+     * You can specify a custom filter which will be used to filter out unnecessary files from ProGuard input.
+     * 
+     * @see http://proguard.sourceforge.net/manual/usage.html#filefilters
+     */
+    @Parameter( property = "android.proguard.customfilter" )
+    private String proguardCustomFilter;
+    
+    @PullParameter
+    private String parsedCustomFilter;
 
     /**
      * If set to true JDK jars will be included as library jars and corresponding filters
@@ -533,6 +545,10 @@ public class ProguardMojo extends AbstractAndroidMojo
         if ( parsedFilterMavenDescriptor )
         {
             globalInJarExcludes.addAll( MAVEN_DESCRIPTOR );
+        }
+        if ( parsedCustomFilter != null )
+        {
+            globalInJarExcludes.addAll( Arrays.asList( parsedCustomFilter.split( "," ) ) );
         }
 
         // we first add the application's own class files
