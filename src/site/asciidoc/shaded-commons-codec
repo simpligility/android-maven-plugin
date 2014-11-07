@@ -45,18 +45,18 @@ Using link:http://maven.apache.org[+maven+] and the link:http://maven.apache.org
        After experimenting with many different variations the current (and final) solution
        to this problem is implemented in this project and does not require big hacks or
        changes in projects which depend on commons-codec, expect for declaring dependency
-       on commons-codec-shade (i.e. this project) instead of the original commons-codec.
+       on commons-codec-shaded (i.e. this project) instead of the original commons-codec.
        What we do here is take the "original" commons-codec library (currently version 1.9)
        and use the maven-shade-plugin to "shade" it, which means we modify the package name
        of the library (both in the compiled classes and the sources jar) in order to avoid
-       the clash with Android's version. The package name is changes from
+       the clash with Android's version. The package name is changed from
        "org.apache.commons.codec" to "shaded.org.apache.commons.codec". The result is
        published to the local Maven repository for other projects to use by simple
        dependency declaration on this project. Because we only apply the shading to
-       commons-codec itself (and not to other classes using it; which is possible using the
-       shade plug-in but doesn't work in combination with android-maven-plugin) any client
-       classes which make use of commons-codec will have to import the new "shaded" package
-       name instead of the old one.
+       commons-codec itself (and not to other projects/classes using it; which in fact is
+       possible using the shade plug-in but breaks in combination with android-maven-plugin)
+       any client classes which make use of commons-codec will have to import the new
+       "shaded" package name instead of the old one.
      Issue on android-maven-plugin github which I posted to discuss all this:
        https://github.com/jayway/maven-android-plugin/issues/487
    -->
