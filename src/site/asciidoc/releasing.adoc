@@ -1,1 +1,15 @@
 = Releasing 
+
+Manfred will document this all more but basically its the usual Maven setup. Some old stuff that has to be migrated is 
+on the  https://code.google.com/p/maven-android-plugin/wiki/Source[old site].
+
+----
+mvn release:prepare release:perform
+----
+
+With the right setup this will
+
+* create a tag and push it to github
+* prepare and deploy everything for the plugin release (jar, sources, javadoc..) to OSSRH
+* release the staging repository on OSSRH so the plugin is automatically synced to the Central Repository
+* deploy the site to github pages 

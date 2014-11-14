@@ -25,24 +25,24 @@
       <implementation>org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping</implementation>
       <configuration>
         <phases>
-          <generate-sources>com.jayway.maven.plugins.android.generation2:android-maven-plugin:generate-sources</generate-sources>
+          <generate-sources>com.simpligility.maven.plugins:android-maven-plugin:generate-sources</generate-sources>
           <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
           <compile>org.apache.maven.plugins:maven-compiler-plugin:compile</compile>
-          <process-classes>com.jayway.maven.plugins.android.generation2:android-maven-plugin:proguard</process-classes>
+          <process-classes>com.simpligility.maven.plugins:android-maven-plugin:proguard</process-classes>
           <process-test-resources>org.apache.maven.plugins:maven-resources-plugin:testResources</process-test-resources>
           <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
           <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
           <prepare-package>
-            com.jayway.maven.plugins.android.generation2:android-maven-plugin:emma,
-            com.jayway.maven.plugins.android.generation2:android-maven-plugin:dex
+            com.simpligility.maven.plugins:android-maven-plugin:emma,
+            com.simpligility.maven.plugins:android-maven-plugin:dex
           </prepare-package>
           <package>
             org.apache.maven.plugins:maven-jar-plugin:jar,
-            com.jayway.maven.plugins.android.generation2:android-maven-plugin:apk
+            com.simpligility.maven.plugins:android-maven-plugin:apk
           </package>
           <install>org.apache.maven.plugins:maven-install-plugin:install</install>
-          <pre-integration-test>com.jayway.maven.plugins.android.generation2:android-maven-plugin:internal-pre-integration-test</pre-integration-test>
-          <integration-test>com.jayway.maven.plugins.android.generation2:android-maven-plugin:internal-integration-test</integration-test>
+          <pre-integration-test>com.simpligility.maven.plugins:android-maven-plugin:internal-pre-integration-test</pre-integration-test>
+          <integration-test>com.simpligility.maven.plugins:android-maven-plugin:internal-integration-test</integration-test>
           <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
         </phases>
       </configuration>
@@ -55,16 +55,16 @@
       <implementation>org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping</implementation>
       <configuration>
         <phases>
-          <generate-sources>com.jayway.maven.plugins.android.generation2:android-maven-plugin:generate-sources</generate-sources>
+          <generate-sources>com.simpligility.maven.plugins:android-maven-plugin:generate-sources</generate-sources>
           <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
           <compile>org.apache.maven.plugins:maven-compiler-plugin:compile</compile>
-          <process-classes>com.jayway.maven.plugins.android.generation2:android-maven-plugin:proguard</process-classes>
+          <process-classes>com.simpligility.maven.plugins:android-maven-plugin:proguard</process-classes>
           <process-test-resources>org.apache.maven.plugins:maven-resources-plugin:testResources</process-test-resources>
           <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
           <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
           <package>
               org.apache.maven.plugins:maven-jar-plugin:jar,
-              com.jayway.maven.plugins.android.generation2:android-maven-plugin:apklib
+              com.simpligility.maven.plugins:android-maven-plugin:apklib
           </package>
           <install>org.apache.maven.plugins:maven-install-plugin:install</install>
           <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
@@ -79,16 +79,16 @@
       <implementation>org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping</implementation>
       <configuration>
           <phases>
-              <generate-sources>com.jayway.maven.plugins.android.generation2:android-maven-plugin:generate-sources</generate-sources>
+              <generate-sources>com.simpligility.maven.plugins:android-maven-plugin:generate-sources</generate-sources>
               <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
               <compile>org.apache.maven.plugins:maven-compiler-plugin:compile</compile>
-              <process-classes>com.jayway.maven.plugins.android.generation2:android-maven-plugin:proguard</process-classes>
+              <process-classes>com.simpligility.maven.plugins:android-maven-plugin:proguard</process-classes>
               <process-test-resources>org.apache.maven.plugins:maven-resources-plugin:testResources</process-test-resources>
               <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
               <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
               <package>
                   org.apache.maven.plugins:maven-jar-plugin:jar,
-                  com.jayway.maven.plugins.android.generation2:android-maven-plugin:aar
+                  com.simpligility.maven.plugins:android-maven-plugin:aar
               </package>
               <install>org.apache.maven.plugins:maven-install-plugin:install</install>
               <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
@@ -105,11 +105,11 @@
         <phases>
           <clean>
               org.apache.maven.plugins:maven-clean-plugin:clean,
-              com.jayway.maven.plugins.android.generation2:android-maven-plugin:clean
+              com.simpligility.maven.plugins:android-maven-plugin:clean
           </clean>
-          <generate-sources>com.jayway.maven.plugins.android.generation2:android-maven-plugin:generate-sources</generate-sources>
+          <generate-sources>com.simpligility.maven.plugins:android-maven-plugin:generate-sources</generate-sources>
           <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
-          <compile>com.jayway.maven.plugins.android.generation2:android-maven-plugin:ndk-build</compile>
+          <compile>com.simpligility.maven.plugins:android-maven-plugin:ndk-build</compile>
           <install>org.apache.maven.plugins:maven-install-plugin:install</install>
           <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
         </phases>
@@ -125,11 +125,11 @@
         <phases>
           <clean>
               org.apache.maven.plugins:maven-clean-plugin:clean,
-              com.jayway.maven.plugins.android.generation2:android-maven-plugin:clean
+              com.simpligility.maven.plugins:android-maven-plugin:clean
           </clean>
-          <generate-sources>com.jayway.maven.plugins.android.generation2:android-maven-plugin:generate-sources</generate-sources>
+          <generate-sources>com.simpligility.maven.plugins:android-maven-plugin:generate-sources</generate-sources>
           <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
-          <compile>com.jayway.maven.plugins.android.generation2:android-maven-plugin:ndk-build</compile>
+          <compile>com.simpligility.maven.plugins:android-maven-plugin:ndk-build</compile>
           <install>org.apache.maven.plugins:maven-install-plugin:install</install>
           <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
         </phases>

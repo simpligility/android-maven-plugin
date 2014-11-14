@@ -1,860 +1,859 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
- Copyright (C) 2009, 2010 Jayway AB
- Copyright (C) 2007-2008 JVending Masa
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
+<!-- Copyright (C) 2009, 2010 Jayway AB Copyright (C) 2007-2008 JVending 
+  Masa Licensed under the Apache License, Version 2.0 (the "License"); you 
+  may not use this file except in compliance with the License. You may obtain 
+  a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless 
+  required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+  OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+  the specific language governing permissions and limitations under the License. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <!-- the progressive-company-super-pom manages all plugin versions for us, we only need to override 
-    where we depend on lower version (e.g. plugin-plugin) -->
-    <parent>
-        <groupId>com.simpligility.maven</groupId>
-        <artifactId>progressive-organization-pom</artifactId>
-        <version>2.0.0</version>
-    </parent>
+  <!-- the progressive-company-super-pom manages all plugin versions for 
+    us, we only need to override where we depend on lower version (e.g. plugin-plugin) -->
+  <parent>
+    <groupId>com.simpligility.maven</groupId>
+    <artifactId>progressive-organization-pom</artifactId>
+    <version>2.1.1</version>
+  </parent>
 
-    <groupId>com.jayway.maven.plugins.android.generation2</groupId>
-    <artifactId>android-maven-plugin</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
-    <packaging>maven-plugin</packaging>
+  <groupId>com.simpligility.maven.plugins</groupId>
+  <artifactId>android-maven-plugin</artifactId>
+  <version>4.0.0-SNAPSHOT</version>
+  <packaging>maven-plugin</packaging>
 
-    <name>Android Maven Plugin - android-maven-plugin</name>
-    <description>Maven Plugin for Android Development</description>
+  <name>Android Maven Plugin - android-maven-plugin</name>
+  <description>Maven Plugin for Android Development</description>
 
-    <url>http://code.google.com/p/maven-android-plugin</url>
-    <inceptionYear>2008</inceptionYear>
+  <url>http://code.google.com/p/maven-android-plugin</url>
+  <inceptionYear>2008</inceptionYear>
 
-    <properties>
-        <scm.branch>master</scm.branch>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  <properties>
+    <scm.branch>master</scm.branch>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <maven-plugin-plugin.version>3.2</maven-plugin-plugin.version>
-        <maven.api.version>3.0.5</maven.api.version>
+    <maven-plugin-plugin.version>3.2</maven-plugin-plugin.version>
+    <maven.api.version>3.0.5</maven.api.version>
 
-        <takari.plugin.testing.version>1.8.3</takari.plugin.testing.version>
-        <easymock.version>3.2</easymock.version>
-        <powermock.version>1.5.2</powermock.version>
-        
-        <!-- Attention - make sure that the tools version is the versions of the transitive dependencies of the builder version -->
-        <android.builder.version>0.13.3</android.builder.version>
-        <android.tools.version>23.1.3</android.tools.version>
-    </properties>
+    <easymock.version>3.2</easymock.version>
+    <powermock.version>1.5.2</powermock.version>
 
-    <scm>
-        <url>http://github.com/jayway/maven-android-plugin/tree/${scm.branch}</url>
-        <connection>scm:git:git://github.com/jayway/maven-android-plugin.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/jayway/maven-android-plugin.git</developerConnection>
-      <tag>HEAD</tag>
-    </scm>
+    <!-- Attention - make sure that the tools version is the versions of 
+      the transitive dependencies of the builder version -->
+    <android.builder.version>0.13.3</android.builder.version>
+    <android.tools.version>23.1.3</android.tools.version>
+  </properties>
 
-    <issueManagement>
-        <system>Google Code Issue Tracking</system>
-        <url>http://code.google.com/p/maven-android-plugin/issues/list</url>
-    </issueManagement>
+  <scm>
+    <url>http://github.com/simpligility/android-maven-plugin/tree/${scm.branch}</url>
+    <connection>scm:git:git://github.com/simpligility/android-maven-plugin.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/simpligility/android-maven-plugin.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
 
-    <ciManagement>
-        <system>Travis</system>
-        <url>https://travis-ci.org/jayway/maven-android-plugin</url>
-    </ciManagement>
+  <issueManagement>
+    <system>Google Code Issue Tracking</system>
+    <url>https://github.com/simpligility/android-maven-plugin/issues</url>
+  </issueManagement>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <name>Jayway OpenSource SNAPSHOTs on Sonatype.org</name>
-            <url>http://oss.sonatype.org/content/repositories/jayway-snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
+  <ciManagement>
+    <system>Travis</system>
+    <url>https://travis-ci.org/simpligility/android-maven-plugin</url>
+  </ciManagement>
 
-    <licenses>
-        <license>
-            <name>Apache 2.0</name>
-            <url>LICENSE.txt</url>
-        </license>
-    </licenses>
+  <distributionManagement>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
 
-    <developers>
-        <developer>
-            <name>See homepage and mailinglist for contributors.</name>
-            <id>android-maven-plugin-project</id>
-            <url>http://code.google.com/p/maven-android-plugin</url>
-            <roles>
-                <role>Developer</role>
-                <role>Contributor</role>
-            </roles>
-        </developer>
-    </developers>
+  <licenses>
+    <license>
+      <name>Apache 2.0</name>
+      <url>LICENSE.txt</url>
+    </license>
+  </licenses>
 
-    <mailingLists>
-        <mailingList>
-            <name>Maven Android Developers</name>
-            <archive>http://groups.google.com/group/maven-android-developers/topics</archive>
-        </mailingList>
-    </mailingLists>
+  <developers>
+    <developer>
+      <name>See homepage and mailinglist for contributors.</name>
+      <id>android-maven-plugin-project</id>
+      <url>http://code.google.com/p/maven-android-plugin</url>
+      <roles>
+        <role>Developer</role>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+  </developers>
 
-    <prerequisites>
-        <!--  define the version need to run this plugin -->
-        <maven>3.0.5</maven>
-    </prerequisites>
+  <mailingLists>
+    <mailingList>
+      <name>Maven Android Developers</name>
+      <archive>http://groups.google.com/group/maven-android-developers/topics</archive>
+    </mailingList>
+  </mailingLists>
 
-    <dependencyManagement>
-        <dependencies>
-            <!-- workaround to avoid site and animalsniffer failure due to invalid old icu4j class file -->
-            <dependency>
-                <groupId>com.ibm.icu</groupId>
-                <artifactId>icu4j</artifactId>
-                <version>3.4.4</version>
-            </dependency>
+  <prerequisites>
+    <!-- define the version need to run this plugin -->
+    <maven>3.0.5</maven>
+  </prerequisites>
 
-            <!-- managing archiver explicitly to 2.3 since 2.2 as found in maven-archiver causes issues
-            with excessive logging -->
-            <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-archiver</artifactId>
-                <version>2.3</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.android.tools</groupId>
-                <artifactId>common</artifactId>
-                <version>${android.tools.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.android.tools</groupId>
-                <artifactId>dvlib</artifactId>
-                <version>${android.tools.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.android.tools</groupId>
-                <artifactId>sdk-common</artifactId>
-                <version>${android.tools.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.android.tools</groupId>
-                <artifactId>sdklib</artifactId>
-                <version>${android.tools.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.android.tools.build</groupId>
-                <artifactId>builder</artifactId>
-                <version>${android.builder.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.android.tools.build</groupId>
-                <artifactId>manifest-merger</artifactId>
-                <version>${android.tools.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.android.tools.ddms</groupId>
-                <artifactId>ddmlib</artifactId>
-                <version>${android.tools.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.android.tools.layoutlib</groupId>
-                <artifactId>layoutlib-api</artifactId>
-                <version>${android.tools.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.android.tools.lint</groupId>
-                <artifactId>lint</artifactId>
-                <version>${android.tools.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.android.tools.lint</groupId>
-                <artifactId>lint-api</artifactId>
-                <version>${android.tools.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.android.tools.lint</groupId>
-                <artifactId>lint-checks</artifactId>
-                <version>${android.tools.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-artifact</artifactId>
-                <version>${maven.api.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-compat</artifactId>
-                <version>${maven.api.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-core</artifactId>
-                <version>${maven.api.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-archiver</artifactId>
-                <version>2.5</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.maven.plugin-tools</groupId>
-                <artifactId>maven-plugin-annotations</artifactId>
-                <version>3.2</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>emma</groupId>
-                <artifactId>emma</artifactId>
-                <version>2.0.5312</version> <!-- do not upgrade to unstable version 2.1.5320 -->
-            </dependency>
-
-            <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-utils</artifactId>
-                <version>3.0.15</version>
-            </dependency>
-
-            <dependency>
-                <groupId>commons-jxpath</groupId>
-                <artifactId>commons-jxpath</artifactId>
-                <version>1.3</version>
-            </dependency>
-
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>2.4</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.ow2.asm</groupId>
-                <artifactId>asm</artifactId>
-                <version>4.1</version>
-            </dependency>
-
-            <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>2.6</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.github.rtyley</groupId>
-                <artifactId>android-screenshot-paparazzo</artifactId>
-                <version>1.9</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.github.rtyley</groupId>
-                <artifactId>android-screenshot-celebrity</artifactId>
-                <version>1.9</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.maven.shared</groupId>
-                <artifactId>maven-dependency-tree</artifactId>
-                <version>2.2</version>
-            </dependency>
-
-            <!-- Required for DefaultMavenRuntime in DependencyResolver -->
-            <dependency>
-                <groupId>org.apache.maven.shared</groupId>
-                <artifactId>maven-runtime</artifactId>
-                <version>1.0-alpha-3</version>
-            </dependency>
-
-            <!-- test deps -->
-            <dependency>
-                <groupId>io.takari.maven.plugins</groupId>
-                <artifactId>takari-plugin-testing</artifactId>
-                <version>${takari.plugin.testing.version}</version>
-            </dependency>
-        
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.11</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.easytesting</groupId>
-                <artifactId>fest-reflect</artifactId>
-                <version>1.4.1</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.easymock</groupId>
-                <artifactId>easymock</artifactId>
-                <version>${easymock.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-module-junit4</artifactId>
-                <version>${powermock.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-api-easymock</artifactId>
-                <version>${powermock.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-api-support</artifactId>
-                <version>${powermock.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-reflect</artifactId>
-                <version>${powermock.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-core</artifactId>
-                <version>${powermock.version}</version>
-            </dependency>
-
-        </dependencies>
-    </dependencyManagement>
-
+  <dependencyManagement>
     <dependencies>
-        <dependency>
-            <groupId>com.android.tools</groupId>
-            <artifactId>common</artifactId>
-        </dependency>
+      <!-- workaround to avoid site and animalsniffer failure due to invalid 
+        old icu4j class file -->
+      <dependency>
+        <groupId>com.ibm.icu</groupId>
+        <artifactId>icu4j</artifactId>
+        <version>3.4.4</version>
+      </dependency>
 
-        <dependency>
-            <groupId>com.android.tools</groupId>
-            <artifactId>dvlib</artifactId>
-        </dependency>
+      <!-- managing archiver explicitly to 2.3 since 2.2 as found in maven-archiver 
+        causes issues with excessive logging -->
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-archiver</artifactId>
+        <version>2.3</version>
+      </dependency>
 
-         <dependency>
-            <groupId>com.android.tools</groupId>
-            <artifactId>sdk-common</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>com.android.tools</groupId>
+        <artifactId>common</artifactId>
+        <version>${android.tools.version}</version>
+      </dependency>
 
-        <dependency>
-            <groupId>com.android.tools</groupId>
-            <artifactId>sdklib</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>com.android.tools</groupId>
+        <artifactId>dvlib</artifactId>
+        <version>${android.tools.version}</version>
+      </dependency>
 
-        <dependency>
-            <groupId>com.android.tools.build</groupId>
-            <artifactId>builder</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>com.android.tools</groupId>
+        <artifactId>sdk-common</artifactId>
+        <version>${android.tools.version}</version>
+      </dependency>
 
-        <dependency>
-            <groupId>com.android.tools.build</groupId>
-            <artifactId>manifest-merger</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>com.android.tools</groupId>
+        <artifactId>sdklib</artifactId>
+        <version>${android.tools.version}</version>
+      </dependency>
 
-        <dependency>
-            <groupId>com.android.tools.ddms</groupId>
-            <artifactId>ddmlib</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>com.android.tools.build</groupId>
+        <artifactId>builder</artifactId>
+        <version>${android.builder.version}</version>
+      </dependency>
 
-        <dependency>
-            <groupId>com.android.tools.layoutlib</groupId>
-            <artifactId>layoutlib-api</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>com.android.tools.build</groupId>
+        <artifactId>manifest-merger</artifactId>
+        <version>${android.tools.version}</version>
+      </dependency>
 
-        <dependency>
-            <groupId>com.android.tools.lint</groupId>
-            <artifactId>lint</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>com.android.tools.ddms</groupId>
+        <artifactId>ddmlib</artifactId>
+        <version>${android.tools.version}</version>
+      </dependency>
 
-        <dependency>
-            <groupId>com.android.tools.lint</groupId>
-            <artifactId>lint-api</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>com.android.tools.layoutlib</groupId>
+        <artifactId>layoutlib-api</artifactId>
+        <version>${android.tools.version}</version>
+      </dependency>
 
-        <dependency>
-            <groupId>com.android.tools.lint</groupId>
-            <artifactId>lint-checks</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>com.android.tools.lint</groupId>
+        <artifactId>lint</artifactId>
+        <version>${android.tools.version}</version>
+      </dependency>
 
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-artifact</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>com.android.tools.lint</groupId>
+        <artifactId>lint-api</artifactId>
+        <version>${android.tools.version}</version>
+      </dependency>
 
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-compat</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>com.android.tools.lint</groupId>
+        <artifactId>lint-checks</artifactId>
+        <version>${android.tools.version}</version>
+      </dependency>
 
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-core</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-artifact</artifactId>
+        <version>${maven.api.version}</version>
+      </dependency>
 
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-archiver</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-compat</artifactId>
+        <version>${maven.api.version}</version>
+      </dependency>
 
-        <dependency>
-            <groupId>org.apache.maven.plugin-tools</groupId>
-            <artifactId>maven-plugin-annotations</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-core</artifactId>
+        <version>${maven.api.version}</version>
+      </dependency>
 
-        <dependency>
-            <groupId>emma</groupId>
-            <artifactId>emma</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-archiver</artifactId>
+        <version>2.5</version>
+      </dependency>
 
-        <dependency>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-archiver</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>org.apache.maven.plugin-tools</groupId>
+        <artifactId>maven-plugin-annotations</artifactId>
+        <version>3.2</version>
+        <scope>provided</scope>
+      </dependency>
 
-        <dependency>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-utils</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>emma</groupId>
+        <artifactId>emma</artifactId>
+        <version>2.0.5312</version> <!-- do not upgrade to unstable version 2.1.5320 -->
+      </dependency>
 
-        <dependency>
-            <groupId>commons-jxpath</groupId>
-            <artifactId>commons-jxpath</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-utils</artifactId>
+        <version>3.0.15</version>
+      </dependency>
 
-        <dependency>
-            <groupId>com.github.rtyley</groupId>
-            <artifactId>android-screenshot-paparazzo</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>commons-jxpath</groupId>
+        <artifactId>commons-jxpath</artifactId>
+        <version>1.3</version>
+      </dependency>
 
-        <dependency>
-            <groupId>com.github.rtyley</groupId>
-            <artifactId>android-screenshot-celebrity</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.4</version>
+      </dependency>
 
-        <dependency>
-            <groupId>org.apache.maven.shared</groupId>
-            <artifactId>maven-dependency-tree</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>4.1</version>
+      </dependency>
 
-        <!-- Required for DefaultMavenRuntime in DependencyResolver -->
-        <dependency>
-            <groupId>org.apache.maven.shared</groupId>
-            <artifactId>maven-runtime</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>2.6</version>
+      </dependency>
 
-        <!-- test deps -->
-        <dependency>
-            <groupId>io.takari.maven.plugins</groupId>
-            <artifactId>takari-plugin-testing</artifactId>
-            <scope>test</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
+      <dependency>
+        <groupId>com.github.rtyley</groupId>
+        <artifactId>android-screenshot-paparazzo</artifactId>
+        <version>1.9</version>
+      </dependency>
 
-        <dependency>
-            <groupId>org.easytesting</groupId>
-            <artifactId>fest-reflect</artifactId>
-            <scope>test</scope>
-        </dependency>
+      <dependency>
+        <groupId>com.github.rtyley</groupId>
+        <artifactId>android-screenshot-celebrity</artifactId>
+        <version>1.9</version>
+      </dependency>
 
-        <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymock</artifactId>
-            <scope>test</scope>
-        </dependency>
+      <dependency>
+        <groupId>org.apache.maven.shared</groupId>
+        <artifactId>maven-dependency-tree</artifactId>
+        <version>2.2</version>
+      </dependency>
 
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <scope>test</scope>
-        </dependency>
+      <!-- Required for DefaultMavenRuntime in DependencyResolver -->
+      <dependency>
+        <groupId>org.apache.maven.shared</groupId>
+        <artifactId>maven-runtime</artifactId>
+        <version>1.0-alpha-3</version>
+      </dependency>
 
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-easymock</artifactId>
-            <scope>test</scope>
-        </dependency>
+      <!-- test deps -->
+      <dependency>
+        <groupId>io.takari.maven.plugins</groupId>
+        <artifactId>takari-plugin-testing</artifactId>
+        <version>${takari.plugins.version}</version>
+      </dependency>
 
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-support</artifactId>
-            <scope>test</scope>
-        </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.11</version>
+      </dependency>
 
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-reflect</artifactId>
-            <scope>test</scope>
-        </dependency>
+      <dependency>
+        <groupId>org.easytesting</groupId>
+        <artifactId>fest-reflect</artifactId>
+        <version>1.4.1</version>
+      </dependency>
 
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-core</artifactId>
-            <scope>test</scope>
-        </dependency>
+      <dependency>
+        <groupId>org.easymock</groupId>
+        <artifactId>easymock</artifactId>
+        <version>${easymock.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-module-junit4</artifactId>
+        <version>${powermock.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-api-easymock</artifactId>
+        <version>${powermock.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-api-support</artifactId>
+        <version>${powermock.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-reflect</artifactId>
+        <version>${powermock.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-core</artifactId>
+        <version>${powermock.version}</version>
+      </dependency>
 
     </dependencies>
+  </dependencyManagement>
 
-    <build>
-        <resources>
-          <resource>
-            <directory>${project.basedir}/src/main/resources</directory>
-          </resource>
-          <resource>
-            <directory>${project.basedir}/src/main/filtered-resources</directory>
-            <filtering>true</filtering>
-          </resource>
-        </resources>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <configuration>
-                        <!-- we are using the Maven code style from the Maven Checkstyle Plugin
-                            but with header check disabled, using the license plugin for that instead -->
-                        <configLocation>src/conf/maven_checks.xml</configLocation>
-                        <enableRulesSummary>false</enableRulesSummary>
-                        <excludes>HelpMojo.java</excludes>
-                    </configuration>
-                </plugin>
-                <plugin>
-                  <groupId>org.codehaus.plexus</groupId>
-                  <artifactId>plexus-component-metadata</artifactId>
-                  <version>1.5.5</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
+  <dependencies>
+    <dependency>
+      <groupId>com.android.tools</groupId>
+      <artifactId>common</artifactId>
+    </dependency>
 
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-component-metadata</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate-metadata</goal>
-                            <goal>generate-test-metadata</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+    <dependency>
+      <groupId>com.android.tools</groupId>
+      <artifactId>dvlib</artifactId>
+    </dependency>
 
-            <plugin>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+    <dependency>
+      <groupId>com.android.tools</groupId>
+      <artifactId>sdk-common</artifactId>
+    </dependency>
 
-            <plugin>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>enforce-maven</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <phase>initialize</phase>
-                        <configuration>
-                            <rules>
-                                <requireMavenVersion>
-                                    <version>[3.2.1,)</version>
-                                    <message>Check for Maven version &gt;=3.0.4 failed. Upgrade your Maven installation to be able to build this project.</message>
-                                </requireMavenVersion>
-                                <requireJavaVersion>
-                                    <version>[1.7.0,)</version>
-                                    <message>Java 7 or higher is required to build the Android Maven Plugin.</message>
-                                    <!--  because the takari-plugin-testing needs Java 7 -->
-                                </requireJavaVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+    <dependency>
+      <groupId>com.android.tools</groupId>
+      <artifactId>sdklib</artifactId>
+    </dependency>
 
-            <plugin>
-                <artifactId>maven-scm-plugin</artifactId>
-                <configuration>
-                    <scmVersionType>branch</scmVersionType>
-                    <scmVersion>${scm.branch}</scmVersion>
-                </configuration>
-            </plugin>
+    <dependency>
+      <groupId>com.android.tools.build</groupId>
+      <artifactId>builder</artifactId>
+    </dependency>
 
-            <plugin>
-                <artifactId>maven-release-plugin</artifactId>
-                <configuration>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <useReleaseProfile>false</useReleaseProfile>
-                    <arguments>-Pofficial-release</arguments>
-                    <!--  only site since the ghpages are deployed in that phase -->
-                    <goals>plugin:report deploy site</goals>
-                </configuration>
-            </plugin>
+    <dependency>
+      <groupId>com.android.tools.build</groupId>
+      <artifactId>manifest-merger</artifactId>
+    </dependency>
 
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
+    <dependency>
+      <groupId>com.android.tools.ddms</groupId>
+      <artifactId>ddmlib</artifactId>
+    </dependency>
 
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Build-Source-Version>1.6</Build-Source-Version>
-                            <Build-Target-Version>1.6</Build-Target-Version>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
+    <dependency>
+      <groupId>com.android.tools.layoutlib</groupId>
+      <artifactId>layoutlib-api</artifactId>
+    </dependency>
 
-            <plugin>
-                <artifactId>maven-plugin-plugin</artifactId>
-                <configuration>
-                    <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>generated-helpmojo</id>
-                        <goals>
-                            <goal>helpmojo</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>generate-descriptor</id>
-                        <goals>
-                            <goal>descriptor</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+    <dependency>
+      <groupId>com.android.tools.lint</groupId>
+      <artifactId>lint</artifactId>
+    </dependency>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <!--  careful with upgrades, e.g. 3.4 does not work with asciidoctor (yet?) -->
-                <version>3.3</version>
-                  <dependencies>
-                      <dependency>
-                          <groupId>org.asciidoctor</groupId>
-                          <artifactId>asciidoctor-maven-plugin</artifactId>
-                          <version>1.5.0</version>
-                      </dependency>
-                  </dependencies>
-            </plugin>
+    <dependency>
+      <groupId>com.android.tools.lint</groupId>
+      <artifactId>lint-api</artifactId>
+    </dependency>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <!-- prevent PermGen OOM in site build -->
-                    <argLine>-Xmx512m -XX:MaxPermSize=128m</argLine>
-                </configuration>
-            </plugin>
+    <dependency>
+      <groupId>com.android.tools.lint</groupId>
+      <artifactId>lint-checks</artifactId>
+    </dependency>
 
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <extensions>true</extensions>
-                <inherited>false</inherited>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <stagingProfileId>26a4c760b261ca</stagingProfileId>
-                </configuration>
-            </plugin>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-artifact</artifactId>
+    </dependency>
 
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>animal-sniffer-maven-plugin</artifactId>
-                <configuration>
-                    <signature>
-                        <groupId>org.codehaus.mojo.signature</groupId>
-                        <artifactId>java16</artifactId>
-                        <version>1.1</version>
-                    </signature>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>check-java16</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            
-             <!--  add support for reactor resolution based IT tests -->
-            <plugin>
-                <groupId>io.takari.maven.plugins</groupId>
-                <artifactId>takari-plugin-testing-plugin</artifactId>
-                <version>${takari.plugin.testing.version}</version>
-                <executions>
-                  <execution>
-                  <id>testProperties</id>
-                  <phase>process-test-resources</phase>
-                  <goals>
-                    <goal>testProperties</goal>
-                  </goals>
-                </execution>
-              </executions>
-            </plugin>
-            <!--  get Maven runtime required for takari-plugin-testing based integration tests -->
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-dependency-plugin</artifactId>
-              <executions>
-                <execution>
-                  <id>unpack</id>
-                  <phase>generate-test-resources</phase>
-                  <goals>
-                    <goal>unpack</goal>
-                  </goals>
-                  <configuration>
-                    <outputDirectory>${project.build.directory}/maven-installation</outputDirectory>
-                    <artifactItems>
-                      <artifactItem>
-                        <groupId>org.apache.maven</groupId>
-                        <artifactId>apache-maven</artifactId>
-                        <version>3.0.5</version>
-                        <classifier>bin</classifier>
-                        <type>tar.gz</type>
-                      </artifactItem>
-                      <artifactItem>
-                        <groupId>org.apache.maven</groupId>
-                        <artifactId>apache-maven</artifactId>
-                        <version>3.2.3</version>
-                        <classifier>bin</classifier>
-                        <type>tar.gz</type>
-                      </artifactItem>
-                    </artifactItems>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-        </plugins>
-    </build>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-compat</artifactId>
+    </dependency>
 
-    <reporting>
-        <plugins>
-            <plugin>
-                <artifactId>maven-plugin-plugin</artifactId>
-                <version>${maven-plugin-plugin.version}</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jxr-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <configuration>
-                    <linkXRef>true</linkXRef>
-                    <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
-                    <minimumTokens>100</minimumTokens>
-                    <targetJdk>1.6</targetJdk>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <configuration>
-                    <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <quiet>true</quiet>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-report-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <configuration>
-                    <formats>
-                        <format>xml</format>
-                        <format>html</format>
-                    </formats>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <configuration>
-                    <excludeFilterFile>src/conf/findbugs-exclude.xml</excludeFilterFile>
-                    <xmlOutput>true</xmlOutput>
-                    <threshold>Low</threshold>
-                    <effort>Max</effort>
-                    <debug>false</debug>
-                    <relaxed>false</relaxed>
-                </configuration>
-            </plugin>
-        </plugins>
-    </reporting>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-archiver</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.plugin-tools</groupId>
+      <artifactId>maven-plugin-annotations</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>emma</groupId>
+      <artifactId>emma</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-archiver</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-jxpath</groupId>
+      <artifactId>commons-jxpath</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.rtyley</groupId>
+      <artifactId>android-screenshot-paparazzo</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.rtyley</groupId>
+      <artifactId>android-screenshot-celebrity</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-dependency-tree</artifactId>
+    </dependency>
+
+    <!-- Required for DefaultMavenRuntime in DependencyResolver -->
+    <dependency>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-runtime</artifactId>
+    </dependency>
+
+    <!-- test deps -->
+    <dependency>
+      <groupId>io.takari.maven.plugins</groupId>
+      <artifactId>takari-plugin-testing</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.easytesting</groupId>
+      <artifactId>fest-reflect</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-module-junit4</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-api-easymock</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-api-support</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-reflect</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>${project.basedir}/src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>${project.basedir}/src/main/filtered-resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.plexus</groupId>
+          <artifactId>plexus-component-metadata</artifactId>
+          <version>1.5.5</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-component-metadata</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate-metadata</goal>
+              <goal>generate-test-metadata</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <!-- we are using the Maven code style from the Maven Checkstyle 
+            Plugin but with header check disabled, using the license plugin for that 
+            instead -->
+          <configLocation>src/conf/maven_checks.xml</configLocation>
+          <enableRulesSummary>false</enableRulesSummary>
+          <excludes>**/**HelpMojo**</excludes>
+
+        </configuration>
+
+        <executions>
+          <execution>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-maven</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <phase>initialize</phase>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>[3.2.1,)</version>
+                  <message>Check for Maven version &gt;=3.2.1 failed.
+                    Upgrade your Maven installation to be able to build
+                    this project.</message>
+                </requireMavenVersion>
+                <requireJavaVersion>
+                  <version>[1.7.0,)</version>
+                  <message>Java 7 or higher is required to build the
+                    Android Maven Plugin.</message>
+                  <!-- because the takari-plugin-testing needs Java 7 -->
+                </requireJavaVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-scm-plugin</artifactId>
+        <configuration>
+          <scmVersionType>branch</scmVersionType>
+          <scmVersion>${scm.branch}</scmVersion>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <useReleaseProfile>false</useReleaseProfile>
+          <arguments>-Pofficial-release</arguments>
+          <!-- only site since the ghpages are deployed in that phase -->
+          <goals>plugin:report deploy site</goals>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Build-Source-Version>1.6</Build-Source-Version>
+              <Build-Target-Version>1.6</Build-Target-Version>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <configuration>
+          <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+        </configuration>
+        <executions>
+          <execution>
+            <id>generated-helpmojo</id>
+            <goals>
+              <goal>helpmojo</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>generate-descriptor</id>
+            <goals>
+              <goal>descriptor</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <!-- careful with upgrades, e.g. 3.4 does not work with asciidoctor 
+          (yet?) -->
+        <version>3.3</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctor-maven-plugin</artifactId>
+            <version>1.5.0</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- prevent PermGen OOM in site build -->
+          <argLine>-Xmx512m -XX:MaxPermSize=128m</argLine>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <inherited>false</inherited>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <stagingProfileId>42b61fb4c62700</stagingProfileId>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>animal-sniffer-maven-plugin</artifactId>
+        <configuration>
+          <signature>
+            <groupId>org.codehaus.mojo.signature</groupId>
+            <artifactId>java16</artifactId>
+            <version>1.1</version>
+          </signature>
+        </configuration>
+        <executions>
+          <execution>
+            <id>check-java16</id>
+            <phase>test</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- add support for reactor resolution based IT tests -->
+      <plugin>
+        <groupId>io.takari.maven.plugins</groupId>
+        <artifactId>takari-plugin-testing-plugin</artifactId>
+        <version>${takari.plugins.version}</version>
+        <executions>
+          <execution>
+            <id>testProperties</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>testProperties</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- get Maven runtime required for takari-plugin-testing based integration 
+        tests -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack</id>
+            <phase>generate-test-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/maven-installation</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.maven</groupId>
+                  <artifactId>apache-maven</artifactId>
+                  <version>3.0.5</version>
+                  <classifier>bin</classifier>
+                  <type>tar.gz</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.maven</groupId>
+                  <artifactId>apache-maven</artifactId>
+                  <version>3.2.3</version>
+                  <classifier>bin</classifier>
+                  <type>tar.gz</type>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <version>${maven-plugin-plugin.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <configuration>
+          <linkXRef>true</linkXRef>
+          <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
+          <minimumTokens>100</minimumTokens>
+          <targetJdk>1.6</targetJdk>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <configuration>
+          <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <quiet>true</quiet>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <configuration>
+          <formats>
+            <format>xml</format>
+            <format>html</format>
+          </formats>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <configuration>
+          <excludeFilterFile>src/conf/findbugs-exclude.xml</excludeFilterFile>
+          <xmlOutput>true</xmlOutput>
+          <threshold>Low</threshold>
+          <effort>Max</effort>
+          <debug>false</debug>
+          <relaxed>false</relaxed>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
 
   <profiles>
     <profile>
       <id>it</id>
-      <!-- the integration tests require a device or emulator attached via ADB -->
+      <!-- the integration tests require a device or emulator attached via 
+        ADB -->
       <build>
         <plugins>
           <plugin>
@@ -872,77 +871,77 @@
         </plugins>
       </build>
     </profile>
-        <profile>
-            <id>official-release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <!-- deploy the site to github pages -->
-                        <groupId>com.github.github</groupId>
-                        <artifactId>site-maven-plugin</artifactId>
-                        <configuration>
-                            <server>github</server> <!--  the id of the server with the passwords in settings.xml -->
-                            <message>Creating site for ${project.version}</message>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <phase>site</phase>
-                                <goals>
-                                    <goal>site</goal> <!-- the site goal uploads to ghpages -->
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- We want to sign the artifact, the POM, and all attached artifacts -->
-                    <plugin>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <configuration>
-                            <useAgent>true</useAgent>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <inherited>true</inherited>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <configuration>
-                            <updateReleaseInfo>true</updateReleaseInfo>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <configuration>
-                            <encoding>${project.build.sourceEncoding}</encoding>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+    <profile>
+      <id>official-release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <!-- deploy the site to github pages -->
+            <groupId>com.github.github</groupId>
+            <artifactId>site-maven-plugin</artifactId>
+            <configuration>
+              <server>github</server> <!-- the id of the server with the passwords in settings.xml -->
+              <message>Creating site for ${project.version}</message>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>site</phase>
+                <goals>
+                  <goal>site</goal> <!-- the site goal uploads to ghpages -->
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- We want to sign the artifact, the POM, and all attached artifacts -->
+          <plugin>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <configuration>
+              <useAgent>true</useAgent>
+            </configuration>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <inherited>true</inherited>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <configuration>
+              <updateReleaseInfo>true</updateReleaseInfo>
+            </configuration>
+          </plugin>
+          <plugin>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <encoding>${project.build.sourceEncoding}</encoding>
+            </configuration>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

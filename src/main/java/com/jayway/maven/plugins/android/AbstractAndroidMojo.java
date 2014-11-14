@@ -258,6 +258,24 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File combinedAssets;
 
     /**
+     * <p>Include jars stored in the libs folder of an apklib as dependencies.
+     * Do not delete or change name as it is used in the LifeCycleParticipant.</p>
+     * 
+     * @see ClasspathModifierLifecycleParticipant
+     */
+    @Parameter( defaultValue = "false" )
+    private boolean includeLibsJarsFromApklib;
+ 
+    /**
+     * <p>Include jars stored in the libs folder of an aar as dependencies.
+     * Do not delete or change name as it is used in the LifeCycleParticipant.</p>
+     * 
+     * @see ClasspathModifierLifecycleParticipant
+     */
+    @Parameter( defaultValue = "false" )
+    private boolean includeLibsJarsFromAar;
+
+    /**
      * Specifies which the serial number of the device to connect to. Using the special values "usb" or
      * "emulator" is also valid. "usb" will connect to all actual devices connected (via usb). "emulator" will
      * connect to all emulators connected. Multiple devices will be iterated over in terms of goals to run. All
@@ -479,18 +497,6 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     private UnpackedLibHelper unpackedLibHelper;
     private ArtifactResolverHelper artifactResolverHelper;
     private NativeHelper nativeHelper;
-
-    /**
-     * <p>Include jars stored in the libs folder of an apklib as dependencies.</p>
-     */
-    @Parameter( property = "android.includeLibsJarsForApklib", defaultValue = "false" )
-    protected boolean includeLibsJarsForApklib;
-
-    /**
-     * <p>Include jars stored in the libs folder of an aar as dependencies.</p>
-     */
-    @Parameter( property = "android.includeLibsJarsForAar", defaultValue = "false" )
-    protected boolean includeLibsJarsForAar;
 
     /**
      *
