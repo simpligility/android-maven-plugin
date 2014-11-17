@@ -8,7 +8,9 @@ import com.jayway.maven.plugins.android.config.ConfigHandler;
 import com.jayway.maven.plugins.android.config.ConfigPojo;
 import com.jayway.maven.plugins.android.config.PullParameter;
 import com.jayway.maven.plugins.android.configuration.Proguard;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -19,6 +21,8 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.codehaus.plexus.interpolation.os.Os;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -193,15 +197,15 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     @PullParameter( defaultValue = "true" )
     private Boolean parsedFilterManifest;
-    
+
     /**
      * You can specify a custom filter which will be used to filter out unnecessary files from ProGuard input.
-     * 
+     *
      * @see http://proguard.sourceforge.net/manual/usage.html#filefilters
      */
     @Parameter( property = "android.proguard.customfilter" )
     private String proguardCustomFilter;
-    
+
     @PullParameter
     private String parsedCustomFilter;
 
@@ -277,28 +281,26 @@ public class ProguardMojo extends AbstractAndroidMojo
             this.excludedFilter = excludedFilter;
         }
 
-        public String toCommandLine()
+        public String toPath()
         {
             if ( excludedFilter != null && !excludedFilter.isEmpty() )
             {
-                String startQuotes, middleQuote, endQuote;
+                String middleQuote, endQuote;
 
                 if ( !Os.isFamily( Os.FAMILY_WINDOWS ) )
                 {
-                    startQuotes = "'\"";
-                    middleQuote = "\"(";
-                    endQuote = ")'";
+                    middleQuote = "(";
+                    endQuote = ")";
                 }
                 else
                 {
-                    startQuotes = "\"'";
-                    middleQuote = "'(";
-                    endQuote = ")\"";
+                    middleQuote = "(";
+                    endQuote = ")";
                 }
 
-                StringBuilder sb = new StringBuilder( startQuotes );
-                    sb.append( path );
-                    sb.append( middleQuote );
+                StringBuilder sb = new StringBuilder();
+                sb.append( path );
+                sb.append( middleQuote );
                 for ( Iterator< String > it = excludedFilter.iterator(); it.hasNext(); )
                 {
                     sb.append( '!' ).append( it.next() );
@@ -312,20 +314,7 @@ public class ProguardMojo extends AbstractAndroidMojo
             }
             else
             {
-                String startQuotes, endQuote;
-
-                if ( !Os.isFamily( Os.FAMILY_WINDOWS ) )
-                {
-                    startQuotes = "'\"";
-                    endQuote = "\"'";
-                }
-                else
-                {
-                    startQuotes = "\"'";
-                    endQuote = "'\"";
-                }
-
-                return startQuotes + path + endQuote;
+                return path;
             }
         }
 
@@ -388,49 +377,72 @@ public class ProguardMojo extends AbstractAndroidMojo
         commands.add( "-jar" );
         commands.add( parsedProguardJarPath );
 
-        commands.add( "@\"" + parsedConfig + "\"" );
+        List<String> proguardCommands = new ArrayList<String>();
+
+        proguardCommands.add( "@" + parsedConfig + "" );
 
         for ( String config : parsedConfigs )
         {
-            commands.add( "@\"" + config + "\"" );
+            proguardCommands.add( "@" + config );
         }
 
         if ( proguardFile != null )
         {
-            commands.add( "@\"" + proguardFile.getAbsolutePath() + "\"" );
+            proguardCommands.add( "@" + proguardFile.getAbsolutePath() );
         }
 
-        collectInputFiles( commands );
+        collectInputFiles( proguardCommands );
 
-        commands.add( "-outjars" );
-        commands.add( "'\"" + obfuscatedJar + "\"'" );
+        proguardCommands.add( "-outjars" );
+        proguardCommands.add( obfuscatedJar );
 
-        commands.add( "-dump" );
-        commands.add( "'\"" + proguardDir + File.separator + "dump.txt\"'" );
-        commands.add( "-printseeds" );
-        commands.add( "'\"" + proguardDir + File.separator + "seeds.txt\"'" );
-        commands.add( "-printusage" );
-        commands.add( "'\"" + proguardDir + File.separator + "usage.txt\"'" );
+        proguardCommands.add( "-dump" );
+        proguardCommands.add( proguardDir + File.separator + "dump.txt" );
+        proguardCommands.add( "-printseeds" );
+        proguardCommands.add( proguardDir + File.separator + "seeds.txt" );
+        proguardCommands.add( "-printusage" );
+        proguardCommands.add( proguardDir + File.separator + "usage.txt" );
 
         File mapFile = new File( proguardDir, "mapping.txt" );
 
-        commands.add( "-printmapping" );
-        commands.add( "'\"" + mapFile + "\"'" );
+        proguardCommands.add( "-printmapping" );
+        proguardCommands.add( mapFile.toString() );
 
-        commands.addAll( Arrays.asList( parsedOptions ) );
+        proguardCommands.addAll( Arrays.asList( parsedOptions ) );
 
         final String javaExecutable = getJavaExecutable().getAbsolutePath();
 
-        getLog().debug( javaExecutable + " " + commands.toString() );
+        getLog().debug( javaExecutable + " " + commands.toString() + proguardCommands.toString() );
 
+        FileOutputStream tempConfigFileOutputStream = null;
         try
         {
+            File tempConfigFile = new File ( proguardDir , "temp_config.cfg" );
+
+            StringBuilder commandStringBuilder = new StringBuilder();
+            for ( String command : proguardCommands )
+            {
+                commandStringBuilder.append( command );
+                commandStringBuilder.append( SystemUtils.LINE_SEPARATOR );
+            }
+            tempConfigFileOutputStream = new FileOutputStream( tempConfigFile );
+            IOUtils.write( commandStringBuilder, tempConfigFileOutputStream );
+
             executor.setCaptureStdOut( true );
+            commands.add( "@\"" + tempConfigFile.getAbsolutePath() + "\"" );
             executor.executeCommand( javaExecutable, commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
         {
             throw new MojoExecutionException( "", e );
+        }
+        catch ( IOException e )
+        {
+            throw new MojoExecutionException( "Error writing proguard commands to temporary file", e );
+        }
+        finally
+        {
+            IOUtils.closeQuietly( tempConfigFileOutputStream );
         }
 
         if ( parsedAttachMap )
@@ -472,7 +484,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         {
             getLog().debug( "Added injar : " + injar );
             commands.add( "-injars" );
-            commands.add( injar.toCommandLine() );
+            commands.add( injar.toPath() );
         }
 
         final List< ProGuardInput > libraryJars = getLibraryInputFiles();
@@ -480,7 +492,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         {
             getLog().debug( "Added libraryJar : " + libraryjar );
             commands.add( "-libraryjars" );
-            commands.add( libraryjar.toCommandLine() );
+            commands.add( libraryjar.toPath() );
         }
     }
 
