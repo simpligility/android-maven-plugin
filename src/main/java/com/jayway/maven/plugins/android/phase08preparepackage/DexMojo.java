@@ -60,8 +60,6 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
 public class DexMojo extends AbstractAndroidMojo
 {
 
-    private static final String DEX = ".dex";
-    private static final String CLASSES = "classes";
     /**
      * Configuration for the dex command execution. It can be configured in the plugin configuration like so
      *
@@ -207,24 +205,6 @@ public class DexMojo extends AbstractAndroidMojo
         if ( generateApk )
         {
             runDex( executor, outputFile );
-
-            if ( parsedMultiDex )
-            {
-
-                File assets = new File( targetDirectory,
-                        "generated-sources" + File.separator + "combined-assets" );
-
-                if ( !assets.exists() && !assets.mkdirs() )
-                {
-                    throw new IllegalStateException( "Unable to create combined-assets directory" );
-                }
-                int i = 2;
-                while ( copyAdditionalDex( outputFile, i, assets ) )
-                {
-                   i++;
-                }
-
-            }
         }
 
         if ( attachJar )
@@ -240,27 +220,6 @@ public class DexMojo extends AbstractAndroidMojo
             final File apksources = createApkSourcesFile();
             projectHelper.attachArtifact( project, "apksources", apksources );
         }
-    }
-
-    private boolean copyAdditionalDex( File outputFile, int dexIndex, File assets ) throws MojoExecutionException
-    {
-        File secondDexFile = new File( outputFile, CLASSES + dexIndex + DEX );
-        if ( secondDexFile.exists() )
-        {
-            File copiedSecondDexFile = new File( assets, CLASSES + dexIndex + DEX );
-
-            try
-            {
-                FileUtils.moveFile( secondDexFile, copiedSecondDexFile );
-            }
-            catch ( IOException e )
-            {
-                throw new MojoExecutionException( "IOException while moving classes" + dexIndex + ".dex to "
-                        + "combined-assets directory", e );
-            }
-            return true;
-        }
-        return false;
     }
 
     /**
