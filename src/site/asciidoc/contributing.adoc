@@ -16,6 +16,12 @@ Once to know how to use git you
 * create a branch for your specific work (separate issues or changes should be separate branches)
 * verify it all builds and looks right (see the Building documentation for more on that)
 * send a pull request
+* the core committers will review the pull request
+* any suggested changes need to be done on the same branch and pushed to your repo, this will update the pull request
+* ideally two core committers agree and will pull in the change
+* the changelog then gets updated and you are done
+* delete your branch and pull in from upstream master
+* rinse and repeat ... 
 
 == Documentation Contributions
 
