@@ -17,6 +17,10 @@
 package com.jayway.maven.plugins.android.phase09package;
 
 import com.android.SdkConstants;
+import com.android.ide.common.res2.MergedResourceWriter;
+import com.android.ide.common.res2.MergingException;
+import com.android.ide.common.res2.ResourceMerger;
+import com.android.ide.common.res2.ResourceSet;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
@@ -41,6 +45,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
@@ -186,17 +191,9 @@ public class AarMojo extends AbstractAndroidMojo
 
             zipArchiver.addFile( androidManifestFile, "AndroidManifest.xml" );
             addDirectory( zipArchiver, assetsDirectory, "assets" );
-            addDirectory( zipArchiver, resourceDirectory, "res" );
             zipArchiver.addFile( classesJar, SdkConstants.FN_CLASSES_JAR );
 
-            final File[] overlayDirectories = getResourceOverlayDirectories();
-            for ( final File resOverlayDir : overlayDirectories )
-            {
-                if ( resOverlayDir != null && resOverlayDir.exists() )
-                {
-                    addDirectory( zipArchiver, resOverlayDir, "res" );
-                }
-            }
+            addDirectory( zipArchiver, generateMergedResourcesDirectory(), "res" );
 
             addR( zipArchiver );
 
@@ -215,6 +212,93 @@ public class AarMojo extends AbstractAndroidMojo
         }
 
         return aarLibrary;
+    }
+
+    private File generateMergedResourcesDirectory() throws MojoExecutionException
+    {
+        final File mergerOutputDirectory = new File( targetDirectory, "mergerOutput" );
+        final File destinationDirectory = new File( targetDirectory, "mergedResources" );
+        final ResourceMerger merger = new ResourceMerger();
+
+        try
+        {
+            FileUtils.deleteDirectory( destinationDirectory );
+
+            final List<File> allResourceDirectories = getAllResourcesDirectories();
+            final List<ResourceSet> resourceSets = convertToResourceSets( allResourceDirectories );
+
+            addResourceSetsToMerger( merger, resourceSets );
+            writeMergeResources( merger, destinationDirectory, mergerOutputDirectory );
+
+            return destinationDirectory;
+        }
+        catch ( MergingException e )
+        {
+            merger.cleanBlob( mergerOutputDirectory );
+
+            throw new MojoExecutionException( "MergingException while creating ." + AAR + " file.", e );
+        }
+        catch ( IOException e )
+        {
+            throw new MojoExecutionException( "IOException while creating ." + AAR + " file.", e );
+        }
+    }
+
+    private void writeMergeResources( ResourceMerger merger, File destinationDir, File mergerOutputDirectory )
+            throws MergingException
+    {
+
+        MergedResourceWriter writer = new MergedResourceWriter( destinationDir, null );
+        writer.setInsertSourceMarkers( false );
+
+        merger.mergeData( writer, false /*doCleanUp*/ );
+
+        merger.writeBlobTo( mergerOutputDirectory, writer );
+    }
+
+    private void addResourceSetsToMerger( ResourceMerger merger, List<ResourceSet> resourceSets )
+            throws MergingException
+    {
+
+        for ( ResourceSet resourceSet : resourceSets )
+        {
+            resourceSet.loadFromFiles( new MavenAndroidLogger( getLog() ) );
+            merger.addDataSet( resourceSet );
+        }
+    }
+
+    private List<File> getAllResourcesDirectories()
+    {
+        final File[] overlayDirectories = getResourceOverlayDirectories();
+        final List<File> allResourceDirectories = new ArrayList<File>( overlayDirectories.length + 1 );
+
+        allResourceDirectories.add( resourceDirectory );
+        allResourceDirectories.addAll( Arrays.asList( overlayDirectories ) );
+
+        return allResourceDirectories;
+    }
+
+    private List<ResourceSet> convertToResourceSets( List<File> resourceDirectories )
+    {
+        List<ResourceSet> resourceSets = new ArrayList<ResourceSet>( resourceDirectories.size() );
+
+        for ( final File resourceDirectory : resourceDirectories )
+        {
+            if ( resourceDirectory != null && resourceDirectory.exists() )
+            {
+                resourceSets.add( convertToResourceSet( resourceDirectory ) );
+            }
+        }
+
+        return resourceSets;
+    }
+
+    private ResourceSet convertToResourceSet( File resourceDirectory )
+    {
+        ResourceSet resourceSet = new ResourceSet( resourceDirectory.getName() );
+        resourceSet.addSource( resourceDirectory );
+
+        return resourceSet;
     }
 
     private void addR( ZipArchiver zipArchiver ) throws MojoExecutionException
