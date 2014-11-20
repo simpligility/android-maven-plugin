@@ -1,0 +1,417 @@
+Clashing versions of Apache Commons Codec
+=========================================
+
+The problem
+-----------
+
+Even though it is hardly document anywhere Android includes an outdated version (v1.3) of link:http://commons.apache.org/codec[Apache Commons Codec] (+commons-codec+) as an link:https://android.googlesource.com/platform/external/apache-http/+/master/src/org/apache/commons/codec[internal library]. The library is not exposed in the Android SDK which means that app developers who want to rely on it in their own apps need to treat it as an addition dependency and include the library classes in APK. However, at runtime Android will always favour its internal commons-codec version instead of the one included by an app. This causes trouble when app code tries to call methods that exist in the +commons-codec+ version the developer expected to be using (e.g. v1.9, which is the current one) but not in Android's outdated version (which remains are v1.3). Annoyingly there is no compile time indication of the trouble that lies ahead.
+
+.For example, when app code tries to call a +commons-codec+ method which was introduced in v1.4, the following error is thrown:
+--
+  10-13 16:22:39.361: I/dalvikvm(3776): Could not find method org.apache.commons.codec.binary.Hex.encodeHexString, referenced from method ...
+--
+
+
+The solution
+------------
+
+Using link:http://maven.apache.org[+maven+] and the link:http://maven.apache.org/plugins/maven-shade-plugin[+maven-shading-plugin+] it is possible to work around this problem in a fairly elegant way by "shading" the +commons-codec+ library, which means its package name is changed to avoid the clash with Android's version.
+
+.Steps to follow:
+. Copy this and save as a _pom.xml_ file somewhere on your system...
+[source,xml]
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>commons-codec</groupId>
+   <artifactId>commons-codec-shaded</artifactId>
+   <name>Apache Commons Codec (shaded)</name>
+   <!-- The version of this project specifies the Apache Commons Codec version which will
+       be used, it must therefore match an existing (and preferably current) version. -->
+   <version>1.9</version>
+   <packaging>jar</packaging>
+   <!--
+     *************************************************************
+      Rationale for this "shaded" version of Apache Commons Codec
+     *************************************************************
+     Context:
+       Android includes an outdated version (v1.3) of commons-codec as an internal library.
+       This library is not exposed in the Android SDK so app developers who want to rely on
+       commons-codec need to treat it as an addition dependency and include it in the APK
+       of their app. However, at runtime Android will always favour its internal version of
+       the library which causes trouble when app code tries to call methods that don't
+       exist in v1.3 but do exist in the version the developer expected to be using.
+     Solution:
+       After experimenting with many different variations the current (and final) solution
+       to this problem is implemented in this project and does not require big hacks or
+       changes in projects which depend on commons-codec, expect for declaring dependency
+       on commons-codec-shaded (i.e. this project) instead of the original commons-codec.
+       What we do here is take the "original" commons-codec library (currently version 1.9)
+       and use the maven-shade-plugin to "shade" it, which means we modify the package name
+       of the library (both in the compiled classes and the sources jar) in order to avoid
+       the clash with Android's version. The package name is changed from
+       "org.apache.commons.codec" to "shaded.org.apache.commons.codec". The result is
+       published to the local Maven repository for other projects to use by simple
+       dependency declaration on this project. Because we only apply the shading to
+       commons-codec itself (and not to other projects/classes using it; which in fact is
+       possible using the shade plug-in but breaks in combination with android-maven-plugin)
+       any client classes which make use of commons-codec will have to import the new
+       "shaded" package name instead of the old one.
+     Issue on android-maven-plugin github which I posted to discuss all this:
+       https://github.com/jayway/maven-android-plugin/issues/487
+   -->
+   <description>
+     The Apache Commons Codec package contains simple encoder and decoders for
+     various formats such as Base64 and Hexadecimal.  In addition to these
+     widely used encoders and decoders, the codec package also maintains a
+     collection of phonetic encoding utilities.
+    </description>
+   <url>http://commons.apache.org/proper/commons-codec/</url>
+   <organization>
+      <name>The Apache Software Foundation</name>
+      <url>http://www.apache.org/</url>
+   </organization>
+   <licenses>
+      <license>
+         <name>The Apache Software License, Version 2.0</name>
+         <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+         <distribution>repo</distribution>
+      </license>
+   </licenses>
+   <contributors>
+      <contributor>
+         <name>Matthias Stevens</name>
+         <email>m.stevens {at} ucl.ac.uk</email>
+         <roles>
+            <role>Shading for use on Android</role>
+         </roles>
+      </contributor>
+      <!-- see commons-codec:commons-codec pom for original contributors/developers -->
+   </contributors>
+   <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+      <maven.compiler.source>1.6</maven.compiler.source>
+      <maven.compiler.target>1.6</maven.compiler.target>
+      <commons-codec-package>org.apache.commons.codec</commons-codec-package>
+      <shading.prefix>shaded</shading.prefix>
+      <shaded-commons-codec-package>${shading.prefix}.${commons-codec-package}</shaded-commons-codec-package>
+      <commons-codec-src-folder>${project.build.directory}/commons-codec-src</commons-codec-src-folder>
+      <commons-codec-res-folder>${project.build.directory}/commons-codec-res</commons-codec-res-folder>
+      <manifest.path>${project.build.directory}/MANIFEST.MF</manifest.path>
+      <!-- plugin versions -->
+      <dependency-plugin-version>2.9</dependency-plugin-version>
+      <compiler-plugin-version>3.2</compiler-plugin-version>
+      <antrun-plugin-version>1.7</antrun-plugin-version>
+      <jar-plugin-version>2.5</jar-plugin-version>
+      <source-plugin-version>2.4</source-plugin-version>
+      <shade-plugin-version>2.3</shade-plugin-version>
+      <bundle-plugin-version>2.5.3</bundle-plugin-version>
+      <!-- taken/modified from: http://svn.apache.org/repos/asf/commons/proper/commons-parent/trunk/pom.xml -->
+      <commons.osgi.symbolicName>${shaded-commons-codec-package}</commons.osgi.symbolicName>
+      <commons.osgi.export>${shaded-commons-codec-package}.*;version=${project.version};-noimport:=true</commons.osgi.export>
+      <commons.osgi.import>*</commons.osgi.import>
+      <commons.osgi.dynamicImport />
+      <commons.osgi.private />
+   </properties>
+   <build>
+      <finalName>${project.artifactId}</finalName>
+      <sourceDirectory>${commons-codec-src-folder}</sourceDirectory>      
+      <resources>
+         <resource>
+            <!-- txt files in shaded\org\apache\commons\codec\language\bm -->
+            <directory>${commons-codec-res-folder}</directory>
+            <includes>
+               <include>${shading.prefix}/**/*.txt</include>
+            </includes>
+         </resource>
+         <resource>
+            <!-- LICENSE & NOTICE files -->
+            <directory>${commons-codec-res-folder}/META-INF</directory>
+            <targetPath>META-INF</targetPath>
+            <includes>
+               <include>*.txt</include>
+            </includes>
+         </resource>
+      </resources>
+      <plugins>
+         <plugin>
+            <!-- fetch & unpack commons-codec sources and resources -->
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>${dependency-plugin-version}</version>
+            <executions>
+               <execution>
+                  <id>unpack_commons-codec_sources_and_resources</id>
+                  <phase>process-sources</phase>
+                  <goals>
+                     <goal>unpack</goal>
+                  </goals>
+                  <configuration>
+                     <artifactItems>
+                        <!-- commons-codec sources -->
+                        <artifactItem>
+                           <groupId>commons-codec</groupId>
+                           <artifactId>commons-codec</artifactId>
+                           <!-- the project version specifies the commons-codec version to use: -->
+                           <version>${project.version}</version>
+                           <classifier>sources</classifier>
+                           <overWrite>true</overWrite>
+                           <excludes>**/*.txt,META-INF/*</excludes>
+                           <outputDirectory>${commons-codec-src-folder}</outputDirectory>
+                        </artifactItem>
+                        <!-- commons-codec resources (in package) -->
+                        <artifactItem>
+                           <groupId>commons-codec</groupId>
+                           <artifactId>commons-codec</artifactId>
+                           <!-- the project version specifies the commons-codec version to use: -->
+                           <version>${project.version}</version>
+                           <classifier>sources</classifier>
+                           <overWrite>true</overWrite>
+                           <includes>org/**/*.txt</includes>
+                           <!-- apply shading: -->
+                           <outputDirectory>${commons-codec-res-folder}/${shading.prefix}</outputDirectory>
+                        </artifactItem> -->
+                        <!-- commons-codec resources (in META-INF) -->
+                        <artifactItem>
+                           <groupId>commons-codec</groupId>
+                           <artifactId>commons-codec</artifactId>
+                           <!-- the project version specifies the commons-codec version to use: -->
+                           <version>${project.version}</version>
+                           <classifier>sources</classifier>
+                           <overWrite>true</overWrite>
+                           <includes>META-INF/*.txt</includes>
+                           <outputDirectory>${commons-codec-res-folder}</outputDirectory>
+                        </artifactItem> -->
+                     </artifactItems>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <!-- compile commons-codec sources -->
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>${compiler-plugin-version}</version>
+            <configuration>
+                  <source>${maven.compiler.source}</source>
+                  <target>${maven.compiler.target}</target>
+               <encoding>UTF-8</encoding>
+            </configuration>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>${jar-plugin-version}</version>
+            <executions>
+               <execution>
+                  <!-- jar unshaded classes (& resources) -->
+                  <id>jar-unshaded</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>jar</goal>
+                  </goals>
+               </execution>
+               <execution>
+                  <!-- rejar shaded classes (& resources), with proper manifest partially generated by bundle plugin -->
+                  <id>jar-shaded</id>
+                  <!-- runs after bundle plugin is done generating the bundle manifest -->
+                  <phase>post-integration-test</phase>
+                  <goals>
+                     <goal>jar</goal>
+                  </goals>
+                  <configuration>
+                     <archive>
+                        <manifestFile>${manifest.path}</manifestFile>
+                        <manifestEntries>
+                           <Specification-Title>${project.name}</Specification-Title>
+                           <Specification-Version>${project.version}</Specification-Version>
+                           <Specification-Vendor>${project.organization.name}</Specification-Vendor>
+                           <Implementation-Title>${project.name}</Implementation-Title>
+                           <Implementation-Version>${project.version}</Implementation-Version>
+                           <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
+                           <Implementation-Vendor-Id>org.apache</Implementation-Vendor-Id>
+                           <Implementation-Build>${implementation.build}</Implementation-Build>
+                           <X-Compile-Source-JDK>${maven.compiler.source}</X-Compile-Source-JDK>
+                           <X-Compile-Target-JDK>${maven.compiler.target}</X-Compile-Target-JDK>
+                        </manifestEntries>
+                     </archive>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <!-- attach sources jar -->
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>${source-plugin-version}</version>
+            <configuration>
+               <archive>
+                  <manifest>
+                     <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                     <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                  </manifest>
+               </archive>
+            </configuration>
+            <executions>
+               <execution>
+                  <!-- jar unshaded sources -->
+                  <id>attach-unshaded-sources</id>
+                  <!-- <phase>package</phase> (default) -->
+                  <goals>
+                     <goal>jar</goal>
+                  </goals>
+               </execution>
+               <execution>
+                  <!-- rejar shaded sources -->
+                  <id>attach-shaded-sources</id>
+                  <phase>post-integration-test</phase>
+                  <goals>
+                     <goal>jar</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <!-- apply the shading to main jar and sources jar -->
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>${shade-plugin-version}</version>
+            <executions>
+               <execution>
+                  <id>shading-main-jar-and-sources-jar</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>shade</goal>
+                  </goals>
+                  <configuration>
+                     <!-- (not needed as it is the one and only artifact/dependency)
+                     <artifactSet> 
+                        <includes>
+                           <include>commons-codec:*</include>
+                        </includes>
+                     </artifactSet>
+                     -->
+                     <relocations>
+                        <relocation>
+                           <pattern>${commons-codec-package}</pattern>
+                           <shadedPattern>${shaded-commons-codec-package}</shadedPattern>
+                        </relocation>
+                     </relocations>
+                     <createDependencyReducedPom>false</createDependencyReducedPom>
+                     <!-- (only needed when dependency reduced pom is generated)
+                     <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation> 
+                     <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope> 
+                     <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+                     -->
+                     <createSourcesJar>true</createSourcesJar>
+                     <shadeSourcesContent>true</shadeSourcesContent>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>${antrun-plugin-version}</version>
+            <executions>
+               <execution>
+                  <!-- unpack shaded classes & sources for manifest generation and re-jarring -->
+                  <id>post-shading-tasks</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>run</goal>
+                  </goals>
+                  <configuration>
+                     <target>
+                        <!-- Unjar shaded classes for generation of manifest -->
+                        <echo>Deleting unshaded classes...</echo>
+                        <delete dir="${project.build.directory}/classes"/>
+                        <echo>Unjarring shaded main jar...</echo>
+                        <unzip src="${project.build.directory}/${project.artifactId}.jar" dest="${project.build.directory}/classes"/>
+                        <!-- delete to prevent dual inclusion in new main jar -->
+                        <delete dir="${project.build.directory}/classes/META-INF/maven"/>
+                        <!-- Unjar shaded sources -->
+                        <echo>Deleting unshaded sources...</echo>
+                        <delete dir="${commons-codec-src-folder}"/>
+                        <echo>Unjarring shaded sources jar...</echo>
+                        <unzip src="${project.build.directory}/${project.artifactId}-sources.jar" dest="${commons-codec-src-folder}"/>
+                        <!-- delete to prevent dual inclusion in new sources jar -->
+                        <delete dir="${commons-codec-src-folder}/META-INF"/>
+                     </target>
+                  </configuration>
+               </execution>
+                <execution>
+                     <id>delete-orginals</id>
+                     <phase>verify</phase>
+                     <goals>
+                        <goal>run</goal>
+                     </goals>
+                     <configuration>
+                        <target>
+                           <echo>Deleting unshaded jar files...</echo>
+                           <delete>
+                              <fileset dir="${project.build.directory}" includes="**/original-*.jar" />
+                           </delete>
+                        </target>
+                     </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <!-- taken/modified from: http://svn.apache.org/repos/asf/commons/proper/commons-parent/trunk/pom.xml -->
+            <groupId>org.apache.felix</groupId>
+            <artifactId>maven-bundle-plugin</artifactId>
+            <version>${bundle-plugin-version}</version>
+            <configuration>
+               <archive>
+                  <forced>true</forced>
+               </archive>
+               <excludeDependencies>true</excludeDependencies>
+               <manifestLocation>${project.build.directory}</manifestLocation>
+               <instructions>
+                  <!-- stops the "uses" clauses being added to "Export-Package" manifest entry -->
+                  <_nouses>true</_nouses>
+                  <!-- Stop the JAVA_1_n_HOME variables from being treated as headers by Bnd -->
+                  <_removeheaders>JAVA_1_3_HOME,JAVA_1_4_HOME,JAVA_1_5_HOME,JAVA_1_6_HOME,JAVA_1_7_HOME,JAVA_1_8_HOME</_removeheaders>
+                  <Bundle-SymbolicName>${commons.osgi.symbolicName}</Bundle-SymbolicName>
+                  <Export-Package>${commons.osgi.export}</Export-Package>
+                  <Private-Package>${commons.osgi.private}</Private-Package>
+                  <Import-Package>${commons.osgi.import}</Import-Package>
+                  <DynamicImport-Package>${commons.osgi.dynamicImport}</DynamicImport-Package>
+                  <Bundle-DocURL>${project.url}</Bundle-DocURL>
+               </instructions>
+            </configuration>
+            <executions>
+               <execution>
+                  <id>bundle-manifest</id>
+                  <!-- runs after the unjarring of the shaded classes -->
+                  <phase>integration-test</phase><!--  default is: process-classes -->
+                  <goals>
+                     <goal>manifest</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
+      </plugins>
+   </build>
+</project>
+
+[NOTE]
+You can also base the shaded library on another version of +commons-codec+ by simply changing the version of the +shaded-commons-codec+ project.
+. Run +mvn install+ on the command line while in the directory where the _pom.xml_ sits. This will install the "shaded" version of commons-codec to your local Maven repository.
+
+. Now open the _pom.xml_ file of any Android-targeting project (jar, apk, apklib or aar) in which you want to make use of +commons-codec+ and replace...
+[source,xml]
+   <!-- this: -->
+   <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.9</version><!-- or whatever version you were using -->
+   </dependency>
+   <!-- by this: -->
+   <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec-shaded</artifactId>
+      <version>1.9</version><!-- or whatever version you based your shaded library on -->
+   </dependency>
