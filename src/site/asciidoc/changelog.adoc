@@ -12,6 +12,11 @@
 ** see https://github.com/simpligility/android-maven-plugin/pull/509
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/507
 ** contributed by Łukasz Suski https://github.com/lsuski
+* Documentation for shading commons-codec to allow usage of newer version
+** see https://github.com/simpligility/android-maven-plugin/pull/498
+** see https://github.com/simpligility/android-maven-plugin/issues/487#issuecomment-60956025
+** contributed by Matthias Stevens https://github.com/mstevens83
+
 
 == 4.0.0-rc.3 - released 2014-10-28
 
