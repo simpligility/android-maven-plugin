@@ -9,7 +9,7 @@
   <name>Android Support V4 Demos</name>
   <properties>
     <!-- at test time this will be overridden with snapshot version -->
-    <it-plugin.version>4.0.0-rc.1</it-plugin.version>
+    <it-plugin.version>4.0.0-SNAPSHOT</it-plugin.version>
   </properties>
   <dependencies>
     <dependency>
