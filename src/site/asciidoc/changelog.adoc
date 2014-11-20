@@ -2,7 +2,16 @@
 
 == 4.0.0 - upcoming
 
-
+* Migrated some documentation from the old Google Code site
+** contributed by Manfred Moser http://www.simpligility.com
+* Fix for aar and jar dependency mix and related resolving
+** see https://github.com/simpligility/android-maven-plugin/pull/493
+** fixes https://github.com/simpligility/android-maven-plugin/issues/485
+** contributed by Hoyt Summers Pittman https://github.com/secondsun
+* Fixes to proguard and multidex related processing
+** see https://github.com/simpligility/android-maven-plugin/pull/509
+** fixes https://github.com/simpligility/android-maven-plugin/issues/507
+** contributed by Łukasz Suski https://github.com/lsuski
 
 == 4.0.0-rc.3 - released 2014-10-28
 
