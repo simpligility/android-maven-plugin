@@ -19,6 +19,9 @@
 * Custom exclude filter to ProGuardMojo
 ** see https://github.com/simpligility/android-maven-plugin/pull/497
 ** Contributed by Csaba Kozák https://github.com/WonderCsabo
+* Fixes to resource files in sample projects to allow builds to pass with new SDK
+** see https://github.com/simpligility/android-maven-plugin/pull/514
+** contributed by Manfred Moser http://www.simpligility.com
 
 == 4.0.0-rc.3 - released 2014-10-28
 
