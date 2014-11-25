@@ -16,8 +16,6 @@
  */
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import static com.android.ddmlib.testrunner.ITestRunListener.TestFailure.ERROR;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -753,33 +751,54 @@ public class MonkeyMojo extends AbstractAndroidMojo
         }
 
         @Override
-        public void testFailed( TestFailure status, TestIdentifier testIdentifier, String trace )
+        public void testIgnored( TestIdentifier testIdentifier )
         {
-            if ( status == ERROR )
-            {
-                ++testErrorCount;
-            }
-            else
-            {
-                ++testFailureCount;
-            }
-            getLog().info( deviceLogLinePrefix + INDENT + INDENT + status.name() + ":" + testIdentifier.toString() );
+            // TODO Implement this
+        }
+
+        @Override
+        public void testFailed( TestIdentifier testIdentifier, String trace )
+        {
+            ++testErrorCount;
+
+            getLog().info( deviceLogLinePrefix + INDENT + INDENT + testIdentifier.toString() );
             getLog().info( deviceLogLinePrefix + INDENT + INDENT + trace );
 
             if ( parsedCreateReport )
             {
                 Node errorFailureNode;
                 NamedNodeMap errorfailureAttributes;
-                if ( status == ERROR )
-                {
-                    errorFailureNode = junitReport.createElement( TAG_ERROR );
-                    errorfailureAttributes = errorFailureNode.getAttributes();
-                }
-                else
-                {
-                    errorFailureNode = junitReport.createElement( TAG_FAILURE );
-                    errorfailureAttributes = errorFailureNode.getAttributes();
-                }
+
+                errorFailureNode = junitReport.createElement( TAG_ERROR );
+                errorfailureAttributes = errorFailureNode.getAttributes();
+
+                errorFailureNode.setTextContent( trace );
+                Attr msgAttr = junitReport.createAttribute( ATTR_MESSAGE );
+                msgAttr.setValue( parseForMessage( trace ) );
+                errorfailureAttributes.setNamedItem( msgAttr );
+                Attr typeAttr = junitReport.createAttribute( ATTR_TYPE );
+                typeAttr.setValue( parseForException( trace ) );
+                errorfailureAttributes.setNamedItem( typeAttr );
+                currentTestCaseNode.appendChild( errorFailureNode );
+            }
+        }
+
+        @Override
+        public void testAssumptionFailure( TestIdentifier testIdentifier, String trace )
+        {
+            ++testFailureCount;
+
+            getLog().info( deviceLogLinePrefix + INDENT + INDENT + testIdentifier.toString() );
+            getLog().info( deviceLogLinePrefix + INDENT + INDENT + trace );
+
+            if ( parsedCreateReport )
+            {
+                Node errorFailureNode;
+                NamedNodeMap errorfailureAttributes;
+
+                errorFailureNode = junitReport.createElement( TAG_FAILURE );
+                errorfailureAttributes = errorFailureNode.getAttributes();
+
                 errorFailureNode.setTextContent( trace );
                 Attr msgAttr = junitReport.createAttribute( ATTR_MESSAGE );
                 msgAttr.setValue( parseForMessage( trace ) );

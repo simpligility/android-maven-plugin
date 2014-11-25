@@ -60,8 +60,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static com.android.ddmlib.testrunner.ITestRunListener.TestFailure.ERROR;
-
 /**
  * AbstractInstrumentationMojo implements running the instrumentation
  * tests.
@@ -843,33 +841,19 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
             }
         }
 
-        public void testFailed( TestFailure status, TestIdentifier testIdentifier, String trace )
+        public void testFailed( TestIdentifier testIdentifier, String trace )
         {
-            if ( status == ERROR )
-            {
-                ++ testErrorCount;
-            }
-            else
-            {
-                ++ testFailureCount;
-            }
-            getLog().info( deviceLogLinePrefix + INDENT + INDENT + status.name() + ":" + testIdentifier.toString() );
+            ++ testErrorCount;
+            getLog().info( deviceLogLinePrefix + INDENT + INDENT + testIdentifier.toString() );
             getLog().info( deviceLogLinePrefix + INDENT + INDENT + trace );
 
             if ( parsedCreateReport )
             {
                 Node errorFailureNode;
                 NamedNodeMap errorfailureAttributes;
-                if ( status == ERROR )
-                {
-                    errorFailureNode = junitReport.createElement( TAG_ERROR );
-                    errorfailureAttributes = errorFailureNode.getAttributes();
-                }
-                else
-                {
-                    errorFailureNode = junitReport.createElement( TAG_FAILURE );
-                    errorfailureAttributes = errorFailureNode.getAttributes();
-                }
+
+                errorFailureNode = junitReport.createElement( TAG_ERROR );
+                errorfailureAttributes = errorFailureNode.getAttributes();
 
                 errorFailureNode.setTextContent( trace );
 
@@ -883,6 +867,39 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
                 currentTestCaseNode.appendChild( errorFailureNode );
             }
+        }
+
+        public void testAssumptionFailure( TestIdentifier testIdentifier, String trace )
+        {
+            ++ testFailureCount;
+            getLog().info( deviceLogLinePrefix + INDENT + INDENT + testIdentifier.toString() );
+            getLog().info( deviceLogLinePrefix + INDENT + INDENT + trace );
+
+            if ( parsedCreateReport )
+            {
+                Node errorFailureNode;
+                NamedNodeMap errorfailureAttributes;
+
+                errorFailureNode = junitReport.createElement( TAG_FAILURE );
+                errorfailureAttributes = errorFailureNode.getAttributes();
+
+                errorFailureNode.setTextContent( trace );
+
+                Attr msgAttr = junitReport.createAttribute( ATTR_MESSAGE );
+                msgAttr.setValue( parseForMessage( trace ) );
+                errorfailureAttributes.setNamedItem( msgAttr );
+
+                Attr typeAttr = junitReport.createAttribute( ATTR_TYPE );
+                typeAttr.setValue( parseForException( trace ) );
+                errorfailureAttributes.setNamedItem( typeAttr );
+
+                currentTestCaseNode.appendChild( errorFailureNode );
+            }
+        }
+
+        public void testIgnored( TestIdentifier testIdentifier )
+        {
+            // TODO Implement this
         }
 
         public void testEnded( TestIdentifier testIdentifier, Map<String, String> testMetrics )

@@ -22,7 +22,6 @@ import com.android.ddmlib.IShellOutputReceiver;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
 import com.android.ddmlib.testrunner.ITestRunListener;
-import com.android.ddmlib.testrunner.ITestRunListener.TestFailure;
 import com.android.ddmlib.testrunner.TestIdentifier;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.CommandExecutor;
@@ -72,8 +71,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static com.android.ddmlib.testrunner.ITestRunListener.TestFailure.ERROR;
 
 /**
  * Can execute monkey runner programs.<br/>
@@ -440,7 +437,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
 
         for ( ITestRunListener listener : mTestListeners )
         {
-            listener.testFailed( TestFailure.ERROR, mCurrentTestIndentifier, trace );
+            listener.testFailed( mCurrentTestIndentifier, trace );
         }
         mCurrentTestIndentifier = null;
 
@@ -691,33 +688,55 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
         }
 
         @Override
-        public void testFailed( TestFailure status, TestIdentifier testIdentifier, String trace )
+        public void testIgnored( TestIdentifier testIdentifier )
         {
-            if ( status == ERROR )
-            {
-                ++testErrorCount;
-            }
-            else
-            {
-                ++testFailureCount;
-            }
-            getLog().info( deviceLogLinePrefix + INDENT + INDENT + status.name() + ":" + testIdentifier.toString() );
+            // TODO Implement this
+        }
+
+        @Override
+        public void testFailed( TestIdentifier testIdentifier, String trace )
+        {
+            ++testErrorCount;
+
+            getLog().info( deviceLogLinePrefix + INDENT + INDENT + testIdentifier.toString() );
             getLog().info( deviceLogLinePrefix + INDENT + INDENT + trace );
 
             if ( parsedCreateReport )
             {
                 Node errorFailureNode;
                 NamedNodeMap errorfailureAttributes;
-                if ( status == ERROR )
-                {
-                    errorFailureNode = junitReport.createElement( TAG_ERROR );
-                    errorfailureAttributes = errorFailureNode.getAttributes();
-                }
-                else
-                {
-                    errorFailureNode = junitReport.createElement( TAG_FAILURE );
-                    errorfailureAttributes = errorFailureNode.getAttributes();
-                }
+
+                errorFailureNode = junitReport.createElement( TAG_ERROR );
+                errorfailureAttributes = errorFailureNode.getAttributes();
+
+                errorFailureNode.setTextContent( trace );
+                Attr msgAttr = junitReport.createAttribute( ATTR_MESSAGE );
+                msgAttr.setValue( parseForMessage( trace ) );
+                errorfailureAttributes.setNamedItem( msgAttr );
+                Attr typeAttr = junitReport.createAttribute( ATTR_TYPE );
+                typeAttr.setValue( parseForException( trace ) );
+                errorfailureAttributes.setNamedItem( typeAttr );
+                currentTestCaseNode.appendChild( errorFailureNode );
+            }
+        }
+
+        @Override
+        public void testAssumptionFailure( TestIdentifier testIdentifier, String trace )
+        {
+
+            ++testFailureCount;
+
+            getLog().info( deviceLogLinePrefix + INDENT + INDENT + testIdentifier.toString() );
+            getLog().info( deviceLogLinePrefix + INDENT + INDENT + trace );
+
+            if ( parsedCreateReport )
+            {
+                Node errorFailureNode;
+                NamedNodeMap errorfailureAttributes;
+
+                errorFailureNode = junitReport.createElement( TAG_FAILURE );
+                errorfailureAttributes = errorFailureNode.getAttributes();
+
                 errorFailureNode.setTextContent( trace );
                 Attr msgAttr = junitReport.createAttribute( ATTR_MESSAGE );
                 msgAttr.setValue( parseForMessage( trace ) );
