@@ -530,10 +530,10 @@ public class DexMojo extends AbstractAndroidMojo
             {
                 commands.add( "--minimal-main-dex" );
             }
-            if ( parsedDexArguments != null )
-            {
-               commands.add( parsedDexArguments );
-            }
+        }
+        if ( parsedDexArguments != null )
+        {
+           commands.add( parsedDexArguments );
         }
         commands.add( "--output=" + outputFile.getAbsolutePath() );
         for ( File inputFile : filteredFiles )
