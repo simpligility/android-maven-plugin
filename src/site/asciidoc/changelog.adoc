@@ -29,6 +29,12 @@
 ** contributed by Manfred Moser http://www.simpligility.com
 * Examples documentation
 ** contributed by Manfred Moser http://www.simpligility.com
+* Moved Emma analysis to process-classes phase
+** fixes https://github.com/simpligility/android-maven-plugin/issues/489
+** see https://github.com/simpligility/android-maven-plugin/pull/515
+** contributed by Dmitry Berezhnoy https://github.com/deadmoto
+
+
 
 == 4.0.0-rc.3 - released 2014-10-28
 
