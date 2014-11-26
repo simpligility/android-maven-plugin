@@ -34,7 +34,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <maven-plugin-plugin.version>3.2</maven-plugin-plugin.version>
-    <maven.api.version>3.0.5</maven.api.version>
+    <maven.api.version>3.0.4</maven.api.version>
 
     <easymock.version>3.2</easymock.version>
     <powermock.version>1.5.2</powermock.version>
