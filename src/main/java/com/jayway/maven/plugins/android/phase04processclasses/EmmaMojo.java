@@ -1,4 +1,4 @@
-package com.jayway.maven.plugins.android.phase08preparepackage;
+package com.jayway.maven.plugins.android.phase04processclasses;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import com.vladium.emma.instr.InstrProcessor.OutMode;
  */
 @Mojo(
         name = "emma",
-        defaultPhase = LifecyclePhase.PREPARE_PACKAGE,
+        defaultPhase = LifecyclePhase.PROCESS_CLASSES,
         requiresDependencyResolution = ResolutionScope.COMPILE
 )
 public class EmmaMojo extends AbstractAndroidMojo
