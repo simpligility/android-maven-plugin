@@ -1,21 +1,36 @@
-Clashing versions of Apache Commons Codec
-=========================================
+= Clashing versions of Apache Commons Codec
 
-The problem
------------
+== The problem
 
-Even though it is hardly document anywhere Android includes an outdated version (v1.3) of link:http://commons.apache.org/codec[Apache Commons Codec] (+commons-codec+) as an link:https://android.googlesource.com/platform/external/apache-http/+/master/src/org/apache/commons/codec[internal library]. The library is not exposed in the Android SDK which means that app developers who want to rely on it in their own apps need to treat it as an addition dependency and include the library classes in APK. However, at runtime Android will always favour its internal commons-codec version instead of the one included by an app. This causes trouble when app code tries to call methods that exist in the +commons-codec+ version the developer expected to be using (e.g. v1.9, which is the current one) but not in Android's outdated version (which remains are v1.3). Annoyingly there is no compile time indication of the trouble that lies ahead.
+Even though it is hardly document anywhere Android includes an
+outdated version (v1.3) of link:http://commons.apache.org/codec[Apache
+Commons Codec] (+commons-codec+) as an
+link:https://android.googlesource.com/platform/external/apache-http/[internal
+library]. The library is not exposed in the Android SDK which means
+that app developers who want to rely on it in their own apps need to
+treat it as an addition dependency and include the library classes
+in APK. However, at runtime Android will always favour its internal
+commons-codec version instead of the one included by an app. This
+causes trouble when app code tries to call methods that exist in the
++commons-codec+ version the developer expected to be using (e.g. v1.9,
+which is the current one) but not in Android's outdated version (which
+remains are v1.3). Annoyingly there is no compile time indication of
+the trouble that lies ahead.
 
-.For example, when app code tries to call a +commons-codec+ method which was introduced in v1.4, the following error is thrown:
---
+For example, when app code tries to call a +commons-codec+ method
+which was introduced in v1.4, the following error is thrown:
+----
   10-13 16:22:39.361: I/dalvikvm(3776): Could not find method org.apache.commons.codec.binary.Hex.encodeHexString, referenced from method ...
---
+----
 
 
-The solution
-------------
+== The solution
 
-Using link:http://maven.apache.org[+maven+] and the link:http://maven.apache.org/plugins/maven-shade-plugin[+maven-shading-plugin+] it is possible to work around this problem in a fairly elegant way by "shading" the +commons-codec+ library, which means its package name is changed to avoid the clash with Android's version.
+Using link:http://maven.apache.org[+maven+] and the
+link:http://maven.apache.org/plugins/maven-shade-plugin[+maven-shading-plugin+]
+it is possible to work around this problem in a fairly elegant way by
+"shading" the +commons-codec+ library, which means its package name is
+changed to avoid the clash with Android's version.
 
 .Steps to follow:
 . Copy this and save as a _pom.xml_ file somewhere on your system...
@@ -397,11 +412,18 @@ Using link:http://maven.apache.org[+maven+] and the link:http://maven.apache.org
    </build>
 </project>
 
-[NOTE]
-You can also base the shaded library on another version of +commons-codec+ by simply changing the version of the +shaded-commons-codec+ project.
-. Run +mvn install+ on the command line while in the directory where the _pom.xml_ sits. This will install the "shaded" version of commons-codec to your local Maven repository.
+[NOTE] You can also base the shaded library on another version of
++commons-codec+ by simply changing the version of the
++shaded-commons-codec+ project.
 
-. Now open the _pom.xml_ file of any Android-targeting project (jar, apk, apklib or aar) in which you want to make use of +commons-codec+ and replace...
+. Run +mvn install+ on the command line while in the directory where
+the _pom.xml_ sits. This will install the "shaded" version of
+commons-codec to your local Maven repository.
+
+. Now open the _pom.xml_ file of any Android-targeting project (jar,
+apk, apklib or aar) in which you want to make use of +commons-codec+
+and replace...
+
 [source,xml]
    <!-- this: -->
    <dependency>
