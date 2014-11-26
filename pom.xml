@@ -20,7 +20,7 @@
 
   <groupId>com.simpligility.maven.plugins</groupId>
   <artifactId>android-maven-plugin</artifactId>
-  <version>4.0.0</version>
+  <version>4.0.1-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>Android Maven Plugin - android-maven-plugin</name>
@@ -49,7 +49,7 @@
     <url>http://github.com/simpligility/android-maven-plugin/tree/${scm.branch}</url>
     <connection>scm:git:git://github.com/simpligility/android-maven-plugin.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/simpligility/android-maven-plugin.git</developerConnection>
-    <tag>4.0.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <issueManagement>
