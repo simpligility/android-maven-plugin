@@ -1,6 +1,15 @@
 = Changelog
 
-== 4.0.0 - upcoming
+== 4.0.1 - upcoming
+
+Planned changes:
+
+* adapt Takari lifecycle to improve build speed
+* migrate more documentation into the github project
+* migrate more tests to be instrumentation tests with example projects
+* anything else contributed by the community
+
+== 4.0.0 - released 2014-11-25
 
 * Migrated some documentation from the old Google Code site
 ** contributed by Manfred Moser http://www.simpligility.com
