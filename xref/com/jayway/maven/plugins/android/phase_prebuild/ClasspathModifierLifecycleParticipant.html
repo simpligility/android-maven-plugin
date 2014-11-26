@@ -263,7 +263,7 @@
 <a class="jxr_linenumber" name="L255" href="#L255">255</a>         }
 <a class="jxr_linenumber" name="L256" href="#L256">256</a> 
 <a class="jxr_linenumber" name="L257" href="#L257">257</a>         <em class="jxr_comment">// Add the classes to the classpath</em>
-<a class="jxr_linenumber" name="L258" href="#L258">258</a>         <strong class="jxr_keyword">final</strong> Dependency dependency = createSystemScopeDependency( artifact, classesJar, <strong class="jxr_keyword">null</strong> );
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>         <strong class="jxr_keyword">final</strong> Dependency dependency = createSystemScopeDependency( artifact, classesJar, <span class="jxr_string">"extracted"</span> );
 <a class="jxr_linenumber" name="L259" href="#L259">259</a>         project.getModel().addDependency( dependency );
 <a class="jxr_linenumber" name="L260" href="#L260">260</a>     }
 <a class="jxr_linenumber" name="L261" href="#L261">261</a> 
@@ -272,7 +272,7 @@
 <a class="jxr_linenumber" name="L264" href="#L264">264</a>         String artifactId = artifact.getArtifactId();
 <a class="jxr_linenumber" name="L265" href="#L265">265</a>         <strong class="jxr_keyword">if</strong> ( suffix != <strong class="jxr_keyword">null</strong> )
 <a class="jxr_linenumber" name="L266" href="#L266">266</a>         {
-<a class="jxr_linenumber" name="L267" href="#L267">267</a>             artifactId = <span class="jxr_string">"_"</span> + suffix;
+<a class="jxr_linenumber" name="L267" href="#L267">267</a>             artifactId += <span class="jxr_string">"_"</span> + suffix;
 <a class="jxr_linenumber" name="L268" href="#L268">268</a>         }
 <a class="jxr_linenumber" name="L269" href="#L269">269</a>         <strong class="jxr_keyword">final</strong> Dependency dependency = <strong class="jxr_keyword">new</strong> Dependency();
 <a class="jxr_linenumber" name="L270" href="#L270">270</a>         dependency.setGroupId( artifact.getGroupId() );
