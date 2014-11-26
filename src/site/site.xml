@@ -22,13 +22,16 @@
             <item name="Introduction" href="index.html"/>
             <item name="Goals" href="plugin-info.html"/>
             <item name="Examples" href="examples.html"/>
-            
         </menu>
         <menu name="Help us">
             <item name="Contributing" href="contributing.html"/>
             <item name="Developing" href="developing.html"/>
             <item name="Releasing" href="releasing.html"/>
-        </menu>  
+        </menu>
+        <menu name="More Documentation">
+            <item name="Shading Example" href="shaded-commons-codec.html"/>
+        </menu>
+          
         <menu ref="reports" />
     </body>
 </project>
