@@ -7,12 +7,50 @@ The are also built as part of the integration tests and the tests that run those
 
 == HelloFlashLight
 
+Located in the +helloflashlight+ folder. A flashlight
+application as an example for a simple Android application build.
+
 == MorseFlash
 
-== ABS Example
+Located in the +morseflash+ folder. A multi-module application with a
+simple jar project for non-Android Java classes, the application and a
+integration test module.
 
-== Native
+== ActionBarSherlock Example
+ 
+Located in the +aar-actionbarsherlock-example+ folder. An example
+application that uses the ActionBarSherlock library packaged as an AAR
+as a dependency. 
+
+== API Demos Application
+
+Located in the +apidemos-android-16+ folder. The example application
+from the Android SDK (API level 16) repackaged to be built with the
+Android Maven Plugin.
 
 == Scala
 
+Located in the +scala+ folder. A simple Android application written
+with the Scala programming language.
 
+== Support4Demos
+
+Located in the +support4demos+ folder. A simple demo application using
+the support library.
+
+== Library Projects
+
+Located in the +libraryprojects+ folder. A number of library project
+using +apklib+ and +aar+ packaging as well as transitive dependencies
+and a simple application consuming all those including integration
+tests verifying the correct consumption of the dependencies and their
+resources and code.
+
+== Native
+
+Located in the +native+ folder. A number of projects using the Android
+NDK to create libraries and applications using them. 
+
+== AAR Child
+
+Located in the +aar-child+ folder. A test project for AAR usage.
