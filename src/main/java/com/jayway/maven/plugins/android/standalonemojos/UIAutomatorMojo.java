@@ -483,6 +483,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
         private static final String TAG_TESTSUITE = "testsuite";
         private static final String ATTR_TESTSUITE_ERRORS = "errors";
         private static final String ATTR_TESTSUITE_FAILURES = "failures";
+        private static final String ATTR_TESTSUITE_IGNORED = "ignored";
         private static final String ATTR_TESTSUITE_HOSTNAME = "hostname";
         private static final String ATTR_TESTSUITE_NAME = "name";
         private static final String ATTR_TESTSUITE_TESTS = "tests";
@@ -511,6 +512,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
 
         private int testCount = 0;
         private int testRunCount = 0;
+        private int testIgnoredCount = 0;
         private int testFailureCount = 0;
         private int testErrorCount = 0;
         private String testRunFailureCause = null;
@@ -630,7 +632,10 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
         @Override
         public void testIgnored( TestIdentifier testIdentifier )
         {
-            // TODO Implement this
+            ++testIgnoredCount;
+
+            getLog().info( deviceLogLinePrefix + INDENT + INDENT + testIdentifier.toString() );
+
         }
 
         @Override
@@ -801,7 +806,8 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
             getLog().info(
                     INDENT + "Tests run: " + testRunCount
                             + ( testRunCount < testCount ? " (of " + testCount + ")" : "" ) + ",  Failures: "
-                            + testFailureCount + ",  Errors: " + testErrorCount );
+                            + testFailureCount + ",  Errors: " + testErrorCount
+                            + ",  Ignored: " + testIgnoredCount );
 
             if ( parsedCreateReport )
             {
@@ -815,6 +821,9 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
                 Attr testErrorsAttr = junitReport.createAttribute( ATTR_TESTSUITE_ERRORS );
                 testErrorsAttr.setValue( Integer.toString( testErrorCount ) );
                 testSuiteAttributes.setNamedItem( testErrorsAttr );
+                Attr testIgnoredAttr = junitReport.createAttribute( ATTR_TESTSUITE_IGNORED );
+                testIgnoredAttr.setValue( Integer.toString( testIgnoredCount ) );
+                testSuiteAttributes.setNamedItem( testIgnoredAttr );
                 Attr timeAttr = junitReport.createAttribute( ATTR_TESTSUITE_TIME );
                 timeAttr.setValue( timeFormatter.format( elapsedTime / 1000.0 ) );
                 testSuiteAttributes.setNamedItem( timeAttr );
