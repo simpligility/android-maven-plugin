@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import org.codehaus.plexus.interpolation.os.Os;
 
 /**
  * Represents an Android SDK.
@@ -247,12 +248,17 @@ public class AndroidSdk
 
     private String getPathForBuildTool( BuildToolInfo.PathId pathId )
     {
+        return getBuildToolInfo().getPath( pathId );
+    }
+    
+    private BuildToolInfo getBuildToolInfo()
+    {
         if ( androidTarget != null )
         {
             BuildToolInfo buildToolInfo = androidTarget.getBuildToolInfo();
             if ( buildToolInfo != null ) 
             {
-                return androidTarget.getBuildToolInfo().getPath( pathId );
+                return androidTarget.getBuildToolInfo();
             }
         }
         // if no valid target is defined, or it has no build tools installed, try to use the latest
@@ -264,7 +270,7 @@ public class AndroidSdk
                 + sdkPath.getAbsolutePath() + File.separator + "tools" + File.separator 
                 + "android sdk' to install them" );
         }
-        return latestBuildToolInfo.getPath( pathId );
+        return latestBuildToolInfo;
     }
 
     private String getPathForPlatformTool( String tool )
@@ -297,6 +303,31 @@ public class AndroidSdk
     public String getPathForFrameworkAidl()
     {
         return androidTarget.getPath( IAndroidTarget.ANDROID_AIDL );
+    }
+
+    /**
+     * Returns the mainDexClasses script file, based on this SDK and OS.
+     * Assumes that the script is in build-tools\VERSION\ directory.
+     * 
+     * <b>NOTE</b>: This file is found in version 21.1.1+ of build-tools.  
+     * 
+     * @return mainDexClasses file
+     * @throws MojoExecutionException when the file is not found 
+     */
+    public File getMainDexClasses() throws MojoExecutionException 
+    {
+        final File location = getBuildToolInfo().getLocation();
+        String mainDexClassesScript = "mainDexClasses";   
+        if ( Os.isFamily( Os.FAMILY_WINDOWS ) ) 
+        {
+            mainDexClassesScript += ".bat";   
+        }               
+        File mainDexClasses = new File( location, mainDexClassesScript );
+        if ( !mainDexClasses.exists() ) 
+        {
+            throw new MojoExecutionException( "No " + mainDexClassesScript + " found in " + location );
+        }
+        return mainDexClasses;
     }
 
     /**
