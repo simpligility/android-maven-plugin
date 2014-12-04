@@ -365,6 +365,13 @@ public class LintMojo extends AbstractAndroidMojo
     @PullParameter( defaultValue = "true" )
     private Boolean parsedLegacy;
 
+    @Parameter( property = "android.lint.quiet" )
+    private Boolean quiet;
+
+    @PullParameter( defaultValue = "true" )
+    private Boolean parsedQuiet;
+
+
     /**
      * Execute the mojo by parsing the config and actually invoking the lint command from the Android SDK.
      *
@@ -378,6 +385,8 @@ public class LintMojo extends AbstractAndroidMojo
         getLog().debug( "Parsed values for Android Lint invocation: " );
         getLog().debug( "failOnError:" + parsedFailOnError );
         getLog().debug( "skip:" + parsedSkip );
+        getLog().debug( "legacy:" + parsedLegacy );
+        getLog().debug( "quiet:" + parsedQuiet );
         getLog().debug( "ignoreWarnings:" + parsedIgnoreWarnings );
         getLog().debug( "warnAll:" + parsedWarnAll );
         getLog().debug( "warningsAsErrors:" + parsedWarningsAsErrors );
@@ -530,12 +539,15 @@ public class LintMojo extends AbstractAndroidMojo
         IssueRegistry registry = new BuiltinIssueRegistry();
 
         LintCliFlags flags = new LintCliFlags();
-        flags.setQuiet( false );
 
         LintCliClient client = new LintCliClient( flags );
 
         try
         {
+            if ( isNotNull( parsedQuiet ) )
+            {
+                flags.setQuiet( parsedQuiet );
+            }
             if ( isNotNull( parsedIgnoreWarnings ) )
             {
                 flags.setIgnoreWarnings( parsedIgnoreWarnings );
