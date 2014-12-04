@@ -1,9 +1,7 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -11,7 +9,7 @@ import java.util.Set;
 import com.android.tools.lint.LintCliClient;
 import com.android.tools.lint.LintCliFlags;
 import com.android.tools.lint.MultiProjectHtmlReporter;
-import com.android.tools.lint.TextReporter;
+import com.android.tools.lint.XmlReporter;
 import com.android.tools.lint.checks.BuiltinIssueRegistry;
 import com.android.tools.lint.client.api.IssueRegistry;
 import org.apache.maven.artifact.Artifact;
@@ -527,7 +525,7 @@ public class LintMojo extends AbstractAndroidMojo
         getLog().info( "Lint analysis completed successfully." );
     }
 
-    private void runLint()
+    private void runLint() throws MojoExecutionException
     {
         IssueRegistry registry = new BuiltinIssueRegistry();
 
@@ -535,19 +533,83 @@ public class LintMojo extends AbstractAndroidMojo
         flags.setQuiet( false );
 
         LintCliClient client = new LintCliClient( flags );
-        File outHtmlFile = new File( getHtmlOutputPath() );
+
         try
         {
-            File outFile = new File( getHtmlOutputPath() + "/lint-results.txt" );
-            outFile.createNewFile();
-            FileOutputStream out = new FileOutputStream( outFile );
+            if ( isNotNull( parsedIgnoreWarnings ) )
+            {
+                flags.setIgnoreWarnings( parsedIgnoreWarnings );
+            }
+            if ( isNotNull( parsedWarnAll ) )
+            {
+                flags.setCheckAllWarnings( parsedWarnAll );
+            }
+            if ( isNotNull( parsedWarningsAsErrors ) )
+            {
+                flags.setWarningsAsErrors( parsedWarningsAsErrors );
+            }
 
-            TextReporter reporter = new TextReporter( client, flags, new PrintWriter( out, true ), false );
-            flags.getReporters().add( reporter );
+            if ( isNotNullAndNotEquals( parsedConfig, "null" ) )
+            {
+                flags.setDefaultConfiguration( new File( parsedConfig ) );
+            }
 
-            MultiProjectHtmlReporter htmlReporter = new MultiProjectHtmlReporter( client, outHtmlFile );
-            flags.getReporters().add( htmlReporter );
+            if ( isNotNull( parsedFullPath ) )
+            {
+                flags.setFullPath( parsedFullPath );
+            }
+            if ( isNotNull( parsedShowAll ) )
+            {
+                flags.setShowEverything( parsedShowAll );
+            }
+            if ( isNotNull( parsedDisableSourceLines ) )
+            {
+                flags.setShowSourceLines( !parsedDisableSourceLines );
+            }
+            if ( isNotNullAndTrue( parsedEnableHtml ) )
+            {
+                File outHtml = new File( parsedHtmlOutputPath );
+                flags.getReporters().add( new MultiProjectHtmlReporter( client, outHtml ) );
 
+                getLog().info( "Writing Lint HTML report in " + parsedHtmlOutputPath );
+            }
+            if ( isNotNullAndNotEquals( parsedUrl, "none" ) )
+            {
+//                TODO what is this?
+//                parameters.add( "--url" );
+//                parameters.add( parsedUrl );
+            }
+            if ( isNotNullAndTrue( parsedEnableSimpleHtml ) )
+            {
+                File outSimpleHtml = new File( parsedSimpleHtmlOutputPath );
+                flags.getReporters().add( new MultiProjectHtmlReporter( client, outSimpleHtml ) );
+
+                getLog().info( "Writing Lint simple HTML report in " + parsedSimpleHtmlOutputPath );
+            }
+            if ( isNotNullAndTrue( parsedEnableXml ) )
+            {
+                flags.getReporters().add( new XmlReporter( client, new File( parsedXmlOutputPath ) ) );
+
+                getLog().info( "Writing Lint XML report in " + parsedXmlOutputPath );
+            }
+            if ( isNotNullAndTrue( parsedEnableSources ) )
+            {
+//                TODO what is this?
+//                parameters.add( "--sources" );
+//                parameters.add( parsedSources );
+            }
+            if ( isNotNullAndTrue( parsedEnableClasspath ) )
+            {
+//                TODO what is this?
+//                parameters.add( "--classpath" );
+//                parameters.add( parsedClasspath );
+            }
+            if ( isNotNullAndTrue( parsedEnableLibraries ) )
+            {
+//              TODO libraries
+//                parameters.add( "--libraries" );
+//                parameters.add( parsedLibraries );
+            }
 
             List< File > files = new ArrayList< File >();
             files.add( resourceDirectory );
@@ -559,8 +621,13 @@ public class LintMojo extends AbstractAndroidMojo
         }
         catch ( IOException ex )
         {
-            // TODO Error
+            throw new MojoExecutionException( ex.getMessage(), ex );
         }
+    }
+
+    private boolean isNotNull( Boolean b )
+    {
+        return b != null;
     }
 
     private boolean isNotNullAndTrue( Boolean b )
