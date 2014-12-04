@@ -12,6 +12,7 @@ public class Lint
 {
     private Boolean failOnError;
     private Boolean skip;
+    private Boolean legacy;
 
     // ---------------
     // Enabled Checks
@@ -58,6 +59,11 @@ public class Lint
     public final Boolean isSkip()
     {
         return skip;
+    }
+
+    public final Boolean isLegacy()
+    {
+        return legacy;
     }
 
     public final Boolean isIgnoreWarnings()
