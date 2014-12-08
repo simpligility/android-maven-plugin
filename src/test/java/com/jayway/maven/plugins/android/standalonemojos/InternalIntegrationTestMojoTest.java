@@ -21,6 +21,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Ignore;
@@ -36,7 +37,6 @@ import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.Client;
 import com.android.ddmlib.FileListingService;
 import com.android.ddmlib.IDevice;
-import com.android.ddmlib.IDevice.Feature;
 import com.android.ddmlib.IShellOutputReceiver;
 import com.android.ddmlib.InstallException;
 import com.android.ddmlib.RawImage;
@@ -281,6 +281,11 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
                     }
 
                     @Override
+                    public void installPackages(List<String> list, int i, boolean b, String... strings) throws InstallException {
+
+                    }
+
+                    @Override
                     public String installRemotePackage(String s, boolean b, String... strings) throws InstallException {
                         return null;
                     }
@@ -292,6 +297,16 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
 
                     @Override
                     public Integer getBatteryLevel(long l) throws TimeoutException, AdbCommandRejectedException, IOException, ShellCommandUnresponsiveException {
+                        return null;
+                    }
+
+                    @Override
+                    public Future<Integer> getBattery() {
+                        return null;
+                    }
+
+                    @Override
+                    public Future<Integer> getBattery(long l, TimeUnit timeUnit) {
                         return null;
                     }
 
@@ -311,6 +326,11 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
                     public void executeShellCommand(String s, IShellOutputReceiver iShellOutputReceiver, long l, TimeUnit timeUnit)
                         throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException
                     {
+                    }
+
+                    @Override
+                    public Future<String> getSystemProperty(String s) {
+                        return null;
                     }
 
                     @Override
