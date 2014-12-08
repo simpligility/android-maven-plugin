@@ -15,7 +15,6 @@ import com.android.ddmlib.Log;
 import com.android.ddmlib.MultiLineReceiver;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
-import com.android.ddmlib.testrunner.ITestRunListener.TestFailure;
 
 /**
  * Runs a Monkey test command remotely and reports results.
@@ -509,7 +508,7 @@ public class MonkeyTestRunner
 
             for ( ITestRunListener listener : mTestListeners )
             {
-                listener.testFailed( TestFailure.ERROR, mCurrentTestIndentifier, trace );
+                listener.testFailed( mCurrentTestIndentifier, trace );
             }
             mCurrentTestIndentifier = null;
             return indexLine;
