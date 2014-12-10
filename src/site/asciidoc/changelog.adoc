@@ -1,9 +1,15 @@
 = Changelog
 
-== 4.0.1 - upcoming
+== 4.1.0 - upcoming
 
 * Updated to Android SDK libraries 1.0.0 / 24.0.0
 ** see https://github.com/simpligility/android-maven-plugin/pull/531
+** contributed by Benoit Billington https://github.com/Shusshu
+* Use lint from Android SDK libraries rather than command line invocation
+** see https://github.com/simpligility/android-maven-plugin/pull/528
+** fixes https://github.com/simpligility/android-maven-plugin/issues/400
+** fixes https://github.com/simpligility/android-maven-plugin/issues/357
+** fixes https://github.com/simpligility/android-maven-plugin/issues/476
 ** contributed by Benoit Billington https://github.com/Shusshu
 
 Planned changes:
