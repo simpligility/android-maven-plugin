@@ -359,12 +359,22 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private void validateStandardLocations() throws MojoExecutionException
     {
         boolean hasNonStandardStructure = false;
-        if ( androidManifestFilePre4.exists() && !androidManifestFilePre4.equals( androidManifestFile ) )
+        if ( androidManifestFilePre4.exists() )
         {
-            getLog().warn( "Non-standard location of AndroidManifest.xml file found, but not configured:\n " 
-                + androidManifestFilePre4 + "\nMove to the standard location src/main/AndroidManifest.xml\n"
-                + "Or configure androidManifestFile. \n" );
-            hasNonStandardStructure = true;
+            if ( sourceManifestFile != null && !androidManifestFilePre4.equals( sourceManifestFile ) )
+            {
+                getLog().warn( "Non-standard location of AndroidManifest.xml file found, but not configured:\n " 
+                    + androidManifestFilePre4 + "\nMove to the standard location src/main/AndroidManifest.xml\n"
+                    + "Or update sourceManifestFile. \n" );
+                hasNonStandardStructure = true;
+            }
+            else if ( sourceManifestFile == null && !androidManifestFilePre4.equals( androidManifestFile ) )
+            {
+                getLog().warn( "Non-standard location of AndroidManifest.xml file found, but not configured:\n " 
+                    + androidManifestFilePre4 + "\nMove to the standard location src/main/AndroidManifest.xml\n"
+                    + "Or configure androidManifestFile. \n" );
+                hasNonStandardStructure = true;
+            }
         }
         if ( resourceDirectoryPre4.exists() && !resourceDirectoryPre4.equals( resourceDirectory ) )
         {
