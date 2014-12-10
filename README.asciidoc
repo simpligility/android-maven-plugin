@@ -6,12 +6,12 @@ the http://tools.android.com[Android SDK].
 === Links
 
 
-* http://simpligility.github.io/android-maven-plugin/[Documentation website from last release]
+* http://simpligility.github.io/android-maven-plugin/[Documentation website from latest release]
 * http://code.google.com/p/maven-android-plugin[Google Code Project site - to be deprecated] 
-* https://code.google.com/p/maven-android-plugin/wiki/Issues[Issue tracker]
+* https://github.com/simpligility/android-maven-plugin/issues[Issue tracker]
 * http://www.sonatype.com/books/mvnref-book/reference/android-dev.html[Maven: Complete Reference - Chapter - Android Application Development with Maven]
 * https://groups.google.com/forum/?fromgroups#!forum/maven-android-developers[Mailinglist]
-* http://code.google.com/p/maven-android-plugin/wiki/Changelog[Changelog]
+* http://simpligility.github.io/android-maven-plugin/changelog.html[Changelog]
 * image:https://travis-ci.org/simpligility/android-maven-plugin.png["Build Status", link="https://travis-ci.org/simpligility/android-maven-plugin"]
 
 === Latest and greatest documentation
