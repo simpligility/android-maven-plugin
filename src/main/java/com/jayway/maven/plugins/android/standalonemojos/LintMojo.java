@@ -1,10 +1,17 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.android.tools.lint.LintCliClient;
+import com.android.tools.lint.LintCliFlags;
+import com.android.tools.lint.MultiProjectHtmlReporter;
+import com.android.tools.lint.XmlReporter;
+import com.android.tools.lint.checks.BuiltinIssueRegistry;
+import com.android.tools.lint.client.api.IssueRegistry;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -24,7 +31,7 @@ import org.apache.maven.plugins.annotations.Parameter;
  * arguments and sets useful defaults as well. Warning, if you use android.lint.enableClasspath and/or
  * android.lint.enableLibraries the behavior of this goal will vary depending on the phase where this goal is executed.
  * See android.lint.classpath/lintClassPath and android.lint.libraries/lintLibraries for more details.
- * 
+ *
  * @author Stéphane Nicolas <snicolas@octo.com>
  * @author Manfred Moser <manfred@simpligility.com>
  */
@@ -37,15 +44,15 @@ public class LintMojo extends AbstractAndroidMojo
      * The configuration for the lint goal. As soon as a lint goal is invoked the command will be executed unless the
      * skip parameter is set. A minimal configuration that will run lint and produce a XML report in
      * ${project.build.directory}/lint/lint-results.xml is
-     * 
+     *
      * <pre>
      * &lt;lint&gt;
      *     &lt;skip&gt;false&lt;/skip&gt;
      * &lt;/lint&gt;
      * </pre>
-     * 
+     *
      * Full configuration can use these parameters.
-     * 
+     *
      * <pre>
      * &lt;lint&gt;
      *     &lt;failOnError&gt;true|false&lt;/failOnError&gt;
@@ -73,9 +80,9 @@ public class LintMojo extends AbstractAndroidMojo
      *     &lt;libraries&gt;&lt;/libraries&gt;
      * &lt;/lint&gt;
      * </pre>
-     * 
-     * 
-     * Alternatively to the plugin configuration values can also be configured as properties on the command line as 
+     *
+     *
+     * Alternatively to the plugin configuration values can also be configured as properties on the command line as
      * android.lint.* or in pom or settings file as properties like lint*.
      */
     @Parameter
@@ -84,7 +91,7 @@ public class LintMojo extends AbstractAndroidMojo
 
     /**
      * Fail build on lint errors. Defaults to "false".
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#failOnError
      */
     @Parameter( property = "android.lint.failOnError" )
@@ -95,7 +102,7 @@ public class LintMojo extends AbstractAndroidMojo
 
     /**
      * Skip the lint goal execution. Defaults to "true".
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#skip
      */
     @Parameter( property = "android.lint.skip" )
@@ -110,7 +117,7 @@ public class LintMojo extends AbstractAndroidMojo
 
     /**
      * Only check for errors and ignore warnings. Defaults to "false".
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#ignoreWarnings
      */
     @Parameter( property = "android.lint.ignoreWarning" )
@@ -121,7 +128,7 @@ public class LintMojo extends AbstractAndroidMojo
 
     /**
      * Check all warnings, including those off by default. Defaults to "false".
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#warnAll
      */
     @Parameter( property = "android.lint.warnAll" )
@@ -132,7 +139,7 @@ public class LintMojo extends AbstractAndroidMojo
 
     /**
      * Report all warnings as errors. Defaults to "false".
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#warningsAsErrors
      */
     @Parameter( property = "android.lint.warningsAsErrors" )
@@ -142,10 +149,10 @@ public class LintMojo extends AbstractAndroidMojo
     private Boolean parsedWarningsAsErrors;
 
     /**
-     * Use the given configuration file to determine whether issues are enabled or disabled. Defaults is "null" so no 
-     * config file will be used. To use the commonly used lint.xml in the project root set the parameter to 
+     * Use the given configuration file to determine whether issues are enabled or disabled. Defaults is "null" so no
+     * config file will be used. To use the commonly used lint.xml in the project root set the parameter to
      * "${project.basedir}/lint.xml".
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#config
      */
     @Parameter( property = "android.lint.config" )
@@ -160,7 +167,7 @@ public class LintMojo extends AbstractAndroidMojo
 
     /**
      * Use full paths in the error output. Defaults to "false".
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#fullPath
      */
     @Parameter( property = "android.lint.fullPath" )
@@ -171,7 +178,7 @@ public class LintMojo extends AbstractAndroidMojo
 
     /**
      * Do not truncate long messages, lists of alternate locations, etc. Defaults to "true".
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#showAll
      */
     @Parameter( property = "android.lint.showAll" )
@@ -183,7 +190,7 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * Do not include the source file lines with errors in the output. By default, the error output includes snippets of
      * source code on the line containing the error, but this flag turns it off. Defaults to "false".
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#disableSourceLines
      */
     @Parameter( property = "android.lint.disableSourceLines" )
@@ -196,7 +203,7 @@ public class LintMojo extends AbstractAndroidMojo
      * Add links to HTML report, replacing local path prefixes with url prefix. The mapping can be a comma-separated
      * list of path prefixes to corresponding URL prefixes, such as C:\temp\Proj1=http://buildserver/sources/temp/Proj1.
      * To turn off linking to files, use --url none. Defaults to "none".
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#url
      */
     @Parameter( property = "android.lint.url" )
@@ -207,7 +214,7 @@ public class LintMojo extends AbstractAndroidMojo
 
     /**
      * Enable the creation of a HTML report. Defaults to "false".
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#enableHtml
      */
     @Parameter( property = "android.lint.enableHtml" )
@@ -219,7 +226,7 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * Path for the HTML report. If the filename is a directory (or a new filename without an extension), lint will
      * create a separate report for each scanned project. Defaults to ${project.build.directory}/lint/lint-html/.
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#htmlOutputPath
      */
     @Parameter( property = "android.lint.htmlOutputPath" )
@@ -230,7 +237,7 @@ public class LintMojo extends AbstractAndroidMojo
 
     /**
      * Enable the creation of a simple HTML report. Defaults to "false".
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#enableSimpleHtml
      */
     @Parameter( property = "android.lint.enableSimpleHtml" )
@@ -242,7 +249,7 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * Create a simple HTML report. If the filename is a directory (or a new filename without an extension), lint will
      * create a separate report for each scanned project. Defaults to ${project.build.directory}/lint/lint-simple-html/.
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#simpleHtmlOutputPath
      */
     @Parameter( property = "android.lint.simpleHtmlOutputPath" )
@@ -253,7 +260,7 @@ public class LintMojo extends AbstractAndroidMojo
 
     /**
      * Enable the creation of a XML report. Defaults to "true".
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#enableXml
      */
     @Parameter( property = "android.lint.enableXml" )
@@ -265,7 +272,7 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * Create an XML report. If the filename is a directory (or a new filename without an extension), lint will create a
      * separate report for each scanned project. Defaults to ${project.build.directory}/lint/lint-results.xml.
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#xmlOutputPath
      */
     @Parameter( property = "android.lint.xmlOutputPath" )
@@ -280,7 +287,7 @@ public class LintMojo extends AbstractAndroidMojo
 
     /**
      * Enable including sources into lint analysis. Defaults to "true".
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#enableSources
      */
     @Parameter( property = "android.lint.enableSources" )
@@ -292,7 +299,7 @@ public class LintMojo extends AbstractAndroidMojo
     /**
      * Add the given folder (or path) as a source directory for the project. Only valid when running lint on a single
      * project. Defaults to ${project.build.sourceDirectory}.
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#sources
      */
     @Parameter( property = "android.lint.sources" )
@@ -303,7 +310,7 @@ public class LintMojo extends AbstractAndroidMojo
 
     /**
      * Enable including classpath into lint analysis. Defaults to "false".
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#enableClasspath
      * @see com.jayway.maven.plugins.android.configuration.Lint#classpath
      */
@@ -317,7 +324,7 @@ public class LintMojo extends AbstractAndroidMojo
      * Add the given folder (or jar file, or path) as a class directory for the project. Only valid when running lint on
      * a single project. Defaults to ${project.build.outputDirectory}. Consequently, the lint output depends on the
      * phase during which this goal is executed, whether project has been compiled or not.
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#classpath
      */
     @Parameter( property = "android.lint.classpath" )
@@ -328,7 +335,7 @@ public class LintMojo extends AbstractAndroidMojo
 
     /**
      * Enable including libraries into lint analysis. Defaults to "false".
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#enableLibraries
      * @see com.jayway.maven.plugins.android.configuration.Lint#libraries
      */
@@ -342,7 +349,7 @@ public class LintMojo extends AbstractAndroidMojo
      * Add the given folder (or jar file, or path) as a class library for the project. Only valid when running lint on a
      * single project. Defaults to all non provided resolved artifacts. Consequently, the lint output depends on the
      * phase during which this goal is executed, whether project's dependencies have been resolved or not.
-     * 
+     *
      * @see com.jayway.maven.plugins.android.configuration.Lint#libraries
      */
     @Parameter( property = "android.lint.libraries" )
@@ -351,9 +358,23 @@ public class LintMojo extends AbstractAndroidMojo
     @PullParameter( defaultValueGetterMethod = "getLibraries" )
     private String parsedLibraries;
 
+
+    @Parameter( property = "android.lint.legacy" )
+    private Boolean legacy;
+
+    @PullParameter( defaultValue = "true" )
+    private Boolean parsedLegacy;
+
+    @Parameter( property = "android.lint.quiet" )
+    private Boolean quiet;
+
+    @PullParameter( defaultValue = "true" )
+    private Boolean parsedQuiet;
+
+
     /**
      * Execute the mojo by parsing the config and actually invoking the lint command from the Android SDK.
-     * 
+     *
      * @throws MojoExecutionException
      */
     @Override
@@ -364,6 +385,8 @@ public class LintMojo extends AbstractAndroidMojo
         getLog().debug( "Parsed values for Android Lint invocation: " );
         getLog().debug( "failOnError:" + parsedFailOnError );
         getLog().debug( "skip:" + parsedSkip );
+        getLog().debug( "legacy:" + parsedLegacy );
+        getLog().debug( "quiet:" + parsedQuiet );
         getLog().debug( "ignoreWarnings:" + parsedIgnoreWarnings );
         getLog().debug( "warnAll:" + parsedWarnAll );
         getLog().debug( "warningsAsErrors:" + parsedWarningsAsErrors );
@@ -393,7 +416,17 @@ public class LintMojo extends AbstractAndroidMojo
         else
         {
             getLog().info( "Performing lint analysis." );
-            executeWhenConfigured();
+
+            if ( parsedLegacy )
+            {
+                getLog().info( "Using Lint from the Android SDK." );
+                executeWhenConfigured();
+            }
+            else
+            {
+                getLog().info( "Using Lint dependency library." );
+                runLint();
+            }
         }
     }
 
@@ -499,6 +532,114 @@ public class LintMojo extends AbstractAndroidMojo
             }
         }
         getLog().info( "Lint analysis completed successfully." );
+    }
+
+    private void runLint() throws MojoExecutionException
+    {
+        IssueRegistry registry = new BuiltinIssueRegistry();
+
+        LintCliFlags flags = new LintCliFlags();
+
+        LintCliClient client = new LintCliClient( flags );
+
+        try
+        {
+            if ( isNotNull( parsedQuiet ) )
+            {
+                flags.setQuiet( parsedQuiet );
+            }
+            if ( isNotNull( parsedIgnoreWarnings ) )
+            {
+                flags.setIgnoreWarnings( parsedIgnoreWarnings );
+            }
+            if ( isNotNull( parsedWarnAll ) )
+            {
+                flags.setCheckAllWarnings( parsedWarnAll );
+            }
+            if ( isNotNull( parsedWarningsAsErrors ) )
+            {
+                flags.setWarningsAsErrors( parsedWarningsAsErrors );
+            }
+
+            if ( isNotNullAndNotEquals( parsedConfig, "null" ) )
+            {
+                flags.setDefaultConfiguration( new File( parsedConfig ) );
+            }
+
+            if ( isNotNull( parsedFullPath ) )
+            {
+                flags.setFullPath( parsedFullPath );
+            }
+            if ( isNotNull( parsedShowAll ) )
+            {
+                flags.setShowEverything( parsedShowAll );
+            }
+            if ( isNotNull( parsedDisableSourceLines ) )
+            {
+                flags.setShowSourceLines( !parsedDisableSourceLines );
+            }
+            if ( isNotNullAndTrue( parsedEnableHtml ) )
+            {
+                File outHtml = new File( parsedHtmlOutputPath );
+                flags.getReporters().add( new MultiProjectHtmlReporter( client, outHtml ) );
+
+                getLog().info( "Writing Lint HTML report in " + parsedHtmlOutputPath );
+            }
+            if ( isNotNullAndNotEquals( parsedUrl, "none" ) )
+            {
+//                TODO what is this?
+//                parameters.add( "--url" );
+//                parameters.add( parsedUrl );
+            }
+            if ( isNotNullAndTrue( parsedEnableSimpleHtml ) )
+            {
+                File outSimpleHtml = new File( parsedSimpleHtmlOutputPath );
+                flags.getReporters().add( new MultiProjectHtmlReporter( client, outSimpleHtml ) );
+
+                getLog().info( "Writing Lint simple HTML report in " + parsedSimpleHtmlOutputPath );
+            }
+            if ( isNotNullAndTrue( parsedEnableXml ) )
+            {
+                flags.getReporters().add( new XmlReporter( client, new File( parsedXmlOutputPath ) ) );
+
+                getLog().info( "Writing Lint XML report in " + parsedXmlOutputPath );
+            }
+            if ( isNotNullAndTrue( parsedEnableSources ) )
+            {
+//                TODO what is this?
+//                parameters.add( "--sources" );
+//                parameters.add( parsedSources );
+            }
+            if ( isNotNullAndTrue( parsedEnableClasspath ) )
+            {
+//                TODO what is this?
+//                parameters.add( "--classpath" );
+//                parameters.add( parsedClasspath );
+            }
+            if ( isNotNullAndTrue( parsedEnableLibraries ) )
+            {
+//              TODO libraries
+//                parameters.add( "--libraries" );
+//                parameters.add( parsedLibraries );
+            }
+
+            List< File > files = new ArrayList< File >();
+            files.add( resourceDirectory );
+            files.add( androidManifestFile );
+            files.add( sourceDirectory );
+            files.add( assetsDirectory );
+
+            client.run( registry, files );
+        }
+        catch ( IOException ex )
+        {
+            throw new MojoExecutionException( ex.getMessage(), ex );
+        }
+    }
+
+    private boolean isNotNull( Boolean b )
+    {
+        return b != null;
     }
 
     private boolean isNotNullAndTrue( Boolean b )
