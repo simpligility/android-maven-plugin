@@ -38,6 +38,7 @@
 
     <easymock.version>3.2</easymock.version>
     <powermock.version>1.5.2</powermock.version>
+    <publisher.version>v2-rev13-1.19.0</publisher.version>
 
     <!-- Attention - make sure that the tools version is the versions of 
       the transitive dependencies of the builder version -->
@@ -336,6 +337,12 @@
         <version>${powermock.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>com.google.apis</groupId>
+        <artifactId>google-api-services-androidpublisher</artifactId>
+        <version>${publisher.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
@@ -467,6 +474,11 @@
       <artifactId>maven-dependency-tree</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.google.apis</groupId>
+      <artifactId>google-api-services-androidpublisher</artifactId>
+    </dependency>
+
     <!-- Required for DefaultMavenRuntime in DependencyResolver -->
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
@@ -567,8 +579,8 @@
       <plugin>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
-          <!-- we are using the Maven code style from the Maven Checkstyle 
-            Plugin but with header check disabled, using the license plugin for that 
+          <!-- we are using the Maven code style from the Maven Checkstyle
+            Plugin but with header check disabled, using the license plugin for that
             instead -->
           <configLocation>src/conf/maven_checks.xml</configLocation>
           <enableRulesSummary>false</enableRulesSummary>
