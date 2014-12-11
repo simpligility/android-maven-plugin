@@ -30,7 +30,7 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
  * @author Joris de Groot
  * @author Benoit Billington
  */
-@Mojo( name = "publisher", requiresProject = false )
+@Mojo( name = "publish-apk", requiresProject = false )
 public class PublisherMojo extends AbstractAndroidMojo
 {
 
@@ -100,7 +100,7 @@ public class PublisherMojo extends AbstractAndroidMojo
             List<Integer> versionCodes  = new ArrayList<Integer>();
             versionCodes.add( apk.getVersionCode() );
             Track newTrack = new Track().setVersionCodes( versionCodes );
-            edits.tracks().update(packageName, editId, track, newTrack).execute();
+            edits.tracks().update( packageName, editId, track, newTrack ).execute();
 
             publishWhatsNew( packageName, edits, editId, apk );
 
@@ -115,6 +115,12 @@ public class PublisherMojo extends AbstractAndroidMojo
     private void publishWhatsNew( String packageName, AndroidPublisher.Edits edits, String editId, Apk apk )
             throws IOException
     {
+        if ( ! listingDirectory.exists() )
+        {
+            getLog().warn( "What's new texts are missing." );
+            return ;
+        }
+
         File [] localeDirs = listingDirectory.listFiles( new FilenameFilter()
         {
             @Override
