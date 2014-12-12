@@ -1,5 +1,6 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
+import com.android.annotations.NonNull;
 import com.google.api.client.http.FileContent;
 import com.google.api.services.androidpublisher.AndroidPublisher;
 import com.google.api.services.androidpublisher.model.Apk;
@@ -58,7 +59,7 @@ public class PublishApkMojo extends AbstractPublisherMojo
         publishApk( packageName );
     }
 
-    private void publishApk( String packageName ) throws MojoExecutionException
+    private void publishApk( @NonNull String packageName ) throws MojoExecutionException
     {
         try
         {

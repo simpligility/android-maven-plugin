@@ -54,6 +54,8 @@ public class AndroidPublisherHelper
 
     public static final String MIME_TYPE_APK = "application/vnd.android.package-archive";
 
+    public static final String MIME_TYPE_IMAGE = "image/*";
+
     /** Path to the private key file (only used for Service Account auth). */
     private static final String SRC_RESOURCES_KEY_P12 = "resources/key.p12";
 

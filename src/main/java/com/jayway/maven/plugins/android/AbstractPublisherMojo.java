@@ -1,5 +1,6 @@
 package com.jayway.maven.plugins.android;
 
+import com.android.annotations.NonNull;
 import com.google.api.services.androidpublisher.AndroidPublisher;
 import com.google.api.services.androidpublisher.model.AppEdit;
 import com.jayway.maven.plugins.android.common.AndroidPublisherHelper;
@@ -42,7 +43,7 @@ public abstract class AbstractPublisherMojo extends AbstractAndroidMojo
     // region '419' is a special case in the play store that represents latin america
     protected static final String LOCALE_DIR_PATTERN = "^[a-z]{2}(-([A-Z]{2}|419))?";
 
-    protected void initializePublisher( String packageName ) throws MojoExecutionException
+    protected void initializePublisher( @NonNull String packageName ) throws MojoExecutionException
     {
         getLog().debug( "Initializing publisher" );
         if ( projectName == null || projectName.equals( "" ) )
