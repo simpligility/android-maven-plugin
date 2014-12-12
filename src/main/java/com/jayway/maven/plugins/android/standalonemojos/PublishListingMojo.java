@@ -104,6 +104,7 @@ public class PublishListingMojo extends AbstractPublisherMojo
                         throw new MojoFailureException( "Incomplete listing" );
                     }
 
+                    getLog().info( "Updating the listing for " + packageName );
                     final Listing listing = new Listing();
                     listing.setTitle( title );
                     listing.setFullDescription( fullDescription );
@@ -198,7 +199,6 @@ public class PublishListingMojo extends AbstractPublisherMojo
         AbstractInputStreamContent contentGraphic = getImageAsStream( dir, imageType );
         if ( contentGraphic == null )
         {
-            getLog().warn( "No " + imageType + " found" );
             return ;
         }
 
@@ -226,7 +226,7 @@ public class PublishListingMojo extends AbstractPublisherMojo
         List<AbstractInputStreamContent> contentGraphicList = getImageListAsStream( dir, imageType );
         if ( contentGraphicList == null || contentGraphicList.isEmpty() )
         {
-            getLog().warn( "No " + imageType + " found" );
+            getLog().warn( "There are no images in " + dir.getAbsolutePath() + "/" + imageType );
             return ;
         }
 
