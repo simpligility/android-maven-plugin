@@ -11,6 +11,7 @@
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/357
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/476
 ** contributed by Benoit Billington https://github.com/Shusshu
+* Use the Google Play Developer API to upload APKs and update the store listing
 
 Planned changes:
 
