@@ -1,0 +1,111 @@
+= Publishing with the Google Play Developer API
+
+== Maven Publisher
+With help of the link:https://developers.google.com/android-publisher/[Google Play Developer API] it is now possible
+to automatically publish APKs, update store listings, etc.
+
+A link:https://github.com/Triple-T/gradle-play-publisher[Gradle plugin] for this was already created on which we based
+the Maven Mojo's.
+
+At the moment there are Mojo's for uploading APKs and updating the store listing including screen shots, feature graphics
+etc. Both can be used inside a project or in a standalone fashion, but in both cases you need the publisher email and
+a p12 key file. How to obtain these can be found link:https://developers.google.com/android-publisher/getting_started[here].
+
+It is possible to pass the email and key file as arguments in the command line but the preferred way is to setup
+a profile in settings.xml:
+[source,xml]
+<profile>
+  <id>publisher</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+    <properties>
+        <android.publisher.email>publisher email</android.publisher.email>
+        <android.publisher.p12>path to p12 key file</android.publisher.p12>
+    </properties>
+</profile>
+
+If you want to use the publisher outside of a project, you will need to supply the other required values:
+
+[source,xml]
+<android.publisher.apkpath>path to APK</android.publisher.apkpath>
+<android.publisher.project.name>project title</android.publisher.project.name>
+<android.publisher.listing.directory>path to listing directory</android.publisher.listing.directory>
+<android.publisher.package.name>project package name</android.publisher.package.name>
+
+Again these can be supplied in the commandline or added to the profile.
+
+To update the listing comply to the following structure:
+[source,text]
+- [src]
+  |
+  + - [main]
+      |
+      + - [play]
+          |
+          + - [en-US]
+          |   |
+          |   + - [listing]
+          |   |   |
+          |   |   + - fulldescription.txt
+          |   |   |
+          |   |   + - shortdescription.txt
+          |   |   |
+          |   |   + - title.txt
+          |   |
+          |   + - whatsnew.txt
+          |
+          + - [de-DE]
+              |
+              + - [listing]
+              |   |
+              |   + - fulldescription.txt
+              |   |
+              |   + - shortdescription.txt
+              |   |
+              |   + - title.txt
+              |
+              + - whatsnew.txt
+
+[NOTE] The text files are the default values, which can be changed by setting the corresponding parameters. For example
+android.publisher.filename.whatsnew=newinversion2.xml
+
+If you want to update images in the listing as well, set the following attribute to true:
+[source,xml]
+<android.publisher.upload.images>true</android.publisher.upload.images>
+
+And comply to the structure:
+[source,text]
+- [src]
+  |
+  + - [main]
+      |
+      + - [play]
+          |
+          + - [en-US]
+              |
+              + - [listing]
+                  |
+                  + - [featureGraphic]
+                  |
+                  + - [icon]
+                  |
+                  + - [phoneScreenshots]
+                  |
+                  + - [promoGraphic]
+                  |
+                  + - [sevenInchScreenshots]
+                  |
+                  + - [tenInchScreenshots]
+
+[NOTE] This structure is the same as the one used in the Gradle plugin, so both plugins can be used if this structure is followed.
+
+== Examples
+
+To upload an APK to the Play store, use the following command
+[source,text]
+mvn android:publish-apk -Ppublisher
+
+To update the store listing with new images
+[source,text]
+mvn android:publish-listing -Ppublisher -Dandroid.publisher.upload.images=true
