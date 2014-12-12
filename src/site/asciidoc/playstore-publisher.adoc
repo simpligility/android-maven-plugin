@@ -109,3 +109,6 @@ mvn android:publish-apk -Ppublisher
 To update the store listing with new images
 [source,text]
 mvn android:publish-listing -Ppublisher -Dandroid.publisher.upload.images=true
+
+[NOTE] By default the APK will be uploaded to the alpha track in the Play store, to change this set the
+android.publisher.track parameter (see link:https://developers.google.com/android-publisher/tracks[Tracks]).
