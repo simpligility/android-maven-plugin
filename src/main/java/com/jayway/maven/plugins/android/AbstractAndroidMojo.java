@@ -494,6 +494,12 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     @Parameter( property = "android.adb.connectionTimeout", defaultValue = "5000" )
     protected int adbConnectionTimeout;
 
+    /**
+     * Folder in which AAR library dependencies will be unpacked.
+     */
+    @Parameter( property = "unpackedLibsFolder", defaultValue = "target/unpacked-libs" )
+    private File unpackedLibsFolder;
+
     private UnpackedLibHelper unpackedLibHelper;
     private ArtifactResolverHelper artifactResolverHelper;
     private NativeHelper nativeHelper;
@@ -1372,7 +1378,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
             unpackedLibHelper = new UnpackedLibHelper(
                 getArtifactResolverHelper(),
                 project,
-                new MavenToPlexusLogAdapter( getLog() )
+                new MavenToPlexusLogAdapter( getLog() ),
+                unpackedLibsFolder
             );
         }
         return unpackedLibHelper;
