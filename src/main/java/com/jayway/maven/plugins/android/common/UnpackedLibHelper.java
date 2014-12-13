@@ -42,11 +42,24 @@ public final class UnpackedLibHelper
     // ${project.build.directory}/unpacked-libs
     private final File unpackedLibsDirectory;
 
-    public UnpackedLibHelper( ArtifactResolverHelper artifactResolverHelper, MavenProject project, Logger log )
+    public UnpackedLibHelper( ArtifactResolverHelper artifactResolverHelper, MavenProject project, Logger log,
+                              File unpackedLibsFolder )
     {
         this.artifactResolverHelper = artifactResolverHelper;
-        final File targetFolder = new File( project.getBuild().getDirectory() );
-        this.unpackedLibsDirectory = new File( targetFolder, "unpacked-libs" );
+        if ( unpackedLibsFolder != null )
+        {
+            // if absolute then use it.
+            // if relative then make it relative to the basedir of the project.
+            this.unpackedLibsDirectory = unpackedLibsFolder.isAbsolute()
+                    ? unpackedLibsFolder
+                    : new File( project.getBasedir(), unpackedLibsFolder.getPath() );
+        }
+        else
+        {
+            // If not specified then default to target/unpacked-libs
+            final File targetFolder = new File( project.getBuild().getDirectory() );
+            this.unpackedLibsDirectory = new File( targetFolder, "unpacked-libs" );
+        }
         this.log = log;
     }
 
@@ -160,6 +173,8 @@ public final class UnpackedLibHelper
                 getShortenedGroupId( artifact.getGroupId() )
                 + "_"
                 + artifact.getArtifactId()
+                + "_"
+                + artifact.getVersion()
         );
     }
 
