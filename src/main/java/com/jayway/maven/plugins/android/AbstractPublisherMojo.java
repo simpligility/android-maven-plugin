@@ -24,10 +24,10 @@ public abstract class AbstractPublisherMojo extends AbstractAndroidMojo
 {
     private static final String WHATSNEW = "whatsnew.txt";
 
-    @Parameter( property = "android.publisher.email", required = true )
+    @Parameter( property = "android.publisher.google.email", required = true )
     private String publisherEmail;
 
-    @Parameter( property = "android.publisher.p12", required = true )
+    @Parameter( property = "android.publisher.google.p12", required = true )
     private File p12File;
 
     @Parameter( property = "android.publisher.project.name" )
