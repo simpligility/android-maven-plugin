@@ -29,9 +29,6 @@ import java.util.HashMap;
 public class ManifestMergerMojo extends AbstractAndroidMojo
 {
 
-    // version encoding
-    private static final int NUMBER_OF_DIGITS_FOR_VERSION_POSITION = 3;
-
     /**
      * Configuration for the manifest-update goal.
      * <p>
@@ -101,12 +98,6 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
     private String parsedVersionName;
     private Integer parsedVersionCode;
     private UsesSdk parsedUsesSdk;
-
-    /**
-     * The modified <code>AndroidManifest.xml</code> file.
-     */
-    @Parameter( property = "android.manifestFile", defaultValue = "${project.build.directory}/AndroidManifest.xml" )
-    protected File updatedManifestFile;
 
     /**
      * @throws org.apache.maven.plugin.MojoExecutionException
@@ -187,13 +178,13 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
                 new MavenILogger( getLog() ), false );
 
         getLog().debug( "sourceManifestFile " + sourceManifestFile );
-        getLog().debug( "updatedManifestFile " + updatedManifestFile );
+        getLog().debug( "androidManifestFile " + androidManifestFile );
 
         builder.mergeManifests(
                 sourceManifestFile, new ArrayList<File>(), new ArrayList<ManifestDependency>(), "",
                 parsedVersionCode, parsedVersionName,
                 parsedUsesSdk.getMinSdkVersion(), parsedUsesSdk.getTargetSdkVersion(), null,
-                updatedManifestFile.getPath(), ManifestMerger2.MergeType.APPLICATION,
+                androidManifestFile.getPath(), ManifestMerger2.MergeType.APPLICATION,
                 new HashMap<String, String>(), null );
                 /* @NonNull List<File> manifestOverlays,
                 @NonNull List<? extends ManifestDependency> libraries,
