@@ -11,6 +11,9 @@
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/357
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/476
 ** contributed by Benoit Billington https://github.com/Shusshu
+* Making unpacked-libs folder configurable
+** See https://github.com/simpligility/android-maven-plugin/pull/538
+** contributed by William Ferguson https://github.com/william-ferguson-au
 
 Planned changes:
 
