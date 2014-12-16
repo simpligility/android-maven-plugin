@@ -270,12 +270,6 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private UsesSdk parsedUsesSdk;
 
     /**
-     * The modified <code>AndroidManifest.xml</code> file.
-     */
-    @Parameter( property = "android.manifestFile", defaultValue = "${project.basedir}/src/main/AndroidManifest.xml" )
-    protected File updatedManifestFile;
-
-    /**
      * @throws MojoExecutionException
      * @throws MojoFailureException
      */
@@ -657,12 +651,6 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
 
         if ( dirty )
         {
-            if ( updatedManifestFile != null && !manifestFile.equals( updatedManifestFile ) )
-            {
-                project.getProperties().setProperty( "android.manifestFile", updatedManifestFile.getAbsolutePath() );
-
-                manifestFile = updatedManifestFile;
-            }
             if ( manifestFile.exists() && ! manifestFile.delete() )
             {
                 getLog().warn( "Could not remove old " + manifestFile );
