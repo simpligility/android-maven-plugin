@@ -11,7 +11,10 @@ import java.util.Properties;
  * {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo} and used there.
  *
  * @author Manfred Moser <manfred@simpligility.com>
+ * @deprecated Use ManifestMerger {@link com.jayway.maven.plugins.android.configuration.ManifestMerger} in combination
+ * with {@link com.jayway.maven.plugins.android.standalonemojos.ManifestMergerMojo}
  */
+@Deprecated
 public class Manifest
 {
     /**
