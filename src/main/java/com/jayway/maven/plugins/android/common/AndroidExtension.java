@@ -12,7 +12,9 @@ public final class AndroidExtension
 
     /**
      * Android library project as created by Android Maven Plugin.
+     * @deprecated Use {@link AAR} instead.
      */
+    @Deprecated
     public static final String APKLIB = "apklib";
 
     /**

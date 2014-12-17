@@ -51,7 +51,9 @@ import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
  * apklib files do not generate deployable artifacts.
  *
  * @author nmaiorana@gmail.com
+ * @deprecated Use Aar instead see {@link com.jayway.maven.plugins.android.phase09package.AarMojo}
  */
+@Deprecated
 @Mojo( name = "apklib", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE )
 public class ApklibMojo extends AbstractAndroidMojo
 {
