@@ -17,7 +17,7 @@ public class Apk
     private String[] metaIncludes;
 
     /**
-     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ApkMojo#apkMetaInf}.
+     * Mirror of {@link com.jayway.maven.plugins.android.phase09package.ApkMojo#apkMetaInf}.
      */
     private MetaInf  metaInf;
 
