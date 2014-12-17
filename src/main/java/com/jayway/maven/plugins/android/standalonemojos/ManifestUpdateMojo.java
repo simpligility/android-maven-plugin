@@ -47,7 +47,10 @@ import java.util.Properties;
  * @author joakim@erdfelt.com
  * @author nic.strong@gmail.com
  * @author Manfred Moser <manfred@simpligility.com>
+ * @deprecated Use manifest-merger v2 mojo instead
+ * {@link com.jayway.maven.plugins.android.standalonemojos.ManifestMergerMojo}
  */
+@Deprecated
 @Mojo( name = "manifest-update", defaultPhase = LifecyclePhase.PROCESS_RESOURCES )
 public class ManifestUpdateMojo extends AbstractAndroidMojo
 {
