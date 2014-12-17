@@ -21,7 +21,7 @@
   <groupId>com.simpligility.maven.plugins</groupId>
   <artifactId>android-maven-plugin</artifactId>
   <version>4.0.1-SNAPSHOT</version>
-  <packaging>takari-maven-plugin</packaging>
+  <packaging>maven-plugin</packaging>
 
   <name>Android Maven Plugin - android-maven-plugin</name>
   <description>Maven Plugin for Android Development</description>
@@ -661,9 +661,10 @@
       <plugin>
         <artifactId>maven-plugin-plugin</artifactId>
         <configuration>
-          <packagingTypes>
+          <!-- <packagingTypes>
             <packaging>takari-maven-plugin</packaging>
           </packagingTypes>
+           -->
           <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
         </configuration>
         <executions>
