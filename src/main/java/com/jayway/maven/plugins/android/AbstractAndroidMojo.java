@@ -217,16 +217,17 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File assetsDirectory;
 
     /**
-     * Source <code>AndroidManifest.xml</code> file to copy into the {@link #androidManifestFile} location.
-     */
-    @Parameter( property = "source.manifestFile" )
-    protected File sourceManifestFile;
-
-    /**
      * The <code>AndroidManifest.xml</code> file.
      */
     @Parameter( property = "android.manifestFile", defaultValue = "${project.basedir}/src/main/AndroidManifest.xml" )
     protected File androidManifestFile;
+
+
+    /**
+     * Source <code>AndroidManifest.xml</code> file to copy into the {@link #destinationManifestFile} location.
+     */
+    @Parameter( property = "destination.manifestFile", defaultValue = "${project.build.directory}/AndroidManifest.xml" )
+    protected File destinationManifestFile;
 
     /**
      * <p>A possibly new package name for the application. This value will be passed on to the aapt
@@ -1030,7 +1031,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     protected final String getAndroidManifestPackageName()
     {
-        return extractPackageNameFromAndroidManifest( androidManifestFile );
+        return extractPackageNameFromAndroidManifest( destinationManifestFile );
     }
 
     /**
@@ -1070,7 +1071,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     protected final boolean isInstrumentationTest() throws MojoExecutionException
     {
-        return extractInstrumentationRunnerFromAndroidManifest( androidManifestFile ) != null;
+        return extractInstrumentationRunnerFromAndroidManifest( destinationManifestFile ) != null;
     }
 
     /**

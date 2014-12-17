@@ -141,7 +141,7 @@ public class ApklibMojo extends AbstractAndroidMojo
             JarArchiver jarArchiver = new JarArchiver();
             jarArchiver.setDestFile( apklibrary );
 
-            jarArchiver.addFile( androidManifestFile, "AndroidManifest.xml" );
+            jarArchiver.addFile( destinationManifestFile, "AndroidManifest.xml" );
             addDirectory( jarArchiver, assetsDirectory, "assets" );
             addDirectory( jarArchiver, resourceDirectory, "res" );
             
@@ -366,7 +366,7 @@ public class ApklibMojo extends AbstractAndroidMojo
         AaptCommandBuilder commandBuilder = AaptCommandBuilder
                 .packageResources( getLog() )
                 .forceOverwriteExistingFiles()
-                .setPathToAndroidManifest( androidManifestFile )
+                .setPathToAndroidManifest( destinationManifestFile )
                 .addResourceDirectoriesIfExists( overlayDirectories )
                 .addResourceDirectoryIfExists( resourceDirectory )
                 .addResourceDirectoriesIfExists( dependencyArtifactResDirectoryList )

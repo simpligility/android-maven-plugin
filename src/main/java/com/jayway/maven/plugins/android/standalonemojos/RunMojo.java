@@ -222,7 +222,7 @@ public class RunMojo extends AbstractAndroidMojo
 
         documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
-        document = documentBuilder.parse( androidManifestFile );
+        document = documentBuilder.parse( destinationManifestFile );
 
         xPathFactory = XPathFactory.newInstance();
 
