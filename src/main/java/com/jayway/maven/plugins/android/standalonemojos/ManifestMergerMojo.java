@@ -29,6 +29,9 @@ import java.util.HashMap;
 public class ManifestMergerMojo extends AbstractAndroidMojo
 {
 
+    // version encoding
+    private static final int NUMBER_OF_DIGITS_FOR_VERSION_POSITION = 3;
+
     /**
      * Configuration for the manifest-update goal.
      * <p>
@@ -55,6 +58,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
      *           &lt;manifestMerger&gt;
      *             &lt;versionName&gt;&lt;/versionName&gt;
      *             &lt;versionCode&gt;123&lt;/versionCode&gt;
+     *             &lt;versionCodeUpdateFromVersion&gt;true|false&lt;/versionCodeUpdateFromVersion&gt;
      *             &lt;usesSdk&gt;
      *               &lt;minSdkVersion&gt;14&lt;/minSdkVersion&gt;
      *               &lt;targetSdkVersion&gt;21&lt;/targetSdkVersion&gt;
@@ -86,15 +90,30 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
      * Update the <code>android:versionCode</code> attribute with the specified parameter. Exposed via
      * the project property <code>android.manifestMerger.versionCode</code>.
      */
-    @Parameter( property = "android.manifestMerger.versionCode" )
+    @Parameter( property = "android.manifestMerger.versionCode", defaultValue = "1" )
     protected Integer manifestVersionCode;
+
+    /**
+     * Update the <code>android:versionCode</code> attribute automatically from the project version
+     * e.g 3.2.1 will become version code 3002001. As described in this blog post
+     * http://www.simpligility.com/2010/11/release-version-management-for-your-android-application/
+     * but done without using resource filtering. The value is exposed via the project property
+     * property <code>android.manifest.versionCodeUpdateFromVersion</code> and the resulting value
+     * as <code>android.manifest.versionCode</code>.
+     * For the purpose of generating the versionCode, if a version element is missing it is presumed to be 0.
+     * The maximum values for the version increment and version minor values are 999,
+     * the version major should be no larger than 2000.  Any other suffixes do not
+     * participate in the version code generation.
+     */
+    @Parameter( property = "android.manifest.versionCodeUpdateFromVersion", defaultValue = "false" )
+    protected Boolean manifestVersionCodeUpdateFromVersion = false;
 
     /**
      *  Update the uses-sdk tag. It can be configured to change: <code>android:minSdkVersion</code>,
      *  <code>android:maxSdkVersion</code> and <code>android:targetSdkVersion</code>
      */
     protected UsesSdk manifestUsesSdk;
-
+    private Boolean parsedVersionCodeUpdateFromVersion;
     private String parsedVersionName;
     private Integer parsedVersionCode;
     private UsesSdk parsedUsesSdk;
@@ -112,6 +131,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
 
         if ( sourceManifestFile == null )
         {
+            getLog().debug( "skip, no androidmanifest.xml defined (sourceManifestFile rare case)" );
             return; // skip, no androidmanifest.xml defined (rare case)
         }
 
@@ -153,7 +173,14 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
             {
                 parsedVersionCode = manifestVersionCode;
             }
-
+            if ( manifestMerger.getVersionCodeUpdateFromVersion() != null )
+            {
+                parsedVersionCodeUpdateFromVersion = manifestMerger.getVersionCodeUpdateFromVersion();
+            }
+            else
+            {
+                parsedVersionCodeUpdateFromVersion = manifestVersionCodeUpdateFromVersion;
+            }
             if ( manifestMerger.getUsesSdk() != null )
             {
                 parsedUsesSdk = manifestMerger.getUsesSdk();
@@ -168,6 +195,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
             parsedVersionName = manifestVersionName;
             parsedVersionCode = manifestVersionCode;
             parsedUsesSdk = manifestUsesSdk;
+            parsedVersionCodeUpdateFromVersion = manifestVersionCodeUpdateFromVersion;
         }
     }
 
@@ -177,25 +205,44 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
         AndroidBuilder builder = new AndroidBuilder( project.toString(), "created by Android Maven Plugin",
                 new MavenILogger( getLog() ), false );
 
-        getLog().debug( "sourceManifestFile " + sourceManifestFile );
-        getLog().debug( "androidManifestFile " + androidManifestFile );
+        String minSdkVersion = null;
+        String targetSdkVersion = null;
+        int versionCode;
+        if ( parsedUsesSdk != null )
+        {
+            minSdkVersion = parsedUsesSdk.getMinSdkVersion();
+            targetSdkVersion = parsedUsesSdk.getTargetSdkVersion();
+        }
+        if ( parsedVersionCodeUpdateFromVersion )
+        {
+            versionCode = generateVersionCodeFromVersionName( parsedVersionName );
+        }
+        else
+        {
+            versionCode = parsedVersionCode;
+        }
 
         builder.mergeManifests(
                 sourceManifestFile, new ArrayList<File>(), new ArrayList<ManifestDependency>(), "",
-                parsedVersionCode, parsedVersionName,
-                parsedUsesSdk.getMinSdkVersion(), parsedUsesSdk.getTargetSdkVersion(), null,
+                versionCode, parsedVersionName,
+                minSdkVersion, targetSdkVersion, null,
                 androidManifestFile.getPath(), ManifestMerger2.MergeType.APPLICATION,
                 new HashMap<String, String>(), null );
-                /* @NonNull List<File> manifestOverlays,
-                @NonNull List<? extends ManifestDependency> libraries,
-            String packageOverride, int versionCode,
-        String versionName, @Nullable
-    String minSdkVersion,
-        @Nullable String targetSdkVersion,
-        @Nullable Integer maxSdkVersion,
-        @NonNull String outManifestLocation,
-        MergeType mergeType,
-        Map<String, String> placeHolders) {);*/
+
+    }
+
+    private int generateVersionCodeFromVersionName( String versionName )
+    {
+        String[] versionNameDigits = versionName.replaceAll( "[^0-9.]", "" ).split( "\\." );
+
+        int versionCode = 0;
+        for ( int i = 0; i < versionNameDigits.length; i++ )
+        {
+            double digitMultiplayer = Math.pow( 10, i * NUMBER_OF_DIGITS_FOR_VERSION_POSITION );
+            String versionDigit = versionNameDigits[versionNameDigits.length - i - 1 ];
+            versionCode += Integer.valueOf( versionDigit ) * digitMultiplayer;
+        }
+        return versionCode;
     }
 
 }
