@@ -14,12 +14,17 @@
 * Making unpacked-libs folder configurable
 ** See https://github.com/simpligility/android-maven-plugin/pull/538
 ** contributed by William Ferguson https://github.com/william-ferguson-au
+* Added deprecation for APKLIB format
+** see https://github.com/simpligility/android-maven-plugin/pull/543
+** contributed by Benoit Billington https://github.com/Shusshu
 
 Planned changes:
 
 * adapt Takari lifecycle to improve build speed
+** see https://github.com/simpligility/android-maven-plugin/issues/532
 * migrate more documentation into the github project
 * migrate more tests to be instrumentation tests with example projects
+** see https://github.com/simpligility/android-maven-plugin/issues/452
 * anything else contributed by the community
 
 == 4.0.0 - released 2014-11-25
