@@ -21,6 +21,9 @@
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/418
 ** contributed by Joris de Groot https://github.com/jdegroot
 ** contributed by Benoit Billington https://github.com/Shusshu
+* Improvements to project site including github ribbon and more
+** see https://github.com/simpligility/android-maven-plugin/pull/544
+** contributed by Manfred Moser http://www.simpligility.com
 
 Planned changes:
 

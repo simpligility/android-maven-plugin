@@ -1,37 +1,47 @@
 <project name="Android Maven Plugin">
-    <bannerLeft>
-        <name>${project.name}</name>
-    </bannerLeft>
-    <bannerRight>
-        <src></src>
-    </bannerRight>
-    <skin>
-        <groupId>org.apache.maven.skins</groupId>
-        <artifactId>maven-fluido-skin</artifactId>
-        <version>1.3.0</version>
-    </skin>
-    <custom>
-        <fluidoSkin>
-            <topBarEnabled>true</topBarEnabled>
-            <sideBarEnabled>true</sideBarEnabled>
-        </fluidoSkin>
-    </custom>
+  <bannerLeft>
+    <name>${project.name}</name>
+  </bannerLeft>
+  <bannerRight>
+    <src></src>
+  </bannerRight>
+  <skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-fluido-skin</artifactId>
+    <version>1.3.1</version>
+  </skin>
+  <custom>
+    <fluidoSkin>
+      <topBarEnabled>true</topBarEnabled>
+      <sideBarEnabled>true</sideBarEnabled>
+      <googleSearch>
+        <sitesearch/>
+      </googleSearch>
+      <gitHub>
+        <projectId>simpligility/android-maven-plugin</projectId>
+        <ribbonOrientation>right</ribbonOrientation>
+        <ribbonColor>orange</ribbonColor>
+      </gitHub>
+      <breadcrumbDivider>»</breadcrumbDivider>
+    </fluidoSkin>
+  </custom>
 
-    <body>
-        <menu name="Overview">
-            <item name="Introduction" href="index.html"/>
-            <item name="Goals" href="plugin-info.html"/>
-            <item name="Examples" href="examples.html"/>
-        </menu>
-        <menu name="Help us">
-            <item name="Contributing" href="contributing.html"/>
-            <item name="Developing" href="developing.html"/>
-            <item name="Releasing" href="releasing.html"/>
-        </menu>
-        <menu name="More Documentation">
-            <item name="Shading Example" href="shaded-commons-codec.html"/>
-        </menu>
-          
-        <menu ref="reports" />
-    </body>
+  <body>
+    <menu name="Overview">
+      <item name="Introduction" href="index.html"/>
+      <item name="Goals" href="plugin-info.html"/>
+      <item name="Examples" href="examples.html"/>
+      <item name="Changelog" href="changelog.html"/>
+    </menu>
+    <menu name="How To's"/>
+      <item name="Publishing to Google Play Store" href="playstore-publisher.html"/>
+      <item name="Shading Example" href="shaded-commons-codec.html"/>
+    </menu>
+    <menu name="Help us">
+      <item name="Contributing" href="contributing.html"/>
+      <item name="Developing" href="developing.html"/>
+      <item name="Releasing" href="releasing.html"/>
+    </menu>
+    <menu ref="reports" />
+  </body>
 </project>
