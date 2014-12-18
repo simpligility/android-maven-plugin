@@ -33,7 +33,7 @@
       <item name="Examples" href="examples.html"/>
       <item name="Changelog" href="changelog.html"/>
     </menu>
-    <menu name="How To's"/>
+    <menu name="How To's">
       <item name="Publishing to Google Play Store" href="playstore-publisher.html"/>
       <item name="Shading Example" href="shaded-commons-codec.html"/>
     </menu>
