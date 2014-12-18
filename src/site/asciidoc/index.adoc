@@ -1,6 +1,12 @@
 = Android Maven Plugin
 
-The Android Maven Plugin is used to build applications for the Android operating system.
+The Android Maven Plugin is used to build applications for the Android operating system as well as build 
+libraries to be used in these efforts in AAR and the legacy APKLIB format.
+
+The plugin includes numerous features to help by supporting for running instrumentation tests, analysis with 
+Android Lint, processing with ProGuard and many other tasks. 
+
+Please check out the example projects as well as the all the documentation here.
 
 Further information is available on
 
