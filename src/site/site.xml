@@ -22,6 +22,7 @@
         <ribbonOrientation>right</ribbonOrientation>
         <ribbonColor>orange</ribbonColor>
       </gitHub>
+      <breadcrumbDivider>»</breadcrumbDivider>
     </fluidoSkin>
   </custom>
 
