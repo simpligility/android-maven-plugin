@@ -31,6 +31,7 @@
       <item name="Introduction" href="index.html"/>
       <item name="Goals" href="plugin-info.html"/>
       <item name="Examples" href="examples.html"/>
+      <item name="Changelog" href="changelog.html"/>
     </menu>
     <menu name="How To's"/>
       <item name="Publishing to Google Play Store" href="playstore-publisher.html"/>
