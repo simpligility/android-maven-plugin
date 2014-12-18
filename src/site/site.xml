@@ -17,6 +17,11 @@
       <googleSearch>
         <sitesearch/>
       </googleSearch>
+      <gitHub>
+        <projectId>simpligility/android-maven-plugin</projectId>
+        <ribbonOrientation>right</ribbonOrientation>
+        <ribbonColor>orange</ribbonColor>
+      </gitHub>
     </fluidoSkin>
   </custom>
 
