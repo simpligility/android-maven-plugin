@@ -23,6 +23,9 @@
             <item name="Goals" href="plugin-info.html"/>
             <item name="Examples" href="examples.html"/>
         </menu>
+        <menu name="How To's"/>
+            <item name="Publishing to Google Play Store" href="playstore-publisher.html"/>
+        </menu>
         <menu name="Help us">
             <item name="Contributing" href="contributing.html"/>
             <item name="Developing" href="developing.html"/>
