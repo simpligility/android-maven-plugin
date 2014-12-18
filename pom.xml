@@ -26,7 +26,7 @@
   <name>Android Maven Plugin - android-maven-plugin</name>
   <description>Maven Plugin for Android Development</description>
 
-  <url>http://code.google.com/p/maven-android-plugin</url>
+  <url>http://simpligility.github.io/android-maven-plugin/</url>
   <inceptionYear>2008</inceptionYear>
 
   <properties>
