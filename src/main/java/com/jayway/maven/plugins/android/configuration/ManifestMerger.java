@@ -1,5 +1,7 @@
 package com.jayway.maven.plugins.android.configuration;
 
+import java.io.File;
+
 /**
  * Configuration for the manifest update. This class is only the definition of the parameters that are shadowed in
  * {@link com.jayway.maven.plugins.android.standalonemojos.ManifestMergerMojo} and used there.
@@ -37,6 +39,12 @@ public class ManifestMerger
      */
     protected Boolean mergeLibraries;
 
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestMergerMojo
+     * #manifestMergeReportFile}.
+     */
+    protected File mergeReportFile;
+
     public String getVersionName()
     {
         return versionName;
@@ -60,5 +68,10 @@ public class ManifestMerger
     public Boolean getMergeLibraries()
     {
         return mergeLibraries;
+    }
+
+    public File getMergeReportFile()
+    {
+        return mergeReportFile;
     }
 }
