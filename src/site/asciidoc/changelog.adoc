@@ -24,6 +24,10 @@
 * Improvements to project site including github ribbon and more
 ** see https://github.com/simpligility/android-maven-plugin/pull/544
 ** contributed by Manfred Moser http://www.simpligility.com
+* Added Manifest Merger V2 and deprecated Manifest-Update mojo
+** see https://github.com/simpligility/android-maven-plugin/pull/539
+** fixes https://github.com/simpligility/android-maven-plugin/issues/519
+** contributed by Benoit Billington https://github.com/Shusshu
 
 Planned changes:
 
