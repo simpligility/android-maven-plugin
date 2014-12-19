@@ -64,6 +64,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
      *             &lt;versionCode&gt;123&lt;/versionCode&gt;
      *             &lt;versionCodeUpdateFromVersion&gt;true|false&lt;/versionCodeUpdateFromVersion&gt;
      *             &lt;mergeLibraries&gt;true|false&lt;/mergeLibraries&gt;
+     *             &lt;mergeReportFile&gt;${project.build.directory}/ManifestMergeReport.txt&lt;/mergeReportFile&gt;
      *             &lt;usesSdk&gt;
      *               &lt;minSdkVersion&gt;14&lt;/minSdkVersion&gt;
      *               &lt;targetSdkVersion&gt;21&lt;/targetSdkVersion&gt;
@@ -121,6 +122,13 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
     protected Boolean manifestMergeLibraries;
 
     /**
+     * Merge Manifest with library projects. Exposed via the project property
+     * <code>android.manifestMerger.mergeLibraries</code>.
+     */
+    @Parameter( property = "android.manifestMerger.mergeReportFile" )
+    protected File manifestMergeReportFile;
+
+    /**
      *  Update the uses-sdk tag. It can be configured to change: <code>android:minSdkVersion</code>,
      *  <code>android:maxSdkVersion</code> and <code>android:targetSdkVersion</code>
      */
@@ -130,6 +138,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
     private String parsedVersionName;
     private Integer parsedVersionCode;
     private UsesSdk parsedUsesSdk;
+    private File parsedMergeReportFile;
 
     /**
      * @throws org.apache.maven.plugin.MojoExecutionException
@@ -157,6 +166,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
         getLog().debug( "    usesSdk=" + parsedUsesSdk );
         getLog().debug( "    versionCodeUpdateFromVersion=" + parsedVersionCodeUpdateFromVersion );
         getLog().debug( "    mergeLibraries=" + parsedMergeLibraries );
+        getLog().debug( "    mergeReportFile=" + parsedMergeReportFile );
 
         if ( ! sourceManifestFile.exists() )
         {
@@ -212,6 +222,14 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
             {
                 parsedMergeLibraries = manifestMergeLibraries;
             }
+            if ( manifestMerger.getMergeReportFile() != null )
+            {
+                parsedMergeReportFile = manifestMerger.getMergeReportFile();
+            }
+            else
+            {
+                parsedMergeReportFile = manifestMergeReportFile;
+            }
         }
         else
         {
@@ -220,6 +238,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
             parsedUsesSdk = manifestUsesSdk;
             parsedVersionCodeUpdateFromVersion = manifestVersionCodeUpdateFromVersion;
             parsedMergeLibraries = manifestMergeLibraries;
+            parsedMergeReportFile = manifestMergeReportFile;
         }
     }
 
@@ -269,7 +288,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
                 versionCode, parsedVersionName,
                 minSdkVersion, targetSdkVersion, null,
                 androidManifestFile.getPath(), ManifestMerger2.MergeType.APPLICATION,
-                new HashMap<String, String>(), null );
+                new HashMap<String, String>(), parsedMergeReportFile );
 
     }
 
