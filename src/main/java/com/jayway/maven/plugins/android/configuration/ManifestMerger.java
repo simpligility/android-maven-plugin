@@ -26,10 +26,16 @@ public class ManifestMerger
     protected UsesSdk usesSdk;
 
     /**
-     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestUpdateMojo
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestMergerMojo
      * #manifestVersionCodeUpdateFromVersion}.
      */
     protected Boolean versionCodeUpdateFromVersion;
+
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestMergerMojo
+     * #manifestMergeLibraries}.
+     */
+    protected Boolean mergeLibraries;
 
     public String getVersionName()
     {
@@ -49,5 +55,10 @@ public class ManifestMerger
     public Boolean getVersionCodeUpdateFromVersion()
     {
         return versionCodeUpdateFromVersion;
+    }
+
+    public Boolean getMergeLibraries()
+    {
+        return mergeLibraries;
     }
 }

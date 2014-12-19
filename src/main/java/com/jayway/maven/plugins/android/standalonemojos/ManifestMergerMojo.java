@@ -1,14 +1,16 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
+import com.android.SdkConstants;
 import com.android.builder.core.AndroidBuilder;
-import com.android.builder.dependency.ManifestDependency;
 import com.android.manifmerger.ManifestMerger2;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
+import com.jayway.maven.plugins.android.common.MavenManifestDependency;
 import com.jayway.maven.plugins.android.configuration.ManifestMerger;
 import com.jayway.maven.plugins.android.configuration.UsesSdk;
 import com.jayway.maven.plugins.android.phase01generatesources.MavenILogger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -18,6 +20,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Manifest Merger V2 <code>AndroidManifest.xml</code> file.
@@ -59,6 +63,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
      *             &lt;versionName&gt;&lt;/versionName&gt;
      *             &lt;versionCode&gt;123&lt;/versionCode&gt;
      *             &lt;versionCodeUpdateFromVersion&gt;true|false&lt;/versionCodeUpdateFromVersion&gt;
+     *             &lt;mergeLibraries&gt;true|false&lt;/mergeLibraries&gt;
      *             &lt;usesSdk&gt;
      *               &lt;minSdkVersion&gt;14&lt;/minSdkVersion&gt;
      *               &lt;targetSdkVersion&gt;21&lt;/targetSdkVersion&gt;
@@ -109,11 +114,19 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
     protected Boolean manifestVersionCodeUpdateFromVersion = false;
 
     /**
+     * Merge Manifest with library projects. Exposed via the project property
+     * <code>android.manifestMerger.mergeLibraries</code>.
+     */
+    @Parameter( property = "android.manifestMerger.mergeLibraries", defaultValue = "false" )
+    protected Boolean manifestMergeLibraries;
+
+    /**
      *  Update the uses-sdk tag. It can be configured to change: <code>android:minSdkVersion</code>,
      *  <code>android:maxSdkVersion</code> and <code>android:targetSdkVersion</code>
      */
     protected UsesSdk manifestUsesSdk;
     private Boolean parsedVersionCodeUpdateFromVersion;
+    private Boolean parsedMergeLibraries;
     private String parsedVersionName;
     private Integer parsedVersionCode;
     private UsesSdk parsedUsesSdk;
@@ -141,7 +154,9 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
         getLog().debug( "    usesSdk=" + parsedUsesSdk );
         getLog().debug( "    versionName=" + parsedVersionName );
         getLog().debug( "    versionCode=" + parsedVersionCode );
-        getLog().debug( "    parsedUsesSdk=" + parsedUsesSdk );
+        getLog().debug( "    usesSdk=" + parsedUsesSdk );
+        getLog().debug( "    versionCodeUpdateFromVersion=" + parsedVersionCodeUpdateFromVersion );
+        getLog().debug( "    mergeLibraries=" + parsedMergeLibraries );
 
         if ( ! sourceManifestFile.exists() )
         {
@@ -189,6 +204,14 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
             {
                 parsedUsesSdk = manifestUsesSdk;
             }
+            if ( manifestMerger.getMergeLibraries() != null )
+            {
+                parsedMergeLibraries = manifestMerger.getMergeLibraries();
+            }
+            else
+            {
+                parsedMergeLibraries = manifestMergeLibraries;
+            }
         }
         else
         {
@@ -196,6 +219,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
             parsedVersionCode = manifestVersionCode;
             parsedUsesSdk = manifestUsesSdk;
             parsedVersionCodeUpdateFromVersion = manifestVersionCodeUpdateFromVersion;
+            parsedMergeLibraries = manifestMergeLibraries;
         }
     }
 
@@ -221,9 +245,27 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
         {
             versionCode = parsedVersionCode;
         }
+        List<MavenManifestDependency> manifestDependencies = new ArrayList<MavenManifestDependency>();
+
+        if ( parsedMergeLibraries )
+        {
+            final Set<Artifact> allArtifacts = project.getDependencyArtifacts();
+            Set<Artifact> dependencyArtifacts = getArtifactResolverHelper().getFilteredArtifacts( allArtifacts );
+
+            for ( Artifact dependency : dependencyArtifacts )
+            {
+                final File unpackedLibFolder = getUnpackedLibFolder( dependency );
+                final File manifestFile = new File( unpackedLibFolder, SdkConstants.FN_ANDROID_MANIFEST_XML );
+                if ( manifestFile.exists() )
+                {
+                    manifestDependencies.add( new MavenManifestDependency( manifestFile,
+                            manifestFile.getAbsolutePath(), new ArrayList<MavenManifestDependency>() ) );
+                }
+            }
+        }
 
         builder.mergeManifests(
-                sourceManifestFile, new ArrayList<File>(), new ArrayList<ManifestDependency>(), "",
+                sourceManifestFile, new ArrayList<File>(), manifestDependencies, "",
                 versionCode, parsedVersionName,
                 minSdkVersion, targetSdkVersion, null,
                 androidManifestFile.getPath(), ManifestMerger2.MergeType.APPLICATION,
