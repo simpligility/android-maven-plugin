@@ -151,15 +151,15 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
             return; // skip, not an android project.
         }
 
-        if ( sourceManifestFile == null )
+        if ( androidManifestFile == null )
         {
-            getLog().debug( "skip, no androidmanifest.xml defined (sourceManifestFile rare case)" );
+            getLog().debug( "skip, no androidmanifest.xml defined (androidManifestFile rare case)" );
             return; // skip, no androidmanifest.xml defined (rare case)
         }
 
         parseConfiguration();
 
-        getLog().info( "Attempting to update manifest " + sourceManifestFile );
+        getLog().info( "Attempting to update manifest " + androidManifestFile );
         getLog().debug( "    usesSdk=" + parsedUsesSdk );
         getLog().debug( "    versionName=" + parsedVersionName );
         getLog().debug( "    versionCode=" + parsedVersionCode );
@@ -168,7 +168,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
         getLog().debug( "    mergeLibraries=" + parsedMergeLibraries );
         getLog().debug( "    mergeReportFile=" + parsedMergeReportFile );
 
-        if ( ! sourceManifestFile.exists() )
+        if ( ! androidManifestFile.exists() )
         {
             return; // skip, no AndroidManifest.xml file found.
         }
@@ -284,10 +284,10 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
         }
 
         builder.mergeManifests(
-                sourceManifestFile, new ArrayList<File>(), manifestDependencies, "",
+                androidManifestFile, new ArrayList<File>(), manifestDependencies, "",
                 versionCode, parsedVersionName,
                 minSdkVersion, targetSdkVersion, null,
-                androidManifestFile.getPath(), ManifestMerger2.MergeType.APPLICATION,
+                destinationManifestFile.getPath(), ManifestMerger2.MergeType.APPLICATION,
                 new HashMap<String, String>(), parsedMergeReportFile );
 
     }
