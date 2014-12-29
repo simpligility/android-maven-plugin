@@ -273,12 +273,6 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private UsesSdk parsedUsesSdk;
 
     /**
-     * The modified <code>AndroidManifest.xml</code> file.
-     */
-    @Parameter( property = "android.manifestFile", defaultValue = "${project.basedir}/src/main/AndroidManifest.xml" )
-    protected File updatedManifestFile;
-
-    /**
      * @throws MojoExecutionException
      * @throws MojoFailureException
      */
@@ -289,14 +283,14 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             return; // skip, not an android project.
         }
 
-        if ( androidManifestFile == null )
+        if ( destinationManifestFile == null )
         {
             return; // skip, no androidmanifest.xml defined (rare case)
         }
 
         parseConfiguration();
 
-        getLog().info( "Attempting to update manifest " + androidManifestFile );
+        getLog().info( "Attempting to update manifest " + destinationManifestFile );
         getLog().debug( "    usesSdk=" + parsedUsesSdk );
         getLog().debug( "    versionName=" + parsedVersionName );
         getLog().debug( "    versionCode=" + parsedVersionCode );
@@ -313,18 +307,18 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         getLog().debug( "    supports-screens: " + ( parsedSupportsScreens == null ? "not set" : "set" ) );
         getLog().debug( "    compatible-screens: " + ( parsedCompatibleScreens == null ? "not set" : "set" ) );
 
-        if ( ! androidManifestFile.exists() )
+        if ( ! destinationManifestFile.exists() )
         {
             return; // skip, no AndroidManifest.xml file found.
         }
 
         try
         {
-            updateManifest( androidManifestFile );
+            updateManifest( destinationManifestFile );
         }
         catch ( IOException e )
         {
-            throw new MojoFailureException( "XML I/O error: " + androidManifestFile, e );
+            throw new MojoFailureException( "XML I/O error: " + destinationManifestFile, e );
         }
         catch ( ParserConfigurationException e )
         {
@@ -332,11 +326,11 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         }
         catch ( SAXException e )
         {
-            throw new MojoFailureException( "Unable to parse XML: " + androidManifestFile, e );
+            throw new MojoFailureException( "Unable to parse XML: " + destinationManifestFile, e );
         }
         catch ( TransformerException e )
         {
-            throw new MojoFailureException( "Unable write XML: " + androidManifestFile, e );
+            throw new MojoFailureException( "Unable write XML: " + destinationManifestFile, e );
         }
     }
 
@@ -660,12 +654,6 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
 
         if ( dirty )
         {
-            if ( updatedManifestFile != null && !manifestFile.equals( updatedManifestFile ) )
-            {
-                project.getProperties().setProperty( "android.manifestFile", updatedManifestFile.getAbsolutePath() );
-
-                manifestFile = updatedManifestFile;
-            }
             if ( manifestFile.exists() && ! manifestFile.delete() )
             {
                 getLog().warn( "Could not remove old " + manifestFile );

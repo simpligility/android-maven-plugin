@@ -45,7 +45,7 @@ public class RedeployMojo extends AbstractAndroidMojo
         {
             String packageToUndeploy = renameManifestPackage != null
                     ? renameManifestPackage
-                    : extractPackageNameFromAndroidManifest( androidManifestFile );
+                    : extractPackageNameFromAndroidManifest( destinationManifestFile );
             if ( StringUtils.isNotBlank( packageToUndeploy ) ) 
             {
                 undeployApk( packageToUndeploy );

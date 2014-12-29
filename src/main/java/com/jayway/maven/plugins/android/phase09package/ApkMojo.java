@@ -929,7 +929,7 @@ public class ApkMojo extends AbstractAndroidMojo
         AaptCommandBuilder commandBuilder = AaptCommandBuilder
                 .packageResources( getLog() )
                 .forceOverwriteExistingFiles()
-                .setPathToAndroidManifest( androidManifestFile )
+                .setPathToAndroidManifest( destinationManifestFile )
                 .addResourceDirectoriesIfExists( overlayDirectories )
                 .addResourceDirectoryIfExists( resourceDirectory )
                 .addResourceDirectoriesIfExists( dependencyArtifactResDirectoryList )

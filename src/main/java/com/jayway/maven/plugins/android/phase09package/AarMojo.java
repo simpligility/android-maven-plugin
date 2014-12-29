@@ -184,7 +184,7 @@ public class AarMojo extends AbstractAndroidMojo
             final ZipArchiver zipArchiver = new ZipArchiver();
             zipArchiver.setDestFile( aarLibrary );
 
-            zipArchiver.addFile( androidManifestFile, "AndroidManifest.xml" );
+            zipArchiver.addFile( destinationManifestFile, "AndroidManifest.xml" );
             addDirectory( zipArchiver, assetsDirectory, "assets" );
             addDirectory( zipArchiver, resourceDirectory, "res" );
             zipArchiver.addFile( classesJar, SdkConstants.FN_CLASSES_JAR );
@@ -375,7 +375,7 @@ public class AarMojo extends AbstractAndroidMojo
                 .packageResources( getLog() )
                 .makePackageDirectories()
                 .forceOverwriteExistingFiles()
-                .setPathToAndroidManifest( androidManifestFile )
+                .setPathToAndroidManifest( destinationManifestFile )
                 .addResourceDirectoriesIfExists( getResourceOverlayDirectories() )
                 .addResourceDirectoryIfExists( resourceDirectory )
                 .addResourceDirectoriesIfExists( dependenciesResDirectories )

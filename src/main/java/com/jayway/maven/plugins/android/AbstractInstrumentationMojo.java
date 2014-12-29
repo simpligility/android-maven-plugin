@@ -272,12 +272,12 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
         if ( parsedInstrumentationPackage == null )
         {
-            parsedInstrumentationPackage = extractPackageNameFromAndroidManifest( androidManifestFile );
+            parsedInstrumentationPackage = extractPackageNameFromAndroidManifest( destinationManifestFile );
         }
 
         if ( parsedInstrumentationRunner == null )
         {
-            parsedInstrumentationRunner = extractInstrumentationRunnerFromAndroidManifest( androidManifestFile );
+            parsedInstrumentationRunner = extractInstrumentationRunnerFromAndroidManifest( destinationManifestFile );
         }
 
         // only run Tests in specific package
@@ -582,7 +582,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
         if ( parsedSkip == null || "auto".equalsIgnoreCase( parsedSkip ) )
         {
-            if ( extractInstrumentationRunnerFromAndroidManifest( androidManifestFile ) == null )
+            if ( extractInstrumentationRunnerFromAndroidManifest( destinationManifestFile ) == null )
             {
                 getLog().info( "No InstrumentationRunner found - skipping tests" );
                 return false;

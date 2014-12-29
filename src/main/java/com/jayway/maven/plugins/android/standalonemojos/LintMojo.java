@@ -625,7 +625,7 @@ public class LintMojo extends AbstractAndroidMojo
 
             List< File > files = new ArrayList< File >();
             files.add( resourceDirectory );
-            files.add( androidManifestFile );
+            files.add( destinationManifestFile );
             files.add( sourceDirectory );
             files.add( assetsDirectory );
 

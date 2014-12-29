@@ -103,7 +103,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * </p>
      * 
      * <p>
-     * The <code>androidManifestFile</code> should also be configured to pull
+     * The <code>destinationManifestFile</code> should also be configured to pull
      * from the build directory so that later phases will pull the merged
      * manifest file.
      * </p>
@@ -136,9 +136,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      *             &lt;groupId&gt;com.jayway.maven.plugins.android.generation2&lt;/groupId&gt;
      *             &lt;artifactId&gt;android-maven-plugin&lt;/artifactId&gt;
      *             &lt;configuration&gt;
-     *                 <b>&lt;androidManifestFile&gt;
+     *                 <b>&lt;destinationManifestFile&gt;
      *                     ${project.build.directory}/AndroidManifest.xml
-     *                 &lt;/androidManifestFile&gt;
+     *                 &lt;/destinationManifestFile&gt;
      *                 &lt;mergeManifests&gt;true&lt;/mergeManifests&gt;</b>
      *             &lt;/configuration&gt;
      *             &lt;extensions&gt;true&lt;/extensions&gt;
@@ -403,14 +403,14 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     }
 
     /**
-     * Copy the AndroidManifest.xml from sourceManifestFile to androidManifestFile
+     * Copy the AndroidManifest.xml from androidManifestFile to destinationManifestFile
      *
      * @throws MojoExecutionException
      */
     protected void copyManifest() throws MojoExecutionException
     {
-        getLog().debug( "copyManifest: " + sourceManifestFile + " -> " + androidManifestFile );
-        if ( sourceManifestFile == null )
+        getLog().debug( "copyManifest: " + androidManifestFile + " -> " + destinationManifestFile );
+        if ( androidManifestFile == null )
         {
             getLog().debug( "Manifest copying disabled. Using default manifest only" );
             return;
@@ -420,7 +420,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse( sourceManifestFile );
+            Document doc = db.parse( androidManifestFile );
             Source source = new DOMSource( doc );
 
             TransformerFactory xfactory = TransformerFactory.newInstance();
@@ -430,9 +430,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             FileWriter writer = null;
             try
             {
-                androidManifestFile.getParentFile().mkdirs();
+                destinationManifestFile.getParentFile().mkdirs();
 
-                writer = new FileWriter( androidManifestFile, false );
+                writer = new FileWriter( destinationManifestFile, false );
                 if ( doc.getXmlEncoding() != null && doc.getXmlVersion() != null )
                 {
                     String xmldecl = String.format( "<?xml version=\"%s\" encoding=\"%s\"?>%n",
@@ -442,7 +442,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 }
                 Result result = new StreamResult( writer );
                 xformer.transform( source, result );
-                getLog().info( "Manifest copied from " + sourceManifestFile + " to " + androidManifestFile );
+                getLog().info( "Manifest copied from " + androidManifestFile + " to " + destinationManifestFile );
             }
             finally
             {
@@ -861,7 +861,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 .forceOverwriteExistingFiles()
                 .disablePngCrunching()
                 .generateRIntoPackage( customPackage )
-                .setPathToAndroidManifest( androidManifestFile )
+                .setPathToAndroidManifest( destinationManifestFile )
                 .addResourceDirectoryIfExists( resourceDirectory )
                 .addResourceDirectoriesIfExists( getResourceOverlayDirectories() )
                     // Need to include any AAR or APKLIB dependencies when generating R because if any local
@@ -1072,21 +1072,21 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         if ( !libManifests.isEmpty() )
         {
-            final File mergedManifest = new File( androidManifestFile.getParent(), "AndroidManifest-merged.xml" );
+            final File mergedManifest = new File( destinationManifestFile.getParent(), "AndroidManifest-merged.xml" );
             final StdLogger stdLogger = new StdLogger( StdLogger.Level.VERBOSE );
             final ManifestMerger merger = new ManifestMerger( MergerLog.wrapSdkLog( stdLogger ), null );
 
             getLog().info( "Merging manifests of dependent apklibs" );
 
-            final boolean mergeSuccess = merger.process( mergedManifest, androidManifestFile,
+            final boolean mergeSuccess = merger.process( mergedManifest, destinationManifestFile,
                 libManifests.toArray( new File[libManifests.size()] ),  null, null );
 
             if ( mergeSuccess )
             {
                 // Replace the original manifest file with the merged one so that
                 // the rest of the build will pick it up.
-                androidManifestFile.delete();
-                mergedManifest.renameTo( androidManifestFile );
+                destinationManifestFile.delete();
+                mergedManifest.renameTo( destinationManifestFile );
                 getLog().info( "Done Merging Manifests of APKLIBs" );
             }
             else
@@ -1106,7 +1106,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         getLog().debug( "Generating BuildConfig file" );
 
         // Create the BuildConfig for our package.
-        String packageName = extractPackageNameFromAndroidManifest( androidManifestFile );
+        String packageName = extractPackageNameFromAndroidManifest( destinationManifestFile );
         if ( StringUtils.isNotBlank( customPackage ) )
         {
             packageName = customPackage;
