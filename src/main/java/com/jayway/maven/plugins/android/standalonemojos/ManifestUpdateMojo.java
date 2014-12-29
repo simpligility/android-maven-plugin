@@ -273,9 +273,10 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private UsesSdk parsedUsesSdk;
 
     /**
-     * The modified <code>AndroidManifest.xml</code> file.
+     * The modified <code>AndroidManifest.xml</code> file. If not specified, manifest file is updated
+     * by replacing its contents.
      */
-    @Parameter( property = "android.manifestFile", defaultValue = "${project.basedir}/src/main/AndroidManifest.xml" )
+    @Parameter( property = "android.manifestFile" )
     protected File updatedManifestFile;
 
     /**
