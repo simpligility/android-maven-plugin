@@ -28,6 +28,15 @@
 ** see https://github.com/simpligility/android-maven-plugin/pull/539
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/519
 ** contributed by Benoit Billington https://github.com/Shusshu
+* Refactor the 3 parameters used for the androidManifest.xml into 2 params 
+** see https://github.com/simpligility/android-maven-plugin/pull/542
+** see https://github.com/simpligility/android-maven-plugin/issues/508
+** contributed by Benoit Billington https://github.com/Shusshu
+
+ATTENTION:
+
+* updatedManifestFile & sourceManifestFile have been removed.
+** See https://github.com/simpligility/android-maven-plugin/pull/542
 
 Planned changes:
 
