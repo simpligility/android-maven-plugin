@@ -32,15 +32,19 @@
 ** see https://github.com/simpligility/android-maven-plugin/pull/542
 ** see https://github.com/simpligility/android-maven-plugin/issues/508
 ** contributed by Benoit Billington https://github.com/Shusshu
+* Fixed broken undeploy mojo AndroidManifest parsing
+** see https://github.com/simpligility/android-maven-plugin/issues/550
+** contributed by Manfred Moser http://www.simpligility.com
 
 ATTENTION:
 
-* updatedManifestFile & sourceManifestFile have been removed.
+* updatedManifestFile & sourceManifestFile parameters have been removed.
+* use androidManifestFile and destinationManifestFile
 ** See https://github.com/simpligility/android-maven-plugin/pull/542
 
 Planned changes:
 
-* adapt Takari lifecycle to improve build speed
+* use Takari lifecycle to improve build speed
 ** see https://github.com/simpligility/android-maven-plugin/issues/532
 * migrate more documentation into the github project
 * migrate more tests to be instrumentation tests with example projects
@@ -80,8 +84,6 @@ Planned changes:
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/489
 ** see https://github.com/simpligility/android-maven-plugin/pull/515
 ** contributed by Dmitry Berezhnoy https://github.com/deadmoto
-
-
 
 == 4.0.0-rc.3 - released 2014-10-28
 
