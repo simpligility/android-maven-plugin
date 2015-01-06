@@ -3,7 +3,6 @@ package com.jayway.maven.plugins.android.standalonemojos;
 import com.jayway.maven.plugins.android.*;
 import io.takari.maven.testing.TestResources;
 import io.takari.maven.testing.executor.MavenExecutionResult;
-import io.takari.maven.testing.executor.MavenInstallations;
 import io.takari.maven.testing.executor.MavenRuntime;
 import io.takari.maven.testing.executor.MavenVersions;
 import io.takari.maven.testing.executor.junit.MavenJUnitTestRunner;
@@ -21,7 +20,6 @@ import java.io.File;
  * 
  */
 @RunWith( MavenJUnitTestRunner.class )
-@MavenInstallations( {"target/maven-installation/apache-maven-3.2.3"} )
 @MavenVersions( {"3.0.5", "3.2.3"} )
 public class LintMojoIntegrationTest
 {
