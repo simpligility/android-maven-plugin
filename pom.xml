@@ -33,7 +33,7 @@
     <scm.branch>master</scm.branch>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <maven-plugin-plugin.version>3.2</maven-plugin-plugin.version>
+    <maven-plugin-plugin.version>3.3</maven-plugin-plugin.version>
     <maven.api.version>3.0.4</maven.api.version>
 
     <easymock.version>3.2</easymock.version>
