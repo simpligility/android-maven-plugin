@@ -33,6 +33,7 @@
     <scm.branch>master</scm.branch>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+    <!--  upgrade to 3.4 fails build, see https://github.com/simpligility/android-maven-plugin/issues/554 -->
     <maven-plugin-plugin.version>3.3</maven-plugin-plugin.version>
     <maven.api.version>3.0.4</maven.api.version>
 
