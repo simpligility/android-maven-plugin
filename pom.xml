@@ -881,10 +881,9 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
-           <!--  <configuration>
-             <argline>-Xms512m -Xmx1024m -XX:MaxPermSize=512m</argLine>
+            <configuration>
+             <argLine>-Xms512m -Xmx1024m -XX:MaxPermSize=1024m</argLine>
             </configuration>
-             -->
             <executions>
               <execution>
                 <goals>
