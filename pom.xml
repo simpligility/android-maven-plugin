@@ -11,11 +11,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <!-- the progressive-company-super-pom manages all plugin versions for 
-    us, we only need to override where we depend on lower version (e.g. plugin-plugin) -->
+    us, we only need to override where we depend on lower version -->
   <parent>
     <groupId>com.simpligility.maven</groupId>
     <artifactId>progressive-organization-pom</artifactId>
-    <version>2.1.1</version>
+    <version>2.3.0</version>
   </parent>
 
   <groupId>com.simpligility.maven.plugins</groupId>
@@ -33,7 +33,7 @@
     <scm.branch>master</scm.branch>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <maven-plugin-plugin.version>3.2</maven-plugin-plugin.version>
+    <maven-plugin-plugin.version>3.3</maven-plugin-plugin.version>
     <maven.api.version>3.0.4</maven.api.version>
 
     <easymock.version>3.2</easymock.version>
@@ -216,7 +216,7 @@
       <dependency>
         <groupId>org.apache.maven.plugin-tools</groupId>
         <artifactId>maven-plugin-annotations</artifactId>
-        <version>3.2</version>
+        <version>${maven-plugin-plugin.version}</version>
         <scope>provided</scope>
       </dependency>
 
@@ -672,12 +672,12 @@
       </plugin>
       <plugin>
         <artifactId>maven-plugin-plugin</artifactId>
+        <version>${maven-plugin-plugin.version}</version>
         <configuration>
           <!-- <packagingTypes>
             <packaging>takari-maven-plugin</packaging>
           </packagingTypes>
            -->
-          <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
         </configuration>
         <executions>
           <execution>
