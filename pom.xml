@@ -257,13 +257,6 @@
         <version>2.2</version>
       </dependency>
 
-      <!-- Required for DefaultMavenRuntime in DependencyResolver -->
-      <dependency>
-        <groupId>org.apache.maven.shared</groupId>
-        <artifactId>maven-runtime</artifactId>
-        <version>1.0-alpha-3</version>
-      </dependency>
-
       <!-- test deps -->
       <dependency>
         <groupId>io.takari.maven.plugins</groupId>
@@ -467,12 +460,6 @@
       <artifactId>google-api-services-androidpublisher</artifactId>
     </dependency>
 
-    <!-- Required for DefaultMavenRuntime in DependencyResolver -->
-    <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-runtime</artifactId>
-    </dependency>
-
     <!-- test deps -->
     <dependency>
       <groupId>io.takari.maven.plugins</groupId>
@@ -578,7 +565,6 @@
           <configLocation>src/conf/maven_checks.xml</configLocation>
           <enableRulesSummary>false</enableRulesSummary>
           <excludes>**/**HelpMojo**</excludes>
-
         </configuration>
 
         <executions>
