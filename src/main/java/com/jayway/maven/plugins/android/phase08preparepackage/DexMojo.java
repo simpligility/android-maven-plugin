@@ -520,7 +520,9 @@ public class DexMojo extends AbstractAndroidMojo
             commands.add( "--multi-dex" );
             if ( parsedMainDexList == null )
             {
-                throw new MojoExecutionException( "Missing main dex list." );
+                File generatedMainDexClasses = generateMainDexClassesFile();
+                commands.add( "--main-dex-list=" + generatedMainDexClasses );
+                parsedMinimalMainDex = true;
             }
             else
             {
@@ -567,6 +569,33 @@ public class DexMojo extends AbstractAndroidMojo
         return new File( javaHome + slash + "bin" + slash + "java" );
     }
 
+    private File generateMainDexClassesFile() throws MojoExecutionException 
+    {
+        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        executor.setLogger( getLog() );
+        List< String> commands = new ArrayList< String>();
+        commands.add( "--output" );
+        
+        File mainDexClasses = new File( targetDirectory, "mainDexClasses.txt" );
+        commands.add( mainDexClasses.getAbsolutePath() );
+        
+        Set< File> inputFiles = getDexInputFiles();  
+        StringBuilder sb = new StringBuilder();
+        sb.append( '"' ).append( StringUtils.join( inputFiles, File.pathSeparatorChar ) ).append( '"' );
+        commands.add( sb.toString() );
+        
+        String executable = getAndroidSdk().getMainDexClasses().getAbsolutePath();
+        try
+        {
+            executor.executeCommand( executable, commands, project.getBasedir(), false );
+        } 
+        catch ( ExecutionException ex ) 
+        {
+            throw new MojoExecutionException( "Failed to execute mainDexClasses", ex );
+        }
+        return mainDexClasses;
+    }    
+    
     /**
      * @return
      * @throws MojoExecutionException
