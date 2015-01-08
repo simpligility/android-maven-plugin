@@ -11,7 +11,7 @@ Planned changes:
 ** see https://github.com/simpligility/android-maven-plugin/issues/452
 * anything else contributed by the community
 
-== 4.1.0 - upcoming
+== 4.1.0 - released 2015-01-08
 
 * Updated to Android SDK libraries 1.0.0 / 24.0.0
 ** see https://github.com/simpligility/android-maven-plugin/pull/531
