@@ -213,7 +213,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     /**
      * The directory containing the aidl files.
      */
-    @Parameter( property = "android.aidlSourceDirectory", defaultValue = "${project.build.sourceDirectory}" )
+    @Parameter( property = "android.aidlSourceDirectory", defaultValue = "${project.basedir}/src/main/aidl" )
     protected File aidlSourceDirectory;
 
     /**
