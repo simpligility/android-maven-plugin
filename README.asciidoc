@@ -1,6 +1,6 @@
 == ANDROID MAVEN PLUGIN
 
-A plugin for Android application development with http://maven.apache.org[Apache Maven 3.0.4+] and 
+A plugin for Android application development with http://maven.apache.org[Apache Maven 3.0.5+] and 
 the http://tools.android.com[Android SDK].
 
 === Links
