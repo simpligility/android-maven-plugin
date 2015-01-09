@@ -192,7 +192,7 @@
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>             <strong class="jxr_keyword">final</strong> ZipArchiver zipArchiver = <strong class="jxr_keyword">new</strong> ZipArchiver();
 <a class="jxr_linenumber" name="L185" href="#L185">185</a>             zipArchiver.setDestFile( aarLibrary );
 <a class="jxr_linenumber" name="L186" href="#L186">186</a> 
-<a class="jxr_linenumber" name="L187" href="#L187">187</a>             zipArchiver.addFile( androidManifestFile, <span class="jxr_string">"AndroidManifest.xml"</span> );
+<a class="jxr_linenumber" name="L187" href="#L187">187</a>             zipArchiver.addFile( destinationManifestFile, <span class="jxr_string">"AndroidManifest.xml"</span> );
 <a class="jxr_linenumber" name="L188" href="#L188">188</a>             addDirectory( zipArchiver, assetsDirectory, <span class="jxr_string">"assets"</span> );
 <a class="jxr_linenumber" name="L189" href="#L189">189</a>             addDirectory( zipArchiver, resourceDirectory, <span class="jxr_string">"res"</span> );
 <a class="jxr_linenumber" name="L190" href="#L190">190</a>             zipArchiver.addFile( classesJar, SdkConstants.FN_CLASSES_JAR );
@@ -383,7 +383,7 @@
 <a class="jxr_linenumber" name="L375" href="#L375">375</a>                 .packageResources( getLog() )
 <a class="jxr_linenumber" name="L376" href="#L376">376</a>                 .makePackageDirectories()
 <a class="jxr_linenumber" name="L377" href="#L377">377</a>                 .forceOverwriteExistingFiles()
-<a class="jxr_linenumber" name="L378" href="#L378">378</a>                 .setPathToAndroidManifest( androidManifestFile )
+<a class="jxr_linenumber" name="L378" href="#L378">378</a>                 .setPathToAndroidManifest( destinationManifestFile )
 <a class="jxr_linenumber" name="L379" href="#L379">379</a>                 .addResourceDirectoriesIfExists( getResourceOverlayDirectories() )
 <a class="jxr_linenumber" name="L380" href="#L380">380</a>                 .addResourceDirectoryIfExists( resourceDirectory )
 <a class="jxr_linenumber" name="L381" href="#L381">381</a>                 .addResourceDirectoriesIfExists( dependenciesResDirectories )
@@ -413,6 +413,6 @@
 <a class="jxr_linenumber" name="L405" href="#L405">405</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2008&#x2013;2014 <a href="http://www.simpligility.com">simpligility technologies inc.</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2008&#x2013;2015 <a href="http://www.simpligility.com">simpligility technologies inc.</a>. All rights reserved.</div>
 </body>
 </html>

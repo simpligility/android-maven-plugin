@@ -111,7 +111,7 @@
 <a class="jxr_linenumber" name="L103" href="#L103">103</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L104" href="#L104">104</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L106" href="#L106">106</a> <em class="jxr_javadoccomment">     * The &lt;code&gt;androidManifestFile&lt;/code&gt; should also be configured to pull</em>
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> <em class="jxr_javadoccomment">     * The &lt;code&gt;destinationManifestFile&lt;/code&gt; should also be configured to pull</em>
 <a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">     * from the build directory so that later phases will pull the merged</em>
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">     * manifest file.</em>
 <a class="jxr_linenumber" name="L109" href="#L109">109</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
@@ -144,9 +144,9 @@
 <a class="jxr_linenumber" name="L136" href="#L136">136</a> <em class="jxr_javadoccomment">     *             &amp;lt;groupId&amp;gt;com.jayway.maven.plugins.android.generation2&amp;lt;/groupId&amp;gt;</em>
 <a class="jxr_linenumber" name="L137" href="#L137">137</a> <em class="jxr_javadoccomment">     *             &amp;lt;artifactId&amp;gt;android-maven-plugin&amp;lt;/artifactId&amp;gt;</em>
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> <em class="jxr_javadoccomment">     *             &amp;lt;configuration&amp;gt;</em>
-<a class="jxr_linenumber" name="L139" href="#L139">139</a> <em class="jxr_javadoccomment">     *                 &lt;b&gt;&amp;lt;androidManifestFile&amp;gt;</em>
+<a class="jxr_linenumber" name="L139" href="#L139">139</a> <em class="jxr_javadoccomment">     *                 &lt;b&gt;&amp;lt;destinationManifestFile&amp;gt;</em>
 <a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">     *                     ${project.build.directory}/AndroidManifest.xml</em>
-<a class="jxr_linenumber" name="L141" href="#L141">141</a> <em class="jxr_javadoccomment">     *                 &amp;lt;/androidManifestFile&amp;gt;</em>
+<a class="jxr_linenumber" name="L141" href="#L141">141</a> <em class="jxr_javadoccomment">     *                 &amp;lt;/destinationManifestFile&amp;gt;</em>
 <a class="jxr_linenumber" name="L142" href="#L142">142</a> <em class="jxr_javadoccomment">     *                 &amp;lt;mergeManifests&amp;gt;true&amp;lt;/mergeManifests&amp;gt;&lt;/b&gt;</em>
 <a class="jxr_linenumber" name="L143" href="#L143">143</a> <em class="jxr_javadoccomment">     *             &amp;lt;/configuration&amp;gt;</em>
 <a class="jxr_linenumber" name="L144" href="#L144">144</a> <em class="jxr_javadoccomment">     *             &amp;lt;extensions&amp;gt;true&amp;lt;/extensions&amp;gt;</em>
@@ -411,14 +411,14 @@
 <a class="jxr_linenumber" name="L403" href="#L403">403</a>     }
 <a class="jxr_linenumber" name="L404" href="#L404">404</a> 
 <a class="jxr_linenumber" name="L405" href="#L405">405</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">     * Copy the AndroidManifest.xml from sourceManifestFile to androidManifestFile</em>
+<a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">     * Copy the AndroidManifest.xml from androidManifestFile to destinationManifestFile</em>
 <a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">     *</em>
 <a class="jxr_linenumber" name="L408" href="#L408">408</a> <em class="jxr_javadoccomment">     * @throws MojoExecutionException</em>
 <a class="jxr_linenumber" name="L409" href="#L409">409</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L410" href="#L410">410</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> copyManifest() <strong class="jxr_keyword">throws</strong> MojoExecutionException
 <a class="jxr_linenumber" name="L411" href="#L411">411</a>     {
-<a class="jxr_linenumber" name="L412" href="#L412">412</a>         getLog().debug( <span class="jxr_string">"copyManifest: "</span> + sourceManifestFile + <span class="jxr_string">" -&gt; "</span> + androidManifestFile );
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>         <strong class="jxr_keyword">if</strong> ( sourceManifestFile == <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L412" href="#L412">412</a>         getLog().debug( <span class="jxr_string">"copyManifest: "</span> + androidManifestFile + <span class="jxr_string">" -&gt; "</span> + destinationManifestFile );
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>         <strong class="jxr_keyword">if</strong> ( androidManifestFile == <strong class="jxr_keyword">null</strong> )
 <a class="jxr_linenumber" name="L414" href="#L414">414</a>         {
 <a class="jxr_linenumber" name="L415" href="#L415">415</a>             getLog().debug( <span class="jxr_string">"Manifest copying disabled. Using default manifest only"</span> );
 <a class="jxr_linenumber" name="L416" href="#L416">416</a>             <strong class="jxr_keyword">return</strong>;
@@ -428,7 +428,7 @@
 <a class="jxr_linenumber" name="L420" href="#L420">420</a>         {
 <a class="jxr_linenumber" name="L421" href="#L421">421</a>             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 <a class="jxr_linenumber" name="L422" href="#L422">422</a>             DocumentBuilder db = dbf.newDocumentBuilder();
-<a class="jxr_linenumber" name="L423" href="#L423">423</a>             Document doc = db.parse( sourceManifestFile );
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>             Document doc = db.parse( androidManifestFile );
 <a class="jxr_linenumber" name="L424" href="#L424">424</a>             Source source = <strong class="jxr_keyword">new</strong> DOMSource( doc );
 <a class="jxr_linenumber" name="L425" href="#L425">425</a> 
 <a class="jxr_linenumber" name="L426" href="#L426">426</a>             TransformerFactory xfactory = TransformerFactory.newInstance();
@@ -438,9 +438,9 @@
 <a class="jxr_linenumber" name="L430" href="#L430">430</a>             FileWriter writer = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L431" href="#L431">431</a>             <strong class="jxr_keyword">try</strong>
 <a class="jxr_linenumber" name="L432" href="#L432">432</a>             {
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>                 androidManifestFile.getParentFile().mkdirs();
+<a class="jxr_linenumber" name="L433" href="#L433">433</a>                 destinationManifestFile.getParentFile().mkdirs();
 <a class="jxr_linenumber" name="L434" href="#L434">434</a> 
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>                 writer = <strong class="jxr_keyword">new</strong> FileWriter( androidManifestFile, false );
+<a class="jxr_linenumber" name="L435" href="#L435">435</a>                 writer = <strong class="jxr_keyword">new</strong> FileWriter( destinationManifestFile, false );
 <a class="jxr_linenumber" name="L436" href="#L436">436</a>                 <strong class="jxr_keyword">if</strong> ( doc.getXmlEncoding() != <strong class="jxr_keyword">null</strong> &amp;&amp; doc.getXmlVersion() != <strong class="jxr_keyword">null</strong> )
 <a class="jxr_linenumber" name="L437" href="#L437">437</a>                 {
 <a class="jxr_linenumber" name="L438" href="#L438">438</a>                     String xmldecl = String.format( <span class="jxr_string">"&lt;?xml version=\&quot;%s\&quot; encoding=\&quot;%s\&quot;?&gt;%n"</span>,
@@ -450,7 +450,7 @@
 <a class="jxr_linenumber" name="L442" href="#L442">442</a>                 }
 <a class="jxr_linenumber" name="L443" href="#L443">443</a>                 Result result = <strong class="jxr_keyword">new</strong> StreamResult( writer );
 <a class="jxr_linenumber" name="L444" href="#L444">444</a>                 xformer.transform( source, result );
-<a class="jxr_linenumber" name="L445" href="#L445">445</a>                 getLog().info( <span class="jxr_string">"Manifest copied from "</span> + sourceManifestFile + <span class="jxr_string">" to "</span> + androidManifestFile );
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>                 getLog().info( <span class="jxr_string">"Manifest copied from "</span> + androidManifestFile + <span class="jxr_string">" to "</span> + destinationManifestFile );
 <a class="jxr_linenumber" name="L446" href="#L446">446</a>             }
 <a class="jxr_linenumber" name="L447" href="#L447">447</a>             <strong class="jxr_keyword">finally</strong>
 <a class="jxr_linenumber" name="L448" href="#L448">448</a>             {
@@ -869,7 +869,7 @@
 <a class="jxr_linenumber" name="L861" href="#L861">861</a>                 .forceOverwriteExistingFiles()
 <a class="jxr_linenumber" name="L862" href="#L862">862</a>                 .disablePngCrunching()
 <a class="jxr_linenumber" name="L863" href="#L863">863</a>                 .generateRIntoPackage( customPackage )
-<a class="jxr_linenumber" name="L864" href="#L864">864</a>                 .setPathToAndroidManifest( androidManifestFile )
+<a class="jxr_linenumber" name="L864" href="#L864">864</a>                 .setPathToAndroidManifest( destinationManifestFile )
 <a class="jxr_linenumber" name="L865" href="#L865">865</a>                 .addResourceDirectoryIfExists( resourceDirectory )
 <a class="jxr_linenumber" name="L866" href="#L866">866</a>                 .addResourceDirectoriesIfExists( getResourceOverlayDirectories() )
 <a class="jxr_linenumber" name="L867" href="#L867">867</a>                     <em class="jxr_comment">// Need to include any AAR or APKLIB dependencies when generating R because if any local</em>
@@ -1080,21 +1080,21 @@
 <a class="jxr_linenumber" name="L1072" href="#L1072">1072</a> 
 <a class="jxr_linenumber" name="L1073" href="#L1073">1073</a>         <strong class="jxr_keyword">if</strong> ( !libManifests.isEmpty() )
 <a class="jxr_linenumber" name="L1074" href="#L1074">1074</a>         {
-<a class="jxr_linenumber" name="L1075" href="#L1075">1075</a>             <strong class="jxr_keyword">final</strong> File mergedManifest = <strong class="jxr_keyword">new</strong> File( androidManifestFile.getParent(), <span class="jxr_string">"AndroidManifest-merged.xml"</span> );
+<a class="jxr_linenumber" name="L1075" href="#L1075">1075</a>             <strong class="jxr_keyword">final</strong> File mergedManifest = <strong class="jxr_keyword">new</strong> File( destinationManifestFile.getParent(), <span class="jxr_string">"AndroidManifest-merged.xml"</span> );
 <a class="jxr_linenumber" name="L1076" href="#L1076">1076</a>             <strong class="jxr_keyword">final</strong> StdLogger stdLogger = <strong class="jxr_keyword">new</strong> StdLogger( StdLogger.Level.VERBOSE );
-<a class="jxr_linenumber" name="L1077" href="#L1077">1077</a>             <strong class="jxr_keyword">final</strong> ManifestMerger merger = <strong class="jxr_keyword">new</strong> ManifestMerger( MergerLog.wrapSdkLog( stdLogger ), <strong class="jxr_keyword">null</strong> );
+<a class="jxr_linenumber" name="L1077" href="#L1077">1077</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/configuration/ManifestMerger.html">ManifestMerger</a> merger = <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/configuration/ManifestMerger.html">ManifestMerger</a>( MergerLog.wrapSdkLog( stdLogger ), <strong class="jxr_keyword">null</strong> );
 <a class="jxr_linenumber" name="L1078" href="#L1078">1078</a> 
 <a class="jxr_linenumber" name="L1079" href="#L1079">1079</a>             getLog().info( <span class="jxr_string">"Merging manifests of dependent apklibs"</span> );
 <a class="jxr_linenumber" name="L1080" href="#L1080">1080</a> 
-<a class="jxr_linenumber" name="L1081" href="#L1081">1081</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> mergeSuccess = merger.process( mergedManifest, androidManifestFile,
+<a class="jxr_linenumber" name="L1081" href="#L1081">1081</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> mergeSuccess = merger.process( mergedManifest, destinationManifestFile,
 <a class="jxr_linenumber" name="L1082" href="#L1082">1082</a>                 libManifests.toArray( <strong class="jxr_keyword">new</strong> File[libManifests.size()] ),  <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong> );
 <a class="jxr_linenumber" name="L1083" href="#L1083">1083</a> 
 <a class="jxr_linenumber" name="L1084" href="#L1084">1084</a>             <strong class="jxr_keyword">if</strong> ( mergeSuccess )
 <a class="jxr_linenumber" name="L1085" href="#L1085">1085</a>             {
 <a class="jxr_linenumber" name="L1086" href="#L1086">1086</a>                 <em class="jxr_comment">// Replace the original manifest file with the merged one so that</em>
 <a class="jxr_linenumber" name="L1087" href="#L1087">1087</a>                 <em class="jxr_comment">// the rest of the build will pick it up.</em>
-<a class="jxr_linenumber" name="L1088" href="#L1088">1088</a>                 androidManifestFile.delete();
-<a class="jxr_linenumber" name="L1089" href="#L1089">1089</a>                 mergedManifest.renameTo( androidManifestFile );
+<a class="jxr_linenumber" name="L1088" href="#L1088">1088</a>                 destinationManifestFile.delete();
+<a class="jxr_linenumber" name="L1089" href="#L1089">1089</a>                 mergedManifest.renameTo( destinationManifestFile );
 <a class="jxr_linenumber" name="L1090" href="#L1090">1090</a>                 getLog().info( <span class="jxr_string">"Done Merging Manifests of APKLIBs"</span> );
 <a class="jxr_linenumber" name="L1091" href="#L1091">1091</a>             }
 <a class="jxr_linenumber" name="L1092" href="#L1092">1092</a>             <strong class="jxr_keyword">else</strong>
@@ -1114,7 +1114,7 @@
 <a class="jxr_linenumber" name="L1106" href="#L1106">1106</a>         getLog().debug( <span class="jxr_string">"Generating BuildConfig file"</span> );
 <a class="jxr_linenumber" name="L1107" href="#L1107">1107</a> 
 <a class="jxr_linenumber" name="L1108" href="#L1108">1108</a>         <em class="jxr_comment">// Create the BuildConfig for our package.</em>
-<a class="jxr_linenumber" name="L1109" href="#L1109">1109</a>         String packageName = extractPackageNameFromAndroidManifest( androidManifestFile );
+<a class="jxr_linenumber" name="L1109" href="#L1109">1109</a>         String packageName = extractPackageNameFromAndroidManifest( destinationManifestFile );
 <a class="jxr_linenumber" name="L1110" href="#L1110">1110</a>         <strong class="jxr_keyword">if</strong> ( StringUtils.isNotBlank( customPackage ) )
 <a class="jxr_linenumber" name="L1111" href="#L1111">1111</a>         {
 <a class="jxr_linenumber" name="L1112" href="#L1112">1112</a>             packageName = customPackage;
@@ -1330,6 +1330,6 @@
 <a class="jxr_linenumber" name="L1322" href="#L1322">1322</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2008&#x2013;2014 <a href="http://www.simpligility.com">simpligility technologies inc.</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2008&#x2013;2015 <a href="http://www.simpligility.com">simpligility technologies inc.</a>. All rights reserved.</div>
 </body>
 </html>
