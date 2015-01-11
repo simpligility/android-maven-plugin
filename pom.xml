@@ -43,8 +43,8 @@
 
     <!-- Attention - make sure that the tools version is the versions of 
       the transitive dependencies of the builder version -->
-    <android.builder.version>1.0.0</android.builder.version>
-    <android.tools.version>24.0.0</android.tools.version>
+    <android.builder.version>1.0.1</android.builder.version>
+    <android.tools.version>24.0.1</android.tools.version>
   </properties>
 
   <scm>
