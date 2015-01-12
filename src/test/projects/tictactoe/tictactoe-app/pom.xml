@@ -16,6 +16,9 @@
 
   <properties>
     <environment>development</environment>
+    <android.versionCode>42</android.versionCode>
+    <android.minSdk>14</android.minSdk>
+    <android.targetSdk>21</android.targetSdk>
   </properties>
 
   <dependencies>
@@ -42,16 +45,30 @@
     <plugins>
       <plugin>
         <groupId>com.simpligility.maven.plugins</groupId>
-
         <artifactId>android-maven-plugin</artifactId>
         <extensions>true</extensions>
         <configuration>
           <!--<extractDuplicates>true</extractDuplicates> -->
-          <mergeManifests>true</mergeManifests>
-          <manifest>
-            <debuggable>true</debuggable>
-          </manifest>
+          <manifestMerger>
+            <versionCode>${android.versionCode}</versionCode>
+            <versionCodeUpdateFromVersion>false</versionCodeUpdateFromVersion>
+            <usesSdk>
+              <minSdkVersion>${android.minSdk}</minSdkVersion>
+              <targetSdkVersion>${android.targetSdk}</targetSdkVersion>
+            </usesSdk>
+            <mergeLibraries>true</mergeLibraries>
+            <mergeReportFile>${project.build.directory}/ManifestMergeReport.txt</mergeReportFile>
+          </manifestMerger>
         </configuration>
+        <executions>
+          <execution>
+            <id>manifestMerger</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>manifest-merger</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -120,7 +137,6 @@
             proguard and we run the manifest update -->
           <plugin>
             <groupId>com.simpligility.maven.plugins</groupId>
-
             <artifactId>android-maven-plugin</artifactId>
             <inherited>true</inherited>
             <configuration>
@@ -135,10 +151,16 @@
                 <outputApk>${project.build.directory}/${project.artifactId}-signed-aligned.apk
                 </outputApk>
               </zipalign>
-              <manifest>
-                <debuggable>false</debuggable>
-                <versionCodeAutoIncrement>true</versionCodeAutoIncrement>
-              </manifest>
+              <manifestMerger>
+                <versionCode>${android.versionCode}</versionCode>
+                <versionCodeUpdateFromVersion>false</versionCodeUpdateFromVersion>
+                <usesSdk>
+                  <minSdkVersion>${android.minSdk}</minSdkVersion>
+                  <targetSdkVersion>${android.targetSdk}</targetSdkVersion>
+                </usesSdk>
+                <mergeLibraries>true</mergeLibraries>
+                <mergeReportFile>${project.build.directory}/ManifestMergeReport.txt</mergeReportFile>
+              </manifestMerger>
               <proguard>
                 <skip>false</skip>
               </proguard>
@@ -147,10 +169,10 @@
             </configuration>
             <executions>
               <execution>
-                <id>manifestUpdate</id>
+                <id>manifestMerger</id>
                 <phase>process-resources</phase>
                 <goals>
-                  <goal>manifest-update</goal>
+                  <goal>manifest-merger</goal>
                 </goals>
               </execution>
               <execution>

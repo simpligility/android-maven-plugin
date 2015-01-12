@@ -166,7 +166,10 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      *     &lt;/resource&gt;
      * &lt;/resources&gt;
      * </pre>
+     * @deprecated Use ManifestMerger v2 instead
+     * {@link com.jayway.maven.plugins.android.standalonemojos.ManifestMergerMojo}
      */
+    @Deprecated
     @Parameter( property = "android.mergeManifests", defaultValue = "false" )
     protected boolean mergeManifests;
 
@@ -1047,6 +1050,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
     }
 
+    /**
+     * @deprecated Use ManifestMerger v2 instead
+     * {@link com.jayway.maven.plugins.android.standalonemojos.ManifestMergerMojo}
+     * @throws MojoExecutionException
+     */
+    @Deprecated
     private void mergeManifests() throws MojoExecutionException
     {
         getLog().debug( "mergeManifests: " + mergeManifests );

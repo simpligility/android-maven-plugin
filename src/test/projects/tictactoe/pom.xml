@@ -10,7 +10,7 @@
   <name>TicTacToe - Parent</name>
   <properties>
     <!-- at test time this will be overridden with snapshot version -->
-    <it-plugin.version>4.0.0</it-plugin.version>
+    <it-plugin.version>4.1.0</it-plugin.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -44,12 +44,11 @@
 
         <plugin>
           <groupId>com.simpligility.maven.plugins</groupId>
-
           <artifactId>android-maven-plugin</artifactId>
           <version>${it-plugin.version}</version>
           <configuration>
             <sdk>
-              <platform>19</platform>
+              <platform>21</platform>
             </sdk>
             <emulator>
               <avd>23</avd>
