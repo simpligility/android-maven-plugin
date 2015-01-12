@@ -68,7 +68,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
      *             &lt;usesSdk&gt;
      *               &lt;minSdkVersion&gt;14&lt;/minSdkVersion&gt;
      *               &lt;targetSdkVersion&gt;21&lt;/targetSdkVersion&gt;
-     *             &lt;/versionCode&gt;
+     *             &lt;/usesSdk&gt;
      *           &lt;/manifestMerger&gt;
      *         &lt;/configuration&gt;
      *       &lt;/execution&gt;
