@@ -2,6 +2,10 @@
 
 == 4.1.x or higher - upcoming
 
+* Added Manifest Merger v2 example (tictactoe) & Deprecated merge manifest v1
+** see https://github.com/simpligility/android-maven-plugin/pull/560
+** contributed by Benoit Billington https://github.com/Shusshu
+
 Planned changes:
 
 * potentially use Takari lifecycle to improve build speed
