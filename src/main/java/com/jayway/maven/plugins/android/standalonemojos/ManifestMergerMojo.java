@@ -308,8 +308,10 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
                            + "to avoid that the manifest merger messes things up..." );
             try
             {
+                // Create temp file:
                 androidManifestFileLF = new File( targetDirectory, "AndroidManifest_LF_EOL.xml" );
                 FileUtils.copyFile( androidManifestFile, androidManifestFileLF );
+                // Convert line endings:
                 EOLUtils.convertToUnixEOL( androidManifestFileLF );
             }
             catch ( IOException ioe )
@@ -339,6 +341,8 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
             {
                 getLog().warn( "Failed to convert manifest file line endings from LF to CRLF", ioe );
             }
+            // Delete temp file:
+            FileUtils.deleteQuietly( androidManifestFileLF );
         }
     }
 
