@@ -5,10 +5,12 @@ import com.android.builder.core.AndroidBuilder;
 import com.android.manifmerger.ManifestMerger2;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
+import com.jayway.maven.plugins.android.common.EOLUtils;
 import com.jayway.maven.plugins.android.common.MavenManifestDependency;
 import com.jayway.maven.plugins.android.configuration.ManifestMerger;
 import com.jayway.maven.plugins.android.configuration.UsesSdk;
 import com.jayway.maven.plugins.android.phase01generatesources.MavenILogger;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -18,6 +20,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +31,7 @@ import java.util.Set;
  * http://tools.android.com/tech-docs/new-build-system/user-guide/manifest-merger
  *
  * @author Benoit Billington <benoit.billington@gmail.com>
+ * @author Matthias Stevens <matthias.stevens@gmail.com>
  */
 @Mojo( name = "manifest-merger", defaultPhase = LifecyclePhase.PROCESS_RESOURCES )
 public class ManifestMergerMojo extends AbstractAndroidMojo
@@ -173,8 +177,50 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
             return; // skip, no AndroidManifest.xml file found.
         }
 
+        // Determine whether the manifest file has Windows-style line endings (CRLF):
+        boolean hasWindowsLineEndings = false;
+        try
+        {
+            hasWindowsLineEndings = EOLUtils.hasWindowsEOL( androidManifestFile );
+        }
+        catch ( Exception e )
+        {
+            getLog().warn( e );
+        }
+
+        // Convert to Unix-style line endings (LF) if needed:
+        if ( hasWindowsLineEndings )
+        {
+            getLog().info( "Windows-style line-endings detected, converting to Unix-style line endings "
+                           + "to avoid that the manifest merger messes things up..." );
+            try
+            {
+                EOLUtils.convertToUnixEOL( androidManifestFile );
+            }
+            catch ( IOException ioe )
+            {
+                getLog().warn( "Failed to convert manifest file line endings from CRLF to LF", ioe );
+                hasWindowsLineEndings = false; // avoid conversion back to CRLF (as it would probably fail as well)
+            }
+        }
+        
+        // Run manifest merger:
         getLog().debug( "Using manifest merger V2" );
         manifestMergerV2();
+        
+        // Convert back to Windows-style line endings (CRLF) if needed:
+        if ( hasWindowsLineEndings )
+        {
+            getLog().info( "Converting back to Windows-style line-endings..." );
+            try
+            {
+                EOLUtils.convertToWindowsEOL(  destinationManifestFile );
+            }
+            catch ( IOException ioe )
+            {
+                getLog().warn( "Failed to convert manifest file line endings from LF to CRLF", ioe );
+            }
+        }
     }
 
     private void parseConfiguration()
