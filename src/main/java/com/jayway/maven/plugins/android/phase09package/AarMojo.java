@@ -23,6 +23,7 @@ import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.common.AaptCommandBuilder;
 import com.jayway.maven.plugins.android.common.NativeHelper;
 import com.jayway.maven.plugins.android.config.PullParameter;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -105,6 +106,12 @@ public class AarMojo extends AbstractAndroidMojo
     @PullParameter
     private String[] classesJarExcludes = new String[]{"**/R.class", "**/R$*.class"};
 
+    @Parameter(
+            property = "android.proguard.obfuscatedJar",
+            defaultValue = "${project.build.directory}/${project.build.finalName}_obfuscated.jar"
+    )
+    private String obfuscatedJar;
+
     private List<String> sourceFolders = new ArrayList<String>();
 
     /**
@@ -147,8 +154,13 @@ public class AarMojo extends AbstractAndroidMojo
      */
     protected File createAarClassesJar() throws MojoExecutionException
     {
-        final File classesJar = new File( targetDirectory,
-                finalName + ".aar.classes.jar" );
+        final File obfuscatedJarFile = new File( obfuscatedJar );
+        if ( obfuscatedJarFile.exists() )
+        {
+            return obfuscatedJarFile;
+        }
+
+        final File classesJar = new File( targetDirectory, finalName + ".aar.classes.jar" );
         try
         {
             JarArchiver jarArchiver = new JarArchiver();
@@ -167,6 +179,7 @@ public class AarMojo extends AbstractAndroidMojo
         {
             throw new MojoExecutionException( "IOException while creating ." + classesJar + " file.", e );
         }
+
     }
 
     /**

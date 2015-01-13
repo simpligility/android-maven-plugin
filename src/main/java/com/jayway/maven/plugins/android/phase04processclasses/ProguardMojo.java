@@ -152,7 +152,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      *   &lt;skip&gt;false&lt;/skip&gt;
      *   &lt;config&gt;proguard.cfg&lt;/config&gt;
      *   &lt;outputDirectory&gt;my_proguard&lt;/outputDirectory&gt;
-     * &lt;/proguard&gt; 
+     * &lt;/proguard&gt;
      * </pre>
      * <p/>
      * Output directory is defined relatively so it could be also outside of the target directory.
@@ -480,6 +480,11 @@ public class ProguardMojo extends AbstractAndroidMojo
         skipArtifact( "commons-logging", "commons-logging", true );
 
         final List< ProGuardInput > inJars = getProgramInputFiles();
+        if ( isAPKBuild() )
+        {
+            inJars.addAll( getProjectDependencyFiles() );
+        }
+
         for ( final ProGuardInput injar : inJars )
         {
             getLog().debug( "Added injar : " + injar );
@@ -488,6 +493,12 @@ public class ProguardMojo extends AbstractAndroidMojo
         }
 
         final List< ProGuardInput > libraryJars = getLibraryInputFiles();
+        if ( !isAPKBuild() )
+        {
+            getLog().info( "Library project - not adding project dependencies to the obfuscated JAR" );
+            libraryJars.addAll( getProjectDependencyFiles() );
+        }
+
         for ( final ProGuardInput libraryjar : libraryJars )
         {
             getLog().debug( "Added libraryJar : " + libraryjar );
@@ -547,6 +558,13 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     private List< ProGuardInput > getProgramInputFiles()
     {
+        final List< ProGuardInput > inJars = new LinkedList< ProguardMojo.ProGuardInput >();
+        inJars.add( createProguardInput( projectOutputDirectory.getAbsolutePath() ) );
+        return inJars;
+    }
+
+    private List< ProGuardInput > getProjectDependencyFiles()
+    {
         final Collection< String > globalInJarExcludes = new HashSet< String >();
         final List< ProGuardInput > inJars = new LinkedList< ProguardMojo.ProGuardInput >();
 
@@ -562,9 +580,6 @@ public class ProguardMojo extends AbstractAndroidMojo
         {
             globalInJarExcludes.addAll( Arrays.asList( parsedCustomFilter.split( "," ) ) );
         }
-
-        // we first add the application's own class files
-        inJars.add( createProguardInput( projectOutputDirectory.getAbsolutePath() ) );
 
         // we then add all its dependencies (incl. transitive ones), unless they're blacklisted
         for ( Artifact artifact : getTransitiveDependencyArtifacts() )
