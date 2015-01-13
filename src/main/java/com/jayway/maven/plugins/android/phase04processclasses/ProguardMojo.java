@@ -495,7 +495,7 @@ public class ProguardMojo extends AbstractAndroidMojo
         final List< ProGuardInput > libraryJars = getLibraryInputFiles();
         if ( !isAPKBuild() )
         {
-            getLog().warn( "Project dependencies will not be added to obfuscated JAR for library project." );
+            getLog().info( "Library project - not adding project dependencies to the obfuscated JAR" );
             libraryJars.addAll( getProjectDependencyFiles() );
         }
 

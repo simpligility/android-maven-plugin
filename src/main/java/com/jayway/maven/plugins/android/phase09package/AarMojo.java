@@ -155,33 +155,31 @@ public class AarMojo extends AbstractAndroidMojo
     protected File createAarClassesJar() throws MojoExecutionException
     {
         final File obfuscatedJarFile = new File( obfuscatedJar );
-        if ( !obfuscatedJarFile.exists() )
-        {
-            final File classesJar = new File( targetDirectory,
-                    finalName + ".aar.classes.jar" );
-            try
-            {
-                JarArchiver jarArchiver = new JarArchiver();
-                jarArchiver.setDestFile( classesJar );
-                jarArchiver.addDirectory( projectOutputDirectory,
-                        classesJarIncludes,
-                        classesJarExcludes );
-                jarArchiver.createArchive();
-                return classesJar;
-            }
-            catch ( ArchiverException e )
-            {
-                throw new MojoExecutionException( "ArchiverException while creating ." + classesJar + " file.", e );
-            }
-            catch ( IOException e )
-            {
-                throw new MojoExecutionException( "IOException while creating ." + classesJar + " file.", e );
-            }
-        }
-        else
+        if ( obfuscatedJarFile.exists() )
         {
             return obfuscatedJarFile;
         }
+
+        final File classesJar = new File( targetDirectory, finalName + ".aar.classes.jar" );
+        try
+        {
+            JarArchiver jarArchiver = new JarArchiver();
+            jarArchiver.setDestFile( classesJar );
+            jarArchiver.addDirectory( projectOutputDirectory,
+                    classesJarIncludes,
+                    classesJarExcludes );
+            jarArchiver.createArchive();
+            return classesJar;
+        }
+        catch ( ArchiverException e )
+        {
+            throw new MojoExecutionException( "ArchiverException while creating ." + classesJar + " file.", e );
+        }
+        catch ( IOException e )
+        {
+            throw new MojoExecutionException( "IOException while creating ." + classesJar + " file.", e );
+        }
+
     }
 
     /**
