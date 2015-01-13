@@ -11,6 +11,7 @@ import com.jayway.maven.plugins.android.configuration.ManifestMerger;
 import com.jayway.maven.plugins.android.configuration.UsesSdk;
 import com.jayway.maven.plugins.android.phase01generatesources.MavenILogger;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -176,51 +177,10 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
         {
             return; // skip, no AndroidManifest.xml file found.
         }
-
-        // Determine whether the manifest file has Windows-style line endings (CRLF):
-        boolean hasWindowsLineEndings = false;
-        try
-        {
-            hasWindowsLineEndings = EOLUtils.hasWindowsEOL( androidManifestFile );
-        }
-        catch ( Exception e )
-        {
-            getLog().warn( e );
-        }
-
-        // Convert to Unix-style line endings (LF) if needed:
-        if ( hasWindowsLineEndings )
-        {
-            getLog().info( "Windows-style line-endings detected, converting to Unix-style line endings "
-                           + "to avoid that the manifest merger messes things up..." );
-            try
-            {
-                EOLUtils.convertToUnixEOL( androidManifestFile );
-            }
-            catch ( IOException ioe )
-            {
-                getLog().warn( "Failed to convert manifest file line endings from CRLF to LF", ioe );
-                hasWindowsLineEndings = false; // avoid conversion back to CRLF (as it would probably fail as well)
-            }
-        }
         
         // Run manifest merger:
         getLog().debug( "Using manifest merger V2" );
         manifestMergerV2();
-        
-        // Convert back to Windows-style line endings (CRLF) if needed:
-        if ( hasWindowsLineEndings )
-        {
-            getLog().info( "Converting back to Windows-style line-endings..." );
-            try
-            {
-                EOLUtils.convertToWindowsEOL(  destinationManifestFile );
-            }
-            catch ( IOException ioe )
-            {
-                getLog().warn( "Failed to convert manifest file line endings from LF to CRLF", ioe );
-            }
-        }
     }
 
     private void parseConfiguration()
@@ -329,13 +289,57 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
             }
         }
 
+        // Determine whether the manifest file has Windows-style line endings (CRLF):
+        boolean hasWindowsLineEndings = false;
+        try
+        {
+            hasWindowsLineEndings = EOLUtils.hasWindowsEOL( androidManifestFile );
+        }
+        catch ( Exception e )
+        {
+            getLog().warn( e );
+        }
+
+        // Convert to Unix-style line endings (LF) if needed:
+        File androidManifestFileLF = null;
+        if ( hasWindowsLineEndings )
+        {
+            getLog().info( "Windows-style line-endings detected, converting to Unix-style line endings "
+                           + "to avoid that the manifest merger messes things up..." );
+            try
+            {
+                androidManifestFileLF = new File( targetDirectory, "AndroidManifest_LF_EOL.xml" );
+                FileUtils.copyFile( androidManifestFile, androidManifestFileLF );
+                EOLUtils.convertToUnixEOL( androidManifestFileLF );
+            }
+            catch ( IOException ioe )
+            {
+                getLog().warn( "Failed to convert manifest file line endings from CRLF to LF", ioe );
+                hasWindowsLineEndings = false; // use unchanged manifest
+            }
+        }
+        
         builder.mergeManifests(
-                androidManifestFile, new ArrayList<File>(), manifestDependencies, "",
+                hasWindowsLineEndings ? androidManifestFileLF : androidManifestFile,
+                new ArrayList<File>(), manifestDependencies, "",
                 versionCode, parsedVersionName,
                 minSdkVersion, targetSdkVersion, null,
                 destinationManifestFile.getPath(), ManifestMerger2.MergeType.APPLICATION,
                 new HashMap<String, String>(), parsedMergeReportFile );
 
+        // Convert back to Windows-style line endings (CRLF) if needed:
+        if ( hasWindowsLineEndings )
+        {
+            getLog().info( "Converting back to Windows-style line-endings..." );
+            try
+            {
+                EOLUtils.convertToWindowsEOL(  destinationManifestFile );
+            }
+            catch ( IOException ioe )
+            {
+                getLog().warn( "Failed to convert manifest file line endings from LF to CRLF", ioe );
+            }
+        }
     }
 
     private int generateVersionCodeFromVersionName( String versionName )
