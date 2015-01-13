@@ -5,6 +5,9 @@
 * Added Manifest Merger v2 example (tictactoe) & Deprecated merge manifest v1
 ** see https://github.com/simpligility/android-maven-plugin/pull/560
 ** contributed by Benoit Billington https://github.com/Shusshu
+* Added proguard support from library (AAR) projects
+** see https://github.com/simpligility/android-maven-plugin/pull/559
+** contributed by David Sobreira Marques https://github.com/dpsm
 
 Planned changes:
 
