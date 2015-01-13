@@ -1,17 +1,11 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import com.android.SdkConstants;
-import com.android.builder.core.AndroidBuilder;
-import com.android.manifmerger.ManifestMerger2;
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.common.AndroidExtension;
-import com.jayway.maven.plugins.android.common.EOLUtils;
-import com.jayway.maven.plugins.android.common.MavenManifestDependency;
-import com.jayway.maven.plugins.android.configuration.ManifestMerger;
-import com.jayway.maven.plugins.android.configuration.UsesSdk;
-import com.jayway.maven.plugins.android.phase01generatesources.MavenILogger;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -20,12 +14,16 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import com.android.SdkConstants;
+import com.android.builder.core.AndroidBuilder;
+import com.android.manifmerger.ManifestMerger2;
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.common.AndroidExtension;
+import com.jayway.maven.plugins.android.common.AndroidManifestEOLHelper;
+import com.jayway.maven.plugins.android.common.MavenManifestDependency;
+import com.jayway.maven.plugins.android.configuration.ManifestMerger;
+import com.jayway.maven.plugins.android.configuration.UsesSdk;
+import com.jayway.maven.plugins.android.phase01generatesources.MavenILogger;
 
 /**
  * Manifest Merger V2 <code>AndroidManifest.xml</code> file.
@@ -289,61 +287,21 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
             }
         }
 
-        // Determine whether the manifest file has Windows-style line endings (CRLF):
-        boolean hasWindowsLineEndings = false;
-        try
-        {
-            hasWindowsLineEndings = EOLUtils.hasWindowsEOL( androidManifestFile );
-        }
-        catch ( Exception e )
-        {
-            getLog().warn( e );
-        }
-
-        // Convert to Unix-style line endings (LF) if needed:
-        File androidManifestFileLF = null;
-        if ( hasWindowsLineEndings )
-        {
-            getLog().info( "Windows-style line-endings detected, converting to Unix-style line endings "
-                           + "to avoid that the manifest merger messes things up..." );
-            try
-            {
-                // Create temp file:
-                androidManifestFileLF = new File( targetDirectory, "AndroidManifest_LF_EOL.xml" );
-                FileUtils.copyFile( androidManifestFile, androidManifestFileLF );
-                // Convert line endings:
-                EOLUtils.convertToUnixEOL( androidManifestFileLF );
-            }
-            catch ( IOException ioe )
-            {
-                getLog().warn( "Failed to convert manifest file line endings from CRLF to LF", ioe );
-                hasWindowsLineEndings = false; // use unchanged manifest
-            }
-        }
+        // Get AndroidManifestEOLHelper instance to deal with line ending issues:
+        AndroidManifestEOLHelper eolHelper =
+            new AndroidManifestEOLHelper( androidManifestFile, true, targetDirectory, getLog() );
         
+        // Run manifest-merger on manifest with Unix-style line endings (LF):
         builder.mergeManifests(
-                hasWindowsLineEndings ? androidManifestFileLF : androidManifestFile,
+                eolHelper.getUnixEOLManifestFile(),
                 new ArrayList<File>(), manifestDependencies, "",
                 versionCode, parsedVersionName,
                 minSdkVersion, targetSdkVersion, null,
                 destinationManifestFile.getPath(), ManifestMerger2.MergeType.APPLICATION,
                 new HashMap<String, String>(), parsedMergeReportFile );
 
-        // Convert back to Windows-style line endings (CRLF) if needed:
-        if ( hasWindowsLineEndings )
-        {
-            getLog().info( "Converting back to Windows-style line-endings..." );
-            try
-            {
-                EOLUtils.convertToWindowsEOL(  destinationManifestFile );
-            }
-            catch ( IOException ioe )
-            {
-                getLog().warn( "Failed to convert manifest file line endings from LF to CRLF", ioe );
-            }
-            // Delete temp file:
-            FileUtils.deleteQuietly( androidManifestFileLF );
-        }
+        // Restore Windows-style line-endings (CRLF) in destination manifest if needed:
+        eolHelper.restoreEOL( destinationManifestFile ); // does nothing if source manifest had Unix-style line endings
     }
 
     private int generateVersionCodeFromVersionName( String versionName )
