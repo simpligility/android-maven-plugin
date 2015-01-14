@@ -37,7 +37,8 @@
       <item name="Publishing to Google Play Store" href="playstore-publisher.html"/>
       <item name="Shading Example" href="shaded-commons-codec.html"/>
     </menu>
-    <menu name="Help us">
+    <menu name="Community">
+      <item name="Report Issue" href="report-issue.html"/>
       <item name="Contributing" href="contributing.html"/>
       <item name="Developing" href="developing.html"/>
       <item name="Releasing" href="releasing.html"/>
