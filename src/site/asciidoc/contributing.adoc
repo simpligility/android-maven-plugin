@@ -6,13 +6,14 @@ repository.
 
 == Prerequisites
 
-You will have to either know git already or learn it. You will love it!
+You will have to either know git already or learn it. You will love it! Minor documentation or spelling fixes can 
+be performed directly in the github user interface. Anything beyond that needs a local repository and more.
 
 == Contributing Flow
 
 Once to know how to use git you
 
-* fork the repostiory to your own github account
+* fork the repository to your own github account
 * create a branch for your specific work (separate issues or changes should be separate branches)
 * verify it all builds and looks right (see the Building documentation for more on that)
 * send a pull request
