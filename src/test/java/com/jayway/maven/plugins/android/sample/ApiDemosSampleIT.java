@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 import com.jayway.maven.plugins.android.PluginInfo;
 
 @RunWith(MavenJUnitTestRunner.class)
-@MavenVersions({"3.2.3"})
+@MavenVersions({"3.0.5", "3.2.5"})
 public class ApiDemosSampleIT {
   
   @Rule

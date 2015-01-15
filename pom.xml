@@ -36,7 +36,7 @@
     <!--  upgrade to 3.4 fails build, see https://github.com/simpligility/android-maven-plugin/issues/554 -->
     <maven-plugin-plugin.version>3.3</maven-plugin-plugin.version>
     <maven.api.version>3.0.4</maven.api.version>
-
+    <takari.test.version>2.0.0</takari.test.version>
     <easymock.version>3.2</easymock.version>
     <powermock.version>1.5.2</powermock.version>
     <publisher.version>v2-rev13-1.19.0</publisher.version>
@@ -259,12 +259,6 @@
 
       <!-- test deps -->
       <dependency>
-        <groupId>io.takari.maven.plugins</groupId>
-        <artifactId>takari-plugin-testing</artifactId>
-        <version>${takari.plugins.version}</version>
-      </dependency>
-
-      <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.11</version>
@@ -464,12 +458,27 @@
     <dependency>
       <groupId>io.takari.maven.plugins</groupId>
       <artifactId>takari-plugin-testing</artifactId>
+      <version>${takari.test.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.takari.maven.plugins</groupId>
+      <artifactId>takari-plugin-integration-testing</artifactId>
+      <version>${takari.test.version}</version>
+      <type>pom</type>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.plugin-testing</groupId>
+      <artifactId>maven-plugin-testing-harness</artifactId>
+      <version>3.2.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -541,7 +550,17 @@
       <plugin>
         <groupId>io.takari.maven.plugins</groupId>
         <artifactId>takari-lifecycle-plugin</artifactId>
+        <version>1.10.0</version>
         <extensions>true</extensions>
+         <executions>
+          <execution>
+            <id>testProperties</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>testProperties</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.plexus</groupId>
@@ -724,56 +743,6 @@
             <goals>
               <goal>check</goal>
             </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- add support for reactor resolution based IT tests -->
-      <plugin>
-        <groupId>io.takari.maven.plugins</groupId>
-        <artifactId>takari-plugin-testing-plugin</artifactId>
-        <version>${takari.plugins.version}</version>
-        <executions>
-          <execution>
-            <id>testProperties</id>
-            <phase>process-test-resources</phase>
-            <goals>
-              <goal>testProperties</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- get Maven runtime required for takari-plugin-testing based integration 
-        tests -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack</id>
-            <phase>generate-test-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/maven-installation</outputDirectory>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.apache.maven</groupId>
-                  <artifactId>apache-maven</artifactId>
-                  <version>3.0.5</version>
-                  <classifier>bin</classifier>
-                  <type>tar.gz</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.apache.maven</groupId>
-                  <artifactId>apache-maven</artifactId>
-                  <version>3.2.3</version>
-                  <classifier>bin</classifier>
-                  <type>tar.gz</type>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
           </execution>
         </executions>
       </plugin>
