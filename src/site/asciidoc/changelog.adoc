@@ -8,6 +8,11 @@
 * Added proguard support from library (AAR) projects
 ** see https://github.com/simpligility/android-maven-plugin/pull/559
 ** contributed by David Sobreira Marques https://github.com/dpsm
+* Updated Takari lifecyle and integration testing setup to new releases
+** see https://github.com/simpligility/android-maven-plugin/pull/564
+** contributed by Manfred Moser http://www.simpligility.com
+** and Igor Fedorenko https://github.com/ifedorenko
+** sponsored by Takari http://takari.io/
 
 Planned changes:
 
