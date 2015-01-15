@@ -266,7 +266,7 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
         }
 
         // Add the classes to the classpath
-        final Dependency dependency = createSystemScopeDependency( artifact, classesJar, "extracted" );
+        final Dependency dependency = createSystemScopeDependency( artifact, classesJar, null );
         project.getModel().addDependency( dependency );
     }
 
@@ -276,6 +276,7 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
         if ( suffix != null )
         {
             artifactId += "_" + suffix;
+            log.debug( "Changing dependency artifactId to: " + artifactId );
         }
         final Dependency dependency = new Dependency();
         dependency.setGroupId( artifact.getGroupId() );
