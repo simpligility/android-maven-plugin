@@ -20,7 +20,7 @@ import java.io.File;
  * 
  */
 @RunWith( MavenJUnitTestRunner.class )
-@MavenVersions( {"3.0.5", "3.2.3"} )
+@MavenVersions( {"3.0.5", "3.2.5" } )
 public class LintMojoIntegrationTest
 {
     @Rule
