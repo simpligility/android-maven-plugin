@@ -550,7 +550,7 @@
       <plugin>
         <groupId>io.takari.maven.plugins</groupId>
         <artifactId>takari-lifecycle-plugin</artifactId>
-        <version>1.10.0</version>
+        <version>1.10.1</version>
         <extensions>true</extensions>
          <executions>
           <execution>
