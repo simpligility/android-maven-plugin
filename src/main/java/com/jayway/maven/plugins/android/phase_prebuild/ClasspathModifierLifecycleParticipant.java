@@ -265,8 +265,15 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
             throw new MavenExecutionException( "Could not add " + classesJar.getName() + " as dependency", e );
         }
 
-        // Add the classes to the classpath
-        final Dependency dependency = createSystemScopeDependency( artifact, classesJar, "extracted" );
+        
+        // Modify the classpath to use an extracted dex file.  This will overwrite
+        // any exisiting dependencies with the same information.
+        final Dependency dependency = createSystemScopeDependency( artifact, classesJar, null );
+        final Dependency providedJar = findProvidedDependencies( dependency, project );
+        if ( providedJar != null ) 
+        {
+            project.getModel().removeDependency( providedJar );
+        }
         project.getModel().addDependency( dependency );
     }
 
@@ -285,5 +292,25 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
         dependency.setSystemPath( location.getAbsolutePath() );
         return dependency;
     }
+    
+    private Dependency findProvidedDependencies( Dependency dexDependency, MavenProject project ) 
+    {
+        for ( Dependency dependency : project.getDependencies() ) 
+        {
+            if ( dependency.getScope().equals( Artifact.SCOPE_PROVIDED ) ) 
+            {
+                if ( dependency.getArtifactId().equals( dexDependency.getArtifactId() ) 
+                        && dependency.getGroupId().equals( dexDependency.getGroupId() ) 
+                        && dependency.getType().equals( dexDependency.getType() ) 
+                        && dependency.getVersion().equals( dexDependency.getVersion() ) ) 
+                {
+                    return dependency;
+                }
+            }
+        }
+        return null;
+        
+    }
+    
 }
   
