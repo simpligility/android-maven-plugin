@@ -31,6 +31,7 @@
       <item name="Introduction" href="index.html"/>
       <item name="Goals" href="plugin-info.html"/>
       <item name="Examples" href="examples.html"/>
+      <item name="IDE Support" href="ide-support.html"/>
       <item name="Changelog" href="changelog.html"/>
     </menu>
     <menu name="How To's">
@@ -38,10 +39,20 @@
       <item name="Shading Example" href="shaded-commons-codec.html"/>
     </menu>
     <menu name="Community">
-      <item name="Report Issue" href="report-issue.html"/>
+      <item name="Maven Android Mailing List" href="http://groups.google.com/group/maven-android-developers"/>
+      <item name="Report An Issue" href="report-issue.html"/>
       <item name="Contributing" href="contributing.html"/>
       <item name="Developing" href="developing.html"/>
       <item name="Releasing" href="releasing.html"/>
+    </menu>
+    <menu name="Related Projects">
+      <item name="m2e-android" href="http://rgladwell.github.io/m2e-android/"/>
+      <item name="Andmore" href="https://projects.eclipse.org/projects/tools.andmore"/>
+      <item name="Maven Android SDK Deployer" href="https://github.com/simpligility/maven-android-sdk-deployer"/>
+      <item name="Android NDK Maven Plugin" href="http://simpligility.github.io/android-ndk-maven-plugin/"/>
+      <item name="Android Tools" href="http://tools.android.com/"/>
+      <item name="Apache Maven" href="http://maven.apache.org/"/>
+      <item name="M2Eclipse" href="http://eclipse.org/m2e/"/>
     </menu>
     <menu ref="reports" />
   </body>

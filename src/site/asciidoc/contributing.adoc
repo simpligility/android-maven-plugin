@@ -1,8 +1,8 @@
 = Contributing
 
-We welcome any contribtuion in the forms of feedback on social media, helping out on stackoverflow whatever. This 
-page however focuses on how to contribute either documentation or source code. All of it is contained in the same git 
-repository.
+We welcome any contribtuion in the forms of feedback on social media, helping out on stackoverflow, whatever you can do 
+helps. This page however focuses on how to contribute either documentation or source code. All of it is contained in 
+the same git repository.
 
 == Prerequisites
 
@@ -15,7 +15,7 @@ Once to know how to use git you
 
 * fork the repository to your own github account
 * create a branch for your specific work (separate issues or changes should be separate branches)
-* verify it all builds and looks right (see the Building documentation for more on that)
+* verify it all builds and looks right (see the 'Developing' documentation for more on that)
 * send a pull request
 * the core committers will review the pull request
 * any suggested changes need to be done on the same branch and pushed to your repo, this will update the pull request
@@ -27,10 +27,11 @@ Once to know how to use git you
 == Documentation Contributions
 
 All docs are written in asciidoc and should be located in 'src/site/asciidoc'. The will be published with the Maven site 
-for each release and also available on the github user interface directly. You can even edit them in the github interface.
+for each release and is also available on the github project site directly. You can even edit them in the github interface.
 
 == Code Contributions
 
-Just have to be fixing an issue or enhancing the plugin somehow. Even a javadoc spelling fix is not too small to submit.
-The only thing you need to check is that you can build the plugin, because we enforce things like codestyle and so on 
-automatically.
+A contributin can be anything useful to the project. It might be fixing an issue or enhancing the plugin somehow. 
+Even a javadoc spelling fix is not too small to submit! The only thing you need to check is that you can build the 
+plugin, because we enforce things like codestyle and so on automatically. However if you create a pull request, this is
+done automatically as part of our CI setup.
