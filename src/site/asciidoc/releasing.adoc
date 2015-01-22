@@ -54,23 +54,21 @@ to github pages as part of the release build to work:
 In order to release the plugin you need to have fully passing builds including integration tests 
 and site creation.
 
-.Deploy a SNAPSHOT version
+== Deploy a SNAPSHOT version
 
-If you want to make available a binary version of Android Maven Plugin for someone to test, 
-before making a proper release, deploy a SNAPSHOT version.
+If you want to make a binary version of Android Maven Plugin available for someone to test, 
+before making a proper release, deploy a SNAPSHOT version. This will make it available in the 
+OSSRH snapshots repo (see above). It won't end up on the Central Repository.
 
-Don't worry, it will sit in a separate directory structure from the proper releases. 
-It won't end up on Maven Central.
-
-Do it!
 To perform the SNAPSHOT release:
 
 ----
 mvn clean deploy -P official-release
 ----
+
 That should deploy the artifacts directly to the SNAPSHOT repo on http://oss.sonatype.org. 
 
-. Perform a RELEASE
+== Perform a RELEASE
 
 This is the real deal. A release will be synced to Maven Central after a few minutes, and then 
 there is NO way to have it removed. Before you proceed ensure that 
