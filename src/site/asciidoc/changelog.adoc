@@ -15,6 +15,13 @@
 ** sponsored by Takari http://takari.io/
 * Fix to allow both release-plugin and IDEs to correctly consume AAR deps.
 ** See https://github.com/simpligility/android-maven-plugin/pull/565
+** contributed by Hoyt Summers Pittman https://github.com/secondsun
+* Change default value for aidlSourceDirectory to src/main/aidl
+** fixes https://github.com/simpligility/android-maven-plugin/issues/555
+** see https://github.com/simpligility/android-maven-plugin/pull/557
+** contributed by Csaba Kozák https://github.com/WonderCsabo
+
+
 Planned changes:
 
 * potentially use Takari lifecycle to improve build speed
@@ -90,7 +97,7 @@ ATTENTION:
 ** contributed by Matthias Stevens https://github.com/mstevens83
 * Custom exclude filter to ProGuardMojo
 ** see https://github.com/simpligility/android-maven-plugin/pull/497
-** Contributed by Csaba Kozák https://github.com/WonderCsabo
+** contributed by Csaba Kozák https://github.com/WonderCsabo
 * Fixes to resource files in sample projects to allow builds to pass with new SDK
 ** see https://github.com/simpligility/android-maven-plugin/pull/514
 ** contributed by Manfred Moser http://www.simpligility.com
