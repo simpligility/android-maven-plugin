@@ -43,9 +43,6 @@
         <groupId>com.simpligility.maven.plugins</groupId>
 
         <artifactId>android-maven-plugin</artifactId>
-        <configuration>
-          <aidlSourceDirectory>${project.basedir}/src/main/aidl</aidlSourceDirectory>
-        </configuration>
       </plugin>
     </plugins>
   </build>
