@@ -558,7 +558,7 @@
       <plugin>
         <groupId>io.takari.maven.plugins</groupId>
         <artifactId>takari-lifecycle-plugin</artifactId>
-        <version>1.10.1</version>
+        <version>1.10.2</version>
         <extensions>true</extensions>
          <executions>
           <execution>
