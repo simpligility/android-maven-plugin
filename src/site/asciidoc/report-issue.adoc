@@ -1,0 +1,18 @@
+= Report An Issue
+
+Reporting issues is important. Ideally this is what you do to file an issue and get it fiex. The less of these steps 
+you follow the smaller the chances are that your issue gets fixed..
+
+* Verify with the latest release of the plugin
+* Include output from +mvn --version+
+* Provide detailed description of the problem
+* Provide pom configuration used
+* Provide mvn command invocation used
+* Create a sample project that show-cases the issue 
+* Or provide some other means of reproducing the issue
+* Answer any questions from the project team
+
+Now that you know what you should do, https://github.com/simpligility/android-maven-plugin/issues[go ahead an file an issue].
+
+The next steps would be to fix the issue by following our instructions about contributing ;-) 
+

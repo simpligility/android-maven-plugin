@@ -84,9 +84,17 @@
 
   <developers>
     <developer>
-      <name>See homepage and mailinglist for contributors.</name>
-      <id>android-maven-plugin-project</id>
-      <url>http://code.google.com/p/maven-android-plugin</url>
+      <name>Committers</name>
+      <id>Committers</id>
+      <url>https://github.com/orgs/simpligility/teams/android-maven-plugins-core-committers</url>
+      <roles>
+        <role>Committers</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Contributors</name>
+      <id>contributors</id>
+      <url>https://github.com/simpligility/android-maven-plugin/graphs/contributors</url>
       <roles>
         <role>Developer</role>
         <role>Contributor</role>

@@ -1,0 +1,43 @@
+= Resources
+
+This page tries to link to blog posts and other documentation about using the 
+Android Maven Plugin and associated tooling. The lists below are by no way complete. 
+There are lots of users out there. If you want your page linked just send a pull request. 
+
+== Example Projects and Users
+
+* https://github.com/expectedbehavior/gauges-android[Gaug.es]
+* http://code.google.com/p/pomotodo/[PomoTodo]
+* https://github.com/roboguice/roboguice/[Roboguice]
+* https://github.com/robolectric/robolectric[Robolectric]
+* http://code.google.com/p/robotium[Robotium]
+* http://actionbarsherlock.com[ActionBarSherlock]
+* http://bluebill.tidalwave.it/mobile/[blueBill Mobile]
+
+== Presentations and blog posts
+
+Reverse chronological order list of links: 
+
+* 2011-11-23 Fabrizio Giudici  http://www.slideshare.net/fabriziogiudici/dv11-c-17093-building-android-apps-with-maven
+* 2011-11-07 Manfred Moser  http://www.simpligility.com/2011/11/apache-maven-at-andevcon-ii/ 
+* 2011-06-18 Farrukh Najmi  http://netbeans.dzone.com/nb-developing-android-apps[Developing Android Apps with NetBeans, Maven, and VirtualBox]  
+* 2011-02-09 Roy Clarkson  http://blog.springsource.com/2011/02/09/spring-android-and-maven-part-2/[Spring Android and Maven (Part 2)]  
+* 2011-01-24 http://www.makeurownrules.com/rest-spring-maven-android[RESTFul client using Spring+Maven on Android] 
+* 2011-01-14  Clement Escoffier http://blog.akquinet.de/2011/01/14/starting-android-application-development-with-apache-maven/[Starting Android application development with Apache Maven] 
+* 2010-12-17  Roy Clarkson  http://blog.springsource.com/2010/12/17/spring-android-and-maven-part-1/[Spring Android and Maven (Part 1)]  
+* 2010-12-17  Manfred Moser  http://www.simpligility.com/2010/12/hints-for-using-proguard-on-your-android-app/[Hints for using Proguard on your Android app] 
+* 2010-12-11  Manfred Moser  http://www.simpligility.com/2010/12/proguard-for-android-with-maven-without-shooting-yourself-in-the-foot/[Proguard for Android with Maven without shooting yourself in the foot]  
+* 2010-11-12  Manfred Moser  http://www.simpligility.com/2010/11/release-version-management-for-your-android-application/[Release version management for your Android application] 
+* 2010-11-01  John Ferguson Smart  http://www.wakaleo.com/blog/302-android-development-with-maven[Android Development with Maven - a primer] 
+* 2010-07-31  Manfred Moser  http://www.simpligility.com/2010/07/sign-zipalign-and-to-market-to-market-with-maven/[Sign, zipalign and to market, to market with Maven] 
+* 2010-07-08  Manfred Moser  http://www.simpligility.com/2010/07/multi-module-android-project-in-eclipse/[Multi Module Android project in Eclipse] 
+* 2010-06-27  Manfred Moser  http://www.simpligility.com/2010/06/maven-android-plugin-with-zipalign-and-improved-verification/[Android Maven Plugin with zipalign and improved verification] 
+* 2010-06-19  Manfred Moser  http://www.simpligility.com/2010/06/android-artifacts-hit-maven-central/[Android Artifacts hit Maven Central]  
+* 2010-05-31  Manfred Moser  http://www.simpligility.com/2010/05/automatically-starting-the-emulator-in-your-android-build/[Automatically starting the emulator in your Android build] 
+* 2010-04-29  Tomas Malmsten  http://www.tomasmalmsten.com/2010/04/robotium-testing-for-android/[Robotium Testing for Android] 
+* 2010-02-05  Tomas Malmsten  http://www.tomasmalmsten.com/2010/02/how-to-modify-the-versoin-code-and-version-name-in-the-androidmanifest-using-gmaven/[How to modify the version code and version name in the AndroidManifest using GMaven] 
+* Hugo Josefson http://www.slideshare.net/hugojosefson/continuous-integration-with-maven-for-android-apps
+* Manfred Moser http://www.simpligility.com/2010/04/recap-presentation-about-maven-and-android/
+* Manfred Moser http://www.simpligility.com/2010/10/hands-on-lab-about-maven-and-android-development-at-androidto/
+* Manfred Moser http://www.simpligility.com/2010/08/maven-and-android-in-barcelona/
+

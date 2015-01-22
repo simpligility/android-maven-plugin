@@ -1,10 +1,96 @@
 = Releasing 
 
-Manfred will document this all more but basically its the usual Maven setup. Some old stuff that has to be migrated is 
-on the  https://code.google.com/p/maven-android-plugin/wiki/Source[old site].
+This should be of no interest to developers of Android applications. This is for 
+those developers of the Android Maven Plugin who perform releases of the plugin.
+
+== Introduction for Users
+
+Release are available through the Central Repository as built into Maven and as such no further configuration 
+is required to use the plugin.
+
+Development versions are occasionally deployed to the OSSRH snapshot repository. To use them you can proxy the 
+snapshot repository in  your repository manager (good) or add it in your +settings.xml+ (ok) or +pom.xml+ 
+(not so good but also possible).
 
 ----
+<repositories>
+  <repository>
+    <id>ossrh</id>
+    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    <snapshots>
+      <enabled>true</enabled>
+      <updatePolicy>always</updatePolicy>
+    </snapshots>
+  </repository>
+</repositories>
+----  
+
+== General for Contributors
+
+You have to be able to do full build of the plugin including site creation and integration tests: 
+
+----
+mvn install -P it
+mvn site
+----
+
+Beyond that you need all the setup to deploy to the Central Repository. Follow the 
+http://central.sonatype.org[setup instructions]. In addition you need to have permissions to deploy to the 
+groupId. Contact the project owners, if required.
+
+For site deployment you need to add your github credentials into settings.xml for the site deployment 
+to github pages as part of the release build to work:
+
+----
+<server>
+  <id>github</id>
+  <username>yourname</username>
+  <password>yourpassword</password>
+</server>
+---
+
+== Getting Ready
+
+In order to release the plugin you need to have fully passing builds including integration tests 
+and site creation.
+
+== Deploy a SNAPSHOT version
+
+If you want to make a binary version of Android Maven Plugin available for someone to test, 
+before making a proper release, deploy a SNAPSHOT version. This will make it available in the 
+OSSRH snapshots repo (see above). It won't end up on the Central Repository.
+
+To perform the SNAPSHOT release:
+
+----
+mvn clean deploy -P official-release
+----
+
+That should deploy the artifacts directly to the SNAPSHOT repo on http://oss.sonatype.org. 
+
+== Perform a RELEASE
+
+This is the real deal. A release will be synced to Maven Central after a few minutes, and then 
+there is NO way to have it removed. Before you proceed ensure that 
+
+- all tests pass
+- site build passes
+- changelog is up to date including the release date!
+
+Once you are happy with the state of everything - Do it!
+
+To perform the release:
+
+----
+cd ~/maven-android-plugin
 mvn release:prepare release:perform
+----
+
+If something goes wrong during the perform phase you can deploy from the target/checkout folder 
+or checkout a branch of the tag.
+
+----
+mvn deploy site -P official-release
 ----
 
 With the right setup this will
@@ -13,3 +99,12 @@ With the right setup this will
 * prepare and deploy everything for the plugin release (jar, sources, javadoc..) to OSSRH
 * release the staging repository on OSSRH so the plugin is automatically synced to the Central Repository
 * deploy the site to github pages 
+
+Check here http://repo1.maven.org/maven2/com/simpligility/maven/plugins/android-maven-plugin/
+
+Announce on the Maven Android Developers list and the Maven developers and users mailing lists.
+
+To obtain a correct permalink to the announcement email, go to the Maven Android Developers group, 
+open the announcement post and click the little chain/link icon to the right.
+
+Once you are done with it all, celebrate as desired ;-) 
