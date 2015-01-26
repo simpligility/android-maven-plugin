@@ -23,6 +23,8 @@ public class VersionGeneratorTest
 
         assertTrue( new VersionGenerator( 3, 3 ).generate( "1.0" ) < new VersionGenerator( 3, 3 ).generate( "1.0.1" ) );
         assertTrue( new VersionGenerator( 3, 2 ).generate( "1.0" ) < new VersionGenerator( 3, 2 ).generate( "1.0.1" ) );
+        assertTrue( new VersionGenerator( 3, 3 ).generate( "2.0" ) > new VersionGenerator( 3, 3 ).generate( "1.0.1" ) );
+        assertTrue( new VersionGenerator( 3, 2 ).generate( "2.0" ) > new VersionGenerator( 3, 2 ).generate( "1.0.1" ) );
     }
 
     @Test
