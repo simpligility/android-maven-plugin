@@ -8,7 +8,9 @@ import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.MavenManifestDependency;
 import com.jayway.maven.plugins.android.configuration.ManifestMerger;
 import com.jayway.maven.plugins.android.configuration.UsesSdk;
+import com.jayway.maven.plugins.android.configuration.VersionGenerator;
 import com.jayway.maven.plugins.android.phase01generatesources.MavenILogger;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -32,9 +34,6 @@ import java.util.Set;
 @Mojo( name = "manifest-merger", defaultPhase = LifecyclePhase.PROCESS_RESOURCES )
 public class ManifestMergerMojo extends AbstractAndroidMojo
 {
-
-    // version encoding
-    private static final int NUMBER_OF_DIGITS_FOR_VERSION_POSITION = 3;
 
     /**
      * Configuration for the manifest-update goal.
@@ -115,6 +114,20 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
     protected Boolean manifestVersionCodeUpdateFromVersion = false;
 
     /**
+     * The maximum number of version elements. Exposed via
+     * the project property <code>android.manifestMerger.versionElements</code>.
+     */
+    @Parameter( property = "android.manifestMerger.versionElements", defaultValue = "3" )
+    protected Integer manifestVersionElements;
+    
+    /**
+     * The number of digits per version element. Exposed via
+     * the project property <code>android.manifestMerger.versionElementDigits</code>.
+     */
+    @Parameter( property = "android.manifestMerger.versionElementDigits", defaultValue = "3" )
+    protected Integer manifestVersionElementDigits;
+
+    /**
      * Merge Manifest with library projects. Exposed via the project property
      * <code>android.manifestMerger.mergeLibraries</code>.
      */
@@ -134,6 +147,8 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
      */
     protected UsesSdk manifestUsesSdk;
     private Boolean parsedVersionCodeUpdateFromVersion;
+    private Integer parsedVersionElements;
+    private Integer parsedVersionElementDigits;
     private Boolean parsedMergeLibraries;
     private String parsedVersionName;
     private Integer parsedVersionCode;
@@ -165,6 +180,8 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
         getLog().debug( "    versionCode=" + parsedVersionCode );
         getLog().debug( "    usesSdk=" + parsedUsesSdk );
         getLog().debug( "    versionCodeUpdateFromVersion=" + parsedVersionCodeUpdateFromVersion );
+        getLog().debug( "    versionParts=" + parsedVersionElements );
+        getLog().debug( "    versionPartDigits=" + parsedVersionElementDigits );
         getLog().debug( "    mergeLibraries=" + parsedMergeLibraries );
         getLog().debug( "    mergeReportFile=" + parsedMergeReportFile );
 
@@ -206,6 +223,22 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
             {
                 parsedVersionCodeUpdateFromVersion = manifestVersionCodeUpdateFromVersion;
             }
+            if ( manifestMerger.getVersionElements() != null )
+            {
+                parsedVersionElements = manifestMerger.getVersionElements();
+            }
+            else
+            {
+                parsedVersionElements = manifestVersionElements;
+            }
+            if ( manifestMerger.getVersionElementDigits() != null )
+            {
+                parsedVersionElementDigits = manifestMerger.getVersionElementDigits();
+            }
+            else
+            {
+                parsedVersionElementDigits = manifestVersionElementDigits;
+            }
             if ( manifestMerger.getUsesSdk() != null )
             {
                 parsedUsesSdk = manifestMerger.getUsesSdk();
@@ -237,6 +270,8 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
             parsedVersionCode = manifestVersionCode;
             parsedUsesSdk = manifestUsesSdk;
             parsedVersionCodeUpdateFromVersion = manifestVersionCodeUpdateFromVersion;
+            parsedVersionElementDigits = manifestVersionElementDigits;
+            parsedVersionElements = manifestVersionElements;
             parsedMergeLibraries = manifestMergeLibraries;
             parsedMergeReportFile = manifestMergeReportFile;
         }
@@ -258,7 +293,8 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
         }
         if ( parsedVersionCodeUpdateFromVersion )
         {
-            versionCode = generateVersionCodeFromVersionName( parsedVersionName );
+            VersionGenerator gen = new VersionGenerator( parsedVersionElements, parsedVersionElementDigits );
+            versionCode = gen.generate( parsedVersionName );
         }
         else
         {
@@ -290,20 +326,6 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
                 destinationManifestFile.getPath(), ManifestMerger2.MergeType.APPLICATION,
                 new HashMap<String, String>(), parsedMergeReportFile );
 
-    }
-
-    private int generateVersionCodeFromVersionName( String versionName )
-    {
-        String[] versionNameDigits = versionName.replaceAll( "[^0-9.]", "" ).split( "\\." );
-
-        int versionCode = 0;
-        for ( int i = 0; i < versionNameDigits.length; i++ )
-        {
-            double digitMultiplayer = Math.pow( 10, i * NUMBER_OF_DIGITS_FOR_VERSION_POSITION );
-            String versionDigit = versionNameDigits[versionNameDigits.length - i - 1 ];
-            versionCode += Integer.valueOf( versionDigit ) * digitMultiplayer;
-        }
-        return versionCode;
     }
 
 }

@@ -35,6 +35,18 @@ public class ManifestMerger
 
     /**
      * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestMergerMojo
+     * #manifestMergerVersionElements}.
+     */
+    protected Integer versionElements;
+
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestMergerMojo
+     * #manifestMergerVersionElementDigits}.
+     */
+    protected Integer versionElementDigits;
+
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestMergerMojo
      * #manifestMergeLibraries}.
      */
     protected Boolean mergeLibraries;
@@ -63,6 +75,17 @@ public class ManifestMerger
     public Boolean getVersionCodeUpdateFromVersion()
     {
         return versionCodeUpdateFromVersion;
+    }
+
+    
+    public Integer getVersionElements()
+    {
+        return versionElements;
+    }
+
+    public Integer getVersionElementDigits()
+    {
+        return versionElementDigits;
     }
 
     public Boolean getMergeLibraries()
