@@ -46,6 +46,22 @@ public class VersionGeneratorTest
     }
 
     @Test
+    public void mixedCase() throws MojoExecutionException
+    {
+        VersionGenerator g1 = new VersionGenerator( "1,1,2,1,4" );
+        VersionGenerator g2 = new VersionGenerator( "1,1,2,5" );
+        
+        int v1 = g1.generate( "1.2.15.8-SNAPSHOT.1946" );
+        int v2 = g2.generate( "2.1.6-SNAPSHOT.1246" );
+        
+        assertEquals(121581946, v1 );
+        assertEquals(210601246, v2 );
+
+        assertTrue( v1 < v2 );
+
+    }
+
+    @Test
     public void faulty() throws MojoExecutionException
     {
         try
