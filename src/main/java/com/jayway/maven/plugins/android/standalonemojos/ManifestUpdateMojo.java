@@ -5,6 +5,8 @@ import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.XmlHelper;
 import com.jayway.maven.plugins.android.configuration.Manifest;
 import com.jayway.maven.plugins.android.configuration.UsesSdk;
+import com.jayway.maven.plugins.android.configuration.VersionGenerator;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -32,6 +34,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -94,9 +97,6 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     private static final String ELEM_COMPATIBLE_SCREENS = "compatible-screens";
     private static final String ELEM_SCREEN = "screen";
     private static final String ELEM_USES_SDK = "uses-sdk";
-
-    // version encoding 
-    private static final int NUMBER_OF_DIGITS_FOR_VERSION_POSITION = 3;
     
 
     /**
@@ -519,9 +519,11 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      * @throws SAXException
      * @throws TransformerException
      * @throws MojoFailureException
+     * @throws MojoExecutionException 
      */
     public void updateManifest( File manifestFile )
-    throws IOException, ParserConfigurationException, SAXException, TransformerException, MojoFailureException
+    throws IOException, ParserConfigurationException, SAXException, TransformerException,
+    MojoFailureException, MojoExecutionException
     {
         Document doc = readManifest( manifestFile );
         Element manifestElement = doc.getDocumentElement();
@@ -757,8 +759,9 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      * If the version can be parsed then generate a version code from the
      * version components.  In an effort to preseve uniqueness two digits
      * are allowed for both the minor and incremental versions.
+     * @throws MojoExecutionException 
      */
-    private void performVersionCodeUpdateFromVersion( Element manifestElement )
+    private void performVersionCodeUpdateFromVersion( Element manifestElement ) throws MojoExecutionException
     {
         String verString = project.getVersion();
         getLog().debug( "Generating versionCode for " + verString );
@@ -768,18 +771,12 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
         project.getProperties().setProperty( "android.manifest.versionCode", String.valueOf( verCode ) );
     }
 
-    private String generateVersionCodeFromVersionName( String versionName ) 
+    private String generateVersionCodeFromVersionName( String versionName ) throws MojoExecutionException 
     {
-      String[] versionNameDigits = versionName.replaceAll( "[^0-9.]", "" ).split( "\\." );
-      
-      long versionCode = 0;
-      for ( int i = 0; i < versionNameDigits.length; i++ ) 
-      {
-        double digitMultiplayer = Math.pow( 10, i * NUMBER_OF_DIGITS_FOR_VERSION_POSITION );
-        String versionDigit = versionNameDigits[versionNameDigits.length - i - 1 ];
-        versionCode += Integer.valueOf( versionDigit ).intValue() * digitMultiplayer;
-      }
-      return String.valueOf( versionCode );
+        // use the new version generator with default settings
+        VersionGenerator gen = new VersionGenerator();
+
+        return Integer.toString( gen.generate( versionName ) );
     }
 
     private boolean performSupportScreenModification( Document doc, Element manifestElement )

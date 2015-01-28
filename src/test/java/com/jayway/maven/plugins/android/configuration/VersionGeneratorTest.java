@@ -9,6 +9,9 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+/**
+ * @author Pappy STĂNESCU <a href="mailto:pappy.stanescu&#64;gmail.com">&lt;pappy.stanescu&#64;gmail.com&gt;</a>
+ */
 public class VersionGeneratorTest
 {
 
