@@ -1,14 +1,11 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
-import com.android.SdkConstants;
-import com.android.builder.core.AndroidBuilder;
-import com.android.manifmerger.ManifestMerger2;
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.common.AndroidExtension;
-import com.jayway.maven.plugins.android.common.MavenManifestDependency;
-import com.jayway.maven.plugins.android.configuration.ManifestMerger;
-import com.jayway.maven.plugins.android.configuration.UsesSdk;
-import com.jayway.maven.plugins.android.phase01generatesources.MavenILogger;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -17,17 +14,23 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import com.android.SdkConstants;
+import com.android.builder.core.AndroidBuilder;
+import com.android.manifmerger.ManifestMerger2;
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.common.AndroidExtension;
+import com.jayway.maven.plugins.android.common.AndroidManifestEOLHelper;
+import com.jayway.maven.plugins.android.common.MavenManifestDependency;
+import com.jayway.maven.plugins.android.configuration.ManifestMerger;
+import com.jayway.maven.plugins.android.configuration.UsesSdk;
+import com.jayway.maven.plugins.android.phase01generatesources.MavenILogger;
 
 /**
  * Manifest Merger V2 <code>AndroidManifest.xml</code> file.
  * http://tools.android.com/tech-docs/new-build-system/user-guide/manifest-merger
  *
  * @author Benoit Billington <benoit.billington@gmail.com>
+ * @author Matthias Stevens <matthias.stevens@gmail.com>
  */
 @Mojo( name = "manifest-merger", defaultPhase = LifecyclePhase.PROCESS_RESOURCES )
 public class ManifestMergerMojo extends AbstractAndroidMojo
@@ -172,7 +175,8 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
         {
             return; // skip, no AndroidManifest.xml file found.
         }
-
+        
+        // Run manifest merger:
         getLog().debug( "Using manifest merger V2" );
         manifestMergerV2();
     }
@@ -283,13 +287,21 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
             }
         }
 
+        // Get AndroidManifestEOLHelper instance to deal with line ending issues:
+        AndroidManifestEOLHelper eolHelper =
+            new AndroidManifestEOLHelper( androidManifestFile, true, targetDirectory, getLog() );
+        
+        // Run manifest-merger on manifest with Unix-style line endings (LF):
         builder.mergeManifests(
-                androidManifestFile, new ArrayList<File>(), manifestDependencies, "",
+                eolHelper.getUnixEOLManifestFile(),
+                new ArrayList<File>(), manifestDependencies, "",
                 versionCode, parsedVersionName,
                 minSdkVersion, targetSdkVersion, null,
                 destinationManifestFile.getPath(), ManifestMerger2.MergeType.APPLICATION,
                 new HashMap<String, String>(), parsedMergeReportFile );
 
+        // Restore Windows-style line-endings (CRLF) in destination manifest if needed:
+        eolHelper.restoreEOL( destinationManifestFile ); // does nothing if source manifest had Unix-style line endings
     }
 
     private int generateVersionCodeFromVersionName( String versionName )

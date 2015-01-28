@@ -2,9 +2,11 @@ package com.jayway.maven.plugins.android.standalonemojos;
 
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
+import com.jayway.maven.plugins.android.common.AndroidManifestEOLHelper;
 import com.jayway.maven.plugins.android.common.XmlHelper;
 import com.jayway.maven.plugins.android.configuration.Manifest;
 import com.jayway.maven.plugins.android.configuration.UsesSdk;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -32,6 +34,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -523,7 +526,11 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
     public void updateManifest( File manifestFile )
     throws IOException, ParserConfigurationException, SAXException, TransformerException, MojoFailureException
     {
-        Document doc = readManifest( manifestFile );
+        // Get AndroidManifestEOLHelper instance to deal with line ending issues:
+        AndroidManifestEOLHelper eolHelper =
+            new AndroidManifestEOLHelper( manifestFile, false, targetDirectory, getLog() );
+        // Use manifest with Unix-style line endings (LF):
+        Document doc = readManifest( eolHelper.getUnixEOLManifestFile() );
         Element manifestElement = doc.getDocumentElement();
         boolean dirty = false;
 
@@ -660,6 +667,8 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
             }
             getLog().info( "Made changes to manifest file, updating " + manifestFile );
             writeManifest( manifestFile, doc );
+            // Restore Windows-style line-endings (CRLF) in destination manifest if needed:
+            eolHelper.restoreEOL( manifestFile );
         }
         else
         {

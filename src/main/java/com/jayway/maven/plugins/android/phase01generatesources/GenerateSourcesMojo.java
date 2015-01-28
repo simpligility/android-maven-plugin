@@ -24,9 +24,11 @@ import com.jayway.maven.plugins.android.CommandExecutor;
 import com.jayway.maven.plugins.android.ExecutionException;
 import com.jayway.maven.plugins.android.common.AaptCommandBuilder;
 import com.jayway.maven.plugins.android.common.AaptCommandBuilder.AaptPackageCommandBuilder;
+import com.jayway.maven.plugins.android.common.AndroidManifestEOLHelper;
 import com.jayway.maven.plugins.android.common.DependencyResolver;
 import com.jayway.maven.plugins.android.common.FileRetriever;
 import com.jayway.maven.plugins.android.configuration.BuildConfigConstant;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -55,6 +57,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -1086,12 +1089,20 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             final ManifestMerger merger = new ManifestMerger( MergerLog.wrapSdkLog( stdLogger ), null );
 
             getLog().info( "Merging manifests of dependent apklibs" );
-
-            final boolean mergeSuccess = merger.process( mergedManifest, destinationManifestFile,
+            
+            // Get AndroidManifestEOLHelper instance to deal with line ending issues:
+            AndroidManifestEOLHelper eolHelper =
+                new AndroidManifestEOLHelper( destinationManifestFile, false, targetDirectory, getLog() );
+                        
+            // Use manifest with Unix-style line endings (LF): 
+            final boolean mergeSuccess = merger.process( mergedManifest, eolHelper.getUnixEOLManifestFile(),
                 libManifests.toArray( new File[libManifests.size()] ),  null, null );
 
             if ( mergeSuccess )
             {
+                // Restore Windows-style line-endings (CRLF) in destination manifest if needed:
+                eolHelper.restoreEOL( mergedManifest );
+                
                 // Replace the original manifest file with the merged one so that
                 // the rest of the build will pick it up.
                 destinationManifestFile.delete();
