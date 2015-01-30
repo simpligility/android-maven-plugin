@@ -498,7 +498,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * Folder in which AAR library dependencies will be unpacked.
      */
-    @Parameter( property = "unpackedLibsFolder", defaultValue = "target/unpacked-libs" )
+    @Parameter( property = "unpackedLibsFolder", defaultValue = "${project.build.directory}/unpacked-libs" )
     private File unpackedLibsFolder;
 
     private UnpackedLibHelper unpackedLibHelper;
