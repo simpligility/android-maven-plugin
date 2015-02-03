@@ -1,6 +1,17 @@
 = Changelog
 
-== 4.1.x or higher - upcoming
+== 4.1.2 or higher - upcoming
+
+Planned changes:
+
+* potentially use Takari lifecycle to improve build speed
+** see https://github.com/simpligility/android-maven-plugin/issues/532
+* migrate more documentation into the github project
+* migrate more tests to be instrumentation tests with example projects
+** see https://github.com/simpligility/android-maven-plugin/issues/452
+* anything else contributed by the community
+
+== 4.1.1 or higher - released 2015-02-02
 
 * Added Manifest Merger v2 example (tictactoe) & Deprecated merge manifest v1
 ** see https://github.com/simpligility/android-maven-plugin/pull/560
@@ -22,16 +33,14 @@
 ** contributed by Csaba Kozák https://github.com/WonderCsabo
 * Documentation updates for the site rendering
 ** see https://github.com/simpligility/android-maven-plugin/pull/567
+** and other commits
 ** contributed by Manfred Moser http://www.simpligility.com
-
-Planned changes:
-
-* potentially use Takari lifecycle to improve build speed
-** see https://github.com/simpligility/android-maven-plugin/issues/532
-* migrate more documentation into the github project
-* migrate more tests to be instrumentation tests with example projects
-** see https://github.com/simpligility/android-maven-plugin/issues/452
-* anything else contributed by the community
+* Corrected unpackedLibsFolder default value
+** see https://github.com/simpligility/android-maven-plugin/pull/575
+** contributed by Pappy Stanescu https://github.com/pa314159
+* Improvement of versionCode generator
+** see https://github.com/simpligility/android-maven-plugin/pull/570
+** contributed by Pappy Stanescu https://github.com/pa314159
 
 == 4.1.0 - released 2015-01-08
 
