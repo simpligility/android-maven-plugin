@@ -3,21 +3,46 @@
 The Android Maven Plugin is used to build applications for the Android operating system as well as build 
 libraries to be used in these efforts in AAR and the legacy APKLIB format.
 
-The plugin includes numerous features to help by supporting for running instrumentation tests, analysis with 
-Android Lint, processing with ProGuard and many other tasks. 
+The plugin includes numerous features including support for running instrumentation tests, analysis with 
+Android Lint, processing with ProGuard and many other tasks. The main tasks are creating an application 
+or a library for reuse:
 
-Please check out the example projects as well as the all the documentation here.
+* Create an Android application using link:apk.html[+apk+ packaging]
+* Create an Android Archive for code/resources reuse using link:aar.html[+aar+ packaging]
+* Create an Android Application Library (to be deprecated) for code/resources reuse using link:apk.html[+apklib+ packaging]
 
-Further information is available on
+Supplementary tasks helping these efforts supported are:
 
-* http://code.google.com/p/maven-android-plugin/[the project site]
+* link:lint-mojo.html#lint[Android Lint]
+* link:proguard-mojo.html#proguard[Obfuscating and shrinking an application Proguard]
+* Zipalign
+* Running instrumentation tests on attached devices
+* Deploying, undeploying and starting an application on attached devices
+* And many other link:plugin-info.html[goals]
+
+== Required Setup
+
+* Android SDK r21.1 or later, latest is best supported
+* Java Development Kit 1.6 - 1.8 as supported by the Android SDK
+* Apache Maven 3.0.5+
+* Environment variables and PATH settings:
+** Set ANDROID_HOME to point to the path of your installed Android SDK
+** $ANDROID_HOME/tools as well as $ANDROID_HOME/platform-tools to your $PATH
+** Or on Windows %ANDROID_HOME%\tools and %ANDROID_HOME%\platform-tools
+
+== Getting Started
+
+The best examples for project setups are the link:examples.html[example projects] that are part of the plugin 
+codebase and are run with each build and release. 
+
+== Further Information and Help
 
 * Plugin Documentation/Goals on this site
-
-* via the "help" goal of the plugin itself
-
-There is a some documentation in 
+* Via the link:help-mojo.html[+help+ goal] of the plugin itself
+* Specific guides and articles on this site
+* Join and contribute on the http://groups.google.com/group/maven-android-developers[Maven Android Developers mailing list]
+* Documentation in 
 the http://www.sonatype.com/books/mvnref-book/reference/android-dev.html[Android Development with Apache Maven] chapter
 in the book http://www.sonatype.com/Support/Books/Maven-The-Complete-Reference[Maven: The Complete Reference]. 
-Although its a bit out-dated.
+As of 2015 this is a bit out of date.
 

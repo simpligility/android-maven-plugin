@@ -1,0 +1,3 @@
+= Android Application APK
+
+This +apk+ packaging type triggers the creation of an Android application by the Android Maven Plugin.

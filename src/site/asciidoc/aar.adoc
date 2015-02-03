@@ -1,0 +1,43 @@
+= Android Archives AAR
+
+Android Maven Plugin can be used to both consume and produce 
+http://tools.android.com/tech-docs/new-build-system/aar-format[Android Archives AAR]. 
+They are the new default way of sharing libraries as inspired by apklib and implemented and supported by the Android SDK.
+
+== Consume an AAR
+
+Very simply just add the AAR as a dependency to your projects dependencies and set its type as aar 
+(and add the android-maven-plugin to build/plugins section of your maven project). E.g.,
+
+----
+  <dependency>
+    <groupId>com.google.android.gms</groupId>
+    <artifactId>play-services</artifactId>
+    <version>4.4.52</version>
+    <type>aar</type>
+  </dependency>
+----
+
+== Produce an AAR
+
+If you have a bunch of Java code that you want to share then the best solution is to create a Java project and 
+publish as a plain Java archive (ie jar).
+
+But if you have code plus Android resources that you want to share then you really want to share that as an 
+Android archive (ie AAR). Fortunately this is easy.
+
+Just add configure your project to have packaging +aar+ (and add the android-maven-plugin to build/plugins section of 
+your maven project). E.g.,
+
+----
+<project>
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.mycoolcompany</groupId>
+  <artifactId>general-lib</artifactId>
+  <version>1.2.3-SNAPSHOT</version>
+  <packaging>aar</packaging>
+
+  ...
+</project>
+----

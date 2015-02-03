@@ -1,0 +1,78 @@
+=Android Library Project with apklib packaging type
+
+WARNING: The apklib format is deprecated and support for it will be removed in a future release of the 
+Android Maven Plugin (5.0+). Use  the link:aar.html[AAR format] instead.
+
+_apklib was introduced as a stop gap measure to allow a limited ability to bundle and share Android library resources. 
+Now that the Android team have released the AAR format containing compiled code you should use that instead.
+
+
+== Introduction =
+
+An Android Library Project is a project intended for inclusion in other Android applications, rather than being run 
+on its own. It is documented more in detail in the official Android developers guide:
+ 
+ * [http://developer.android.com/guide/developing/projects/projects-cmdline.html#SettingUpLibraryProject Android Library Projects on command line]
+ * [http://developer.android.com/guide/developing/projects/projects-eclipse.html#SettingUpLibraryProject Android Library Projects in Eclipse]
+
+This deprecates ApkSourcesDependency.
+
+Note that the apklib will include content of the  `…/src/main/java` source directory, the `…/libs` native library directory and `…/res` resource directory. They will *not* contain and not the compiled *.class* files. Depending on your needs using a plain old jar package might be the simpler solution.
+
+= Creating an apklib to use in your project =
+
+An apklib is simply an Android library project, compressed as a zip file with a .apklib extension.
+
+It is important however, that the library contents are at the top level of the zip, i.e.
+
+----
++ AndroidGridViewCompatLib.apklib
+  + src
+  + res
+  + AndroidManifest.xml
+  + project.properties
+----
+
+Once you have created your apklib you can add it your local Maven repository:
+
+----
+mvn install:install-file \
+    -Dfile=libs/AndroidGridViewCompatLib-75fd1df.apklib \
+    -DgroupId=com.rokoder \
+    -DartifactId=gridviewcompat \
+    -Dversion=75fd1df \
+    -Dpackaging=apklib
+----
+
+And include it in your pom.xml as normal:
+
+----
+   <dependency> 
+       <groupId>com.rokoder</groupId> 
+       <artifactId>gridviewcompat</artifactId> 
+       <version>75fd1df</version> 
+       <type>apklib</type> 
+   </dependency>
+----
+
+== Compatible with non-Maven Android Library Projects!
+
+The generated +.apklib+ file will have the layout of a standard Android/Eclipse library project. This means that 
+regardless of your Maven layout, the layout inside the +.apklib+ file will be that source code is in +src/+ 
+instead of +src/main/java/+, but still interpreted correctly when used in an Android/Maven application project. 
+This is to be compatible with non-Maven developers' library projects, which is important to grow the Android 
+developer community.
+
+== Use other non-Maven developers' libraries ===
+
+It also means we can take any external Android library project zip file (from non-Maven developers) 
+and do +mvn install:install-file ...+ on it and simply start using it as a dependency.
+
+== Share your +.apklib+ with non-Maven developers
+
+To share your +.apklib+ file with a non-Maven developer, they will probably feel more comfortable if you rename it 
+to +.zip+. They can then simply unpack it in a directory and use it from there.
+
+
+
+
