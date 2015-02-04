@@ -13,6 +13,8 @@ Planned changes:
 
 == 4.1.1 or higher - released 2015-02-02
 
+https://groups.google.com/d/msg/maven-android-developers/EXYhXO1hbwM/L2mS3Ho7-kQJ[Release Announcement Post]
+
 * Added Manifest Merger v2 example (tictactoe) & Deprecated merge manifest v1
 ** see https://github.com/simpligility/android-maven-plugin/pull/560
 ** contributed by Benoit Billington https://github.com/Shusshu
@@ -43,6 +45,8 @@ Planned changes:
 ** contributed by Pappy Stanescu https://github.com/pa314159
 
 == 4.1.0 - released 2015-01-08
+
+https://groups.google.com/d/msg/maven-android-developers/oNm46DqGi2Q/Gs3cQAQ018gJ[Release Announcement Post]
 
 * Updated to Android SDK libraries 1.0.0 / 24.0.0
 ** see https://github.com/simpligility/android-maven-plugin/pull/531
@@ -90,7 +94,10 @@ ATTENTION:
 * use androidManifestFile and destinationManifestFile
 ** See https://github.com/simpligility/android-maven-plugin/pull/542
 
+
 == 4.0.0 - released 2014-11-25
+
+https://groups.google.com/d/msg/maven-android-developers/9ogkKf0Xr7Y/F9CKX6LV0uAJ[Release Announcement Post]
 
 * Migrated some documentation from the old Google Code site
 ** contributed by Manfred Moser http://www.simpligility.com
@@ -125,6 +132,8 @@ ATTENTION:
 ** contributed by Dmitry Berezhnoy https://github.com/deadmoto
 
 == 4.0.0-rc.3 - released 2014-10-28
+
+https://groups.google.com/d/msg/maven-android-developers/9ogkKf0Xr7Y/F9CKX6LV0uAJ[Release Announcement Post]
 
 * Migrated complete project to new git repo at https://github.com/simpligility/android-maven-plugin
 ** contributed by Manfred Moser http://www.simpligility.com
