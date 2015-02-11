@@ -20,8 +20,8 @@ a profile in settings.xml:
         <activeByDefault>false</activeByDefault>
       </activation>
     <properties>
-        <android.publisher.email>publisher email</android.publisher.email>
-        <android.publisher.p12>path to p12 key file</android.publisher.p12>
+        <android.publisher.google.email>publisher email</android.publisher.google.email>
+        <android.publisher.google.p12>path to p12 key file</android.publisher.google.p12>
     </properties>
 </profile>
 
