@@ -16,6 +16,7 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
 import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
@@ -46,6 +47,11 @@ import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
+import java.io.BufferedReader;
+import java.io.StringReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.InetSocketAddress;
 
 /**
  * Runs the first Activity shown in the top-level launcher as determined by its Intent filters.
@@ -114,13 +120,15 @@ public class RunMojo extends AbstractAndroidMojo
     /**
      * Debug parameter for the the run goal. If true, the device or emulator will pause execution of the process at
      * startup to wait for a debugger to connect. Also see the "run" parameter documentation. Default value is false.
+     * If the value is numeric, it is treated as a port number to forward the JDWP protocol
+     * of the launched process to.
      */
     @Parameter( property = "android.run.debug" )
-    protected Boolean runDebug;
+    protected String runDebug;
 
     /* the value for the debug flag after parsing pom and parameter */
     @PullParameter( defaultValue = "false" )
-    private Boolean parsedDebug;
+    private String parsedDebug;
 
     /**
      * Holds information about the "Launcher" activity.
@@ -295,8 +303,10 @@ public class RunMojo extends AbstractAndroidMojo
     private void launch( final LauncherInfo info ) throws MojoExecutionException, MojoFailureException
     {
         final String command;
+        
+        final int debugPort = findDebugPort();
 
-        command = String.format( "am start %s-n %s/%s", parsedDebug ? "-D " : "", info.packageName, info.activity );
+        command = String.format( "am start %s-n %s/%s", debugPort >= 0 ? "-D " : "", info.packageName, info.activity );
 
         doWithDevices( new DeviceCallback()
         {
@@ -315,6 +325,52 @@ public class RunMojo extends AbstractAndroidMojo
                     if ( shellOutput.getOutput().contains( "Error" ) )
                     {
                         throw new MojoFailureException( shellOutput.getOutput() );
+                    }
+                    if ( debugPort > 0 ) 
+                    {
+                        CollectingOutputReceiver processOutput = new CollectingOutputReceiver();
+                        device.executeShellCommand( "ps", processOutput );
+                        BufferedReader r = new BufferedReader( new StringReader( processOutput.getOutput() ) );
+                        int pid = -1;
+                        for ( ;; ) 
+                        {
+                            String line = r.readLine();
+                            if ( line == null )
+                            {
+                                break;
+                            }
+                            if ( line.endsWith( info.packageName ) )
+                            {
+                                String[] values = line.split( " +" );
+                                if ( values.length > 2 )
+                                {
+                                    pid = Integer.valueOf( values[1] );
+                                    break;
+                                }
+                            }
+                        }
+                        r.close();
+                        if ( pid == -1 )
+                        {
+                            throw new MojoFailureException( "Cannot find stated process " + info.packageName );
+                        }
+                        getLog().info(
+                            deviceLogLinePrefix + "Process " + debugPort + " launched"
+                        );
+                        try 
+                        {
+                            createForward( device, debugPort, pid );
+                            getLog().info(
+                                deviceLogLinePrefix + "Debugger listening on " + debugPort
+                            );
+                        } 
+                        catch ( Exception ex ) 
+                        {
+                            throw new MojoFailureException( 
+                                "Cannot create forward tcp: " + debugPort 
+                                    + " jdwp: " + pid, ex 
+                            );
+                        }
                     }
                 }
                 catch ( IOException ex )
@@ -335,5 +391,41 @@ public class RunMojo extends AbstractAndroidMojo
                 }
             }
         } );
+    }
+    
+    private static void createForward( IDevice device, int debugPort, int pid ) 
+    throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException
+    {
+        Method m = Class.forName( "com.android.ddmlib.AdbHelper" ).
+            getDeclaredMethod(
+                "createForward", InetSocketAddress.class, 
+                device.getClass(), String.class, String.class
+            );
+        m.setAccessible( true );
+        m.invoke(
+            null, AndroidDebugBridge.getSocketAddress(), device,
+            String.format( "tcp:%d", debugPort ), String.format( "jdwp:%d", pid )
+        );
+    }
+
+    private int findDebugPort()
+    {
+        int debugPort;
+        if ( "true".equals( parsedDebug ) )
+        {
+            debugPort = 0;
+        }
+        else
+        {
+            try
+            {
+                debugPort = Integer.parseInt( parsedDebug );
+            }
+            catch ( NumberFormatException ex )
+            {
+                debugPort = -1;
+            }
+        }
+        return debugPort;
     }
 }
