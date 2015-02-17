@@ -63,7 +63,7 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
      */
     private static final String INCLUDE_FROM_AAR_PARAM = "includeLibsJarsFromAar";
     private static final boolean INCLUDE_FROM_APKLIB_DEFAULT = false;
-    private static final boolean INCLUDE_FROM_AAR_DEFAULT = false;
+    private static final boolean INCLUDE_FROM_AAR_DEFAULT = true;
 
     /**
      * Mojo configuration parameter that defines where AAR files should be unpacked.
