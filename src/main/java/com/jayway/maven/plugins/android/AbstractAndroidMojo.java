@@ -273,7 +273,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * 
      * @see ClasspathModifierLifecycleParticipant
      */
-    @Parameter( defaultValue = "false" )
+    @Parameter( defaultValue = "true" )
     private boolean includeLibsJarsFromAar;
 
     /**
