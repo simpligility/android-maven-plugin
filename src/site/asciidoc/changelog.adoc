@@ -1,6 +1,6 @@
 = Changelog
 
-== 4.1.2 or higher - upcoming
+== 4.2.0 or higher - upcoming
 
 * Include internal jars from aar libraries by default
 ** see https://github.com/simpligility/android-maven-plugin/pull/586#issuecomment-74931486
