@@ -271,17 +271,6 @@ public class AarMojo extends AbstractAndroidMojo
                     //        libraries from dependencies of the AAR
                     //final File dependentLibs = new File( ndkOutputDirectory.getAbsolutePath(), ndkArchitecture );
                     //addSharedLibraries( jarArchiver, dependentLibs, prefix );
-
-                    // get native libs from other aars and apklibs
-                    for ( Artifact libraryArtifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
-                    {
-                        final File apklibLibsDirectory = new File(
-                                getUnpackedLibNativesFolder( libraryArtifact ), architecture );
-                        if ( apklibLibsDirectory.exists() )
-                        {
-                            addSharedLibraries( zipArchiver, apklibLibsDirectory, architecture );
-                        }
-                    }
                 }
             }
         }
