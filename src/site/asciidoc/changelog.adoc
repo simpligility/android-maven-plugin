@@ -4,6 +4,9 @@
 
 * Include internal jars from aar libraries by default
 ** see https://github.com/simpligility/android-maven-plugin/pull/586#issuecomment-74931486
+* Don't include internal libs from transitive AAR deps into an AAR
+** See https://github.com/simpligility/android-maven-plugin/pull/589
+** Contributed by Philip Schiffer https://github.com/hameno
 
 Planned changes:
 
