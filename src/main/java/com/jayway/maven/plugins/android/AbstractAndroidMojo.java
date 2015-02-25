@@ -224,7 +224,8 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
 
     /**
-     * Source <code>AndroidManifest.xml</code> file to copy into the {@link #destinationManifestFile} location.
+     * Path to which to save the result of updating/merging/processing the source <code>AndroidManifest.xml</code>
+     * file ({@link androidManifestFile}).
      */
     @Parameter( property = "destination.manifestFile", defaultValue = "${project.build.directory}/AndroidManifest.xml" )
     protected File destinationManifestFile;
