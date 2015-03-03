@@ -101,10 +101,11 @@ public class RunMojo extends AbstractAndroidMojo
      * <p>The configuration for the run goal can be set up in the plugin configuration in the pom file as:</p>
      * <pre>
      * &lt;run&gt;
-     *     &lt;debug&gt;true&lt;/debug&gt;
+     *     &lt;debug&gt;true|false|portnumber&lt;/debug&gt;
      * &lt;/run&gt;
      * </pre>
-     * <p>The <code>&lt;debug&gt;</code> parameter is optional and defaults to false.
+     * <p>The <code>&lt;debug&gt;</code> parameter is optional and defaults to false. Numeric values like 5432 are 
+     * parsed as port number. 
      * <p>The debug parameter can also be configured as property in the pom or settings file
      * <pre>
      * &lt;properties&gt;
