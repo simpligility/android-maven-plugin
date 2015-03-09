@@ -152,6 +152,9 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
                     // Create a placeholder classes.jar and add it to the compile classpath.
                     // It will replaced with the real classes.jar by GenerateSourcesMojo.
                     addClassesToClasspath( helper, project, artifact );
+
+                    // An AAR may also contain zero or more internal libs in the libs folder.
+                    // If 'includeLibsJarsFromAar' config param is true then include them too.
                     if ( includeFromAar )
                     {
                         // Add jar files in 'libs' into classpath.
