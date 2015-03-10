@@ -61,6 +61,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
      *             &lt;versionName&gt;&lt;/versionName&gt;
      *             &lt;versionCode&gt;123&lt;/versionCode&gt;
      *             &lt;versionCodeUpdateFromVersion&gt;true|false&lt;/versionCodeUpdateFromVersion&gt;
+     *             &lt;versionNamingPattern&gt;&lt;/versionNamingPattern&gt;
      *             &lt;mergeLibraries&gt;true|false&lt;/mergeLibraries&gt;
      *             &lt;mergeReportFile&gt;${project.build.directory}/ManifestMergeReport.txt&lt;/mergeReportFile&gt;
      *             &lt;usesSdk&gt;
@@ -118,7 +119,8 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
      * set the pattern to a non-empty string to activate. Otherwise, continue using the old
      * behavior of separating version elements by dots and ignoring all non-digit characters.
      * The pattern is standard Java regex. Capturing groups in the pattern are sequentially passed
-     * to the version code generator, while other parts are ignored.
+     * to the version code generator, while other parts are ignored. Be sure to properly escape
+     * your pattern string, in case you use characters that have special meaning in XML.
      * Exposed via the project property
      * <code>android.manifestMerger.versionNamingPattern</code>.
      */
