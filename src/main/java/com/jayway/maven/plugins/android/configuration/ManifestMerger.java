@@ -35,6 +35,12 @@ public class ManifestMerger
 
     /**
      * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestMergerMojo
+     * #manifestVersionNamingPattern}.
+     */
+    protected String versionNamingPattern;
+
+    /**
+     * Mirror of {@link com.jayway.maven.plugins.android.standalonemojos.ManifestMergerMojo
      * #manifestVersionDigits}.
      */
     protected String versionDigits;
@@ -69,6 +75,11 @@ public class ManifestMerger
     public Boolean getVersionCodeUpdateFromVersion()
     {
         return versionCodeUpdateFromVersion;
+    }
+
+    public String getVersionNamingPattern()
+    {
+        return versionNamingPattern;
     }
 
     public String getVersionDigits()
