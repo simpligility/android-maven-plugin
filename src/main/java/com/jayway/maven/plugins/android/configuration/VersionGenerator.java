@@ -20,16 +20,20 @@ public class VersionGenerator
 
     public VersionGenerator()
     {
-        this( "4,3,3" );
+        this( "4,3,3", "" );
     }
 
     public VersionGenerator( String versionDigits )
+    {
+        this( versionDigits, "" );
+    }
+
+    public VersionGenerator( String versionDigits, String versionNamingPattern )
     {
         final String[] digits = versionDigits.split( "[,;]" );
 
         this.elementsCount = digits.length;
         this.multipliers = new int[this.elementsCount];
-        this.elementParser = new SimpleVersionElementParser();
 
         int total = 0;
 
@@ -45,6 +49,17 @@ public class VersionGenerator
         if ( total < 1 || total > 10 )
         {
             throw new IllegalArgumentException( format( "Invalid number of digits, got %d", total ) );
+        }
+
+        // Choose a version element parser implementation based on the naming pattern
+        // passed in; an empty pattern triggers the old behavior.
+        if ( ! versionNamingPattern.isEmpty() )
+        {
+            this.elementParser = new RegexVersionElementParser( versionNamingPattern );
+        }
+        else
+        {
+            this.elementParser = new SimpleVersionElementParser();
         }
     }
 
