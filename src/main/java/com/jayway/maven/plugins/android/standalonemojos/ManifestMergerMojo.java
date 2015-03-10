@@ -299,7 +299,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
         }
         if ( parsedVersionCodeUpdateFromVersion )
         {
-            VersionGenerator gen = new VersionGenerator( parsedVersionDigits );
+            VersionGenerator gen = new VersionGenerator( parsedVersionDigits, parsedVersionNamingPattern );
 
             versionCode = gen.generate( parsedVersionName );
         }
