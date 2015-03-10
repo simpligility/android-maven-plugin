@@ -7,6 +7,7 @@ import static java.lang.String.format;
 
 /**
  * @author Pappy STĂNESCU <a href="mailto:pappy.stanescu&#64;gmail.com">&lt;pappy.stanescu&#64;gmail.com&gt;</a>
+ * @author Wang Xuerui <idontknw.wang@gmail.com>
  */
 public class VersionGenerator
 {
@@ -14,6 +15,8 @@ public class VersionGenerator
     private final int elementsCount;
 
     private final int[] multipliers;
+
+    private final VersionElementParser elementParser;
 
     public VersionGenerator()
     {
@@ -26,6 +29,7 @@ public class VersionGenerator
 
         this.elementsCount = digits.length;
         this.multipliers = new int[this.elementsCount];
+        this.elementParser = new SimpleVersionElementParser();
 
         int total = 0;
 
@@ -46,7 +50,7 @@ public class VersionGenerator
 
     public int generate( String versionName ) throws MojoExecutionException
     {
-        final String[] versionNameElements = versionName.replaceAll( "[^0-9.]", "" ).split( "\\." );
+        final int[] versionElements = elementParser.parseVersionElements( versionName );
 
         long versionCode = 0;
 
@@ -54,10 +58,9 @@ public class VersionGenerator
         {
             versionCode *= this.multipliers[k];
 
-            if ( k < versionNameElements.length )
+            if ( k < versionElements.length )
             {
-                final String versionElement = versionNameElements[k];
-                final int elementValue = Integer.valueOf( versionElement );
+                final int elementValue = versionElements[k];
 
                 if ( elementValue >= this.multipliers[k] )
                 {
