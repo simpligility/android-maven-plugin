@@ -50,6 +50,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -72,6 +73,8 @@ import java.util.zip.ZipOutputStream;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APK;
 import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
+
+
 
 
 /**
@@ -346,9 +349,18 @@ public class ApkMojo extends AbstractAndroidMojo
 
         doAPKWithAPKBuilder( outputFile, dexFile, zipArchive, sourceFolders, jarFiles, nativeFolders,
                     signWithDebugKeyStore );
-
+        
         if ( this.apkMetaInf != null )
         {
+            File outputJar = new File( outputApk.substring( 0, outputApk.length() - 3 ) + "jar" );
+            if ( outputJar.exists() ) 
+            {
+                jarFiles.add( outputJar );
+            } 
+            else 
+            {
+                getLog().warn( "Output jar doesn't exist:" + outputJar );
+            }
             try
             {
                 addMetaInf( outputFile, jarFiles );
