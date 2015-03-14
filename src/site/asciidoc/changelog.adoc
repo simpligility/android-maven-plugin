@@ -10,6 +10,9 @@
 * Better doco for destinationAndroidManifest parameter
 ** https://github.com/simpligility/android-maven-plugin/pull/594
 ** Contributed by Matthias Stevens https://github.com/mstevens83
+* Project META-INF artifacts are included in APK
+** https://github.com/simpligility/android-maven-plugin/pull/602
+** Contributed by Marek Marek Kedzierski https://github.com/kedzie
 
 Planned changes:
 
