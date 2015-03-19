@@ -4,14 +4,17 @@ import com.android.annotations.NonNull;
 import com.google.api.services.androidpublisher.AndroidPublisher;
 import com.google.api.services.androidpublisher.model.AppEdit;
 import com.jayway.maven.plugins.android.common.AndroidPublisherHelper;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -68,7 +71,18 @@ public abstract class AbstractPublisherMojo extends AbstractAndroidMojo
     public String readFile( File file, int maxChars ) throws IOException
     {
         String everything;
-        BufferedReader br = new BufferedReader( new FileReader( file ) );
+        InputStreamReader isr;
+        
+        if ( sourceEncoding == null )
+        {
+            isr = new InputStreamReader( new FileInputStream( file ) ); // platform default encoding
+        }
+        else
+        {
+            isr = new InputStreamReader( new FileInputStream( file ), sourceEncoding );
+        }
+        
+        BufferedReader br = new BufferedReader( isr );
         try
         {
             StringBuilder sb = new StringBuilder();
@@ -135,6 +149,17 @@ public abstract class AbstractPublisherMojo extends AbstractAndroidMojo
         {
             getLog().warn( errorMessage + " - Filename: " + fileName );
             return null;
+        }
+    }
+    
+    protected void warnPlatformDefaultEncoding()
+    {
+        if ( sourceEncoding == null )
+        {
+            getLog().warn(
+                    "Using platform encoding ("
+                            + Charset.defaultCharset()
+                            + " actually) to read Play listing text files, i.e. build is platform dependent!" );
         }
     }
 

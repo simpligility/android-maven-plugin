@@ -85,6 +85,8 @@ public class PublishApkMojo extends AbstractPublisherMojo
     private void publishWhatsNew( String packageName, AndroidPublisher.Edits edits, String editId, Apk apk )
             throws IOException
     {
+        warnPlatformDefaultEncoding();
+        
         File[] localeDirs = getLocaleDirs();
         if ( localeDirs == null )
         {

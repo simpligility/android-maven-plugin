@@ -178,6 +178,12 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected File resourceDirectory;
 
     /**
+     * The project source encoding. It will use the platform default encoding if the property is not set.
+     */
+    @Parameter( defaultValue = "${project.build.sourceEncoding}", readonly = true )
+    protected String sourceEncoding;
+    
+    /**
      * Override default generated folder containing R.java
      */
     @Parameter( property = "android.genDirectory", defaultValue = "${project.build.directory}/generated-sources/r" )

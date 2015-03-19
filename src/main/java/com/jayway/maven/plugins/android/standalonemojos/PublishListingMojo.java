@@ -6,6 +6,7 @@ import com.google.api.services.androidpublisher.AndroidPublisher;
 import com.google.api.services.androidpublisher.model.Listing;
 import com.jayway.maven.plugins.android.AbstractPublisherMojo;
 import com.jayway.maven.plugins.android.common.AndroidPublisherHelper;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -76,6 +77,7 @@ public class PublishListingMojo extends AbstractPublisherMojo
 
     private void publishListing() throws MojoExecutionException, MojoFailureException
     {
+        warnPlatformDefaultEncoding();
 
         File[] localeDirs = getLocaleDirs();
         if ( localeDirs == null )
