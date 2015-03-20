@@ -507,6 +507,14 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      */
     @Parameter( property = "unpackedLibsFolder", defaultValue = "${project.build.directory}/unpacked-libs" )
     private File unpackedLibsFolder;
+    
+    /**
+     * Whether the plugin should show a warning if conflicting dependencies with the Android provided ones exist.
+     * 
+     * @see ClasspathModifierLifecycleParticipant
+     */
+    @Parameter( defaultValue = "false" )
+    private File disableConflictingDependenciesWarning;
 
     private UnpackedLibHelper unpackedLibHelper;
     private ArtifactResolverHelper artifactResolverHelper;
