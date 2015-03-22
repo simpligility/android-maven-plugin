@@ -46,6 +46,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.plugins.shade.resource.ResourceTransformer;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -64,6 +65,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.JarOutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -261,6 +263,9 @@ public class ApkMojo extends AbstractAndroidMojo
     @Parameter( property = "android.nativeLibrariesDependenciesHardwareArchitectureDefault", defaultValue = "armeabi" )
     private String nativeLibrariesDependenciesHardwareArchitectureDefault;
 
+    @Parameter
+    private ResourceTransformer[] transformers;
+
     /**
      * @throws MojoExecutionException
      * @throws MojoFailureException
@@ -348,7 +353,7 @@ public class ApkMojo extends AbstractAndroidMojo
         getLog().info( "Adding native libraries : " + nativeFolders );
 
         doAPKWithAPKBuilder( outputFile, dexFile, zipArchive, sourceFolders, jarFiles, nativeFolders,
-                    signWithDebugKeyStore );
+                signWithDebugKeyStore );
         
         if ( this.apkMetaInf != null )
         {
@@ -377,7 +382,7 @@ public class ApkMojo extends AbstractAndroidMojo
         File tmp = File.createTempFile( outputFile.getName(), ".add", outputFile.getParentFile() );
 
         FileOutputStream fos = new FileOutputStream( tmp );
-        ZipOutputStream zos = new ZipOutputStream( fos );
+        JarOutputStream zos = new JarOutputStream( fos );
         Set<String> entries = new HashSet<String>();
 
         updateWithMetaInf( zos, outputFile, entries, false );
@@ -385,6 +390,17 @@ public class ApkMojo extends AbstractAndroidMojo
         for ( File f : jarFiles )
         {
             updateWithMetaInf( zos, f, entries, true );
+        }
+
+        if ( transformers != null )
+        {
+            for ( ResourceTransformer transformer : transformers )
+            {
+                if ( transformer.hasTransformedResource() )
+                {
+                    transformer.modifyOutputStream( zos );
+                }
+            }
         }
 
         zos.close();
@@ -420,34 +436,59 @@ public class ApkMojo extends AbstractAndroidMojo
                     continue;
                 }
 
-                if ( this.extractDuplicates && ! entries.add( zn ) )
-                {
-                    continue;
-                }
-
                 if ( ! this.apkMetaInf.isIncluded( zn ) )
                 {
                     continue;
                 }
             }
-            final ZipEntry ne;
-            if ( ze.getMethod() == ZipEntry.STORED )
+
+
+
+            boolean resourceTransformed = false;
+
+            if ( transformers != null )
             {
-                ne = new ZipEntry( ze );
+                for ( ResourceTransformer transformer : transformers )
+                {
+                    if ( transformer.canTransformResource( zn ) )
+                    {
+                        getLog().info( "Transforming " + zn + " using " + transformer.getClass().getName() );
+                        InputStream is = zin.getInputStream( ze );
+                        transformer.processResource( zn, is, null );
+                        is.close();
+                        resourceTransformed = true;
+                        break;
+                    }
+                }
             }
-            else
+
+            if ( !resourceTransformed )
             {
-                ne = new ZipEntry( zn );
+                // Avoid duplicates that aren't accounted for by the resource transformers
+                if ( metaInfOnly && this.extractDuplicates && ! entries.add( zn ) )
+                {
+                    continue;
+                }
+
+                InputStream is = zin.getInputStream( ze );
+
+                final ZipEntry ne;
+                if ( ze.getMethod() == ZipEntry.STORED )
+                {
+                    ne = new ZipEntry( ze );
+                }
+                else
+                {
+                    ne = new ZipEntry( zn );
+                }
+
+                zos.putNextEntry( ne );
+
+                copyStreamWithoutClosing( is, zos );
+
+                is.close();
+                zos.closeEntry();
             }
-
-            zos.putNextEntry( ne );
-
-            InputStream is = zin.getInputStream( ze );
-
-            copyStreamWithoutClosing( is, zos );
-
-            is.close();
-            zos.closeEntry();
         }
 
         zin.close();
@@ -472,6 +513,68 @@ public class ApkMojo extends AbstractAndroidMojo
                 }
                 l.add( jar );
             }
+        }
+    }
+
+    private void extractDuplicateFiles( List<File> jarFiles ) throws IOException
+    {
+        getLog().debug( "Extracting duplicates" );
+        List<String> duplicates = new ArrayList<String>();
+        List<File> jarToModify = new ArrayList<File>();
+        for ( String s : jars.keySet() )
+        {
+            List<File> l = jars.get( s );
+            if ( l.size() > 1 )
+            {
+                getLog().warn( "Duplicate file " + s + " : " + l );
+                duplicates.add( s );
+                for ( int i = 0; i < l.size(); i++ )
+                {
+                    if ( ! jarToModify.contains( l.get( i ) ) )
+                    {
+                        jarToModify.add( l.get( i ) );
+                    }
+                }
+            }
+        }
+
+        // Rebuild jars.  Remove duplicates from ALL jars, then add them back into a duplicate-resources.jar
+        File tmp = new File( targetDirectory.getAbsolutePath(), "unpacked-embedded-jars" );
+        tmp.mkdirs();
+        File duplicatesJar = new File( tmp, "duplicate-resources.jar" );
+        Set<String> duplicatesAdded = new HashSet<String>();
+
+        duplicatesJar.createNewFile();
+        final FileOutputStream fos = new FileOutputStream( duplicatesJar );
+        final JarOutputStream zos = new JarOutputStream( fos );
+
+        for ( File file : jarToModify )
+        {
+            final File newJar = removeDuplicatesFromJar( file, duplicates, duplicatesAdded, zos );
+            getLog().debug( "Removed duplicates from " + newJar );
+            if ( newJar != null )
+            {
+                final int index = jarFiles.indexOf( file );
+                jarFiles.set( index, newJar );
+            }
+        }
+        //add transformed resources to duplicate-resources.jar
+        if ( transformers != null )
+        {
+            for ( ResourceTransformer transformer : transformers )
+            {
+                if ( transformer.hasTransformedResource() )
+                {
+                    transformer.modifyOutputStream( zos );
+                }
+            }
+        }
+        zos.close();
+        fos.close();
+
+        if ( !jarToModify.isEmpty() && duplicatesJar.length() > 0 )
+        {
+            jarFiles.add( duplicatesJar );
         }
     }
 
@@ -514,36 +617,13 @@ public class ApkMojo extends AbstractAndroidMojo
         // Check duplicates.
         if ( extractDuplicates )
         {
-            getLog().debug( "Extracting duplicates" );
-            List<String> duplicates = new ArrayList<String>();
-            List<File> jarToModify = new ArrayList<File>();
-            for ( String s : jars.keySet() )
+            try
             {
-                List<File> l = jars.get( s );
-                if ( l.size() > 1 )
-                {
-                    getLog().warn( "Duplicate file " + s + " : " + l );
-                    duplicates.add( s );
-                    for ( int i = 1; i < l.size(); i++ )
-                    {
-                        if ( ! jarToModify.contains( l.get( i ) ) )
-                        {
-                            jarToModify.add( l.get( i ) );
-                        }
-                    }
-                }
+                extractDuplicateFiles( jarFiles );
             }
-
-            // Rebuild jars.
-            for ( File file : jarToModify )
+            catch ( IOException e )
             {
-                final File newJar = removeDuplicatesFromJar( file, duplicates );
-                getLog().debug( "Removed duplicates from " + newJar );
-                if ( newJar != null )
-                {
-                    final int index = jarFiles.indexOf( file );
-                    jarFiles.set( index, newJar );
-                }
+                getLog().error( "Could not extract duplicates to duplicate-resources.jar", e );
             }
         }
 
@@ -666,9 +746,10 @@ public class ApkMojo extends AbstractAndroidMojo
         return CLASSES + dexNumber + DEX_SUFFIX;
     }
 
-    private File removeDuplicatesFromJar( File in, List<String> duplicates )
+    private File removeDuplicatesFromJar( File in, List<String> duplicates,
+                                          Set<String> duplicatesAdded, ZipOutputStream duplicateZos )
     {
-        String target = projectOutputDirectory.getAbsolutePath();
+        String target = targetDirectory.getAbsolutePath();
         File tmp = new File( target, "unpacked-embedded-jars" );
         tmp.mkdirs();
         File out = new File( tmp, in.getName() );
@@ -720,6 +801,39 @@ public class ApkMojo extends AbstractAndroidMojo
                     copyStreamWithoutClosing( currIn, jos );
                     currIn.close();
                     jos.closeEntry();
+                }
+                //if it is duplicate, check the resource transformers
+                else
+                {
+                    boolean resourceTransformed = false;
+                    if ( transformers != null )
+                    {
+                        for ( ResourceTransformer transformer : transformers )
+                        {
+                            if ( transformer.canTransformResource( entry.getName() ) )
+                            {
+                                getLog().info( "Transforming " + entry.getName()
+                                        + " using " + transformer.getClass().getName() );
+                                InputStream currIn = inZip.getInputStream( entry );
+                                transformer.processResource( entry.getName(), currIn, null );
+                                currIn.close();
+                                resourceTransformed = true;
+                                break;
+                            }
+                        }
+                    }
+                    //if not handled by transformer, add (once) to duplicates jar
+                    if ( !resourceTransformed )
+                    {
+                        if ( !duplicatesAdded.add( entry.getName() ) )
+                        {
+                            duplicateZos.putNextEntry( entry );
+                            InputStream currIn = inZip.getInputStream( entry );
+                            copyStreamWithoutClosing( currIn, duplicateZos );
+                            currIn.close();
+                            duplicateZos.closeEntry();
+                        }
+                    }
                 }
             }
         }

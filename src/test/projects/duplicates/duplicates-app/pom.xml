@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.jayway.maven.plugins.android.tests</groupId>
+    <artifactId>duplicates-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>duplicates-app</artifactId>
+  <packaging>apk</packaging>
+
+  <name>Duplicates - App</name>
+
+  <properties>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.jayway.maven.plugins.android.tests</groupId>
+      <artifactId>duplicates-lib-a</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jayway.maven.plugins.android.tests</groupId>
+      <artifactId>duplicates-lib-b</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jayway.maven.plugins.android.tests</groupId>
+      <artifactId>duplicates-lib-c</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.android</groupId>
+      <artifactId>android</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>${project.artifactId}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>com.simpligility.maven.plugins</groupId>
+        <artifactId>android-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <extractDuplicates>true</extractDuplicates>
+          <apk>
+            <metaInf>
+              <includes>
+                <include>services/**</include>
+                <include>kmodule.*</include>
+                <include>maven/${project.groupId}/${project.artifactId}/**</include>
+              </includes>
+            </metaInf>
+          </apk>
+          <transformers>
+            <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+            <transformer implementation="com.jayway.maven.plugins.android.resource.XpathAppendingTransformer">
+              <resource>META-INF/kmodule.xml</resource>
+            </transformer>
+            <transformer implementation="com.jayway.maven.plugins.android.resource.XpathAppendingTransformer">
+              <resource>kmodule.info</resource>
+              <elements>
+                <element>/org.drools.core.rule.KieModuleMetaInfo/typeMetaInfos</element>
+                <element>/org.drools.core.rule.KieModuleMetaInfo/rulesByPackage</element>
+              </elements>
+            </transformer>
+          </transformers>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
