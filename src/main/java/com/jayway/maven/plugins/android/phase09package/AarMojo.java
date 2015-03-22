@@ -16,16 +16,21 @@
  */
 package com.jayway.maven.plugins.android.phase09package;
 
-import com.android.SdkConstants;
-import com.jayway.maven.plugins.android.AbstractAndroidMojo;
-import com.jayway.maven.plugins.android.CommandExecutor;
-import com.jayway.maven.plugins.android.ExecutionException;
-import com.jayway.maven.plugins.android.common.AaptCommandBuilder;
-import com.jayway.maven.plugins.android.common.NativeHelper;
-import com.jayway.maven.plugins.android.config.PullParameter;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
+import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -38,14 +43,13 @@ import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.jayway.maven.plugins.android.common.AndroidExtension.AAR;
-import static com.jayway.maven.plugins.android.common.AndroidExtension.APKLIB;
+import com.android.SdkConstants;
+import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.CommandExecutor;
+import com.jayway.maven.plugins.android.ExecutionException;
+import com.jayway.maven.plugins.android.common.AaptCommandBuilder;
+import com.jayway.maven.plugins.android.common.NativeHelper;
+import com.jayway.maven.plugins.android.config.PullParameter;
 
 
 /**
@@ -105,6 +109,13 @@ public class AarMojo extends AbstractAndroidMojo
     @Parameter
     @PullParameter
     private String[] classesJarExcludes = new String[]{"**/R.class", "**/R$*.class"};
+
+/**
+ * Specifies the proguard rule files to be included in the final package. All specified files will be merged into
+ * one proguard.txt file.
+ */
+@Parameter
+private File[] consumerProguardFiles;
 
     @Parameter(
             property = "android.proguard.obfuscatedJar",
@@ -209,6 +220,56 @@ public class AarMojo extends AbstractAndroidMojo
                 {
                     addDirectory( zipArchiver, resOverlayDir, "res" );
                 }
+            }
+
+            if ( consumerProguardFiles != null )
+            {
+                final File mergedConsumerProguardFile = new File( targetDirectory, "consumer-proguard.txt" );
+                if ( mergedConsumerProguardFile.exists() )
+                {
+                    FileUtils.forceDelete( mergedConsumerProguardFile );
+                }
+                mergedConsumerProguardFile.createNewFile();
+                StringBuilder mergedConsumerProguardFileBuilder = new StringBuilder();
+                for ( File consumerProguardFile : consumerProguardFiles )
+                {
+                    if ( consumerProguardFile.exists() )
+                    {
+                        getLog().info( "Adding consumer proguard file " + consumerProguardFile );
+                        FileInputStream consumerProguardFileInputStream = null;
+                        try
+                        {
+                            consumerProguardFileInputStream = new FileInputStream( consumerProguardFile );
+                            mergedConsumerProguardFileBuilder.append(
+                                IOUtils.toString( consumerProguardFileInputStream ) );
+                            mergedConsumerProguardFileBuilder.append( SystemUtils.LINE_SEPARATOR );
+                        }
+                        catch ( IOException e )
+                        {
+                            throw new MojoExecutionException( "Error writing consumer proguard file ", e );
+                        }
+                        finally
+                        {
+                            IOUtils.closeQuietly( consumerProguardFileInputStream );
+                        }
+                    }
+                }
+                FileOutputStream mergedConsumerProguardFileOutputStream = null;
+                try
+                {
+                    mergedConsumerProguardFileOutputStream = new FileOutputStream( mergedConsumerProguardFile );
+                    IOUtils.write( mergedConsumerProguardFileBuilder, mergedConsumerProguardFileOutputStream );
+                }
+                catch ( IOException e )
+                {
+                    throw new MojoExecutionException( "Error writing consumer proguard file ", e );
+                }
+                finally
+                {
+                    IOUtils.closeQuietly( mergedConsumerProguardFileOutputStream );
+                }
+
+                zipArchiver.addFile( mergedConsumerProguardFile, "proguard.txt" );
             }
 
             addR( zipArchiver );
