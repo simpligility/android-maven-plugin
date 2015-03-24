@@ -18,7 +18,6 @@
 ** and follow up commits
 ** contributed by Jaroslav Tulach https://github.com/jtulach
 ** and Manfred Moser http://www.simpligility.com
->>>>>>> updated changelog
 
 Planned changes:
 
