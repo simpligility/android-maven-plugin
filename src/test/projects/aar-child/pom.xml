@@ -30,19 +30,10 @@
         <module>aar-child-library</module>
         <module>aar-child-test</module>
     </modules>
-    
-    <scm>
-        <connection>scm:git:git@github.com:secondsun/maven-android-plugin-aar-packaging.git</connection>
-        <developerConnection>scm:git:git@github.com:aerogear/maven-android-plugin-aar-packaging.git</developerConnection>
-        <url>git@github.com:secondsun/maven-android-plugin-aar-packaging.git</url>
-        <tag>HEAD</tag>
-    </scm>
-
+ 
     <properties>
-
         <!-- Plugins versions -->
-        <maven.android.plugin.version>${it-plugin.version}</maven.android.plugin.version>
-
+        <it-plugin.version>4.1.1</it-plugin.version>
         <!-- Android configs -->
         <android.platform>19</android.platform>
         <android.debug>false</android.debug>
@@ -67,9 +58,9 @@
                 <plugin>
                     <groupId>com.simpligility.maven.plugins</groupId>
                     <artifactId>android-maven-plugin</artifactId>
-                    <version>${maven.android.plugin.version}</version>
+                    <version>${it-plugin.version}</version>
                     <extensions>true</extensions>
-                </plugin>                
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>

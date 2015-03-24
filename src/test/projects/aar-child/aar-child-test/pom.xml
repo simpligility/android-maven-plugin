@@ -21,7 +21,6 @@
     <artifactId>aar-child-test</artifactId>
     <packaging>apk</packaging>
     <name>Integration Tests</name>
-    <url>http://aerogear.org</url>
 
     <parent>
         <groupId>org.jboss.aerogear</groupId>
@@ -58,11 +57,11 @@
             <plugin>
                 <groupId>com.simpligility.maven.plugins</groupId>
                 <artifactId>android-maven-plugin</artifactId>
-                <configuration>
-                    <test>            
+               <!--  <configuration>
+                    <test>
                         <skip>false</skip>
                     </test>
-                </configuration>
+                </configuration> -->
             </plugin>
         </plugins>
     </build>
