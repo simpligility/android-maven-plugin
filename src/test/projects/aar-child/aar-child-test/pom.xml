@@ -57,11 +57,11 @@
             <plugin>
                 <groupId>com.simpligility.maven.plugins</groupId>
                 <artifactId>android-maven-plugin</artifactId>
-               <!--  <configuration>
+               <configuration>
                     <test>
                         <skip>false</skip>
                     </test>
-                </configuration> -->
+                </configuration>
             </plugin>
         </plugins>
     </build>
