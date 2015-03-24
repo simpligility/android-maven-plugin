@@ -181,11 +181,6 @@ Android Maven Plugin uses the APL v2 but with copyright mentions -->
           <property name="ignoreNumbers" value="-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 32, 64, 100, 128, 256, 512, 1000, 1024"/>
         </module>
         <module name="MissingSwitchDefault"/>
-        <module name="RedundantThrows">
-          <property name="allowUnchecked" value="true"/>
-          <property name="allowSubclasses" value="true"/>
-          <property name="suppressLoadErrors" value="true"/>
-        </module>
         <module name="SimplifyBooleanExpression"/>
         <module name="SimplifyBooleanReturn"/>
 

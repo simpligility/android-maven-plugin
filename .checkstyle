@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <fileset-config file-format-version="1.2.0" simple-config="false" sync-formatter="true">
-  <local-check-config name="android-maven-plugin" location="https://raw.github.com/jayway/maven-android-plugin/master/src/conf/maven_checks.xml" type="remote" description="">
+  <local-check-config name="android-maven-plugin" location="https://raw.github.com/simpligility/android-maven-plugin/master/src/conf/maven_checks.xml" type="remote" description="">
     <property name="checkstyle.cache.file" value="checkstyle.cache.file"/>
     <additional-data name="cache-file" value="false"/>
   </local-check-config>
