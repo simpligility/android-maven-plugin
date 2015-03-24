@@ -11,13 +11,17 @@
 ** see https://github.com/simpligility/android-maven-plugin/pull/594
 ** contributed by Matthias Stevens https://github.com/mstevens83
 * Project META-INF artifacts are included in APK
-** https://github.com/simpligility/android-maven-plugin/pull/602
+** see https://github.com/simpligility/android-maven-plugin/pull/602
 ** Contributed by Marek Marek Kedzierski https://github.com/kedzie
 * Support for specifying debug port - automatically forward JDWP connection
 ** see https://github.com/simpligility/android-maven-plugin/pull/584
 ** and follow up commits
 ** contributed by Jaroslav Tulach https://github.com/jtulach
 ** and Manfred Moser http://www.simpligility.com
+* Configurable encoding for publish mojo listing files
+** see https://github.com/simpligility/android-maven-plugin/pull/603
+** fixes https://github.com/simpligility/android-maven-plugin/issues/601
+** contributed by Csaba Kozák https://github.com/WonderCsabo
 
 Planned changes:
 
