@@ -22,6 +22,9 @@
 ** see https://github.com/simpligility/android-maven-plugin/pull/603
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/601
 ** contributed by Csaba Kozák https://github.com/WonderCsabo
+* Checkstyle - removed deprecated check
+* see https://github.com/simpligility/android-maven-plugin/issues/609
+** contributed by Manfred Moser http://www.simpligility.com
 
 Planned changes:
 
