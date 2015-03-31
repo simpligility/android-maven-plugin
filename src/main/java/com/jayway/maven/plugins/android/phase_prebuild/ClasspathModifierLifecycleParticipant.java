@@ -55,15 +55,24 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
      * pulled onto the classpath and into the resulting apk, defaults to false
      * @see INCLUDE_FROM_APKLIB_DEFAULT
      */
-    private static final String INCLUDE_FROM_APKLIK_PARAM = "includeLibsJarsFromApklib";
+    private static final String INCLUDE_FROM_APKLIB_PARAM = "includeLibsJarsFromApklib";
     /** 
      * Mojo configuration parameter to determine if jar files found inside an aar are 
      * pulled onto the classpath and into the resulting apk, defaults to false
      * @see INCLUDE_FROM_AAR_DEFAULT
      */
     private static final String INCLUDE_FROM_AAR_PARAM = "includeLibsJarsFromAar";
+    /**
+     * Mojo configuration parameter to determine if we should warn about dependency conflicts with the provided
+     * dependencies.
+     * 
+     * @see DISABLE_CONFLICTING_DEPENDENCIES_WARNING_DEFAULT
+     */
+    private static final String DISABLE_CONFLICTING_DEPENDENCIES_WARNING_PARAM
+        = "disableConflictingDependenciesWarning";
     private static final boolean INCLUDE_FROM_APKLIB_DEFAULT = false;
     private static final boolean INCLUDE_FROM_AAR_DEFAULT = true;
+    private static final boolean DISABLE_CONFLICTING_DEPENDENCIES_WARNING_DEFAULT = false;
 
     /**
      * Mojo configuration parameter that defines where AAR files should be unpacked.
@@ -104,9 +113,8 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
                 continue; // do not modify classpath if not an android project.
             }
 
-            final String unpackedLibsFolder = PomConfigurationHelper.getPluginConfigParameter(
-                    project, UNPACKED_LIBS_FOLDER_PARAM, null );
-            log.debug( UNPACKED_LIBS_FOLDER_PARAM + " set to " + unpackedLibsFolder );
+            final String unpackedLibsFolder
+                = getMojoConfigurationParameter( project, UNPACKED_LIBS_FOLDER_PARAM, null );
             final UnpackedLibHelper helper = new UnpackedLibHelper( artifactResolverHelper, project, log,
                     unpackedLibsFolder == null ? null : new File( unpackedLibsFolder )
             );
@@ -135,14 +143,21 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
                 Thread.currentThread().setContextClassLoader( originalClassLoader );
             }
 
-            boolean includeFromAar = PomConfigurationHelper.getPluginConfigParameter( 
-                project, INCLUDE_FROM_AAR_PARAM, INCLUDE_FROM_AAR_DEFAULT ); 
-            log.debug( INCLUDE_FROM_AAR_PARAM + " set to " + includeFromAar );
-            boolean includeFromApklib = PomConfigurationHelper.getPluginConfigParameter(
-                project, INCLUDE_FROM_APKLIK_PARAM, INCLUDE_FROM_APKLIB_DEFAULT );
-            log.debug( INCLUDE_FROM_APKLIK_PARAM + " set to " + includeFromApklib );
+            boolean includeFromAar = getMojoConfigurationParameter( project, INCLUDE_FROM_AAR_PARAM,
+                    INCLUDE_FROM_AAR_DEFAULT );
+            boolean includeFromApklib = getMojoConfigurationParameter( project, INCLUDE_FROM_APKLIB_PARAM,
+                    INCLUDE_FROM_APKLIB_DEFAULT );
+            boolean disableConflictingDependenciesWarning = getMojoConfigurationParameter( project,
+                    DISABLE_CONFLICTING_DEPENDENCIES_WARNING_PARAM, DISABLE_CONFLICTING_DEPENDENCIES_WARNING_DEFAULT );
 
             log.debug( "projects deps: : " + artifacts );
+            
+            if ( !disableConflictingDependenciesWarning )
+            {
+                ProvidedDependencyChecker checker = new ProvidedDependencyChecker();
+                checker.checkProvidedDependencies( artifacts, log );
+            }
+            
             for ( Artifact artifact : artifacts )
             {
                 final String type = artifact.getType();
@@ -188,6 +203,19 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
         }
         log.debug( "" );
         log.debug( "ClasspathModifierLifecycleParticipant#afterProjectsRead - finish" );
+    }
+
+    private String getMojoConfigurationParameter( MavenProject project, String name, String defaultValue )
+    {
+        String value = PomConfigurationHelper.getPluginConfigParameter( project,
+                name, defaultValue );
+        log.debug( name + " set to " + value );
+        return value;
+    }
+    
+    private boolean getMojoConfigurationParameter( MavenProject project, String name, boolean defaultValue )
+    {
+        return Boolean.valueOf( getMojoConfigurationParameter( project, name, Boolean.toString( defaultValue ) ) );
     }
 
     /**
