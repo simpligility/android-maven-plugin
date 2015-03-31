@@ -1,7 +1,11 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
 import com.android.SdkConstants;
+import com.android.annotations.NonNull;
 import com.android.builder.core.AndroidBuilder;
+import com.android.ide.common.process.JavaProcessExecutor;
+import com.android.ide.common.process.ProcessExecutor;
+import com.android.ide.common.process.ProcessOutputHandler;
 import com.android.manifmerger.ManifestMerger2;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
@@ -10,6 +14,7 @@ import com.jayway.maven.plugins.android.configuration.ManifestMerger;
 import com.jayway.maven.plugins.android.configuration.UsesSdk;
 import com.jayway.maven.plugins.android.configuration.VersionGenerator;
 import com.jayway.maven.plugins.android.phase01generatesources.MavenILogger;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -262,8 +267,13 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
 
     public void manifestMergerV2() throws MojoExecutionException, MojoFailureException
     {
+//        @NonNull ProcessExecutor processExecutor,
+//        @NonNull JavaProcessExecutor javaProcessExecutor,
+//        @NonNull ProcessOutputHandler processOutputHandler,
+        // we might have to make one of each for the Android Maven Plugin in general and then just use them here... 
+        // e.g. the class com.android.ide.common.process.DefaultProcessExecutor could be adapted
         AndroidBuilder builder = new AndroidBuilder( project.toString(), "created by Android Maven Plugin",
-                new MavenILogger( getLog() ), false );
+                null, null, null, new MavenILogger( getLog() ), false );
 
         String minSdkVersion = null;
         String targetSdkVersion = null;
