@@ -110,12 +110,12 @@ public class AarMojo extends AbstractAndroidMojo
     @PullParameter
     private String[] classesJarExcludes = new String[]{"**/R.class", "**/R$*.class"};
 
-/**
- * Specifies the proguard rule files to be included in the final package. All specified files will be merged into
- * one proguard.txt file.
- */
-@Parameter
-private File[] consumerProguardFiles;
+    /**
+     * Specifies the proguard rule files to be included in the final package. All specified files will be merged into
+     * one proguard.txt file.
+     */
+    @Parameter
+    private File[] consumerProguardFiles;
 
     @Parameter(
             property = "android.proguard.obfuscatedJar",
