@@ -186,6 +186,11 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
                     }
 
                     @Override
+                    public RawImage getScreenshot(long l, TimeUnit timeUnit) throws TimeoutException, AdbCommandRejectedException, IOException {
+                        return null;
+                    }
+
+                    @Override
                     public void executeShellCommand(String command, IShellOutputReceiver receiver) throws
                             TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException,
                             IOException {
@@ -370,8 +375,18 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
                       // TODO Auto-generated method stub
                       return 0;
                     }
-                    
-                    
+
+                    @Override
+                    public String getLanguage() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getRegion() {
+                        return null;
+                    }
+
+
                 });
                 return null;
             }

@@ -1,13 +1,13 @@
 package com.jayway.maven.plugins.android.standalonemojos;
 
 import com.android.SdkConstants;
-import com.android.annotations.NonNull;
 import com.android.builder.core.AndroidBuilder;
-import com.android.ide.common.process.JavaProcessExecutor;
-import com.android.ide.common.process.ProcessExecutor;
-import com.android.ide.common.process.ProcessOutputHandler;
+import com.android.ide.common.process.DefaultProcessExecutor;
+import com.android.ide.common.process.LoggedProcessOutputHandler;
 import com.android.manifmerger.ManifestMerger2;
+import com.android.utils.ILogger;
 import com.jayway.maven.plugins.android.AbstractAndroidMojo;
+import com.jayway.maven.plugins.android.DefaultJavaProcessExecutor;
 import com.jayway.maven.plugins.android.common.AndroidExtension;
 import com.jayway.maven.plugins.android.common.MavenManifestDependency;
 import com.jayway.maven.plugins.android.configuration.ManifestMerger;
@@ -267,13 +267,12 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
 
     public void manifestMergerV2() throws MojoExecutionException, MojoFailureException
     {
-//        @NonNull ProcessExecutor processExecutor,
-//        @NonNull JavaProcessExecutor javaProcessExecutor,
-//        @NonNull ProcessOutputHandler processOutputHandler,
-        // we might have to make one of each for the Android Maven Plugin in general and then just use them here... 
-        // e.g. the class com.android.ide.common.process.DefaultProcessExecutor could be adapted
+        ILogger logger = new MavenILogger( getLog() );
         AndroidBuilder builder = new AndroidBuilder( project.toString(), "created by Android Maven Plugin",
-                null, null, null, new MavenILogger( getLog() ), false );
+                new DefaultProcessExecutor( logger ),
+                new DefaultJavaProcessExecutor( logger ),
+                new LoggedProcessOutputHandler( logger ),
+                logger, false );
 
         String minSdkVersion = null;
         String targetSdkVersion = null;
@@ -316,7 +315,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
                 androidManifestFile, new ArrayList<File>(), manifestDependencies, "",
                 versionCode, parsedVersionName,
                 minSdkVersion, targetSdkVersion, null,
-                destinationManifestFile.getPath(), ManifestMerger2.MergeType.APPLICATION,
+                destinationManifestFile.getPath(), null, ManifestMerger2.MergeType.APPLICATION,
                 new HashMap<String, String>(), parsedMergeReportFile );
 
     }
