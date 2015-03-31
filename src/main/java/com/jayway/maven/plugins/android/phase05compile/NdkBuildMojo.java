@@ -264,7 +264,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
 
     /**
-     * Specifies the final name of the library output by the build (this allows 
+     * Specifies the final name of the library output by the build (this allows
      * the pom to override the default artifact name). The value should not
      * include the 'lib' prefix or filename extension (e.g. '.so').
      */
@@ -519,6 +519,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             // <ndkArchitectures>
             //   <x86>x86-4.6</x86>
             //   <armeabi>x86-4.6</armeabi>
+            //   <arm64-v8a>aarch64-4.9</arm64-v8a>
             // </ndkArchitectures>
             final String toolchainFromArchitecture = getAndroidNdk().getToolchainFromArchitecture(
                     architecture, ndkArchitectureToolchainMappings );
@@ -572,7 +573,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
             public boolean accept( final File dir, final String name )
             {
                 String libraryName = ndkFinalLibraryName;
-                
+
                 if ( libraryName == null || libraryName.isEmpty() )
                 {
                     libraryName = project.getArtifactId();
@@ -622,7 +623,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         }
         return files[ 0 ];
     }
-    
+
     private File nativeLibraryFromName( File nativeLibDirectory ) throws MojoExecutionException
     {
         final File libraryFile;
@@ -661,7 +662,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
         return libraryFile;
     }
-    
+
     private CommandExecutor.ErrorListener getNdkErrorListener()
     {
         return new CommandExecutor.ErrorListener()
@@ -839,9 +840,9 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         if ( NativeHelper.hasStaticNativeLibraryArtifact( resolveNativeLibraryArtifacts, getUnpackedLibsDirectory(),
                                                           architecture ) )
         {
-            String staticlibs = makefileHelper.createLibraryList( resolveNativeLibraryArtifacts, 
+            String staticlibs = makefileHelper.createLibraryList( resolveNativeLibraryArtifacts,
                                                                   architecture,
-                                                                  true ); 
+                                                                  true );
             executor.addEnvironment( "ANDROID_MAVEN_PLUGIN_LOCAL_STATIC_LIBRARIES", staticlibs );
             getLog().debug( "Set ANDROID_MAVEN_PLUGIN_LOCAL_STATIC_LIBRARIES = " + staticlibs );
         }
@@ -850,14 +851,14 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         if ( NativeHelper.hasSharedNativeLibraryArtifact( resolveNativeLibraryArtifacts, getUnpackedLibsDirectory(),
                                                           architecture ) )
         {
-            String sharedlibs = makefileHelper.createLibraryList( resolveNativeLibraryArtifacts, 
+            String sharedlibs = makefileHelper.createLibraryList( resolveNativeLibraryArtifacts,
                                                                   architecture,
-                                                                  false ); 
+                                                                  false );
             executor.addEnvironment( "ANDROID_MAVEN_PLUGIN_LOCAL_SHARED_LIBRARIES", sharedlibs );
             getLog().debug( "Set ANDROID_MAVEN_PLUGIN_LOCAL_SHARED_LIBRARIES = " + sharedlibs );
         }
     }
-    
+
     private Set<Artifact> findNativeLibraryDependencies() throws MojoExecutionException
     {
         final NativeHelper nativeHelper = getNativeHelper();
@@ -865,7 +866,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 .getNativeDependenciesArtifacts( this, getUnpackedLibsDirectory(), false );
         final Set<Artifact> sharedLibraryArtifacts = nativeHelper
                 .getNativeDependenciesArtifacts( this, getUnpackedLibsDirectory(), true );
-        
+
         final Set<Artifact> mergedArtifacts = new LinkedHashSet<Artifact>();
         filterNativeDependencies( mergedArtifacts, staticLibraryArtifacts );
         filterNativeDependencies( mergedArtifacts, sharedLibraryArtifacts );
@@ -891,7 +892,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
     {
         for ( Artifact a : source )
         {
-            if ( project.getGroupId().equals( a.getGroupId() ) 
+            if ( project.getGroupId().equals( a.getGroupId() )
                     && project.getArtifactId().equals( a.getArtifactId() ) )
             {
                 getLog().warn( "Excluding native dependency attached by this build" );

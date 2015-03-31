@@ -46,6 +46,11 @@ public class AndroidNdk
             "arm-linux-androideabi-4.7", "arm-linux-androideabi-4.6", "arm-linux-androideabi-4.4.3" };
 
     /**
+     * Arm64 toolchain implementations.
+     */
+    public static final String[] ARM64_TOOLCHAIN = {  "aarch64-linux-android-4.9" };
+
+    /**
      * x86 toolchain implementations.
      */
     public static final String[] X86_TOOLCHAIN = { "x86-4.9", "x86-4.8", "x86-4.7", "x86-4.6", "x86-4.4.3" };
@@ -109,6 +114,10 @@ public class AndroidNdk
         if ( toolchain.startsWith( "arm" ) )
         {
             fileName = "arm-linux-androideabi-strip" + extension;
+        }
+        else if ( toolchain.startsWith( "aarch64" ) )
+        {
+            fileName = "aarch64-linux-android-strip" + extension;
         }
         else if ( toolchain.startsWith( "x86" ) )
         {
@@ -177,9 +186,13 @@ public class AndroidNdk
 
         // try to resolve the toolchain now
         String ndkArchitecture = file.getParentFile().getName();
-        if ( ndkArchitecture.startsWith( "arm" ) )
+        if ( ndkArchitecture.startsWith( "armeabi" ) )
         {
             resolvedNdkToolchain = resolveNdkToolchain( ARM_TOOLCHAIN );
+        }
+        else if ( ndkArchitecture.startsWith( "arm64" ) )
+        {
+            resolvedNdkToolchain = resolveNdkToolchain( ARM64_TOOLCHAIN );
         }
         else if ( ndkArchitecture.startsWith( "x86" ) )
         {
@@ -220,10 +233,15 @@ public class AndroidNdk
     {
         // create a list of possible gdb server parent folder locations
         List<String> gdbServerLocations = new ArrayList<String>();
-        if ( ndkArchitecture.startsWith( "arm" ) )
+        if ( ndkArchitecture.startsWith( "armeabi" ) )
         {
-            gdbServerLocations.add( "android-arm" );
+            gdbServerLocations.add( "android-armeabi" );
             gdbServerLocations.addAll( Arrays.asList( ARM_TOOLCHAIN ) );
+        }
+        else if ( ndkArchitecture.startsWith( "arm64" ) )
+        {
+            gdbServerLocations.add( "android-arm64" );
+            gdbServerLocations.addAll( Arrays.asList( ARM64_TOOLCHAIN ) );
         }
         else if ( ndkArchitecture.startsWith( "x86" ) )
         {
@@ -270,13 +288,21 @@ public class AndroidNdk
                                                 final NDKArchitectureToolchainMappings ndkArchitectureToolchainMappings
     ) throws MojoExecutionException
     {
-        if ( ndkArchitecture.startsWith( "arm" ) )
+        if ( ndkArchitecture.startsWith( "armeabi" ) )
         {
             if ( ndkArchitectureToolchainMappings != null )
             {
                 return ndkArchitectureToolchainMappings.getArmeabi();
             }
             return AndroidNdk.ARM_TOOLCHAIN[0];
+        }
+        else if ( ndkArchitecture.startsWith( "arm64" ) )
+        {
+            if ( ndkArchitectureToolchainMappings != null )
+            {
+                return ndkArchitectureToolchainMappings.getArm64();
+            }
+            return AndroidNdk.ARM64_TOOLCHAIN[0];
         }
         else if ( ndkArchitecture.startsWith( "x86" ) )
         {
