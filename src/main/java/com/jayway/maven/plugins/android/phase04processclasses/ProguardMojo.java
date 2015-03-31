@@ -391,6 +391,19 @@ public class ProguardMojo extends AbstractAndroidMojo
             proguardCommands.add( "@" + proguardFile.getAbsolutePath() );
         }
 
+        for ( Artifact artifact : getDirectDependencyArtifacts() )
+        {
+            if ( AAR.equals( artifact.getType() ) )
+            {
+                File unpackedLibFolder = getUnpackedLibFolder( artifact );
+                File proguardFile = new File( unpackedLibFolder, "proguard.txt" );
+                if ( proguardFile.exists() )
+                {
+                    proguardCommands.add( "@" + proguardFile.getAbsolutePath() );
+                }
+            }
+        }
+
         collectInputFiles( proguardCommands );
 
         proguardCommands.add( "-outjars" );
@@ -429,7 +442,7 @@ public class ProguardMojo extends AbstractAndroidMojo
             IOUtils.write( commandStringBuilder, tempConfigFileOutputStream );
 
             executor.setCaptureStdOut( true );
-            commands.add( "@\"" + tempConfigFile.getAbsolutePath() + "\"" );
+            commands.add( "@" + tempConfigFile.getAbsolutePath() + "" );
             executor.executeCommand( javaExecutable, commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
