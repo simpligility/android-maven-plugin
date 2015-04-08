@@ -34,6 +34,11 @@
 * Allow AAR provided proguard configuration to be automatically integrated
 ** see https://github.com/simpligility/android-maven-plugin/pull/612
 ** contributed by Philip Schiffer https://github.com/hameno
+* Updated Android SDK libraries 1.1.3 / 24.1.3
+* see https://github.com/simpligility/android-maven-plugin/commit/60ec75aa8ab889c7033fd403149973c0d3b66f82
+* see https://github.com/simpligility/android-maven-plugin/commit/869578d84af1f215bca341191bb0078899e3330c
+** contributed by Manfred Moser http://www.simpligility.com
+** contributed by Benoit Billington https://github.com/Shusshu
 
 Planned changes:
 
