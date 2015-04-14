@@ -39,6 +39,10 @@
 ** see https://github.com/simpligility/android-maven-plugin/commit/869578d84af1f215bca341191bb0078899e3330c
 ** contributed by Manfred Moser http://www.simpligility.com
 ** contributed by Benoit Billington https://github.com/Shusshu
+* Regex support for VersionGenerator
+** fixes https://github.com/simpligility/android-maven-plugin/issues/605
+** see https://github.com/simpligility/android-maven-plugin/pull/606
+** contributed by Wang Xuerui https://github.com/xen0n
 
 Planned changes:
 
