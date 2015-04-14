@@ -7,6 +7,7 @@ import static java.lang.String.format;
 
 /**
  * @author Pappy STĂNESCU <a href="mailto:pappy.stanescu&#64;gmail.com">&lt;pappy.stanescu&#64;gmail.com&gt;</a>
+ * @author Wang Xuerui <idontknw.wang@gmail.com>
  */
 public class VersionGenerator
 {
@@ -15,12 +16,19 @@ public class VersionGenerator
 
     private final int[] multipliers;
 
+    private final VersionElementParser elementParser;
+
     public VersionGenerator()
     {
-        this( "4,3,3" );
+        this( "4,3,3", "" );
     }
 
     public VersionGenerator( String versionDigits )
+    {
+        this( versionDigits, "" );
+    }
+
+    public VersionGenerator( String versionDigits, String versionNamingPattern )
     {
         final String[] digits = versionDigits.split( "[,;]" );
 
@@ -42,11 +50,22 @@ public class VersionGenerator
         {
             throw new IllegalArgumentException( format( "Invalid number of digits, got %d", total ) );
         }
+
+        // Choose a version element parser implementation based on the naming pattern
+        // passed in; an empty pattern triggers the old behavior.
+        if ( ! versionNamingPattern.isEmpty() )
+        {
+            this.elementParser = new RegexVersionElementParser( versionNamingPattern );
+        }
+        else
+        {
+            this.elementParser = new SimpleVersionElementParser();
+        }
     }
 
     public int generate( String versionName ) throws MojoExecutionException
     {
-        final String[] versionNameElements = versionName.replaceAll( "[^0-9.]", "" ).split( "\\." );
+        final int[] versionElements = elementParser.parseVersionElements( versionName );
 
         long versionCode = 0;
 
@@ -54,10 +73,9 @@ public class VersionGenerator
         {
             versionCode *= this.multipliers[k];
 
-            if ( k < versionNameElements.length )
+            if ( k < versionElements.length )
             {
-                final String versionElement = versionNameElements[k];
-                final int elementValue = Integer.valueOf( versionElement );
+                final int elementValue = versionElements[k];
 
                 if ( elementValue >= this.multipliers[k] )
                 {
