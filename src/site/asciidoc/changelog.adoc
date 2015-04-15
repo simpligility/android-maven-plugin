@@ -1,6 +1,16 @@
 = Changelog
 
-== 4.2.0 or higher - upcoming
+== 4.2.1 or higher - upcoming
+
+Planned changes:
+
+* migrate more documentation into the github project
+* migrate more tests to be instrumentation tests with example projects
+** see https://github.com/simpligility/android-maven-plugin/issues/452
+* anything else contributed by the community
+
+
+== 4.2.0 or higher - released 2015-04-15
 
 * Include internal jars from aar libraries by default
 ** see https://github.com/simpligility/android-maven-plugin/pull/586#issuecomment-74931486
@@ -43,15 +53,6 @@
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/605
 ** see https://github.com/simpligility/android-maven-plugin/pull/606
 ** contributed by Wang Xuerui https://github.com/xen0n
-
-Planned changes:
-
-* potentially use Takari lifecycle to improve build speed
-** see https://github.com/simpligility/android-maven-plugin/issues/532
-* migrate more documentation into the github project
-* migrate more tests to be instrumentation tests with example projects
-** see https://github.com/simpligility/android-maven-plugin/issues/452
-* anything else contributed by the community
 
 == 4.1.1 or higher - released 2015-02-02
 
