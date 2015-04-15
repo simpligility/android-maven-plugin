@@ -272,7 +272,7 @@
 <a class="jxr_linenumber" name="L264" href="#L264">264</a> 
 <a class="jxr_linenumber" name="L265" href="#L265">265</a> 
 <a class="jxr_linenumber" name="L266" href="#L266">266</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L267" href="#L267">267</a> <em class="jxr_javadoccomment">     * Specifies the final name of the library output by the build (this allows </em>
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> <em class="jxr_javadoccomment">     * Specifies the final name of the library output by the build (this allows</em>
 <a class="jxr_linenumber" name="L268" href="#L268">268</a> <em class="jxr_javadoccomment">     * the pom to override the default artifact name). The value should not</em>
 <a class="jxr_linenumber" name="L269" href="#L269">269</a> <em class="jxr_javadoccomment">     * include the 'lib' prefix or filename extension (e.g. '.so').</em>
 <a class="jxr_linenumber" name="L270" href="#L270">270</a> <em class="jxr_javadoccomment">     */</em>
@@ -527,413 +527,414 @@
 <a class="jxr_linenumber" name="L519" href="#L519">519</a>             <em class="jxr_comment">// &lt;ndkArchitectures&gt;</em>
 <a class="jxr_linenumber" name="L520" href="#L520">520</a>             <em class="jxr_comment">//   &lt;x86&gt;x86-4.6&lt;/x86&gt;</em>
 <a class="jxr_linenumber" name="L521" href="#L521">521</a>             <em class="jxr_comment">//   &lt;armeabi&gt;x86-4.6&lt;/armeabi&gt;</em>
-<a class="jxr_linenumber" name="L522" href="#L522">522</a>             <em class="jxr_comment">// &lt;/ndkArchitectures&gt;</em>
-<a class="jxr_linenumber" name="L523" href="#L523">523</a>             <strong class="jxr_keyword">final</strong> String toolchainFromArchitecture = getAndroidNdk().getToolchainFromArchitecture(
-<a class="jxr_linenumber" name="L524" href="#L524">524</a>                     architecture, ndkArchitectureToolchainMappings );
-<a class="jxr_linenumber" name="L525" href="#L525">525</a>             getLog().debug( <span class="jxr_string">"Resolved toolchain for "</span> + architecture + <span class="jxr_string">" to "</span> + toolchainFromArchitecture );
-<a class="jxr_linenumber" name="L526" href="#L526">526</a>             commands.add( <span class="jxr_string">"NDK_TOOLCHAIN="</span> + toolchainFromArchitecture );
-<a class="jxr_linenumber" name="L527" href="#L527">527</a>             commands.add( <span class="jxr_string">"APP_ABI="</span> + architecture );
-<a class="jxr_linenumber" name="L528" href="#L528">528</a> 
-<a class="jxr_linenumber" name="L529" href="#L529">529</a>         }
-<a class="jxr_linenumber" name="L530" href="#L530">530</a>     }
-<a class="jxr_linenumber" name="L531" href="#L531">531</a> 
-<a class="jxr_linenumber" name="L532" href="#L532">532</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L533" href="#L533">533</a> <em class="jxr_javadoccomment">     * Attaches native libs to project.</em>
-<a class="jxr_linenumber" name="L534" href="#L534">534</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L535" href="#L535">535</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> attachNativeLib( File destinationDirectory, String architecture )
-<a class="jxr_linenumber" name="L536" href="#L536">536</a>             <strong class="jxr_keyword">throws</strong> IOException, MojoExecutionException
-<a class="jxr_linenumber" name="L537" href="#L537">537</a>     {
-<a class="jxr_linenumber" name="L538" href="#L538">538</a>         <strong class="jxr_keyword">final</strong> File nativeArtifactFile;
-<a class="jxr_linenumber" name="L539" href="#L539">539</a>         <strong class="jxr_keyword">if</strong> ( ndkFinalLibraryName == <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L540" href="#L540">540</a>         {
-<a class="jxr_linenumber" name="L541" href="#L541">541</a>             nativeArtifactFile = findNativeLibrary( destinationDirectory );
-<a class="jxr_linenumber" name="L542" href="#L542">542</a>         }
-<a class="jxr_linenumber" name="L543" href="#L543">543</a>         <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L544" href="#L544">544</a>         {
-<a class="jxr_linenumber" name="L545" href="#L545">545</a>             nativeArtifactFile = nativeLibraryFromName( destinationDirectory );
-<a class="jxr_linenumber" name="L546" href="#L546">546</a>         }
-<a class="jxr_linenumber" name="L547" href="#L547">547</a> 
-<a class="jxr_linenumber" name="L548" href="#L548">548</a>         <strong class="jxr_keyword">final</strong> String artifactType = resolveArtifactType( nativeArtifactFile );
-<a class="jxr_linenumber" name="L549" href="#L549">549</a>         <strong class="jxr_keyword">if</strong> ( nativeArtifactFile.getName().endsWith( <span class="jxr_string">".so"</span> ) &amp;&amp; ! skipStripping )
-<a class="jxr_linenumber" name="L550" href="#L550">550</a>         {
-<a class="jxr_linenumber" name="L551" href="#L551">551</a>             getLog().debug( <span class="jxr_string">"Post processing (stripping) native compiled artifact: "</span> + nativeArtifactFile );
-<a class="jxr_linenumber" name="L552" href="#L552">552</a>             invokeNDKStripper( nativeArtifactFile );
-<a class="jxr_linenumber" name="L553" href="#L553">553</a>         }
-<a class="jxr_linenumber" name="L554" href="#L554">554</a> 
-<a class="jxr_linenumber" name="L555" href="#L555">555</a>         getLog().debug( <span class="jxr_string">"Adding native compiled artifact: "</span> + nativeArtifactFile );
-<a class="jxr_linenumber" name="L556" href="#L556">556</a> 
-<a class="jxr_linenumber" name="L557" href="#L557">557</a>         <strong class="jxr_keyword">final</strong> String classifier = ( ndkClassifier == <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L558" href="#L558">558</a>                 ? architecture
-<a class="jxr_linenumber" name="L559" href="#L559">559</a>                 : architecture + <span class="jxr_string">"-"</span> + ndkClassifier;
-<a class="jxr_linenumber" name="L560" href="#L560">560</a> 
-<a class="jxr_linenumber" name="L561" href="#L561">561</a>         projectHelper.attachArtifact( <strong class="jxr_keyword">this</strong>.project, artifactType, classifier, nativeArtifactFile );
-<a class="jxr_linenumber" name="L562" href="#L562">562</a>     }
-<a class="jxr_linenumber" name="L563" href="#L563">563</a> 
-<a class="jxr_linenumber" name="L564" href="#L564">564</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L565" href="#L565">565</a> <em class="jxr_javadoccomment">     * Search the specified directory for native artifacts that match the artifact Id</em>
-<a class="jxr_linenumber" name="L566" href="#L566">566</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L567" href="#L567">567</a>     <strong class="jxr_keyword">private</strong> File findNativeLibrary( File nativeLibDirectory ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L568" href="#L568">568</a>     {
-<a class="jxr_linenumber" name="L569" href="#L569">569</a>         getLog().info( <span class="jxr_string">"Searching "</span> + nativeLibDirectory + <span class="jxr_string">" for built library"</span> );
-<a class="jxr_linenumber" name="L570" href="#L570">570</a>         File[] files = nativeLibDirectory.listFiles( <strong class="jxr_keyword">new</strong> FilenameFilter()
-<a class="jxr_linenumber" name="L571" href="#L571">571</a>         {
-<a class="jxr_linenumber" name="L572" href="#L572">572</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> accept( <strong class="jxr_keyword">final</strong> File dir, <strong class="jxr_keyword">final</strong> String name )
-<a class="jxr_linenumber" name="L573" href="#L573">573</a>             {
-<a class="jxr_linenumber" name="L574" href="#L574">574</a>                 String libraryName = ndkFinalLibraryName;
-<a class="jxr_linenumber" name="L575" href="#L575">575</a>                 
-<a class="jxr_linenumber" name="L576" href="#L576">576</a>                 <strong class="jxr_keyword">if</strong> ( libraryName == <strong class="jxr_keyword">null</strong> || libraryName.isEmpty() )
-<a class="jxr_linenumber" name="L577" href="#L577">577</a>                 {
-<a class="jxr_linenumber" name="L578" href="#L578">578</a>                     libraryName = project.getArtifactId();
-<a class="jxr_linenumber" name="L579" href="#L579">579</a>                 }
-<a class="jxr_linenumber" name="L580" href="#L580">580</a> 
-<a class="jxr_linenumber" name="L581" href="#L581">581</a>                 <em class="jxr_comment">// FIXME: The following logic won't work for an APKLIB building a static library</em>
-<a class="jxr_linenumber" name="L582" href="#L582">582</a>                 <strong class="jxr_keyword">if</strong> ( Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( project.getPackaging() ) )
-<a class="jxr_linenumber" name="L583" href="#L583">583</a>                 {
-<a class="jxr_linenumber" name="L584" href="#L584">584</a>                     <strong class="jxr_keyword">return</strong> name.startsWith(
-<a class="jxr_linenumber" name="L585" href="#L585">585</a>                             <span class="jxr_string">"lib"</span> + libraryName ) &amp;&amp; name.endsWith( <span class="jxr_string">".a"</span> );
-<a class="jxr_linenumber" name="L586" href="#L586">586</a>                 }
-<a class="jxr_linenumber" name="L587" href="#L587">587</a>                 <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L588" href="#L588">588</a>                 {
-<a class="jxr_linenumber" name="L589" href="#L589">589</a>                     <strong class="jxr_keyword">return</strong> name.startsWith(
-<a class="jxr_linenumber" name="L590" href="#L590">590</a>                             <span class="jxr_string">"lib"</span> + libraryName ) &amp;&amp; name.endsWith( <span class="jxr_string">".so"</span> );
-<a class="jxr_linenumber" name="L591" href="#L591">591</a>                 }
-<a class="jxr_linenumber" name="L592" href="#L592">592</a>             }
-<a class="jxr_linenumber" name="L593" href="#L593">593</a>         } );
-<a class="jxr_linenumber" name="L594" href="#L594">594</a>         <em class="jxr_comment">// slight limitation at this stage - we only handle a single .so artifact</em>
-<a class="jxr_linenumber" name="L595" href="#L595">595</a>         <strong class="jxr_keyword">if</strong> ( files == <strong class="jxr_keyword">null</strong> || files.length != 1 )
-<a class="jxr_linenumber" name="L596" href="#L596">596</a>         {
-<a class="jxr_linenumber" name="L597" href="#L597">597</a>             getLog().warn( <span class="jxr_string">"Error while detecting native compile artifacts: "</span>
-<a class="jxr_linenumber" name="L598" href="#L598">598</a>                     + ( files == <strong class="jxr_keyword">null</strong> || files.length == 0
-<a class="jxr_linenumber" name="L599" href="#L599">599</a>                             ? <span class="jxr_string">"None found"</span>
-<a class="jxr_linenumber" name="L600" href="#L600">600</a>                             : <span class="jxr_string">"Found more than 1 artifact"</span> ) );
-<a class="jxr_linenumber" name="L601" href="#L601">601</a>             <strong class="jxr_keyword">if</strong> ( target != <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L602" href="#L602">602</a>             {
-<a class="jxr_linenumber" name="L603" href="#L603">603</a>                 getLog().warn( <span class="jxr_string">"Using the 'target' configuration option to specify the output file name "</span>
-<a class="jxr_linenumber" name="L604" href="#L604">604</a>                         + <span class="jxr_string">"is no longer supported, use 'ndkFinalLibraryName' instead."</span> );
-<a class="jxr_linenumber" name="L605" href="#L605">605</a>             }
-<a class="jxr_linenumber" name="L606" href="#L606">606</a> 
-<a class="jxr_linenumber" name="L607" href="#L607">607</a>             <strong class="jxr_keyword">if</strong> ( files != <strong class="jxr_keyword">null</strong> &amp;&amp; files.length &gt; 1 )
-<a class="jxr_linenumber" name="L608" href="#L608">608</a>             {
-<a class="jxr_linenumber" name="L609" href="#L609">609</a>                 getLog().debug( <span class="jxr_string">"List of files found: "</span> + Arrays.asList( files ) );
-<a class="jxr_linenumber" name="L610" href="#L610">610</a>                 getLog().error(
-<a class="jxr_linenumber" name="L611" href="#L611">611</a>                         <span class="jxr_string">"Currently, only a single, final native library is supported by the build"</span> );
-<a class="jxr_linenumber" name="L612" href="#L612">612</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException(
-<a class="jxr_linenumber" name="L613" href="#L613">613</a>                         <span class="jxr_string">"Currently, only a single, final native library is supported by the build"</span> );
-<a class="jxr_linenumber" name="L614" href="#L614">614</a>             }
-<a class="jxr_linenumber" name="L615" href="#L615">615</a>             <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L616" href="#L616">616</a>             {
-<a class="jxr_linenumber" name="L617" href="#L617">617</a>                 getLog().error( <span class="jxr_string">"No native compiled library found, did the native compile complete "</span>
-<a class="jxr_linenumber" name="L618" href="#L618">618</a>                         + <span class="jxr_string">"successfully?"</span> );
-<a class="jxr_linenumber" name="L619" href="#L619">619</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"No native compiled library found, did the native "</span>
-<a class="jxr_linenumber" name="L620" href="#L620">620</a>                         + <span class="jxr_string">"compile complete successfully?"</span> );
-<a class="jxr_linenumber" name="L621" href="#L621">621</a>             }
-<a class="jxr_linenumber" name="L622" href="#L622">622</a>         }
-<a class="jxr_linenumber" name="L623" href="#L623">623</a>         <strong class="jxr_keyword">return</strong> files[ 0 ];
-<a class="jxr_linenumber" name="L624" href="#L624">624</a>     }
-<a class="jxr_linenumber" name="L625" href="#L625">625</a>     
-<a class="jxr_linenumber" name="L626" href="#L626">626</a>     <strong class="jxr_keyword">private</strong> File nativeLibraryFromName( File nativeLibDirectory ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L627" href="#L627">627</a>     {
-<a class="jxr_linenumber" name="L628" href="#L628">628</a>         <strong class="jxr_keyword">final</strong> File libraryFile;
-<a class="jxr_linenumber" name="L629" href="#L629">629</a>         <em class="jxr_comment">// Find the nativeArtifactFile in the nativeLibDirectory/ndkFinalLibraryName</em>
-<a class="jxr_linenumber" name="L630" href="#L630">630</a>         <strong class="jxr_keyword">if</strong> ( Const.ArtifactType.NATIVE_SYMBOL_OBJECT.equals( project.getPackaging() )
-<a class="jxr_linenumber" name="L631" href="#L631">631</a>                 || Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( project.getPackaging() ) )
-<a class="jxr_linenumber" name="L632" href="#L632">632</a>         {
-<a class="jxr_linenumber" name="L633" href="#L633">633</a>             libraryFile = <strong class="jxr_keyword">new</strong> File( nativeLibDirectory,
-<a class="jxr_linenumber" name="L634" href="#L634">634</a>                     <span class="jxr_string">"lib"</span> + ndkFinalLibraryName + <span class="jxr_string">"."</span> + project.getPackaging() );
-<a class="jxr_linenumber" name="L635" href="#L635">635</a>         }
-<a class="jxr_linenumber" name="L636" href="#L636">636</a>         <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L637" href="#L637">637</a>         {
-<a class="jxr_linenumber" name="L638" href="#L638">638</a>             <strong class="jxr_keyword">final</strong> File staticLib = <strong class="jxr_keyword">new</strong> File( nativeLibDirectory,
-<a class="jxr_linenumber" name="L639" href="#L639">639</a>                     <span class="jxr_string">"lib"</span> + ndkFinalLibraryName + <span class="jxr_string">".a"</span> );
-<a class="jxr_linenumber" name="L640" href="#L640">640</a>             <strong class="jxr_keyword">if</strong> ( staticLib.exists() )
-<a class="jxr_linenumber" name="L641" href="#L641">641</a>             {
-<a class="jxr_linenumber" name="L642" href="#L642">642</a>                 libraryFile = staticLib;
-<a class="jxr_linenumber" name="L643" href="#L643">643</a>             }
-<a class="jxr_linenumber" name="L644" href="#L644">644</a>             <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L645" href="#L645">645</a>             {
-<a class="jxr_linenumber" name="L646" href="#L646">646</a>                 libraryFile = <strong class="jxr_keyword">new</strong> File( nativeLibDirectory,
-<a class="jxr_linenumber" name="L647" href="#L647">647</a>                         <span class="jxr_string">"lib"</span> + ndkFinalLibraryName + <span class="jxr_string">".so"</span> );
-<a class="jxr_linenumber" name="L648" href="#L648">648</a>             }
-<a class="jxr_linenumber" name="L649" href="#L649">649</a>         }
-<a class="jxr_linenumber" name="L650" href="#L650">650</a>         <strong class="jxr_keyword">if</strong> ( ! libraryFile.exists() )
-<a class="jxr_linenumber" name="L651" href="#L651">651</a>         {
-<a class="jxr_linenumber" name="L652" href="#L652">652</a>             getLog().error(
-<a class="jxr_linenumber" name="L653" href="#L653">653</a>                     <span class="jxr_string">"Could not locate final native library using the provided ndkFinalLibraryName "</span>
-<a class="jxr_linenumber" name="L654" href="#L654">654</a>                             + ndkFinalLibraryName + <span class="jxr_string">" (tried "</span> + libraryFile.getAbsolutePath()
-<a class="jxr_linenumber" name="L655" href="#L655">655</a>                             + <span class="jxr_string">")"</span> );
-<a class="jxr_linenumber" name="L656" href="#L656">656</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException(
-<a class="jxr_linenumber" name="L657" href="#L657">657</a>                     <span class="jxr_string">"Could not locate final native library using the provided ndkFinalLibraryName "</span>
-<a class="jxr_linenumber" name="L658" href="#L658">658</a>                     + ndkFinalLibraryName + <span class="jxr_string">" (tried "</span> + libraryFile.getAbsolutePath()
-<a class="jxr_linenumber" name="L659" href="#L659">659</a>                     + <span class="jxr_string">")"</span> );
-<a class="jxr_linenumber" name="L660" href="#L660">660</a>         }
-<a class="jxr_linenumber" name="L661" href="#L661">661</a> 
-<a class="jxr_linenumber" name="L662" href="#L662">662</a>         <strong class="jxr_keyword">return</strong> libraryFile;
-<a class="jxr_linenumber" name="L663" href="#L663">663</a>     }
-<a class="jxr_linenumber" name="L664" href="#L664">664</a>     
-<a class="jxr_linenumber" name="L665" href="#L665">665</a>     <strong class="jxr_keyword">private</strong> CommandExecutor.ErrorListener getNdkErrorListener()
-<a class="jxr_linenumber" name="L666" href="#L666">666</a>     {
-<a class="jxr_linenumber" name="L667" href="#L667">667</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> CommandExecutor.ErrorListener()
-<a class="jxr_linenumber" name="L668" href="#L668">668</a>         {
-<a class="jxr_linenumber" name="L669" href="#L669">669</a>             @Override
-<a class="jxr_linenumber" name="L670" href="#L670">670</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isError( String error )
-<a class="jxr_linenumber" name="L671" href="#L671">671</a>             {
-<a class="jxr_linenumber" name="L672" href="#L672">672</a> 
-<a class="jxr_linenumber" name="L673" href="#L673">673</a>                 <em class="jxr_comment">// Unconditionally ignore *All* build warning if configured to</em>
-<a class="jxr_linenumber" name="L674" href="#L674">674</a>                 <strong class="jxr_keyword">if</strong> ( ignoreBuildWarnings )
-<a class="jxr_linenumber" name="L675" href="#L675">675</a>                 {
-<a class="jxr_linenumber" name="L676" href="#L676">676</a>                     <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L677" href="#L677">677</a>                 }
-<a class="jxr_linenumber" name="L678" href="#L678">678</a> 
-<a class="jxr_linenumber" name="L679" href="#L679">679</a>                 <strong class="jxr_keyword">final</strong> Pattern pattern = Pattern.compile( buildWarningsRegularExpression );
-<a class="jxr_linenumber" name="L680" href="#L680">680</a>                 <strong class="jxr_keyword">final</strong> Matcher matcher = pattern.matcher( error );
-<a class="jxr_linenumber" name="L681" href="#L681">681</a> 
-<a class="jxr_linenumber" name="L682" href="#L682">682</a>                 <em class="jxr_comment">// If the the reg.exp actually matches, we can safely say this is not an error</em>
-<a class="jxr_linenumber" name="L683" href="#L683">683</a>                 <em class="jxr_comment">// since in theory the user told us so</em>
-<a class="jxr_linenumber" name="L684" href="#L684">684</a>                 <strong class="jxr_keyword">if</strong> ( matcher.matches() )
-<a class="jxr_linenumber" name="L685" href="#L685">685</a>                 {
-<a class="jxr_linenumber" name="L686" href="#L686">686</a>                     <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L687" href="#L687">687</a>                 }
-<a class="jxr_linenumber" name="L688" href="#L688">688</a> 
-<a class="jxr_linenumber" name="L689" href="#L689">689</a>                 <em class="jxr_comment">// Otherwise, it is just another error</em>
-<a class="jxr_linenumber" name="L690" href="#L690">690</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L691" href="#L691">691</a>             }
-<a class="jxr_linenumber" name="L692" href="#L692">692</a>         };
-<a class="jxr_linenumber" name="L693" href="#L693">693</a>     }
-<a class="jxr_linenumber" name="L694" href="#L694">694</a> 
-<a class="jxr_linenumber" name="L695" href="#L695">695</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L696" href="#L696">696</a> <em class="jxr_javadoccomment">     * Validate the makefile - if our packaging type is so (for example) and there are</em>
-<a class="jxr_linenumber" name="L697" href="#L697">697</a> <em class="jxr_javadoccomment">     * dependencies on .a files (or shared files for that matter) the makefile should include</em>
-<a class="jxr_linenumber" name="L698" href="#L698">698</a> <em class="jxr_javadoccomment">     * the include of our Android Maven plugin generated makefile.</em>
-<a class="jxr_linenumber" name="L699" href="#L699">699</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L700" href="#L700">700</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> validateMakefile( MavenProject project, String file )
-<a class="jxr_linenumber" name="L701" href="#L701">701</a>     {
-<a class="jxr_linenumber" name="L702" href="#L702">702</a>         <em class="jxr_comment">// TODO: actually perform validation</em>
-<a class="jxr_linenumber" name="L703" href="#L703">703</a>     }
-<a class="jxr_linenumber" name="L704" href="#L704">704</a> 
-<a class="jxr_linenumber" name="L705" href="#L705">705</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> invokeNDKStripper( File file ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L706" href="#L706">706</a>     {
-<a class="jxr_linenumber" name="L707" href="#L707">707</a>         <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L708" href="#L708">708</a>         {
-<a class="jxr_linenumber" name="L709" href="#L709">709</a>             getLog().debug( <span class="jxr_string">"Detected shared library artifact, will now strip it"</span> );
-<a class="jxr_linenumber" name="L710" href="#L710">710</a>             <em class="jxr_comment">// Execute the strip command</em>
-<a class="jxr_linenumber" name="L711" href="#L711">711</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/CommandExecutor.html">CommandExecutor</a> stripCommandExecutor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-<a class="jxr_linenumber" name="L712" href="#L712">712</a>             stripCommandExecutor.setErrorListener( <strong class="jxr_keyword">new</strong> CommandExecutor.ErrorListener()
-<a class="jxr_linenumber" name="L713" href="#L713">713</a>             {
-<a class="jxr_linenumber" name="L714" href="#L714">714</a>                 <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isError( String error )
-<a class="jxr_linenumber" name="L715" href="#L715">715</a>                 {
-<a class="jxr_linenumber" name="L716" href="#L716">716</a>                     getLog().error( <span class="jxr_string">"Error while stripping binary: "</span> + error );
-<a class="jxr_linenumber" name="L717" href="#L717">717</a>                     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L718" href="#L718">718</a>                 }
-<a class="jxr_linenumber" name="L719" href="#L719">719</a>             } );
-<a class="jxr_linenumber" name="L720" href="#L720">720</a>             stripCommandExecutor.setLogger( getLog() );
-<a class="jxr_linenumber" name="L721" href="#L721">721</a>             stripCommandExecutor.setCaptureStdOut( <strong class="jxr_keyword">true</strong> );
-<a class="jxr_linenumber" name="L722" href="#L722">722</a>             stripCommandExecutor.executeCommand( resolveNdkStripper( file ).getAbsolutePath(),
-<a class="jxr_linenumber" name="L723" href="#L723">723</a>                                                  Arrays.asList( file.getAbsolutePath() ) );
-<a class="jxr_linenumber" name="L724" href="#L724">724</a>         }
-<a class="jxr_linenumber" name="L725" href="#L725">725</a>         <strong class="jxr_keyword">catch</strong> ( ExecutionException e )
-<a class="jxr_linenumber" name="L726" href="#L726">726</a>         {
-<a class="jxr_linenumber" name="L727" href="#L727">727</a>             getLog().error( <span class="jxr_string">"Error while attempting to strip shared library"</span>, e );
-<a class="jxr_linenumber" name="L728" href="#L728">728</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"Error while attempting to strip shared library"</span> );
-<a class="jxr_linenumber" name="L729" href="#L729">729</a>         }
-<a class="jxr_linenumber" name="L730" href="#L730">730</a>     }
-<a class="jxr_linenumber" name="L731" href="#L731">731</a> 
-<a class="jxr_linenumber" name="L732" href="#L732">732</a>     <strong class="jxr_keyword">private</strong> String resolveNdkBuildExecutable() <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L733" href="#L733">733</a>     {
-<a class="jxr_linenumber" name="L734" href="#L734">734</a>         <strong class="jxr_keyword">if</strong> ( ndkBuildExecutable != <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L735" href="#L735">735</a>         {
-<a class="jxr_linenumber" name="L736" href="#L736">736</a>             getLog().debug( <span class="jxr_string">"ndk-build overriden, using "</span> + ndkBuildExecutable );
-<a class="jxr_linenumber" name="L737" href="#L737">737</a>             <strong class="jxr_keyword">return</strong> ndkBuildExecutable;
-<a class="jxr_linenumber" name="L738" href="#L738">738</a>         }
-<a class="jxr_linenumber" name="L739" href="#L739">739</a>         <strong class="jxr_keyword">return</strong> getAndroidNdk().getNdkBuildPath();
-<a class="jxr_linenumber" name="L740" href="#L740">740</a>     }
-<a class="jxr_linenumber" name="L741" href="#L741">741</a> 
-<a class="jxr_linenumber" name="L742" href="#L742">742</a>     <strong class="jxr_keyword">private</strong> File resolveNdkStripper( File nativeLibrary ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L743" href="#L743">743</a>     {
-<a class="jxr_linenumber" name="L744" href="#L744">744</a>         <strong class="jxr_keyword">if</strong> ( ndkToolchain != <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L745" href="#L745">745</a>         {
-<a class="jxr_linenumber" name="L746" href="#L746">746</a>             <strong class="jxr_keyword">return</strong> getAndroidNdk().getStripper( ndkToolchain );
-<a class="jxr_linenumber" name="L747" href="#L747">747</a>         }
-<a class="jxr_linenumber" name="L748" href="#L748">748</a>         <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L749" href="#L749">749</a>         {
-<a class="jxr_linenumber" name="L750" href="#L750">750</a>             <strong class="jxr_keyword">return</strong> getAndroidNdk().getStripper( getAndroidNdk().getToolchain( nativeLibrary ) );
-<a class="jxr_linenumber" name="L751" href="#L751">751</a>         }
-<a class="jxr_linenumber" name="L752" href="#L752">752</a>     }
-<a class="jxr_linenumber" name="L753" href="#L753">753</a> 
-<a class="jxr_linenumber" name="L754" href="#L754">754</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> attachHeaderFiles( File localCIncludesFile, String architecture )
-<a class="jxr_linenumber" name="L755" href="#L755">755</a>         <strong class="jxr_keyword">throws</strong> MojoExecutionException, IOException
-<a class="jxr_linenumber" name="L756" href="#L756">756</a>     {
-<a class="jxr_linenumber" name="L757" href="#L757">757</a> 
-<a class="jxr_linenumber" name="L758" href="#L758">758</a>         <strong class="jxr_keyword">final</strong> List&lt;HeaderFilesDirective&gt; finalHeaderFilesDirectives = <strong class="jxr_keyword">new</strong> ArrayList&lt;HeaderFilesDirective&gt;();
-<a class="jxr_linenumber" name="L759" href="#L759">759</a> 
-<a class="jxr_linenumber" name="L760" href="#L760">760</a>         <strong class="jxr_keyword">if</strong> ( useLocalSrcIncludePaths )
-<a class="jxr_linenumber" name="L761" href="#L761">761</a>         {
-<a class="jxr_linenumber" name="L762" href="#L762">762</a>             Properties props = <strong class="jxr_keyword">new</strong> Properties();
-<a class="jxr_linenumber" name="L763" href="#L763">763</a>             props.load( <strong class="jxr_keyword">new</strong> FileInputStream( localCIncludesFile ) );
-<a class="jxr_linenumber" name="L764" href="#L764">764</a>             String localCIncludes = props.getProperty( <span class="jxr_string">"LOCAL_C_INCLUDES"</span> );
-<a class="jxr_linenumber" name="L765" href="#L765">765</a>             <strong class="jxr_keyword">if</strong> ( localCIncludes != <strong class="jxr_keyword">null</strong> &amp;&amp; ! localCIncludes.trim().isEmpty() )
-<a class="jxr_linenumber" name="L766" href="#L766">766</a>             {
-<a class="jxr_linenumber" name="L767" href="#L767">767</a>                 String[] includes = localCIncludes.split( <span class="jxr_string">" "</span> );
-<a class="jxr_linenumber" name="L768" href="#L768">768</a>                 <strong class="jxr_keyword">for</strong> ( String include : includes )
-<a class="jxr_linenumber" name="L769" href="#L769">769</a>                 {
-<a class="jxr_linenumber" name="L770" href="#L770">770</a>                     <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/configuration/HeaderFilesDirective.html">HeaderFilesDirective</a> headerFilesDirective = <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/configuration/HeaderFilesDirective.html">HeaderFilesDirective</a>();
-<a class="jxr_linenumber" name="L771" href="#L771">771</a>                     File includeDir = <strong class="jxr_keyword">new</strong> File( project.getBasedir(), include );
-<a class="jxr_linenumber" name="L772" href="#L772">772</a>                     headerFilesDirective.setDirectory( includeDir.getAbsolutePath() );
-<a class="jxr_linenumber" name="L773" href="#L773">773</a>                     headerFilesDirective.setIncludes( <strong class="jxr_keyword">new</strong> String[]{ <span class="jxr_string">"**/*.h"</span> } );
-<a class="jxr_linenumber" name="L774" href="#L774">774</a>                     finalHeaderFilesDirectives.add( headerFilesDirective );
-<a class="jxr_linenumber" name="L775" href="#L775">775</a>                 }
-<a class="jxr_linenumber" name="L776" href="#L776">776</a>             }
-<a class="jxr_linenumber" name="L777" href="#L777">777</a>         }
-<a class="jxr_linenumber" name="L778" href="#L778">778</a>         <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L779" href="#L779">779</a>         {
-<a class="jxr_linenumber" name="L780" href="#L780">780</a>             <strong class="jxr_keyword">if</strong> ( headerFilesDirectives != <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L781" href="#L781">781</a>             {
-<a class="jxr_linenumber" name="L782" href="#L782">782</a>                 finalHeaderFilesDirectives.addAll( headerFilesDirectives );
-<a class="jxr_linenumber" name="L783" href="#L783">783</a>             }
-<a class="jxr_linenumber" name="L784" href="#L784">784</a>         }
-<a class="jxr_linenumber" name="L785" href="#L785">785</a>         <strong class="jxr_keyword">if</strong> ( finalHeaderFilesDirectives.isEmpty() )
-<a class="jxr_linenumber" name="L786" href="#L786">786</a>         {
-<a class="jxr_linenumber" name="L787" href="#L787">787</a>             getLog().debug( <span class="jxr_string">"No header files included, will add default set"</span> );
-<a class="jxr_linenumber" name="L788" href="#L788">788</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/configuration/HeaderFilesDirective.html">HeaderFilesDirective</a> e = <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/configuration/HeaderFilesDirective.html">HeaderFilesDirective</a>();
-<a class="jxr_linenumber" name="L789" href="#L789">789</a>             e.setDirectory( <strong class="jxr_keyword">new</strong> File( project.getBasedir() + <span class="jxr_string">"/jni"</span> ).getAbsolutePath() );
-<a class="jxr_linenumber" name="L790" href="#L790">790</a>             e.setIncludes( <strong class="jxr_keyword">new</strong> String[]{ <span class="jxr_string">"**/*.h"</span> } );
-<a class="jxr_linenumber" name="L791" href="#L791">791</a>             finalHeaderFilesDirectives.add( e );
-<a class="jxr_linenumber" name="L792" href="#L792">792</a>         }
-<a class="jxr_linenumber" name="L793" href="#L793">793</a>         createHeaderArchive( finalHeaderFilesDirectives, architecture );
-<a class="jxr_linenumber" name="L794" href="#L794">794</a>     }
-<a class="jxr_linenumber" name="L795" href="#L795">795</a> 
-<a class="jxr_linenumber" name="L796" href="#L796">796</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> createHeaderArchive( List&lt;HeaderFilesDirective&gt; finalHeaderFilesDirectives, String architecture )
-<a class="jxr_linenumber" name="L797" href="#L797">797</a>             <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L798" href="#L798">798</a>     {
-<a class="jxr_linenumber" name="L799" href="#L799">799</a>         <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L800" href="#L800">800</a>         {
-<a class="jxr_linenumber" name="L801" href="#L801">801</a>             MavenArchiver mavenArchiver = <strong class="jxr_keyword">new</strong> MavenArchiver();
-<a class="jxr_linenumber" name="L802" href="#L802">802</a>             mavenArchiver.setArchiver( jarArchiver );
-<a class="jxr_linenumber" name="L803" href="#L803">803</a> 
-<a class="jxr_linenumber" name="L804" href="#L804">804</a>             <strong class="jxr_keyword">final</strong> File jarFile = <strong class="jxr_keyword">new</strong> File( targetDirectory, finalName + <span class="jxr_string">".har"</span> );
-<a class="jxr_linenumber" name="L805" href="#L805">805</a> 
-<a class="jxr_linenumber" name="L806" href="#L806">806</a>             mavenArchiver.setOutputFile( jarFile );
-<a class="jxr_linenumber" name="L807" href="#L807">807</a> 
-<a class="jxr_linenumber" name="L808" href="#L808">808</a>             <strong class="jxr_keyword">for</strong> ( HeaderFilesDirective headerFilesDirective : finalHeaderFilesDirectives )
-<a class="jxr_linenumber" name="L809" href="#L809">809</a>             {
-<a class="jxr_linenumber" name="L810" href="#L810">810</a>                 mavenArchiver.getArchiver().addDirectory( <strong class="jxr_keyword">new</strong> File( headerFilesDirective.getDirectory() ),
-<a class="jxr_linenumber" name="L811" href="#L811">811</a>                         headerFilesDirective.getIncludes(), headerFilesDirective.getExcludes() );
-<a class="jxr_linenumber" name="L812" href="#L812">812</a>             }
-<a class="jxr_linenumber" name="L813" href="#L813">813</a> 
-<a class="jxr_linenumber" name="L814" href="#L814">814</a>             <strong class="jxr_keyword">final</strong> MavenArchiveConfiguration mavenArchiveConfiguration = <strong class="jxr_keyword">new</strong> MavenArchiveConfiguration();
-<a class="jxr_linenumber" name="L815" href="#L815">815</a>             mavenArchiveConfiguration.setAddMavenDescriptor( false );
-<a class="jxr_linenumber" name="L816" href="#L816">816</a> 
-<a class="jxr_linenumber" name="L817" href="#L817">817</a>             mavenArchiver.createArchive( project, mavenArchiveConfiguration );
-<a class="jxr_linenumber" name="L818" href="#L818">818</a> 
-<a class="jxr_linenumber" name="L819" href="#L819">819</a>             String classifier = architecture;
-<a class="jxr_linenumber" name="L820" href="#L820">820</a>             <strong class="jxr_keyword">if</strong> ( ndkClassifier != <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L821" href="#L821">821</a>             {
-<a class="jxr_linenumber" name="L822" href="#L822">822</a>                 classifier += <span class="jxr_string">"-"</span> + ndkClassifier;
-<a class="jxr_linenumber" name="L823" href="#L823">823</a>             }
-<a class="jxr_linenumber" name="L824" href="#L824">824</a> 
-<a class="jxr_linenumber" name="L825" href="#L825">825</a>             getLog().debug( <span class="jxr_string">"Attaching 'har' classifier="</span> + classifier + <span class="jxr_string">" file="</span> + jarFile );
-<a class="jxr_linenumber" name="L826" href="#L826">826</a>             projectHelper.attachArtifact( project, Const.ArtifactType.NATIVE_HEADER_ARCHIVE, classifier, jarFile );
-<a class="jxr_linenumber" name="L827" href="#L827">827</a> 
-<a class="jxr_linenumber" name="L828" href="#L828">828</a>         }
-<a class="jxr_linenumber" name="L829" href="#L829">829</a>         <strong class="jxr_keyword">catch</strong> ( Exception e )
-<a class="jxr_linenumber" name="L830" href="#L830">830</a>         {
-<a class="jxr_linenumber" name="L831" href="#L831">831</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( e.getMessage() );
-<a class="jxr_linenumber" name="L832" href="#L832">832</a>         }
-<a class="jxr_linenumber" name="L833" href="#L833">833</a>     }
-<a class="jxr_linenumber" name="L834" href="#L834">834</a> 
-<a class="jxr_linenumber" name="L835" href="#L835">835</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> setupNativeLibraryEnvironment( MakefileHelper makefileHelper, CommandExecutor executor,
-<a class="jxr_linenumber" name="L836" href="#L836">836</a>                                                 Set&lt;Artifact&gt; resolveNativeLibraryArtifacts, String architecture )
-<a class="jxr_linenumber" name="L837" href="#L837">837</a>     {
-<a class="jxr_linenumber" name="L838" href="#L838">838</a>         <em class="jxr_comment">// Only add the LOCAL_STATIC_LIBRARIES</em>
-<a class="jxr_linenumber" name="L839" href="#L839">839</a>         <strong class="jxr_keyword">if</strong> ( NativeHelper.hasStaticNativeLibraryArtifact( resolveNativeLibraryArtifacts, getUnpackedLibsDirectory(),
-<a class="jxr_linenumber" name="L840" href="#L840">840</a>                                                           architecture ) )
-<a class="jxr_linenumber" name="L841" href="#L841">841</a>         {
-<a class="jxr_linenumber" name="L842" href="#L842">842</a>             String staticlibs = makefileHelper.createLibraryList( resolveNativeLibraryArtifacts, 
-<a class="jxr_linenumber" name="L843" href="#L843">843</a>                                                                   architecture,
-<a class="jxr_linenumber" name="L844" href="#L844">844</a>                                                                   <strong class="jxr_keyword">true</strong> ); 
-<a class="jxr_linenumber" name="L845" href="#L845">845</a>             executor.addEnvironment( <span class="jxr_string">"ANDROID_MAVEN_PLUGIN_LOCAL_STATIC_LIBRARIES"</span>, staticlibs );
-<a class="jxr_linenumber" name="L846" href="#L846">846</a>             getLog().debug( <span class="jxr_string">"Set ANDROID_MAVEN_PLUGIN_LOCAL_STATIC_LIBRARIES = "</span> + staticlibs );
-<a class="jxr_linenumber" name="L847" href="#L847">847</a>         }
-<a class="jxr_linenumber" name="L848" href="#L848">848</a> 
-<a class="jxr_linenumber" name="L849" href="#L849">849</a>         <em class="jxr_comment">// Only add the LOCAL_SHARED_LIBRARIES</em>
-<a class="jxr_linenumber" name="L850" href="#L850">850</a>         <strong class="jxr_keyword">if</strong> ( NativeHelper.hasSharedNativeLibraryArtifact( resolveNativeLibraryArtifacts, getUnpackedLibsDirectory(),
-<a class="jxr_linenumber" name="L851" href="#L851">851</a>                                                           architecture ) )
-<a class="jxr_linenumber" name="L852" href="#L852">852</a>         {
-<a class="jxr_linenumber" name="L853" href="#L853">853</a>             String sharedlibs = makefileHelper.createLibraryList( resolveNativeLibraryArtifacts, 
-<a class="jxr_linenumber" name="L854" href="#L854">854</a>                                                                   architecture,
-<a class="jxr_linenumber" name="L855" href="#L855">855</a>                                                                   false ); 
-<a class="jxr_linenumber" name="L856" href="#L856">856</a>             executor.addEnvironment( <span class="jxr_string">"ANDROID_MAVEN_PLUGIN_LOCAL_SHARED_LIBRARIES"</span>, sharedlibs );
-<a class="jxr_linenumber" name="L857" href="#L857">857</a>             getLog().debug( <span class="jxr_string">"Set ANDROID_MAVEN_PLUGIN_LOCAL_SHARED_LIBRARIES = "</span> + sharedlibs );
-<a class="jxr_linenumber" name="L858" href="#L858">858</a>         }
-<a class="jxr_linenumber" name="L859" href="#L859">859</a>     }
-<a class="jxr_linenumber" name="L860" href="#L860">860</a>     
-<a class="jxr_linenumber" name="L861" href="#L861">861</a>     <strong class="jxr_keyword">private</strong> Set&lt;Artifact&gt; findNativeLibraryDependencies() <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L862" href="#L862">862</a>     {
-<a class="jxr_linenumber" name="L863" href="#L863">863</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/common/NativeHelper.html">NativeHelper</a> nativeHelper = getNativeHelper();
-<a class="jxr_linenumber" name="L864" href="#L864">864</a>         <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; staticLibraryArtifacts = nativeHelper
-<a class="jxr_linenumber" name="L865" href="#L865">865</a>                 .getNativeDependenciesArtifacts( <strong class="jxr_keyword">this</strong>, getUnpackedLibsDirectory(), false );
-<a class="jxr_linenumber" name="L866" href="#L866">866</a>         <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; sharedLibraryArtifacts = nativeHelper
-<a class="jxr_linenumber" name="L867" href="#L867">867</a>                 .getNativeDependenciesArtifacts( <strong class="jxr_keyword">this</strong>, getUnpackedLibsDirectory(), <strong class="jxr_keyword">true</strong> );
-<a class="jxr_linenumber" name="L868" href="#L868">868</a>         
-<a class="jxr_linenumber" name="L869" href="#L869">869</a>         <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; mergedArtifacts = <strong class="jxr_keyword">new</strong> LinkedHashSet&lt;Artifact&gt;();
-<a class="jxr_linenumber" name="L870" href="#L870">870</a>         filterNativeDependencies( mergedArtifacts, staticLibraryArtifacts );
-<a class="jxr_linenumber" name="L871" href="#L871">871</a>         filterNativeDependencies( mergedArtifacts, sharedLibraryArtifacts );
-<a class="jxr_linenumber" name="L872" href="#L872">872</a> 
-<a class="jxr_linenumber" name="L873" href="#L873">873</a>         getLog().debug( <span class="jxr_string">"findNativeLibraryDependencies found "</span> + mergedArtifacts.size()
-<a class="jxr_linenumber" name="L874" href="#L874">874</a>                 + <span class="jxr_string">": "</span> + mergedArtifacts.toString() );
-<a class="jxr_linenumber" name="L875" href="#L875">875</a> 
-<a class="jxr_linenumber" name="L876" href="#L876">876</a>         <strong class="jxr_keyword">return</strong> mergedArtifacts;
-<a class="jxr_linenumber" name="L877" href="#L877">877</a>     }
-<a class="jxr_linenumber" name="L878" href="#L878">878</a> 
-<a class="jxr_linenumber" name="L879" href="#L879">879</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L880" href="#L880">880</a> <em class="jxr_javadoccomment">     * Selectively add artifacts from source to target excluding any whose groupId and artifactId match</em>
-<a class="jxr_linenumber" name="L881" href="#L881">881</a> <em class="jxr_javadoccomment">     * the current build.</em>
-<a class="jxr_linenumber" name="L882" href="#L882">882</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L883" href="#L883">883</a> <em class="jxr_javadoccomment">     * Introduced to work around an issue when the ndk-build is executed twice by maven for example when</em>
-<a class="jxr_linenumber" name="L884" href="#L884">884</a> <em class="jxr_javadoccomment">     * invoking maven 'install site'. In this case the artifacts attached by the first invocation are</em>
-<a class="jxr_linenumber" name="L885" href="#L885">885</a> <em class="jxr_javadoccomment">     * found but are not valid dependencies and must be excluded.</em>
-<a class="jxr_linenumber" name="L886" href="#L886">886</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L887" href="#L887">887</a> <em class="jxr_javadoccomment">     * @param targetSet artifact Set to copy in to</em>
-<a class="jxr_linenumber" name="L888" href="#L888">888</a> <em class="jxr_javadoccomment">     * @param source artifact Set to filter</em>
-<a class="jxr_linenumber" name="L889" href="#L889">889</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L890" href="#L890">890</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> filterNativeDependencies( Set&lt;Artifact&gt; targetSet, Set&lt;Artifact&gt; source )
-<a class="jxr_linenumber" name="L891" href="#L891">891</a>     {
-<a class="jxr_linenumber" name="L892" href="#L892">892</a>         <strong class="jxr_keyword">for</strong> ( Artifact a : source )
-<a class="jxr_linenumber" name="L893" href="#L893">893</a>         {
-<a class="jxr_linenumber" name="L894" href="#L894">894</a>             <strong class="jxr_keyword">if</strong> ( project.getGroupId().equals( a.getGroupId() ) 
-<a class="jxr_linenumber" name="L895" href="#L895">895</a>                     &amp;&amp; project.getArtifactId().equals( a.getArtifactId() ) )
-<a class="jxr_linenumber" name="L896" href="#L896">896</a>             {
-<a class="jxr_linenumber" name="L897" href="#L897">897</a>                 getLog().warn( <span class="jxr_string">"Excluding native dependency attached by this build"</span> );
-<a class="jxr_linenumber" name="L898" href="#L898">898</a>             }
-<a class="jxr_linenumber" name="L899" href="#L899">899</a>             <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L900" href="#L900">900</a>             {
-<a class="jxr_linenumber" name="L901" href="#L901">901</a>                 targetSet.add( a );
-<a class="jxr_linenumber" name="L902" href="#L902">902</a>             }
-<a class="jxr_linenumber" name="L903" href="#L903">903</a>         }
-<a class="jxr_linenumber" name="L904" href="#L904">904</a>     }
-<a class="jxr_linenumber" name="L905" href="#L905">905</a> 
-<a class="jxr_linenumber" name="L906" href="#L906">906</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L907" href="#L907">907</a> <em class="jxr_javadoccomment">     * Resolve the artifact type from the current project and the specified file.  If the project packaging is</em>
-<a class="jxr_linenumber" name="L908" href="#L908">908</a> <em class="jxr_javadoccomment">     * either 'a' or 'so' it will use the packaging, otherwise it checks the file for the extension</em>
-<a class="jxr_linenumber" name="L909" href="#L909">909</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L910" href="#L910">910</a> <em class="jxr_javadoccomment">     * @param file The file being added as an artifact</em>
-<a class="jxr_linenumber" name="L911" href="#L911">911</a> <em class="jxr_javadoccomment">     * @return The artifact type (so or a)</em>
-<a class="jxr_linenumber" name="L912" href="#L912">912</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L913" href="#L913">913</a>     <strong class="jxr_keyword">private</strong> String resolveArtifactType( File file )
-<a class="jxr_linenumber" name="L914" href="#L914">914</a>     {
-<a class="jxr_linenumber" name="L915" href="#L915">915</a>         <strong class="jxr_keyword">if</strong> ( Const.ArtifactType.NATIVE_SYMBOL_OBJECT.equals( project.getPackaging() )
-<a class="jxr_linenumber" name="L916" href="#L916">916</a>                 || Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( project.getPackaging() ) )
-<a class="jxr_linenumber" name="L917" href="#L917">917</a>         {
-<a class="jxr_linenumber" name="L918" href="#L918">918</a>             <strong class="jxr_keyword">return</strong> project.getPackaging();
-<a class="jxr_linenumber" name="L919" href="#L919">919</a>         }
-<a class="jxr_linenumber" name="L920" href="#L920">920</a>         <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L921" href="#L921">921</a>         {
-<a class="jxr_linenumber" name="L922" href="#L922">922</a>             <em class="jxr_comment">// At this point, the file (as found by our filtering previously will end with either 'so' or 'a'</em>
-<a class="jxr_linenumber" name="L923" href="#L923">923</a>             <strong class="jxr_keyword">return</strong> file.getName().endsWith( Const.ArtifactType.NATIVE_SYMBOL_OBJECT )
-<a class="jxr_linenumber" name="L924" href="#L924">924</a>                     ? Const.ArtifactType.NATIVE_SYMBOL_OBJECT
-<a class="jxr_linenumber" name="L925" href="#L925">925</a>                     : Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE;
-<a class="jxr_linenumber" name="L926" href="#L926">926</a>         }
-<a class="jxr_linenumber" name="L927" href="#L927">927</a>     }
-<a class="jxr_linenumber" name="L928" href="#L928">928</a> }
+<a class="jxr_linenumber" name="L522" href="#L522">522</a>             <em class="jxr_comment">//   &lt;arm64-v8a&gt;aarch64-4.9&lt;/arm64-v8a&gt;</em>
+<a class="jxr_linenumber" name="L523" href="#L523">523</a>             <em class="jxr_comment">// &lt;/ndkArchitectures&gt;</em>
+<a class="jxr_linenumber" name="L524" href="#L524">524</a>             <strong class="jxr_keyword">final</strong> String toolchainFromArchitecture = getAndroidNdk().getToolchainFromArchitecture(
+<a class="jxr_linenumber" name="L525" href="#L525">525</a>                     architecture, ndkArchitectureToolchainMappings );
+<a class="jxr_linenumber" name="L526" href="#L526">526</a>             getLog().debug( <span class="jxr_string">"Resolved toolchain for "</span> + architecture + <span class="jxr_string">" to "</span> + toolchainFromArchitecture );
+<a class="jxr_linenumber" name="L527" href="#L527">527</a>             commands.add( <span class="jxr_string">"NDK_TOOLCHAIN="</span> + toolchainFromArchitecture );
+<a class="jxr_linenumber" name="L528" href="#L528">528</a>             commands.add( <span class="jxr_string">"APP_ABI="</span> + architecture );
+<a class="jxr_linenumber" name="L529" href="#L529">529</a> 
+<a class="jxr_linenumber" name="L530" href="#L530">530</a>         }
+<a class="jxr_linenumber" name="L531" href="#L531">531</a>     }
+<a class="jxr_linenumber" name="L532" href="#L532">532</a> 
+<a class="jxr_linenumber" name="L533" href="#L533">533</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L534" href="#L534">534</a> <em class="jxr_javadoccomment">     * Attaches native libs to project.</em>
+<a class="jxr_linenumber" name="L535" href="#L535">535</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L536" href="#L536">536</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> attachNativeLib( File destinationDirectory, String architecture )
+<a class="jxr_linenumber" name="L537" href="#L537">537</a>             <strong class="jxr_keyword">throws</strong> IOException, MojoExecutionException
+<a class="jxr_linenumber" name="L538" href="#L538">538</a>     {
+<a class="jxr_linenumber" name="L539" href="#L539">539</a>         <strong class="jxr_keyword">final</strong> File nativeArtifactFile;
+<a class="jxr_linenumber" name="L540" href="#L540">540</a>         <strong class="jxr_keyword">if</strong> ( ndkFinalLibraryName == <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L541" href="#L541">541</a>         {
+<a class="jxr_linenumber" name="L542" href="#L542">542</a>             nativeArtifactFile = findNativeLibrary( destinationDirectory );
+<a class="jxr_linenumber" name="L543" href="#L543">543</a>         }
+<a class="jxr_linenumber" name="L544" href="#L544">544</a>         <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L545" href="#L545">545</a>         {
+<a class="jxr_linenumber" name="L546" href="#L546">546</a>             nativeArtifactFile = nativeLibraryFromName( destinationDirectory );
+<a class="jxr_linenumber" name="L547" href="#L547">547</a>         }
+<a class="jxr_linenumber" name="L548" href="#L548">548</a> 
+<a class="jxr_linenumber" name="L549" href="#L549">549</a>         <strong class="jxr_keyword">final</strong> String artifactType = resolveArtifactType( nativeArtifactFile );
+<a class="jxr_linenumber" name="L550" href="#L550">550</a>         <strong class="jxr_keyword">if</strong> ( nativeArtifactFile.getName().endsWith( <span class="jxr_string">".so"</span> ) &amp;&amp; ! skipStripping )
+<a class="jxr_linenumber" name="L551" href="#L551">551</a>         {
+<a class="jxr_linenumber" name="L552" href="#L552">552</a>             getLog().debug( <span class="jxr_string">"Post processing (stripping) native compiled artifact: "</span> + nativeArtifactFile );
+<a class="jxr_linenumber" name="L553" href="#L553">553</a>             invokeNDKStripper( nativeArtifactFile );
+<a class="jxr_linenumber" name="L554" href="#L554">554</a>         }
+<a class="jxr_linenumber" name="L555" href="#L555">555</a> 
+<a class="jxr_linenumber" name="L556" href="#L556">556</a>         getLog().debug( <span class="jxr_string">"Adding native compiled artifact: "</span> + nativeArtifactFile );
+<a class="jxr_linenumber" name="L557" href="#L557">557</a> 
+<a class="jxr_linenumber" name="L558" href="#L558">558</a>         <strong class="jxr_keyword">final</strong> String classifier = ( ndkClassifier == <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L559" href="#L559">559</a>                 ? architecture
+<a class="jxr_linenumber" name="L560" href="#L560">560</a>                 : architecture + <span class="jxr_string">"-"</span> + ndkClassifier;
+<a class="jxr_linenumber" name="L561" href="#L561">561</a> 
+<a class="jxr_linenumber" name="L562" href="#L562">562</a>         projectHelper.attachArtifact( <strong class="jxr_keyword">this</strong>.project, artifactType, classifier, nativeArtifactFile );
+<a class="jxr_linenumber" name="L563" href="#L563">563</a>     }
+<a class="jxr_linenumber" name="L564" href="#L564">564</a> 
+<a class="jxr_linenumber" name="L565" href="#L565">565</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L566" href="#L566">566</a> <em class="jxr_javadoccomment">     * Search the specified directory for native artifacts that match the artifact Id</em>
+<a class="jxr_linenumber" name="L567" href="#L567">567</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L568" href="#L568">568</a>     <strong class="jxr_keyword">private</strong> File findNativeLibrary( File nativeLibDirectory ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L569" href="#L569">569</a>     {
+<a class="jxr_linenumber" name="L570" href="#L570">570</a>         getLog().info( <span class="jxr_string">"Searching "</span> + nativeLibDirectory + <span class="jxr_string">" for built library"</span> );
+<a class="jxr_linenumber" name="L571" href="#L571">571</a>         File[] files = nativeLibDirectory.listFiles( <strong class="jxr_keyword">new</strong> FilenameFilter()
+<a class="jxr_linenumber" name="L572" href="#L572">572</a>         {
+<a class="jxr_linenumber" name="L573" href="#L573">573</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> accept( <strong class="jxr_keyword">final</strong> File dir, <strong class="jxr_keyword">final</strong> String name )
+<a class="jxr_linenumber" name="L574" href="#L574">574</a>             {
+<a class="jxr_linenumber" name="L575" href="#L575">575</a>                 String libraryName = ndkFinalLibraryName;
+<a class="jxr_linenumber" name="L576" href="#L576">576</a> 
+<a class="jxr_linenumber" name="L577" href="#L577">577</a>                 <strong class="jxr_keyword">if</strong> ( libraryName == <strong class="jxr_keyword">null</strong> || libraryName.isEmpty() )
+<a class="jxr_linenumber" name="L578" href="#L578">578</a>                 {
+<a class="jxr_linenumber" name="L579" href="#L579">579</a>                     libraryName = project.getArtifactId();
+<a class="jxr_linenumber" name="L580" href="#L580">580</a>                 }
+<a class="jxr_linenumber" name="L581" href="#L581">581</a> 
+<a class="jxr_linenumber" name="L582" href="#L582">582</a>                 <em class="jxr_comment">// FIXME: The following logic won't work for an APKLIB building a static library</em>
+<a class="jxr_linenumber" name="L583" href="#L583">583</a>                 <strong class="jxr_keyword">if</strong> ( Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( project.getPackaging() ) )
+<a class="jxr_linenumber" name="L584" href="#L584">584</a>                 {
+<a class="jxr_linenumber" name="L585" href="#L585">585</a>                     <strong class="jxr_keyword">return</strong> name.startsWith(
+<a class="jxr_linenumber" name="L586" href="#L586">586</a>                             <span class="jxr_string">"lib"</span> + libraryName ) &amp;&amp; name.endsWith( <span class="jxr_string">".a"</span> );
+<a class="jxr_linenumber" name="L587" href="#L587">587</a>                 }
+<a class="jxr_linenumber" name="L588" href="#L588">588</a>                 <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L589" href="#L589">589</a>                 {
+<a class="jxr_linenumber" name="L590" href="#L590">590</a>                     <strong class="jxr_keyword">return</strong> name.startsWith(
+<a class="jxr_linenumber" name="L591" href="#L591">591</a>                             <span class="jxr_string">"lib"</span> + libraryName ) &amp;&amp; name.endsWith( <span class="jxr_string">".so"</span> );
+<a class="jxr_linenumber" name="L592" href="#L592">592</a>                 }
+<a class="jxr_linenumber" name="L593" href="#L593">593</a>             }
+<a class="jxr_linenumber" name="L594" href="#L594">594</a>         } );
+<a class="jxr_linenumber" name="L595" href="#L595">595</a>         <em class="jxr_comment">// slight limitation at this stage - we only handle a single .so artifact</em>
+<a class="jxr_linenumber" name="L596" href="#L596">596</a>         <strong class="jxr_keyword">if</strong> ( files == <strong class="jxr_keyword">null</strong> || files.length != 1 )
+<a class="jxr_linenumber" name="L597" href="#L597">597</a>         {
+<a class="jxr_linenumber" name="L598" href="#L598">598</a>             getLog().warn( <span class="jxr_string">"Error while detecting native compile artifacts: "</span>
+<a class="jxr_linenumber" name="L599" href="#L599">599</a>                     + ( files == <strong class="jxr_keyword">null</strong> || files.length == 0
+<a class="jxr_linenumber" name="L600" href="#L600">600</a>                             ? <span class="jxr_string">"None found"</span>
+<a class="jxr_linenumber" name="L601" href="#L601">601</a>                             : <span class="jxr_string">"Found more than 1 artifact"</span> ) );
+<a class="jxr_linenumber" name="L602" href="#L602">602</a>             <strong class="jxr_keyword">if</strong> ( target != <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L603" href="#L603">603</a>             {
+<a class="jxr_linenumber" name="L604" href="#L604">604</a>                 getLog().warn( <span class="jxr_string">"Using the 'target' configuration option to specify the output file name "</span>
+<a class="jxr_linenumber" name="L605" href="#L605">605</a>                         + <span class="jxr_string">"is no longer supported, use 'ndkFinalLibraryName' instead."</span> );
+<a class="jxr_linenumber" name="L606" href="#L606">606</a>             }
+<a class="jxr_linenumber" name="L607" href="#L607">607</a> 
+<a class="jxr_linenumber" name="L608" href="#L608">608</a>             <strong class="jxr_keyword">if</strong> ( files != <strong class="jxr_keyword">null</strong> &amp;&amp; files.length &gt; 1 )
+<a class="jxr_linenumber" name="L609" href="#L609">609</a>             {
+<a class="jxr_linenumber" name="L610" href="#L610">610</a>                 getLog().debug( <span class="jxr_string">"List of files found: "</span> + Arrays.asList( files ) );
+<a class="jxr_linenumber" name="L611" href="#L611">611</a>                 getLog().error(
+<a class="jxr_linenumber" name="L612" href="#L612">612</a>                         <span class="jxr_string">"Currently, only a single, final native library is supported by the build"</span> );
+<a class="jxr_linenumber" name="L613" href="#L613">613</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException(
+<a class="jxr_linenumber" name="L614" href="#L614">614</a>                         <span class="jxr_string">"Currently, only a single, final native library is supported by the build"</span> );
+<a class="jxr_linenumber" name="L615" href="#L615">615</a>             }
+<a class="jxr_linenumber" name="L616" href="#L616">616</a>             <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L617" href="#L617">617</a>             {
+<a class="jxr_linenumber" name="L618" href="#L618">618</a>                 getLog().error( <span class="jxr_string">"No native compiled library found, did the native compile complete "</span>
+<a class="jxr_linenumber" name="L619" href="#L619">619</a>                         + <span class="jxr_string">"successfully?"</span> );
+<a class="jxr_linenumber" name="L620" href="#L620">620</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"No native compiled library found, did the native "</span>
+<a class="jxr_linenumber" name="L621" href="#L621">621</a>                         + <span class="jxr_string">"compile complete successfully?"</span> );
+<a class="jxr_linenumber" name="L622" href="#L622">622</a>             }
+<a class="jxr_linenumber" name="L623" href="#L623">623</a>         }
+<a class="jxr_linenumber" name="L624" href="#L624">624</a>         <strong class="jxr_keyword">return</strong> files[ 0 ];
+<a class="jxr_linenumber" name="L625" href="#L625">625</a>     }
+<a class="jxr_linenumber" name="L626" href="#L626">626</a> 
+<a class="jxr_linenumber" name="L627" href="#L627">627</a>     <strong class="jxr_keyword">private</strong> File nativeLibraryFromName( File nativeLibDirectory ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L628" href="#L628">628</a>     {
+<a class="jxr_linenumber" name="L629" href="#L629">629</a>         <strong class="jxr_keyword">final</strong> File libraryFile;
+<a class="jxr_linenumber" name="L630" href="#L630">630</a>         <em class="jxr_comment">// Find the nativeArtifactFile in the nativeLibDirectory/ndkFinalLibraryName</em>
+<a class="jxr_linenumber" name="L631" href="#L631">631</a>         <strong class="jxr_keyword">if</strong> ( Const.ArtifactType.NATIVE_SYMBOL_OBJECT.equals( project.getPackaging() )
+<a class="jxr_linenumber" name="L632" href="#L632">632</a>                 || Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( project.getPackaging() ) )
+<a class="jxr_linenumber" name="L633" href="#L633">633</a>         {
+<a class="jxr_linenumber" name="L634" href="#L634">634</a>             libraryFile = <strong class="jxr_keyword">new</strong> File( nativeLibDirectory,
+<a class="jxr_linenumber" name="L635" href="#L635">635</a>                     <span class="jxr_string">"lib"</span> + ndkFinalLibraryName + <span class="jxr_string">"."</span> + project.getPackaging() );
+<a class="jxr_linenumber" name="L636" href="#L636">636</a>         }
+<a class="jxr_linenumber" name="L637" href="#L637">637</a>         <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L638" href="#L638">638</a>         {
+<a class="jxr_linenumber" name="L639" href="#L639">639</a>             <strong class="jxr_keyword">final</strong> File staticLib = <strong class="jxr_keyword">new</strong> File( nativeLibDirectory,
+<a class="jxr_linenumber" name="L640" href="#L640">640</a>                     <span class="jxr_string">"lib"</span> + ndkFinalLibraryName + <span class="jxr_string">".a"</span> );
+<a class="jxr_linenumber" name="L641" href="#L641">641</a>             <strong class="jxr_keyword">if</strong> ( staticLib.exists() )
+<a class="jxr_linenumber" name="L642" href="#L642">642</a>             {
+<a class="jxr_linenumber" name="L643" href="#L643">643</a>                 libraryFile = staticLib;
+<a class="jxr_linenumber" name="L644" href="#L644">644</a>             }
+<a class="jxr_linenumber" name="L645" href="#L645">645</a>             <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L646" href="#L646">646</a>             {
+<a class="jxr_linenumber" name="L647" href="#L647">647</a>                 libraryFile = <strong class="jxr_keyword">new</strong> File( nativeLibDirectory,
+<a class="jxr_linenumber" name="L648" href="#L648">648</a>                         <span class="jxr_string">"lib"</span> + ndkFinalLibraryName + <span class="jxr_string">".so"</span> );
+<a class="jxr_linenumber" name="L649" href="#L649">649</a>             }
+<a class="jxr_linenumber" name="L650" href="#L650">650</a>         }
+<a class="jxr_linenumber" name="L651" href="#L651">651</a>         <strong class="jxr_keyword">if</strong> ( ! libraryFile.exists() )
+<a class="jxr_linenumber" name="L652" href="#L652">652</a>         {
+<a class="jxr_linenumber" name="L653" href="#L653">653</a>             getLog().error(
+<a class="jxr_linenumber" name="L654" href="#L654">654</a>                     <span class="jxr_string">"Could not locate final native library using the provided ndkFinalLibraryName "</span>
+<a class="jxr_linenumber" name="L655" href="#L655">655</a>                             + ndkFinalLibraryName + <span class="jxr_string">" (tried "</span> + libraryFile.getAbsolutePath()
+<a class="jxr_linenumber" name="L656" href="#L656">656</a>                             + <span class="jxr_string">")"</span> );
+<a class="jxr_linenumber" name="L657" href="#L657">657</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException(
+<a class="jxr_linenumber" name="L658" href="#L658">658</a>                     <span class="jxr_string">"Could not locate final native library using the provided ndkFinalLibraryName "</span>
+<a class="jxr_linenumber" name="L659" href="#L659">659</a>                     + ndkFinalLibraryName + <span class="jxr_string">" (tried "</span> + libraryFile.getAbsolutePath()
+<a class="jxr_linenumber" name="L660" href="#L660">660</a>                     + <span class="jxr_string">")"</span> );
+<a class="jxr_linenumber" name="L661" href="#L661">661</a>         }
+<a class="jxr_linenumber" name="L662" href="#L662">662</a> 
+<a class="jxr_linenumber" name="L663" href="#L663">663</a>         <strong class="jxr_keyword">return</strong> libraryFile;
+<a class="jxr_linenumber" name="L664" href="#L664">664</a>     }
+<a class="jxr_linenumber" name="L665" href="#L665">665</a> 
+<a class="jxr_linenumber" name="L666" href="#L666">666</a>     <strong class="jxr_keyword">private</strong> CommandExecutor.ErrorListener getNdkErrorListener()
+<a class="jxr_linenumber" name="L667" href="#L667">667</a>     {
+<a class="jxr_linenumber" name="L668" href="#L668">668</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> CommandExecutor.ErrorListener()
+<a class="jxr_linenumber" name="L669" href="#L669">669</a>         {
+<a class="jxr_linenumber" name="L670" href="#L670">670</a>             @Override
+<a class="jxr_linenumber" name="L671" href="#L671">671</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isError( String error )
+<a class="jxr_linenumber" name="L672" href="#L672">672</a>             {
+<a class="jxr_linenumber" name="L673" href="#L673">673</a> 
+<a class="jxr_linenumber" name="L674" href="#L674">674</a>                 <em class="jxr_comment">// Unconditionally ignore *All* build warning if configured to</em>
+<a class="jxr_linenumber" name="L675" href="#L675">675</a>                 <strong class="jxr_keyword">if</strong> ( ignoreBuildWarnings )
+<a class="jxr_linenumber" name="L676" href="#L676">676</a>                 {
+<a class="jxr_linenumber" name="L677" href="#L677">677</a>                     <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L678" href="#L678">678</a>                 }
+<a class="jxr_linenumber" name="L679" href="#L679">679</a> 
+<a class="jxr_linenumber" name="L680" href="#L680">680</a>                 <strong class="jxr_keyword">final</strong> Pattern pattern = Pattern.compile( buildWarningsRegularExpression );
+<a class="jxr_linenumber" name="L681" href="#L681">681</a>                 <strong class="jxr_keyword">final</strong> Matcher matcher = pattern.matcher( error );
+<a class="jxr_linenumber" name="L682" href="#L682">682</a> 
+<a class="jxr_linenumber" name="L683" href="#L683">683</a>                 <em class="jxr_comment">// If the the reg.exp actually matches, we can safely say this is not an error</em>
+<a class="jxr_linenumber" name="L684" href="#L684">684</a>                 <em class="jxr_comment">// since in theory the user told us so</em>
+<a class="jxr_linenumber" name="L685" href="#L685">685</a>                 <strong class="jxr_keyword">if</strong> ( matcher.matches() )
+<a class="jxr_linenumber" name="L686" href="#L686">686</a>                 {
+<a class="jxr_linenumber" name="L687" href="#L687">687</a>                     <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L688" href="#L688">688</a>                 }
+<a class="jxr_linenumber" name="L689" href="#L689">689</a> 
+<a class="jxr_linenumber" name="L690" href="#L690">690</a>                 <em class="jxr_comment">// Otherwise, it is just another error</em>
+<a class="jxr_linenumber" name="L691" href="#L691">691</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L692" href="#L692">692</a>             }
+<a class="jxr_linenumber" name="L693" href="#L693">693</a>         };
+<a class="jxr_linenumber" name="L694" href="#L694">694</a>     }
+<a class="jxr_linenumber" name="L695" href="#L695">695</a> 
+<a class="jxr_linenumber" name="L696" href="#L696">696</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L697" href="#L697">697</a> <em class="jxr_javadoccomment">     * Validate the makefile - if our packaging type is so (for example) and there are</em>
+<a class="jxr_linenumber" name="L698" href="#L698">698</a> <em class="jxr_javadoccomment">     * dependencies on .a files (or shared files for that matter) the makefile should include</em>
+<a class="jxr_linenumber" name="L699" href="#L699">699</a> <em class="jxr_javadoccomment">     * the include of our Android Maven plugin generated makefile.</em>
+<a class="jxr_linenumber" name="L700" href="#L700">700</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L701" href="#L701">701</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> validateMakefile( MavenProject project, String file )
+<a class="jxr_linenumber" name="L702" href="#L702">702</a>     {
+<a class="jxr_linenumber" name="L703" href="#L703">703</a>         <em class="jxr_comment">// TODO: actually perform validation</em>
+<a class="jxr_linenumber" name="L704" href="#L704">704</a>     }
+<a class="jxr_linenumber" name="L705" href="#L705">705</a> 
+<a class="jxr_linenumber" name="L706" href="#L706">706</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> invokeNDKStripper( File file ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L707" href="#L707">707</a>     {
+<a class="jxr_linenumber" name="L708" href="#L708">708</a>         <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L709" href="#L709">709</a>         {
+<a class="jxr_linenumber" name="L710" href="#L710">710</a>             getLog().debug( <span class="jxr_string">"Detected shared library artifact, will now strip it"</span> );
+<a class="jxr_linenumber" name="L711" href="#L711">711</a>             <em class="jxr_comment">// Execute the strip command</em>
+<a class="jxr_linenumber" name="L712" href="#L712">712</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/CommandExecutor.html">CommandExecutor</a> stripCommandExecutor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+<a class="jxr_linenumber" name="L713" href="#L713">713</a>             stripCommandExecutor.setErrorListener( <strong class="jxr_keyword">new</strong> CommandExecutor.ErrorListener()
+<a class="jxr_linenumber" name="L714" href="#L714">714</a>             {
+<a class="jxr_linenumber" name="L715" href="#L715">715</a>                 <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isError( String error )
+<a class="jxr_linenumber" name="L716" href="#L716">716</a>                 {
+<a class="jxr_linenumber" name="L717" href="#L717">717</a>                     getLog().error( <span class="jxr_string">"Error while stripping binary: "</span> + error );
+<a class="jxr_linenumber" name="L718" href="#L718">718</a>                     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L719" href="#L719">719</a>                 }
+<a class="jxr_linenumber" name="L720" href="#L720">720</a>             } );
+<a class="jxr_linenumber" name="L721" href="#L721">721</a>             stripCommandExecutor.setLogger( getLog() );
+<a class="jxr_linenumber" name="L722" href="#L722">722</a>             stripCommandExecutor.setCaptureStdOut( <strong class="jxr_keyword">true</strong> );
+<a class="jxr_linenumber" name="L723" href="#L723">723</a>             stripCommandExecutor.executeCommand( resolveNdkStripper( file ).getAbsolutePath(),
+<a class="jxr_linenumber" name="L724" href="#L724">724</a>                                                  Arrays.asList( file.getAbsolutePath() ) );
+<a class="jxr_linenumber" name="L725" href="#L725">725</a>         }
+<a class="jxr_linenumber" name="L726" href="#L726">726</a>         <strong class="jxr_keyword">catch</strong> ( ExecutionException e )
+<a class="jxr_linenumber" name="L727" href="#L727">727</a>         {
+<a class="jxr_linenumber" name="L728" href="#L728">728</a>             getLog().error( <span class="jxr_string">"Error while attempting to strip shared library"</span>, e );
+<a class="jxr_linenumber" name="L729" href="#L729">729</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"Error while attempting to strip shared library"</span> );
+<a class="jxr_linenumber" name="L730" href="#L730">730</a>         }
+<a class="jxr_linenumber" name="L731" href="#L731">731</a>     }
+<a class="jxr_linenumber" name="L732" href="#L732">732</a> 
+<a class="jxr_linenumber" name="L733" href="#L733">733</a>     <strong class="jxr_keyword">private</strong> String resolveNdkBuildExecutable() <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L734" href="#L734">734</a>     {
+<a class="jxr_linenumber" name="L735" href="#L735">735</a>         <strong class="jxr_keyword">if</strong> ( ndkBuildExecutable != <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L736" href="#L736">736</a>         {
+<a class="jxr_linenumber" name="L737" href="#L737">737</a>             getLog().debug( <span class="jxr_string">"ndk-build overriden, using "</span> + ndkBuildExecutable );
+<a class="jxr_linenumber" name="L738" href="#L738">738</a>             <strong class="jxr_keyword">return</strong> ndkBuildExecutable;
+<a class="jxr_linenumber" name="L739" href="#L739">739</a>         }
+<a class="jxr_linenumber" name="L740" href="#L740">740</a>         <strong class="jxr_keyword">return</strong> getAndroidNdk().getNdkBuildPath();
+<a class="jxr_linenumber" name="L741" href="#L741">741</a>     }
+<a class="jxr_linenumber" name="L742" href="#L742">742</a> 
+<a class="jxr_linenumber" name="L743" href="#L743">743</a>     <strong class="jxr_keyword">private</strong> File resolveNdkStripper( File nativeLibrary ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L744" href="#L744">744</a>     {
+<a class="jxr_linenumber" name="L745" href="#L745">745</a>         <strong class="jxr_keyword">if</strong> ( ndkToolchain != <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L746" href="#L746">746</a>         {
+<a class="jxr_linenumber" name="L747" href="#L747">747</a>             <strong class="jxr_keyword">return</strong> getAndroidNdk().getStripper( ndkToolchain );
+<a class="jxr_linenumber" name="L748" href="#L748">748</a>         }
+<a class="jxr_linenumber" name="L749" href="#L749">749</a>         <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L750" href="#L750">750</a>         {
+<a class="jxr_linenumber" name="L751" href="#L751">751</a>             <strong class="jxr_keyword">return</strong> getAndroidNdk().getStripper( getAndroidNdk().getToolchain( nativeLibrary ) );
+<a class="jxr_linenumber" name="L752" href="#L752">752</a>         }
+<a class="jxr_linenumber" name="L753" href="#L753">753</a>     }
+<a class="jxr_linenumber" name="L754" href="#L754">754</a> 
+<a class="jxr_linenumber" name="L755" href="#L755">755</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> attachHeaderFiles( File localCIncludesFile, String architecture )
+<a class="jxr_linenumber" name="L756" href="#L756">756</a>         <strong class="jxr_keyword">throws</strong> MojoExecutionException, IOException
+<a class="jxr_linenumber" name="L757" href="#L757">757</a>     {
+<a class="jxr_linenumber" name="L758" href="#L758">758</a> 
+<a class="jxr_linenumber" name="L759" href="#L759">759</a>         <strong class="jxr_keyword">final</strong> List&lt;HeaderFilesDirective&gt; finalHeaderFilesDirectives = <strong class="jxr_keyword">new</strong> ArrayList&lt;HeaderFilesDirective&gt;();
+<a class="jxr_linenumber" name="L760" href="#L760">760</a> 
+<a class="jxr_linenumber" name="L761" href="#L761">761</a>         <strong class="jxr_keyword">if</strong> ( useLocalSrcIncludePaths )
+<a class="jxr_linenumber" name="L762" href="#L762">762</a>         {
+<a class="jxr_linenumber" name="L763" href="#L763">763</a>             Properties props = <strong class="jxr_keyword">new</strong> Properties();
+<a class="jxr_linenumber" name="L764" href="#L764">764</a>             props.load( <strong class="jxr_keyword">new</strong> FileInputStream( localCIncludesFile ) );
+<a class="jxr_linenumber" name="L765" href="#L765">765</a>             String localCIncludes = props.getProperty( <span class="jxr_string">"LOCAL_C_INCLUDES"</span> );
+<a class="jxr_linenumber" name="L766" href="#L766">766</a>             <strong class="jxr_keyword">if</strong> ( localCIncludes != <strong class="jxr_keyword">null</strong> &amp;&amp; ! localCIncludes.trim().isEmpty() )
+<a class="jxr_linenumber" name="L767" href="#L767">767</a>             {
+<a class="jxr_linenumber" name="L768" href="#L768">768</a>                 String[] includes = localCIncludes.split( <span class="jxr_string">" "</span> );
+<a class="jxr_linenumber" name="L769" href="#L769">769</a>                 <strong class="jxr_keyword">for</strong> ( String include : includes )
+<a class="jxr_linenumber" name="L770" href="#L770">770</a>                 {
+<a class="jxr_linenumber" name="L771" href="#L771">771</a>                     <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/configuration/HeaderFilesDirective.html">HeaderFilesDirective</a> headerFilesDirective = <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/configuration/HeaderFilesDirective.html">HeaderFilesDirective</a>();
+<a class="jxr_linenumber" name="L772" href="#L772">772</a>                     File includeDir = <strong class="jxr_keyword">new</strong> File( project.getBasedir(), include );
+<a class="jxr_linenumber" name="L773" href="#L773">773</a>                     headerFilesDirective.setDirectory( includeDir.getAbsolutePath() );
+<a class="jxr_linenumber" name="L774" href="#L774">774</a>                     headerFilesDirective.setIncludes( <strong class="jxr_keyword">new</strong> String[]{ <span class="jxr_string">"**/*.h"</span> } );
+<a class="jxr_linenumber" name="L775" href="#L775">775</a>                     finalHeaderFilesDirectives.add( headerFilesDirective );
+<a class="jxr_linenumber" name="L776" href="#L776">776</a>                 }
+<a class="jxr_linenumber" name="L777" href="#L777">777</a>             }
+<a class="jxr_linenumber" name="L778" href="#L778">778</a>         }
+<a class="jxr_linenumber" name="L779" href="#L779">779</a>         <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L780" href="#L780">780</a>         {
+<a class="jxr_linenumber" name="L781" href="#L781">781</a>             <strong class="jxr_keyword">if</strong> ( headerFilesDirectives != <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L782" href="#L782">782</a>             {
+<a class="jxr_linenumber" name="L783" href="#L783">783</a>                 finalHeaderFilesDirectives.addAll( headerFilesDirectives );
+<a class="jxr_linenumber" name="L784" href="#L784">784</a>             }
+<a class="jxr_linenumber" name="L785" href="#L785">785</a>         }
+<a class="jxr_linenumber" name="L786" href="#L786">786</a>         <strong class="jxr_keyword">if</strong> ( finalHeaderFilesDirectives.isEmpty() )
+<a class="jxr_linenumber" name="L787" href="#L787">787</a>         {
+<a class="jxr_linenumber" name="L788" href="#L788">788</a>             getLog().debug( <span class="jxr_string">"No header files included, will add default set"</span> );
+<a class="jxr_linenumber" name="L789" href="#L789">789</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/configuration/HeaderFilesDirective.html">HeaderFilesDirective</a> e = <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/jayway/maven/plugins/android/configuration/HeaderFilesDirective.html">HeaderFilesDirective</a>();
+<a class="jxr_linenumber" name="L790" href="#L790">790</a>             e.setDirectory( <strong class="jxr_keyword">new</strong> File( project.getBasedir() + <span class="jxr_string">"/jni"</span> ).getAbsolutePath() );
+<a class="jxr_linenumber" name="L791" href="#L791">791</a>             e.setIncludes( <strong class="jxr_keyword">new</strong> String[]{ <span class="jxr_string">"**/*.h"</span> } );
+<a class="jxr_linenumber" name="L792" href="#L792">792</a>             finalHeaderFilesDirectives.add( e );
+<a class="jxr_linenumber" name="L793" href="#L793">793</a>         }
+<a class="jxr_linenumber" name="L794" href="#L794">794</a>         createHeaderArchive( finalHeaderFilesDirectives, architecture );
+<a class="jxr_linenumber" name="L795" href="#L795">795</a>     }
+<a class="jxr_linenumber" name="L796" href="#L796">796</a> 
+<a class="jxr_linenumber" name="L797" href="#L797">797</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> createHeaderArchive( List&lt;HeaderFilesDirective&gt; finalHeaderFilesDirectives, String architecture )
+<a class="jxr_linenumber" name="L798" href="#L798">798</a>             <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L799" href="#L799">799</a>     {
+<a class="jxr_linenumber" name="L800" href="#L800">800</a>         <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L801" href="#L801">801</a>         {
+<a class="jxr_linenumber" name="L802" href="#L802">802</a>             MavenArchiver mavenArchiver = <strong class="jxr_keyword">new</strong> MavenArchiver();
+<a class="jxr_linenumber" name="L803" href="#L803">803</a>             mavenArchiver.setArchiver( jarArchiver );
+<a class="jxr_linenumber" name="L804" href="#L804">804</a> 
+<a class="jxr_linenumber" name="L805" href="#L805">805</a>             <strong class="jxr_keyword">final</strong> File jarFile = <strong class="jxr_keyword">new</strong> File( targetDirectory, finalName + <span class="jxr_string">".har"</span> );
+<a class="jxr_linenumber" name="L806" href="#L806">806</a> 
+<a class="jxr_linenumber" name="L807" href="#L807">807</a>             mavenArchiver.setOutputFile( jarFile );
+<a class="jxr_linenumber" name="L808" href="#L808">808</a> 
+<a class="jxr_linenumber" name="L809" href="#L809">809</a>             <strong class="jxr_keyword">for</strong> ( HeaderFilesDirective headerFilesDirective : finalHeaderFilesDirectives )
+<a class="jxr_linenumber" name="L810" href="#L810">810</a>             {
+<a class="jxr_linenumber" name="L811" href="#L811">811</a>                 mavenArchiver.getArchiver().addDirectory( <strong class="jxr_keyword">new</strong> File( headerFilesDirective.getDirectory() ),
+<a class="jxr_linenumber" name="L812" href="#L812">812</a>                         headerFilesDirective.getIncludes(), headerFilesDirective.getExcludes() );
+<a class="jxr_linenumber" name="L813" href="#L813">813</a>             }
+<a class="jxr_linenumber" name="L814" href="#L814">814</a> 
+<a class="jxr_linenumber" name="L815" href="#L815">815</a>             <strong class="jxr_keyword">final</strong> MavenArchiveConfiguration mavenArchiveConfiguration = <strong class="jxr_keyword">new</strong> MavenArchiveConfiguration();
+<a class="jxr_linenumber" name="L816" href="#L816">816</a>             mavenArchiveConfiguration.setAddMavenDescriptor( false );
+<a class="jxr_linenumber" name="L817" href="#L817">817</a> 
+<a class="jxr_linenumber" name="L818" href="#L818">818</a>             mavenArchiver.createArchive( project, mavenArchiveConfiguration );
+<a class="jxr_linenumber" name="L819" href="#L819">819</a> 
+<a class="jxr_linenumber" name="L820" href="#L820">820</a>             String classifier = architecture;
+<a class="jxr_linenumber" name="L821" href="#L821">821</a>             <strong class="jxr_keyword">if</strong> ( ndkClassifier != <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L822" href="#L822">822</a>             {
+<a class="jxr_linenumber" name="L823" href="#L823">823</a>                 classifier += <span class="jxr_string">"-"</span> + ndkClassifier;
+<a class="jxr_linenumber" name="L824" href="#L824">824</a>             }
+<a class="jxr_linenumber" name="L825" href="#L825">825</a> 
+<a class="jxr_linenumber" name="L826" href="#L826">826</a>             getLog().debug( <span class="jxr_string">"Attaching 'har' classifier="</span> + classifier + <span class="jxr_string">" file="</span> + jarFile );
+<a class="jxr_linenumber" name="L827" href="#L827">827</a>             projectHelper.attachArtifact( project, Const.ArtifactType.NATIVE_HEADER_ARCHIVE, classifier, jarFile );
+<a class="jxr_linenumber" name="L828" href="#L828">828</a> 
+<a class="jxr_linenumber" name="L829" href="#L829">829</a>         }
+<a class="jxr_linenumber" name="L830" href="#L830">830</a>         <strong class="jxr_keyword">catch</strong> ( Exception e )
+<a class="jxr_linenumber" name="L831" href="#L831">831</a>         {
+<a class="jxr_linenumber" name="L832" href="#L832">832</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( e.getMessage() );
+<a class="jxr_linenumber" name="L833" href="#L833">833</a>         }
+<a class="jxr_linenumber" name="L834" href="#L834">834</a>     }
+<a class="jxr_linenumber" name="L835" href="#L835">835</a> 
+<a class="jxr_linenumber" name="L836" href="#L836">836</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> setupNativeLibraryEnvironment( MakefileHelper makefileHelper, CommandExecutor executor,
+<a class="jxr_linenumber" name="L837" href="#L837">837</a>                                                 Set&lt;Artifact&gt; resolveNativeLibraryArtifacts, String architecture )
+<a class="jxr_linenumber" name="L838" href="#L838">838</a>     {
+<a class="jxr_linenumber" name="L839" href="#L839">839</a>         <em class="jxr_comment">// Only add the LOCAL_STATIC_LIBRARIES</em>
+<a class="jxr_linenumber" name="L840" href="#L840">840</a>         <strong class="jxr_keyword">if</strong> ( NativeHelper.hasStaticNativeLibraryArtifact( resolveNativeLibraryArtifacts, getUnpackedLibsDirectory(),
+<a class="jxr_linenumber" name="L841" href="#L841">841</a>                                                           architecture ) )
+<a class="jxr_linenumber" name="L842" href="#L842">842</a>         {
+<a class="jxr_linenumber" name="L843" href="#L843">843</a>             String staticlibs = makefileHelper.createLibraryList( resolveNativeLibraryArtifacts,
+<a class="jxr_linenumber" name="L844" href="#L844">844</a>                                                                   architecture,
+<a class="jxr_linenumber" name="L845" href="#L845">845</a>                                                                   <strong class="jxr_keyword">true</strong> );
+<a class="jxr_linenumber" name="L846" href="#L846">846</a>             executor.addEnvironment( <span class="jxr_string">"ANDROID_MAVEN_PLUGIN_LOCAL_STATIC_LIBRARIES"</span>, staticlibs );
+<a class="jxr_linenumber" name="L847" href="#L847">847</a>             getLog().debug( <span class="jxr_string">"Set ANDROID_MAVEN_PLUGIN_LOCAL_STATIC_LIBRARIES = "</span> + staticlibs );
+<a class="jxr_linenumber" name="L848" href="#L848">848</a>         }
+<a class="jxr_linenumber" name="L849" href="#L849">849</a> 
+<a class="jxr_linenumber" name="L850" href="#L850">850</a>         <em class="jxr_comment">// Only add the LOCAL_SHARED_LIBRARIES</em>
+<a class="jxr_linenumber" name="L851" href="#L851">851</a>         <strong class="jxr_keyword">if</strong> ( NativeHelper.hasSharedNativeLibraryArtifact( resolveNativeLibraryArtifacts, getUnpackedLibsDirectory(),
+<a class="jxr_linenumber" name="L852" href="#L852">852</a>                                                           architecture ) )
+<a class="jxr_linenumber" name="L853" href="#L853">853</a>         {
+<a class="jxr_linenumber" name="L854" href="#L854">854</a>             String sharedlibs = makefileHelper.createLibraryList( resolveNativeLibraryArtifacts,
+<a class="jxr_linenumber" name="L855" href="#L855">855</a>                                                                   architecture,
+<a class="jxr_linenumber" name="L856" href="#L856">856</a>                                                                   false );
+<a class="jxr_linenumber" name="L857" href="#L857">857</a>             executor.addEnvironment( <span class="jxr_string">"ANDROID_MAVEN_PLUGIN_LOCAL_SHARED_LIBRARIES"</span>, sharedlibs );
+<a class="jxr_linenumber" name="L858" href="#L858">858</a>             getLog().debug( <span class="jxr_string">"Set ANDROID_MAVEN_PLUGIN_LOCAL_SHARED_LIBRARIES = "</span> + sharedlibs );
+<a class="jxr_linenumber" name="L859" href="#L859">859</a>         }
+<a class="jxr_linenumber" name="L860" href="#L860">860</a>     }
+<a class="jxr_linenumber" name="L861" href="#L861">861</a> 
+<a class="jxr_linenumber" name="L862" href="#L862">862</a>     <strong class="jxr_keyword">private</strong> Set&lt;Artifact&gt; findNativeLibraryDependencies() <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L863" href="#L863">863</a>     {
+<a class="jxr_linenumber" name="L864" href="#L864">864</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../../../com/jayway/maven/plugins/android/common/NativeHelper.html">NativeHelper</a> nativeHelper = getNativeHelper();
+<a class="jxr_linenumber" name="L865" href="#L865">865</a>         <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; staticLibraryArtifacts = nativeHelper
+<a class="jxr_linenumber" name="L866" href="#L866">866</a>                 .getNativeDependenciesArtifacts( <strong class="jxr_keyword">this</strong>, getUnpackedLibsDirectory(), false );
+<a class="jxr_linenumber" name="L867" href="#L867">867</a>         <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; sharedLibraryArtifacts = nativeHelper
+<a class="jxr_linenumber" name="L868" href="#L868">868</a>                 .getNativeDependenciesArtifacts( <strong class="jxr_keyword">this</strong>, getUnpackedLibsDirectory(), <strong class="jxr_keyword">true</strong> );
+<a class="jxr_linenumber" name="L869" href="#L869">869</a> 
+<a class="jxr_linenumber" name="L870" href="#L870">870</a>         <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; mergedArtifacts = <strong class="jxr_keyword">new</strong> LinkedHashSet&lt;Artifact&gt;();
+<a class="jxr_linenumber" name="L871" href="#L871">871</a>         filterNativeDependencies( mergedArtifacts, staticLibraryArtifacts );
+<a class="jxr_linenumber" name="L872" href="#L872">872</a>         filterNativeDependencies( mergedArtifacts, sharedLibraryArtifacts );
+<a class="jxr_linenumber" name="L873" href="#L873">873</a> 
+<a class="jxr_linenumber" name="L874" href="#L874">874</a>         getLog().debug( <span class="jxr_string">"findNativeLibraryDependencies found "</span> + mergedArtifacts.size()
+<a class="jxr_linenumber" name="L875" href="#L875">875</a>                 + <span class="jxr_string">": "</span> + mergedArtifacts.toString() );
+<a class="jxr_linenumber" name="L876" href="#L876">876</a> 
+<a class="jxr_linenumber" name="L877" href="#L877">877</a>         <strong class="jxr_keyword">return</strong> mergedArtifacts;
+<a class="jxr_linenumber" name="L878" href="#L878">878</a>     }
+<a class="jxr_linenumber" name="L879" href="#L879">879</a> 
+<a class="jxr_linenumber" name="L880" href="#L880">880</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L881" href="#L881">881</a> <em class="jxr_javadoccomment">     * Selectively add artifacts from source to target excluding any whose groupId and artifactId match</em>
+<a class="jxr_linenumber" name="L882" href="#L882">882</a> <em class="jxr_javadoccomment">     * the current build.</em>
+<a class="jxr_linenumber" name="L883" href="#L883">883</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L884" href="#L884">884</a> <em class="jxr_javadoccomment">     * Introduced to work around an issue when the ndk-build is executed twice by maven for example when</em>
+<a class="jxr_linenumber" name="L885" href="#L885">885</a> <em class="jxr_javadoccomment">     * invoking maven 'install site'. In this case the artifacts attached by the first invocation are</em>
+<a class="jxr_linenumber" name="L886" href="#L886">886</a> <em class="jxr_javadoccomment">     * found but are not valid dependencies and must be excluded.</em>
+<a class="jxr_linenumber" name="L887" href="#L887">887</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L888" href="#L888">888</a> <em class="jxr_javadoccomment">     * @param targetSet artifact Set to copy in to</em>
+<a class="jxr_linenumber" name="L889" href="#L889">889</a> <em class="jxr_javadoccomment">     * @param source artifact Set to filter</em>
+<a class="jxr_linenumber" name="L890" href="#L890">890</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L891" href="#L891">891</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> filterNativeDependencies( Set&lt;Artifact&gt; targetSet, Set&lt;Artifact&gt; source )
+<a class="jxr_linenumber" name="L892" href="#L892">892</a>     {
+<a class="jxr_linenumber" name="L893" href="#L893">893</a>         <strong class="jxr_keyword">for</strong> ( Artifact a : source )
+<a class="jxr_linenumber" name="L894" href="#L894">894</a>         {
+<a class="jxr_linenumber" name="L895" href="#L895">895</a>             <strong class="jxr_keyword">if</strong> ( project.getGroupId().equals( a.getGroupId() )
+<a class="jxr_linenumber" name="L896" href="#L896">896</a>                     &amp;&amp; project.getArtifactId().equals( a.getArtifactId() ) )
+<a class="jxr_linenumber" name="L897" href="#L897">897</a>             {
+<a class="jxr_linenumber" name="L898" href="#L898">898</a>                 getLog().warn( <span class="jxr_string">"Excluding native dependency attached by this build"</span> );
+<a class="jxr_linenumber" name="L899" href="#L899">899</a>             }
+<a class="jxr_linenumber" name="L900" href="#L900">900</a>             <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L901" href="#L901">901</a>             {
+<a class="jxr_linenumber" name="L902" href="#L902">902</a>                 targetSet.add( a );
+<a class="jxr_linenumber" name="L903" href="#L903">903</a>             }
+<a class="jxr_linenumber" name="L904" href="#L904">904</a>         }
+<a class="jxr_linenumber" name="L905" href="#L905">905</a>     }
+<a class="jxr_linenumber" name="L906" href="#L906">906</a> 
+<a class="jxr_linenumber" name="L907" href="#L907">907</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L908" href="#L908">908</a> <em class="jxr_javadoccomment">     * Resolve the artifact type from the current project and the specified file.  If the project packaging is</em>
+<a class="jxr_linenumber" name="L909" href="#L909">909</a> <em class="jxr_javadoccomment">     * either 'a' or 'so' it will use the packaging, otherwise it checks the file for the extension</em>
+<a class="jxr_linenumber" name="L910" href="#L910">910</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L911" href="#L911">911</a> <em class="jxr_javadoccomment">     * @param file The file being added as an artifact</em>
+<a class="jxr_linenumber" name="L912" href="#L912">912</a> <em class="jxr_javadoccomment">     * @return The artifact type (so or a)</em>
+<a class="jxr_linenumber" name="L913" href="#L913">913</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L914" href="#L914">914</a>     <strong class="jxr_keyword">private</strong> String resolveArtifactType( File file )
+<a class="jxr_linenumber" name="L915" href="#L915">915</a>     {
+<a class="jxr_linenumber" name="L916" href="#L916">916</a>         <strong class="jxr_keyword">if</strong> ( Const.ArtifactType.NATIVE_SYMBOL_OBJECT.equals( project.getPackaging() )
+<a class="jxr_linenumber" name="L917" href="#L917">917</a>                 || Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( project.getPackaging() ) )
+<a class="jxr_linenumber" name="L918" href="#L918">918</a>         {
+<a class="jxr_linenumber" name="L919" href="#L919">919</a>             <strong class="jxr_keyword">return</strong> project.getPackaging();
+<a class="jxr_linenumber" name="L920" href="#L920">920</a>         }
+<a class="jxr_linenumber" name="L921" href="#L921">921</a>         <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L922" href="#L922">922</a>         {
+<a class="jxr_linenumber" name="L923" href="#L923">923</a>             <em class="jxr_comment">// At this point, the file (as found by our filtering previously will end with either 'so' or 'a'</em>
+<a class="jxr_linenumber" name="L924" href="#L924">924</a>             <strong class="jxr_keyword">return</strong> file.getName().endsWith( Const.ArtifactType.NATIVE_SYMBOL_OBJECT )
+<a class="jxr_linenumber" name="L925" href="#L925">925</a>                     ? Const.ArtifactType.NATIVE_SYMBOL_OBJECT
+<a class="jxr_linenumber" name="L926" href="#L926">926</a>                     : Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE;
+<a class="jxr_linenumber" name="L927" href="#L927">927</a>         }
+<a class="jxr_linenumber" name="L928" href="#L928">928</a>     }
+<a class="jxr_linenumber" name="L929" href="#L929">929</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2008&#x2013;2015 <a href="http://www.simpligility.com">simpligility technologies inc.</a>. All rights reserved.</div>
