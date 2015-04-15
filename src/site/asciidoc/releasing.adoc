@@ -82,7 +82,7 @@ Once you are happy with the state of everything - Do it!
 To perform the release:
 
 ----
-cd ~/maven-android-plugin
+cd ~/android-maven-plugin
 mvn release:prepare release:perform
 ----
 

@@ -9,8 +9,7 @@ Planned changes:
 ** see https://github.com/simpligility/android-maven-plugin/issues/452
 * anything else contributed by the community
 
-
-== 4.2.0 or higher - released 2015-04-15
+== 4.2.0 - released 2015-04-15
 
 * Include internal jars from aar libraries by default
 ** see https://github.com/simpligility/android-maven-plugin/pull/586#issuecomment-74931486
