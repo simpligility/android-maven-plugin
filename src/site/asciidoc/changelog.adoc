@@ -4,12 +4,14 @@
 
 Planned changes:
 
-* migrate more documentation into the github project
+* migrate rest of Google Code project content into the github project
 * migrate more tests to be instrumentation tests with example projects
 ** see https://github.com/simpligility/android-maven-plugin/issues/452
 * anything else contributed by the community
 
 == 4.2.0 - released 2015-04-15
+
+https://groups.google.com/d/msg/maven-android-developers/-HhJutxX0u8/PAKA2dYDK2wJ[Release Announcement Post]
 
 * Include internal jars from aar libraries by default
 ** see https://github.com/simpligility/android-maven-plugin/pull/586#issuecomment-74931486
