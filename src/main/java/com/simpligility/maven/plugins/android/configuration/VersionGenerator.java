@@ -53,7 +53,7 @@ public class VersionGenerator
 
         // Choose a version element parser implementation based on the naming pattern
         // passed in; an empty pattern triggers the old behavior.
-        if ( ! versionNamingPattern.isEmpty() )
+        if ( versionNamingPattern != null && ! versionNamingPattern.isEmpty() )
         {
             this.elementParser = new RegexVersionElementParser( versionNamingPattern );
         }

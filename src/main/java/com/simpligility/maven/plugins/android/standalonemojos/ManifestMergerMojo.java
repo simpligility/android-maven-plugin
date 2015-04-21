@@ -129,7 +129,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
      * Exposed via the project property
      * <code>android.manifestMerger.versionNamingPattern</code>.
      */
-    @Parameter( property = "android.manifestMerger.versionNamingPattern", defaultValue = "" )
+    @Parameter( property = "android.manifestMerger.versionNamingPattern" )
     protected String manifestVersionNamingPattern;
 
     /**
