@@ -28,7 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Finds Android instrumentation test classes in a directory of compiled Java classes.
+ * Finds Android instrumentation test classes to be run by InstrumentationTestRunner in a directory of compiled Java classes.
  *
  * @author hugo.josefson@jayway.com
  */
