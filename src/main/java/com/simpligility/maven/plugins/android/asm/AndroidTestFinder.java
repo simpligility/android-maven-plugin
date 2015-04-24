@@ -47,6 +47,7 @@ public class AndroidTestFinder
 
         final List<File> classFiles = findEligebleClassFiles( classesBaseDirectory );
         final DescendantFinder descendantFinder = new DescendantFinder( TEST_PACKAGES );
+        final AnnotatedFinder annotationFinder = new AnnotatedFinder( TEST_PACKAGES );
 
         for ( File classFile : classFiles )
         {
@@ -58,6 +59,8 @@ public class AndroidTestFinder
                 classReader = new ClassReader( inputStream );
 
                 classReader.accept( descendantFinder, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES
+                        | ClassReader.SKIP_CODE );
+                classReader.accept( annotationFinder, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES
                         | ClassReader.SKIP_CODE );
             }
             catch ( IOException e )
@@ -72,7 +75,7 @@ public class AndroidTestFinder
             }
         }
 
-        return descendantFinder.isDescendantFound();
+        return descendantFinder.isDescendantFound() || annotationFinder.isDescendantFound();
     }
 
     private static List<File> findEligebleClassFiles( File classesBaseDirectory )
