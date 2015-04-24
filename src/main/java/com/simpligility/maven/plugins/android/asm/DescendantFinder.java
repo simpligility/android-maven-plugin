@@ -49,6 +49,7 @@ class DescendantFinder extends ClassVisitor
     private final String[] parentPackages;
     private final AtomicBoolean isDescendantFound = new AtomicBoolean( false );
 
+    @Override
     public void visit( int version, int access, String name, String signature, String superName, String[] interfaces )
     {
         for ( String testPackage : parentPackages )
@@ -76,37 +77,45 @@ class DescendantFinder extends ClassVisitor
         return isDescendantFound.get();
     }
 
+    @Override
     public void visitSource( String source, String debug )
     {
     }
 
+    @Override
     public void visitOuterClass( String owner, String name, String desc )
     {
     }
 
+    @Override
     public AnnotationVisitor visitAnnotation( String desc, boolean visible )
     {
         return null;
     }
 
+    @Override
     public void visitAttribute( Attribute attr )
     {
     }
 
+    @Override
     public void visitInnerClass( String name, String outerName, String innerName, int access )
     {
     }
 
+    @Override
     public FieldVisitor visitField( int access, String name, String desc, String signature, Object value )
     {
         return null;
     }
 
+    @Override
     public MethodVisitor visitMethod( int access, String name, String desc, String signature, String[] exceptions )
     {
         return null;
     }
 
+    @Override
     public void visitEnd()
     {
     }
