@@ -36,7 +36,6 @@ import org.junit.runner.RunWith;
 
 import com.simpligility.maven.plugins.android.PluginInfo;
 
-@Ignore( "Currently failing test disabled. See https://github.com/simpligility/android-maven-plugin/issues/617 ")
 @RunWith(MavenJUnitTestRunner.class)
 @MavenVersions({"3.2.5"})
 public class ApkWithProvidedJarBuildExampleIT {
@@ -57,6 +56,6 @@ public class ApkWithProvidedJarBuildExampleIT {
           .forProject(basedir)
           .execute( "clean", "install" );
     result.assertErrorFreeLog();
-    result.assertLogText( "Tests run: 4,  Failures: 0,  Errors: 0" );
+    result.assertLogText( "Tests run: 2,  Failures: 0,  Errors: 0" );
   }
 }
