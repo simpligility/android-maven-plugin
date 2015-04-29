@@ -34,6 +34,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 public class InternalPreIntegrationTestMojo extends AbstractInstrumentationMojo
 {
 
+    @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         if ( isEnableIntegrationTest() )
