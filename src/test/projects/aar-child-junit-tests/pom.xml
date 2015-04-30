@@ -64,6 +64,17 @@
             </plugins>
         </pluginManagement>
     </build>
-
+<profiles>
+  <profile>
+    <id>support-test</id>
+    <repositories>
+    <repository>
+      <id>android-m2</id>
+      <name>Android M2</name>
+      <url>file://${env.ANDROID_HOME}/extras/android/m2repository</url>
+    </repository>
+    </repositories>
+  </profile>
+</profiles>
 </project>
 

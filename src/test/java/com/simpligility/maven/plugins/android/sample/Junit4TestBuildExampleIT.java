@@ -53,6 +53,7 @@ public class Junit4TestBuildExampleIT {
     File basedir = resources.getBasedir( "aar-child-junit-tests" );
     MavenExecutionResult result = mavenRuntime
           .forProject(basedir)
+          .withCliOption("-Psupport-test")
           .execute( "clean", "install" );
     result.assertErrorFreeLog();
     result.assertLogText( "Tests run: 1,  Failures: 0,  Errors: 0" );
