@@ -2,6 +2,10 @@
 
 == 4.2.1 or higher - upcoming
 
+* Refactored codebase to com.simpligility to follow groupId
+** contributed by Manfred Moser http://www.simpligility.com
+
+
 Planned changes:
 
 * migrate rest of Google Code project content into the github project
