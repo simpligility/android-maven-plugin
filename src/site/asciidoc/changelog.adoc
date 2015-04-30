@@ -4,7 +4,12 @@
 
 * Refactored codebase to com.simpligility to follow groupId
 ** contributed by Manfred Moser http://www.simpligility.com
-
+* Fixed NPE for undefined versionNamingPattern in ManifestMojo
+** see https://github.com/simpligility/android-maven-plugin/pull/622
+** contributed by Leonid https://github.com/greek1979
+* Updated Android SDK libraries 1.2.1 / 24.1.3
+** see https://github.com/simpligility/android-maven-plugin/commit/18950452504bbc8f1a8cc5a47419e0e5036db134
+** contributed by Benoit Billington https://github.com/Shusshu
 
 Planned changes:
 
