@@ -7,6 +7,9 @@
 * Fixed NPE for undefined versionNamingPattern in ManifestMojo
 ** see https://github.com/simpligility/android-maven-plugin/pull/622
 ** contributed by Leonid https://github.com/greek1979
+* Fixed Error generating BuildConfig (ZipException: zip file is empty) if one of the dependent AARs has an empty classes.zip
+** See https://github.com/simpligility/android-maven-plugin/issues/626
+** contributed by William Ferguson https://github.com/william-ferguson-au
 * Updated Android SDK libraries 1.2.2 / 24.2.2
 ** contributed by Benoit Billington https://github.com/Shusshu
 ** contributed by Manfred Moser http://www.simpligility.com
