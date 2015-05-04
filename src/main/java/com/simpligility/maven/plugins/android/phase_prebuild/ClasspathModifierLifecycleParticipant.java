@@ -15,7 +15,6 @@ import com.simpligility.maven.plugins.android.common.ArtifactResolverHelper;
 import com.simpligility.maven.plugins.android.common.DependencyResolver;
 import com.simpligility.maven.plugins.android.common.PomConfigurationHelper;
 import com.simpligility.maven.plugins.android.common.UnpackedLibHelper;
-
 import org.apache.maven.AbstractMavenLifecycleParticipant;
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.artifact.Artifact;
@@ -31,6 +30,7 @@ import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.Logger;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 
 /**
@@ -289,7 +290,8 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
         classesJar.getParentFile().mkdirs();
         try
         {
-            classesJar.createNewFile();
+            final ZipOutputStream zipOutputStream = new ZipOutputStream( new FileOutputStream( classesJar ) );
+            zipOutputStream.close();
             log.debug( "Created dummy " + classesJar.getName() + " exist=" + classesJar.exists() );
         }
         catch ( IOException e )
