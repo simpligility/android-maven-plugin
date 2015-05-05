@@ -29,33 +29,33 @@ import io.takari.maven.testing.executor.junit.MavenJUnitTestRunner;
 
 import java.io.File;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.simpligility.maven.plugins.android.PluginInfo;
+
 
 @RunWith(MavenJUnitTestRunner.class)
 @MavenVersions({"3.2.5"})
-public class ApkWithProvidedJarBuildExampleIT {
+public class Junit4TestBuildExampleIT {
 
   @Rule
   public final TestResources resources = new TestResources();
   
   public final MavenRuntime mavenRuntime;
   
-  public ApkWithProvidedJarBuildExampleIT(MavenRuntimeBuilder builder) throws Exception {
+  public Junit4TestBuildExampleIT(MavenRuntimeBuilder builder) throws Exception {
     this.mavenRuntime = builder.build();
   }
   
   @Test
   public void buildInstall() throws Exception {
-    File basedir = resources.getBasedir( "aar-child" );
+    File basedir = resources.getBasedir( "aar-child-junit-tests" );
     MavenExecutionResult result = mavenRuntime
           .forProject(basedir)
+          .withCliOptions("-Psupport_test","-X")
           .execute( "clean", "install" );
     result.assertErrorFreeLog();
-    result.assertLogText( "Tests run: 2,  Failures: 0,  Errors: 0" );
+    result.assertLogText( "Tests run: 1,  Failures: 0,  Errors: 0" );
   }
 }

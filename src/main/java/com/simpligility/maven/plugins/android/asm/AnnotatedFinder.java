@@ -1,65 +1,34 @@
-/*
- * Copyright (C) 2009 Jayway AB
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.simpligility.maven.plugins.android.asm;
 
-import org.apache.commons.lang.StringUtils;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-
-import java.util.concurrent.atomic.AtomicBoolean;
+import org.objectweb.asm.Type;
 
 /**
- * Finds descendants of any class from specific parent packages.
- * Will remember if any match was found, and returns that fact in {@link #isDescendantFound()}.
+ * Finds classes annotated with a set of annotations.
  *
- * @author hugo.josefson@jayway.com
+ * @author secondsun@gmail.com
  */
-class DescendantFinder extends ClassVisitor
+public class AnnotatedFinder extends ClassVisitor 
 {
 
-    /**
-     * Constructs this finder.
-     *
-     * @param parentPackages Packages to find descendants of. Must be formatted with <code>/</code> (slash) instead of
-     *                       <code>.</code> (dot). For example: <code>junit/framework/</code>
-     */
-    public DescendantFinder( String... parentPackages )
+    private static final String TEST_RUNNER = "Lorg/junit/runner/RunWith;";
+    
+    public AnnotatedFinder( String[] parentPackages ) 
     {
         super( Opcodes.ASM4 );
-        this.parentPackages = parentPackages;
     }
 
-    private final String[] parentPackages;
     private final AtomicBoolean isDescendantFound = new AtomicBoolean( false );
 
     @Override
     public void visit( int version, int access, String name, String signature, String superName, String[] interfaces )
     {
-        for ( String testPackage : parentPackages )
-        {
-            if ( StringUtils.startsWith( superName, testPackage ) )
-            {
-                flagAsFound();
-                //                System.out.println(name + " extends " + superName);
-            }
-        }
     }
 
     private void flagAsFound()
@@ -90,6 +59,25 @@ class DescendantFinder extends ClassVisitor
     @Override
     public AnnotationVisitor visitAnnotation( String desc, boolean visible )
     {
+        if ( TEST_RUNNER.equals( desc ) ) 
+        {
+            return new AnnotationVisitor( Opcodes.ASM4 ) 
+            {
+
+                @Override
+                public void visit( String name, Object value ) 
+                {
+                    if ( value instanceof Type ) 
+                    {
+                        if ( ( ( Type ) value ).getClassName().contains( "AndroidJUnit4" ) ) 
+                        {
+                            flagAsFound();
+                        }
+                    }
+                }
+                
+            };
+        } 
         return null;
     }
 
@@ -119,4 +107,5 @@ class DescendantFinder extends ClassVisitor
     public void visitEnd()
     {
     }
+    
 }

@@ -48,7 +48,7 @@
           <version>${it-plugin.version}</version>
           <configuration>
             <sdk>
-              <platform>21</platform>
+              <platform>19</platform>
             </sdk>
             <emulator>
               <avd>23</avd>

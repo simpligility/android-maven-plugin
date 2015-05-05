@@ -28,7 +28,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Finds Android instrumentation test classes in a directory of compiled Java classes.
+ * Finds Android instrumentation test classes to be run by InstrumentationTestRunner 
+ * in a directory of compiled Java classes.
  *
  * @author hugo.josefson@jayway.com
  */
@@ -47,6 +48,7 @@ public class AndroidTestFinder
 
         final List<File> classFiles = findEligebleClassFiles( classesBaseDirectory );
         final DescendantFinder descendantFinder = new DescendantFinder( TEST_PACKAGES );
+        final AnnotatedFinder annotationFinder = new AnnotatedFinder( TEST_PACKAGES );
 
         for ( File classFile : classFiles )
         {
@@ -58,6 +60,8 @@ public class AndroidTestFinder
                 classReader = new ClassReader( inputStream );
 
                 classReader.accept( descendantFinder, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES
+                        | ClassReader.SKIP_CODE );
+                classReader.accept( annotationFinder, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES
                         | ClassReader.SKIP_CODE );
             }
             catch ( IOException e )
@@ -72,7 +76,7 @@ public class AndroidTestFinder
             }
         }
 
-        return descendantFinder.isDescendantFound();
+        return descendantFinder.isDescendantFound() || annotationFinder.isDescendantFound();
     }
 
     private static List<File> findEligebleClassFiles( File classesBaseDirectory )
