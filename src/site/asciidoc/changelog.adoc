@@ -13,6 +13,13 @@
 * Updated Android SDK libraries 1.2.2 / 24.2.2
 ** contributed by Benoit Billington https://github.com/Shusshu
 ** contributed by Manfred Moser http://www.simpligility.com
+* Support for Junit4 Test Runner based tests
+** Usage requires deployment of Android SDK supplied Maven repositories to the
+  local repository e.g. with Maven Android SDK Deployer
+** see https://github.com/simpligility/android-maven-plugin/pull/625
+** fixes https://github.com/simpligility/android-maven-plugin/issues/623
+** fixes https://github.com/simpligility/android-maven-plugin/issues/617
+** contributed by Hoyt Summers Pittman https://github.com/secondsun
 
 Planned changes:
 
