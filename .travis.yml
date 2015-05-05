@@ -67,4 +67,8 @@ before_script:
   # Make sure the emulator is running.
   - ./wait_for_emulator
 
-script: mvn clean install -Dandroid.device=test -P it
+# with integration tests disabled for now since they require
+# the usage of Maven Android SDK Deployer to get the
+# Maven repos from the SDK deployed to the local repository
+# script: mvn clean install -Dandroid.device=test -P it
+script: mvn clean install -Dandroid.device=test
