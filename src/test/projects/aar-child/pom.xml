@@ -33,7 +33,7 @@
  
     <properties>
         <!-- Plugins versions -->
-        <it-plugin.version>4.2.0</it-plugin.version>
+        <it-plugin.version>4.2.1</it-plugin.version>
         <!-- Android configs -->
         <android.platform>19</android.platform>
         <android.debug>false</android.debug>

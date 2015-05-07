@@ -14,7 +14,7 @@
   <properties>
     <server_schema>http</server_schema>
     <!-- at test time this will be overridden with snapshot version -->
-    <it-plugin.version>4.2.0</it-plugin.version>
+    <it-plugin.version>4.2.1</it-plugin.version>
   </properties>
 
   <dependencyManagement>
