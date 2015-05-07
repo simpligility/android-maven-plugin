@@ -1,5 +1,7 @@
 = Changelog
 
+== 4.2.2 or higher - upcoming 
+
 Planned changes:
 
 * migrate rest of Google Code project content into the github project

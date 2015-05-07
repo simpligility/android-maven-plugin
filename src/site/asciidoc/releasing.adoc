@@ -82,7 +82,7 @@ Once you are happy with the state of everything - Do it!
 To perform the release:
 
 ----
-cd ~/android-maven-plugin
+cd android-maven-plugin
 mvn release:prepare release:perform
 ----
 
@@ -108,3 +108,9 @@ To obtain a correct permalink to the announcement email, go to the Maven Android
 open the announcement post and click the little chain/link icon to the right.
 
 Once you are done with it all, celebrate as desired ;-) 
+
+== After the release
+
+* update changelog for next version 
+* add release notes mailing list perma link changelog
+* change it-plugin.version parameter in IT test pom file to reference last release
