@@ -1,8 +1,15 @@
 = Changelog
 
-== 4.2.1 or higher - upcoming
+Planned changes:
 
-* Refactored codebase to com.simpligility to follow groupId
+* migrate rest of Google Code project content into the github project
+* migrate more tests to be instrumentation tests with example projects
+** see https://github.com/simpligility/android-maven-plugin/issues/452
+* anything else contributed by the community
+
+== 4.2.1 - released 2014-05-07
+
+* Refactored code base to com.simpligility to follow groupId
 ** contributed by Manfred Moser http://www.simpligility.com
 * Fixed NPE for undefined versionNamingPattern in ManifestMojo
 ** see https://github.com/simpligility/android-maven-plugin/pull/622
@@ -20,13 +27,6 @@
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/623
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/617
 ** contributed by Hoyt Summers Pittman https://github.com/secondsun
-
-Planned changes:
-
-* migrate rest of Google Code project content into the github project
-* migrate more tests to be instrumentation tests with example projects
-** see https://github.com/simpligility/android-maven-plugin/issues/452
-* anything else contributed by the community
 
 == 4.2.0 - released 2015-04-15
 
