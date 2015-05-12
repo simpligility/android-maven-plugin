@@ -1906,35 +1906,37 @@ API/Configuration Changes:
 
 === Maven Android Plugin 2.3.2 ===
 
- * Issue 4
-** New support for stopping an emulator on Windows.
-  ** *We still need someone on Windows to test it!*
-  ** See Issue 4, and scroll down to "INSTRUCTIONS FOR ANYONE TO TEST ON WINDOWS".
-** Improved support for starting an emulator on Mac in IntelliJ IDEA.
+* Issue 4
+* New support for stopping an emulator on Windows.
+** We still need someone on Windows to test it!
+** See Issue 4, and scroll down to "INSTRUCTIONS FOR ANYONE TO TEST ON WINDOWS".
+* Improved support for starting an emulator on Mac in IntelliJ IDEA.
 ** Thank you Manfred Moser for the patches!
- * Using newer plugins.
+* Using newer plugins.
 
 === Maven Android Plugin 2.3.0 ===
 
- * Issue 4
-** New support for starting and stopping an emulator on Unix/Linux, and starting an emulator on Windows. Thank you Manfred Moser for this functionality! Documented in the [http://www.sonatype.com/books/mvnref-book/reference/android-dev-sect-goals.html Maven Android Plugin Goals] section of the book _Maven: The Complete Reference_.
- * Defaulting '<sdk><path>...</path></sdk>' to environment variable 'ANDROID_HOME' so that the config parameter is not needed by default. Thank you Manfred Moser for the patch!
- * Require _at least_ Maven 2.2.1, instead of _exactly_ 2.2.1. This should fix an [http://groups.google.com/group/maven-android-developers/browse_thread/thread/eb48fddd36b0524 Eclipse issue discussed on the Maven Android Developers list].
- * Using newer plugins. Now 'mvn versions:display-plugin-updates' is happy :)
-
+* Issue 4
+** New support for starting and stopping an emulator on Unix/Linux, and starting an emulator on Windows. 
+Thank you Manfred Moser for this functionality!  Documented in the [http://www.sonatype.com/books/mvnref-book/reference/android-dev-sect-goals.html Maven Android Plugin Goals] section of the book _Maven: The Complete Reference_.
+* Defaulting '<sdk><path>...</path></sdk>' to environment variable 'ANDROID_HOME' so that the config parameter is not needed by default. Thank you Manfred Moser for the patch!
+* Require _at least_ Maven 2.2.1, instead of _exactly_ 2.2.1. This should fix an [http://groups.google.com/group/maven-android-developers/browse_thread/thread/eb48fddd36b0524 Eclipse issue discussed on the Maven Android Developers list].
+* Using newer plugins. Now 'mvn versions:display-plugin-updates' is happy :)
+f
 === Maven Android Plugin 2.2.2 ===
 
  * Increased configuration possibilities for ApkSourcesDependency. Thank you Albin Theander for the patch!
 ** Added the possibility to use several overlay directories instead of just one. This makes it possible to config which ones to use with profiles. To use this feature, just add the following to the plugin configuration:
-  ** *'<resourceOverlayDirectories>'*
-  ** *'    <dir>res-overlay-1</dir>'*
-  ** *'    <dir>res-overlay-2</dir>'*
-  ** *'</resourceOverlayDirectories>'*
+----
+<resourceOverlayDirectories>
+<dir>res-overlay-1</dir>
+<dir>res-overlay-2</dir>
+</resourceOverlayDirectories>
+----
 ** If the feature is not used, the old resourceOverlayDirectory parameter is used as before, keeping everything backwards compatible.
-
- * Issue 39
+* Issue 39
 ** Improved detection for which projects are instrumentation test projects. Now considers projects without '<instrumentation.../>' tag in them, as non-instrumentationtest projects, and doesn't try to run them as tests.
- * Issue 41
+* Issue 41
 ** Exclude any '<scope>provided</scope>' dependencies from the built apk file. The android.jar dependencies are/should be such dependencies.
 
 
@@ -1945,8 +1947,8 @@ API/Configuration Changes:
 ** Added the ability to provide overlay resources. These will need to be put in a directory named "res-overlay". See ApkSourcesDependency.
 ** When using the eclipse maven plugin, the 'apksources' artifact will point towards a directory (which isn't the correct one). Therefore, when extracting the 'apksources' artifact we'll first try to get a jar from the local repository.
 ** Fixed bug where the dependency files overwrote the local files (should be the other way around).
- * Require latest [http://maven.apache.org/download.html Apache Maven 2.2.1] (coincidental version number!) in fixing Issue 38.
- * Pom cleanup. Thank you Manfred Moser for the patch.
+* Require latest [http://maven.apache.org/download.html Apache Maven 2.2.1] (coincidental version number!) in fixing Issue 38.
+* Pom cleanup. Thank you Manfred Moser for the patch.
 
 === Maven Android Plugin 2.2.0 ===
 
