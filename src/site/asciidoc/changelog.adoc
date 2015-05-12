@@ -11,6 +11,8 @@ Planned changes:
 
 == 4.2.1 - released 2014-05-07
 
+https://groups.google.com/d/msg/maven-android-developers/HOIC3b7MmoA/Z8XUXpsmT-EJ[Release Announcement Post]
+
 * Refactored code base to com.simpligility to follow groupId
 ** contributed by Manfred Moser http://www.simpligility.com
 * Fixed NPE for undefined versionNamingPattern in ManifestMojo
