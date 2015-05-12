@@ -1395,17 +1395,15 @@ API/Configuration Changes
 
 === Android Maven Plugin 3.0.0-alpha-11 ===
 
- * refactored name of plugin to *android-maven-plugin*
-** *THIS MEANS ALL USERS MUST UPDATE THEIR POMS*
-  ** In your projects, change all '<artifactId>maven-android-plugin</artifactId>' to *'<artifactId>android-maven-plugin</artifactId>'*.
-  ** See also [PluginRenamed] for further information.
+* refactored name of plugin to *android-maven-plugin*
+** THIS MEANS ALL USERS MUST UPDATE THEIR POMS
+** In your projects, change all '<artifactId>maven-android-plugin</artifactId>' to '<artifactId>android-maven-plugin</artifactId>'.
+** See also [PluginRenamed] for further information.
 ** see Issue 198
 ** contributed by Manfred Moser,  http://simpligility.com 
 
 API/Configuration Changes:
- * renamed all plugin configuration from '<artifactId>maven-android-plugin</artifactId>' to *'<artifactId>android-maven-plugin</artifactId>'*
-
-----
+* renamed all plugin configuration from '<artifactId>maven-android-plugin</artifactId>' to *'<artifactId>android-maven-plugin</artifactId>'*
 
 === Maven Android Plugin 3.0.0-alpha-11 ===
 
@@ -1419,49 +1417,41 @@ API/Configuration Changes:
 
 === Maven Android Plugin 3.0.0-alpha-9 ===
 
- * Wait for the initial device list to be loaded from the Android Debug Bridge before proceeding to deploy and other tasks using adb
+* Wait for the initial device list to be loaded from the Android Debug Bridge before proceeding to deploy and other tasks using adb
 ** see https://github.com/jayway/maven-android-plugin/pull/61
 ** fixes issue 197
 ** contributed by oldelvet 
- 
- * *Require Maven 3.0.3.*
+* Require Maven 3.0.3
 ** see https://groups.google.com/d/topic/maven-android-developers/7vTpCUdgPD0/discussion
 ** contributed by Hugo Josefson
- 
- * Allow to push directories to the device
+* Allow to push directories to the device
 ** fixes issue 192
 ** see https://github.com/jayway/maven-android-plugin/pull/63
 ** contributed by Roman Zimmer http://sprylab.com
-
- * Start apk with debug flag for run goal
+* Start apk with debug flag for run goal
 ** fixes issue 199 
 ** see https://github.com/jayway/maven-android-plugin/pull/64
 ** contributed by cherrydev
 ** modified to work with plugin configuration parameter by Manfred Moser,  http://simpligility.com 
-
- * fixed StringIndexOutOfBoundException when instrumentation test report AssertionError 
+* fixed StringIndexOutOfBoundException when instrumentation test report AssertionError 
 ** contributed by Manfred Moser,  http://simpligility.com 
-
- * support for all instrumentation test configuration parameters to be supplied as properties or in plugin configuration
+* support for all instrumentation test configuration parameters to be supplied as properties or in plugin configuration
 ** contributed by Manfred Moser,  http://simpligility.com 
-
- * refactored enableIntegrationTest parameter to android.test.skip
+* refactored enableIntegrationTest parameter to android.test.skip
 ** contributed by Manfred Moser,  http://simpligility.com 
-
- * internal refactor of all pure config pojos into separate package and other cleanup
+* internal refactor of all pure config pojos into separate package and other cleanup
 ** contributed by Manfred Moser,  http://simpligility.com 
-
- * refactored configuration parameters for manifest update mojo to be contained in `<manifest>` element 
+* refactored configuration parameters for manifest update mojo to be contained in `<manifest>` element 
 ** contributed by Manfred Moser,  http://simpligility.com 
 
 API/Configuration Changes:
 
- * *Upgrade to Maven 3.0.3+ *
- * support for debug parameter for run goal as android.run.debug as property value in pom, settings or command line or in plugin configuration as  
+* Upgrade to Maven 3.0.3+
+* support for debug parameter for run goal as android.run.debug as property value in pom, settings or command line or in plugin configuration as  
 ----
 <configuration><run><debug>true|false</debug></run></configuration>
 ----
- * refactored *enableIntegrationTest* parameter to *android.test.skip* also see next... 
+ * refactored 'enableIntegrationTest' parameter to 'android.test.skip' also see next... 
  * support for test configuration parameters to be supplied in pom like so
 ----
 <configuration>
