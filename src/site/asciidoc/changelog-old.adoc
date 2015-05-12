@@ -1666,79 +1666,74 @@ API/Configuration Changes:
  * Additional config option for apk allowing additional source directories
 ** see [https://github.com/jayway/maven-android-plugin/pull/23]
 ** contributed by Lars Poeschel
- * *Remove jar goal from process resources phase*
+* Remove jar goal from process resources phase
 ** see [https://github.com/jayway/maven-android-plugin/pull/36]
 ** required for M2 Eclipse Android Integration 
 ** contributed by Ricardo Gladwell
  * Support for extra arguments for aapt (Issue 165)
 ** see [https://github.com/jayway/maven-android-plugin/pull/35]
 ** contributed by Fabrizio Giudici
- * *Removed support for Android 1.1 SDK tools* (NOT platform/API) 
+* Removed support for Android 1.1 SDK tools (NOT platform/API) 
 ** contributed by Manfred Moser
- * Added multi-device support for push, pull and instrumentation test runs
+* Added multi-device support for push, pull and instrumentation test runs
 ** see [https://github.com/jayway/maven-android-plugin/commit/33e52c75edea2f7d579b3d2517c33356bf77ddca]
 ** contributed by Hugo Josefson 
- * Run instrumentation tests via ddmlib directly rather than adb command
- ** see [https://github.com/jayway/maven-android-plugin/commit/ecccb4a558e81255c705a5f4053bfbe7e2e06c84]
- ** contributed by Manfred Moser
- * Support for various parameters for instrumentation test runs
-  ** contributed by Manfred Moser
-
+* Run instrumentation tests via ddmlib directly rather than adb command
+** see [https://github.com/jayway/maven-android-plugin/commit/ecccb4a558e81255c705a5f4053bfbe7e2e06c84]
+** contributed by Manfred Moser
+* Support for various parameters for instrumentation test runs
+** contributed by Manfred Moser
 
 API/Configuration Changes: 
 
-** new standalone goal "version-update" with parameters "versionname.update" and "versioncode.autoincrement"
-** new goal ndk-build
-  ** "ndk.path" parameter for Android NDK support, supports environment variable ANDROID_NDK_HOME
-  ** "ndk.build.native-classifier" parameter
-  ** "ndk.build.command-line" parameter
-  ** "ndk.build.clear-native-artifacts" parameter
-  ** "ndk.build.ndk-output-directory" parameter
-  ** "nativeLibrariesDirectory" parameter
-  ** "ndk.build.architecture" parameter, default armeabi
-** "classifier" parameter, when given cause the apk to get a classifier and be an attached build artifact
-** *removed parameter "deleteDataAndCacheDirectoriesOnDevice"* since it is no longer needed
+* new standalone goal "version-update" with parameters "versionname.update" and "versioncode.autoincrement"
+* new goal ndk-build
+* "ndk.path" parameter for Android NDK support, supports environment variable ANDROID_NDK_HOME
+* "ndk.build.native-classifier" parameter
+* "ndk.build.command-line" parameter
+* "ndk.build.clear-native-artifacts" parameter
+* "ndk.build.ndk-output-directory" parameter
+* "nativeLibrariesDirectory" parameter
+* "ndk.build.architecture" parameter, default armeabi
+* "classifier" parameter, when given cause the apk to get a classifier and be an attached build artifact
+* removed parameter "deleteDataAndCacheDirectoriesOnDevice" since it is no longer needed
+* new instrumentation test related parameters
+* "test.debug" 
+* "test.coverage"
+* "test.logonly"
+* "test.testsize"
+* changed "instrumentationRunner" to "test.instrumentationRunner"
+* changed "instrumentationPackage" to "test.instrumentationPackage"
 
-** new instrumentation test related parameters
-  ** "test.debug" 
-  ** "test.coverage"
-  ** "test.logonly"
-  ** "test.testsize"
-  ** *changed "instrumentationRunner" to "test.instrumentationRunner"*
-  ** *changed "instrumentationPackage" to "test.instrumentationPackage"*
+== Maven Android Plugin 2.x release series
 
+== Maven Android Plugin 2.9.0-beta-5
 
-== Maven Android Plugin 2.x release series ==
-
-=== Maven Android Plugin 2.9.0-beta-5  ===
-
- * Fix for Issue 153: jvmArguments missing dash, 
+* Fix for Issue 153: jvmArguments missing dash, 
 ** contributed by Manfred Moser
- * Fix for Issue 148: correct help documentation for sdk path, 
+* Fix for Issue 148: correct help documentation for sdk path, 
 ** contributed by Pierre-Yves Ricau
- * Support for lazy library unpacking to speed up build. See issue 120
+* Support for lazy library unpacking to speed up build. See issue 120
 ** contributed by shivawu. 
- * Fix for issue 118 and issue 143
+* Fix for issue 118 and issue 143
 ** see [https://github.com/jayway/maven-android-plugin/pull/32]
 ** contributed by alecplumb
- * Support for extra arguments for aapt (Issue 165)
+* Support for extra arguments for aapt (Issue 165)
 ** see [https://github.com/jayway/maven-android-plugin/pull/35]
 ** contributed by Fabrizio Giudici
- * Added apk parameters support "renameInstrumentationTargetPackage"
+* Added apk parameters support "renameInstrumentationTargetPackage"
 ** see [https://github.com/jayway/maven-android-plugin/pull/38]
 ** contributed by Rodrigo Munoz
 
-
 API/Configuration Changes: 
 
-** noLocals (default false), pass --no-locals to dx command
-** lazyLibraryUnpack (default false) only unpack library after a clean build and not when output directory already exists
-** aaptExtraArgs array of string extra arguments to be passed to aapt
-** renameManifestPackage - pass the --rename-manifest-package parameter to aapt
-** renameInstrumentationTargetPackage - pass the --rename-instrumentation-target-package parameter to aapt
- 
+* noLocals (default false), pass --no-locals to dx command
+* lazyLibraryUnpack (default false) only unpack library after a clean build and not when output directory already exists
+* aaptExtraArgs array of string extra arguments to be passed to aapt
+* renameManifestPackage - pass the --rename-manifest-package parameter to aapt
+* renameInstrumentationTargetPackage - pass the --rename-instrumentation-target-package parameter to aapt
 
-=== Maven Android Plugin 2.9.0-beta-4 ===
+== Maven Android Plugin 2.9.0-beta-4
 
  * Fix for Issue 147: apklib modules aren't deployed
 ** ApkLib modules are now deployed to Maven repository when running 'mvn deploy' or when performing a Maven release.
