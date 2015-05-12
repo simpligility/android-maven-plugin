@@ -1995,64 +1995,65 @@ API/Configuration Changes:
  * No changes needed since 2.0.0-rc1, just re-releasing as version 2.0.0.
  * The most stable, bug-free, easy-to-use release of any Maven plugin for Android app developers we know about!
 
-----
-
 == Maven Android Plugin 2.x pre-releases ==
 
 Changes which require action are marked as *bold*.
 
-
 === Maven Android Plugin 2.0.0-rc1 ===
- * Closes input/output streams.
+* Closes input/output streams.
 ** Thank you to Martin Vyšný for the patch.
 ** This fixes [http://code.google.com/p/masa/issues/detail?id=27 Masa Issue 27], but in this project.
 
 === Maven Android Plugin 2.0.0-alpha9 ===
- * Issue 6: look over parameter names and expressions
-** [http://maven-android-plugin-m2site.googlecode.com/svn/plugin-info.html mvn site] is updated with new goal names, and their config params.
-** Simplified goals 'android:deploy' and 'android:deploy-file' into the same goal, 'android:deploy'.
-** Simplified goals 'android:undeploy-file' and 'android:undeploy-package' into the same goal, 'android:undeploy'.
-** In goals 'android:deploy' and 'android:undeploy':
-  ** Renamed command-line parameter '-Dfile' to '-Dandroid.file', for consistency.
-** In goals 'android:pull' and 'android:push':
-  ** Renamed command-line parameter '-Dsource' to '-Dandroid.source', for consistency.
-  ** Renamed command-line parameter '-Ddestination' to '-Dandroid.destination', for consistency.
-** *Renamed config param '<signWithDebugKeystore>true|false</signWithDebugKeystore>' to*
-  ** *'<sign>'*
-  ** *'    <debug>true|false|auto</debug>'*
-  ** *'</sign>'*
-** Removed config param '<sourceDirectory>' for clarity, because it should be configured outside the plugin, like this:
-  ** '<build>'
-  ** '    <sourceDirectory>src/main/java</sourceDirectory>'
-  ** '</build>'
+* Issue 6: look over parameter names and expressions
+* [http://maven-android-plugin-m2site.googlecode.com/svn/plugin-info.html mvn site] is updated with new goal names, and their config params.
+* Simplified goals 'android:deploy' and 'android:deploy-file' into the same goal, 'android:deploy'.
+* Simplified goals 'android:undeploy-file' and 'android:undeploy-package' into the same goal, 'android:undeploy'.
+* In goals 'android:deploy' and 'android:undeploy':
+** Renamed command-line parameter '-Dfile' to '-Dandroid.file', for consistency.
+* In goals 'android:pull' and 'android:push':
+** Renamed command-line parameter '-Dsource' to '-Dandroid.source', for consistency.
+** Renamed command-line parameter '-Ddestination' to '-Dandroid.destination', for consistency.
+* Renamed config param '<signWithDebugKeystore>true|false</signWithDebugKeystore>' to
+----
+<sign>
+<debug>true|false|auto</debug>
+</sign>
+----
+* Removed config param '<sourceDirectory>' for clarity, because it should be configured outside the plugin, like this:
+----
+<build>
+<sourceDirectory>src/main/java</sourceDirectory>
+</build>
+----
 
 === Maven Android Plugin 2.0.0-alpha8 ===
- * Issue 6: look over parameter names and expressions
+* Issue 6: look over parameter names and expressions
 ** [http://maven-android-plugin-m2site.googlecode.com/svn/plugin-info.html mvn site] is updated with new goal names, and their config params.
 ** [Glossary] is updated.
-** Renamed goal 'android:deployDependencies' to 'android:deploy-dependencies'.
-  ** *Renamed config param '<undeployApkBeforeDeploying>' to '<undeployBeforeDeploy>'.*
-** Renamed goal 'android:adbPull' to 'android:pull'.
-  ** Renamed config param '<destinationFileOrDirectory>' to '<destination>'.
-  ** Renamed config param '<sourceFileOrDirectory>' to '<source>'.
-  ** Improved error handling.
-** Renamed goal 'android:adbPush' to 'android:push'.
-  ** Renamed config param '<destinationFileOrDirectory>' to '<destination>'.
-  ** Renamed config param '<sourceFileOrDirectory>' to '<source>'.
-  ** Improved error handling.
-** Renamed goal 'android:undeploy-packageName' to 'android:undeploy-package'.
-  ** Renamed config param '<packageName>' to '<package>'.
-  ** Renamed config param '-Dpackage' to '-Dandroid.package'.
-  ** Resolve config param '<package>'/'-Dandroid.package' from 'AndroidManifest.xml' if not defined.
-** Renamed goal 'android:platformTest' to 'android:instrument'.
-  ** Renamed config param '<testsPackage>' to '<testPackage>'.
-  ** Renamed config param '<testPackage>' to '<instrumentationPackage>'.
-  ** Renamed config param '<testRunner>' to '<instrumentationRunner>'.
-  ** Renamed config param '-Dandroid.test.testPackage' to '-Dandroid.instrumentationPackage'.
-  ** Renamed config param '-Dandroid.test.testRunner' to '-Dandroid.instrumentationRunner'.
-** In goal 'android:generate-sources':
-  ** Removed parameter 'createPackageDirectories' for clarity, and because we currently have no known use case for setting it to 'false'.
-** Samples: Renamed apidemos-`*`-platformtests to apidemos-`*`-instrumentationtest.
+* Renamed goal 'android:deployDependencies' to 'android:deploy-dependencies'.
+* Renamed config param '<undeployApkBeforeDeploying>' to '<undeployBeforeDeploy>'.*
+* Renamed goal 'android:adbPull' to 'android:pull'.
+* Renamed config param '<destinationFileOrDirectory>' to '<destination>'.
+* Renamed config param '<sourceFileOrDirectory>' to '<source>'.
+* Improved error handling.
+* Renamed goal 'android:adbPush' to 'android:push'.
+* Renamed config param '<destinationFileOrDirectory>' to '<destination>'.
+* Renamed config param '<sourceFileOrDirectory>' to '<source>'.
+* Improved error handling.
+* Renamed goal 'android:undeploy-packageName' to 'android:undeploy-package'.
+* Renamed config param '<packageName>' to '<package>'.
+* Renamed config param '-Dpackage' to '-Dandroid.package'.
+* Resolve config param '<package>'/'-Dandroid.package' from 'AndroidManifest.xml' if not defined.
+* Renamed goal 'android:platformTest' to 'android:instrument'.
+* Renamed config param '<testsPackage>' to '<testPackage>'.
+* Renamed config param '<testPackage>' to '<instrumentationPackage>'.
+* Renamed config param '<testRunner>' to '<instrumentationRunner>'.
+* Renamed config param '-Dandroid.test.testPackage' to '-Dandroid.instrumentationPackage'.
+* Renamed config param '-Dandroid.test.testRunner' to '-Dandroid.instrumentationRunner'.
+* In goal 'android:generate-sources':
+** Removed parameter 'createPackageDirectories' for clarity, and because we currently have no known use case for setting it to 'false'.
+* Samples: Renamed apidemos-`*`-platformtests to apidemos-`*`-instrumentationtest.
 
 
 
