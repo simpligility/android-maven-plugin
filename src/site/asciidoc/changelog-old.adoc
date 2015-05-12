@@ -2086,7 +2086,7 @@ Changes which require action are marked as *bold*.
 * Issue 1: Support for Android SDK 1.5!
 ** Thank you to Andreas Ronge for the initial patch.
 * No longer requires any magic environment variables!
-** *Instead, a mandatory configuration parameter was added:*
+** Instead, a mandatory configuration parameter was added:
    ----
    <artifactId>maven-android-plugin</artifactId>
    <version>2.0.0-alpha3</version>
@@ -2101,72 +2101,71 @@ Changes which require action are marked as *bold*.
 ** This also means you can use different specific Android SDK's for different projects.
 ** This change was made to make the plugin feel like less magic. Now you know that any environment variables you set, are only for yourself. The plugin doesn't read them; it only reads its configuration parameters.
 ** This fixes [http://code.google.com/p/masa/issues/detail?id=26 Masa Issue 26], but in this project.
- * Duplicated the sample 'apidemos' application into 'apidemos-11' with code from the Android SDK 1.1, and 'apidemos-15' with code from the Android SDK 1.5. They use, and will work with, their corresponding Android SDK. Use 'apidemos-15' for Android SDK 1.5r2.
- * More and updated documentation, both wiki and in code.
- * More tests in code.
+* Duplicated the sample 'apidemos' application into 'apidemos-11' with code from the Android SDK 1.1, and 'apidemos-15' with code from the Android SDK 1.5. They use, and will work with, their corresponding Android SDK. Use 'apidemos-15' for Android SDK 1.5r2.
+* More and updated documentation, both wiki and in code.
+* More tests in code.
 
-=== Maven Android Plugin 2.0.0-alpha2 ===
+== Maven Android Plugin 2.0.0-alpha2
  
 * Doesn't expect PATH to be set too. Uses ANDROID_SDK/tools instead. (fixed in one more place)
 * Split out samples to a separate git repo.
 
-=== Maven Android Plugin 2.0.0-alpha1 ===
+== Maven Android Plugin 2.0.0-alpha1
 
 First release of the new implementation of Maven Android Plugin.
 
 Implemented all changes listed in [http://groups.google.com/group/masa-developers/browse_thread/thread/732fb629ec917cd4 this email with suggestions sent to the Masa Developers list], except number 11 (done as of 2.0.0-alpha3) and number 12 (ongoing as Issue 6 here, please give feedback on that).
 
 Some of the details implemented:
- * Collected all plugins into one, for clarity and maintainability.
- * Refactored *a lot* of code for maintainability and clarity.
- * Separate the act of deploying an apk into a goal of its own ('mvn android:deploy'). This fixes [http://code.google.com/p/masa/issues/detail?id=20 Masa Issue 20], but in this project.
- * When running the 'integration-test' phase for a '<packaging>android:apk:platformTest</packaging>' pom, automatically deploy the platform test apk, as well as the apk to test, onto the device before. This fixes [http://code.google.com/p/masa/issues/detail?id=21 Masa Issue 21], but in this project.
- * Optionally undeploy each apk from the device before deploying it. This helps the issue where different developers with different debug keys use the same device and try to install an apk with the same package id. They would collide if the first one is not undeployed before the other is deployed on top of it.
- * Make as much as possible automatically configured, if possible. For example reading the package id from inside an apk file or !AndroidManifest.xml (whichever is available), instead of the user having to define it when for example undeploying an apk.
- * Added a sample Maven application (!ApiDemos) as an example of using Maven Android Plugin, and as a test for the plugin. This fixes [http://code.google.com/p/masa/issues/detail?id=11 Masa Issue 11], but in this project.
- * Improved documentation.
- * Added unit testing.
- * Added error messages.
- * Updated dependencies' versions.
- * Removed the PAR plugin. It can be added again if requested.
- * Fine-tuned phases and made lifecycle more like the default lifecycle for '<packaging>jar</packaging>'. This fixes [http://code.google.com/p/masa/issues/detail?id=14 Masa Issue 14], but in this project.
- * Renamed many things to names which say what they do.
- * Renamed 'install' to 'deploy', because that's what it's usually called in Maven-world, and because 'install' has a very specific (other) meaning.
- * Also delete 'Manifest.java' when deleting 'R.java'.
- * Added goals 'deploy-file' and 'undeploy-file' for (un)deploying any separate apk outside of any project.
- * Added goal 'undeploy-packageName' for undeploying an apk from device, if you already know the package name.
- * Config parameter platformtestrunner class can be inferred from 'AndroidManifest.xml: /manifest//instrumentation/@android:name'.
- * Standalone goals should not require a project.
- * Doesn't expect PATH to be set too. Uses ANDROID_SDK/tools instead.
- * Set up release management procedures to enable frequent releases.
- * Started preparing for syncing to Maven Central, so we won't need to specify '<pluginRepository>' in the pom.xml when it's set up.
 
+* Collected all plugins into one, for clarity and maintainability.
+* Refactored a lot of code for maintainability and clarity.
+* Separate the act of deploying an apk into a goal of its own ('mvn android:deploy'). This fixes [http://code.google.com/p/masa/issues/detail?id=20 Masa Issue 20], but in this project.
+* When running the 'integration-test' phase for a '<packaging>android:apk:platformTest</packaging>' pom, automatically deploy the platform test apk, as well as the apk to test, onto the device before. This fixes [http://code.google.com/p/masa/issues/detail?id=21 Masa Issue 21], but in this project.
+* Optionally undeploy each apk from the device before deploying it. This helps the issue where different developers with different debug keys use the same device and try to install an apk with the same package id. They would collide if the first one is not undeployed before the other is deployed on top of it.
+* Make as much as possible automatically configured, if possible. For example reading the package id from inside an apk file or !AndroidManifest.xml (whichever is available), instead of the user having to define it when for example undeploying an apk.
+* Added a sample Maven application (!ApiDemos) as an example of using Maven Android Plugin, and as a test for the plugin. This fixes [http://code.google.com/p/masa/issues/detail?id=11 Masa Issue 11], but in this project.
+* Improved documentation.
+* Added unit testing.
+* Added error messages.
+* Updated dependencies' versions.
+* Removed the PAR plugin. It can be added again if requested.
+* Fine-tuned phases and made lifecycle more like the default lifecycle for '<packaging>jar</packaging>'. This fixes [http://code.google.com/p/masa/issues/detail?id=14 Masa Issue 14], but in this project.
+* Renamed many things to names which say what they do.
+* Renamed 'install' to 'deploy', because that's what it's usually called in Maven-world, and because 'install' has a very specific (other) meaning.
+* Also delete 'Manifest.java' when deleting 'R.java'.
+* Added goals 'deploy-file' and 'undeploy-file' for (un)deploying any separate apk outside of any project.
+* Added goal 'undeploy-packageName' for undeploying an apk from device, if you already know the package name.
+* Config parameter platformtestrunner class can be inferred from 'AndroidManifest.xml: /manifest//instrumentation/@android:name'.
+* Standalone goals should not require a project.
+* Doesn't expect PATH to be set too. Uses ANDROID_SDK/tools instead.
+* Set up release management procedures to enable frequent releases.
+* Started preparing for syncing to Maven Central, so we won't need to specify '<pluginRepository>' in the pom.xml when it's set up.
 
-----
-    ==== _About the Maven Android Plugin versions history_ ====
+== About the Maven Android Plugin versions history
 
-    _Maven Android Plugin was originally based on the Masa plugins 1.0.0. Thank you to Shane Isbell for creating Masa ([http://code.google.com/p/masa http://code.google.com/p/masa])! Maven Android Plugin 1.x was a direct clone of Masa's trunk. It was meant as an easy way for any current user of Masa 1.0.0 to get access to the latest unreleased bug fixes in Masa's trunk.
+_Maven Android Plugin was originally based on the Masa plugins 1.0.0. Thank you to Shane Isbell for 
+creating Masa ([http://code.google.com/p/masa http://code.google.com/p/masa])! Maven Android Plugin 1.x 
+was a direct clone of Masa's trunk. It was meant as an easy way for any current user of Masa 1.0.0 to 
+get access to the latest unreleased bug fixes in Masa's trunk.
 
-    Maven Android Plugin 2.x has since been reworked and greatly improved in terms of bugfixing, features and ease-of-use, compared to version 1.
+Maven Android Plugin 2.x has since been reworked and greatly improved in terms of bugfixing, features 
+and ease-of-use, compared to version 1.
 
-    <b>Versions 2.x are recommended for all users.</b>_
-
-----
+Versions 2.x are recommended for all users.
 
 == Maven Android Plugin 1.x release series ==
 
-=== Maven Android Plugin 1.0.2 ===
+== Maven Android Plugin 1.0.2 ===
 Released by this project (Maven Android Plugin), based on [http://code.google.com/p/masa/source/list Masa svn revision 63], which includes fixes for the following:
 
- * ~~[http://code.google.com/p/masa/issues/detail?id=4 Masa Issue 4]~~: Not possible to set finalName
- * ~~[http://code.google.com/p/masa/issues/detail?id=15 Masa Issue 15]~~: !NullPointerException when localRepository not set
- * ~~[http://code.google.com/p/masa/issues/detail?id=15 Masa Issue 16]~~: IntelliJ IDEA does not pick up generated-sources
- * ~~[http://code.google.com/p/masa/issues/detail?id=15 Masa Issue 17]~~: apk file not attached properly to build
- * ~~[http://code.google.com/p/masa/issues/detail?id=15 Masa Issue 18]~~: assets not included                                          
- * ~~[http://code.google.com/p/masa/issues/detail?id=15 Masa Issue 19]~~: Not possible to specify jvm parameters to dx
-
-
-----
+ * http://code.google.com/p/masa/issues/detail?id=4 Masa Issue 4 : Not possible to set finalName
+ * http://code.google.com/p/masa/issues/detail?id=15 Masa Issue 15 : !NullPointerException when localRepository not set
+ * http://code.google.com/p/masa/issues/detail?id=15 Masa Issue 16 : IntelliJ IDEA does not pick up generated-sources
+ * http://code.google.com/p/masa/issues/detail?id=15 Masa Issue 17 : apk file not attached properly to build
+ * http://code.google.com/p/masa/issues/detail?id=15 Masa Issue 18 : assets not included                                          
+ * http://code.google.com/p/masa/issues/detail?id=15 Masa Issue 19 : Not possible to specify jvm parameters to dx
 
 == Masa plugins 1.0.0 ==
+
 Released by the Masa project, based on [http://code.google.com/p/masa/source/list Masa svn revision 56].
