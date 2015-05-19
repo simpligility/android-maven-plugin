@@ -247,7 +247,15 @@ public class ApkMojo extends AbstractAndroidMojo
      */
     @Parameter
     @ConfigPojo( prefix = "apk" )
+
     private Apk apk;
+
+    /**
+     * Skips transitive dependencies. May be useful if the target classes directory is populated with the
+     * {@code maven-dependency-plugin} and already contains all dependency classes.
+     */
+    @Parameter( property = "skipDependencies", defaultValue = "false" )
+    private boolean skipDependencies;
 
     private static final Pattern PATTERN_JAR_EXT = Pattern.compile( "^.+\\.jar$", Pattern.CASE_INSENSITIVE );
 
@@ -597,21 +605,29 @@ public class ApkMojo extends AbstractAndroidMojo
         getLog().debug( "Building APK with internal APKBuilder" );
         sourceFolders.add( projectOutputDirectory );
 
-        for ( Artifact artifact : getRelevantCompileArtifacts() )
+        if ( !skipDependencies )
         {
-            getLog().debug( "Found artifact for APK :" + artifact );
-            if ( extractDuplicates )
+            for ( Artifact artifact : getRelevantCompileArtifacts() )
             {
-                try
+                getLog().debug( "Found artifact for APK :" + artifact );
+                if ( extractDuplicates )
                 {
-                    computeDuplicateFiles( artifact.getFile() );
+                    try
+                    {
+                        computeDuplicateFiles( artifact.getFile() );
+                    }
+                    catch ( Exception e )
+                    {
+                        getLog().warn( "Cannot compute duplicates files from " + artifact.getFile().getAbsolutePath(),
+                                e );
+                    }
                 }
-                catch ( Exception e )
-                {
-                    getLog().warn( "Cannot compute duplicates files from " + artifact.getFile().getAbsolutePath(), e );
-                }
+                jarFiles.add( artifact.getFile() );
             }
-            jarFiles.add( artifact.getFile() );
+        }
+        else
+        {
+            getLog().info( "Skipping artifact dependencies" );
         }
 
         // Check duplicates.

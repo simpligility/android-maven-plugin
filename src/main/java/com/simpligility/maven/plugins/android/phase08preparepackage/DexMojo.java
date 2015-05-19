@@ -169,6 +169,13 @@ public class DexMojo extends AbstractAndroidMojo
     @Parameter( property = "android.dex.dexarguments" )
     private String dexArguments;
 
+    /**
+     * Skips transitive dependencies. May be useful if the target classes directory is populated with the
+     * {@code maven-dependency-plugin} and already contains all dependency classes.
+     */
+    @Parameter( property = "skipDependencies", defaultValue = "false" )
+    private boolean skipDependencies;
+
     private String[] parsedJvmArguments;
     private boolean parsedCoreLibrary;
     private boolean parsedNoLocals;
@@ -244,41 +251,49 @@ public class DexMojo extends AbstractAndroidMojo
             // no proguard, use original config
             inputs.add( projectOutputDirectory );
             getLog().debug( "Adding dex input : " + project.getBuild().getOutputDirectory() );
-            for ( Artifact artifact : getTransitiveDependencyArtifacts() )
+            if ( !skipDependencies )
             {
-                if ( artifact.getType().equals( Const.ArtifactType.NATIVE_SYMBOL_OBJECT )
-                        || artifact.getType().equals( Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE ) )
+                for ( Artifact artifact : getTransitiveDependencyArtifacts() )
                 {
-                    // Ignore native dependencies - no need for dexer to see those
+                    if ( artifact.getType().equals( Const.ArtifactType.NATIVE_SYMBOL_OBJECT )
+                            || artifact.getType().equals( Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE ) )
+                    {
+                        // Ignore native dependencies - no need for dexer to see those
+                    }
+                    else if ( artifact.getType().equals( APKLIB ) )
+                    {
+                        // Any jars in the libs folder should now be
+                        // automatically included because they will be a transitive dependency.
+                    }
+                    else if ( artifact.getType().equals( AAR ) )
+                    {
+                        // The Aar classes.jar should now be automatically included
+                        // because it will be a transitive dependency. As should any jars in the libs folder.
+                    }
+                    else if ( artifact.getType().equals( APK ) )
+                    {
+                        // We need to dex the APK classes including the APK R.
+                        // But we don't want to add a second instance of the embedded Rs for any of the APK's
+                        // dependencies as they will already have been generated to target/classes. The R values from
+                        // the APK will be the correct ones, so best solution is to extract the APK classes (including
+                        // all Rs) to target/classes overwriting any generated Rs and let dex pick up the values from
+                        // there.
+                        getLog().debug( "Extracting APK classes to target/classes : " + artifact.getArtifactId() );
+                        final File apkClassesJar = getUnpackedLibHelper().getJarFileForApk( artifact );
+                        getLog().debug( "Extracting APK : " + apkClassesJar + " to " + targetDirectory );
+                        final ZipExtractor extractor = new ZipExtractor( getLog() );
+                        extractor.extract( apkClassesJar, targetDirectory, ".class" );
+                    }
+                    else
+                    {
+                        getLog().debug( "Adding dex input : " + artifact.getFile() );
+                        inputs.add( artifact.getFile().getAbsoluteFile() );
+                    }
                 }
-                else if ( artifact.getType().equals( APKLIB ) )
-                {
-                    // Any jars in the libs folder should now be
-                    // automatically included because they will be a transitive dependency.
-                }
-                else if ( artifact.getType().equals( AAR ) )
-                {
-                    // The Aar classes.jar should now be automatically included
-                    // because it will be a transitive dependency. As should any jars in the libs folder.
-                }
-                else if ( artifact.getType().equals( APK ) )
-                {
-                    // We need to dex the APK classes including the APK R.
-                    // But we don't want to add a second instance of the embedded Rs for any of the APK's dependencies
-                    // as they will already have been generated to target/classes. The R values from the APK will be
-                    // the correct ones, so best solution is to extract the APK classes (including all Rs) to
-                    // target/classes overwriting any generated Rs and let dex pick up the values from there.
-                    getLog().debug( "Extracting APK classes to target/classes : " + artifact.getArtifactId() );
-                    final File apkClassesJar = getUnpackedLibHelper().getJarFileForApk( artifact );
-                    getLog().debug( "Extracting APK : " + apkClassesJar + " to " + targetDirectory );
-                    final ZipExtractor extractor = new ZipExtractor( getLog() );
-                    extractor.extract( apkClassesJar, targetDirectory, ".class" );
-                }
-                else
-                {
-                    getLog().debug( "Adding dex input : " + artifact.getFile() );
-                    inputs.add( artifact.getFile().getAbsoluteFile() );
-                }
+            }
+            else
+            {
+                getLog().info( "Skipping artifact dependencies" );
             }
         }
 
