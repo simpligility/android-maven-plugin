@@ -23,6 +23,7 @@ import com.android.sdklib.build.SealedApkException;
 import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.AndroidNdk;
 import com.simpligility.maven.plugins.android.AndroidSigner;
+import com.simpligility.maven.plugins.android.ArtifactTypeSet;
 import com.simpligility.maven.plugins.android.CommandExecutor;
 import com.simpligility.maven.plugins.android.ExecutionException;
 import com.simpligility.maven.plugins.android.common.AaptCommandBuilder;
@@ -72,7 +73,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import static com.simpligility.maven.plugins.android.InclusionExclusionResolver.filterDependencies;
+import static com.simpligility.maven.plugins.android.InclusionExclusionResolver.filterArtifacts;
 import static com.simpligility.maven.plugins.android.common.AndroidExtension.AAR;
 import static com.simpligility.maven.plugins.android.common.AndroidExtension.APK;
 import static com.simpligility.maven.plugins.android.common.AndroidExtension.APKLIB;
@@ -256,6 +257,27 @@ public class ApkMojo extends AbstractAndroidMojo
      */
     @Parameter( property = "skipDependencies", defaultValue = "false" )
     private boolean skipDependencies;
+
+    /**
+     * Allows to include or exclude artifacts by type. Note that this parameter works in cooperation with the
+     * {@code skipDependencies} parameter. Artifacts of type defined in the {@code include} parameter are always
+     * included even if {@code skipDependencies} is set to {@code true} (higher priority). Artifacts of type defined
+     * in the {@code excluded} parameter are always excluded even if {@code skipDependencies} is undefined or set to
+     * {@code false} (lower priority). {@code include} has higher priority than {@code exclude} if the their values
+     * match. For example:
+     * <pre>
+     *     &lt;artifactTypeSet&gt;
+     *         &lt;includes&gt;
+     *             &lt;include&gt;aar&lt;/include&gt;
+     *         &lt;includes&gt;
+     *         &lt;excludes&gt;
+     *             &lt;exclude&gt;jar&lt;/exclude&gt;
+     *         &lt;excludes&gt;
+     *     &lt;/artifactTypeSet&gt;
+     * </pre>
+     */
+    @Parameter( property = "artifactTypeSet" )
+    private ArtifactTypeSet artifactTypeSet;
 
     private static final Pattern PATTERN_JAR_EXT = Pattern.compile( "^.+\\.jar$", Pattern.CASE_INSENSITIVE );
 
@@ -605,7 +627,8 @@ public class ApkMojo extends AbstractAndroidMojo
         getLog().debug( "Building APK with internal APKBuilder" );
         sourceFolders.add( projectOutputDirectory );
 
-        for ( Artifact artifact : filterDependencies( getRelevantCompileArtifacts(), skipDependencies ) )
+        for ( Artifact artifact : filterArtifacts( getRelevantCompileArtifacts(), skipDependencies,
+                artifactTypeSet.getIncludes(), artifactTypeSet.getExcludes() ) )
         {
             getLog().debug( "Found artifact for APK :" + artifact );
             if ( extractDuplicates )
