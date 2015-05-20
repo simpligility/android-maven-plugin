@@ -72,6 +72,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import static com.simpligility.maven.plugins.android.InclusionExclusionResolver.filterDependencies;
 import static com.simpligility.maven.plugins.android.common.AndroidExtension.AAR;
 import static com.simpligility.maven.plugins.android.common.AndroidExtension.APK;
 import static com.simpligility.maven.plugins.android.common.AndroidExtension.APKLIB;
@@ -247,7 +248,6 @@ public class ApkMojo extends AbstractAndroidMojo
      */
     @Parameter
     @ConfigPojo( prefix = "apk" )
-
     private Apk apk;
 
     /**
@@ -605,29 +605,21 @@ public class ApkMojo extends AbstractAndroidMojo
         getLog().debug( "Building APK with internal APKBuilder" );
         sourceFolders.add( projectOutputDirectory );
 
-        if ( !skipDependencies )
+        for ( Artifact artifact : filterDependencies( getRelevantCompileArtifacts(), skipDependencies ) )
         {
-            for ( Artifact artifact : getRelevantCompileArtifacts() )
+            getLog().debug( "Found artifact for APK :" + artifact );
+            if ( extractDuplicates )
             {
-                getLog().debug( "Found artifact for APK :" + artifact );
-                if ( extractDuplicates )
+                try
                 {
-                    try
-                    {
-                        computeDuplicateFiles( artifact.getFile() );
-                    }
-                    catch ( Exception e )
-                    {
-                        getLog().warn( "Cannot compute duplicates files from " + artifact.getFile().getAbsolutePath(),
-                                e );
-                    }
+                    computeDuplicateFiles( artifact.getFile() );
                 }
-                jarFiles.add( artifact.getFile() );
+                catch ( Exception e )
+                {
+                    getLog().warn( "Cannot compute duplicates files from " + artifact.getFile().getAbsolutePath(), e );
+                }
             }
-        }
-        else
-        {
-            getLog().info( "Skipping artifact dependencies" );
+            jarFiles.add( artifact.getFile() );
         }
 
         // Check duplicates.
