@@ -37,37 +37,34 @@ public class InclusionExclusionResolver
             @Nullable final Collection< String > includeArtifactQualifiers,
             @Nullable final Collection< String > excludeArtifactQualifiers )
     {
-        final boolean includeTypesSpecified = includeArtifactTypes != null;
-        final boolean excludeTypesSpecified = excludeArtifactTypes != null;
-        final boolean includeQualifierSpecified = includeArtifactQualifiers != null;
-        final boolean excludeQualifierSpecified = excludeArtifactQualifiers != null;
+        final boolean hasIncludeTypes = includeArtifactTypes != null;
+        final boolean hasExcludeTypes = excludeArtifactTypes != null;
+        final boolean hasIncludeQualifier = includeArtifactQualifiers != null;
+        final boolean hasExcludeQualifier = excludeArtifactQualifiers != null;
         return from( artifacts )
             .filter( new Predicate<Artifact>() {
                 @Override
                 public boolean apply( Artifact artifact )
                 {
-                    final boolean includedByType = includeTypesSpecified
+                    final boolean includedByType = hasIncludeTypes
                             && includeArtifactTypes.contains( artifact.getType() );
-                    final boolean includedByQualifier = includeQualifierSpecified
+                    final boolean includedByQualifier = hasIncludeQualifier
                             && match( artifact, includeArtifactQualifiers );
-                    final boolean excludedByType = excludeTypesSpecified
+                    final boolean excludedByType = hasExcludeTypes
                             && excludeArtifactTypes.contains( artifact.getType() );
-                    final boolean excludedByQualifier = excludeQualifierSpecified
+                    final boolean excludedByQualifier = hasExcludeQualifier
                             && match( artifact, excludeArtifactQualifiers );
                     if ( !skipDependencies )
                     {
-                        if ( !includedByType && !includedByQualifier
-                                && ( excludeTypesSpecified && excludedByType
-                                || excludeQualifierSpecified && excludedByQualifier ) )
-                        {
-                            return false;
-                        }
-                        return true;
+                        return !excludedByType && !excludedByQualifier
+                                || includedByQualifier
+                                || includedByType && !excludedByQualifier;
                     }
                     else
                     {
-                        return includeTypesSpecified && includedByType
-                                || includeQualifierSpecified && includedByQualifier;
+                        return includedByQualifier
+                                || includedByType && hasExcludeQualifier && !excludedByQualifier
+                                || includedByType;
                     }
                 }
             } )

@@ -19,25 +19,22 @@ import static org.junit.Assert.assertEquals;
 public class InclusionExclusionResolverTest
 {
 
-    private static final Artifact artifact1Jar = artifact( "jar", "G1", "A1", "1.0" );
-    private static final Artifact artifact2Jar = artifact( "jar", "G2", "A1", "1.0" );
-    private static final Artifact artifact3Aar = artifact( "aar", "G1", "A2", "1.0" );
-    private static final Artifact artifact4Jar = artifact( "jar", "G1", "A3", "2.0-rc" );
-    private static final Artifact artifact5Aar = artifact( "aar", "G2", "A2", "2.0-rc" );
+    private static final Artifact A1 = artifact( "jar", "G1", "A1", "1.0" );
+    private static final Artifact A2 = artifact( "jar", "G2", "A1", "1.0" );
+    private static final Artifact A3 = artifact( "aar", "G1", "A2", "1.0" );
+    private static final Artifact A4 = artifact( "jar", "G1", "A3", "2.0-rc" );
+    private static final Artifact A5 = artifact( "aar", "G2", "A2", "2.0-rc" );
 
-    private static final Collection< Artifact > allArtifacts = collect(
-            artifact1Jar, artifact2Jar, artifact3Aar, artifact4Jar, artifact5Aar
-    );
-
-    private static final Collection< Artifact > noArtifacts = emptySet();
+    private static final Collection< Artifact > ALL = collect( A1, A2, A3, A4, A5 );
+    private static final Collection< Artifact > NONE = emptySet();
 
     @Test
     public void testSkipDependenciesFalse()
     {
         assertEquals(
                 "No artifacts must be skiped",
-                allArtifacts,
-                filterArtifacts( allArtifacts, false, null, null, null, null )
+                ALL,
+                filterArtifacts( ALL, false, null, null, null, null )
         );
 	}
 
@@ -46,8 +43,8 @@ public class InclusionExclusionResolverTest
     {
         assertEquals(
                 "All artifacts must be skipped",
-                noArtifacts,
-                filterArtifacts( allArtifacts, true, null, null, null, null )
+                NONE,
+                filterArtifacts( ALL, true, null, null, null, null )
         );
     }
 
@@ -56,23 +53,23 @@ public class InclusionExclusionResolverTest
     {
         assertEquals(
                 "All artifacts must be skipped, but AAR artifacts have higher priority",
-                collect( artifact3Aar, artifact5Aar ),
-                filterArtifacts( allArtifacts, true, singleton( "aar" ), null, null, null )
+                collect( A3, A5 ),
+                filterArtifacts( ALL, true, singleton( "aar" ), null, null, null )
         );
         assertEquals(
                 "All artifacts must be skipped, but JAR artifacts have higher priority",
-                collect( artifact1Jar, artifact2Jar, artifact4Jar ),
-                filterArtifacts( allArtifacts, true, singleton( "jar" ), null, null, null )
+                collect( A1, A2, A4 ),
+                filterArtifacts( ALL, true, singleton( "jar" ), null, null, null )
         );
         assertEquals(
                 "No artifacts must be skipped",
-                allArtifacts,
-                filterArtifacts( allArtifacts, false, singleton( "aar" ), null, null, null )
+                ALL,
+                filterArtifacts( ALL, false, singleton( "aar" ), null, null, null )
         );
         assertEquals(
                 "No artifacts must be skipped",
-                allArtifacts,
-                filterArtifacts( allArtifacts, false, singleton( "jar" ), null, null, null )
+                ALL,
+                filterArtifacts( ALL, false, singleton( "jar" ), null, null, null )
         );
     }
 
@@ -81,28 +78,28 @@ public class InclusionExclusionResolverTest
     {
         assertEquals(
                 "All artifacts must be skipped, especially AAR artifacts",
-                noArtifacts,
-                filterArtifacts( allArtifacts, true, null, singleton( "aar" ), null, null )
+                NONE,
+                filterArtifacts(ALL, true, null, singleton( "aar" ), null, null )
         );
         assertEquals(
                 "All artifacts must be skipped, especially JAR artifacts",
-                noArtifacts,
-                filterArtifacts( allArtifacts, true, null, singleton( "jar" ), null, null )
+                NONE,
+                filterArtifacts( ALL, true, null, singleton( "jar" ), null, null )
         );
         assertEquals(
                 "AAR artifacts must be skipped",
-                collect( artifact1Jar, artifact2Jar, artifact4Jar ),
-                filterArtifacts( allArtifacts, false, null, singleton( "aar" ), null, null )
+                collect( A1, A2, A4 ),
+                filterArtifacts( ALL, false, null, singleton( "aar" ), null, null )
         );
         assertEquals(
                 "JAR artifacts must be skipped",
-                collect( artifact3Aar, artifact5Aar ),
-                filterArtifacts( allArtifacts, false, null, singleton( "jar" ), null, null )
+                collect( A3, A5 ),
+                filterArtifacts( ALL, false, null, singleton( "jar" ), null, null )
         );
         assertEquals(
                 "All artifacts must be skipped, especially both JAR and AAR artifacts",
-                noArtifacts,
-                filterArtifacts( allArtifacts, false, null, asList( "aar", "jar" ), null, null )
+                NONE,
+                filterArtifacts( ALL, false, null, asList( "aar", "jar" ), null, null )
         );
     }
 
@@ -111,23 +108,23 @@ public class InclusionExclusionResolverTest
     {
         assertEquals(
                 "Include must have higher priority",
-                allArtifacts,
-                filterArtifacts( allArtifacts, false, singleton( "jar" ), singleton( "jar" ), null, null )
+                ALL,
+                filterArtifacts( ALL, false, singleton( "jar" ), singleton( "jar" ), null, null )
         );
         assertEquals(
                 "Include must have higher priority",
-                collect( artifact1Jar, artifact2Jar, artifact4Jar ),
-                filterArtifacts( allArtifacts, false, singleton( "jar" ), asList("aar", "jar"), null, null )
+                collect( A1, A2, A4 ),
+                filterArtifacts( ALL, false, singleton( "jar" ), asList("aar", "jar"), null, null )
         );
         assertEquals(
                 "Include must have higher priority",
-                collect( artifact1Jar, artifact2Jar, artifact4Jar ),
-                filterArtifacts( allArtifacts, true, singleton( "jar" ), singleton( "jar" ), null, null )
+                collect( A1, A2, A4 ),
+                filterArtifacts( ALL, true, singleton( "jar" ), singleton( "jar" ), null, null )
         );
         assertEquals(
                 "Include must have higher priority",
-                collect( artifact1Jar, artifact2Jar, artifact4Jar ),
-                filterArtifacts( allArtifacts, true, singleton( "jar" ), asList( "aar", "jar" ), null, null )
+                collect( A1, A2, A4 ),
+                filterArtifacts( ALL, true, singleton( "jar" ), asList( "aar", "jar" ), null, null )
         );
     }
 
@@ -136,43 +133,43 @@ public class InclusionExclusionResolverTest
     {
         assertEquals(
                 "Empty exclude must do nothing",
-                allArtifacts,
-                filterArtifacts( allArtifacts, false, null, null, null, singleton( "" ) )
+                ALL,
+                filterArtifacts( ALL, false, null, null, null, singleton( "" ) )
         );
         assertEquals(
                 "Empty include must do nothing",
-                noArtifacts,
-                filterArtifacts( allArtifacts, true, null, null, singleton( "" ), null )
+                NONE,
+                filterArtifacts( ALL, true, null, null, singleton( "" ), null )
         );
         assertEquals(
                 "Skip all and must include all of group G2",
-                collect( artifact2Jar, artifact5Aar ),
-                filterArtifacts( allArtifacts, true, null, null, singleton( "G2" ), null )
+                collect( A2, A5 ),
+                filterArtifacts( ALL, true, null, null, singleton( "G2" ), null )
         );
         assertEquals(
                 "Skip all and must include all of group G2 and artifact A2",
-                collect( artifact5Aar ),
-                filterArtifacts( allArtifacts, true, null, null, singleton( "G2:A2" ), null )
+                collect( A5 ),
+                filterArtifacts( ALL, true, null, null, singleton( "G2:A2" ), null )
         );
         assertEquals(
                 "Do not skip and must exclude group G2",
-                collect( artifact1Jar, artifact3Aar, artifact4Jar ),
-                filterArtifacts( allArtifacts, false, null, null, null, singleton( "G2" ) )
+                collect( A1, A3, A4 ),
+                filterArtifacts( ALL, false, null, null, null, singleton( "G2" ) )
         );
         assertEquals(
                 "Do not skip and must exclude group G2 and artifact A2",
-                collect( artifact1Jar, artifact2Jar, artifact3Aar, artifact4Jar ),
-                filterArtifacts( allArtifacts, false, null, null, null, singleton( "G2:A2" ) )
+                collect( A1, A2, A3, A4 ),
+                filterArtifacts(ALL, false, null, null, null, singleton( "G2:A2" ) )
         );
         assertEquals(
                 "Do not skip and must exclude group G2 and artifact A2 with invalid version",
-                allArtifacts,
-                filterArtifacts( allArtifacts, false, null, null, null, singleton( "G2:A2:-" ) )
+                ALL,
+                filterArtifacts( ALL, false, null, null, null, singleton( "G2:A2:-" ) )
         );
         assertEquals(
                 "Do not skip and must exclude group G2 and artifact A2 with valid version",
-                collect( artifact1Jar, artifact2Jar, artifact3Aar, artifact4Jar ),
-                filterArtifacts( allArtifacts, false, null, null, null, singleton( "G2:A2:2.0-rc" ) )
+                collect( A1, A2, A3, A4 ),
+                filterArtifacts( ALL, false, null, null, null, singleton( "G2:A2:2.0-rc" ) )
         );
     }
 
@@ -181,20 +178,25 @@ public class InclusionExclusionResolverTest
     {
         assertEquals(
                 "Exclude all JARs but include by artifact qualifiers",
-                collect( artifact2Jar, artifact3Aar, artifact4Jar, artifact5Aar ),
-                filterArtifacts( allArtifacts, false, null, singleton( "jar" ), asList( "G2:A1", "G1:A3" ), null )
+                collect( A2, A3, A4, A5 ),
+                filterArtifacts( ALL, false, null, singleton( "jar" ), asList( "G2:A1", "G1:A3" ), null )
+        );
+        assertEquals(
+                "Exclude all JARs but include by artifact qualifiers",
+                collect(A2, A3, A4, A5),
+                filterArtifacts( ALL, false, null, singleton( "jar" ), asList( "G2:A1", "G1:A3" ), asList( "G2:A1", "G1:A3" ) )
         );
         assertEquals(
                 "Skip all but must include all AAR files despite the concrete artifact exclusion",
-                collect( artifact3Aar, artifact5Aar ),
-                filterArtifacts( allArtifacts, true, singleton( "aar" ), null, null, singleton( "G2:A2:2.0-rc" ) )
+                collect( A3, A5 ),
+                filterArtifacts( ALL, true, singleton("aar"), null, null, singleton("G2:A2:2.0-rc"))
         );
     }
 
     @Test( expected = IllegalArgumentException.class )
     public void testIllegalQualifier()
     {
-        filterArtifacts( allArtifacts, false, null, null, singleton( "G1:A1:V:X" ), null );
+        filterArtifacts( ALL, false, null, null, singleton( "G1:A1:V:X" ), null );
     }
 
     private static Collection<Artifact> collect( Artifact... artifacts )

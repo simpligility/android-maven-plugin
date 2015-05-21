@@ -179,12 +179,9 @@ public class DexMojo extends AbstractAndroidMojo
     private boolean skipDependencies;
 
     /**
-     * Allows to include or exclude artifacts by type. Note that this parameter works in cooperation with the
-     * {@code skipDependencies} parameter. Artifacts of type defined in the {@code include} parameter are always
-     * included even if {@code skipDependencies} is set to {@code true} (higher priority). Artifacts of type defined
-     * in the {@code excluded} parameter are always excluded even if {@code skipDependencies} is undefined or set to
-     * {@code false} (lower priority). {@code include} has higher priority than {@code exclude} if the their values
-     * match. For example:
+     * Allows to include or exclude artifacts by type. The {@code include} parameter has higher priority than the
+     * {@code exclude} parameter. These two parameters can be overridden by the {@code artifactSet} parameter. Empty
+     * strings are ignored. Example:
      * <pre>
      *     &lt;artifactTypeSet&gt;
      *         &lt;includes&gt;
@@ -200,13 +197,12 @@ public class DexMojo extends AbstractAndroidMojo
     private IncludeExcludeSet artifactTypeSet;
 
     /**
-     * Allows to include or exclude artifacts by {@code groupId}, {@code artifactId}, and {@code versionId}. Note that
-     * this parameter works in cooperation with the  {@code skipDependencies} parameter. Artifacts of type defined in
-     * the {@code include} parameter are always included even if {@code skipDependencies} is set to {@code true}
-     * (higher priority). Artifacts of type defined in the {@code excluded} parameter are always excluded even if
-     * {@code skipDependencies} is undefined or set to {@code false} (lower priority). {@code include} has higher
-     * priority than {@code exclude} if the their values match. The include and exclude parameters must contain
-     * {@code groupId}, {@code artifactId}, and {@code versionId} separated by {@code :}. For example:
+     * Allows to include or exclude artifacts by {@code groupId}, {@code artifactId}, and {@code versionId}. The
+     * {@code include} parameter has higher priority than the {@code exclude} parameter. These two parameters can
+     * override the {@code artifactTypeSet} and {@code skipDependencies} parameters. Artifact {@code groupId},
+     * {@code artifactId}, and {@code versionId} are specified by a string with the respective values separated using
+     * a colon character {@code :}. {@code artifactId} and {@code versionId} can be optional covering an artifact
+     * range. Empty strings are ignored. Example:
      * <pre>
      *     &lt;artifactTypeSet&gt;
      *         &lt;includes&gt;
