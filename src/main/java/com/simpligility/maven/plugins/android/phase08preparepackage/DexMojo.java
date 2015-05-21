@@ -17,7 +17,7 @@
 package com.simpligility.maven.plugins.android.phase08preparepackage;
 
 import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
-import com.simpligility.maven.plugins.android.ArtifactTypeSet;
+import com.simpligility.maven.plugins.android.IncludeExcludeSet;
 import com.simpligility.maven.plugins.android.CommandExecutor;
 import com.simpligility.maven.plugins.android.ExecutionException;
 import com.simpligility.maven.plugins.android.common.Const;
@@ -197,7 +197,31 @@ public class DexMojo extends AbstractAndroidMojo
      * </pre>
      */
     @Parameter( property = "artifactTypeSet" )
-    private ArtifactTypeSet artifactTypeSet;
+    private IncludeExcludeSet artifactTypeSet;
+
+    /**
+     * Allows to include or exclude artifacts by {@code groupId}, {@code artifactId}, and {@code versionId}. Note that
+     * this parameter works in cooperation with the  {@code skipDependencies} parameter. Artifacts of type defined in
+     * the {@code include} parameter are always included even if {@code skipDependencies} is set to {@code true}
+     * (higher priority). Artifacts of type defined in the {@code excluded} parameter are always excluded even if
+     * {@code skipDependencies} is undefined or set to {@code false} (lower priority). {@code include} has higher
+     * priority than {@code exclude} if the their values match. The include and exclude parameters must contain
+     * {@code groupId}, {@code artifactId}, and {@code versionId} separated by {@code :}. For example:
+     * <pre>
+     *     &lt;artifactTypeSet&gt;
+     *         &lt;includes&gt;
+     *             &lt;include&gt;foo-group:foo-artifact:1.0-SNAPSHOT&lt;/include&gt;
+     *             &lt;include&gt;bar-group:bar-artifact:1.0-SNAPSHOT&lt;/include&gt;
+     *             &lt;include&gt;baz-group:*&lt;/include&gt;
+     *         &lt;includes&gt;
+     *         &lt;excludes&gt;
+     *             &lt;exclude&gt;qux-group:qux-artifact:*&lt;/exclude&gt;
+     *         &lt;excludes&gt;
+     *     &lt;/artifactTypeSet&gt;
+     * </pre>
+     */
+    @Parameter( property = "artifactSet" )
+    private IncludeExcludeSet artifactSet;
 
     private String[] parsedJvmArguments;
     private boolean parsedCoreLibrary;
@@ -275,7 +299,8 @@ public class DexMojo extends AbstractAndroidMojo
             inputs.add( projectOutputDirectory );
             getLog().debug( "Adding dex input : " + project.getBuild().getOutputDirectory() );
             for ( Artifact artifact : filterArtifacts( getTransitiveDependencyArtifacts(), skipDependencies,
-                    artifactTypeSet.getIncludes(), artifactTypeSet.getExcludes() ) )
+                    artifactTypeSet.getIncludes(), artifactTypeSet.getExcludes(), artifactSet.getIncludes(),
+                    artifactSet.getExcludes() ) )
             {
                 if ( artifact.getType().equals( Const.ArtifactType.NATIVE_SYMBOL_OBJECT )
                         || artifact.getType().equals( Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE ) )

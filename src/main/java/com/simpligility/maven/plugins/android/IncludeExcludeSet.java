@@ -2,7 +2,7 @@ package com.simpligility.maven.plugins.android;
 
 import java.util.Set;
 
-public class ArtifactTypeSet
+public class IncludeExcludeSet
 {
 
     private Set< String > includes;
