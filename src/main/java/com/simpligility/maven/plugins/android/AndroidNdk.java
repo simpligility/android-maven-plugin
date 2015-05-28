@@ -38,7 +38,7 @@ public class AndroidNdk
             + "alternative, you may add the parameter to commandline: -Dandroid.ndk.path=... or set environment "
             + "variable " + NdkBuildMojo.ENV_ANDROID_NDK_HOME + ".";
 
-    public static final String[] NDK_ARCHITECTURES = { "armeabi", "armeabi-v7a", "mips", "x86" };
+    public static final String[] NDK_ARCHITECTURES = { "armeabi", "armeabi-v7a", "mips", "mips64", "x86", "x86_64" };
 
     /**
      * Arm toolchain implementations.
@@ -57,10 +57,20 @@ public class AndroidNdk
     public static final String[] X86_TOOLCHAIN = { "x86-4.9", "x86-4.8", "x86-4.7", "x86-4.6", "x86-4.4.3" };
 
     /**
+     * x86 toolchain implementations.
+     */
+    public static final String[] X86_64_TOOLCHAIN = { "x86_64-4.9" };
+
+    /**
      * Mips toolchain implementations.
      */
     public static final String[] MIPS_TOOLCHAIN = { "mipsel-linux-android-4.9", "mipsel-linux-android-4.8",
             "mipsel-linux-android-4.7", "mipsel-linux-android-4.6", "mipsel-linux-android-4.4.3" };
+
+    /**
+     * Mips toolchain implementations.
+     */
+    public static final String[] MIPS64_TOOLCHAIN = { "mips64el-linux-android-4.9" };
 
     /**
      * Possible locations for the gdbserver file.
@@ -120,9 +130,17 @@ public class AndroidNdk
         {
             fileName = "aarch64-linux-android-strip" + extension;
         }
+        else if ( toolchain.startsWith( "x86_64" ) )
+        {
+            fileName = "x86_64-linux-android-strip" + extension;
+        }
         else if ( toolchain.startsWith( "x86" ) )
         {
             fileName = "i686-linux-android-strip" + extension;
+        }
+        else if ( toolchain.startsWith( "mips64" ) )
+        {
+            fileName = "mips64el-linux-android-strip" + extension;
         }
         else if ( toolchain.startsWith( "mips" ) )
         {
@@ -195,9 +213,17 @@ public class AndroidNdk
         {
             resolvedNdkToolchain = resolveNdkToolchain( ARM64_TOOLCHAIN );
         }
+        else if ( ndkArchitecture.startsWith( "x86_64" ) )
+        {
+            resolvedNdkToolchain = resolveNdkToolchain( X86_64_TOOLCHAIN );
+        }
         else if ( ndkArchitecture.startsWith( "x86" ) )
         {
             resolvedNdkToolchain = resolveNdkToolchain( X86_TOOLCHAIN );
+        }
+        else if ( ndkArchitecture.startsWith( "mips64" ) )
+        {
+            resolvedNdkToolchain = resolveNdkToolchain( MIPS64_TOOLCHAIN );
         }
         else if ( ndkArchitecture.startsWith( "mips" ) )
         {
@@ -244,10 +270,20 @@ public class AndroidNdk
             gdbServerLocations.add( "android-arm64" );
             gdbServerLocations.addAll( Arrays.asList( ARM64_TOOLCHAIN ) );
         }
+        else if ( ndkArchitecture.startsWith( "x86_64" ) )
+        {
+            gdbServerLocations.add( "android-x86_64" );
+            gdbServerLocations.addAll( Arrays.asList( X86_64_TOOLCHAIN ) );
+        }
         else if ( ndkArchitecture.startsWith( "x86" ) )
         {
             gdbServerLocations.add( "android-x86" );
             gdbServerLocations.addAll( Arrays.asList( X86_TOOLCHAIN ) );
+        }
+        else if ( ndkArchitecture.startsWith( "mips64" ) )
+        {
+            gdbServerLocations.add( "android-mips64" );
+            gdbServerLocations.addAll( Arrays.asList( MIPS64_TOOLCHAIN ) );
         }
         else if ( ndkArchitecture.startsWith( "mips" ) )
         {
@@ -305,6 +341,14 @@ public class AndroidNdk
             }
             return AndroidNdk.ARM64_TOOLCHAIN[0];
         }
+        else if ( ndkArchitecture.startsWith( "x86_64" ) )
+        {
+            if ( ndkArchitectureToolchainMappings != null )
+            {
+                return ndkArchitectureToolchainMappings.getX86_64();
+            }
+            return AndroidNdk.X86_64_TOOLCHAIN[0];
+        }
         else if ( ndkArchitecture.startsWith( "x86" ) )
         {
             if ( ndkArchitectureToolchainMappings != null )
@@ -312,6 +356,14 @@ public class AndroidNdk
                 return ndkArchitectureToolchainMappings.getX86();
             }
             return AndroidNdk.X86_TOOLCHAIN[0];
+        }
+        else if ( ndkArchitecture.startsWith( "mips64" ) )
+        {
+            if ( ndkArchitectureToolchainMappings != null )
+            {
+                return ndkArchitectureToolchainMappings.getMips64();
+            }
+            return AndroidNdk.MIPS64_TOOLCHAIN[0];
         }
         else if ( ndkArchitecture.startsWith( "mips" ) )
         {
