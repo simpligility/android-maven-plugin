@@ -2,6 +2,9 @@ package com.simpligility.maven.plugins.android.standalonemojos;
 
 import com.android.SdkConstants;
 import com.android.builder.core.AndroidBuilder;
+import com.android.builder.core.EvaluationErrorReporter;
+import com.android.builder.core.EvaluationErrorReporter.EvaluationMode;
+import com.android.builder.model.SyncIssue;
 import com.android.ide.common.process.DefaultProcessExecutor;
 import com.android.ide.common.process.LoggedProcessOutputHandler;
 import com.android.manifmerger.ManifestMerger2;
@@ -294,11 +297,21 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
     public void manifestMergerV2() throws MojoExecutionException, MojoFailureException
     {
         ILogger logger = new MavenILogger( getLog() );
+        
+        EvaluationErrorReporter reporter = new EvaluationErrorReporter( EvaluationMode.STANDARD )
+        {
+            @Override
+            public SyncIssue handleSyncError( String data, int type, String msg )
+            {
+                return null;
+            }
+        };
+        
         AndroidBuilder builder = new AndroidBuilder( project.toString(), "created by Android Maven Plugin",
                 new DefaultProcessExecutor( logger ),
                 new DefaultJavaProcessExecutor( logger ),
                 new LoggedProcessOutputHandler( logger ),
-                logger, false );
+                reporter, logger, false );
 
         String minSdkVersion = null;
         String targetSdkVersion = null;
