@@ -76,16 +76,62 @@ public class AndroidSdkTest {
      * for this test to pass including the obsolete ones.
      */
     @Test
-    public void validPlatformsAndApiLevels() {
+    public void validPlatformsAndApiLevels1() {
         // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
         final AndroidSdk sdk19 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "19"); 
     }
 
-    @Test(expected = InvalidSdkException.class)
-    public void invalidPlatformAndApiLevels() {
-        final AndroidSdk invalid = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "invalid");
-
+    @Test
+    public void validPlatformsAndApiLevels2() {
+        // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
+        final AndroidSdk sdk21 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "21", null);
+        Assert.assertTrue( sdk21.getAaptPath() != null && !sdk21.getAaptPath().equals( "" ) );
     }
 
+    @Test
+    public void validPlatformsAndApiLevels3() {
+        // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
+        final AndroidSdk sdk22 = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME()), "22", "22.0.0" );
+        Assert.assertTrue( sdk22.getAaptPath() != null && !sdk22.getAaptPath().equals( "" ) );
+    }
+
+    @Test
+    public void validPlatformsAndApiLevels4() {
+        // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
+        final AndroidSdk sdk19 = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "22", "22.0.0" );
+        Assert.assertTrue( sdk19.getAaptPath() != null && !sdk19.getAaptPath().equals( "" ) );
+    }
+
+    @Test(expected = InvalidSdkException.class)
+    public void invalidPlatformAndApiLevels() {
+        final AndroidSdk invalid = new AndroidSdk (new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "invalid" );
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void invalidBuildTools() {
+        final AndroidSdk invalid = new AndroidSdk (new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "19", "invalid" );
+        invalid.getAaptPath();
+    }
+
+    @Test
+    public void validPlatformsAndApiLevelsWithDiffBuildTools1() {
+        // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
+        final AndroidSdk sdk = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "19", "22" );
+        Assert.assertTrue( sdk.getAaptPath() != null && !sdk.getAaptPath().equals( "" ) );
+    }
+
+    @Test
+    public void validPlatformsAndApiLevelsWithDiffBuildTools2() {
+        // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
+        final AndroidSdk sdk = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "19", "22.0.0" );
+        Assert.assertTrue( sdk.getAaptPath() != null && !sdk.getAaptPath().equals( "" ) );
+    }
+
+    @Test
+    public void validPlatformsAndApiLevelsWithDiffBuildToolsMinor() {
+        // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
+        final AndroidSdk sdk = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "19", "21.1.2" );
+        Assert.assertTrue( sdk.getAaptPath() != null && !sdk.getAaptPath().equals( "" ) );
+    }
 
 }

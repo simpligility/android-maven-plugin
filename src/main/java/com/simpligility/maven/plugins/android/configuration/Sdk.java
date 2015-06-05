@@ -43,6 +43,13 @@ public class Sdk
     @Parameter ( property = "android.sdk.platform" )
     private String platform;
 
+    /**
+     * <p>Chosen Build-Tools version. Valid values are whichever build-tools are available in the SDK,
+     * under the directory <code>buildTools</code>. Defaults to the latest available one if not set.</p>
+     */
+    @Parameter ( property = "android.sdk.buildTools" )
+    private String buildTools;
+
     public File getPath()
     {
         return path;
@@ -51,5 +58,10 @@ public class Sdk
     public String getPlatform()
     {
         return platform;
+    }
+
+    public String getBuildTools()
+    {
+        return buildTools;
     }
 }
