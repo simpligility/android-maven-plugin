@@ -29,6 +29,9 @@ before_install:
   # removed > /dev/null to prevent Travis timing out and ease debugging
   - echo y | android update sdk --filter tools,platform-tools --no-ui --force --all
   - echo y | android update sdk --filter build-tools-19.0.3 --no-ui --force --all
+  - echo y | android update sdk --filter build-tools-21.1.2 --no-ui --force --all
+  - echo y | android update sdk --filter build-tools-22.0.0 --no-ui --force --all
+  - echo y | android update sdk --filter build-tools-22.0.1 --no-ui --force --all
   - echo y | android update sdk --filter $ANDROID_TARGET --no-ui --force --all
   - echo y | android update sdk --filter sys-img-$ANDROID_ABI-$ANDROID_TARGET --no-ui --force --all
   - echo y | android update sdk --filter extra-android-support,extra-android-m2repository --no-ui --force --all
