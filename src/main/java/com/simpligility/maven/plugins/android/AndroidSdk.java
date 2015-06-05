@@ -262,9 +262,18 @@ public class AndroidSdk
     
     private BuildToolInfo getBuildToolInfo()
     {
+        //First we use the build tools specified in the pom file
         if ( buildToolsVersion != null && !buildToolsVersion.equals( "" ) )
         {
-            return sdkManager.getBuildTool( FullRevision.parseRevision( buildToolsVersion ) );
+            BuildToolInfo buildToolInfo = sdkManager.getBuildTool( FullRevision.parseRevision( buildToolsVersion ) );
+            if ( buildToolInfo != null )
+            {
+                return buildToolInfo;
+            }
+            //Since we cannot find the build tool specified by the user we make it fail
+            // instead of using the latest build tool version
+            throw new InvalidSdkException( "Invalid SDK: Build-tools " + buildToolsVersion + " not found."
+                    + " Check your Android SDK to install the build tools " + buildToolsVersion );
         }
 
         if ( androidTarget != null )
