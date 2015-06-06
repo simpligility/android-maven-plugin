@@ -1,60 +1,27 @@
 sudo: false
-language: java
 cache:
   directories:
   - $HOME/.m2
 jdk: oraclejdk7
-env:
-  matrix:
-    # android-19 is always included
-    - ANDROID_TARGET=android-19  ANDROID_ABI=armeabi-v7a
-before_install:
-  # Install base Android SDK
-  - sudo apt-get update -qq
-  # changed install to -q instead of -qq to expose any missing packages
-  - if [ `uname -m` = x86_64 ]; then sudo apt-get install -q --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch > /dev/null; fi
-  - wget http://dl.google.com/android/android-sdk_r23.0.2-linux.tgz
-  - tar xzf android-sdk_r23.0.2-linux.tgz
-  - export ANDROID_HOME=$PWD/android-sdk-linux
-  - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
+language: android
+android:
+  components:
+    - android-19
+    - android-22
+    - build-tools-22.0.0
+    - build-tools-22.0.1
+    - build-tools-21.1.2
+    - sys-img-armeabi-v7a-android-22
+    - extra-android-m2repository
+  licenses:
+    - android-sdk-license-5be876d5
 
-  # Maven 3.2.3
-  #- wget http://www.us.apache.org/dist/maven/maven-3/3.2.3/binaries/apache-maven-3.2.3-bin.tar.gz
-  #- tar xvf apache-maven-3.2.3-bin.tar.gz > /dev/null
-  #- export MVN_HOME=`pwd`/apache-maven-3.2.3
-  #- export PATH=${MVN_HOME}/bin/:${PATH}
-  #- mvn --version
-
-  # Install required components.
-  # For a full list, run `android list sdk -a --extended`
-  # Note that sysimg-19 downloads the ARM, x86 and MIPS images (we should optimize this).
-  # Other relevant API's:
-  #  addon-google_apis-google-16
-  # removed > /dev/null to prevent Travis timing out and ease debugging
-  - echo y | android update sdk --filter tools,platform-tools --no-ui --force --all
-  - echo y | android update sdk --filter build-tools-19.0.3 --no-ui --force --all
-  - echo y | android update sdk --filter build-tools-21.1.2 --no-ui --force --all
-  - echo y | android update sdk --filter build-tools-22.0.1 --no-ui --force --all
-  - echo y | android update sdk --filter $ANDROID_TARGET --no-ui --force --all
-  - echo y | android update sdk --filter sys-img-$ANDROID_ABI-$ANDROID_TARGET --no-ui --force --all
-  - echo y | android update sdk --filter extra-android-support,extra-android-m2repository --no-ui --force --all
-  - echo y | android update sdk --filter extra-google-m2repository --no-ui --force --all
-
+before_script:
   # Create and start emulator
-  - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
+  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
   - emulator -avd test -no-skin -no-audio -no-window &
-  
-  # Install Android NDK 10c (not working so commented out for now)
-  # Note: There is now a difference between Target architecture and Platform architecture. What SHOULD they be?
-  #- NDK_ARCH=""
-  #- if [ `uname -m` = x86_64 ]; then NDK_ARCH=_64; fi
-  #- FILE="android-ndk-r10c-linux-x86${NDK_ARCH}.bin"
-  #- wget http://dl.google.com/android/ndk/${FILE}
-  #- chmod a+x ${FILE}
-  #- ./${FILE} > nul
-  #- export ANDROID_NDK_HOME=$PWD/android-ndk-r10c
-  
-   # Install Android NDK 10b
+
+  # Install Android NDK 10b
   # Note: There is now a difference between Target architecture and Platform architecture. What SHOULD they be?
   - NDK_ARCH=""
   - NDK_PLAT="32"
@@ -63,18 +30,9 @@ before_install:
   - wget http://dl.google.com/android/ndk/${FILE}
   - tar xjf ${FILE}
   - export ANDROID_NDK_HOME=$PWD/android-ndk-r10b
-  
-  
 
-# setting install to true to avoid unnecessary build
-install: true
-
-before_script:
   # Make sure the emulator is running.
-  - ./wait_for_emulator
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
 
-# with integration tests disabled for now since they require
-# the usage of Maven Android SDK Deployer to get the
-# Maven repos from the SDK deployed to the local repository
-# script: mvn clean install -Dandroid.device=test -P it
-script: mvn clean install -Dandroid.device=test
+script: mvn clean install -Dandroid.device=test -P it
