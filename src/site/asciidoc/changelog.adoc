@@ -5,6 +5,9 @@
 * Fixed processing of duplicate resources from dependencies
 ** see https://github.com/simpligility/android-maven-plugin/pull/614
 ** contributed by Marek Kedzierski https://github.com/kedzie
+* Ability to choose the build tools version
+** see https://github.com/simpligility/android-maven-plugin/pull/637
+** Contributed by Benoit Billington https://github.com/Shusshu
 
 Planned changes:
 
