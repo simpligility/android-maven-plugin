@@ -5,8 +5,8 @@ If you want to help on the actual codebase of the Android Maven Plugin, here is 
 == Pre-requisites
 
 * Android SDK installed
-* Apache Maven installed - (3.2+1 or higher as enforced during the build
-* Optionally for better testing,debugging support Eclipse with M2e and Maven Development Tools
+* Apache Maven installed - (3.2+1 or higher as enforced during the build)
+* Optionally for better testing and debugging support Eclipse with M2e and Maven Development Tools
 * Optionally git or svn to get the code from github, unless you download the source as zip
 * An Android device or emulator connected via ADB for full build
 
@@ -32,7 +32,6 @@ To truly verify everything you also need to connect a device via ADB and run the
 ----
 mvn clean install -P it
 ----
-
 
 == Using 
 

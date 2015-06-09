@@ -1,2 +1,22 @@
 = Device Interaction 
 
+The Android Maven Plugin supports interaction with all devices attached via adb. 
+
+All goals interacting with devices, use the `device` parameter. By default, all devices are targetted.
+
+This means that e.g. deploying a build apk with `mvn package android:deploy` will deploy the apk to all attached devices.
+
+Goals using the device interaction include 
+
+* deviceslist attached devices
+* deploy
+* undeploy
+* redeploy
+* deploy-apk
+* undeploy-apk
+* redeploy-apk
+* run
+* integration-test
+* pull
+* push 
+

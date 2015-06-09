@@ -23,41 +23,19 @@ which was introduced in v1.4, the following error is thrown:
   10-13 16:22:39.361: I/dalvikvm(3776): Could not find method org.apache.commons.codec.binary.Hex.encodeHexString, referenced from method ...
 ----
 
+== Rationale for this "shaded" version of Apache Commons Codec
 
-== The solution
+=== Context
 
-Using link:http://maven.apache.org[+maven+] and the
-link:http://maven.apache.org/plugins/maven-shade-plugin[+maven-shading-plugin+]
-it is possible to work around this problem in a fairly elegant way by
-"shading" the +commons-codec+ library, which means its package name is
-changed to avoid the clash with Android's version.
-
-.Steps to follow:
-. Copy this and save as a _pom.xml_ file somewhere on your system...
-----f
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-   <modelVersion>4.0.0</modelVersion>
-   <groupId>commons-codec</groupId>
-   <artifactId>commons-codec-shaded</artifactId>
-   <name>Apache Commons Codec (shaded)</name>
-   <!-- The version of this project specifies the Apache Commons Codec version which will
-       be used, it must therefore match an existing (and preferably current) version. -->
-   <version>1.9</version>
-   <packaging>jar</packaging>
-   <!--
-     *************************************************************
-      Rationale for this "shaded" version of Apache Commons Codec
-     *************************************************************
-     Context:
-       Android includes an outdated version (v1.3) of commons-codec as an internal library.
-       This library is not exposed in the Android SDK so app developers who want to rely on
-       commons-codec need to treat it as an addition dependency and include it in the APK
+Android includes an outdated version (v1.3) of commons-codec as an internal library.
+ This library is not exposed in the Android SDK so app developers who want to rely on
+ commons-codec need to treat it as an addition dependency and include it in the APK
        of their app. However, at runtime Android will always favour its internal version of
        the library which causes trouble when app code tries to call methods that don't
        exist in v1.3 but do exist in the version the developer expected to be using.
-     Solution:
-       After experimenting with many different variations the current (and final) solution
+=== Solution
+
+After experimenting with many different variations the current (and final) solution
        to this problem is implemented in this project and does not require big hacks or
        changes in projects which depend on commons-codec, expect for declaring dependency
        on commons-codec-shaded (i.e. this project) instead of the original commons-codec.
@@ -72,9 +50,31 @@ changed to avoid the clash with Android's version.
        possible using the shade plug-in but breaks in combination with android-maven-plugin)
        any client classes which make use of commons-codec will have to import the new
        "shaded" package name instead of the old one.
-     Issue on android-maven-plugin github which I posted to discuss all this:
-       https://github.com/jayway/maven-android-plugin/issues/487
-   -->
+
+== The solution
+
+Using the
+link:http://maven.apache.org/plugins/maven-shade-plugin[+maven-shading-plugin+]
+it is possible to work around this problem in a fairly elegant way by
+"shading" the +commons-codec+ library, which means its package name is
+changed to avoid the clash with Android's version.
+
+
+
+
+.Steps to follow:
+. Copy this and save as a _pom.xml_ file somewhere on your system...
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>commons-codec</groupId>
+   <artifactId>commons-codec-shaded</artifactId>
+   <name>Apache Commons Codec (shaded)</name>
+   <!-- The version of this project specifies the Apache Commons Codec version which will
+       be used, it must therefore match an existing (and preferably current) version. -->
+   <version>1.9</version>
+   <packaging>jar</packaging>
    <description>
      The Apache Commons Codec package contains simple encoder and decoders for
      various formats such as Base64 and Hexadecimal.  In addition to these

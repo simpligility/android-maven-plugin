@@ -29,7 +29,6 @@
   <body>
     <menu name="Overview">
       <item name="Introduction" href="index.html"/>
-      <item name="Getting Started" href="getting-started.html"/>
       <item name="Goals" href="plugin-info.html"/>
       <item name="Examples" href="examples.html"/>
       <item name="IDE Support" href="ide-support.html"/>
@@ -46,7 +45,7 @@
       <item name="NDK" href="ndk.html"/>
       <item name="Native Dependencies" href="native-deps.html"/>
       <item name="Scala" href="scala.html"/>
-      <item name="apksources" href="apksources.html">
+      <item name="apksources" href="apksources.html"/>
     </menu>
     <menu name="Community">
       <item name="Maven Android Mailing List" href="http://groups.google.com/group/maven-android-developers"/>
