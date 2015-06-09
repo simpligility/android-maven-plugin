@@ -10,8 +10,6 @@ Please check out the example projects as well as the all the documentation here.
 
 Further information is available on
 
-* http://code.google.com/p/maven-android-plugin/[the project site]
-
 * Plugin Documentation/Goals on this site
 
 * via the "help" goal of the plugin itself

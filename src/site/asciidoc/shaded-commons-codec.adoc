@@ -34,7 +34,7 @@ changed to avoid the clash with Android's version.
 
 .Steps to follow:
 . Copy this and save as a _pom.xml_ file somewhere on your system...
-[source,xml]
+----f
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
    <modelVersion>4.0.0</modelVersion>
@@ -411,8 +411,9 @@ changed to avoid the clash with Android's version.
       </plugins>
    </build>
 </project>
+----
 
-[NOTE] You can also base the shaded library on another version of
+NOTE: You can also base the shaded library on another version of
 +commons-codec+ by simply changing the version of the
 +shaded-commons-codec+ project.
 
@@ -422,18 +423,22 @@ commons-codec to your local Maven repository.
 
 . Now open the _pom.xml_ file of any Android-targeting project (jar,
 apk, apklib or aar) in which you want to make use of +commons-codec+
-and replace...
+and replace this:
 
-[source,xml]
-   <!-- this: -->
-   <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>1.9</version><!-- or whatever version you were using -->
-   </dependency>
-   <!-- by this: -->
-   <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec-shaded</artifactId>
-      <version>1.9</version><!-- or whatever version you based your shaded library on -->
-   </dependency>
+----
+ <dependency>
+    <groupId>commons-codec</groupId>
+    <artifactId>commons-codec</artifactId>
+    <version>1.9</version><!-- or whatever version you were using -->
+ </dependency>
+---
+
+with this:
+
+----
+<dependency>
+  <groupId>commons-codec</groupId>
+  <artifactId>commons-codec-shaded</artifactId>
+  <version>1.9</version><!-- or whatever version you based your shaded library on -->
+</dependency>
+----
