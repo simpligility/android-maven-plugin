@@ -216,4 +216,4 @@ https://groups.google.com/d/msg/maven-android-developers/9ogkKf0Xr7Y/F9CKX6LV0uA
 
 == 4.0.0-rc.2 and older release notes
 
-Can be found in link:changelog-old.html[the migrated changelog] from the old project site.
+Can be found in link:changelog-old-3x.html[the migrated changelog] from the old project site.
