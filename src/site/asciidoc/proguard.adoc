@@ -1,0 +1,25 @@
+== Shrink, Obfuscate and Optmize your APK with Proguard
+
+=== Introduction
+
+When packaging an apk, all classes of all libraries used by the program 
+will be included. Potentially this makes the apk very huge, 
+even exceeding the capacity of dex. ProGuard can strip unused classes and 
+methods, make it as small as possible. In addition it can be used to obfuscate the 
+classes in your apk.
+
+The android maven plugin has built in support for ProGuard with the 
+link./proguard-mojo.thml[proguard goal]. It supports using the `proguard.cfg` 
+file and you can activate it with 
+
+----
+<proguard>
+  <skip>false</skip>
+</proguard>
+----
+
+=== Samples
+
+Complete setup with more options can be found link:./example.html[in the Morseflash as well 
+as the Scala example projects].
+
