@@ -40,8 +40,8 @@
       <item name="Signing APK" href="sign.html"/>
       <item name="Publishing to Google Play Store" href="playstore-publisher.html"/>
       <item name="Shading Example" href="shaded-commons-codec.html"/>
-      <item name="Test Code Coverage" href="emna.html"/>
-      <item name="Screenshots" href="screenshots.html"/>
+      <item name="Test Code Coverage with Emma" href="emma.html"/>
+      <item name="Automated Screenshots" href="screenshots.html"/>
       <item name="NDK" href="ndk.html"/>
       <item name="Native Dependencies" href="native-deps.html"/>
       <item name="Scala" href="scala.html"/>

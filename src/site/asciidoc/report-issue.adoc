@@ -14,5 +14,5 @@ you follow the smaller the chances are that your issue gets fixed..
 
 Now that you know what you should do, https://github.com/simpligility/android-maven-plugin/issues[go ahead an file an issue].
 
-The next steps would be to fix the issue by following our instructions about contributing ;-) 
+The next steps would be to fix the issue by following our instructions about link:contributing.html[contributing.]
 

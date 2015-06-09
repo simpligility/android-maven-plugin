@@ -13,3 +13,6 @@ The following companies provide support for core contributors:
 Other contributions have been sponsored by
 
 * https://github.com/[GitHub]
+* and many others.
+
+Please let us know if we have omitted you!

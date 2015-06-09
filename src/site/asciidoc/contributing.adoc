@@ -9,7 +9,7 @@ the same git repository.
 You will have to either know git already or learn it. You will love it! Minor documentation or spelling fixes can 
 be performed directly in the github user interface. Anything beyond that needs a local repository and more.
 
-== Contributing Flow
+== Flow of Contributions
 
 Once to know how to use git you
 

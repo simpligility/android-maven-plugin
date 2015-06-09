@@ -23,7 +23,7 @@ snapshot repository in  your repository manager (good) or add it in your +settin
     </snapshots>
   </repository>
 </repositories>
-----  
+----
 
 == General for Contributors
 
@@ -47,7 +47,7 @@ to github pages as part of the release build to work:
   <username>yourname</username>
   <password>yourpassword</password>
 </server>
----
+----
 
 == Getting Ready
 
