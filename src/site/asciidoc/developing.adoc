@@ -9,6 +9,8 @@ If you want to help on the actual codebase of the Android Maven Plugin, here is 
 * Optionally for better testing and debugging support Eclipse with M2e and Maven Development Tools
 * Optionally git or svn to get the code from github, unless you download the source as zip
 * An Android device or emulator connected via ADB for full build
+* You must have run the https://github.com/simpligility/maven-android-sdk-deployer[Maven Android SDK Deployer] or have the dependencies from it in your local repository 
+or repository manager for all the IT tests to run
 
 == Getting the code
 
