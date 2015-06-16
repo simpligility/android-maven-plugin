@@ -56,7 +56,6 @@
       <item name="Releasing" href="releasing.html"/>
     </menu>
     <menu name="Related Projects">
-      <item name="Old Project site on Google Code" href="http://code.google.com/p/maven-android-plugin/"/>
       <item name="m2e-android" href="http://rgladwell.github.io/m2e-android/"/>
       <item name="Andmore" href="https://projects.eclipse.org/projects/tools.andmore"/>
       <item name="Maven Android SDK Deployer" href="https://github.com/simpligility/maven-android-sdk-deployer"/>
