@@ -34,7 +34,7 @@ undeploying or staring application]
 == Getting Started
 
 The best examples for project setups are the link:examples.html[example projects] that are part of the plugin 
-codebase and are run with each build and release. 
+code base and are run with each build and release. 
 
 == Further Information and Help
 

@@ -2,7 +2,7 @@
 
 A quick guide on how to use native dependencies (of type .so) when creating an APK for Android. In 
 an attempt reduce build times for projects involving a lot of native code, it would be useful to 
-deploy the native libraries (.so) into the Maven Repository and only refer to them from the Maven pom 
+deploy the native libraries (.so) into the Maven Repository and only refer to them from the Maven POM 
 of the Android application.
 
 As of version 2.8.3, native dependencies are supported directly by the Android Maven plugin.  All that 

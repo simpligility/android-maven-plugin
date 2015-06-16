@@ -3,9 +3,9 @@
 Emma is a tool which measures how many lines of code have been caused during testing.
 Better explanation: http://emma.sourceforge.net/
 
-IMPORTANT: Emma takes your compiled java classes and adds Emma bytecode. Emma divides your code 
+IMPORTANT: Emma takes your compiled java classes and adds Emma byte code. Emma divides your code 
 into blocks and adds emma counting methods. It is important to NOT submit your code with 
-emma methods to the Play store. If you submitted your code with emma bytecode your apk will be larger 
+emma methods to the Play store. If you submitted your code with emma byte code your apk will be larger 
 and less performant.
 
 == Configuration
@@ -15,7 +15,7 @@ Add a emma profile to the project that we want to measure:
 ----
 <build/>
 
-<!-- un commment when you want use sonar to present rules 
+<!-- un-commment when you want use sonar to present rules 
 <properties>
   <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
   <sonar.emma.reportPath>target/emma/</sonar.emma.reportPath>

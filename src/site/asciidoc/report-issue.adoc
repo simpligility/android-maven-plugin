@@ -1,6 +1,6 @@
 = Report An Issue
 
-Reporting issues is important. Ideally this is what you do to file an issue and get it fiex. The less of these steps 
+Reporting issues is important. Ideally this is what you do to file an issue and get it fixed. The less of these steps 
 you follow the smaller the chances are that your issue gets fixed..
 
 * Verify with the latest release of the plugin

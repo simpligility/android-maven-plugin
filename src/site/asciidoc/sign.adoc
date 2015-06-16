@@ -13,7 +13,7 @@ To enable signing you need to provide a key store path (in the keystore node bel
 alias node below), and passwords for both the keystore and the key (in the storepass and keypass nodes 
 respectively).
 
-Include the following in the pom file. If you use a hierarchal project structure then the below should be 
+Include the following in the pom file. If you use a hierarchical project structure then the below should be 
 located in the parent pom in order to sign all child poms with the same key.
 
 ----

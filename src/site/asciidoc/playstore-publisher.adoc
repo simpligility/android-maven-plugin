@@ -1,6 +1,7 @@
 = Publishing with the Google Play Developer API
 
 == Maven Publisher
+
 With help of the link:https://developers.google.com/android-publisher/[Google Play Developer API] it is now possible
 to automatically publish APKs, update store listings, etc.
 
@@ -8,7 +9,7 @@ A link:https://github.com/Triple-T/gradle-play-publisher[Gradle plugin] for this
 the Maven Mojo's.
 
 At the moment there are Mojo's for uploading APKs and updating the store listing including screen shots, feature graphics
-etc. Both can be used inside a project or in a standalone fashion, but in both cases you need the publisher email and
+etc. Both can be used inside a project or in a stand alone fashion, but in both cases you need the publisher email and
 a p12 key file. How to obtain these can be found link:https://developers.google.com/android-publisher/getting_started[here].
 
 It is possible to pass the email and key file as arguments in the command line but the preferred way is to setup

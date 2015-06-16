@@ -1,6 +1,6 @@
 = On-demand Screenshots during Android Integration Tests
 
-Visual design is important to Android apps, and though devising tests for design is hard, 
+Visual design is important to Android applications, and though devising tests for design is hard, 
 you 'can' make visual checks much easier by capturing screenshots from your device during 
 your normal testing. The android-maven-plugin includes support for taking screenshots 
 whenever requested to do so by your instrumentation test code. This

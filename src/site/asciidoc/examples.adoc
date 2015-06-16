@@ -1,6 +1,6 @@
 = Android Maven Plugin Example Projects
 
-All the examples are located in 'src/test/projects' of the plugin codebase. They are all standalone Maven projects 
+All the examples are located in 'src/test/projects' of the plugin code base. They are all stand-alone Maven projects 
 that can be copied into a separate location and used as a basis or inspiration for your own projects and serve as useful
 examples for all the different use cases of the Android Maven Plugin.
 

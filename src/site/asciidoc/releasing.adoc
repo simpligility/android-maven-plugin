@@ -5,7 +5,7 @@ those developers of the Android Maven Plugin who perform releases of the plugin.
 
 == Introduction for Users
 
-Release are available through the Central Repository as built into Maven and as such no further configuration 
+Releases are available through the Central Repository as built into Maven and as such no further configuration 
 is required to use the plugin.
 
 Development versions are occasionally deployed to the OSSRH snapshot repository. To use them you can proxy the 
@@ -104,7 +104,7 @@ Check here http://repo1.maven.org/maven2/com/simpligility/maven/plugins/android-
 
 Announce on the Maven Android Developers list and the Maven developers and users mailing lists.
 
-To obtain a correct permalink to the announcement email, go to the Maven Android Developers group, 
+To obtain a correct permanent link to the announcement email, go to the Maven Android Developers group, 
 open the announcement post and click the little chain/link icon to the right.
 
 Once you are done with it all, celebrate as desired ;-) 
@@ -112,5 +112,5 @@ Once you are done with it all, celebrate as desired ;-)
 == After the release
 
 * update changelog for next version 
-* add release notes mailing list perma link changelog
+* add release notes mailing list permanent link changelog
 * change it-plugin.version parameter in IT test pom file to reference last release
