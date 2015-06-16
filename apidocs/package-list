@@ -1,4 +1,5 @@
 com.android.ddmlib.testrunner
+com.jayway.maven.plugins.android.resource
 com.simpligility.maven.plugins.android
 com.simpligility.maven.plugins.android.asm
 com.simpligility.maven.plugins.android.common
