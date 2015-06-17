@@ -16,54 +16,36 @@
 
 package com.simpligility.android.morseflash;
 
-import android.app.Activity;
-import android.app.Instrumentation;
-import android.content.Intent;
-import android.test.ActivityInstrumentationTestCase;
-import android.test.ActivityInstrumentationTestCase2;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static com.github.rtyley.android.screenshot.celebrity.Screenshots.poseForScreenshot;
 import static com.github.rtyley.android.screenshot.celebrity.Screenshots.poseForScreenshotNamed;
-import static java.lang.Thread.sleep;
 
-/**
- * Make sure that the main launcher activity opens up properly, which will be
- * verified by {@link ActivityInstrumentationTestCase#testActivityTestCaseSetUpProperly}.
- */
-public class ConfigureMorseActivityTest extends ActivityInstrumentationTestCase2<ConfigureMorseActivity> {
 
-    /**
-     * The first constructor parameter must refer to the package identifier of the
-     * package hosting the activity to be launched, which is specified in the AndroidManifest.xml
-     * file.  This is not necessarily the same as the java package name of the class - in fact, in
-     * some cases it may not match at all.
-     */
-    public ConfigureMorseActivityTest() {
-        super("com.simpligility.android.morseflash", ConfigureMorseActivity.class);
-    }
+@RunWith(AndroidJUnit4.class)
+public class ConfigureMorseActivityTest {
 
+    @Rule
+    public ActivityTestRule<ConfigureMorseActivity> mActivityRule =
+            new ActivityTestRule<ConfigureMorseActivity>(ConfigureMorseActivity.class);
+
+    @Test
     @LargeTest
     public void testAppearance() throws Exception {
-        startActivitySync(ConfigureMorseActivity.class);
-        Instrumentation instrumentation = getInstrumentation();
-
-        sleep(500); // robotium provides neater ways of waiting for the activity to initialise
-
         poseForScreenshot();
-        instrumentation.sendStringSync("s");
+        onView(withId(R.id.message)).perform(typeText("s"));
         poseForScreenshot();
-        instrumentation.sendStringSync("o");
+        onView(withId(R.id.message)).perform(typeText("o"));
         poseForScreenshot();
-        instrumentation.sendStringSync("s");
+        onView(withId(R.id.message)).perform(typeText("s"));
         poseForScreenshotNamed("ConfigureMorseActivity-SOS");
     }
-
-    private <T extends Activity> T startActivitySync(Class<T> clazz) {
-        Intent intent = new Intent(getInstrumentation().getTargetContext(), clazz);
-        intent.setFlags(intent.getFlags() | FLAG_ACTIVITY_NEW_TASK);
-        return (T) getInstrumentation().startActivitySync(intent);
-    }
-
 }

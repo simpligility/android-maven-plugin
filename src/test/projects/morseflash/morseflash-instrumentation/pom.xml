@@ -20,9 +20,32 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.android.support.test</groupId>
+      <artifactId>runner</artifactId>
+      <version>0.3</version>
+      <type>aar</type>
+    </dependency>
+    <dependency>
       <groupId>com.google.android</groupId>
       <artifactId>android-test</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.android.support.test.espresso</groupId>
+      <artifactId>espresso-core</artifactId>
+      <version>2.2</version>
+      <type>aar</type>
+    </dependency>
+    <dependency>
+      <groupId>com.android.support.test</groupId>
+      <artifactId>rules</artifactId>
+      <version>0.3</version>
+      <type>aar</type>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
     </dependency>
     <dependency>
       <groupId>com.simpligility.android.morse</groupId>
@@ -69,10 +92,26 @@
                         <!--<package>your.package.name</package>-->
                         <!--</packages>-->
           </test>
+          <excludeJarResources>
+            <excludeJarResource>.*</excludeJarResource>
+          </excludeJarResources>
         </configuration>
         <extensions>true</extensions>
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>support_test</id>
+      <repositories>
+        <repository>
+          <id>android-m2</id>
+          <name>Android M2</name>
+          <url>file://${env.ANDROID_HOME}/extras/android/m2repository</url>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
 
 </project>
