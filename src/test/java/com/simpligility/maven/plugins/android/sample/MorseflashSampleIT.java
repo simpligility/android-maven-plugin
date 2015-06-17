@@ -48,6 +48,7 @@ public class MorseflashSampleIT {
     File basedir = resources.getBasedir( "morseflash" );
     MavenExecutionResult result = mavenRuntime
           .forProject(basedir)
+          .withCliOptions("-Psupport_test")
           .execute( "clean", PluginInfo.getQualifiedGoal( "undeploy" ), 
               "install" );
     
