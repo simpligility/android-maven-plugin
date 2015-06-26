@@ -4,6 +4,10 @@
     android:versionCode="1" 
     android:versionName="1.0.0-SNAPSHOT">
 
+  <!-- these are only needed for the instrumentation test-->
+  <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+  <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
   <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="19"/>
   <application android:name="MorseFlashApplication" android:debuggable="true" android:icon="@drawable/icon" android:label="@string/app_name">
     <activity android:name="ConfigureMorseActivity" android:label="@string/app_name">
