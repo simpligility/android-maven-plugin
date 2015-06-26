@@ -6,7 +6,7 @@
     <application>
         <uses-library android:name="android.test.runner"/>
     </application>
-    <instrumentation android:name="android.test.InstrumentationTestRunner"
+    <instrumentation android:name="com.simpligility.android.morseflash.ScreenUnlockerTestRunner"
                      android:targetPackage="com.simpligility.android.morseflash"
                      android:label="Tests for MorseFlash."/>
 </manifest>
