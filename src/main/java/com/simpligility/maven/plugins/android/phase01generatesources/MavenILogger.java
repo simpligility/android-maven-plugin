@@ -13,10 +13,18 @@ import java.util.Formatter;
 public class MavenILogger implements ILogger
 {
     private final Log log;
+    private final boolean verboseInfo;
+
+    public MavenILogger( Log log, boolean verboseInfo )
+    {
+        this.log = log;
+        this.verboseInfo = verboseInfo;
+    }
 
     public MavenILogger( Log log )
     {
         this.log = log;
+        this.verboseInfo = false;
     }
 
     @Override
@@ -53,7 +61,15 @@ public class MavenILogger implements ILogger
     public void info( @NonNull String s, Object... objects )
     {
         final Formatter formatter = new Formatter();
-        log.info( formatter.format( s, objects ).out().toString() );
+        if ( verboseInfo )
+        {
+            log.debug( formatter.format( s, objects ).out().toString() );
+        }
+        else
+        {
+            log.info( formatter.format( s, objects ).out().toString() );
+        }
+        
     }
 
     @Override
