@@ -262,6 +262,7 @@ public class AndroidNdk
         List<String> gdbServerLocations = new ArrayList<String>();
         if ( ndkArchitecture.startsWith( "armeabi" ) )
         {
+            gdbServerLocations.add( "android-arm" );
             gdbServerLocations.add( "android-armeabi" );
             gdbServerLocations.addAll( Arrays.asList( ARM_TOOLCHAIN ) );
         }

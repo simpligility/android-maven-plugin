@@ -5,6 +5,9 @@
 * Make manifest merging less verbose
 ** See https://github.com/simpligility/android-maven-plugin/pull/650
 ** contributed by Nathan Toone https://github.com/Toonetown
+* Fix for gdbserver on NDK version r10e
+** See https://github.com/simpligility/android-maven-plugin/pull/648
+** contributed by Nathan Toone https://github.com/Toonetown
 * Fix building with debug mode and raw file directories
 ** See https://github.com/simpligility/android-maven-plugin/pull/649
 ** contributed by Nathan Toone https://github.com/Toonetown
