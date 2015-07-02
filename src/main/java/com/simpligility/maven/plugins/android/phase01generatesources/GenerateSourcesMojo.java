@@ -876,14 +876,14 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 .addRawAssetsDirectoryIfExists( combinedAssets )
                 .addExistingPackageToBaseIncludeSet( getAndroidSdk().getAndroidJar() )
                 .addConfigurations( configurations )
-                .addExtraArguments( aaptExtraArgs )
                 .setVerbose( aaptVerbose )
                     // We need to generate R.txt for all projects as it needs to be consumed when generating R class.
                     // It also needs to be consumed when packaging aar.
                 .generateRTextFile( targetDirectory )
                 // If a proguard file is defined then output Proguard options to it.
                 .setProguardOptionsOutputFile( proguardFile )
-                .makeResourcesNonConstant( AAR.equals( project.getArtifact().getType() ) );
+                .makeResourcesNonConstant( AAR.equals( project.getArtifact().getType() ) )
+                .addExtraArguments( aaptExtraArgs );
 
         getLog().debug( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
         try
@@ -1033,8 +1033,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 .addRawAssetsDirectoryIfExists( apklibCombAssets )
                 .addExistingPackageToBaseIncludeSet( getAndroidSdk().getAndroidJar() )
                 .addConfigurations( configurations )
-                .addExtraArguments( aaptExtraArgs )
                 .setVerbose( aaptVerbose )
+                .addExtraArguments( aaptExtraArgs )
                 // We need to generate R.txt for all projects as it needs to be consumed when generating R class.
                 // It also needs to be consumed when packaging aar.
                 .generateRTextFile( unpackDir );
