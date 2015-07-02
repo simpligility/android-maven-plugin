@@ -1067,9 +1067,9 @@ public class ApkMojo extends AbstractAndroidMojo
                 .addExistingPackageToBaseIncludeSet( androidJar )
                 .setOutputApkFile( outputFile )
                 .addConfigurations( configurations )
-                .addExtraArguments( aaptExtraArgs )
                 .setVerbose( aaptVerbose )
-                .setDebugMode( !release );
+                .setDebugMode( !release )
+                .addExtraArguments( aaptExtraArgs );
 
         getLog().debug( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
         try
