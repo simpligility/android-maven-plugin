@@ -20,9 +20,9 @@
     mvn site causes this:
      
     ] Failed to execute goal org.apache.maven.plugins:maven-site-plugin:3.3:site (default-site) on project libraryprojects-parent: failed to get report for org.apache.maven.plugins:maven-javadoc-plugin: Failed to execute goal com.simpligility.maven.plugins:android-maven-plugin:4.3.0:generate-sources (default-generate-sources) on project libraryprojects-tests: Execution default-generate-sources of goal com.simpligility.maven.plugins:android-maven-plugin:4.3.0:generate-sources failed: String index out of range: -1 -> [Help 1]
-
+    -->
     
-    <module>libraryprojects-tests</module>-->
+    <module>libraryprojects-tests</module>
   </modules>
 
   <properties>
