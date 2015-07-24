@@ -11,6 +11,11 @@ The are also built as part of the integration tests and the tests that run those
 Located in the +helloflashlight+ folder. A flashlight
 application as an example for a simple Android application build.
 
+== BuildConfigInjection
+
+Located in the +buildConfigInjection+ folder. Based on the flashlight
+application, this shows you how to inject information into the BuildConfig class. Useful for versioning and build tracking.
+
 == MorseFlash
 
 Located in the +morseflash+ folder. A multi-module application with a

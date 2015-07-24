@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+     <modelVersion>4.0.0</modelVersion>
+
+     <groupId>com.simpligility.android</groupId>
+     <artifactId>dependencyInjection</artifactId>
+     <version>1.0.0</version>
+     <packaging>apk</packaging>
+
+     <name>HelloFlashLight with Injection</name>
+     <properties>
+	  <!-- at test time this will be overridden with snapshot version -->
+	  <it-plugin.version>4.3.0</it-plugin.version>
+     </properties>
+     <dependencies>
+	  <dependency>
+	       <groupId>com.google.android</groupId>
+	       <artifactId>android</artifactId>
+	       <version>4.1.1.4</version>
+	       <scope>provided</scope>
+	  </dependency>
+     </dependencies>
+
+     <build>
+	  <pluginManagement>
+	       <plugins>
+		    <plugin>
+			 <groupId>com.simpligility.maven.plugins</groupId>
+
+			 <artifactId>android-maven-plugin</artifactId>
+			 <version>${it-plugin.version}</version>
+			 <extensions>true</extensions>
+		    </plugin>
+	       </plugins>
+	  </pluginManagement>
+	  <plugins>
+	       <!-- simple plugin to get the current build timestamp -->
+	       <plugin>
+		    <groupId>com.keyboardsamurais.maven</groupId>
+		    <artifactId>maven-timestamp-plugin</artifactId>
+		    <version>1.0</version>
+		    <configuration>
+			 <propertyName>timestamp</propertyName>
+			 <timestampPattern>yyyy.MM.dd HH:mm</timestampPattern>
+		    </configuration>
+		    <executions>
+			 <execution>
+			      <goals>
+				   <goal>create</goal>
+			      </goals>
+			 </execution>
+		    </executions>
+	       </plugin>
+	       <!-- enable JGit plugin -->
+	       <plugin>
+		    <groupId>ru.concerteza.buildnumber</groupId>
+		    <artifactId>maven-jgit-buildnumber-plugin</artifactId>
+		    <version>1.2.9</version>
+		    <executions>
+			 <execution>
+			      <id>git-buildnumber</id>
+			      <goals>
+				   <goal>extract-buildnumber</goal>
+			      </goals>
+			      <!-- must execute before generate sources-->
+			      <phase>validate</phase>
+			 </execution>
+		    </executions>
+	       </plugin> 
+	       <plugin>
+		    <groupId>com.simpligility.maven.plugins</groupId>
+
+		    <artifactId>android-maven-plugin</artifactId>
+		    <configuration>
+			 <sdk>
+			      <platform>19</platform>
+			 </sdk>
+			 <!-- inject our settings to BuildConfig.java here-->
+			 <buildConfigConstants>
+			      <buildConfigConstants>
+				   <name>Title</name>
+				   <value>${project.name}</value>
+				   <type>String</type>
+			      </buildConfigConstants>
+			      <buildConfigConstants>
+				   <name>Version</name>
+				   <value>${project.version}</value>
+				   <type>String</type>
+			      </buildConfigConstants>
+			      <buildConfigConstants>
+				   <name>Vendor</name>
+				   <value>${project.organization.name}</value>
+				   <type>String</type>
+			      </buildConfigConstants>
+			      <buildConfigConstants>
+				   <name>ArtifactId</name>
+				   <value>${project.groupId}.${project.artifactId}</value>
+				   <type>String</type>
+			      </buildConfigConstants>
+			      
+			      <buildConfigConstants>
+				   <name>GitRevision</name>
+				   <value>${git.revision}</value>
+				   <type>String</type>
+			      </buildConfigConstants>
+			      <buildConfigConstants>
+				   <name>GitBranch</name>
+				   <value>${git.branch}</value>
+				   <type>String</type>
+			      </buildConfigConstants>
+			      
+			      <buildConfigConstants>
+				   <name>GitTag</name>
+				   <value>${git.tag}</value>
+				   <type>String</type>
+			      </buildConfigConstants>
+
+			      <buildConfigConstants>
+				   <name>GitCommitCount</name>
+				   <value>${git.commitsCount}</value>
+				   <type>String</type>
+			      </buildConfigConstants>
+			      <buildConfigConstants>
+				   <name>BuiltOn</name>
+				   <value>${timestamp}</value>
+				   <type>String</type>
+			      </buildConfigConstants>
+			      <buildConfigConstants>
+				   <name>BuiltBy</name>
+				   <value>${user.name}</value>
+				   <type>String</type>
+			      </buildConfigConstants>
+			 </buildConfigConstants>
+		    </configuration>
+	       </plugin>
+	  </plugins>
+     </build>
+</project>
