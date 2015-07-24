@@ -26,13 +26,20 @@ Once to know how to use git you
 
 == Documentation Contributions
 
-All documentation is written in asciidoc and should be located in 'src/site/asciidoc'. The will be published with the 
-Maven site for each release and is also available on the github project site directly. You can even edit them in the 
-github interface.
+All documentation is written in asciidoc and should be located in +src/site/asciidoc+.
+Navigation and other layout and design resources can be found in +src/site+ and
+specifically +src/site/site.xml+.  The documentation is published with each release
+and is available on GitHub. You can edit documentation in the github interface
+or in your local clone. Check  out the documentation on
+link:developing.html[developing] for further tips and tricks.
+
 
 == Code Contributions
 
-A contribution can be anything useful to the project. It might be fixing an issue or enhancing the plugin somehow. 
-Even a javadoc spelling fix is not too small to submit! The only thing you need to check is that you can build the 
-plugin, because we enforce things like code style and so on automatically. However if you create a pull request, this is
-done automatically as part of our CI setup.
+A contribution can be anything useful to the project. It might be fixing an
+issue or enhancing the plugin somehow. Even a javadoc spelling fix is not too
+small to submit! The only thing you need to check is that you can build the
+plugin, because we enforce things like code style and so on automatically.
+However if you create a pull request, this is done automatically as part of
+our continuous integration setup. Check  out the documentation on
+link:developing.html[developing] for further tips and tricks.

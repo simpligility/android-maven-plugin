@@ -35,6 +35,14 @@ To truly verify everything you also need to connect a device via ADB and run the
 mvn clean install -P it
 ----
 
+The documentation website can be built with
+
+----
+mvn clean site
+----
+
+with the resulting HTML found in +target/site/+.
+
 == Using 
 
 Once you have built the plugin, you can use the respective version (x.y.z-SNASPHOT) in your own projects by updating the 
