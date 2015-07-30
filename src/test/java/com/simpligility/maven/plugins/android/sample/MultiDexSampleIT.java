@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 simpligility technologies inc.
+ * Copyright (C) 2015 Piotr Soróbka
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +22,22 @@ import io.takari.maven.testing.executor.junit.MavenJUnitTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+/**
+ *
+ * @author Piotr Soróbka <psorobka@gmail.com>
+ */
 @RunWith(MavenJUnitTestRunner.class)
 @MavenVersions({"3.2.3"})
-public class HelloFlashLightSampleIT extends AbstractSampleIT {
+public class MultiDexSampleIT extends AbstractSampleIT {
 
-    public HelloFlashLightSampleIT(MavenRuntimeBuilder builder) throws Exception {
+    public MultiDexSampleIT(MavenRuntimeBuilder builder) throws Exception {
         super(builder);
     }
 
     @Test
     public void buildDeployAndRun() throws Exception {
-        buildDeployAndRun("helloflashlight", "com.simpligility.android.helloflashlight", "com.simpligility.android.helloflashlight.HelloFlashlight");
-
+        buildDeployAndRun("multidexsample", "com.simpligility.android.multidexsample",
+                "com.simpligility.android.multidexsample.MultiDexSampleActivity");
     }
 
 }
