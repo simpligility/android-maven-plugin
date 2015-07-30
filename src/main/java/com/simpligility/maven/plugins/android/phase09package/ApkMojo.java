@@ -825,7 +825,7 @@ public class ApkMojo extends AbstractAndroidMojo
                     //if not handled by transformer, add (once) to duplicates jar
                     if ( !resourceTransformed )
                     {
-                        if ( duplicatesAdded.contains( entry.getName() ) )
+                        if ( !duplicatesAdded.contains( entry.getName() ) )
                         {
                         	duplicatesAdded.add( entry.getName() );
                             duplicateZos.putNextEntry( entry );
