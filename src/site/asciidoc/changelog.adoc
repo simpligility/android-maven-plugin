@@ -18,7 +18,7 @@ Planned changes:
 ** see https://github.com/simpligility/android-maven-plugin/issues/452
 * anything else contributed by the community
 
-== 4.3.0 - released 2014-06-15 
+== 4.3.0 - released 2015-06-15 
 
 https://groups.google.com/d/msg/maven-android-developers/FB4mP5s1kvA/EFxbrnnbca0J[Release Announcement Post]
 
@@ -36,7 +36,7 @@ https://groups.google.com/d/msg/maven-android-developers/FB4mP5s1kvA/EFxbrnnbca0
 * Plugin updates
 ** Contributed by Manfred Moser http://www.simpligility.com
 
-== 4.2.1 - released 2014-05-07
+== 4.2.1 - released 2015-05-07
 
 https://groups.google.com/d/msg/maven-android-developers/HOIC3b7MmoA/Z8XUXpsmT-EJ[Release Announcement Post]
 
