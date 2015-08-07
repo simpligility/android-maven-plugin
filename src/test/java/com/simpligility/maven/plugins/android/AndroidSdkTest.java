@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import com.simpligility.maven.plugins.android.AndroidSdk;
 import com.simpligility.maven.plugins.android.InvalidSdkException;
+import org.junit.Ignore;
 
 /**
  * Excercises the {@link AndroidSdk} class.
@@ -113,6 +114,7 @@ public class AndroidSdkTest {
         invalid.getAaptPath();
     }
 
+    @Ignore
     @Test
     public void validPlatformsAndApiLevelsWithDiffBuildTools1() {
         // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails

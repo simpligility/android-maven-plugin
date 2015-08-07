@@ -54,7 +54,7 @@ public class BuildConfigInjectionSampleIT {
     
     result.assertErrorFreeLog();
     result.assertLogText( "Successfully installed" );
-    result.assertLogText( "Attempting to start com.simpligility.android.helloflashlightinjection/com.simpligility.android.helloflashlight.HelloFlashlight" );
+    result.assertLogText( "Attempting to start com.simpligility.android.helloflashlightinjection/com.simpligility.android.helloflashlightinjection.HelloFlashlight" );
   }
 
 }
