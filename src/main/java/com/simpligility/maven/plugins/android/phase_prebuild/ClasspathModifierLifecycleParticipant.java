@@ -291,6 +291,7 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
         try
         {
             final ZipOutputStream zipOutputStream = new ZipOutputStream( new FileOutputStream( classesJar ) );
+            zipOutputStream.putNextEntry( new ZipEntry( "dummy" ) );
             zipOutputStream.close();
             log.debug( "Created dummy " + classesJar.getName() + " exist=" + classesJar.exists() );
         }
@@ -321,7 +322,7 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
         final Dependency dependency = new Dependency();
         dependency.setGroupId( artifact.getGroupId() );
         dependency.setArtifactId( artifactId );
-        dependency.setVersion( artifact.getVersion() );
+        dependency.setVersion( artifact.getBaseVersion() );
         dependency.setScope( Artifact.SCOPE_SYSTEM );
         dependency.setSystemPath( location.getAbsolutePath() );
         return dependency;
