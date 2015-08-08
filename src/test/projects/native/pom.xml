@@ -29,6 +29,7 @@
     <module>java-with-native-apklib-dependency</module>
 <!--     <module>mixed-java-native-with-apklib-dependency</module> -->
     <module>transient-apklib-with-native</module>
+    <module>native-code-nonstandard-structure</module>
   </modules>
 
   <dependencyManagement>

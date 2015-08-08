@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                              http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.jayway.maven.plugins.android.generation2.samples</groupId>
+    <artifactId>native-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>native-code-nonstandard-structure</artifactId>
+    <!--
+    Packaging is defined as 'so' - this will indicate to the Maven Android
+    plugin that it is meant to compile the native code.  The resulting native
+    library is attached to the build
+    -->
+  <packaging>so</packaging>
+
+  <name>Android NDK - Native Sample Non-standard folder structure</name>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.simpligility.maven.plugins</groupId>
+
+        <artifactId>android-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <ndkArchitectures>x86 armeabi</ndkArchitectures>
+          <makefile>src/Android.mk</makefile>
+          <applicationMakefile>src/Application.mk</applicationMakefile>
+            <attachHeaderFiles>false</attachHeaderFiles>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

@@ -100,9 +100,6 @@ public class NdkBuildMojo extends AbstractAndroidMojo
 
     /**
      * <p>Folder containing native, static libraries compiled and linked by the NDK.</p>
-     *
-     * The NDK build executable seems determined to create the native libs in the root folder.
-     * TODO work out how to create them in /target.
      */
     @Parameter(
             property = "android.nativeLibrariesOutputDirectory",
@@ -411,14 +408,16 @@ public class NdkBuildMojo extends AbstractAndroidMojo
                 getLog().error( "Specified makefile " + makeFile + " does not exist" );
                 throw new MojoExecutionException( "Specified makefile " + makeFile + " does not exist" );
             }
-            commands.add( "-f" );
-            commands.add( makefile );
+            commands.add( "APP_BUILD_SCRIPT=" + makefile );
         }
 
         configureApplicationMakefile( commands );
         configureMaxJobs( commands );
         configureNdkToolchain( architecture, commands );
         configureAdditionalCommands( commands );
+
+        commands.add( "NDK_LIBS_OUT=" + ndkOutputDirectory.getAbsolutePath() );
+        commands.add( "NDK_OUT=" + ndkOutputDirectory.getAbsolutePath() );
 
         // If a build target is specified, tag that onto the command line as the very last of the parameters
         if ( target != null )
@@ -438,14 +437,7 @@ public class NdkBuildMojo extends AbstractAndroidMojo
         executor.executeCommand( ndkBuildPath, commands, ndkBuildDirectory, true );
         getLog().debug( "Executed NDK " + architecture + " make at : " + ndkBuildDirectory );
 
-        // Where the NDK build creates the libs.
-        final File nativeLibOutputDirectory = new File( nativeLibrariesOutputDirectory, architecture );
-        nativeLibOutputDirectory.mkdirs();
-
-        // Move the built native libs into the packaging folder.
-        // We don't create them there to start with because the NDK build seems determined to create them in the root.
         final File destinationDirectory = new File( ndkOutputDirectory, architecture );
-        FileUtils.moveDirectory( nativeLibOutputDirectory, destinationDirectory );
 
         // Attempt to attach the native library if the project is defined as a "pure" native Android library
         // (packaging is 'so' or 'a') or if the plugin has been configured to attach the native library to the build
