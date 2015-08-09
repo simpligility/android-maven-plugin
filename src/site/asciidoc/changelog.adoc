@@ -11,6 +11,9 @@
 * Fix continuous integration(use Travis Android support and enable/update ITs)
 ** See https://github.com/simpligility/android-maven-plugin/pull/641
 ** contributed by Csaba Kozák https://github.com/WonderCsabo
+* Fix issue in which dudplicate files were added to the APK
+** https://github.com/simpligility/android-maven-plugin/pull/661
+** contributed by Andrew Bowley https://github.com/andrew-bowley
 
 Planned changes:
 
