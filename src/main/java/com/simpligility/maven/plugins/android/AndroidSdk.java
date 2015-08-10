@@ -30,7 +30,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-import org.codehaus.plexus.interpolation.os.Os;
 
 /**
  * Represents an Android SDK.
@@ -185,7 +184,76 @@ public class AndroidSdk
     {
         return getPathForBuildTool( BuildToolInfo.PathId.DX_JAR );
     }
+    
+     /**
+     * Get the path for proguard.jar
+     * @return
+     */
+    public String getProguardJarPath()
+    {
+        File directory = new File( getToolsPath(), "proguard" + File.separator + "lib" + File.separator );
+        File proguardJar = new File( directory, "proguard.jar" );
+        if ( proguardJar.exists() ) 
+        {
+            return proguardJar.getAbsolutePath();
+        }
+        throw new InvalidSdkException( "Cannot find " + proguardJar );
+    }
+    
+    /**
+     * Get the path for shrinkedAndroid.jar
+     * @return
+     */
+    public String getShrinkedAndroidJarPath()
+    {
+        File shrinkedAndroidJar = new File( getBuildToolsLibDirectoryPath(), "shrinkedAndroid.jar" );
+        if ( shrinkedAndroidJar.exists() ) 
+        {
+            return shrinkedAndroidJar.getAbsolutePath();
+        }
+        throw new InvalidSdkException( "Cannot find " + shrinkedAndroidJar );
+    }
+    
+    /**
+     * Get the path for build-tools lib directory
+     * @return
+     */
+    public String getBuildToolsLibDirectoryPath()
+    {
+        File buildToolsLib = new File( getBuildToolInfo().getLocation(), "lib" );
+        if ( buildToolsLib.exists() ) 
+        {
+            return buildToolsLib.getAbsolutePath();
+        }
+        throw new InvalidSdkException( "Cannot find " + buildToolsLib );
+    }
+    
+    /**
+     * Get the path for mainDexClasses.rules
+     * @return
+     */
+    public String getMainDexClassesRulesPath()
+    {
+        File mainDexClassesRules = new File( getBuildToolInfo().getLocation(),
+                "mainDexClasses.rules" );
+        if ( mainDexClassesRules.exists() ) 
+        {
+            return mainDexClassesRules.getAbsolutePath();
+        }
+        throw new InvalidSdkException( "Cannot find " + mainDexClassesRules );
+    }
 
+    public void assertThatBuildToolsVersionIsAtLeast( String version, String feature ) 
+            throws InvalidSdkException, NumberFormatException 
+    {
+        if ( getBuildToolInfo().getRevision().
+                compareTo( FullRevision.parseRevision( version ) ) < 0 )
+        {
+            throw new InvalidSdkException( "Version of build tools must be at least " 
+                    + version + " for " + feature + " to work" );
+        }
+    }
+    
     /**
      * Get the android debug tool path (adb).
      *
@@ -326,31 +394,6 @@ public class AndroidSdk
     public String getPathForFrameworkAidl()
     {
         return androidTarget.getPath( IAndroidTarget.ANDROID_AIDL );
-    }
-
-    /**
-     * Returns the mainDexClasses script file, based on this SDK and OS.
-     * Assumes that the script is in build-tools\VERSION\ directory.
-     * 
-     * <b>NOTE</b>: This file is found in version 21.1.1+ of build-tools.  
-     * 
-     * @return mainDexClasses file
-     * @throws MojoExecutionException when the file is not found 
-     */
-    public File getMainDexClasses() throws MojoExecutionException 
-    {
-        final File location = getBuildToolInfo().getLocation();
-        String mainDexClassesScript = "mainDexClasses";   
-        if ( Os.isFamily( Os.FAMILY_WINDOWS ) ) 
-        {
-            mainDexClassesScript += ".bat";   
-        }               
-        File mainDexClasses = new File( location, mainDexClassesScript );
-        if ( !mainDexClasses.exists() ) 
-        {
-            throw new MojoExecutionException( "No " + mainDexClassesScript + " found in " + location );
-        }
-        return mainDexClasses;
     }
 
     /**
