@@ -3,13 +3,16 @@
 The Android Maven Plugin is used to build applications for the Android operating system as well as build 
 libraries to be used in these efforts in AAR and the legacy APKLIB format using Apache Maven.
 
-The plugin includes numerous features including support for running instrumentation tests, analysis with 
-Android Lint, processing with ProGuard and many other tasks. The main tasks are creating an application 
+The plugin includes numerous features with 
+link:usage.html[some minimal setup for usage]. The main tasks are creating an application 
 or a library for reuse:
 
 * Create an Android application using link:apk.html[+apk+ packaging]
 * Create an Android Archive for code/resources reuse using link:aar.html[+aar+ packaging]
 * Create an Android Application Library (to be deprecated) for code/resources reuse using link:apk.html[+apklib+ packaging]
+
+It includes support for running instrumentation tests, analysis with 
+Android Lint, processing with ProGuard and many other tasks. 
 
 Supplementary tasks helping these efforts supported are:
 
