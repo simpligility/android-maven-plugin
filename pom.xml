@@ -15,7 +15,7 @@
   <parent>
     <groupId>com.simpligility.maven</groupId>
     <artifactId>progressive-organization-pom</artifactId>
-    <version>2.5.0</version>
+    <version>3.0.0</version>
   </parent>
 
   <groupId>com.simpligility.maven.plugins</groupId>
