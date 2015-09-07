@@ -877,8 +877,9 @@ public class ApkMojo extends AbstractAndroidMojo
                     //if not handled by transformer, add (once) to duplicates jar
                     if ( !resourceTransformed )
                     {
-                        if ( !duplicatesAdded.add( entry.getName() ) )
+                        if ( !duplicatesAdded.contains( entry.getName() ) )
                         {
+                            duplicatesAdded.add( entry.getName() );
                             duplicateZos.putNextEntry( entry );
                             InputStream currIn = inZip.getInputStream( entry );
                             copyStreamWithoutClosing( currIn, duplicateZos );
@@ -1119,9 +1120,9 @@ public class ApkMojo extends AbstractAndroidMojo
                 .addExistingPackageToBaseIncludeSet( androidJar )
                 .setOutputApkFile( outputFile )
                 .addConfigurations( configurations )
-                .addExtraArguments( aaptExtraArgs )
                 .setVerbose( aaptVerbose )
-                .setDebugMode( !release );
+                .setDebugMode( !release )
+                .addExtraArguments( aaptExtraArgs );
 
         getLog().debug( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
         try

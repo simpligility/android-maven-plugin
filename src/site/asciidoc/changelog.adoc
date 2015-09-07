@@ -1,30 +1,56 @@
 = Changelog
 
-== 4.2.2 or higher - upcoming 
+== 4.3.1 or higher - upcoming 
 
-* Fixed processing of duplicate resources from dependencies
-** see https://github.com/simpligility/android-maven-plugin/pull/614
-** contributed by Marek Kedzierski https://github.com/kedzie
+* Make manifest merging less verbose
+** See https://github.com/simpligility/android-maven-plugin/pull/650
+** contributed by Nathan Toone https://github.com/Toonetown
+* Fix building with debug mode and raw file directories
+** See https://github.com/simpligility/android-maven-plugin/pull/649
+** contributed by Nathan Toone https://github.com/Toonetown
+* Fix continuous integration(use Travis Android support and enable/update ITs)
+** See https://github.com/simpligility/android-maven-plugin/pull/641
+** contributed by Csaba Kozák https://github.com/WonderCsabo
+* Fix issue in which dudplicate files were added to the APK
+** https://github.com/simpligility/android-maven-plugin/pull/661
+** contributed by Andrew Bowley https://github.com/andrew-bowley
 
 Planned changes:
 
-* migrate rest of Google Code project content into the github project
 * migrate more tests to be instrumentation tests with example projects
 ** see https://github.com/simpligility/android-maven-plugin/issues/452
 * anything else contributed by the community
 
-== 4.2.1 - released 2014-05-07
+== 4.3.0 - released 2015-06-15 
+
+https://groups.google.com/d/msg/maven-android-developers/FB4mP5s1kvA/EFxbrnnbca0J[Release Announcement Post]
+
+* Fixed processing of duplicate resources from dependencies
+** See https://github.com/simpligility/android-maven-plugin/pull/614
+** contributed by Marek Kedzierski https://github.com/kedzie
+* Ability to choose the build tools version
+** See https://github.com/simpligility/android-maven-plugin/pull/637
+** Contributed by Benoit Billington https://github.com/Shusshu
+* Added x86_64 and mips64 architectures to NDK support
+** see https://github.com/simpligility/android-maven-plugin/pull/634
+** Contributed by Marek Kedzierski http://kedzie.github.io/
+* Migrated rest of the Google Code project content into site content
+** Contributed by Manfred Moser http://www.simpligility.com
+* Plugin updates
+** Contributed by Manfred Moser http://www.simpligility.com
+
+== 4.2.1 - released 2015-05-07
 
 https://groups.google.com/d/msg/maven-android-developers/HOIC3b7MmoA/Z8XUXpsmT-EJ[Release Announcement Post]
 
 * Refactored code base to com.simpligility to follow groupId
-** contributed by Manfred Moser http://www.simpligility.com
+** Contributed by Manfred Moser http://www.simpligility.com
 * Fixed NPE for undefined versionNamingPattern in ManifestMojo
-** see https://github.com/simpligility/android-maven-plugin/pull/622
-** contributed by Leonid https://github.com/greek1979
+** See https://github.com/simpligility/android-maven-plugin/pull/622
+** Contributed by Leonid https://github.com/greek1979
 * Fixed Error generating BuildConfig (ZipException: zip file is empty) if one of the dependent AARs has an empty classes.zip
 ** See https://github.com/simpligility/android-maven-plugin/issues/626
-** contributed by William Ferguson https://github.com/william-ferguson-au
+** Contributed by William Ferguson https://github.com/william-ferguson-au
 * Updated Android SDK libraries 1.2.2 / 24.2.2
 ** contributed by Benoit Billington https://github.com/Shusshu
 ** contributed by Manfred Moser http://www.simpligility.com
@@ -213,4 +239,4 @@ https://groups.google.com/d/msg/maven-android-developers/9ogkKf0Xr7Y/F9CKX6LV0uA
 
 == 4.0.0-rc.2 and older release notes
 
-Can be found in link:changelog-old.html[the migrated changelog] from the old project site.
+Can be found in link:changelog-old-3x.html[the migrated changelog] from the old project site.

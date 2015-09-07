@@ -3,7 +3,7 @@
 WARNING: The apklib format is deprecated and support for it will be removed in a future release of the 
 Android Maven Plugin (5.0+). Use  the link:aar.html[AAR format] instead.
 
-_apklib was introduced as a stop gap measure to allow a limited ability to bundle and share Android library resources. 
+`apklib` was introduced as a stop gap measure to allow a limited ability to bundle and share Android library resources. 
 Now that the Android team have released the AAR format containing compiled code you should use that instead.
 
 

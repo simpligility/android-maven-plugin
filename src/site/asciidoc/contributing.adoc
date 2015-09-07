@@ -1,6 +1,6 @@
 = Contributing
 
-We welcome any contribtuion in the forms of feedback on social media, helping out on stackoverflow, whatever you can do 
+We welcome any contribution in the forms of feedback on social media, helping out on stackoverflow, whatever you can do 
 helps. This page however focuses on how to contribute either documentation or source code. All of it is contained in 
 the same git repository.
 
@@ -9,7 +9,7 @@ the same git repository.
 You will have to either know git already or learn it. You will love it! Minor documentation or spelling fixes can 
 be performed directly in the github user interface. Anything beyond that needs a local repository and more.
 
-== Contributing Flow
+== Flow of Contributions
 
 Once to know how to use git you
 
@@ -18,7 +18,7 @@ Once to know how to use git you
 * verify it all builds and looks right (see the 'Developing' documentation for more on that)
 * send a pull request
 * the core committers will review the pull request
-* any suggested changes need to be done on the same branch and pushed to your repo, this will update the pull request
+* any suggested changes need to be done on the same branch and pushed to your repository, this will update the pull request
 * ideally two core committers agree and will pull in the change
 * the changelog then gets updated and you are done
 * delete your branch and pull in from upstream master
@@ -26,12 +26,20 @@ Once to know how to use git you
 
 == Documentation Contributions
 
-All docs are written in asciidoc and should be located in 'src/site/asciidoc'. The will be published with the Maven site 
-for each release and is also available on the github project site directly. You can even edit them in the github interface.
+All documentation is written in asciidoc and should be located in +src/site/asciidoc+.
+Navigation and other layout and design resources can be found in +src/site+ and
+specifically +src/site/site.xml+.  The documentation is published with each release
+and is available on GitHub. You can edit documentation in the github interface
+or in your local clone. Check  out the documentation on
+link:developing.html[developing] for further tips and tricks.
+
 
 == Code Contributions
 
-A contributin can be anything useful to the project. It might be fixing an issue or enhancing the plugin somehow. 
-Even a javadoc spelling fix is not too small to submit! The only thing you need to check is that you can build the 
-plugin, because we enforce things like codestyle and so on automatically. However if you create a pull request, this is
-done automatically as part of our CI setup.
+A contribution can be anything useful to the project. It might be fixing an
+issue or enhancing the plugin somehow. Even a javadoc spelling fix is not too
+small to submit! The only thing you need to check is that you can build the
+plugin, because we enforce things like code style and so on automatically.
+However if you create a pull request, this is done automatically as part of
+our continuous integration setup. Check  out the documentation on
+link:developing.html[developing] for further tips and tricks.

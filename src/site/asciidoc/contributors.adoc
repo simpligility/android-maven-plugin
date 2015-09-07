@@ -1,0 +1,18 @@
+= Contributors
+
+The Android Maven Plugin has received contributions from many individuals and companies. The source 
+code repository includes a https://github.com/simpligility/android-maven-plugin/graphs/contributors[list of contributor]. 
+These contributions are managed by 
+https://github.com/orgs/simpligility/teams/android-maven-plugins-core-committers[core contributors].
+
+The following companies provide support for core contributors:
+
+* http://www.simpligility.com/[simpligility] - core maintenance since Sept 2012
+* http://www.jayway.com/[jayway] - project creation and core maintenance until Sept 2012
+
+Other contributions have been sponsored by
+
+* https://github.com/[GitHub]
+* and many others.
+
+Please let us know if we have omitted you!

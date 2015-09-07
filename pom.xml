@@ -15,12 +15,12 @@
   <parent>
     <groupId>com.simpligility.maven</groupId>
     <artifactId>progressive-organization-pom</artifactId>
-    <version>2.4.0</version>
+    <version>3.0.0</version>
   </parent>
 
   <groupId>com.simpligility.maven.plugins</groupId>
   <artifactId>android-maven-plugin</artifactId>
-  <version>4.2.2-SNAPSHOT</version>
+  <version>4.3.1-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>Android Maven Plugin - android-maven-plugin</name>
@@ -36,9 +36,9 @@
     <!--  upgrade to 3.4 fails build, see https://github.com/simpligility/android-maven-plugin/issues/554 -->
     <maven-plugin-plugin.version>3.3</maven-plugin-plugin.version>
     <maven.api.version>3.0.4</maven.api.version>
-    <takari.test.version>2.1.0</takari.test.version>
+    <takari.test.version>2.4.0</takari.test.version>
     <easymock.version>3.2</easymock.version>
-    <powermock.version>1.5.2</powermock.version>
+    <powermock.version>1.6.2</powermock.version>
     <publisher.version>v2-rev13-1.19.0</publisher.version>
 
     <!-- Attention - make sure that the tools version is the versions of 
@@ -625,7 +625,6 @@
       <plugin>
         <groupId>io.takari.maven.plugins</groupId>
         <artifactId>takari-lifecycle-plugin</artifactId>
-        <version>1.11.4</version>
         <extensions>true</extensions>
          <executions>
           <execution>

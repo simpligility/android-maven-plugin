@@ -140,7 +140,7 @@ public interface CommandExecutor
     /**
      * Provides factory services for creating a default instance of the command executor.
      */
-    public static class Factory
+    class Factory
     {
 
         /**

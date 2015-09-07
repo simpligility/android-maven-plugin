@@ -1,10 +1,38 @@
 = Android Maven Plugin Example Projects
 
-All the examples are located in 'src/test/projects' of the plugin codebase. They are all standalone Maven projects 
-that can be copied into a separate location and used as a basis or inspiration for your own projects and serve as useful
+All the examples are located in +src/test/projects+ of the plugin code base. They are 
+all stand-alone Maven projects that can be copied into a separate location and 
+used as a basis or inspiration for your own projects and serve as useful
 examples for all the different use cases of the Android Maven Plugin.
 
-The are also built as part of the integration tests and the tests that run those builds are all named '*SampleIT.java'.
+The are also built as part of the integration tests and the tests that run those
+builds are all named '*SampleIT.java'. 
+
+Typically you can do a full build of the application in the example with
+
+----
+mvn clean install
+----
+
+Multi-module examples will potentially require an attached device or emulator
+and deploy the application and the integrations tests as part of the above
+invocation.
+
+In all cases you can deploy the application with
+
+----
+mvn android:deploy
+----
+
+and even start it with
+
+----
+mvn android:run
+----
+
+Check out the documentation on other link:plugin-info.html[goals of the plugin]
+for other potential tasks to run and inspect the POM file to see used
+the configuration and the IT test Java class for other example invocations.
 
 == HelloFlashLight
 

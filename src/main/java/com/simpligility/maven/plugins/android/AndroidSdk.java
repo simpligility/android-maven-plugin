@@ -16,11 +16,13 @@
 package com.simpligility.maven.plugins.android;
 
 import com.android.SdkConstants;
+import com.android.annotations.Nullable;
 import com.android.sdklib.AndroidTargetHash;
 import com.android.sdklib.AndroidVersion;
 import com.android.sdklib.BuildToolInfo;
 import com.android.sdklib.IAndroidTarget;
 import com.android.sdklib.SdkManager;
+import com.android.sdklib.repository.FullRevision;
 import com.android.utils.NullLogger;
 import org.apache.maven.plugin.MojoExecutionException;
 
@@ -42,7 +44,7 @@ public class AndroidSdk
      * the default API level for the SDK used as a fall back if none is supplied, 
      * should ideally point to the latest available version
      */
-    private static final String DEFAULT_ANDROID_API_LEVEL = "19";
+    private static final String DEFAULT_ANDROID_API_LEVEL = "22";
     /**
      * property file in each platform folder with details about platform.
      */
@@ -69,10 +71,17 @@ public class AndroidSdk
     private final IAndroidTarget androidTarget;
     private SdkManager sdkManager;
     private int sdkMajorVersion;
+    private String buildToolsVersion;
 
     public AndroidSdk( File sdkPath, String apiLevel )
     {
+        this( sdkPath, apiLevel, null );
+    }
+
+    public AndroidSdk( File sdkPath, String apiLevel, @Nullable String buildToolsVersion )
+    {
         this.sdkPath = sdkPath;
+        this.buildToolsVersion = buildToolsVersion;
 
         if ( sdkPath != null )
         {
@@ -253,12 +262,26 @@ public class AndroidSdk
     
     private BuildToolInfo getBuildToolInfo()
     {
+        //First we use the build tools specified in the pom file
+        if ( buildToolsVersion != null && !buildToolsVersion.equals( "" ) )
+        {
+            BuildToolInfo buildToolInfo = sdkManager.getBuildTool( FullRevision.parseRevision( buildToolsVersion ) );
+            if ( buildToolInfo != null )
+            {
+                return buildToolInfo;
+            }
+            //Since we cannot find the build tool specified by the user we make it fail
+            // instead of using the latest build tool version
+            throw new InvalidSdkException( "Invalid SDK: Build-tools " + buildToolsVersion + " not found."
+                    + " Check your Android SDK to install the build tools " + buildToolsVersion );
+        }
+
         if ( androidTarget != null )
         {
             BuildToolInfo buildToolInfo = androidTarget.getBuildToolInfo();
             if ( buildToolInfo != null ) 
             {
-                return androidTarget.getBuildToolInfo();
+                return buildToolInfo;
             }
         }
         // if no valid target is defined, or it has no build tools installed, try to use the latest

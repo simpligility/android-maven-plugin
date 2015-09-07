@@ -1,23 +1,26 @@
 = Android Maven Plugin
 
 The Android Maven Plugin is used to build applications for the Android operating system as well as build 
-libraries to be used in these efforts in AAR and the legacy APKLIB format.
+libraries to be used in these efforts in AAR and the legacy APKLIB format using Apache Maven.
 
-The plugin includes numerous features including support for running instrumentation tests, analysis with 
-Android Lint, processing with ProGuard and many other tasks. The main tasks are creating an application 
+The plugin includes numerous features with 
+link:usage.html[some minimal setup for usage]. The main tasks are creating an application 
 or a library for reuse:
 
 * Create an Android application using link:apk.html[+apk+ packaging]
 * Create an Android Archive for code/resources reuse using link:aar.html[+aar+ packaging]
 * Create an Android Application Library (to be deprecated) for code/resources reuse using link:apk.html[+apklib+ packaging]
 
+It includes support for running instrumentation tests, analysis with 
+Android Lint, processing with ProGuard and many other tasks. 
+
 Supplementary tasks helping these efforts supported are:
 
 * link:lint-mojo.html#lint[Android Lint]
 * link:proguard-mojo.html#proguard[Obfuscating and shrinking an application Proguard]
 * Zipalign
-* Running instrumentation tests on attached devices
-* Deploying, undeploying and starting an application on attached devices
+* link:adb-devices.html[Interacting with attached devices including running instrumentation tests, deploying, 
+undeploying or staring application]
 * And many other link:plugin-info.html[goals]
 
 == Required Setup
@@ -29,15 +32,16 @@ Supplementary tasks helping these efforts supported are:
 ** Set ANDROID_HOME to point to the path of your installed Android SDK
 ** $ANDROID_HOME/tools as well as $ANDROID_HOME/platform-tools to your $PATH
 ** Or on Windows %ANDROID_HOME%\tools and %ANDROID_HOME%\platform-tools
+* Optionally Android NDK and ANDROID_NDK_HOME set
 
 == Getting Started
 
 The best examples for project setups are the link:examples.html[example projects] that are part of the plugin 
-codebase and are run with each build and release. 
+code base and are run with each build and release. 
 
 == Further Information and Help
 
-* Plugin Documentation/Goals on this site
+* Plugin goal documentation on this site
 * Via the link:help-mojo.html[+help+ goal] of the plugin itself
 * Specific guides and articles on this site
 * Join and contribute on the http://groups.google.com/group/maven-android-developers[Maven Android Developers mailing list]

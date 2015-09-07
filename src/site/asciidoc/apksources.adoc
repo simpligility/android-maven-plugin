@@ -1,0 +1,91 @@
+= APK Sources Packaging -Deprecated
+
+WARNING: The apklib format is deprecated and support for it will be removed in a future release of the 
+Android Maven Plugin (5.0+). Use  the link:aar.html[AAR format] instead.
+
+The Android Maven Plugin created a specific packaging for Android sources and assets - `apksources`. 
+This packaging has been replaced by `apklib` and later by the Google-created `aar`.
+
+TIP: The information below is merely for historical context, if required for older projects.
+
+== Introduction
+
+This is useful if you develop apk's which share some code, but still have some different content. 
+The purpose is to share identical code through a "common-stuff" project, instead of copy/pasting it 
+between two projects.
+
+It might look like this:
+
+----
+  myapp-common-stuff
+    - contains common java source, res resources, assets and aidl files. typically all domain objects, business logic, common strings and common UI elements.
+    - 'mvn install' in this project generates myapp-common-stuff.apksources, which is used by the other specific projects.
+
+  myapp-for-phoneA
+    - depends on myapp-common-stuff.
+    - contains extra UI elements, and perhaps code, specific to phoneA.
+    - 'mvn install' in this project generates myapp-for-phoneA.apk, for deployment on phoneA devices.
+
+  myapp-for-tabletB
+    - depends on myapp-common-stuff.
+    - contains extra UI elements, and perhaps code, specific to tabletB.
+    - 'mvn install' in this project generates myapp-for-tabletB.apk, for deployment on tabletB devices.
+----
+
+NOTE: It is of course recommended (as far as possible) to keep everything in the same apk and just make it 
+work dynamically on every device. When that's not possible, for example when the functionality and UI differs 
+too much, this kind of dependency setup can be nice to do.
+
+== Details
+
+=== myapp-common-stuff
+In the apk project you wish to make available to other project as sources, declare the {{{pom.xml}}} as:
+
+----
+ <packaging>apk</packaging>
+----
+
+Also, add this to the android-maven-plugin's {{{<configuration>}}} tag:
+
+----
+<configuration>
+ <attachSources>true</attachSources>
+----
+
+Then run `mvn install` in that project. Its source code, res and assets directories will be collected and stored 
+in your local Maven repo. 
+
+=== myapp-for-phoneA and myapp-for-tabletB
+
+In the apk projects where you wish to use the src/main/java, res and assets directories of the dependency project, 
+add this to the `<dependencies>` tag of the pom:
+
+----
+ <dependency>
+     <groupId>enter.groupid.here</groupId>
+     <artifactId>myapp-common-stuff</artifactId>
+     <type>apksources</type>
+ </dependency>
+----
+
+All projects must be `<packaging>apk</packaging>`. Note the use of `<type>apksources</type>` when declaring how you 
+depend on the common source project.
+
+When you build these projects, they will pull in the sources from the first project, and include them. A new 
+R.java and new .java files from .aidl files will be built, based on the entire codebase and the entire collection 
+of `res`-resources.
+
+
+=== Overwrite vs. Overlay
+
+Be aware of the names you give to res files, for example `strings.xml`. Make sure they don't collide, because then 
+they will be overwritten when copied on top of each other. Use for example `commonStrings.xml` in the project with 
+common code and resources, and other specific names in each project.
+
+=== res-overlay
+
+If you don't want a certain resource file to overwrite a dependency resource file with the same name, you can put 
+it in a `res-overlay` directory instead of the `res` directory. That way, only the specific XML tags you specify 
+in the overlay resource file, will overwrite those specific xml tags in its dependency resource counterpart.
+
+

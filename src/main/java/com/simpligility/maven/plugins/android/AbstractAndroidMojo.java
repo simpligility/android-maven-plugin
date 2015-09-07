@@ -1107,10 +1107,12 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     {
         File chosenSdkPath;
         String chosenSdkPlatform;
+        String buildToolsVersion = null;
 
         if ( sdk != null )
         {
             // An <sdk> tag exists in the pom.
+            buildToolsVersion = sdk.getBuildTools();
 
             if ( sdk.getPath() != null )
             {
@@ -1164,7 +1166,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
             chosenSdkPlatform = sdkPlatform;
         }
 
-        return new AndroidSdk( chosenSdkPath, chosenSdkPlatform );
+        return new AndroidSdk( chosenSdkPath, chosenSdkPlatform, buildToolsVersion );
     }
 
     private String getAndroidHomeOrThrow() throws MojoExecutionException

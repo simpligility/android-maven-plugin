@@ -1,4 +1,4 @@
-= Older Releases Changelog
+= Older Releases Changelog - Version 4.0.0-rc.2 to 3.0.0-alpha-1
 
 This is the old changelog for releases 4.0.0-rc.2 and earlier as migrated from the old
 project hosting site on Google Code. Various links or mentions of issues might be defunct, 
@@ -123,7 +123,7 @@ Changes:
 ** fixes https://github.com/jayway/maven-android-plugin/issues/399
 ** contributed by Benoit Billington https://github.com/Shusshu
 
-=== Android Maven Plugin 3.9.0-rc.3 - released 2014-07-24  ===
+== Android Maven Plugin 3.9.0-rc.3 - released 2014-07-24
 
 * Improved error message when build tools of SDK are missing
 ** see https://github.com/jayway/maven-android-plugin/pull/381
@@ -171,7 +171,7 @@ Changes:
 ** contributed by Lenoid https://github.com/greek1979
 ** and Manfred Moser http://www.simpligility.com
 
-=== Android Maven Plugin 3.9.0-rc.2 - released 2014-05-27  ===
+== Android Maven Plugin 3.9.0-rc.2 - released 2014-05-27
  
 * Path issues fix for proguard mojo usage on Windows
 ** see https://github.com/jayway/maven-android-plugin/pull/296
@@ -318,7 +318,7 @@ ATTENTION:
  * instrumentation tested apk's have to use provided scope in the test project
  * further new parameters and their usage are documented on the site http://jayway.github.io/maven-android-plugin/
 
-=== Android Maven Plugin 3.9.0-rc.1 - 2014-02-24  ===
+== Android Maven Plugin 3.9.0-rc.1 - 2014-02-24
 
  * A whole lot of pom and other clean ups to the sample projects
  ** contributed by Manfred Moser http://www.simpligility.com
@@ -410,7 +410,7 @@ ATTENTION:
 ** see https://github.com/jayway/maven-android-plugin/pull/292
 ** contributed by William Ferguson https://github.com/william-ferguson-au 
 
-=== Android Maven Plugin 3.8.2 - 2013-12-30  ===
+== Android Maven Plugin 3.8.2 - 2013-12-30
 
  * Moved to plugin-testing from ASF
  ** fixes issue 423
@@ -437,7 +437,7 @@ ATTENTION:
 ** see https://github.com/jayway/maven-android-plugin/pull/259
 ** contributed by Pappy Stanescu https://github.com/pa314159
 
-=== Android Maven Plugin 3.8.1 - 2013-12-05 ===
+== Android Maven Plugin 3.8.1 - 2013-12-05
 
  * Support for aar consumption improved
 ** see https://github.com/jayway/maven-android-plugin/pull/244
@@ -467,7 +467,7 @@ ATTENTION:
 ** see https://github.com/jayway/maven-android-plugin/pull/253
 ** contributed by Pappy Stanescu https://github.com/pa314159
 
-=== Android Maven Plugin 3.8.0 - 2013-11-08  ===
+== Android Maven Plugin 3.8.0 - 2013-11-08 
 
  * Migrated to require Apache Maven 3.1.1 or higher
  ** contributed by Manfred Moser http://www.simpligility.com
@@ -498,7 +498,7 @@ ATTENTION:
 
 ATTENTION: Maven 3.1.1+ is required to build the plugin itself as well as to use the plugin to build Android applications!
 
-=== Android Maven Plugin 3.7.0 - 2013-09-27 ===
+== Android Maven Plugin 3.7.0 - 2013-09-27
 
  * Updated builder library version to 0.5.6
  ** see https://github.com/jayway/maven-android-plugin/pull/220
@@ -546,7 +546,7 @@ ATTENTION:
  * the keyword 'all' is no longer supported for ndk architectures, you have to explicitly list them
 
 
-=== Android Maven Plugin 3.6.1 - 2013-07-31 ===
+== Android Maven Plugin 3.6.1 - 2013-07-31
 
  * Updated builder library version to 0.4.1 and 0.4.2, which pulls in Android SDK 22.0.1 components
    ** contributed by Manfred Moser http://www.simpligility.com
@@ -575,7 +575,7 @@ ATTENTION:
 ** see https://github.com/jayway/maven-android-plugin/pull/219
 ** contributed by Matthias Käppler http://mttkay.github.io/
 
-=== Android Maven Plugin 3.6.0 - 2013-05-22 ===
+== Android Maven Plugin 3.6.0 - 2013-05-22
 
  * Fix forMac OS X Proguard usage bug    
  ** see https://github.com/jayway/maven-android-plugin/pull/198
@@ -646,7 +646,7 @@ An example plugin configuration is
 
 The plugin has been updated to work with the SDK release 22.0. 21.1 works on the CI server. It might or might not work for older versions. YMMV.
 
-=== Android Maven Plugin 3.5.3 - 2013-04-09 ===
+== Android Maven Plugin 3.5.3 - 2013-04-09
 
  * Fix for NDK codebase so that NDK install is NOT required for normal builds
  ** see https://github.com/jayway/maven-android-plugin/pull/196
@@ -706,7 +706,7 @@ Full configuration can use these parameters.
  </monkey>
 ----
 
-=== Android Maven Plugin 3.5.2 - 2013-04-01  ===
+== Android Maven Plugin 3.5.2 - 2013-04-01 
 
 Attention - due to a bug this release requires you to have the NDK installed even for normal builds. 
 If that is a problem please wait for the next release. A fix exist in the current 3.5.3-SNAPSHOT version.
@@ -766,7 +766,7 @@ Full configuration can use these parameters.
 </uiautomator>
 ----
 
-=== Android Maven Plugin 3.5.1 - 2013-02-23 ===
+== Android Maven Plugin 3.5.1 - 2013-02-23
 
  * Added existence check for res folder when expanding apklib files to make it more robust against that problem
  ** see https://github.com/jayway/maven-android-plugin/pull/165
@@ -868,7 +868,7 @@ Full configuration options available are
 </lint>
 ----
 
-=== Android Maven Plugin 3.5.0 - released 2012-12-18 ===
+== Android Maven Plugin 3.5.0 - released 2012-12-18
 
  * Non-release builds will now automatically be debuggable
  ** see https://github.com/jayway/maven-android-plugin/pull/149
@@ -927,7 +927,7 @@ mvn clean deploy -Dandroid.release=true
 or if you use the release plugin just add the above pom config to the release profile.
 
 
-=== Android Maven Plugin 3.4.1 ===
+== Android Maven Plugin 3.4.1
 ** apklib now uses the resourceOverlayDirectories and resourceOverlayDirectory options
  ** see https://github.com/jayway/maven-android-plugin/pull/143
  ** contributed by Tim Hepner https://github.com/mithepner
@@ -946,7 +946,7 @@ or if you use the release plugin just add the above pom config to the release pr
  
 All merges, miscellaneous improvements and release performance contributed by Manfred Moser, http://www.simpligility.com
 
-=== Android Maven Plugin 3.4.0 ===
+== Android Maven Plugin 3.4.0
 
  * Added support to specify application makefile in ndk-build
  ** see https://github.com/jayway/maven-android-plugin/pull/131
@@ -1024,7 +1024,7 @@ API/Configuration Changes:
  </plugins>
 ----
 
-=== Android Maven Plugin 3.3.2 ===
+== Android Maven Plugin 3.3.2
  * Support transitive apklibs when invoking aapt
  ** see https://github.com/jayway/maven-android-plugin/pull/124
  ** contributed by Jake Wharton http://jakewharton.com
@@ -1054,10 +1054,10 @@ API/Configuration Changes:
 
 All merges into master and release process work contributed by Manfred Moser
 
-=== Android Maven Plugin 3.3.1 (never released) ===
+== Android Maven Plugin 3.3.1 (never released)
 
 release process failed, version got bumped to 3.3.2
-=== Android Maven Plugin 3.3.0 ===
+== Android Maven Plugin 3.3.0
 
 ** Expose manifest values in manifest goal as properties so they can be picked up in the build e.g. to be used for further tasks like scm branch creation, logging and so on
  ** see javadoc for property name details, convention is android.manifest.xyz
@@ -1090,7 +1090,7 @@ release process failed, version got bumped to 3.3.2
  ** and https://github.com/jayway/maven-android-plugin/commit/03e275df8a1b3801d4ed1f704b6b1619a3af682b
  ** contributed by Marvin Bredal Lillehaug https://github.com/computerlove and Manfred Moser http://simpligility.com
 
-=== Android Maven Plugin 3.2.0 ===
+== Android Maven Plugin 3.2.0
 
 ** Capture screenshots from the Android device during integration tests
   ** see https://github.com/jayway/maven-android-plugin/pull/104
@@ -1176,13 +1176,13 @@ API/Configuration Changes:
           </manifest>
 ---- 
 
-=== Android Maven Plugin 3.1.1 ===
+== Android Maven Plugin 3.1.1
 
 ** verify required NDK message and bring up useful error messages
  ** see https://github.com/jayway/maven-android-plugin/pull/102
  ** contributed by Johan Lindquist
 
-=== Android Maven Plugin 3.1.0 ===
+== Android Maven Plugin 3.1.0
 
 ** plugin site updated to use fluido skin and new report plugin versions
   ** contributed by Manfred Moser http://simpligility.com
@@ -1253,7 +1253,7 @@ API/Configuration Changes:
 ----
 ** *NDK builds now require NDK `r7`*
 
-=== Android Maven Plugin 3.0.0 ===
+== Android Maven Plugin 3.0.0
 
 ** new proguard goal 
   ** see https://github.com/jayway/maven-android-plugin/pull/78
@@ -1277,7 +1277,7 @@ API/Configuration Changes:
 ----
  in the plugin configuration, by default uses a proguard.cfg file as used/created by the Android SDK
 
-=== Android Maven Plugin 3.0.0-alpha-14 ===
+== Android Maven Plugin 3.0.0-alpha-14
 
 ** support for statically linked native libraries as dependencies 
  ** see https://github.com/jayway/maven-android-plugin/pull/73
@@ -1315,7 +1315,7 @@ API/Configuration Changes:
 ** new parameter to specify alternate ndk build file *android.ndk.ndk-build-executable*
 ** new parameter to specify build directory for ndk build step *android.ndk.ndk-build-directory*
 
-=== Android Maven Plugin 3.0.0-alpha-13 ===
+== Android Maven Plugin 3.0.0-alpha-13
 
  * improved error message for apkbuilder
  ** see https://github.com/jayway/maven-android-plugin/pull/69
@@ -1330,7 +1330,7 @@ API/Configuration Changes:
  ** see https://github.com/jayway/maven-android-plugin/pull/71
  ** contributed by Erik Ogenvik http://erikhjortsberg.blogspot.com
 
-=== Android Maven Plugin 3.0.0-alpha-12 ===
+== Android Maven Plugin 3.0.0-alpha-12
 
  * upgraded to `r13` of ddmlib, that is now available in central
 ** special thanks to Ladislav Thon and Robert Manning
@@ -1393,7 +1393,7 @@ API/Configuration Changes
 </pull>
 ----
 
-=== Android Maven Plugin 3.0.0-alpha-11 ===
+== Android Maven Plugin 3.0.0-alpha-11
 
 * refactored name of plugin to *android-maven-plugin*
 ** THIS MEANS ALL USERS MUST UPDATE THEIR POMS
@@ -1405,17 +1405,17 @@ API/Configuration Changes
 API/Configuration Changes:
 * renamed all plugin configuration from '<artifactId>maven-android-plugin</artifactId>' to *'<artifactId>android-maven-plugin</artifactId>'*
 
-=== Maven Android Plugin 3.0.0-alpha-11 ===
+== Maven Android Plugin 3.0.0-alpha-11
 
  * This is the last 3.x-series release under the name 'maven-android-plugin'. From now on, the plugin is known as 'android-maven-plugin'. See above.
  * Added forward-pointing relocation meta-data to artifactId 'android-maven-plugin'.
 ** contributed by Hugo Josefson
 
-=== Maven Android Plugin 3.0.0-alpha-10 ===
+== Maven Android Plugin 3.0.0-alpha-10
 
 (not released)
 
-=== Maven Android Plugin 3.0.0-alpha-9 ===
+== Maven Android Plugin 3.0.0-alpha-9
 
 * Wait for the initial device list to be loaded from the Android Debug Bridge before proceeding to deploy and other tasks using adb
 ** see https://github.com/jayway/maven-android-plugin/pull/61
@@ -1489,11 +1489,11 @@ API/Configuration Changes:
 or have the manifest as part of the configuration property like e.g. 
 android.manifest.debuggable or android.manifest.sharedUserId
 
-=== Maven Android Plugin 3.0.0-alpha-8 ===
+== Maven Android Plugin 3.0.0-alpha-8
 
 (not released)
 
-=== Maven Android Plugin 3.0.0-alpha-7 ===
+== Maven Android Plugin 3.0.0-alpha-7
 
  * improved naming for devices in logging and unit report file name
  ** see https://github.com/jayway/maven-android-plugin/pull/58
@@ -1551,7 +1551,7 @@ Updating Your android:debuggable attribute
 
  * new goal to stop all emulators, try mvn *android:emulator-stop-all*
 
-=== Maven Android Plugin 3.0.0-alpha-6 ===
+== Maven Android Plugin 3.0.0-alpha-6
  * new parameter 'optimize'. Defaults to 'true'. Setting to 'false' may make the build faster.
 ** see https://github.com/jayway/maven-android-plugin/pull/56
 ** contributed by Lorenzo Villani
@@ -1560,7 +1560,7 @@ API/Configuration Changes:
 
  * new *optimize* boolean parameter.
 
-=== Maven Android Plugin 3.0.0-alpha-5 ===
+== Maven Android Plugin 3.0.0-alpha-5
 
  * failure of test run result in build failure
 ** see https://github.com/jayway/maven-android-plugin/pull/55
@@ -1572,7 +1572,7 @@ API/Configuration Changes:
 API/Configuration Changes:
   none
 
-=== Maven Android Plugin 3.0.0-alpha-4 ===
+== Maven Android Plugin 3.0.0-alpha-4
  * new goal "help" that will display all goals and their help text or a specific goal and its parameters
  ** see https://github.com/jayway/maven-android-plugin/pull/53 
  ** fixes Issue 191
@@ -1586,7 +1586,7 @@ API/Configuration Changes:
 
  * new *help* goal: try 'mvn android:help'
 
-=== Maven Android Plugin 3.0.0-alpha-3 ===
+== Maven Android Plugin 3.0.0-alpha-3
 
  * Improved logging for deploy and undeploy
 ** see https://github.com/jayway/maven-android-plugin/commit/8fa9454c5f16d0d0024ad2452088e3a0b622dcf6
@@ -1629,13 +1629,13 @@ API/Configuration Changes:
 ** new standalone mojo android:run
 ** new parameter android.test.createreport default to true, set to false and junit xml report will not be created
 
-=== Maven Android Plugin 3.0.0-alpha-2 ===
+== Maven Android Plugin 3.0.0-alpha-2
 
  * Fix so that builds won't pass when integration tests fail
 ** see https://github.com/jayway/maven-android-plugin/pull/41
 ** contributed by Roberto Tyley
 
-=== Maven Android Plugin 3.0.0-alpha-1 ===
+== Maven Android Plugin 3.0.0-alpha-1
 
  * Fix for Issue 153: jvmArguments missing dash
 ** contributed by Manfred Moser
@@ -1705,455 +1705,8 @@ API/Configuration Changes:
 * changed "instrumentationRunner" to "test.instrumentationRunner"
 * changed "instrumentationPackage" to "test.instrumentationPackage"
 
-== Maven Android Plugin 2.x release series
 
-== Maven Android Plugin 2.9.0-beta-5
+== 2.9.0-beta-5 and older release notes
 
-* Fix for Issue 153: jvmArguments missing dash, 
-** contributed by Manfred Moser
-* Fix for Issue 148: correct help documentation for sdk path, 
-** contributed by Pierre-Yves Ricau
-* Support for lazy library unpacking to speed up build. See issue 120
-** contributed by shivawu. 
-* Fix for issue 118 and issue 143
-** see [https://github.com/jayway/maven-android-plugin/pull/32]
-** contributed by alecplumb
-* Support for extra arguments for aapt (Issue 165)
-** see [https://github.com/jayway/maven-android-plugin/pull/35]
-** contributed by Fabrizio Giudici
-* Added apk parameters support "renameInstrumentationTargetPackage"
-** see [https://github.com/jayway/maven-android-plugin/pull/38]
-** contributed by Rodrigo Munoz
+Can be found in link:changelog-old-2x.html[the migrated changelog] from the old project site.
 
-API/Configuration Changes: 
-
-* noLocals (default false), pass --no-locals to dx command
-* lazyLibraryUnpack (default false) only unpack library after a clean build and not when output directory already exists
-* aaptExtraArgs array of string extra arguments to be passed to aapt
-* renameManifestPackage - pass the --rename-manifest-package parameter to aapt
-* renameInstrumentationTargetPackage - pass the --rename-instrumentation-target-package parameter to aapt
-
-== Maven Android Plugin 2.9.0-beta-4
-
- * Fix for Issue 147: apklib modules aren't deployed
-** ApkLib modules are now deployed to Maven repository when running 'mvn deploy' or when performing a Maven release.
-** By Hugo Josefson.
- * Fixed usage of coreLibrary in dex command. See [https://github.com/jayway/maven-android-plugin/pull/34] Contributed by kevinpotgieter 
-
-=== Maven Android Plugin 2.9.0-beta-3 ===
-
- * Fix for Issue 137: Specifying jvmArguments results in "error: no command specified"
-** 'jvmArguments' now work again.
-** Thank you to Roberto Tyley.
- * Fix for Issue 145: Can't release multi-module with apklib
-** When one of your multi-module project's modules is '<packaging>apklib</apklib>', you had to 'mvn install' before, for the other modules to be able to find it. Now 'mvn package' works too, even when your local repo is empty.
-** Especially important when performing a Maven release of a multi-module project like that :) 
-** By Hugo Josefson.
-
-=== Maven Android Plugin 2.9.0-beta-2 ===
-
- * New feature: Issue 113: Patch for advanced instrumentation settings
-** Allows you to specify which tests to run, via configuration.
-** See description in Issue 113 for usage instructions.
-** Thank you to Marcus.
- * New feature: Added option for using 'aapt --custom-package'.
-** For those who know you need it, add '<customPackage>...</customPackage>' to the plugin configuration or '-Dandroid.customPackage=...' to the command line.
-** Thank you to Stéphane Jacquemain.
- * Fix for Issue 112 - The deploy, undeploy and redeploy goals must have no effect on non-APK project
-** Running 'mvn android:deploy'/'redeploy'/'undeploy' on a project which is not an APK, now does nothing instead of giving an error.
-** Thank you to Clement Escoffier.
- * Fix for Issue 115 - Build Fails if command path has a space in it
-** Running 'mvn install' from a project directory with spaces in it now works.
-** Thank you to David.
- * Fix for resource collisions in apklib projects.
-** Eric Bowman's example should work now, using current release of the plugin: https://github.com/hugojosefson/maven-android-multimodule-example 
-** By Hugo Josefson.
-
-=== Maven Android Plugin 2.9.0-beta-1 ===
-
- * New feature - Issue 96: Support for library projects
-** Use '<packaging>apklib</packaging>' for the library project, and '<type>apklib</type>' in the '<dependency>' tag in the app when depending on it.
-** See ApkLib for documentation and samples.
-** Thank you to Nick Maiorana. Some extra patches by Eric Bowman and Hugo Josefson.
- * Made maven-android-plugin easier to build from source for new developers.
-** Removed tests for obsolete Android SDK versions, which are hard to find and install.
- * Fix for Issue 123: Packaging failed when embedded dependencies have duplicate resources
- ** Disabled by default, enable with '<extractDuplicates>true</extractDuplicates>'
- ** See Issue 123 and linked pull request for more information.
- ** Thank you to Clement Escoffier.
-
-=== Maven Android Plugin 2.8.4 ===
-
- * Fix for Issue 119: "aapt: /lib/libz.so.1: no version information available"
-** Works in Amazon's own Linux dist now.
-** By Hugo Josefson
-
-=== Maven Android Plugin 2.8.3 ===
-
- * Re-fix for Issue 104: "Can't find SDK tools on Windows"
-** Issue introduced in version 2.8.1, now fixed even better.
-** Thank you to Nick Maiorana.
-
-=== Maven Android Plugin 2.8.2 ===
-
- * Fix for Issue 104: "Can't find SDK tools on Windows"
-** Issue introduced in version 2.8.1, now fixed.
-** By Hugo Josefson
-
-=== Maven Android Plugin 2.8.1 ===
-
- * Fix for Issue 103: "Use `platform-tools` instead of `platforms/*/tools`"
-** This makes all commands automatically work also with the latest Android SDK `r08` (for Android 2.3 / Gingerbread).
-** By Hugo Josefson
-
-=== Maven Android Plugin 2.8.0 ===
-
- * Fix for Issue 48: "`*`.apksources file contains .svn files"
-** Thank you to Clement Escoffier.
- * Fix for Issue 49: "'assets' files are not included when including one android project as 'apksources' type dependency of another"
-** Thank you to Clement Escoffier.
- * New feature - Issue 69: "Add android:redeploy Goal"
-** 'mvn android:redeploy' can now be used as a shortcut for 'mvn android:undeploy android:deploy'.
-** Thank you to Clement Escoffier.
- * Fix for Issue 85: "apkbuilder:  THIS TOOL IS DEPRECATED. See --help for more information."
-** Now automatically loads 'sdklib.jar' from the Android SDK.
-** Thank you to Clement Escoffier.
- * New feature - Issue 98: "package should produce the signed as well as the unsigned apk"
-** Set '-Dandroid.sign.debug=both' or '<sign><debug>both</debug></sign>' to get both a debug signed and an unsigned apk.
-** Thank you to Mirko Friedenhagen.
-
-
-=== Maven Android Plugin 2.7.0 ===
-
- * New feature: Native library copying support
- ** Includes native libraries in the project's 'libs/' directory. Can be changed with parameter 'nativeLibrariesDirectory'.
- ** Includes native libraries from Maven dependencies, if they are '<type>so</type>'.
- ** Hardware architecture is picked up from the 'so' artifact's classifier. If none is set, it defaults to 'armebi'. (The default hw architecture when no classifier is set, can also be changed with parameter 'nativeLibrariesDependenciesHardwareArchitectureDefault'.)
- ** Thank you to Johan Lindquist.
- * Fix for Issue 87: zipalign should be skipped on non APK projects
- ** Thank you to Clement Escoffier.
- * Fix: Do not get confused by trailing slashes.
- ** Thank you to Mirko Friedenhagen.
-
-
-=== Maven Android Plugin 2.6.0 ===
-
- * Split dex into unpack/dex so something like ProGuard can be inserted.
- ** Thank you to Zang !MingJie for this patch.
- * Fixed Issue 72: Allows modification of the gen folder.
- ** Thank you to Mathieu Carbou for this patch.
- * Obey the '-Dandroid.device=...' and '<device>...</device>' parameters for all adb commands.
- ** By Hugo Josefson
- * Fixed Issue 68: Added boolean flag 'coreLibrary' to !DexMojo to allow for passing the '--core-library' flag to dx.
-** Thank you to Kelsey Francis for the patch.
- * Fix for Issue 4: emulator cannot be stopped on windows because of command params not set correctly in the stop command, also makes sure to start the emulator when the device is connected to the usb, by passing the '-e' option to adb when getting the serial number.
-** Thank you to Chander Pechetty for this patch.
- * Dirty Fix for Issue 82.
- ** Better that current situation! Thank you to Mirko Friedenhagen for this patch.
- * Paths on the device or emulator during Pull and Push may be Strings only instead of File as absolutePath is OS-dependant, e.g. on Windows Drive Letters will be added and Backslashes will be used as path separator.
- ** Thank you to Mirko Friedenhagen for this patch.
- * Excluded old plexus:plexus-utils
- ** Looks like maven-dependency-plugin indirectly depends on some really old version of plexus:plexus-utils, which had groupId different from current org.codehaus.plexus and thus was included together with the new version. The order of dependencies has changed in 3.0-beta-3, and the old/stale plexus-utils causes problems both during the build and at runtime.
- ** Thank you to Igor Fedorenko for this patch.
- * Various cleanup and improvements.
- ** Thank you to Mirko Friedenhagen and Manfred Moser for these.
-
-
-=== Maven Android Plugin 2.5.2 ===
-
- * Fixed Issue 78: Platform folder names must be android-x, where x is a number.
-** Now, all subfolders of '<sdk-path>/platforms' with names starting with "'android-'" are valid platform folders. There is no implicit connection between the name of the directories and the platform versions. (The name of the platform version and the api level number are taken from the 'source.properties' file.)
-** The plugin looks for platforms in '<sdk-path>/platforms'. Only directories starting with "'android-'" are considered valid. (Maybe we should remove this restriction.) It then looks in the file 'source.properties' to find out the api level and the platform name. The level and name will then be matched to what is specified in the pom file.
-** Thank you to Albin Theander for the patch!
-
-=== Maven Android Plugin 2.5.1 ===
-
- * Fixed Issue 74: Dependencies are now processed in the order they stand in the pom.
-** Thank you to Albin Theander for the patch!
- * Updated [http://maven-android-plugin-m2site.googlecode.com/svn/zipalign-mojo.html plugin documentation for zipalign].
- * Fixed misspelled command-line argument, corrected to '-Dandroid.zipalign.inputApk=...'
-** Thank you to Manfred Moser for the patch!
-
-=== Maven Android Plugin 2.5.0 ===
-
- * New feature: Zipalign goal (Issue 51).
- * Improved verification of the Android SDK platform and API level.
- * Issue 4: Some more fixes for starting/stopping emulator on Windows.
- * Updated [Samples] to use android.jar from Maven Central, and not requiring Maven Android SDK Deployer.
-
-  Thank you to Manfred Moser for these patches!
-
-  ([http://www.simpligility.com/2010/06/maven-android-plugin-with-zipalign-and-improved-verification/ Manfred's blog post about this release] has more details)
-
-
-=== Maven Android Plugin 2.4.0 ===
-
- * New feature: [http://maven-android-plugin-m2site.googlecode.com/svn/apk-mojo.html#configurations apk configurations]
- * Now possible to [http://maven-android-plugin-m2site.googlecode.com/svn/apk-mojo.html#generateApk skip generating dex and apk], by setting '<generateApk>false</generateApk>'.
-** Thank you to Albin Theander for the patches!
-
-=== Maven Android Plugin 2.3.3 ===
-
- * Basic NDK support: include compiled native libraries to the apk
-** Thank you to Sergey Rudchenko for the patch!
- * Fixed Issue 57 / Issue 50: Dependencies do not get included in apk / maven dependency ksoap2-android reference error
-** This issue affected both EclipseIntegration and command-line builds with Maven 3.
-** Thank you to Ricardo Gladwell for the patch!
- * Google changed how platform directories are named. android-1.1 -> android-2; android-1.5 -> android-3, etc.:
-** Updated unit tests to pass for new version of Android SDK: convention for platforms directory structure has changed. Thank you to Ricardo Gladwell for the patch.
-** Updated pom.xml files in [Samples] to use the new platform directory names too.
-** *Users should edit their pom.xml files, and change the '<sdk><platform>' tags accordingly, if they install the new Android SDK.*
-
-=== Maven Android Plugin 2.3.2 ===
-
-* Issue 4
-* New support for stopping an emulator on Windows.
-** We still need someone on Windows to test it!
-** See Issue 4, and scroll down to "INSTRUCTIONS FOR ANYONE TO TEST ON WINDOWS".
-* Improved support for starting an emulator on Mac in IntelliJ IDEA.
-** Thank you Manfred Moser for the patches!
-* Using newer plugins.
-
-=== Maven Android Plugin 2.3.0 ===
-
-* Issue 4
-** New support for starting and stopping an emulator on Unix/Linux, and starting an emulator on Windows. 
-Thank you Manfred Moser for this functionality!  Documented in the [http://www.sonatype.com/books/mvnref-book/reference/android-dev-sect-goals.html Maven Android Plugin Goals] section of the book _Maven: The Complete Reference_.
-* Defaulting '<sdk><path>...</path></sdk>' to environment variable 'ANDROID_HOME' so that the config parameter is not needed by default. Thank you Manfred Moser for the patch!
-* Require _at least_ Maven 2.2.1, instead of _exactly_ 2.2.1. This should fix an [http://groups.google.com/group/maven-android-developers/browse_thread/thread/eb48fddd36b0524 Eclipse issue discussed on the Maven Android Developers list].
-* Using newer plugins. Now 'mvn versions:display-plugin-updates' is happy :)
-f
-=== Maven Android Plugin 2.2.2 ===
-
- * Increased configuration possibilities for ApkSourcesDependency. Thank you Albin Theander for the patch!
-** Added the possibility to use several overlay directories instead of just one. This makes it possible to config which ones to use with profiles. To use this feature, just add the following to the plugin configuration:
-----
-<resourceOverlayDirectories>
-<dir>res-overlay-1</dir>
-<dir>res-overlay-2</dir>
-</resourceOverlayDirectories>
-----
-** If the feature is not used, the old resourceOverlayDirectory parameter is used as before, keeping everything backwards compatible.
-* Issue 39
-** Improved detection for which projects are instrumentation test projects. Now considers projects without '<instrumentation.../>' tag in them, as non-instrumentationtest projects, and doesn't try to run them as tests.
-* Issue 41
-** Exclude any '<scope>provided</scope>' dependencies from the built apk file. The android.jar dependencies are/should be such dependencies.
-
-
-=== Maven Android Plugin 2.2.1 ===
-
- * Bugfixes for features introduced in Maven Android Plugin 2.2.0. Thank you Erik Hjortsberg for your patches!
-** Combine both the local resources and any dependency resources in a combined directory.
-** Added the ability to provide overlay resources. These will need to be put in a directory named "res-overlay". See ApkSourcesDependency.
-** When using the eclipse maven plugin, the 'apksources' artifact will point towards a directory (which isn't the correct one). Therefore, when extracting the 'apksources' artifact we'll first try to get a jar from the local repository.
-** Fixed bug where the dependency files overwrote the local files (should be the other way around).
-* Require latest [http://maven.apache.org/download.html Apache Maven 2.2.1] (coincidental version number!) in fixing Issue 38.
-* Pom cleanup. Thank you Manfred Moser for the patch.
-
-=== Maven Android Plugin 2.2.0 ===
-
- * Improved EclipseIntegration support. Thank you to Dietrich Schulten for the patch!
-** Eclipse should now better understand that '<packaging>apk</packaging>' projects are Java projects.
- * Improved EclipseIntegration support. Thank you to Erik Hjortsberg for the patch!
-** When using '<deleteConflictingFiles>true</deleteConflictingFiles>', only delete those .aidl files which will result in a .java file being auto created.
- * New feature: Possible to set up inter-project dependencies, even for source code, Android resources and assets.
-** It lets you target different devices easier, without having to duplicate code.
-** Useful for when apk's for different devices need to share some code, Android resources and assets, while still having some code/resources/assets different.
-** See ApkSourcesDependency for details and instructions.
- * (Hopefully) Fixes Issue 31: android:dex should work with packaging=jar
-** Added config parameter '<attachJar>true|false</attachJar>' which is 'true' by default. It can be disabled if the jar is not desired in the build. Alternatively configured from commandline: '-Dandroid.attachJar=false'
- * (Hopefully) Fixes Issue 30: Generated sources and duplicate attachment in a "mavenized" Eclipse project
-** No longer attaches the jar artifact twice. Attaching the jar can also be disabled 
- * Fixes Issue 28: !NoClassDefFoundError, but class exists in target/android-classes
-** Adding java classpath resources from project and dependencies to the apk file.
- * Fixes Issue 33: Dealing with META-INF in 3rd party jars
-** Adding java classpath resources from project and dependencies to the apk file.
- * Fixed and added more error messages.
-
-
-=== Maven Android Plugin 2.1.0 ===
- * New feature, fixes Issue 27: RFE: Add posibility to specify the device to deploy to
-** Can be configured with configuration parameter '<device>emulator-5554</device>'
-** Can be configured from command line: 'mvn -Dandroid.device=emulator-5554'
-** Special values 'usb' and 'emulator' can be used instead of serial number, for automatic device detection on USB cable or among started emulators.
-
-
-=== Maven Android Plugin 2.0.0 ===
- * No changes needed since 2.0.0-rc1, just re-releasing as version 2.0.0.
- * The most stable, bug-free, easy-to-use release of any Maven plugin for Android app developers we know about!
-
-== Maven Android Plugin 2.x pre-releases ==
-
-Changes which require action are marked as *bold*.
-
-=== Maven Android Plugin 2.0.0-rc1 ===
-* Closes input/output streams.
-** Thank you to Martin Vyšný for the patch.
-** This fixes [http://code.google.com/p/masa/issues/detail?id=27 Masa Issue 27], but in this project.
-
-=== Maven Android Plugin 2.0.0-alpha9 ===
-* Issue 6: look over parameter names and expressions
-* [http://maven-android-plugin-m2site.googlecode.com/svn/plugin-info.html mvn site] is updated with new goal names, and their config params.
-* Simplified goals 'android:deploy' and 'android:deploy-file' into the same goal, 'android:deploy'.
-* Simplified goals 'android:undeploy-file' and 'android:undeploy-package' into the same goal, 'android:undeploy'.
-* In goals 'android:deploy' and 'android:undeploy':
-** Renamed command-line parameter '-Dfile' to '-Dandroid.file', for consistency.
-* In goals 'android:pull' and 'android:push':
-** Renamed command-line parameter '-Dsource' to '-Dandroid.source', for consistency.
-** Renamed command-line parameter '-Ddestination' to '-Dandroid.destination', for consistency.
-* Renamed config param '<signWithDebugKeystore>true|false</signWithDebugKeystore>' to
-----
-<sign>
-<debug>true|false|auto</debug>
-</sign>
-----
-* Removed config param '<sourceDirectory>' for clarity, because it should be configured outside the plugin, like this:
-----
-<build>
-<sourceDirectory>src/main/java</sourceDirectory>
-</build>
-----
-
-=== Maven Android Plugin 2.0.0-alpha8 ===
-* Issue 6: look over parameter names and expressions
-** [http://maven-android-plugin-m2site.googlecode.com/svn/plugin-info.html mvn site] is updated with new goal names, and their config params.
-** [Glossary] is updated.
-* Renamed goal 'android:deployDependencies' to 'android:deploy-dependencies'.
-* Renamed config param '<undeployApkBeforeDeploying>' to '<undeployBeforeDeploy>'.*
-* Renamed goal 'android:adbPull' to 'android:pull'.
-* Renamed config param '<destinationFileOrDirectory>' to '<destination>'.
-* Renamed config param '<sourceFileOrDirectory>' to '<source>'.
-* Improved error handling.
-* Renamed goal 'android:adbPush' to 'android:push'.
-* Renamed config param '<destinationFileOrDirectory>' to '<destination>'.
-* Renamed config param '<sourceFileOrDirectory>' to '<source>'.
-* Improved error handling.
-* Renamed goal 'android:undeploy-packageName' to 'android:undeploy-package'.
-* Renamed config param '<packageName>' to '<package>'.
-* Renamed config param '-Dpackage' to '-Dandroid.package'.
-* Resolve config param '<package>'/'-Dandroid.package' from 'AndroidManifest.xml' if not defined.
-* Renamed goal 'android:platformTest' to 'android:instrument'.
-* Renamed config param '<testsPackage>' to '<testPackage>'.
-* Renamed config param '<testPackage>' to '<instrumentationPackage>'.
-* Renamed config param '<testRunner>' to '<instrumentationRunner>'.
-* Renamed config param '-Dandroid.test.testPackage' to '-Dandroid.instrumentationPackage'.
-* Renamed config param '-Dandroid.test.testRunner' to '-Dandroid.instrumentationRunner'.
-* In goal 'android:generate-sources':
-** Removed parameter 'createPackageDirectories' for clarity, and because we currently have no known use case for setting it to 'false'.
-* Samples: Renamed apidemos-`*`-platformtests to apidemos-`*`-instrumentationtest.
-
-
-
-=== Maven Android Plugin 2.0.0-alpha7 ===
- * Issue 25: 'mvn android:deploy' doesn't work
-** Now it does :)
-
-=== Maven Android Plugin 2.0.0-alpha6 ===
- * Issue 24: mvn install fails on Windows for '<packaging>android:apk:platformTest</packaging>'
-** MAJOR CHANGE: Solving this had to result in a major change in how poms are defined. It really was necessary for fixing this issue. Can't be done without changing the '<packaging>' to something without ":", so it's best to do it all at once now while we're still in alpha.
-** The change is that all Android application poms and all Android platformTest poms will have to have *'<packaging>apk</packaging>'* instead of the separate '<packaging>android:apk</packaging>' and '<packaging>android:apk:platformTest</packaging>' which they've had before. Also, of course, if the platformTest pom has a dependency to another apk, that '<dependency>' will now have to be *'<type>apk</type>'* instead of '<type>android:apk</type>'.
-** '<packaging>apk</packaging>' also makes more sense, especially when comparing to other packaging types such as jar, war and so on...
- * Updated [Samples] to reflect the fixed Issue 24.
- * Because both application and platformTest poms have the same '<packaging>' now, Maven Android Plugin autodetects whether to enable integration test goals when going through the 'integration-test' phase. The autodetection is based on whether it finds any test classes (those which extend 'junit.framework.*' or 'android.test.*') in your application. It looks in both the project's source directory and any jar dependencies brought in, which will be included in the apk.
- * Test class autodetection can be overridden with the config parameter '<enableIntegrationTest>true|false|auto</enableIntegrationTest>'.
-
-
-=== Maven Android Plugin 2.0.0-alpha5 ===
- * Issue 23: !PlatformTestMojo requires PATH
-** Doesn't expect PATH to be set. Uses tools in the configured sdk instead. (fixed in one more place)
-
-=== Maven Android Plugin 2.0.0-alpha4 ===
- * Issue 21: Run standalone goals (without pom)
-** It is now possible to run standalone goals (such as 'android:undeploy-file') directly from commandline, without having a pom with the required config parameter '<sdk><path>...' in it. It can instead be set on commandline with the '-Dandroid.sdk.path' parameter.
- * Improved error messages for missing sdk path: added suggestions for configuration options.
- * Issue 19: Created DeploymentInstructions wiki page
- * Issue 16: Add site, source:jar, javadoc:jar to release configuration 
-
-=== Maven Android Plugin 2.0.0-alpha3 ===
-
-* Issue 1: Support for Android SDK 1.5!
-** Thank you to Andreas Ronge for the initial patch.
-* No longer requires any magic environment variables!
-** Instead, a mandatory configuration parameter was added:
-   ----
-   <artifactId>maven-android-plugin</artifactId>
-   <version>2.0.0-alpha3</version>
-   <configuration>
-       <sdk>
-           <path>/opt/android-sdk-linux_x86-1.5_r2</path>
-       </sdk>
-   </configuration>
-   ----
-** If you want, you can set it using an environment variable, as done in the [Samples], for example '${env.MY_ANDROID_SDK_LOCATION'}. Then you will have to set that environment variable to the location where you installed Android SDK 1.5r2.
-** You also have the option of setting it in a parent pom instead, with '<pluginManagement>'. Then you can skip including the '<sdk><path>' in your project pom altogether!
-** This also means you can use different specific Android SDK's for different projects.
-** This change was made to make the plugin feel like less magic. Now you know that any environment variables you set, are only for yourself. The plugin doesn't read them; it only reads its configuration parameters.
-** This fixes [http://code.google.com/p/masa/issues/detail?id=26 Masa Issue 26], but in this project.
-* Duplicated the sample 'apidemos' application into 'apidemos-11' with code from the Android SDK 1.1, and 'apidemos-15' with code from the Android SDK 1.5. They use, and will work with, their corresponding Android SDK. Use 'apidemos-15' for Android SDK 1.5r2.
-* More and updated documentation, both wiki and in code.
-* More tests in code.
-
-== Maven Android Plugin 2.0.0-alpha2
- 
-* Doesn't expect PATH to be set too. Uses ANDROID_SDK/tools instead. (fixed in one more place)
-* Split out samples to a separate git repo.
-
-== Maven Android Plugin 2.0.0-alpha1
-
-First release of the new implementation of Maven Android Plugin.
-
-Implemented all changes listed in [http://groups.google.com/group/masa-developers/browse_thread/thread/732fb629ec917cd4 this email with suggestions sent to the Masa Developers list], except number 11 (done as of 2.0.0-alpha3) and number 12 (ongoing as Issue 6 here, please give feedback on that).
-
-Some of the details implemented:
-
-* Collected all plugins into one, for clarity and maintainability.
-* Refactored a lot of code for maintainability and clarity.
-* Separate the act of deploying an apk into a goal of its own ('mvn android:deploy'). This fixes [http://code.google.com/p/masa/issues/detail?id=20 Masa Issue 20], but in this project.
-* When running the 'integration-test' phase for a '<packaging>android:apk:platformTest</packaging>' pom, automatically deploy the platform test apk, as well as the apk to test, onto the device before. This fixes [http://code.google.com/p/masa/issues/detail?id=21 Masa Issue 21], but in this project.
-* Optionally undeploy each apk from the device before deploying it. This helps the issue where different developers with different debug keys use the same device and try to install an apk with the same package id. They would collide if the first one is not undeployed before the other is deployed on top of it.
-* Make as much as possible automatically configured, if possible. For example reading the package id from inside an apk file or !AndroidManifest.xml (whichever is available), instead of the user having to define it when for example undeploying an apk.
-* Added a sample Maven application (!ApiDemos) as an example of using Maven Android Plugin, and as a test for the plugin. This fixes [http://code.google.com/p/masa/issues/detail?id=11 Masa Issue 11], but in this project.
-* Improved documentation.
-* Added unit testing.
-* Added error messages.
-* Updated dependencies' versions.
-* Removed the PAR plugin. It can be added again if requested.
-* Fine-tuned phases and made lifecycle more like the default lifecycle for '<packaging>jar</packaging>'. This fixes [http://code.google.com/p/masa/issues/detail?id=14 Masa Issue 14], but in this project.
-* Renamed many things to names which say what they do.
-* Renamed 'install' to 'deploy', because that's what it's usually called in Maven-world, and because 'install' has a very specific (other) meaning.
-* Also delete 'Manifest.java' when deleting 'R.java'.
-* Added goals 'deploy-file' and 'undeploy-file' for (un)deploying any separate apk outside of any project.
-* Added goal 'undeploy-packageName' for undeploying an apk from device, if you already know the package name.
-* Config parameter platformtestrunner class can be inferred from 'AndroidManifest.xml: /manifest//instrumentation/@android:name'.
-* Standalone goals should not require a project.
-* Doesn't expect PATH to be set too. Uses ANDROID_SDK/tools instead.
-* Set up release management procedures to enable frequent releases.
-* Started preparing for syncing to Maven Central, so we won't need to specify '<pluginRepository>' in the pom.xml when it's set up.
-
-== About the Maven Android Plugin versions history
-
-_Maven Android Plugin was originally based on the Masa plugins 1.0.0. Thank you to Shane Isbell for 
-creating Masa ([http://code.google.com/p/masa http://code.google.com/p/masa])! Maven Android Plugin 1.x 
-was a direct clone of Masa's trunk. It was meant as an easy way for any current user of Masa 1.0.0 to 
-get access to the latest unreleased bug fixes in Masa's trunk.
-
-Maven Android Plugin 2.x has since been reworked and greatly improved in terms of bugfixing, features 
-and ease-of-use, compared to version 1.
-
-Versions 2.x are recommended for all users.
-
-== Maven Android Plugin 1.x release series ==
-
-== Maven Android Plugin 1.0.2 ===
-Released by this project (Maven Android Plugin), based on [http://code.google.com/p/masa/source/list Masa svn revision 63], which includes fixes for the following:
-
- * http://code.google.com/p/masa/issues/detail?id=4 Masa Issue 4 : Not possible to set finalName
- * http://code.google.com/p/masa/issues/detail?id=15 Masa Issue 15 : !NullPointerException when localRepository not set
- * http://code.google.com/p/masa/issues/detail?id=15 Masa Issue 16 : IntelliJ IDEA does not pick up generated-sources
- * http://code.google.com/p/masa/issues/detail?id=15 Masa Issue 17 : apk file not attached properly to build
- * http://code.google.com/p/masa/issues/detail?id=15 Masa Issue 18 : assets not included                                          
- * http://code.google.com/p/masa/issues/detail?id=15 Masa Issue 19 : Not possible to specify jvm parameters to dx
-
-== Masa plugins 1.0.0 ==
-
-Released by the Masa project, based on [http://code.google.com/p/masa/source/list Masa svn revision 56].

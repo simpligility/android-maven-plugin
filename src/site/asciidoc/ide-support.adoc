@@ -8,7 +8,7 @@ All this is managed by external projects. In the following are a few pointers.
 This works fine for full development. You will need to have ADT, http://eclipse.org/m2e/[M2Eclipse] 
 and http://rgladwell.github.io/m2e-android/[m2e-android] installed. In the future this 
 might work become even better with https://projects.eclipse.org/projects/tools.andmore[Andmore].
-
+Eclipse developers have contributed features to this plugin.
 
 == IntelliJ/Android Studio
 
@@ -16,8 +16,8 @@ This works fine for full development.
 
 == Netbeans
 
-Not sure. 
+This works fine for full development. Netbeans developers have contributed features to this plugin.
 
 == Others
 
-Even less sure ;-)
+Not sure... 

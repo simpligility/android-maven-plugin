@@ -7,7 +7,7 @@ They are the new default way of sharing libraries as inspired by apklib and impl
 == Consume an AAR
 
 Very simply just add the AAR as a dependency to your projects dependencies and set its type as aar 
-(and add the android-maven-plugin to build/plugins section of your maven project). E.g.,
+(and add the android-maven-plugin to build/plugins section of your project). E.g.,
 
 ----
   <dependency>
@@ -21,10 +21,10 @@ Very simply just add the AAR as a dependency to your projects dependencies and s
 == Produce an AAR
 
 If you have a bunch of Java code that you want to share then the best solution is to create a Java project and 
-publish as a plain Java archive (ie jar).
+publish as a plain Java archive (i.e. jar).
 
 But if you have code plus Android resources that you want to share then you really want to share that as an 
-Android archive (ie AAR). Fortunately this is easy.
+Android archive (i.e. AAR). Fortunately this is easy.
 
 Just add configure your project to have packaging +aar+ (and add the android-maven-plugin to build/plugins section of 
 your maven project). E.g.,
