@@ -1,4 +1,4 @@
-package com.jayway.maven.plugins.android.resource;
+package com.simpligility.maven.plugins.android.resource;
 
 import org.apache.maven.plugins.shade.relocation.Relocator;
 import org.apache.maven.plugins.shade.resource.ResourceTransformer;
