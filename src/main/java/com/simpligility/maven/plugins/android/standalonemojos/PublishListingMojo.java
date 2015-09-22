@@ -142,13 +142,14 @@ public class PublishListingMojo extends AbstractPublisherMojo
                         uploadScreenShots( listingDir, localeDir.getName(), IMAGE_TYPE_TV_SCREENSHOTS );
                     }
 
-                    edits.commit( packageName, editId ).execute();
                 }
                 else
                 {
                     getLog().warn( "Listing directory is missing." );
                 }
             }
+
+            edits.commit( packageName, editId ).execute();
         }
         catch ( IOException e )
         {
