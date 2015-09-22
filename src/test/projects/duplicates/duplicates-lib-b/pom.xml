@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.jayway.maven.plugins.android.tests</groupId>
+    <groupId>com.simpligility.maven.plugins.android.tests</groupId>
     <artifactId>duplicates-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
