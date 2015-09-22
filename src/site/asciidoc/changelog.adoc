@@ -20,7 +20,14 @@
 * Fixes for provided apk dependency for instrumentation tests
 ** see https://github.com/simpligility/android-maven-plugin/pull/671
 ** contributed by Marek Kedzierski https://github.com/kedzie
-
+* Allow to upload one than one locale for Play store publishing
+** fixes issue https://github.com/simpligility/android-maven-plugin/issues/662
+** see https://github.com/simpligility/android-maven-plugin/pull/666
+** contributed by App Annie https://github.com/jdegroot
+* XpathAppendingTransformer moved package
+** fixes https://github.com/simpligility/android-maven-plugin/issues/646
+** see https://github.com/simpligility/android-maven-plugin/pull/676
+** contributed by Marek Kedzierski https://github.com/kedzie
 
 == 4.3.0 - released 2015-06-15 
 
