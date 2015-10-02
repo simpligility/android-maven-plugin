@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.simpligility.maven.plugins.android.phase01generatesources.AbstractDataBinderMojo;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -44,7 +45,6 @@ import org.codehaus.plexus.archiver.util.DefaultFileSet;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 
 import com.android.SdkConstants;
-import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.CommandExecutor;
 import com.simpligility.maven.plugins.android.ExecutionException;
 import com.simpligility.maven.plugins.android.common.AaptCommandBuilder;
@@ -60,7 +60,7 @@ import com.simpligility.maven.plugins.android.config.PullParameter;
         defaultPhase = LifecyclePhase.VERIFY,
         requiresDependencyResolution = ResolutionScope.COMPILE
 )
-public class AarMojo extends AbstractAndroidMojo
+public class AarMojo extends AbstractDataBinderMojo
 {
     /**
      * The name of the top level folder in the AAR where native libraries are found.
@@ -131,6 +131,7 @@ public class AarMojo extends AbstractAndroidMojo
      */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
+        super.execute();
         String out = targetDirectory.getPath();
         for ( String src : project.getCompileSourceRoots() )
         {
@@ -210,7 +211,7 @@ public class AarMojo extends AbstractAndroidMojo
 
             zipArchiver.addFile( destinationManifestFile, "AndroidManifest.xml" );
             addDirectory( zipArchiver, assetsDirectory, "assets" );
-            addDirectory( zipArchiver, resourceDirectory, "res" );
+            addDirectory( zipArchiver, dataBindingResourceDirectory, "res" );
             zipArchiver.addFile( classesJar, SdkConstants.FN_CLASSES_JAR );
 
             final File[] overlayDirectories = getResourceOverlayDirectories();
@@ -440,7 +441,7 @@ public class AarMojo extends AbstractAndroidMojo
                 .forceOverwriteExistingFiles()
                 .setPathToAndroidManifest( destinationManifestFile )
                 .addResourceDirectoriesIfExists( getResourceOverlayDirectories() )
-                .addResourceDirectoryIfExists( resourceDirectory )
+                .addResourceDirectoryIfExists( dataBindingResourceDirectory )
                 .addResourceDirectoriesIfExists( dependenciesResDirectories )
                 .autoAddOverlay()
                 .addRawAssetsDirectoryIfExists( combinedAssets )

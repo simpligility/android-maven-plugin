@@ -1,0 +1,61 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="phonewordVM"
+            type="com.simpligility.android.databinding.PhonewordViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/til"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp">
+
+            <EditText
+                android:id="@+id/phoneword_text"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:hint="@string/phoneword_label_text"
+                android:text="@{phonewordVM.phoneWord}"
+                tools:ignore="TextFields" />
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/translate_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:drawableLeft="@drawable/ic_action_translate"
+                android:elevation="40dp"
+                android:text="@string/translate_button_text" />
+
+            <Button
+                android:id="@+id/call_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_action_phone_call"
+                android:elevation="40dp"
+                android:enabled="@{phonewordVM.isTranslated}"
+                android:text="@{phonewordVM.callButtonText}" />
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>

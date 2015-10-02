@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                              http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <groupId>com.simpligility.android.databinding</groupId>
+   <artifactId>parent</artifactId>
+   <version>1.0.0-SNAPSHOT</version>
+   <packaging>pom</packaging>
+
+   <name>Data Binding Integration test :: Parent</name>
+
+   <modules>
+      <module>library</module>
+      <module>app</module>
+   </modules>
+
+   <properties>
+      <it-plugin.version>4.3.1-SNAPSHOT</it-plugin.version>
+   </properties>
+
+   <dependencyManagement>
+      <dependencies>
+         <dependency>
+            <groupId>android</groupId>
+            <artifactId>android</artifactId>
+            <version>6.0_r1</version>
+            <scope>provided</scope>
+         </dependency>
+         <dependency>
+            <groupId>com.android.databinding</groupId>
+            <artifactId>adapters</artifactId>
+            <version>1.0-rc2</version>
+            <type>aar</type>
+            <exclusions>
+               <exclusion>
+                  <groupId>com.android.databinding</groupId>
+                  <artifactId>library</artifactId>
+               </exclusion>
+            </exclusions>
+         </dependency>
+         <dependency>
+            <groupId>com.android.databinding</groupId>
+            <artifactId>library</artifactId>
+            <version>1.0-rc2</version>
+            <type>aar</type>
+            <exclusions>
+               <exclusion>
+                  <groupId>com.android.support</groupId>
+                  <artifactId>support-v4</artifactId>
+               </exclusion>
+            </exclusions>
+         </dependency>
+         <dependency>
+            <groupId>com.android.databinding</groupId>
+            <artifactId>compiler</artifactId>
+            <version>1.0-rc2</version>
+            <type>jar</type>
+            <scope>provided</scope>
+         </dependency>
+         <dependency>
+            <groupId>com.android.support</groupId>
+            <artifactId>support-v4</artifactId>
+            <version>23.0.1</version>
+            <type>aar</type>
+         </dependency>
+         <dependency>
+            <groupId>com.android.support</groupId>
+            <artifactId>appcompat-v7</artifactId>
+            <version>23.0.1</version>
+            <type>aar</type>
+         </dependency>
+         <dependency>
+            <groupId>com.android.support</groupId>
+            <artifactId>design</artifactId>
+            <version>23.0.1</version>
+            <type>aar</type>
+         </dependency>
+         <dependency>
+            <groupId>com.android.support</groupId>
+            <artifactId>support-annotations</artifactId>
+            <version>23.0.1</version>
+         </dependency>
+      </dependencies>
+   </dependencyManagement>
+
+   <build>
+      <plugins>
+         <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>2.3.2</version>
+            <configuration>
+               <source>1.7</source>
+               <target>1.7</target>
+               <generatedSourcesDirectory>${project.build.outputDirectory}</generatedSourcesDirectory>
+            </configuration>
+         </plugin>
+      </plugins>
+      <pluginManagement>
+         <plugins>
+            <plugin>
+               <groupId>com.simpligility.maven.plugins</groupId>
+               <artifactId>android-maven-plugin</artifactId>
+               <version>${it-plugin.version}</version>
+               <extensions>true</extensions>
+               <configuration>
+                  <sdk>
+                     <platform>23</platform>
+                  </sdk>
+                  <dataBinding>
+                     <skip>false</skip>
+                  </dataBinding>
+               </configuration>
+            </plugin>
+         </plugins>
+      </pluginManagement>
+   </build>
+
+   <repositories>
+      <repository>
+         <id>jcenter</id>
+         <url>http://jcenter.bintray.com/</url>
+      </repository>
+   </repositories>
+
+</project>

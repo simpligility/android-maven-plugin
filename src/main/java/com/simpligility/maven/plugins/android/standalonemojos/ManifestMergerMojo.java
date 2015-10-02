@@ -2,12 +2,14 @@ package com.simpligility.maven.plugins.android.standalonemojos;
 
 import com.android.SdkConstants;
 import com.android.builder.core.AndroidBuilder;
+import com.android.builder.core.EvaluationErrorReporter;
 import com.android.ide.common.process.DefaultProcessExecutor;
 import com.android.ide.common.process.LoggedProcessOutputHandler;
 import com.android.manifmerger.ManifestMerger2;
 import com.android.utils.ILogger;
 import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.DefaultJavaProcessExecutor;
+import com.simpligility.maven.plugins.android.MavenEvaluationErrorReporter;
 import com.simpligility.maven.plugins.android.common.AndroidExtension;
 import com.simpligility.maven.plugins.android.common.MavenManifestDependency;
 import com.simpligility.maven.plugins.android.configuration.ManifestMerger;
@@ -298,7 +300,9 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
                 new DefaultProcessExecutor( logger ),
                 new DefaultJavaProcessExecutor( logger ),
                 new LoggedProcessOutputHandler( logger ),
-                logger, false );
+                new MavenEvaluationErrorReporter( logger, EvaluationErrorReporter.EvaluationMode.STANDARD ),
+                logger,
+              false );
 
         String minSdkVersion = null;
         String targetSdkVersion = null;

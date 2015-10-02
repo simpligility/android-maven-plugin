@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Phone Word</string>
+    <string name="translate_button_text">Translate</string>
+    <string name="phoneword_label_text">Enter a phoneword:</string>
+    <string name="default_text">1-855-ANDROID</string>
+    <string name="call_button_text">Call</string>
+    <string name="cancel_text">Cancel</string>
+    <string name="title_activity_translate_log">Call Log</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="call_log_button_text">Call Log</string>
+    <string name="call_log_list_text">Numbers Called:</string>
+    <string name="action_call_log">Call Log</string>
+</resources>

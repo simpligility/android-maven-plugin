@@ -25,10 +25,15 @@
       <implementation>org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping</implementation>
       <configuration>
         <phases>
-          <generate-sources>com.simpligility.maven.plugins:android-maven-plugin:generate-sources</generate-sources>
+          <generate-sources>
+            com.simpligility.maven.plugins:android-maven-plugin:databinding-process-layouts,
+            com.simpligility.maven.plugins:android-maven-plugin:generate-sources,
+            com.simpligility.maven.plugins:android-maven-plugin:databinding-export-info
+          </generate-sources>
           <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
           <compile>org.apache.maven.plugins:maven-compiler-plugin:compile</compile>
           <process-classes>
+            com.simpligility.maven.plugins:android-maven-plugin:databinding-exclude-dependencies,
             com.simpligility.maven.plugins:android-maven-plugin:emma,
             com.simpligility.maven.plugins:android-maven-plugin:proguard
           </process-classes>
@@ -55,10 +60,17 @@
       <implementation>org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping</implementation>
       <configuration>
         <phases>
-          <generate-sources>com.simpligility.maven.plugins:android-maven-plugin:generate-sources</generate-sources>
+          <generate-sources>
+            com.simpligility.maven.plugins:android-maven-plugin:databinding-process-layouts,
+            com.simpligility.maven.plugins:android-maven-plugin:generate-sources,
+            com.simpligility.maven.plugins:android-maven-plugin:databinding-export-info
+          </generate-sources>
           <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
           <compile>org.apache.maven.plugins:maven-compiler-plugin:compile</compile>
-          <process-classes>com.simpligility.maven.plugins:android-maven-plugin:proguard</process-classes>
+          <process-classes>
+            com.simpligility.maven.plugins:android-maven-plugin:databinding-exclude-dependencies,
+            com.simpligility.maven.plugins:android-maven-plugin:proguard
+          </process-classes>
           <process-test-resources>org.apache.maven.plugins:maven-resources-plugin:testResources</process-test-resources>
           <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
           <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
@@ -79,10 +91,17 @@
       <implementation>org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping</implementation>
       <configuration>
           <phases>
-              <generate-sources>com.simpligility.maven.plugins:android-maven-plugin:generate-sources</generate-sources>
+            <generate-sources>
+              com.simpligility.maven.plugins:android-maven-plugin:databinding-process-layouts,
+              com.simpligility.maven.plugins:android-maven-plugin:generate-sources,
+              com.simpligility.maven.plugins:android-maven-plugin:databinding-export-info
+            </generate-sources>
               <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
               <compile>org.apache.maven.plugins:maven-compiler-plugin:compile</compile>
-              <process-classes>com.simpligility.maven.plugins:android-maven-plugin:proguard</process-classes>
+              <process-classes>
+                com.simpligility.maven.plugins:android-maven-plugin:databinding-exclude-dependencies,
+                com.simpligility.maven.plugins:android-maven-plugin:proguard
+              </process-classes>
               <process-test-resources>org.apache.maven.plugins:maven-resources-plugin:testResources</process-test-resources>
               <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
               <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>

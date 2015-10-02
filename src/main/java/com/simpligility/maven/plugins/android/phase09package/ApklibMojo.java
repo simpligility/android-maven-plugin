@@ -16,13 +16,13 @@
  */
 package com.simpligility.maven.plugins.android.phase09package;
 
-import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.CommandExecutor;
 import com.simpligility.maven.plugins.android.ExecutionException;
 import com.simpligility.maven.plugins.android.common.AaptCommandBuilder;
 import com.simpligility.maven.plugins.android.common.NativeHelper;
 import com.simpligility.maven.plugins.android.config.PullParameter;
 
+import com.simpligility.maven.plugins.android.phase01generatesources.AbstractDataBinderMojo;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -56,7 +56,7 @@ import static com.simpligility.maven.plugins.android.common.AndroidExtension.APK
  */
 @Deprecated
 @Mojo( name = "apklib", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE )
-public class ApklibMojo extends AbstractAndroidMojo
+public class ApklibMojo extends AbstractDataBinderMojo
 {
     /**
      * The name of the top level folder in the APKLIB where native libraries are found.
@@ -369,7 +369,7 @@ public class ApklibMojo extends AbstractAndroidMojo
                 .forceOverwriteExistingFiles()
                 .setPathToAndroidManifest( destinationManifestFile )
                 .addResourceDirectoriesIfExists( overlayDirectories )
-                .addResourceDirectoryIfExists( resourceDirectory )
+                .addResourceDirectoryIfExists( dataBindingResourceDirectory )
                 .addResourceDirectoriesIfExists( dependencyArtifactResDirectoryList )
                 .autoAddOverlay()
                 // NB aapt only accepts a single assets parameter - combinedAssets is a merge of all assets

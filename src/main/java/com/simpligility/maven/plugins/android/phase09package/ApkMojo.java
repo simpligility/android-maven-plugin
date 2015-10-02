@@ -20,7 +20,6 @@ import com.android.sdklib.build.ApkBuilder;
 import com.android.sdklib.build.ApkCreationException;
 import com.android.sdklib.build.DuplicateFileException;
 import com.android.sdklib.build.SealedApkException;
-import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.AndroidNdk;
 import com.simpligility.maven.plugins.android.AndroidSigner;
 import com.simpligility.maven.plugins.android.IncludeExcludeSet;
@@ -35,6 +34,7 @@ import com.simpligility.maven.plugins.android.configuration.Apk;
 import com.simpligility.maven.plugins.android.configuration.MetaInf;
 import com.simpligility.maven.plugins.android.configuration.Sign;
 
+import com.simpligility.maven.plugins.android.phase01generatesources.AbstractDataBinderMojo;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.FileFileFilter;
@@ -91,7 +91,7 @@ import static com.simpligility.maven.plugins.android.common.AndroidExtension.APK
 @Mojo( name = "apk",
        defaultPhase = LifecyclePhase.PACKAGE,
        requiresDependencyResolution = ResolutionScope.COMPILE )
-public class ApkMojo extends AbstractAndroidMojo
+public class ApkMojo extends AbstractDataBinderMojo
 {
 
     /**
@@ -1110,7 +1110,7 @@ public class ApkMojo extends AbstractAndroidMojo
                 .forceOverwriteExistingFiles()
                 .setPathToAndroidManifest( destinationManifestFile )
                 .addResourceDirectoriesIfExists( overlayDirectories )
-                .addResourceDirectoryIfExists( resourceDirectory )
+                .addResourceDirectoryIfExists( dataBindingResourceDirectory )
                 .addResourceDirectoriesIfExists( dependencyArtifactResDirectoryList )
                 .autoAddOverlay()
                 // NB aapt only accepts a single assets parameter - combinedAssets is a merge of all assets

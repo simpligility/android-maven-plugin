@@ -1,0 +1,48 @@
+<!--
+  ~ Copyright (C) 2015 CNH Industrial NV. All rights reserved.
+  ~
+  ~ This software contains proprietary information of CNH Industrial NV. Neither
+  ~ receipt nor possession thereof confers any right to reproduce, use, or
+  ~ disclose in whole or in part any such information without written
+  ~ authorization from CNH Industrial NV.
+  -->
+
+<lifecycleMappingMetadata>
+  <pluginExecutions>
+
+    <pluginExecution>
+      <pluginExecutionFilter>
+        <goals>
+          <goal>clean</goal>
+          <goal>ndk-build</goal>
+          <goal>databinding-exclude-dependencies</goal>
+          <goal>emma</goal>
+          <goal>proguard</goal>
+          <goal>dex</goal>
+          <goal>integration-test</goal>
+          <goal>apk</goal>
+        </goals>
+      </pluginExecutionFilter>
+      <action>
+        <ignore/>
+      </action>
+    </pluginExecution>
+
+    <pluginExecution>
+      <pluginExecutionFilter>
+        <goals>
+          <goal>databinding-process-layouts</goal>
+          <goal>generate-sources</goal>
+          <goal>databinding-export-info</goal>
+        </goals>
+      </pluginExecutionFilter>
+      <action>
+        <execute>
+          <runOnIncremental>true</runOnIncremental>
+          <runOnConfiguration>true</runOnConfiguration>
+        </execute>
+      </action>
+    </pluginExecution>
+
+</pluginExecutions>
+</lifecycleMappingMetadata>

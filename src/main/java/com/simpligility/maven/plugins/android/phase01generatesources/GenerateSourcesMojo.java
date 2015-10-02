@@ -19,7 +19,6 @@ package com.simpligility.maven.plugins.android.phase01generatesources;
 import com.android.manifmerger.ManifestMerger;
 import com.android.manifmerger.MergerLog;
 import com.android.utils.StdLogger;
-import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.CommandExecutor;
 import com.simpligility.maven.plugins.android.ExecutionException;
 import com.simpligility.maven.plugins.android.common.AaptCommandBuilder;
@@ -90,7 +89,7 @@ import static com.simpligility.maven.plugins.android.common.AndroidExtension.APK
         defaultPhase = LifecyclePhase.GENERATE_SOURCES,
         requiresDependencyResolution = ResolutionScope.COMPILE
 )
-public class GenerateSourcesMojo extends AbstractAndroidMojo
+public class GenerateSourcesMojo extends AbstractDataBinderMojo
 {
     /**
      * <p>
@@ -277,6 +276,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      */
     public void execute() throws MojoExecutionException, MojoFailureException
     {
+        super.execute();
         // If the current POM isn't an Android-related POM, then don't do
         // anything. This helps work with multi-module projects.
         if ( ! isCurrentProjectAndroid() )
@@ -867,7 +867,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 .disablePngCrunching()
                 .generateRIntoPackage( customPackage )
                 .setPathToAndroidManifest( destinationManifestFile )
-                .addResourceDirectoryIfExists( resourceDirectory )
+                .addResourceDirectoryIfExists( dataBindingResourceDirectory )
                 .addResourceDirectoriesIfExists( getResourceOverlayDirectories() )
                     // Need to include any AAR or APKLIB dependencies when generating R because if any local
                     // resources directly reference dependent resources then R generation will crash.
