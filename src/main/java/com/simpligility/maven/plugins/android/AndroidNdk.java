@@ -38,7 +38,7 @@ public class AndroidNdk
             + "alternative, you may add the parameter to commandline: -Dandroid.ndk.path=... or set environment "
             + "variable " + NdkBuildMojo.ENV_ANDROID_NDK_HOME + ".";
 
-    public static final String[] NDK_ARCHITECTURES = { "armeabi", "armeabi-v7a", "mips", "mips64", "x86", "x86_64" };
+    public static final String[] NDK_ARCHITECTURES = { "armeabi", "armeabi-v7a", "arm64-v8a", "mips", "mips64", "x86", "x86_64" };
 
     /**
      * Arm toolchain implementations.
@@ -122,7 +122,10 @@ public class AndroidNdk
         }
 
         String fileName = "";
-        if ( toolchain.startsWith( "arm" ) )
+        if( toolchain.startsWith( "arm64-v8a")) {
+            fileName = "aarch64-linux-android-strip" + extension;
+        }
+        else if ( toolchain.startsWith( "arm" ) )
         {
             fileName = "arm-linux-androideabi-strip" + extension;
         }
