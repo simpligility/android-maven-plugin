@@ -235,6 +235,7 @@
         <version>2.4</version>
       </dependency>
 
+<!--  the sdk has a newer version as dependency, we should update this if possible -->
       <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm</artifactId>
@@ -773,6 +774,7 @@
           <dependency>
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctor-maven-plugin</artifactId>
+            <!--  tbd <version>1.5.2.1</version> -->
             <version>1.5.0</version>
           </dependency>
         </dependencies>
@@ -918,6 +920,7 @@
         <plugins>
           <plugin>
             <!-- deploy the site to github pages -->
+            <!--  this plugin needs access to dependencies from https://repo.eclipse.org/content/repositories/egit-releases/  -->
             <groupId>com.github.github</groupId>
             <artifactId>site-maven-plugin</artifactId>
             <configuration>

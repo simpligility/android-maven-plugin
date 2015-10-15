@@ -174,7 +174,7 @@ public final class UnpackedLibHelper
                 + "_"
                 + artifact.getArtifactId()
                 + "_"
-                + artifact.getVersion()
+                + artifact.getBaseVersion()
         );
     }
 
