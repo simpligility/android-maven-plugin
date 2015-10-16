@@ -67,6 +67,11 @@ public class Test
      * Mirror of {@link com.simpligility.maven.plugins.android.AbstractInstrumentationMojo#testInstrumentationArgs}
      */
     private List<String> instrumentationArgs;
+    /**
+     * Mirror of {@link com.simpligility.maven.plugins.android.AbstractInstrumentationMojo#testFailSafe}
+     */
+    private Boolean failSafe;
+
 
     public String getSkip()
     {
@@ -136,5 +141,10 @@ public class Test
     public List<String> getInstrumentationArgs()
     {
         return instrumentationArgs;
+    }
+
+    public Boolean isFailSafe()
+    {
+        return failSafe;
     }
 }

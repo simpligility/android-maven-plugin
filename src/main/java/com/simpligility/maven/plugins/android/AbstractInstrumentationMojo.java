@@ -112,6 +112,13 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
     private String testSkip;
 
     /**
+     * Enables or disables integration safe failure.
+     * If <code>true</code> build will not stop on test failure or error.
+     */
+    @Parameter( property = "android.test.failsafe", defaultValue = "true" )
+    private Boolean testFailSafe;
+
+    /**
      * Package name of the apk we wish to instrument. If not specified, it is inferred from
      * <code>AndroidManifest.xml</code>.
      */
@@ -370,16 +377,16 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                     AndroidTestRunListener testRunListener = new AndroidTestRunListener( project, device, getLog(),
                             parsedCreateReport, false, "", "", targetDirectory );
                     remoteAndroidTestRunner.run( testRunListener );
-                    if ( testRunListener.hasFailuresOrErrors() )
+                    if ( testRunListener.hasFailuresOrErrors() && !testFailSafe )
                     {
-                        throw new MojoFailureException( deviceLogLinePrefix +  "Tests failed on device." );
+                        throw new MojoFailureException( deviceLogLinePrefix + "Tests failed on device." );
                     }
-                    if ( testRunListener.testRunFailed() )
+                    if ( testRunListener.testRunFailed() && !testFailSafe  )
                     {
                         throw new MojoFailureException( deviceLogLinePrefix + "Test run failed to complete: " 
                                 + testRunListener.getTestRunFailureCause() );
                     }
-                    if ( testRunListener.threwException() )
+                    if ( testRunListener.threwException() && !testFailSafe  )
                     {
                         throw new MojoFailureException( deviceLogLinePrefix +  testRunListener.getExceptionMessages() );
                     }
