@@ -2,7 +2,6 @@ package com.simpligility.maven.plugins.android;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import com.android.annotations.NonNull;
 import com.android.annotations.Nullable;
@@ -31,7 +30,7 @@ public class InclusionExclusionResolver
      * @param excludeArtifactQualifiers Artifact qualifiers to be always excluded even if {@code skipDependencies} is
      *                                  {@code true}
      */
-    public static Set< Artifact > filterArtifacts( @NonNull Iterable< Artifact > artifacts,
+    public static Collection< Artifact > filterArtifacts( @NonNull Iterable< Artifact > artifacts,
             final boolean skipDependencies, @Nullable final Collection< String > includeArtifactTypes,
             @Nullable final Collection< String > excludeArtifactTypes,
             @Nullable final Collection< String > includeArtifactQualifiers,
