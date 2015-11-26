@@ -23,6 +23,7 @@ import com.android.sdklib.build.SealedApkException;
 import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.AndroidNdk;
 import com.simpligility.maven.plugins.android.AndroidSigner;
+import com.simpligility.maven.plugins.android.IncludeExcludeSet;
 import com.simpligility.maven.plugins.android.CommandExecutor;
 import com.simpligility.maven.plugins.android.ExecutionException;
 import com.simpligility.maven.plugins.android.common.AaptCommandBuilder;
@@ -72,6 +73,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import static com.simpligility.maven.plugins.android.InclusionExclusionResolver.filterArtifacts;
 import static com.simpligility.maven.plugins.android.common.AndroidExtension.AAR;
 import static com.simpligility.maven.plugins.android.common.AndroidExtension.APK;
 import static com.simpligility.maven.plugins.android.common.AndroidExtension.APKLIB;
@@ -248,6 +250,54 @@ public class ApkMojo extends AbstractAndroidMojo
     @Parameter
     @ConfigPojo( prefix = "apk" )
     private Apk apk;
+
+    /**
+     * Skips transitive dependencies. May be useful if the target classes directory is populated with the
+     * {@code maven-dependency-plugin} and already contains all dependency classes.
+     */
+    @Parameter( property = "skipDependencies", defaultValue = "false" )
+    private boolean skipDependencies;
+
+    /**
+     * Allows to include or exclude artifacts by type. The {@code include} parameter has higher priority than the
+     * {@code exclude} parameter. These two parameters can be overridden by the {@code artifactSet} parameter. Empty
+     * strings are ignored. Example:
+     * <pre>
+     *     &lt;artifactTypeSet&gt;
+     *         &lt;includes&gt;
+     *             &lt;include&gt;aar&lt;/include&gt;
+     *         &lt;includes&gt;
+     *         &lt;excludes&gt;
+     *             &lt;exclude&gt;jar&lt;/exclude&gt;
+     *         &lt;excludes&gt;
+     *     &lt;/artifactTypeSet&gt;
+     * </pre>
+     */
+    @Parameter( property = "artifactTypeSet" )
+    private IncludeExcludeSet artifactTypeSet;
+
+    /**
+     * Allows to include or exclude artifacts by {@code groupId}, {@code artifactId}, and {@code versionId}. The
+     * {@code include} parameter has higher priority than the {@code exclude} parameter. These two parameters can
+     * override the {@code artifactTypeSet} and {@code skipDependencies} parameters. Artifact {@code groupId},
+     * {@code artifactId}, and {@code versionId} are specified by a string with the respective values separated using
+     * a colon character {@code :}. {@code artifactId} and {@code versionId} can be optional covering an artifact
+     * range. Empty strings are ignored. Example:
+     * <pre>
+     *     &lt;artifactTypeSet&gt;
+     *         &lt;includes&gt;
+     *             &lt;include&gt;foo-group:foo-artifact:1.0-SNAPSHOT&lt;/include&gt;
+     *             &lt;include&gt;bar-group:bar-artifact:1.0-SNAPSHOT&lt;/include&gt;
+     *             &lt;include&gt;baz-group:*&lt;/include&gt;
+     *         &lt;includes&gt;
+     *         &lt;excludes&gt;
+     *             &lt;exclude&gt;qux-group:qux-artifact:*&lt;/exclude&gt;
+     *         &lt;excludes&gt;
+     *     &lt;/artifactTypeSet&gt;
+     * </pre>
+     */
+    @Parameter( property = "artifactSet" )
+    private IncludeExcludeSet artifactSet;
 
     private static final Pattern PATTERN_JAR_EXT = Pattern.compile( "^.+\\.jar$", Pattern.CASE_INSENSITIVE );
 
@@ -597,7 +647,9 @@ public class ApkMojo extends AbstractAndroidMojo
         getLog().debug( "Building APK with internal APKBuilder" );
         sourceFolders.add( projectOutputDirectory );
 
-        for ( Artifact artifact : getRelevantCompileArtifacts() )
+        for ( Artifact artifact : filterArtifacts( getRelevantCompileArtifacts(), skipDependencies,
+                artifactTypeSet.getIncludes(), artifactTypeSet.getExcludes(), artifactSet.getIncludes(),
+                artifactSet.getExcludes() ) )
         {
             getLog().debug( "Found artifact for APK :" + artifact );
             if ( extractDuplicates )
