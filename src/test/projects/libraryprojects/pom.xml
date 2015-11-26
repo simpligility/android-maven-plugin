@@ -16,6 +16,12 @@
     <module>libraryprojects-apklib-from-apklib</module>
     <module>libraryprojects-aar-from-aar</module>
     <module>libraryprojects-apk-with-deps</module>
+    <!--
+    mvn site causes this:
+     
+    ] Failed to execute goal org.apache.maven.plugins:maven-site-plugin:3.3:site (default-site) on project libraryprojects-parent: failed to get report for org.apache.maven.plugins:maven-javadoc-plugin: Failed to execute goal com.simpligility.maven.plugins:android-maven-plugin:4.3.0:generate-sources (default-generate-sources) on project libraryprojects-tests: Execution default-generate-sources of goal com.simpligility.maven.plugins:android-maven-plugin:4.3.0:generate-sources failed: String index out of range: -1 -> [Help 1]
+    -->
+    
     <module>libraryprojects-tests</module>
   </modules>
 
@@ -45,6 +51,56 @@
     </dependencies>
   </dependencyManagement>
 
+
+  <reporting>
+        <plugins>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.3</version>
+
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.8</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jdepend-maven-plugin</artifactId>
+                <version>2.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>2.5</version>
+            </plugin>
+            <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.5.5</version>
+            </plugin>
+
+
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.4</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.3</version>
+                <configuration>
+                    <aggregate>true</aggregate>
+                </configuration>
+
+            </plugin>
+        </plugins>
+    </reporting>
+    
+    
   <build>
     <pluginManagement>
       <plugins>
