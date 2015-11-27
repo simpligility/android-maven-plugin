@@ -1,0 +1,166 @@
+== Instrument your classes
+
+=== Introduction
+
+Sometimes your classes need to be instrumented in a certain way before they get
+into the result APK. The plugin cannot instrument your classes itself, but it
+gives you some facilities to control your instrumentation process during the build.
+
+=== Use Java 8 classes with Maven example
+
+https://github.com/orfjackal/retrolambda[Retrolambda Maven plugin] is an awesome
+tool to downgrade your code from Java 8 to Java 7 and lower. This allows you to
+use your Java 8 code (say, lambda expressions) on older Java virtual machines
+or Android after your classes are processed with the `dx` tool.
+
+Unfortunately, the Retrolambda plugin cannot instrument your classes that come
+from dependencies as the latter are stored in your local Maven repository.
+In combination with `android-maven-plugin` you can process Java 8 dependencies,
+but, sure, it cannot provide the new Java 8 APIs like Stream API on Android.
+Here are some steps that describe how to use Java 8 dependencies in your project.
+
+==== Specify your Java 8 dependencies
+
+----
+<dependency>
+	<groupId>foo.java8</groupId>
+	<artifactId>lib</artifactId>
+	<type>jar</type>
+</dependency>
+<dependency>
+	<groupId>bar.java8</groupId>
+	<artifactId>lib</artifactId>
+	<type>aar</type>
+</dependency>
+----
+
+==== Use Java 8 language features in your source code
+
+----
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-compiler-plugin</artifactId>
+	<configuration>
+		<source>1.8</source>
+		<target>1.8</target>
+	</configuration>
+</plugin>
+----
+
+==== Unpack your Java 8 dependencies classes
+
+----
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-dependency-plugin</artifactId>
+	<executions>
+		<execution>
+			<phase>process-classes</phase>
+			<goals>
+				<goal>unpack-dependencies</goal>
+			</goals>
+			<configuration>
+				<includeScope>runtime</includeScope>
+				<!--
+					Assuming this group contains Java 8 based artifacts only
+				-->
+				<includeGroupIds>foo.java8</includeGroupIds>
+				<!--
+					Process JAR dependencies only.
+					Note that AAR dependencies cannot be processed with maven-dependency-plugin and such dependencies must be extracted separately
+				-->
+				<includeTypes>jar</includeTypes>
+				<outputDirectory>${project.build.directory}/classes</outputDirectory>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
+----
+
+===== Unpack your Java 8 AAR dependencies classes
+
+If you have an AAR dependency, you can extract your classes using the
+`maven-antrun-plugin`:
+
+----
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-antrun-plugin</artifactId>
+	<executions>
+		<execution>
+			<phase>process-classes</phase>
+			<configuration>
+				<tasks>
+					<!--
+						The bar.java8:lib dependency is an AAR, so it contains classes JAR inside that we can unpack
+					-->
+					<unzip src="${project.build.directory}/unpacked-libs/bar_java8_lib_0.1/classes.jar" dest="${project.build.directory}/classes">
+						<patternset>
+							<exclude name="META-INF"/>
+							<exclude name="META-INF/*"/>
+						</patternset>
+					</unzip>
+				</tasks>
+			</configuration>
+			<goals>
+				<goal>run</goal>
+			</goals>
+		</execution>
+	</executions>
+</plugin>
+----
+
+==== Downgrade your Java 8 bytecode to Java 6
+
+Now you can convert your classes from Java 8 to Java 6 assuming
+the `${project.build.directory}/classes` directory now contains
+all classes to be downgraded:
+
+----
+<plugin>
+	<groupId>net.orfjackal.retrolambda</groupId>
+	<artifactId>retrolambda-maven-plugin</artifactId>
+	<executions>
+		<execution>
+			<phase>process-classes</phase>
+			<goals>
+				<goal>process-main</goal>
+				<goal>process-test</goal>
+			</goals>
+		</execution>
+	</executions>
+	<configuration>
+		<defaultMethods>true</defaultMethods>
+		<target>1.6</target>
+	</configuration>
+</plugin>
+----
+
+==== Create an APK file
+
+Now the `${project.build.directory}/classes` directory contains Java 6
+or lower bytecode only that can now be easily processed with the `dx`
+tool or ProGuard.
+
+----
+<plugin>
+	<groupId>com.simpligility.maven.plugins</groupId>
+	<artifactId>android-maven-plugin</artifactId>
+	<executions>
+		<execution>
+			<phase>package</phase>
+		</execution>
+	</executions>
+	<configuration>
+		<artifactSet>
+			<excludes>
+				<!--
+					This exclude argument does not pass the dependencies from the local Maven repository,
+					hence the dx tool or ProGuard will use ${project.build.directory}/classes.
+				-->
+				<exclude>foo.java8,bar.java8</exclude>
+			</excludes>
+		</artifactSet>
+	</configuration>
+</plugin>
+----
