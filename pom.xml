@@ -740,7 +740,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-plugin-plugin</artifactId>
-        <version>${maven-plugin-plugin.version}</version>
+        <version>${maven-plugin-plugin.version}</version><!--$NO-MVN-MAN-VER$-->
         <configuration>
           <!-- <packagingTypes>
             <packaging>takari-maven-plugin</packaging>
@@ -769,7 +769,7 @@
         <artifactId>maven-site-plugin</artifactId>
         <!-- careful with upgrades, e.g. 3.4 does not work with asciidoctor 
           (yet?) -->
-        <version>3.3</version>
+        <version>3.3</version><!--$NO-MVN-MAN-VER$-->
         <dependencies>
           <dependency>
             <groupId>org.asciidoctor</groupId>
