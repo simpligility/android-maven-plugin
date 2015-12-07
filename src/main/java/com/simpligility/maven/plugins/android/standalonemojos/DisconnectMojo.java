@@ -25,10 +25,12 @@ public class DisconnectMojo extends AbstractAndroidMojo
         if ( ips.length > 0 )
         {
             CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+            executor.setLogger( this.getLog() );
 
             for ( String ip : ips )
             {
                 getLog().debug( "Disconnecting " + ip );
+
 
                 // It would be better to use the AndroidDebugBridge class 
                 // rather than calling the command line tool
