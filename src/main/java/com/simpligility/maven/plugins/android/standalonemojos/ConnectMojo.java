@@ -45,6 +45,7 @@ public class ConnectMojo extends AbstractAndroidMojo
                 {
                     executor.setCaptureStdOut( true );
                     executor.executeCommand( command, parameters );
+                    parameters.clear();
                     // ... now put in wireless mode ...
                     String hostport[] = ip.split( ":" );
                     parameters.add( "tcpip" );
