@@ -43,7 +43,7 @@ public class DisconnectMojo extends AbstractAndroidMojo
                 try
                 {
                     executor.setCaptureStdOut( true );
-                    executor.executeCommand( command, parameters );
+                    executor.executeCommand( command, parameters, false );
                 }
                 catch ( ExecutionException e )
                 {
