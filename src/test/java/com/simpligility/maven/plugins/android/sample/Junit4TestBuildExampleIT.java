@@ -33,6 +33,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import com.simpligility.maven.plugins.android.PluginInfo;
+
 
 
 @RunWith(MavenJUnitTestRunner.class)
@@ -53,8 +55,8 @@ public class Junit4TestBuildExampleIT {
     File basedir = resources.getBasedir( "aar-child-junit-tests" );
     MavenExecutionResult result = mavenRuntime
           .forProject(basedir)
-          .withCliOptions("-Psupport_test","-X")
-          .execute( "clean", "install" );
+          .withCliOptions("-Psupport_test")
+          .execute( "clean", PluginInfo.getQualifiedGoal( "undeploy" ), "install" );
     result.assertErrorFreeLog();
     result.assertLogText( "Tests run: 1,  Failures: 0,  Errors: 0" );
   }
