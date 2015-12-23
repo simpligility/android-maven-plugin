@@ -95,6 +95,11 @@ public abstract class AbstractPublisherMojo extends AbstractAndroidMojo
                 line = br.readLine();
             }
             everything = sb.toString();
+
+            if ( everything.endsWith( "\n" ) )
+            {
+                everything = everything.substring( 0, everything.length() - 1 );
+            }
         }
         finally
         {
