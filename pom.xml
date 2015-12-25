@@ -36,7 +36,7 @@
     <!--  upgrade to 3.4 fails build, see https://github.com/simpligility/android-maven-plugin/issues/554 -->
     <maven-plugin-plugin.version>3.3</maven-plugin-plugin.version>
     <maven.api.version>3.0.4</maven.api.version>
-    <takari.test.version>2.4.0</takari.test.version>
+    <takari.test.version>2.8.0</takari.test.version>
     <easymock.version>3.2</easymock.version>
     <powermock.version>1.6.2</powermock.version>
     <publisher.version>v2-rev13-1.19.0</publisher.version>
@@ -740,7 +740,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-plugin-plugin</artifactId>
-        <version>${maven-plugin-plugin.version}</version>
+        <version>${maven-plugin-plugin.version}</version><!--$NO-MVN-MAN-VER$-->
         <configuration>
           <!-- <packagingTypes>
             <packaging>takari-maven-plugin</packaging>
@@ -769,7 +769,7 @@
         <artifactId>maven-site-plugin</artifactId>
         <!-- careful with upgrades, e.g. 3.4 does not work with asciidoctor 
           (yet?) -->
-        <version>3.3</version>
+        <version>3.3</version><!--$NO-MVN-MAN-VER$-->
         <dependencies>
           <dependency>
             <groupId>org.asciidoctor</groupId>

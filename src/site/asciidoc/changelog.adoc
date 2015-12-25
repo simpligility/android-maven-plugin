@@ -28,6 +28,10 @@
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/646
 ** see https://github.com/simpligility/android-maven-plugin/pull/676
 ** contributed by Marek Kedzierski https://github.com/kedzie
+* Added <skipDependencies> option to ApkMojo and DexMojo
+** see https://github.com/simpligility/android-maven-plugin/pull/632
+** contributed by Lyubomyr Shaydariv https://github.com/lyubomyr-shaydariv
+
 
 == 4.3.0 - released 2015-06-15 
 
