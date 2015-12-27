@@ -41,6 +41,7 @@
       <item name="Signing APK" href="sign.html"/>
       <item name="Publishing to Google Play Store" href="playstore-publisher.html"/>
       <item name="Shading Example" href="shaded-commons-codec.html"/>
+      <item name="Instrumentation Example" href="instrumentation.html"/>
       <item name="Test Code Coverage with Emma" href="emma.html"/>
       <item name="Automated Screenshots" href="screenshots.html"/>
       <item name="NDK" href="ndk.html"/>
