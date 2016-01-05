@@ -442,16 +442,13 @@ public class ProguardMojo extends AbstractAndroidMojo
             proguardCommands.add( "@" + proguardFile.getAbsolutePath() );
         }
 
-        for ( Artifact artifact : getDirectDependencyArtifacts() )
+        for ( Artifact artifact : getTransitiveDependencyArtifacts( AAR ) )
         {
-            if ( AAR.equals( artifact.getType() ) )
+            File unpackedLibFolder = getUnpackedLibFolder( artifact );
+            File proguardFile = new File( unpackedLibFolder, "proguard.txt" );
+            if ( proguardFile.exists() )
             {
-                File unpackedLibFolder = getUnpackedLibFolder( artifact );
-                File proguardFile = new File( unpackedLibFolder, "proguard.txt" );
-                if ( proguardFile.exists() )
-                {
-                    proguardCommands.add( "@" + proguardFile.getAbsolutePath() );
-                }
+                proguardCommands.add( "@" + proguardFile.getAbsolutePath() );
             }
         }
 
