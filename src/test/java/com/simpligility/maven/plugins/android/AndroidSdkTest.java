@@ -100,10 +100,6 @@ public class AndroidSdkTest {
         // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
         final AndroidSdk sdk231 = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "23", "23.0.1" );
         Assert.assertTrue( sdk231.getAaptPath() != null && !sdk231.getAaptPath().equals( "" ) );
-
-        // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
-        final AndroidSdk sdk232 = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "23", "23.0.2" );
-        Assert.assertTrue( sdk232.getAaptPath() != null && !sdk232.getAaptPath().equals( "" ) );
     }
 
     @Test(expected = InvalidSdkException.class)
