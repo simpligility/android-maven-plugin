@@ -11,6 +11,8 @@ android:
     - build-tools-22.0.0
     - build-tools-22.0.1
     - build-tools-21.1.2
+    - build-tools-23.0.1
+    - build-tools-23.0.2
     - sys-img-armeabi-v7a-android-22
     - extra-android-m2repository
   licenses:
