@@ -76,30 +76,34 @@ public class AndroidSdkTest {
      * for this test to pass including the obsolete ones.
      */
     @Test
-    public void validPlatformsAndApiLevels1() {
+    public void validPlatformsAndApiLevels19() {
         // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
         final AndroidSdk sdk19 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "19"); 
     }
 
     @Test
-    public void validPlatformsAndApiLevels2() {
+    public void validPlatformsAndApiLevels21() {
         // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
         final AndroidSdk sdk21 = new AndroidSdk(new File(sdkTestSupport.getEnv_ANDROID_HOME()), "21", null);
         Assert.assertTrue( sdk21.getAaptPath() != null && !sdk21.getAaptPath().equals( "" ) );
     }
 
     @Test
-    public void validPlatformsAndApiLevels3() {
+    public void validPlatformsAndApiLevels22() {
         // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
         final AndroidSdk sdk22 = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME()), "22", "22.0.1" );
         Assert.assertTrue( sdk22.getAaptPath() != null && !sdk22.getAaptPath().equals( "" ) );
     }
 
     @Test
-    public void validPlatformsAndApiLevels4() {
+    public void validPlatformsAndApiLevels23() {
         // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
-        final AndroidSdk sdk19 = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "22", "22.0.1" );
-        Assert.assertTrue( sdk19.getAaptPath() != null && !sdk19.getAaptPath().equals( "" ) );
+        final AndroidSdk sdk231 = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "23", "23.0.1" );
+        Assert.assertTrue( sdk231.getAaptPath() != null && !sdk231.getAaptPath().equals( "" ) );
+
+        // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
+        final AndroidSdk sdk232 = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "23", "23.0.2" );
+        Assert.assertTrue( sdk232.getAaptPath() != null && !sdk232.getAaptPath().equals( "" ) );
     }
 
     @Test(expected = InvalidSdkException.class)
