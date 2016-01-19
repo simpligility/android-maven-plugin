@@ -338,7 +338,7 @@ public interface CommandExecutor
             private final Log logger;
             private boolean captureStdOut;
 
-            public StreamConsumerImpl( Log logger, boolean captureStdOut )
+            StreamConsumerImpl( Log logger, boolean captureStdOut )
             {
                 this.logger = logger;
                 this.captureStdOut = captureStdOut;
@@ -384,7 +384,7 @@ public interface CommandExecutor
             private final ErrorListener errorListener;
             private boolean captureStdErr;
 
-            public ErrorStreamConsumer( Log logger, ErrorListener errorListener, boolean captureStdErr )
+            ErrorStreamConsumer( Log logger, ErrorListener errorListener, boolean captureStdErr )
             {
                 this.logger = logger;
                 this.errorListener = errorListener;

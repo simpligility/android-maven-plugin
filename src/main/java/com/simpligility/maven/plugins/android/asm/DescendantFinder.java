@@ -40,7 +40,7 @@ class DescendantFinder extends ClassVisitor
      * @param parentPackages Packages to find descendants of. Must be formatted with <code>/</code> (slash) instead of
      *                       <code>.</code> (dot). For example: <code>junit/framework/</code>
      */
-    public DescendantFinder( String... parentPackages )
+    DescendantFinder( String... parentPackages )
     {
         super( Opcodes.ASM4 );
         this.parentPackages = parentPackages;

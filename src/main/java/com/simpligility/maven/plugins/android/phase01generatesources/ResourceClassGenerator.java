@@ -28,7 +28,7 @@ final class ResourceClassGenerator
     private final Log log;
     private final ILogger androidUtilsLog;
 
-    public ResourceClassGenerator( GenerateSourcesMojo mojo, File targetDirectory,
+    ResourceClassGenerator( GenerateSourcesMojo mojo, File targetDirectory,
                                    File genDirectory )
     {
         this.mojo = mojo;

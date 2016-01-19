@@ -326,7 +326,7 @@ public class ProguardMojo extends AbstractAndroidMojo
 
         private Collection< String > excludedFilter;
 
-        public ProGuardInput( String path, Collection< String > excludedFilter )
+        ProGuardInput( String path, Collection< String > excludedFilter )
         {
             this.path = path;
             this.excludedFilter = excludedFilter;
