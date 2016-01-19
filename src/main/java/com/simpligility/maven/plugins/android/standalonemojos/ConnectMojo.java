@@ -26,23 +26,43 @@ public class ConnectMojo extends AbstractAndroidMojo
 
         if ( ips.length > 0 )
         {
-            CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+            CommandExecutor executor = getExecutor();
 
             for ( String ip : ips )
             {
                 getLog().debug( "Connecting " + ip );
 
-                // It would be better to use the AndroidDebugBridge class 
+                // It would be better to use the AndroidDebugBridge class
                 // rather than calling the command line tool
                 String command = getAndroidSdk().getAdbPath();
+                // We first have to the put the bridge in tcpip mode or else it will fail to connect
+                // First make sure everything is clean ...
                 List<String> parameters = new ArrayList<String>();
-                parameters.add( "connect" );
-                parameters.add( ip );
+                parameters.add( "kill-server" );
 
                 try
                 {
-                    executor.setCaptureStdOut( true );
-                    executor.executeCommand( command, parameters );
+                    executor.executeCommand( command, parameters, false );
+                    parameters.clear();
+                    // initial connect to get adb in the right frame of mind
+                    // http://stackoverflow.com/questions/14899935/set-adb-in-tcp-ip-mode-device-not-found
+                    executor = getExecutor();
+                    parameters.add( "connect" );
+                    parameters.add( ip );
+                    executor.executeCommand( command, parameters, false );
+                    parameters.clear();
+                    // ... now put in wireless mode ...
+                    executor = getExecutor();
+                    String hostport[] = ip.split( ":" );
+                    parameters.add( "tcpip" );
+                    parameters.add( hostport[1] );
+                    executor.executeCommand( command, parameters, false );
+                    parameters.clear();
+                    // ... and finally really connect
+                    executor = getExecutor();
+                    parameters.add( "connect" );
+                    parameters.add( ip );
+                    executor.executeCommand( command, parameters, false );
                 }
                 catch ( ExecutionException e )
                 {
@@ -50,5 +70,13 @@ public class ConnectMojo extends AbstractAndroidMojo
                 }
             }
         }
+    }
+
+    private CommandExecutor getExecutor()
+    {
+        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        executor.setLogger( this.getLog() );
+        executor.setCaptureStdOut( true );
+        return executor;
     }
 }
