@@ -6,5 +6,6 @@ target
 .settings
 .project
 .classpath
+.checkstyle
 bin
 gen
