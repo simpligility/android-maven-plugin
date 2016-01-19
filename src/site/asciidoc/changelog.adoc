@@ -46,6 +46,9 @@
 * Example project and documentation for build configuration injection
 ** see https://github.com/simpligility/android-maven-plugin/pull/659
 ** contributed by https://github.com/spyhunter99 
+* Added testFailSafe option to allows build to continue even if IT tests fail (e.g. for cleanup)
+**  see https://github.com/simpligility/android-maven-plugin/pull/688
+** contributed by Marek Kedzierski https://github.com/kedzie
 
 == 4.3.0 - released 2015-06-15 
 
