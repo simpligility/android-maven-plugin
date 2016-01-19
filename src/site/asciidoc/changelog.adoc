@@ -31,11 +31,18 @@
 * Added <skipDependencies> option to ApkMojo and DexMojo
 ** see https://github.com/simpligility/android-maven-plugin/pull/632
 ** contributed by Lyubomyr Shaydariv https://github.com/lyubomyr-shaydariv
-* Include transitive dependencies when merhing Proguard rules
+* Instrumentation example documentation
+** see https://github.com/simpligility/android-maven-plugin/pull/696
+** contributed by Lyubomyr Shaydariv https://github.com/lyubomyr-shaydariv
+* Include transitive dependencies when merging Proguard rules
 ** see  https://github.com.simpligility/android-maven-plugin/pull/708
 ** contributed by Noe Beuret https://github.com/nbeuret
-
-
+* Support emma code coverage for aar and apklib projects
+** see https://github.com/simpligility/android-maven-plugin/pull/689
+** contributed by Hoyt Summers Pittman https://github.com/secondsun
+* Device connect and disconnect mojo improvements
+** see https://github.com/simpligility/android-maven-plugin/pull/702
+** contributed by Andy Piper https://github.com/andyp1per
 
 == 4.3.0 - released 2015-06-15 
 
