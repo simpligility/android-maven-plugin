@@ -49,6 +49,8 @@
 * Added testFailSafe option to allows build to continue even if IT tests fail (e.g. for cleanup)
 **  see https://github.com/simpligility/android-maven-plugin/pull/688
 ** contributed by Marek Kedzierski https://github.com/kedzie
+* Fixed inclusion of arm64-v8a libraries in APKs
+** fixes https://github.com/simpligility/android-maven-plugin/issues/682
 
 == 4.3.0 - released 2015-06-15 
 
