@@ -22,7 +22,7 @@
     <dependency>
       <groupId>com.android.support.test</groupId>
       <artifactId>runner</artifactId>
-      <version>0.3</version>
+      <version>0.4.1</version>
       <type>aar</type>
     </dependency>
     <dependency>
@@ -39,7 +39,7 @@
     <dependency>
       <groupId>com.android.support.test</groupId>
       <artifactId>rules</artifactId>
-      <version>0.3</version>
+      <version>0.4.1</version>
       <type>aar</type>
     </dependency>
     <dependency>
@@ -63,7 +63,7 @@
     <dependency>
       <groupId>com.github.rtyley</groupId>
       <artifactId>android-screenshot-celebrity</artifactId>
-      <version>1.8</version>
+      <version>1.9</version>
     </dependency>
   </dependencies>
 
