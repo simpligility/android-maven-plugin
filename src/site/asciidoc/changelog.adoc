@@ -51,6 +51,16 @@
 ** contributed by Marek Kedzierski https://github.com/kedzie
 * Fixed inclusion of arm64-v8a libraries in APKs
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/682
+* Upgraded SDK tool libraries 24.5.0 and 1.5.0
+** see https://github.com/simpligility/android-maven-plugin/pull/711
+** contributed by Marek Kedzierski https://github.com/kedzie
+** and Manfred Moser http://www.simpligility.com
+* Ensure duplicates are extracted from outputfolder
+** also handle multiple jar files with same name correctly
+** see https://github.com/simpligility/android-maven-plugin/pull/705
+** contributed by Marek Kedzierski https://github.com/kedzie
+
+
 
 == 4.3.0 - released 2015-06-15 
 
