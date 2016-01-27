@@ -2,12 +2,13 @@ package com.simpligility.maven.plugins.android.standalonemojos;
 
 import com.android.SdkConstants;
 import com.android.builder.core.AndroidBuilder;
+import com.android.builder.core.ErrorReporter;
 import com.android.ide.common.process.DefaultProcessExecutor;
-import com.android.ide.common.process.LoggedProcessOutputHandler;
 import com.android.manifmerger.ManifestMerger2;
 import com.android.utils.ILogger;
 import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.DefaultJavaProcessExecutor;
+import com.simpligility.maven.plugins.android.MavenErrorReporter;
 import com.simpligility.maven.plugins.android.common.AndroidExtension;
 import com.simpligility.maven.plugins.android.common.MavenManifestDependency;
 import com.simpligility.maven.plugins.android.configuration.ManifestMerger;
@@ -295,11 +296,12 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
     {
         ILogger logger = new MavenILogger( getLog(), ( parsedMergeReportFile != null ) );
         AndroidBuilder builder = new AndroidBuilder( project.toString(), "created by Android Maven Plugin",
-                new DefaultProcessExecutor( logger ),
-                new DefaultJavaProcessExecutor( logger ),
-                new LoggedProcessOutputHandler( logger ),
-                logger, false );
-
+            new DefaultProcessExecutor( logger ),
+            new DefaultJavaProcessExecutor( logger ),
+            new MavenErrorReporter( logger, ErrorReporter.EvaluationMode.STANDARD ),
+            logger,
+          false );
+        
         String minSdkVersion = null;
         String targetSdkVersion = null;
         int versionCode;
@@ -338,12 +340,20 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
         }
 
         builder.mergeManifests(
-                androidManifestFile, new ArrayList<File>(), manifestDependencies, "",
-                versionCode, parsedVersionName,
-                minSdkVersion, targetSdkVersion, null,
-                destinationManifestFile.getPath(), null, ManifestMerger2.MergeType.APPLICATION,
-                new HashMap<String, String>(), parsedMergeReportFile );
-
+                  androidManifestFile,     // mainManifest
+                  new ArrayList<File>(),   // manifestOverlays
+                  manifestDependencies,    // libraries
+                  "",                      // packageOverride
+                  versionCode,             // versionCode
+                  parsedVersionName,       // versionName
+                  minSdkVersion,           // minSdkVersion
+                  targetSdkVersion,        // targetSdkVersion
+                  null,                    // maxSdkVersion
+                  destinationManifestFile.getPath(),       // outManifestLocation
+                  null,                                    // outAaptSafeManifestLocation
+                  ManifestMerger2.MergeType.APPLICATION,   // mergeType
+                  new HashMap<String, Object>(),           // placeHolders
+                  parsedMergeReportFile                    // reportFile
+                  );
     }
-
 }

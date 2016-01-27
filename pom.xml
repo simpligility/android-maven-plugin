@@ -32,7 +32,7 @@
   <properties>
     <scm.branch>master</scm.branch>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!--  upgrade to 3.4 fails build, see https://github.com/simpligility/android-maven-plugin/issues/554 -->
     <maven-plugin-plugin.version>3.3</maven-plugin-plugin.version>
     <maven.api.version>3.0.4</maven.api.version>
@@ -43,8 +43,8 @@
 
     <!-- Attention - make sure that the tools version is the versions of 
       the transitive dependencies of the builder version -->
-    <android.builder.version>1.2.2</android.builder.version>
-    <android.tools.version>24.2.2</android.tools.version>
+    <android.builder.version>1.5.0</android.builder.version>
+    <android.tools.version>24.5.0</android.tools.version>
   </properties>
 
   <scm>
@@ -366,6 +366,13 @@
     <dependency>
       <groupId>com.android.tools.build</groupId>
       <artifactId>builder</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.android.tools.build</groupId>
+      <artifactId>builder-model</artifactId>
+      <version>${android.builder.version}</version>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
