@@ -21,6 +21,7 @@ import com.android.sdklib.build.ApkCreationException;
 import com.android.sdklib.build.DuplicateFileException;
 import com.android.sdklib.build.SealedApkException;
 import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
+import com.google.common.io.Files;
 import com.simpligility.maven.plugins.android.AndroidNdk;
 import com.simpligility.maven.plugins.android.AndroidSigner;
 import com.simpligility.maven.plugins.android.IncludeExcludeSet;
@@ -51,6 +52,7 @@ import org.apache.maven.plugins.shade.resource.ResourceTransformer;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
@@ -566,7 +568,27 @@ public class ApkMojo extends AbstractAndroidMojo
         }
     }
 
-    private void extractDuplicateFiles( List<File> jarFiles ) throws IOException
+    private void computeDuplicateFilesInSource( File folder )
+    {
+        String rPath = folder.getAbsolutePath();
+        for ( File file : Files.fileTreeTraverser().breadthFirstTraversal( folder ).toList() )
+        {
+            String lPath = file.getAbsolutePath();
+            if ( lPath.equals( rPath ) )
+            {
+                continue; //skip the root
+            }
+            lPath = lPath.substring( rPath.length() + 1 ); //strip root folder to make relative path
+
+            if ( jars.get( lPath ) == null )
+            {
+                jars.put( lPath, new ArrayList<File>() );
+            }
+            jars.get( lPath ).add( folder );
+        }
+    }
+
+    private void extractDuplicateFiles( List<File> jarFiles, Collection<File> sourceFolders ) throws IOException
     {
         getLog().debug( "Extracting duplicates" );
         List<String> duplicates = new ArrayList<String>();
@@ -600,12 +622,20 @@ public class ApkMojo extends AbstractAndroidMojo
 
         for ( File file : jarToModify )
         {
-            final File newJar = removeDuplicatesFromJar( file, duplicates, duplicatesAdded, zos );
-            getLog().debug( "Removed duplicates from " + newJar );
-            if ( newJar != null )
+            final int index = jarFiles.indexOf( file );
+            if ( index != -1 )
             {
-                final int index = jarFiles.indexOf( file );
-                jarFiles.set( index, newJar );
+                final File newJar = removeDuplicatesFromJar( file, duplicates, duplicatesAdded, zos, index );
+                getLog().debug( "Removed duplicates from " + newJar );
+                if ( newJar != null )
+                {
+                    jarFiles.set( index, newJar );
+                }
+            }
+            else
+            {
+                removeDuplicatesFromFolder( file, file, duplicates, duplicatesAdded, zos );
+                getLog().debug( "Removed duplicates from " + file );
             }
         }
         //add transformed resources to duplicate-resources.jar
@@ -666,12 +696,17 @@ public class ApkMojo extends AbstractAndroidMojo
             jarFiles.add( artifact.getFile() );
         }
 
+        for ( File src : sourceFolders )
+        {
+            computeDuplicateFilesInSource( src );
+        }
+
         // Check duplicates.
         if ( extractDuplicates )
         {
             try
             {
-                extractDuplicateFiles( jarFiles );
+                extractDuplicateFiles( jarFiles, sourceFolders );
             }
             catch ( IOException e )
             {
@@ -799,12 +834,14 @@ public class ApkMojo extends AbstractAndroidMojo
     }
 
     private File removeDuplicatesFromJar( File in, List<String> duplicates,
-                                          Set<String> duplicatesAdded, ZipOutputStream duplicateZos )
+                                          Set<String> duplicatesAdded, ZipOutputStream duplicateZos, int num )
     {
         String target = targetDirectory.getAbsolutePath();
         File tmp = new File( target, "unpacked-embedded-jars" );
         tmp.mkdirs();
-        File out = new File( tmp, in.getName() );
+        String jarName = String.format( "%s-%d.%s",
+           Files.getNameWithoutExtension( in.getName() ), num, Files.getFileExtension( in.getName() ) );
+        File out = new File( tmp, jarName );
 
         if ( out.exists() )
         {
@@ -908,6 +945,66 @@ public class ApkMojo extends AbstractAndroidMojo
         }
         getLog().info( in.getName() + " rewritten without duplicates : " + out.getAbsolutePath() );
         return out;
+    }
+
+    private void removeDuplicatesFromFolder( File root, File in, List<String> duplicates,
+       Set<String> duplicatesAdded, ZipOutputStream duplicateZos )
+    {
+        String rPath = root.getAbsolutePath();
+        try
+        {
+            for ( File f : in.listFiles() )
+            {
+                if ( f.isDirectory() )
+                {
+                    removeDuplicatesFromFolder( root, f, duplicates, duplicatesAdded, duplicateZos );
+                }
+                else
+                {
+                    String lName = f.getAbsolutePath();
+                    lName = lName.substring( rPath.length() + 1 ); //make relative path
+                    if ( duplicates.contains( lName ) )
+                    {
+                        boolean resourceTransformed = false;
+                        if ( transformers != null )
+                        {
+                            for ( ResourceTransformer transformer : transformers )
+                            {
+                                if ( transformer.canTransformResource( lName ) )
+                                {
+                                    getLog().info( "Transforming " + lName
+                                       + " using " + transformer.getClass().getName() );
+                                    InputStream currIn = new FileInputStream( f );
+                                    transformer.processResource( lName, currIn, null );
+                                    currIn.close();
+                                    resourceTransformed = true;
+                                    break;
+                                }
+                            }
+                        }
+                        //if not handled by transformer, add (once) to duplicates jar
+                        if ( !resourceTransformed )
+                        {
+                            if ( !duplicatesAdded.contains( lName ) )
+                            {
+                                duplicatesAdded.add( lName );
+                                ZipEntry entry = new ZipEntry( lName );
+                                duplicateZos.putNextEntry( entry );
+                                InputStream currIn = new FileInputStream( f );
+                                copyStreamWithoutClosing( currIn, duplicateZos );
+                                currIn.close();
+                                duplicateZos.closeEntry();
+                            }
+                        }
+                        f.delete();
+                    }
+                }
+            }
+        }
+        catch ( IOException e )
+        {
+            getLog().error( "Cannot removing duplicates : " + e.getMessage() );
+        }
     }
 
     /**
