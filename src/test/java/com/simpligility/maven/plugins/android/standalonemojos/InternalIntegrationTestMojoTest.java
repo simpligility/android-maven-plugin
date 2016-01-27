@@ -281,18 +281,15 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
                     }
 
                     @Override
-                    public String installPackage(String s, boolean b, String... strings) throws InstallException {
-                        return null;
+                    public void installPackage(String s, boolean b, String... strings) throws InstallException {
                     }
 
                     @Override
                     public void installPackages(List<String> list, int i, boolean b, String... strings) throws InstallException {
-
                     }
 
                     @Override
-                    public String installRemotePackage(String s, boolean b, String... strings) throws InstallException {
-                        return null;
+                    public void installRemotePackage(String s, boolean b, String... strings) throws InstallException {
                     }
 
                     @Override
@@ -360,19 +357,16 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
 
                     @Override
                     public boolean supportsFeature(HardwareFeature arg0) {
-                      // TODO Auto-generated method stub
                       return false;
                     }
 
                     @Override
                     public List<String> getAbis() {
-                      // TODO Auto-generated method stub
                       return null;
                     }
 
                     @Override
                     public int getDensity() {
-                      // TODO Auto-generated method stub
                       return 0;
                     }
 
@@ -384,6 +378,23 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
                     @Override
                     public String getRegion() {
                         return null;
+                    }
+
+                    @Override
+                    public boolean root() throws TimeoutException, AdbCommandRejectedException, IOException,
+                        ShellCommandUnresponsiveException {
+                      return false;
+                    }
+
+                    @Override
+                    public boolean isRoot() throws TimeoutException, AdbCommandRejectedException, IOException,
+                        ShellCommandUnresponsiveException {
+                      return false;
+                    }
+
+                    @Override
+                    public int getApiLevel() {
+                      return 0;
                     }
 
 

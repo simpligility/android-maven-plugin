@@ -696,14 +696,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
                 String deviceLogLinePrefix = DeviceHelper.getDeviceLogLinePrefix( device );
                 try
                 {
-                    String result = device.installPackage( apkFile.getAbsolutePath(), true );
-                    // according to the docs for installPackage, not null response is error
-                    if ( result != null )
-                    {
-                        throw new MojoExecutionException( deviceLogLinePrefix
-                                + "Install of " + apkFile.getAbsolutePath()
-                                + " failed - [" + result + "]" );
-                    }
+                    device.installPackage( apkFile.getAbsolutePath(), true );
                     getLog().info( deviceLogLinePrefix + "Successfully installed " + apkFile.getAbsolutePath() ); 
                     getLog().debug( " to " + DeviceHelper.getDescriptiveName( device ) );
                 }
