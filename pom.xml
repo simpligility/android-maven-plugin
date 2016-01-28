@@ -40,7 +40,7 @@
     <easymock.version>3.4</easymock.version>
     <powermock.version>1.6.4</powermock.version>
     <publisher.version>v2-rev13-1.19.0</publisher.version>
-
+    <asm.version>5.0.4</asm.version>
     <!-- Attention - make sure that the tools version is the versions of 
       the transitive dependencies of the builder version -->
     <android.builder.version>1.5.0</android.builder.version>
@@ -233,13 +233,24 @@
         <version>2.5</version>
       </dependency>
 
-<!--  the sdk has a newer version as dependency, we should update this if possible -->
+      <!--  managed since its transitive from SDK and others -->
       <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm</artifactId>
-        <version>4.1</version>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-tree</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-analysis</artifactId>
+        <version>${asm.version}</version>
       </dependency>
 
+      <!--TBD replace with org.apache.commons:commons-lang3 -->
       <dependency>
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
