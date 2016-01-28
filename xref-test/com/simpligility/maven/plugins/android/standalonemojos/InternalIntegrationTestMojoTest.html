@@ -289,127 +289,138 @@
 <a class="jxr_linenumber" name="L281" href="#L281">281</a>                     }
 <a class="jxr_linenumber" name="L282" href="#L282">282</a> 
 <a class="jxr_linenumber" name="L283" href="#L283">283</a>                     @Override
-<a class="jxr_linenumber" name="L284" href="#L284">284</a>                     <strong class="jxr_keyword">public</strong> String installPackage(String s, <strong class="jxr_keyword">boolean</strong> b, String... strings) <strong class="jxr_keyword">throws</strong> InstallException {
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>                         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L286" href="#L286">286</a>                     }
-<a class="jxr_linenumber" name="L287" href="#L287">287</a> 
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>                     @Override
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> installPackages(List&lt;String&gt; list, <strong class="jxr_keyword">int</strong> i, <strong class="jxr_keyword">boolean</strong> b, String... strings) <strong class="jxr_keyword">throws</strong> InstallException {
+<a class="jxr_linenumber" name="L284" href="#L284">284</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> installPackage(String s, <strong class="jxr_keyword">boolean</strong> b, String... strings) <strong class="jxr_keyword">throws</strong> InstallException {
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>                     }
+<a class="jxr_linenumber" name="L286" href="#L286">286</a> 
+<a class="jxr_linenumber" name="L287" href="#L287">287</a>                     @Override
+<a class="jxr_linenumber" name="L288" href="#L288">288</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> installPackages(List&lt;String&gt; list, <strong class="jxr_keyword">int</strong> i, <strong class="jxr_keyword">boolean</strong> b, String... strings) <strong class="jxr_keyword">throws</strong> InstallException {
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>                     }
 <a class="jxr_linenumber" name="L290" href="#L290">290</a> 
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>                     }
-<a class="jxr_linenumber" name="L292" href="#L292">292</a> 
-<a class="jxr_linenumber" name="L293" href="#L293">293</a>                     @Override
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>                     <strong class="jxr_keyword">public</strong> String installRemotePackage(String s, <strong class="jxr_keyword">boolean</strong> b, String... strings) <strong class="jxr_keyword">throws</strong> InstallException {
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>                         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>                     }
-<a class="jxr_linenumber" name="L297" href="#L297">297</a> 
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>                     @Override
-<a class="jxr_linenumber" name="L299" href="#L299">299</a>                     <strong class="jxr_keyword">public</strong> Integer getBatteryLevel() <strong class="jxr_keyword">throws</strong> TimeoutException, AdbCommandRejectedException, IOException, ShellCommandUnresponsiveException {
-<a class="jxr_linenumber" name="L300" href="#L300">300</a>                         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L301" href="#L301">301</a>                     }
-<a class="jxr_linenumber" name="L302" href="#L302">302</a> 
-<a class="jxr_linenumber" name="L303" href="#L303">303</a>                     @Override
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>                     <strong class="jxr_keyword">public</strong> Integer getBatteryLevel(<strong class="jxr_keyword">long</strong> l) <strong class="jxr_keyword">throws</strong> TimeoutException, AdbCommandRejectedException, IOException, ShellCommandUnresponsiveException {
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>                         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>                     }
-<a class="jxr_linenumber" name="L307" href="#L307">307</a> 
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>                     @Override
-<a class="jxr_linenumber" name="L309" href="#L309">309</a>                     <strong class="jxr_keyword">public</strong> Future&lt;Integer&gt; getBattery() {
-<a class="jxr_linenumber" name="L310" href="#L310">310</a>                         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L311" href="#L311">311</a>                     }
-<a class="jxr_linenumber" name="L312" href="#L312">312</a> 
-<a class="jxr_linenumber" name="L313" href="#L313">313</a>                     @Override
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>                     <strong class="jxr_keyword">public</strong> Future&lt;Integer&gt; getBattery(<strong class="jxr_keyword">long</strong> l, TimeUnit timeUnit) {
-<a class="jxr_linenumber" name="L315" href="#L315">315</a>                         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L316" href="#L316">316</a>                     }
-<a class="jxr_linenumber" name="L317" href="#L317">317</a> 
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>                     @Override
-<a class="jxr_linenumber" name="L319" href="#L319">319</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> createForward(<strong class="jxr_keyword">int</strong> arg0, String arg1, DeviceUnixSocketNamespace arg2)
-<a class="jxr_linenumber" name="L320" href="#L320">320</a>                             <strong class="jxr_keyword">throws</strong> TimeoutException, AdbCommandRejectedException, IOException
-<a class="jxr_linenumber" name="L321" href="#L321">321</a>                     {
-<a class="jxr_linenumber" name="L322" href="#L322">322</a>                     }
-<a class="jxr_linenumber" name="L323" href="#L323">323</a> 
-<a class="jxr_linenumber" name="L324" href="#L324">324</a>                     @Override
-<a class="jxr_linenumber" name="L325" href="#L325">325</a>                     <strong class="jxr_keyword">public</strong> String getName()
-<a class="jxr_linenumber" name="L326" href="#L326">326</a>                     {
-<a class="jxr_linenumber" name="L327" href="#L327">327</a>                         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L328" href="#L328">328</a>                     }
-<a class="jxr_linenumber" name="L329" href="#L329">329</a> 
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>                     @Override
-<a class="jxr_linenumber" name="L331" href="#L331">331</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> executeShellCommand(String s, IShellOutputReceiver iShellOutputReceiver, <strong class="jxr_keyword">long</strong> l, TimeUnit timeUnit)
-<a class="jxr_linenumber" name="L332" href="#L332">332</a>                         <strong class="jxr_keyword">throws</strong> TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException
-<a class="jxr_linenumber" name="L333" href="#L333">333</a>                     {
-<a class="jxr_linenumber" name="L334" href="#L334">334</a>                     }
-<a class="jxr_linenumber" name="L335" href="#L335">335</a> 
-<a class="jxr_linenumber" name="L336" href="#L336">336</a>                     @Override
-<a class="jxr_linenumber" name="L337" href="#L337">337</a>                     <strong class="jxr_keyword">public</strong> Future&lt;String&gt; getSystemProperty(String s) {
-<a class="jxr_linenumber" name="L338" href="#L338">338</a>                         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L339" href="#L339">339</a>                     }
-<a class="jxr_linenumber" name="L340" href="#L340">340</a> 
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>                     @Override
-<a class="jxr_linenumber" name="L342" href="#L342">342</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> removeForward(<strong class="jxr_keyword">int</strong> arg0, String arg1, DeviceUnixSocketNamespace arg2)
-<a class="jxr_linenumber" name="L343" href="#L343">343</a>                             <strong class="jxr_keyword">throws</strong> TimeoutException, AdbCommandRejectedException, IOException
-<a class="jxr_linenumber" name="L344" href="#L344">344</a>                     {
-<a class="jxr_linenumber" name="L345" href="#L345">345</a>                     }
-<a class="jxr_linenumber" name="L346" href="#L346">346</a> 
-<a class="jxr_linenumber" name="L347" href="#L347">347</a>                     @Override
-<a class="jxr_linenumber" name="L348" href="#L348">348</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> supportsFeature(Feature feature) {
-<a class="jxr_linenumber" name="L349" href="#L349">349</a>                         <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L350" href="#L350">350</a>                     }
-<a class="jxr_linenumber" name="L351" href="#L351">351</a> 
-<a class="jxr_linenumber" name="L352" href="#L352">352</a>                     @Override
-<a class="jxr_linenumber" name="L353" href="#L353">353</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> startScreenRecorder(String remoteFilePath,
-<a class="jxr_linenumber" name="L354" href="#L354">354</a>                             ScreenRecorderOptions options,
-<a class="jxr_linenumber" name="L355" href="#L355">355</a>                             IShellOutputReceiver receiver)
-<a class="jxr_linenumber" name="L356" href="#L356">356</a>                             <strong class="jxr_keyword">throws</strong> TimeoutException,
-<a class="jxr_linenumber" name="L357" href="#L357">357</a>                             AdbCommandRejectedException, IOException,
-<a class="jxr_linenumber" name="L358" href="#L358">358</a>                             ShellCommandUnresponsiveException {
-<a class="jxr_linenumber" name="L359" href="#L359">359</a>                     }
-<a class="jxr_linenumber" name="L360" href="#L360">360</a> 
-<a class="jxr_linenumber" name="L361" href="#L361">361</a>                     @Override
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> supportsFeature(HardwareFeature arg0) {
-<a class="jxr_linenumber" name="L363" href="#L363">363</a>                       <em class="jxr_comment">// TODO Auto-generated method stub</em>
-<a class="jxr_linenumber" name="L364" href="#L364">364</a>                       <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L365" href="#L365">365</a>                     }
-<a class="jxr_linenumber" name="L366" href="#L366">366</a> 
-<a class="jxr_linenumber" name="L367" href="#L367">367</a>                     @Override
-<a class="jxr_linenumber" name="L368" href="#L368">368</a>                     <strong class="jxr_keyword">public</strong> List&lt;String&gt; getAbis() {
-<a class="jxr_linenumber" name="L369" href="#L369">369</a>                       <em class="jxr_comment">// TODO Auto-generated method stub</em>
-<a class="jxr_linenumber" name="L370" href="#L370">370</a>                       <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L291" href="#L291">291</a>                     @Override
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> installRemotePackage(String s, <strong class="jxr_keyword">boolean</strong> b, String... strings) <strong class="jxr_keyword">throws</strong> InstallException {
+<a class="jxr_linenumber" name="L293" href="#L293">293</a>                     }
+<a class="jxr_linenumber" name="L294" href="#L294">294</a> 
+<a class="jxr_linenumber" name="L295" href="#L295">295</a>                     @Override
+<a class="jxr_linenumber" name="L296" href="#L296">296</a>                     <strong class="jxr_keyword">public</strong> Integer getBatteryLevel() <strong class="jxr_keyword">throws</strong> TimeoutException, AdbCommandRejectedException, IOException, ShellCommandUnresponsiveException {
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>                         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>                     }
+<a class="jxr_linenumber" name="L299" href="#L299">299</a> 
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>                     @Override
+<a class="jxr_linenumber" name="L301" href="#L301">301</a>                     <strong class="jxr_keyword">public</strong> Integer getBatteryLevel(<strong class="jxr_keyword">long</strong> l) <strong class="jxr_keyword">throws</strong> TimeoutException, AdbCommandRejectedException, IOException, ShellCommandUnresponsiveException {
+<a class="jxr_linenumber" name="L302" href="#L302">302</a>                         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>                     }
+<a class="jxr_linenumber" name="L304" href="#L304">304</a> 
+<a class="jxr_linenumber" name="L305" href="#L305">305</a>                     @Override
+<a class="jxr_linenumber" name="L306" href="#L306">306</a>                     <strong class="jxr_keyword">public</strong> Future&lt;Integer&gt; getBattery() {
+<a class="jxr_linenumber" name="L307" href="#L307">307</a>                         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>                     }
+<a class="jxr_linenumber" name="L309" href="#L309">309</a> 
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>                     @Override
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>                     <strong class="jxr_keyword">public</strong> Future&lt;Integer&gt; getBattery(<strong class="jxr_keyword">long</strong> l, TimeUnit timeUnit) {
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>                         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L313" href="#L313">313</a>                     }
+<a class="jxr_linenumber" name="L314" href="#L314">314</a> 
+<a class="jxr_linenumber" name="L315" href="#L315">315</a>                     @Override
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> createForward(<strong class="jxr_keyword">int</strong> arg0, String arg1, DeviceUnixSocketNamespace arg2)
+<a class="jxr_linenumber" name="L317" href="#L317">317</a>                             <strong class="jxr_keyword">throws</strong> TimeoutException, AdbCommandRejectedException, IOException
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>                     {
+<a class="jxr_linenumber" name="L319" href="#L319">319</a>                     }
+<a class="jxr_linenumber" name="L320" href="#L320">320</a> 
+<a class="jxr_linenumber" name="L321" href="#L321">321</a>                     @Override
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>                     <strong class="jxr_keyword">public</strong> String getName()
+<a class="jxr_linenumber" name="L323" href="#L323">323</a>                     {
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>                         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L325" href="#L325">325</a>                     }
+<a class="jxr_linenumber" name="L326" href="#L326">326</a> 
+<a class="jxr_linenumber" name="L327" href="#L327">327</a>                     @Override
+<a class="jxr_linenumber" name="L328" href="#L328">328</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> executeShellCommand(String s, IShellOutputReceiver iShellOutputReceiver, <strong class="jxr_keyword">long</strong> l, TimeUnit timeUnit)
+<a class="jxr_linenumber" name="L329" href="#L329">329</a>                         <strong class="jxr_keyword">throws</strong> TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>                     {
+<a class="jxr_linenumber" name="L331" href="#L331">331</a>                     }
+<a class="jxr_linenumber" name="L332" href="#L332">332</a> 
+<a class="jxr_linenumber" name="L333" href="#L333">333</a>                     @Override
+<a class="jxr_linenumber" name="L334" href="#L334">334</a>                     <strong class="jxr_keyword">public</strong> Future&lt;String&gt; getSystemProperty(String s) {
+<a class="jxr_linenumber" name="L335" href="#L335">335</a>                         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L336" href="#L336">336</a>                     }
+<a class="jxr_linenumber" name="L337" href="#L337">337</a> 
+<a class="jxr_linenumber" name="L338" href="#L338">338</a>                     @Override
+<a class="jxr_linenumber" name="L339" href="#L339">339</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> removeForward(<strong class="jxr_keyword">int</strong> arg0, String arg1, DeviceUnixSocketNamespace arg2)
+<a class="jxr_linenumber" name="L340" href="#L340">340</a>                             <strong class="jxr_keyword">throws</strong> TimeoutException, AdbCommandRejectedException, IOException
+<a class="jxr_linenumber" name="L341" href="#L341">341</a>                     {
+<a class="jxr_linenumber" name="L342" href="#L342">342</a>                     }
+<a class="jxr_linenumber" name="L343" href="#L343">343</a> 
+<a class="jxr_linenumber" name="L344" href="#L344">344</a>                     @Override
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> supportsFeature(Feature feature) {
+<a class="jxr_linenumber" name="L346" href="#L346">346</a>                         <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>                     }
+<a class="jxr_linenumber" name="L348" href="#L348">348</a> 
+<a class="jxr_linenumber" name="L349" href="#L349">349</a>                     @Override
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> startScreenRecorder(String remoteFilePath,
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>                             ScreenRecorderOptions options,
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>                             IShellOutputReceiver receiver)
+<a class="jxr_linenumber" name="L353" href="#L353">353</a>                             <strong class="jxr_keyword">throws</strong> TimeoutException,
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>                             AdbCommandRejectedException, IOException,
+<a class="jxr_linenumber" name="L355" href="#L355">355</a>                             ShellCommandUnresponsiveException {
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>                     }
+<a class="jxr_linenumber" name="L357" href="#L357">357</a> 
+<a class="jxr_linenumber" name="L358" href="#L358">358</a>                     @Override
+<a class="jxr_linenumber" name="L359" href="#L359">359</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> supportsFeature(HardwareFeature arg0) {
+<a class="jxr_linenumber" name="L360" href="#L360">360</a>                       <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>                     }
+<a class="jxr_linenumber" name="L362" href="#L362">362</a> 
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>                     @Override
+<a class="jxr_linenumber" name="L364" href="#L364">364</a>                     <strong class="jxr_keyword">public</strong> List&lt;String&gt; getAbis() {
+<a class="jxr_linenumber" name="L365" href="#L365">365</a>                       <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>                     }
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> 
+<a class="jxr_linenumber" name="L368" href="#L368">368</a>                     @Override
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getDensity() {
+<a class="jxr_linenumber" name="L370" href="#L370">370</a>                       <strong class="jxr_keyword">return</strong> 0;
 <a class="jxr_linenumber" name="L371" href="#L371">371</a>                     }
 <a class="jxr_linenumber" name="L372" href="#L372">372</a> 
 <a class="jxr_linenumber" name="L373" href="#L373">373</a>                     @Override
-<a class="jxr_linenumber" name="L374" href="#L374">374</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getDensity() {
-<a class="jxr_linenumber" name="L375" href="#L375">375</a>                       <em class="jxr_comment">// TODO Auto-generated method stub</em>
-<a class="jxr_linenumber" name="L376" href="#L376">376</a>                       <strong class="jxr_keyword">return</strong> 0;
-<a class="jxr_linenumber" name="L377" href="#L377">377</a>                     }
-<a class="jxr_linenumber" name="L378" href="#L378">378</a> 
-<a class="jxr_linenumber" name="L379" href="#L379">379</a>                     @Override
-<a class="jxr_linenumber" name="L380" href="#L380">380</a>                     <strong class="jxr_keyword">public</strong> String getLanguage() {
-<a class="jxr_linenumber" name="L381" href="#L381">381</a>                         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L382" href="#L382">382</a>                     }
-<a class="jxr_linenumber" name="L383" href="#L383">383</a> 
-<a class="jxr_linenumber" name="L384" href="#L384">384</a>                     @Override
-<a class="jxr_linenumber" name="L385" href="#L385">385</a>                     <strong class="jxr_keyword">public</strong> String getRegion() {
-<a class="jxr_linenumber" name="L386" href="#L386">386</a>                         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L374" href="#L374">374</a>                     <strong class="jxr_keyword">public</strong> String getLanguage() {
+<a class="jxr_linenumber" name="L375" href="#L375">375</a>                         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L376" href="#L376">376</a>                     }
+<a class="jxr_linenumber" name="L377" href="#L377">377</a> 
+<a class="jxr_linenumber" name="L378" href="#L378">378</a>                     @Override
+<a class="jxr_linenumber" name="L379" href="#L379">379</a>                     <strong class="jxr_keyword">public</strong> String getRegion() {
+<a class="jxr_linenumber" name="L380" href="#L380">380</a>                         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L381" href="#L381">381</a>                     }
+<a class="jxr_linenumber" name="L382" href="#L382">382</a> 
+<a class="jxr_linenumber" name="L383" href="#L383">383</a>                     @Override
+<a class="jxr_linenumber" name="L384" href="#L384">384</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> root() <strong class="jxr_keyword">throws</strong> TimeoutException, AdbCommandRejectedException, IOException,
+<a class="jxr_linenumber" name="L385" href="#L385">385</a>                         ShellCommandUnresponsiveException {
+<a class="jxr_linenumber" name="L386" href="#L386">386</a>                       <strong class="jxr_keyword">return</strong> false;
 <a class="jxr_linenumber" name="L387" href="#L387">387</a>                     }
 <a class="jxr_linenumber" name="L388" href="#L388">388</a> 
-<a class="jxr_linenumber" name="L389" href="#L389">389</a> 
-<a class="jxr_linenumber" name="L390" href="#L390">390</a>                 });
-<a class="jxr_linenumber" name="L391" href="#L391">391</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L392" href="#L392">392</a>             }
-<a class="jxr_linenumber" name="L393" href="#L393">393</a>         });
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>                     @Override
+<a class="jxr_linenumber" name="L390" href="#L390">390</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isRoot() <strong class="jxr_keyword">throws</strong> TimeoutException, AdbCommandRejectedException, IOException,
+<a class="jxr_linenumber" name="L391" href="#L391">391</a>                         ShellCommandUnresponsiveException {
+<a class="jxr_linenumber" name="L392" href="#L392">392</a>                       <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>                     }
 <a class="jxr_linenumber" name="L394" href="#L394">394</a> 
-<a class="jxr_linenumber" name="L395" href="#L395">395</a>         InternalIntegrationTestMojo mojo = createMojo(<span class="jxr_string">"manifest-tests/test-project"</span>);
-<a class="jxr_linenumber" name="L396" href="#L396">396</a> 
-<a class="jxr_linenumber" name="L397" href="#L397">397</a>         mojo.execute();
-<a class="jxr_linenumber" name="L398" href="#L398">398</a>         List&lt;String&gt; classes = Whitebox.getInternalState(mojo, <span class="jxr_string">"parsedClasses"</span>);
-<a class="jxr_linenumber" name="L399" href="#L399">399</a>         assertNotNull(classes);
-<a class="jxr_linenumber" name="L400" href="#L400">400</a>         assertEquals(1, classes.size());
-<a class="jxr_linenumber" name="L401" href="#L401">401</a>     }
-<a class="jxr_linenumber" name="L402" href="#L402">402</a> }
+<a class="jxr_linenumber" name="L395" href="#L395">395</a>                     @Override
+<a class="jxr_linenumber" name="L396" href="#L396">396</a>                     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getApiLevel() {
+<a class="jxr_linenumber" name="L397" href="#L397">397</a>                       <strong class="jxr_keyword">return</strong> 0;
+<a class="jxr_linenumber" name="L398" href="#L398">398</a>                     }
+<a class="jxr_linenumber" name="L399" href="#L399">399</a> 
+<a class="jxr_linenumber" name="L400" href="#L400">400</a> 
+<a class="jxr_linenumber" name="L401" href="#L401">401</a>                 });
+<a class="jxr_linenumber" name="L402" href="#L402">402</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L403" href="#L403">403</a>             }
+<a class="jxr_linenumber" name="L404" href="#L404">404</a>         });
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> 
+<a class="jxr_linenumber" name="L406" href="#L406">406</a>         InternalIntegrationTestMojo mojo = createMojo(<span class="jxr_string">"manifest-tests/test-project"</span>);
+<a class="jxr_linenumber" name="L407" href="#L407">407</a> 
+<a class="jxr_linenumber" name="L408" href="#L408">408</a>         mojo.execute();
+<a class="jxr_linenumber" name="L409" href="#L409">409</a>         List&lt;String&gt; classes = Whitebox.getInternalState(mojo, <span class="jxr_string">"parsedClasses"</span>);
+<a class="jxr_linenumber" name="L410" href="#L410">410</a>         assertNotNull(classes);
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>         assertEquals(1, classes.size());
+<a class="jxr_linenumber" name="L412" href="#L412">412</a>     }
+<a class="jxr_linenumber" name="L413" href="#L413">413</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2008&#x2013;2015 <a href="http://www.simpligility.com">simpligility technologies inc.</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2008&#x2013;2016 <a href="http://www.simpligility.com">simpligility technologies inc.</a>. All rights reserved.</div>
 </body>
 </html>

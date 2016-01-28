@@ -34,34 +34,62 @@
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>          <strong class="jxr_keyword">if</strong> ( ips.length &gt; 0 )
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>          {
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>              <a href="../../../../../../com/simpligility/maven/plugins/android/CommandExecutor.html">CommandExecutor</a> executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>              <a href="../../../../../../com/simpligility/maven/plugins/android/CommandExecutor.html">CommandExecutor</a> executor = getExecutor();
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>              <strong class="jxr_keyword">for</strong> ( String ip : ips )
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>              {
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>                  getLog().debug( <span class="jxr_string">"Connecting "</span> + ip );
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>                  <em class="jxr_comment">// It would be better to use the AndroidDebugBridge class </em>
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>                  <em class="jxr_comment">// It would be better to use the AndroidDebugBridge class</em>
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>                  <em class="jxr_comment">// rather than calling the command line tool</em>
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>                  String command = getAndroidSdk().getAdbPath();
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>                  List&lt;String&gt; parameters = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>                  parameters.add( <span class="jxr_string">"connect"</span> );
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>                  parameters.add( ip );
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>                  <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>                  {
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>                      executor.setCaptureStdOut( <strong class="jxr_keyword">true</strong> );
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>                      executor.executeCommand( command, parameters );
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>                  }
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>                  <strong class="jxr_keyword">catch</strong> ( ExecutionException e )
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>                  {
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>                      <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( String.format( <span class="jxr_string">"Can not connect %s"</span>, ip ), e );
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>                  }
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>              }
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>          }
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>      }
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  }
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>                  <em class="jxr_comment">// We first have to the put the bridge in tcpip mode or else it will fail to connect</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>                  <em class="jxr_comment">// First make sure everything is clean ...</em>
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>                  List&lt;String&gt; parameters = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>                  parameters.add( <span class="jxr_string">"kill-server"</span> );
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>                  <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>                  {
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>                      executor.executeCommand( command, parameters, false );
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>                      parameters.clear();
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>                      <em class="jxr_comment">// initial connect to get adb in the right frame of mind</em>
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>                      <em class="jxr_comment">// http://stackoverflow.com/questions/14899935/set-adb-in-tcp-ip-mode-device-not-found</em>
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>                      executor = getExecutor();
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>                      parameters.add( <span class="jxr_string">"connect"</span> );
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>                      parameters.add( ip );
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>                      executor.executeCommand( command, parameters, false );
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>                      parameters.clear();
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>                      <em class="jxr_comment">// ... now put in wireless mode ...</em>
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>                      executor = getExecutor();
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>                      String hostport[] = ip.split( <span class="jxr_string">":"</span> );
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>                      parameters.add( <span class="jxr_string">"tcpip"</span> );
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>                      parameters.add( hostport[1] );
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>                      executor.executeCommand( command, parameters, false );
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>                      parameters.clear();
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>                      <em class="jxr_comment">// ... and finally really connect</em>
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>                      executor = getExecutor();
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>                      parameters.add( <span class="jxr_string">"connect"</span> );
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>                      parameters.add( ip );
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>                      executor.executeCommand( command, parameters, false );
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>                  }
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>                  <strong class="jxr_keyword">catch</strong> ( ExecutionException e )
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>                  {
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>                      <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( String.format( <span class="jxr_string">"Can not connect %s"</span>, ip ), e );
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>                  }
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>              }
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>          }
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>      }
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../../../com/simpligility/maven/plugins/android/CommandExecutor.html">CommandExecutor</a> getExecutor()
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>      {
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          <a href="../../../../../../com/simpligility/maven/plugins/android/CommandExecutor.html">CommandExecutor</a> executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>          executor.setLogger( <strong class="jxr_keyword">this</strong>.getLog() );
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>          executor.setCaptureStdOut( <strong class="jxr_keyword">true</strong> );
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>          <strong class="jxr_keyword">return</strong> executor;
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>      }
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>  }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2008&#x2013;2015 <a href="http://www.simpligility.com">simpligility technologies inc.</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2008&#x2013;2016 <a href="http://www.simpligility.com">simpligility technologies inc.</a>. All rights reserved.</div>
 </body>
 </html>

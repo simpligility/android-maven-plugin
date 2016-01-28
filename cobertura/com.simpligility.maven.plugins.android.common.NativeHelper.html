@@ -667,8 +667,8 @@
   <td class="src"><pre class="src">&nbsp;    <span class="keyword">public</span> <span class="keyword">static</span> String extractArchitectureFromArtifact( Artifact artifact, <span class="keyword">final</span> String defaultArchitecture )</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;389</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;    {</pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;390</td>  <td class="nbHitsCovered">&nbsp;52</td>  <td class="src"><pre class="src">&nbsp;        String classifier = artifact.getClassifier();</pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;391</td>  <td class="nbHitsUncovered"><a title="Line 391: Conditional coverage 50% (1/2).">&nbsp;52</a></td>  <td class="src"><pre class="src"><span class="srcUncovered">&nbsp;<a title="Line 391: Conditional coverage 50% (1/2).">        <span class="keyword">if</span> ( classifier != <span class="keyword">null</span> )</a></span></pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;390</td>  <td class="nbHitsCovered">&nbsp;60</td>  <td class="src"><pre class="src">&nbsp;        String classifier = artifact.getClassifier();</pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;391</td>  <td class="nbHitsUncovered"><a title="Line 391: Conditional coverage 50% (1/2).">&nbsp;60</a></td>  <td class="src"><pre class="src"><span class="srcUncovered">&nbsp;<a title="Line 391: Conditional coverage 50% (1/2).">        <span class="keyword">if</span> ( classifier != <span class="keyword">null</span> )</a></span></pre></td></tr>
 <tr>  <td class="numLine">&nbsp;392</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;        {</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;393</td>  <td class="nbHits">&nbsp;</td>
@@ -683,14 +683,14 @@
   <td class="src"><pre class="src">&nbsp;            <span class="comment">//</span></pre></td></tr>
 <tr>  <td class="numLine">&nbsp;398</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;</pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;399</td>  <td class="nbHitsCovered"><a title="Line 399: Conditional coverage 100% (2/2).">&nbsp;196</a></td>  <td class="src"><pre class="src">&nbsp;<a title="Line 399: Conditional coverage 100% (2/2).">            <span class="keyword">for</span> ( <span class="keyword">int</span> i = AndroidNdk.NDK_ARCHITECTURES.length - 1; i &gt;= 0; i-- )</a></pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;399</td>  <td class="nbHitsCovered"><a title="Line 399: Conditional coverage 100% (2/2).">&nbsp;256</a></td>  <td class="src"><pre class="src">&nbsp;<a title="Line 399: Conditional coverage 100% (2/2).">            <span class="keyword">for</span> ( <span class="keyword">int</span> i = AndroidNdk.NDK_ARCHITECTURES.length - 1; i &gt;= 0; i-- )</a></pre></td></tr>
 <tr>  <td class="numLine">&nbsp;400</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;            {</pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;401</td>  <td class="nbHitsCovered">&nbsp;192</td>  <td class="src"><pre class="src">&nbsp;                String ndkArchitecture = AndroidNdk.NDK_ARCHITECTURES[i];</pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;402</td>  <td class="nbHitsCovered"><a title="Line 402: Conditional coverage 100% (2/2).">&nbsp;192</a></td>  <td class="src"><pre class="src">&nbsp;<a title="Line 402: Conditional coverage 100% (2/2).">                <span class="keyword">if</span> ( classifier.startsWith( ndkArchitecture ) )</a></pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;401</td>  <td class="nbHitsCovered">&nbsp;252</td>  <td class="src"><pre class="src">&nbsp;                String ndkArchitecture = AndroidNdk.NDK_ARCHITECTURES[i];</pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;402</td>  <td class="nbHitsCovered"><a title="Line 402: Conditional coverage 100% (2/2).">&nbsp;252</a></td>  <td class="src"><pre class="src">&nbsp;<a title="Line 402: Conditional coverage 100% (2/2).">                <span class="keyword">if</span> ( classifier.startsWith( ndkArchitecture ) )</a></pre></td></tr>
 <tr>  <td class="numLine">&nbsp;403</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;                {</pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;404</td>  <td class="nbHitsCovered">&nbsp;48</td>  <td class="src"><pre class="src">&nbsp;                    <span class="keyword">return</span> ndkArchitecture;</pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;404</td>  <td class="nbHitsCovered">&nbsp;56</td>  <td class="src"><pre class="src">&nbsp;                    <span class="keyword">return</span> ndkArchitecture;</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;405</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;                }</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;406</td>  <td class="nbHits">&nbsp;</td>
@@ -823,7 +823,7 @@
   <td class="src"><pre class="src">&nbsp;                                                           String defaultArchitecture )</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;476</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;    {</pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;477</td>  <td class="nbHitsUncovered"><a title="Line 477: Conditional coverage 75% (3/4) [each condition: 100%, 50%].">&nbsp;28</a></td>  <td class="src"><pre class="src"><span class="srcUncovered">&nbsp;<a title="Line 477: Conditional coverage 75% (3/4) [each condition: 100%, 50%].">        <span class="keyword">return</span> Const.ArtifactType.NATIVE_SYMBOL_OBJECT.equals( artifact.getType() )</a></span></pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;477</td>  <td class="nbHitsUncovered"><a title="Line 477: Conditional coverage 75% (3/4) [each condition: 100%, 50%].">&nbsp;32</a></td>  <td class="src"><pre class="src"><span class="srcUncovered">&nbsp;<a title="Line 477: Conditional coverage 75% (3/4) [each condition: 100%, 50%].">        <span class="keyword">return</span> Const.ArtifactType.NATIVE_SYMBOL_OBJECT.equals( artifact.getType() )</a></span></pre></td></tr>
 <tr>  <td class="numLine">&nbsp;478</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;                &amp;&amp; ndkArchitecture.equals( extractArchitectureFromArtifact( artifact, defaultArchitecture ) );</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;479</td>  <td class="nbHits">&nbsp;</td>
@@ -834,6 +834,6 @@
   <td class="src"><pre class="src">&nbsp;}</pre></td></tr>
 </table>
 
-<div class="footer">Report generated by <a href="http://cobertura.sourceforge.net/" target="_top">Cobertura</a> 2.1.1 on 15/06/15 11:18 PM.</div>
+<div class="footer">Report generated by <a href="http://cobertura.sourceforge.net/" target="_top">Cobertura</a> 2.1.1 on 27/01/16 10:49 PM.</div>
 </body>
 </html>
