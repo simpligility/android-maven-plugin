@@ -1,6 +1,10 @@
 = Changelog
 
-== 4.3.1 or higher - upcoming 
+== 4.4.1 or higher - upcoming
+
+More to come.. 
+
+== 4.4.0 - Released 2016-01-27 
 
 * Make manifest merging less verbose
 ** See https://github.com/simpligility/android-maven-plugin/pull/650
