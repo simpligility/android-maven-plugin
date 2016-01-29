@@ -4,6 +4,11 @@
 
 Your contributions could be here. 
 
+* Fixed site deployment by switching to use maven-scm-publish-plugin
+** contributed by Manfred Moser http://www.simpligility.com
+* Updated asciidoctor for site rendering
+** contributed by Manfred Moser http://www.simpligility.com
+
 == 4.4.1 - Released 2016-01-28 
 
 * Make manifest merging less verbose
