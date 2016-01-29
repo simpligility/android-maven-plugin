@@ -734,7 +734,7 @@
           <autoVersionSubmodules>true</autoVersionSubmodules>
           <useReleaseProfile>false</useReleaseProfile>
           <arguments>-Pofficial-release</arguments>
-          <!-- only site since the ghpages are deployed in that phase -->
+          <!-- only site for now since site-deploy bombs out, currently manually copying to gh-pages-->
           <goals>plugin:report deploy site</goals>
         </configuration>
       </plugin>
