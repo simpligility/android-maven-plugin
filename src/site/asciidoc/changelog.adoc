@@ -1,10 +1,10 @@
 = Changelog
 
-== 4.4.1 or higher - upcoming
+== 4.4.2 or higher - upcoming
 
-More to come.. 
+Your contributions could be here. 
 
-== 4.4.0 - Released 2016-01-27 
+== 4.4.1 - Released 2016-01-28 
 
 * Make manifest merging less verbose
 ** See https://github.com/simpligility/android-maven-plugin/pull/650
@@ -67,6 +67,11 @@ More to come..
 ** contributed by Manfred Moser http://www.simpligility.com
 * MorseflashExample dependency updates
 ** contributed by Manfred Moser http://www.simpligility.com
+
+== 4.4.0 - released 2016-01-27 
+
+See changelog for 4.4.1, do NOT use this release as it requires commons-io:commons-io:2.5 that was NOT yet released to the Central Repository at the time of release.
+At a future time this might be fine, however by then we hopefully have even better releases available.
 
 == 4.3.0 - released 2015-06-15 
 

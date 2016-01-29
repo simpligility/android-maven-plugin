@@ -46,6 +46,10 @@ to github pages as part of the release build to work:
   <id>github</id>
   <username>yourname</username>
   <password>yourpassword</password>
+  <configuration>
+    <scmVersionType>branch</scmVersionType>
+    <scmVersion>gh-pages</scmVersion>
+  </configuration>
 </server>
 ----
 
@@ -90,7 +94,7 @@ If something goes wrong during the perform phase you can deploy from the target/
 or checkout a branch of the tag.
 
 ----
-mvn deploy site -P official-release
+mvn deploy site-deploy -P official-release
 ----
 
 With the right setup this will

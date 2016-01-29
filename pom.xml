@@ -73,6 +73,10 @@
       <id>ossrh</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
+    <site>
+      <id>github</id>
+      <url>scm:git:ssh://git@github.com/simpligility/android-maven-plugin.git</url>
+    </site>
   </distributionManagement>
 
   <licenses>
@@ -619,7 +623,7 @@
   </dependencies>
 
   <build>
-    <resources>
+       <resources>
       <resource>
         <directory>${project.basedir}/src/main/resources</directory>
       </resource>
@@ -793,6 +797,22 @@
             <!--  tbd <version>1.5.2.1</version> -->
             <version>1.5.0</version>
           </dependency>
+          <!--  extensions to deploy site to gh-pages -->
+          <dependency>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-scm</artifactId>
+            <version>2.10</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-manager-plexus</artifactId>
+            <version>${maven.scm.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-provider-gitexe</artifactId>
+            <version>${maven.scm.version}</version>
+          </dependency>
         </dependencies>
       </plugin>
 
@@ -934,24 +954,6 @@
       <id>official-release</id>
       <build>
         <plugins>
-          <plugin>
-            <!-- deploy the site to github pages -->
-            <!--  this plugin needs access to dependencies from https://repo.eclipse.org/content/repositories/egit-releases/  -->
-            <groupId>com.github.github</groupId>
-            <artifactId>site-maven-plugin</artifactId>
-            <configuration>
-              <server>github</server> <!-- the id of the server with the passwords in settings.xml -->
-              <message>Creating site for ${project.version}</message>
-            </configuration>
-            <executions>
-              <execution>
-                <phase>site</phase>
-                <goals>
-                  <goal>site</goal> <!-- the site goal uploads to ghpages -->
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
           <!-- We want to sign the artifact, the POM, and all attached artifacts -->
           <plugin>
             <artifactId>maven-gpg-plugin</artifactId>
