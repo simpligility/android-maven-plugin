@@ -735,7 +735,7 @@
           <useReleaseProfile>false</useReleaseProfile>
           <arguments>-Pofficial-release</arguments>
           <!-- only site for now since site-deploy bombs out, currently manually copying to gh-pages-->
-          <goals>plugin:report deploy site</goals>
+          <goals>plugin:report deploy site-deploy</goals>
         </configuration>
       </plugin>
 
@@ -783,35 +783,39 @@
           </execution>
         </executions>
       </plugin>
-
+      <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-scm-publish-plugin</artifactId>
+          <configuration>
+            <pubScmUrl>${project.scm.developerConnection}</pubScmUrl>
+            <scmBranch>gh-pages</scmBranch>
+            <content>${project.reporting.outputDirectory}</content>
+          </configuration>
+          <executions>
+            <execution>
+              <id>scm-publish</id>
+              <phase>site-deploy</phase><!-- deploy site with maven-scm-publish-plugin -->
+              <goals>
+                <goal>publish-scm</goal>
+              </goals>
+            </execution>
+         </executions>
+        </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
         <!-- careful with upgrades, e.g. 3.4 does not work with asciidoctor 
           (yet?) -->
         <version>3.3</version><!--$NO-MVN-MAN-VER$-->
+        <configuration>
+          <skipDeploy>true</skipDeploy><!-- don't deploy site with maven-site-plugin -->
+        </configuration>
         <dependencies>
           <dependency>
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctor-maven-plugin</artifactId>
             <!--  tbd <version>1.5.2.1</version> -->
             <version>1.5.0</version>
-          </dependency>
-          <!--  extensions to deploy site to gh-pages -->
-          <dependency>
-            <groupId>org.apache.maven.wagon</groupId>
-            <artifactId>wagon-scm</artifactId>
-            <version>2.10</version>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-manager-plexus</artifactId>
-            <version>${maven.scm.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-gitexe</artifactId>
-            <version>${maven.scm.version}</version>
           </dependency>
         </dependencies>
       </plugin>
