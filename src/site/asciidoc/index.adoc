@@ -26,7 +26,7 @@ undeploying or staring application]
 == Required Setup
 
 * Android SDK r21.1 or later, latest is best supported
-* Java Development Kit 1.6 - 1.8 as supported by the Android SDK
+* Java Development Kit 1.7 - 1.8 as supported by the Android SDK
 * Apache Maven 3.0.5+
 * Environment variables and PATH settings:
 ** Set ANDROID_HOME to point to the path of your installed Android SDK
