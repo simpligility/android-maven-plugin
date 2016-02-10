@@ -21,7 +21,7 @@ import static com.simpligility.maven.plugins.android.common.AndroidExtension.APK
 
 import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;

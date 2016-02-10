@@ -16,7 +16,7 @@ import com.simpligility.maven.plugins.android.configuration.UsesSdk;
 import com.simpligility.maven.plugins.android.configuration.VersionGenerator;
 import com.simpligility.maven.plugins.android.phase01generatesources.MavenILogger;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;

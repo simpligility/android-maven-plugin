@@ -254,13 +254,6 @@
         <version>${asm.version}</version>
       </dependency>
 
-      <!--TBD replace with org.apache.commons:commons-lang3 -->
-      <dependency>
-        <groupId>commons-lang</groupId>
-        <artifactId>commons-lang</artifactId>
-        <version>2.6</version>
-      </dependency>
-
       <dependency>
         <groupId>com.github.rtyley</groupId>
         <artifactId>android-screenshot-paparazzo</artifactId>
@@ -475,9 +468,11 @@
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm</artifactId>
     </dependency>
+ 
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.4</version>
     </dependency>
 
     <dependency>

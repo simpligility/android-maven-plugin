@@ -1,6 +1,6 @@
 package com.simpligility.maven.plugins.android.common;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;

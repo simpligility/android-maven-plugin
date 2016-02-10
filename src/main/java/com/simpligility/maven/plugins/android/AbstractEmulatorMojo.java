@@ -24,7 +24,7 @@ import com.android.ddmlib.TimeoutException;
 import com.simpligility.maven.plugins.android.common.DeviceHelper;
 import com.simpligility.maven.plugins.android.configuration.Emulator;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
 

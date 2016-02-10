@@ -24,7 +24,7 @@ import com.simpligility.maven.plugins.android.common.NativeHelper;
 import com.simpligility.maven.plugins.android.config.PullParameter;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;

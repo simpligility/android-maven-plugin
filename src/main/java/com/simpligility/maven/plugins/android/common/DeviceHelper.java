@@ -1,7 +1,7 @@
 package com.simpligility.maven.plugins.android.common;
 
 import com.android.ddmlib.IDevice;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A bunch of helper methods for dealing with IDevice instances.

@@ -30,7 +30,7 @@ import com.simpligility.maven.plugins.android.config.PullParameter;
 import com.simpligility.maven.plugins.android.configuration.MonkeyRunner;
 import com.simpligility.maven.plugins.android.configuration.Program;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;

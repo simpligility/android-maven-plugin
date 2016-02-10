@@ -16,7 +16,7 @@ package com.simpligility.maven.plugins.android;
 import com.simpligility.maven.plugins.android.configuration.NDKArchitectureToolchainMappings;
 import com.simpligility.maven.plugins.android.phase05compile.NdkBuildMojo;
 
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.File;
