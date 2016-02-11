@@ -705,8 +705,8 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.7</source>
+          <target>1.7</target>
         </configuration>
       </plugin>
 
@@ -715,8 +715,8 @@
         <configuration>
           <archive>
             <manifestEntries>
-              <Build-Source-Version>1.6</Build-Source-Version>
-              <Build-Target-Version>1.6</Build-Target-Version>
+              <Build-Source-Version>1.7</Build-Source-Version>
+              <Build-Target-Version>1.7</Build-Target-Version>
             </manifestEntries>
           </archive>
         </configuration>
@@ -807,13 +807,13 @@
         <configuration>
           <signature>
             <groupId>org.codehaus.mojo.signature</groupId>
-            <artifactId>java16</artifactId>
-            <version>1.1</version>
+            <artifactId>java17</artifactId>
+            <version>1.0</version>
           </signature>
         </configuration>
         <executions>
           <execution>
-            <id>check-java16</id>
+            <id>check-java17</id>
             <phase>test</phase>
             <goals>
               <goal>check</goal>
@@ -841,7 +841,7 @@
           <linkXRef>true</linkXRef>
           <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
           <minimumTokens>100</minimumTokens>
-          <targetJdk>1.6</targetJdk>
+          <targetJdk>1.7</targetJdk>
         </configuration>
       </plugin>
       <plugin>
