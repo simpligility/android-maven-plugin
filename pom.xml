@@ -120,13 +120,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- workaround to avoid site and animalsniffer failure due to invalid 
-        old icu4j class file -->
-      <dependency>
-        <groupId>com.ibm.icu</groupId>
-        <artifactId>icu4j</artifactId>
-        <version>3.4.4</version>
-      </dependency>
 
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
