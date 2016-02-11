@@ -99,8 +99,8 @@ public class AndroidSdkTest {
     @Test
     public void validPlatformsAndApiLevels23() {
         // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
-        final AndroidSdk sdk231 = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "23", "23.0.1" );
-        Assert.assertTrue( sdk231.getAaptPath() != null && !sdk231.getAaptPath().equals( "" ) );
+        final AndroidSdk sdk23 = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "23" );
+        Assert.assertTrue( sdk23.getAaptPath() != null && !sdk23.getAaptPath().equals( "" ) );
     }
 
     @Test(expected = InvalidSdkException.class)
