@@ -2,15 +2,15 @@ package com.simpligility.maven.plugins.android.resource;
 
 import org.apache.maven.plugins.shade.relocation.Relocator;
 import org.apache.maven.plugins.shade.resource.ResourceTransformer;
-import org.jdom.Attribute;
-import org.jdom.Content;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
-import org.jdom.xpath.XPath;
+import org.jdom2.Attribute;
+import org.jdom2.Content;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.xpath.XPath;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -130,7 +130,7 @@ public class XpathAppendingTransformer implements ResourceTransformer
             }
         }
 
-        for ( Iterator<Content> itr = source.getChildren().iterator(); itr.hasNext(); )
+        for ( Iterator<Element> itr = source.getChildren().iterator(); itr.hasNext(); )
         {
             Content n = itr.next();
             itr.remove();

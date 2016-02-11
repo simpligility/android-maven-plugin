@@ -271,12 +271,6 @@
         <version>2.3</version>
       </dependency>
 
-      <dependency>
-        <groupId>jaxen</groupId>
-        <artifactId>jaxen</artifactId>
-        <version>1.1.1</version>
-      </dependency>
-
       <!-- test deps -->
       <dependency>
         <groupId>junit</groupId>
@@ -507,35 +501,16 @@
       </exclusions>
     </dependency>
 
+    <!-- Needed by XpathAppendingTransformer and ExtractDuplicatesIT -->
     <dependency>
       <groupId>jaxen</groupId>
       <artifactId>jaxen</artifactId>
-      <exclusions>
-        <!--<exclusion>-->
-          <!--<groupId>jdom</groupId>-->
-          <!--<artifactId>jdom</artifactId>-->
-        <!--</exclusion>-->
-        <exclusion>
-          <groupId>dom4j</groupId>
-          <artifactId>dom4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xml-apis</groupId>
-          <artifactId>xml-apis</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xmlParserAPIs</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xercesImpl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xalan</groupId>
-          <artifactId>xalan</artifactId>
-        </exclusion>
-      </exclusions>
+      <version>1.1.6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom2</artifactId>
+      <version>2.0.6</version>
     </dependency>
 
     <!-- test deps -->
