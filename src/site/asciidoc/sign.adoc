@@ -51,7 +51,7 @@ located in the parent pom in order to sign all child poms with the same key.
           </executions>
         </plugin>
         <plugin>
-          <groupId>com.simpligilty.maven.plugins</groupId>
+          <groupId>com.simpligility.maven.plugins</groupId>
           <artifactId>android-maven-plugin</artifactId>
           <inherited>true</inherited>
           <configuration>
