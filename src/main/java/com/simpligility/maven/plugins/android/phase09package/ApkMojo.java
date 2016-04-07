@@ -28,6 +28,7 @@ import com.simpligility.maven.plugins.android.IncludeExcludeSet;
 import com.simpligility.maven.plugins.android.CommandExecutor;
 import com.simpligility.maven.plugins.android.ExecutionException;
 import com.simpligility.maven.plugins.android.common.AaptCommandBuilder;
+import com.simpligility.maven.plugins.android.common.AndroidExtension;
 import com.simpligility.maven.plugins.android.common.NativeHelper;
 import com.simpligility.maven.plugins.android.config.ConfigHandler;
 import com.simpligility.maven.plugins.android.config.ConfigPojo;
@@ -378,7 +379,7 @@ public class ApkMojo extends AbstractAndroidMojo
         else
         {
             // If there is a classifier specified, attach the artifact using that
-            projectHelper.attachArtifact( project, outputFile, classifier );
+            projectHelper.attachArtifact( project, AndroidExtension.APK, classifier, outputFile );
         }
     }
 

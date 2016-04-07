@@ -20,6 +20,7 @@ import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.CommandExecutor;
 import com.simpligility.maven.plugins.android.ExecutionException;
 import com.simpligility.maven.plugins.android.common.AaptCommandBuilder;
+import com.simpligility.maven.plugins.android.common.AndroidExtension;
 import com.simpligility.maven.plugins.android.common.NativeHelper;
 import com.simpligility.maven.plugins.android.config.PullParameter;
 
@@ -63,7 +64,7 @@ public class ApklibMojo extends AbstractAndroidMojo
      * NOTE: This is inconsistent with APK where the folder is called "lib"
      */
     public static final String NATIVE_LIBRARIES_FOLDER = "libs";
-    
+
     /**
      * <p>Classifier to add to the artifact generated. If given, the artifact will be an attachment instead.</p>
      */
@@ -90,7 +91,7 @@ public class ApklibMojo extends AbstractAndroidMojo
     @Parameter( property = "android.ndk.build.native-classifier" )
     @PullParameter
     private String ndkClassifier;
-    
+
     private List<String> sourceFolders = new ArrayList<String>();
 
     /**
@@ -102,12 +103,12 @@ public class ApklibMojo extends AbstractAndroidMojo
         String out = targetDirectory.getPath();
         for ( String src : project.getCompileSourceRoots() )
         {
-            if ( !src.startsWith( out ) ) 
+            if ( !src.startsWith( out ) )
             {
                 sourceFolders.add( src );
             }
         }
-        
+
         generateIntermediateApk();
 
         File outputFile = createApkLibraryFile();
@@ -120,7 +121,7 @@ public class ApklibMojo extends AbstractAndroidMojo
         else
         {
             // If there is a classifier specified, attach the artifact using that
-            projectHelper.attachArtifact( project, outputFile, classifier );
+            projectHelper.attachArtifact( project, AndroidExtension.APKLIB, classifier, outputFile );
         }
 
         if ( attachJar )
@@ -145,12 +146,12 @@ public class ApklibMojo extends AbstractAndroidMojo
             jarArchiver.addFile( destinationManifestFile, "AndroidManifest.xml" );
             addDirectory( jarArchiver, assetsDirectory, "assets" );
             addDirectory( jarArchiver, resourceDirectory, "res" );
-            
-            for ( String src : sourceFolders ) 
-            { 
+
+            for ( String src : sourceFolders )
+            {
                 addDirectory( jarArchiver, new File( src ), "src" );
             }
-            
+
             File[] overlayDirectories = getResourceOverlayDirectories();
             for ( File resOverlayDir : overlayDirectories )
             {
@@ -191,7 +192,7 @@ public class ApklibMojo extends AbstractAndroidMojo
             }
             else
             {
-                getLog().info( nativeLibrariesDirectory 
+                getLog().info( nativeLibrariesDirectory
                         + " does not exist, looking for libraries in target directory." );
                 // Add native libraries built and attached in this build
                 String[] ndkArchitectures = NativeHelper.getNdkArchitectures( ndkArchitecture,
@@ -201,7 +202,7 @@ public class ApklibMojo extends AbstractAndroidMojo
                 {
                     final File ndkLibsDirectory = new File( ndkOutputDirectory, architecture );
                     addSharedLibraries( jarArchiver, ndkLibsDirectory, architecture );
-                
+
                     // Add native library dependencies
                     // FIXME: Remove as causes duplicate libraries when building final APK if this set includes
                     //        libraries from dependencies of the APKLIB
@@ -309,10 +310,10 @@ public class ApklibMojo extends AbstractAndroidMojo
             getLog().debug( "Added files from " + directory );
         }
     }
-    
+
     /**
      * Adds all shared libraries (.so) to a {@link JarArchiver} under 'libs'.
-     * 
+     *
      * @param jarArchiver The jarArchiver to add files to
      * @param directory   The directory to scan for .so files
      * @param architecture      The prefix for where in the jar the .so files will go.
