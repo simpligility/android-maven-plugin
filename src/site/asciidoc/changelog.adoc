@@ -8,6 +8,9 @@ Your contributions could be here.
 ** contributed by Manfred Moser http://www.simpligility.com
 * Updated asciidoctor for site rendering
 ** contributed by Manfred Moser http://www.simpligility.com
+* buildConfigConstants paramater made visible
+** See https://github.com/simpligility/android-maven-plugin/pull/723
+** contributed by Csaba Kozák https://github.com/WonderCsabo
 
 == 4.4.1 - Released 2016-01-28 
 
