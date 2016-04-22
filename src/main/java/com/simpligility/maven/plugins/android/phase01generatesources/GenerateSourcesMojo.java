@@ -224,7 +224,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     /**
      * <p>Parameter designed to generate custom BuildConfig constants
      */
-    @Parameter( property = "android.buildConfigConstants", readonly = true )
+    @Parameter( property = "android.buildConfigConstants" )
     protected BuildConfigConstant[] buildConfigConstants;
 
     /**

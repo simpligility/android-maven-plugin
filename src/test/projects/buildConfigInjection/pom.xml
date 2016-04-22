@@ -77,59 +77,59 @@
 			 </sdk>
 			 <!-- inject our settings to BuildConfig.java here-->
 			 <buildConfigConstants>
-			      <buildConfigConstants>
+			      <buildConfigConstant>
 				   <name>Title</name>
 				   <value>${project.name}</value>
 				   <type>String</type>
-			      </buildConfigConstants>
-			      <buildConfigConstants>
+			      </buildConfigConstant>
+			      <buildConfigConstant>
 				   <name>Version</name>
 				   <value>${project.version}</value>
 				   <type>String</type>
-			      </buildConfigConstants>
-			      <buildConfigConstants>
+			      </buildConfigConstant>
+			      <buildConfigConstant>
 				   <name>Vendor</name>
 				   <value>${project.organization.name}</value>
 				   <type>String</type>
-			      </buildConfigConstants>
-			      <buildConfigConstants>
+			      </buildConfigConstant>
+			      <buildConfigConstant>
 				   <name>ArtifactId</name>
 				   <value>${project.groupId}.${project.artifactId}</value>
 				   <type>String</type>
-			      </buildConfigConstants>
+			      </buildConfigConstant>
 			      
-			      <buildConfigConstants>
+			      <buildConfigConstant>
 				   <name>GitRevision</name>
 				   <value>${git.revision}</value>
 				   <type>String</type>
-			      </buildConfigConstants>
-			      <buildConfigConstants>
+			      </buildConfigConstant>
+			      <buildConfigConstant>
 				   <name>GitBranch</name>
 				   <value>${git.branch}</value>
 				   <type>String</type>
-			      </buildConfigConstants>
+			      </buildConfigConstant>
 			      
-			      <buildConfigConstants>
+			      <buildConfigConstant>
 				   <name>GitTag</name>
 				   <value>${git.tag}</value>
 				   <type>String</type>
-			      </buildConfigConstants>
+			      </buildConfigConstant>
 
-			      <buildConfigConstants>
+			      <buildConfigConstant>
 				   <name>GitCommitCount</name>
 				   <value>${git.commitsCount}</value>
 				   <type>String</type>
-			      </buildConfigConstants>
-			      <buildConfigConstants>
+			      </buildConfigConstant>
+			      <buildConfigConstant>
 				   <name>BuiltOn</name>
 				   <value>${timestamp}</value>
 				   <type>String</type>
-			      </buildConfigConstants>
-			      <buildConfigConstants>
+			      </buildConfigConstant>
+			      <buildConfigConstant>
 				   <name>BuiltBy</name>
 				   <value>${user.name}</value>
 				   <type>String</type>
-			      </buildConfigConstants>
+			      </buildConfigConstant>
 			 </buildConfigConstants>
 		    </configuration>
 	       </plugin>
