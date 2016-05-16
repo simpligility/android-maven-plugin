@@ -11,7 +11,6 @@ import com.simpligility.maven.plugins.android.config.PullParameter;
 import com.simpligility.maven.plugins.android.configuration.Proguard;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -113,8 +112,8 @@ public class ProguardMojo extends AbstractAndroidMojo
     private String[] parsedOptions;
 
     /**
-     * Path to the proguard jar and therefore version of proguard to be used. By default this will load the jar from
-     * the Android SDK install. Overriding it with an absolute path allows you to use a newer or custom proguard
+     * Path to the proguard jar and therefore version of proguard to be used. By default this will use Proguard
+     * from the Central Repository. Overriding it with an absolute path allows you to use a newer or custom proguard
      * version..
      * <p/>
      * You can also reference an external Proguard version as a plugin dependency like this:
@@ -758,13 +757,7 @@ public class ProguardMojo extends AbstractAndroidMojo
     @SuppressWarnings( "unused" ) // NB Used to populate the parsedProguardJarPath attribute via reflection.
     private String getProguardJarPath() throws MojoExecutionException
     {
-        String proguardJarPath = getProguardJarPathFromDependencies();
-        if ( StringUtils.isEmpty( proguardJarPath ) )
-        {
-            File proguardJarPathFile = new File( getAndroidSdk().getToolsPath(), "proguard/lib/proguard.jar" );
-            return proguardJarPathFile.getAbsolutePath();
-        }
-        return proguardJarPath;
+        return getProguardJarPathFromDependencies();
     }
 
     private String getProguardJarPathFromDependencies() throws MojoExecutionException
