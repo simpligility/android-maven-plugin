@@ -6,16 +6,18 @@ jdk: oraclejdk7
 language: android
 android:
   components:
+    - tools
+    - tools # https://github.com/travis-ci/travis-ci/issues/6040#issuecomment-219367943
+    - platform-tools
     - android-19
     - android-22
+    - android-23
     - build-tools-22.0.0
     - build-tools-22.0.1
     - build-tools-21.1.2
     - build-tools-23.0.1
     - sys-img-armeabi-v7a-android-22
     - extra-android-m2repository
-  licenses:
-    - android-sdk-license-5be876d5
 
 before_script:
   # Create and start emulator
