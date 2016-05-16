@@ -54,10 +54,6 @@ public class HelloFlashlight extends Activity {
         sb.append("ArtifactId:\n" + BuildConfig.ArtifactId + "\n");
         sb.append("Build on:\n" + BuildConfig.BuiltOn + "\n");
         sb.append("Built by:\n" + BuildConfig.BuiltBy  + "\n");
-        sb.append("Branch:\n" + BuildConfig.GitBranch + "\n");
-        sb.append("Commits:\n" + BuildConfig.GitCommitCount + "\n");
-        sb.append("Revision:\n" + BuildConfig.GitRevision + "\n");
-        sb.append("Tag:\n" + BuildConfig.GitTag + "\n");
         sb.append("Title:\n" + BuildConfig.Title  + "\n");
         sb.append("Vendor:\n" + BuildConfig.Vendor  + "\n");
         sb.append("Version:\n" + BuildConfig.Version  + "\n");
