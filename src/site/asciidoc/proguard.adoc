@@ -18,6 +18,9 @@ file and you can activate it with
 </proguard>
 ----
 
+The ProGuard version used is determined by the plugin itself and set to the latest available version.
+If desired, a plugin-specific dependency declaration can be used to override the preconfigured version.
+
 === Samples
 
 Complete setup with more options can be found link:./example.html[in the Morseflash as well 

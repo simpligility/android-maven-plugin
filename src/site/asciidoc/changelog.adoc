@@ -11,6 +11,14 @@ Your contributions could be here.
 * buildConfigConstants paramater made visible
 ** See https://github.com/simpligility/android-maven-plugin/pull/723
 ** contributed by Csaba Kozák https://github.com/WonderCsabo
+* Fix Travis CI setup
+** see https://github.com/simpligility/android-maven-plugin/pull/727
+** fixes https://github.com/simpligility/android-maven-plugin/issues/726
+** contributed by Csaba Kozák https://github.com/WonderCsabo
+* Update to use latest available Proguard from Central instead of old bundled version from SDK
+** see https://github.com/simpligility/android-maven-plugin/pull/725
+** fixes https://github.com/simpligility/android-maven-plugin/issues/724
+** contributed by Csaba Kozák https://github.com/WonderCsabo
 
 == 4.4.1 - Released 2016-01-28 
 
