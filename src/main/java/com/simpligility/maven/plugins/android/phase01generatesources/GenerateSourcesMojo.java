@@ -867,8 +867,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 .disablePngCrunching()
                 .generateRIntoPackage( customPackage )
                 .setPathToAndroidManifest( destinationManifestFile )
-                .addResourceDirectoryIfExists( resourceDirectory )
-                .addResourceDirectoriesIfExists( getResourceOverlayDirectories() )
+				.addResourceDirectoriesIfExists( getResourceOverlayDirectories() )
+				.addResourceDirectoryIfExists( resourceDirectory )
                     // Need to include any AAR or APKLIB dependencies when generating R because if any local
                     // resources directly reference dependent resources then R generation will crash.
                 .addResourceDirectoriesIfExists( getLibraryResourceFolders() )
