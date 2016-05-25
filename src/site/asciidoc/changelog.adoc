@@ -19,6 +19,11 @@ Your contributions could be here.
 ** see https://github.com/simpligility/android-maven-plugin/pull/725
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/724
 ** contributed by Csaba Kozák https://github.com/WonderCsabo
+* Fix for ResourceOverlay usage
+** see https://github.com/simpligility/android-maven-plugin/pull/728
+** fixes https://github.com/simpligility/android-maven-plugin/issues/417
+** fixes https://github.com/simpligility/android-maven-plugin/issues/573
+** contributed by Jacob Mattsson https://github.com/jacobmattsson
 
 == 4.4.1 - Released 2016-01-28 
 
