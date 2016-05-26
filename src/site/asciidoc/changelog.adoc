@@ -1,8 +1,8 @@
 = Changelog
 
-== 4.4.2 or higher - upcoming
+== 4.4.2 - Released 2016-05-25
 
-Your contributions could be here. 
+http://www.simpligility.com/2016/05/android-maven-plugin-4-4-2-released[Release Announcement]
 
 * Fixed site deployment by switching to use maven-scm-publish-plugin
 ** contributed by Manfred Moser http://www.simpligility.com

@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 import com.simpligility.maven.plugins.android.PluginInfo;
 
 @RunWith(MavenJUnitTestRunner.class)
-@MavenVersions({"3.2.3"})
+@MavenVersions({"3.3.9"})
 public class AarActionbarsherlockExampleSampleIT {
   
   @Rule

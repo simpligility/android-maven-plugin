@@ -38,7 +38,7 @@ import com.simpligility.maven.plugins.android.PluginInfo;
 
 
 @RunWith(MavenJUnitTestRunner.class)
-@MavenVersions({"3.2.5"})
+@MavenVersions({"3.3.9"})
 public class Junit4TestBuildExampleIT {
 
   @Rule
