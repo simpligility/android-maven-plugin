@@ -48,6 +48,7 @@ import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.CommandExecutor;
 import com.simpligility.maven.plugins.android.ExecutionException;
 import com.simpligility.maven.plugins.android.common.AaptCommandBuilder;
+import com.simpligility.maven.plugins.android.common.AndroidExtension;
 import com.simpligility.maven.plugins.android.common.NativeHelper;
 import com.simpligility.maven.plugins.android.config.PullParameter;
 
@@ -153,7 +154,7 @@ public class AarMojo extends AbstractAndroidMojo
         else
         {
             // If there is a classifier specified, attach the artifact using that
-            projectHelper.attachArtifact( project, outputFile, classifier );
+            projectHelper.attachArtifact( project, AndroidExtension.AAR, classifier, outputFile );
         }
     }
 
