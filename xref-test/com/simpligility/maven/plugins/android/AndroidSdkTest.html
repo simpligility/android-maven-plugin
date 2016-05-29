@@ -107,8 +107,8 @@
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>      @Test
 <a class="jxr_linenumber" name="L100" href="#L100">100</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> validPlatformsAndApiLevels23() {
 <a class="jxr_linenumber" name="L101" href="#L101">101</a>         <em class="jxr_comment">// Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails</em>
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>         <strong class="jxr_keyword">final</strong> AndroidSdk sdk231 = <strong class="jxr_keyword">new</strong> AndroidSdk( <strong class="jxr_keyword">new</strong> File( sdkTestSupport.getEnv_ANDROID_HOME() ), <span class="jxr_string">"23"</span>, <span class="jxr_string">"23.0.1"</span> );
-<a class="jxr_linenumber" name="L103" href="#L103">103</a>         Assert.assertTrue( sdk231.getAaptPath() != <strong class="jxr_keyword">null</strong> &amp;&amp; !sdk231.getAaptPath().equals( <span class="jxr_string">""</span> ) );
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>         <strong class="jxr_keyword">final</strong> AndroidSdk sdk23 = <strong class="jxr_keyword">new</strong> AndroidSdk( <strong class="jxr_keyword">new</strong> File( sdkTestSupport.getEnv_ANDROID_HOME() ), <span class="jxr_string">"23"</span> );
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>         Assert.assertTrue( sdk23.getAaptPath() != <strong class="jxr_keyword">null</strong> &amp;&amp; !sdk23.getAaptPath().equals( <span class="jxr_string">""</span> ) );
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>     }
 <a class="jxr_linenumber" name="L105" href="#L105">105</a> 
 <a class="jxr_linenumber" name="L106" href="#L106">106</a>     @Test(expected = InvalidSdkException.<strong class="jxr_keyword">class</strong>)

@@ -38,7 +38,7 @@
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.io.FileUtils;
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.io.IOUtils;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.lang.StringUtils;
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.lang3.StringUtils;
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.artifact.Artifact;
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.plugin.MojoExecutionException;
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.plugin.MojoFailureException;
@@ -232,7 +232,7 @@
 <a class="jxr_linenumber" name="L224" href="#L224">224</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">     * &lt;p&gt;Parameter designed to generate custom BuildConfig constants</em>
 <a class="jxr_linenumber" name="L226" href="#L226">226</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>     @Parameter( property = <span class="jxr_string">"android.buildConfigConstants"</span>, readonly = <strong class="jxr_keyword">true</strong> )
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>     @Parameter( property = <span class="jxr_string">"android.buildConfigConstants"</span> )
 <a class="jxr_linenumber" name="L228" href="#L228">228</a>     <strong class="jxr_keyword">protected</strong> <a href="../../../../../../com/simpligility/maven/plugins/android/configuration/BuildConfigConstant.html">BuildConfigConstant</a>[] buildConfigConstants;
 <a class="jxr_linenumber" name="L229" href="#L229">229</a> 
 <a class="jxr_linenumber" name="L230" href="#L230">230</a>     <em class="jxr_javadoccomment">/**</em>
@@ -875,8 +875,8 @@
 <a class="jxr_linenumber" name="L867" href="#L867">867</a>                 .disablePngCrunching()
 <a class="jxr_linenumber" name="L868" href="#L868">868</a>                 .generateRIntoPackage( customPackage )
 <a class="jxr_linenumber" name="L869" href="#L869">869</a>                 .setPathToAndroidManifest( destinationManifestFile )
-<a class="jxr_linenumber" name="L870" href="#L870">870</a>                 .addResourceDirectoryIfExists( resourceDirectory )
-<a class="jxr_linenumber" name="L871" href="#L871">871</a>                 .addResourceDirectoriesIfExists( getResourceOverlayDirectories() )
+<a class="jxr_linenumber" name="L870" href="#L870">870</a>                 .addResourceDirectoriesIfExists( getResourceOverlayDirectories() )
+<a class="jxr_linenumber" name="L871" href="#L871">871</a>                 .addResourceDirectoryIfExists( resourceDirectory )
 <a class="jxr_linenumber" name="L872" href="#L872">872</a>                     <em class="jxr_comment">// Need to include any AAR or APKLIB dependencies when generating R because if any local</em>
 <a class="jxr_linenumber" name="L873" href="#L873">873</a>                     <em class="jxr_comment">// resources directly reference dependent resources then R generation will crash.</em>
 <a class="jxr_linenumber" name="L874" href="#L874">874</a>                 .addResourceDirectoriesIfExists( getLibraryResourceFolders() )
