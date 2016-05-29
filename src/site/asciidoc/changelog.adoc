@@ -1,6 +1,6 @@
 = Changelog
 
-== 4.4.2 - Released 2016-05-25
+== 4.4.2 - Released 2016-05-28
 
 http://www.simpligility.com/2016/05/android-maven-plugin-4-4-2-released[Release Announcement]
 
@@ -24,6 +24,9 @@ http://www.simpligility.com/2016/05/android-maven-plugin-4-4-2-released[Release 
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/417
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/573
 ** contributed by Jacob Mattsson https://github.com/jacobmattsson
+* Use correct type for attached artifacts
+** see https://github.com/simpligility/android-maven-plugin/pull/721
+** contributed by Karsten Sperling https://github.com/ksperling
 
 == 4.4.1 - Released 2016-01-28 
 
