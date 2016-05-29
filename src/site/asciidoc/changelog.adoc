@@ -1,5 +1,9 @@
 = Changelog
 
+== 4.4.3 or higher, Upcoming
+
+* your improvements could be here
+
 == 4.4.2 - Released 2016-05-28
 
 http://www.simpligility.com/2016/05/android-maven-plugin-4-4-2-released[Release Announcement]
