@@ -634,7 +634,7 @@ public class DexMojo extends AbstractAndroidMojo
         
         Set< File> inputFiles = getDexInputFiles();  
         StringBuilder sb = new StringBuilder();
-        sb.append( '"' ).append( StringUtils.join( inputFiles, File.pathSeparatorChar ) ).append( '"' );
+        sb.append( StringUtils.join( inputFiles, File.pathSeparatorChar ) );
         commands.add( sb.toString() );
         
         String executable = getAndroidSdk().getMainDexClasses().getAbsolutePath();
