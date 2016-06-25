@@ -2,7 +2,12 @@
 
 == 4.4.3 or higher, Upcoming
 
-* your improvements could be here
+* Fix for quotes problem for dex and multidex
+** see https://github.com/simpligility/android-maven-plugin/commit/24499f20e5d7061e2e686c873f9f4edb8f0f7bd8
+** fixes https://github.com/simpligility/android-maven-plugin/issues/731
+** fixes https://github.com/simpligility/android-maven-plugin/issues/716
+** contributed by https://github.com/zhenkhokh as well as https://github.com/sprylab
+
 
 == 4.4.2 - Released 2016-05-28
 
