@@ -7,7 +7,9 @@
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/731
 ** fixes https://github.com/simpligility/android-maven-plugin/issues/716
 ** contributed by https://github.com/zhenkhokh as well as https://github.com/sprylab
-
+* Update to use API level 23 for default Android SDK value
+** see https://github.com/simpligility/android-maven-plugin/pull/733
+** contributed by Casey Kulm https://github.com/caseykulm
 
 == 4.4.2 - Released 2016-05-28
 
