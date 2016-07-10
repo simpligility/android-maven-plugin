@@ -494,7 +494,7 @@ public class MonkeyMojo extends AbstractAndroidMojo
                 getLog().info( deviceLogLinePrefix + "Running ui monkey tests" );
                 try
                 {
-                    AndroidTestRunListener testRunListener = new AndroidTestRunListener( project, device, getLog(),
+                    AndroidTestRunListener testRunListener = new AndroidTestRunListener( device, getLog(),
                             parsedCreateReport, false, "", "", targetDirectory );
                     monkeyTestRunner.run( testRunListener );
                     if ( testRunListener.hasFailuresOrErrors() && !isIgnoreTestFailures() )

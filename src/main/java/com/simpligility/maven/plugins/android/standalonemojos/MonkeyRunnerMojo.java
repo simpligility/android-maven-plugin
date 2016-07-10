@@ -217,7 +217,7 @@ public class MonkeyRunnerMojo extends AbstractAndroidMojo
             @Override
             public void doWithDevice( IDevice device ) throws MojoExecutionException, MojoFailureException
             {
-                AndroidTestRunListener testRunListener = new AndroidTestRunListener( project, device, getLog(),
+                AndroidTestRunListener testRunListener = new AndroidTestRunListener( device, getLog(),
                         parsedCreateReport, false, "", "", targetDirectory );
                 if ( isEnableIntegrationTest() )
                 {

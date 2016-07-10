@@ -345,7 +345,7 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
                 getLog().info( deviceLogLinePrefix + "Running ui uiautomator tests in" + parsedJarFile );
                 try
                 {
-                    AndroidTestRunListener testRunListener = new AndroidTestRunListener( project, device, getLog(),
+                    AndroidTestRunListener testRunListener = new AndroidTestRunListener( device, getLog(),
                             parsedCreateReport, parsedTakeScreenshotOnFailure, parsedScreenshotsPathOnDevice,
                             parsedReportSuffix, targetDirectory );
                     automatorRemoteAndroidTestRunner.run( testRunListener );
