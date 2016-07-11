@@ -287,17 +287,20 @@ public final class ClasspathModifierLifecycleParticipant extends AbstractMavenLi
 
         // In order to satisfy the LifecycleDependencyResolver on execution up to a phase that
         // has a Mojo requiring dependency resolution I need to create a dummy classesJar here.
-        classesJar.getParentFile().mkdirs();
-        try
+        if ( !classesJar.exists() )
         {
-            final ZipOutputStream zipOutputStream = new ZipOutputStream( new FileOutputStream( classesJar ) );
-            zipOutputStream.putNextEntry( new ZipEntry( "dummy" ) );
-            zipOutputStream.close();
-            log.debug( "Created dummy " + classesJar.getName() + " exist=" + classesJar.exists() );
-        }
-        catch ( IOException e )
-        {
-            throw new MavenExecutionException( "Could not add " + classesJar.getName() + " as dependency", e );
+            classesJar.getParentFile().mkdirs();
+            try
+            {
+                final ZipOutputStream zipOutputStream = new ZipOutputStream( new FileOutputStream( classesJar ) );
+                zipOutputStream.putNextEntry( new ZipEntry( "dummy" ) );
+                zipOutputStream.close();
+                log.debug( "Created dummy " + classesJar.getName() + " exist=" + classesJar.exists() );
+            }
+            catch ( IOException e )
+            {
+                throw new MavenExecutionException( "Could not add " + classesJar.getName() + " as dependency", e );
+            }
         }
 
         
