@@ -374,7 +374,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
                         + parsedInstrumentationPackage );
                 try
                 {
-                    AndroidTestRunListener testRunListener = new AndroidTestRunListener( project, device, getLog(),
+                    AndroidTestRunListener testRunListener = new AndroidTestRunListener( device, getLog(),
                             parsedCreateReport, false, "", "", targetDirectory );
                     remoteAndroidTestRunner.run( testRunListener );
                     if ( testRunListener.hasFailuresOrErrors() && !testFailSafe )

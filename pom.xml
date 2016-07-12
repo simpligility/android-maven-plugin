@@ -652,7 +652,7 @@
             instead -->
           <configLocation>src/conf/maven_checks.xml</configLocation>
           <enableRulesSummary>false</enableRulesSummary>
-          <excludes>**/**HelpMojo**</excludes>
+          <excludes>**/**HelpMojo**,org/apache/maven/surefire/**</excludes>
         </configuration>
 
         <executions>
@@ -831,6 +831,24 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>xjc</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <sources>
+            <source>src/main/xsd/surefire-test-report.xsd</source>
+          </sources>
+          <packageName>org.apache.maven.surefire</packageName>
+        </configuration>
       </plugin>
     </plugins>
   </build>

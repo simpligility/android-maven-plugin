@@ -10,33 +10,19 @@ import com.android.ddmlib.testrunner.TestIdentifier;
 import com.simpligility.maven.plugins.android.common.DeviceHelper;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.project.MavenProject;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
+import org.apache.maven.surefire.ObjectFactory;
+import org.apache.maven.surefire.Testsuite;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -55,44 +41,9 @@ public class AndroidTestRunListener implements ITestRunListener
     private static final String INDENT = "  ";
 
     /**
-     * Junit report schema documentation is sparse. Here are some hints
-     *
-     * @see "http://mail-archives.apache.org/mod_mbox/ ant-dev/200902.mbox/%3
-     *      Cdffc72020902241548l4316d645w2e98caf5f0aac770
-     * @mail.gmail.com%3E"
-     * @see "http://junitpdfreport.sourceforge.net/managedcontent/PdfTranslation"
-     */
-    private static final String TAG_TESTSUITES = "testsuites";
-
-    private static final String TAG_TESTSUITE = "testsuite";
-    private static final String ATTR_TESTSUITE_ERRORS = "errors";
-    private static final String ATTR_TESTSUITE_FAILURES = "failures";
-    private static final String ATTR_TESTSUITE_IGNORED = "ignored";
-    private static final String ATTR_TESTSUITE_HOSTNAME = "hostname";
-    private static final String ATTR_TESTSUITE_NAME = "name";
-    private static final String ATTR_TESTSUITE_TESTS = "tests";
-    private static final String ATTR_TESTSUITE_TIME = "time";
-    private static final String ATTR_TESTSUITE_TIMESTAMP = "timestamp";
-
-    private static final String TAG_PROPERTIES = "properties";
-    private static final String TAG_PROPERTY = "property";
-    private static final String ATTR_PROPERTY_NAME = "name";
-    private static final String ATTR_PROPERTY_VALUE = "value";
-
-    private static final String TAG_TESTCASE = "testcase";
-    private static final String ATTR_TESTCASE_NAME = "name";
-    private static final String ATTR_TESTCASE_CLASSNAME = "classname";
-    private static final String ATTR_TESTCASE_TIME = "time";
-
-    private static final String TAG_ERROR = "error";
-    private static final String TAG_FAILURE = "failure";
-    private static final String ATTR_MESSAGE = "message";
-    private static final String ATTR_TYPE = "type";
-
-    /**
      * time format for the output of milliseconds in seconds in the xml file *
      */
-    private final NumberFormat timeFormatter = new DecimalFormat( "#0.0000" );
+    private final NumberFormat timeFormatter = new DecimalFormat( "#0.000" );
 
     private int testCount = 0;
     private int testRunCount = 0;
@@ -101,7 +52,6 @@ public class AndroidTestRunListener implements ITestRunListener
     private int testErrorCount = 0;
     private String testRunFailureCause = null;
 
-    private final MavenProject project;
     /**
      * the emulator or device we are running the tests on *
      */
@@ -115,14 +65,10 @@ public class AndroidTestRunListener implements ITestRunListener
 
     private final String deviceLogLinePrefix;
 
-    // junit xml report related fields
-    private Document junitReport;
-    private Node testSuiteNode;
+    private final ObjectFactory objectFactory = new ObjectFactory();
+    private Testsuite report;
+    private Testsuite.Testcase currentTestCase;
 
-    /**
-     * node for the current test case for junit report
-     */
-    private Node currentTestCaseNode;
     /**
      * start time of current test case in millis, reset with each test start
      */
@@ -135,16 +81,13 @@ public class AndroidTestRunListener implements ITestRunListener
     /**
      * Create a new test run listener.
      *
-     * @param project
-     *            the test project.
      * @param device
      *            the device on which test is executed.
      */
-    public AndroidTestRunListener( MavenProject project, IDevice device, Log log, Boolean createReport,
+    public AndroidTestRunListener( IDevice device, Log log, Boolean createReport,
                                    Boolean takeScreenshotOnFailure, String screenshotsPathOnDevice,
                                    String reportSuffix, File targetDirectory )
     {
-        this.project = project;
         this.device = device;
         this.deviceLogLinePrefix = DeviceHelper.getDeviceLogLinePrefix( device );
         this.log = log;
@@ -174,60 +117,24 @@ public class AndroidTestRunListener implements ITestRunListener
 
         if ( createReport )
         {
-            try
+            report = new Testsuite();
+            report.setName( runName );
+            final Testsuite.Properties props = new Testsuite.Properties();
+            report.getProperties().add( props );
+            for ( Map.Entry< Object, Object > systemProperty : System.getProperties().entrySet() )
             {
-                DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
-                DocumentBuilder parser = null;
-                parser = fact.newDocumentBuilder();
-                junitReport = parser.newDocument();
-                Node testSuitesNode = junitReport.createElement( TAG_TESTSUITES );
-                junitReport.appendChild( testSuitesNode );
-                testSuiteNode = junitReport.createElement( TAG_TESTSUITE );
-                NamedNodeMap testSuiteAttributes = testSuiteNode.getAttributes();
-                Attr nameAttr = junitReport.createAttribute( ATTR_TESTSUITE_NAME );
-                nameAttr.setValue( runName );
-                testSuiteAttributes.setNamedItem( nameAttr );
-                Attr hostnameAttr = junitReport.createAttribute( ATTR_TESTSUITE_HOSTNAME );
-                hostnameAttr.setValue( DeviceHelper.getDescriptiveName( device ) );
-                testSuiteAttributes.setNamedItem( hostnameAttr );
-                Node propertiesNode = junitReport.createElement( TAG_PROPERTIES );
-                Node propertyNode;
-                NamedNodeMap propertyAttributes;
-                Attr propNameAttr;
-                Attr propValueAttr;
-                for ( Map.Entry< Object, Object > systemProperty : System.getProperties().entrySet() )
-                {
-                    propertyNode = junitReport.createElement( TAG_PROPERTY );
-                    propertyAttributes = propertyNode.getAttributes();
-                    propNameAttr = junitReport.createAttribute( ATTR_PROPERTY_NAME );
-                    propNameAttr.setValue( systemProperty.getKey().toString() );
-                    propertyAttributes.setNamedItem( propNameAttr );
-                    propValueAttr = junitReport.createAttribute( ATTR_PROPERTY_VALUE );
-                    propValueAttr.setValue( systemProperty.getValue().toString() );
-                    propertyAttributes.setNamedItem( propValueAttr );
-                    propertiesNode.appendChild( propertyNode );
-                }
-                Map< String, String > deviceProperties = device.getProperties();
-                for ( Map.Entry< String, String > deviceProperty : deviceProperties.entrySet() )
-                {
-                    propertyNode = junitReport.createElement( TAG_PROPERTY );
-                    propertyAttributes = propertyNode.getAttributes();
-                    propNameAttr = junitReport.createAttribute( ATTR_PROPERTY_NAME );
-                    propNameAttr.setValue( deviceProperty.getKey() );
-                    propertyAttributes.setNamedItem( propNameAttr );
-                    propValueAttr = junitReport.createAttribute( ATTR_PROPERTY_VALUE );
-                    propValueAttr.setValue( deviceProperty.getValue() );
-                    propertyAttributes.setNamedItem( propValueAttr );
-                    propertiesNode.appendChild( propertyNode );
-                }
-                testSuiteNode.appendChild( propertiesNode );
-                testSuitesNode.appendChild( testSuiteNode );
+                final Testsuite.Properties.Property property = new Testsuite.Properties.Property();
+                property.setName( systemProperty.getKey().toString() );
+                property.setValue( systemProperty.getValue().toString() );
+                props.getProperty().add( property );
             }
-            catch ( ParserConfigurationException e )
+            Map< String, String > deviceProperties = device.getProperties();
+            for ( Map.Entry< String, String > deviceProperty : deviceProperties.entrySet() )
             {
-                threwException = true;
-                exceptionMessages.append( "Failed to create document" );
-                exceptionMessages.append( e.getMessage() );
+                final Testsuite.Properties.Property property = new Testsuite.Properties.Property();
+                property.setName( deviceProperty.getKey() );
+                property.setValue( deviceProperty.getValue() );
+                props.getProperty().add( property );
             }
         }
     }
@@ -252,15 +159,10 @@ public class AndroidTestRunListener implements ITestRunListener
 
         if ( createReport )
         { // reset start time for each test run
-            currentTestCaseStartTime = new Date().getTime();
-            currentTestCaseNode = junitReport.createElement( TAG_TESTCASE );
-            NamedNodeMap testCaseAttributes = currentTestCaseNode.getAttributes();
-            Attr classAttr = junitReport.createAttribute( ATTR_TESTCASE_CLASSNAME );
-            classAttr.setValue( testIdentifier.getClassName() );
-            testCaseAttributes.setNamedItem( classAttr );
-            Attr methodAttr = junitReport.createAttribute( ATTR_TESTCASE_NAME );
-            methodAttr.setValue( testIdentifier.getTestName() );
-            testCaseAttributes.setNamedItem( methodAttr );
+            currentTestCaseStartTime = System.currentTimeMillis();
+            currentTestCase = new Testsuite.Testcase();
+            currentTestCase.setClassname( testIdentifier.getClassName() );
+            currentTestCase.setName( testIdentifier.getTestName() );
         }
     }
 
@@ -283,20 +185,11 @@ public class AndroidTestRunListener implements ITestRunListener
 
         if ( createReport )
         {
-            Node errorFailureNode;
-            NamedNodeMap errorfailureAttributes;
-
-            errorFailureNode = junitReport.createElement( TAG_ERROR );
-            errorfailureAttributes = errorFailureNode.getAttributes();
-
-            errorFailureNode.setTextContent( trace );
-            Attr msgAttr = junitReport.createAttribute( ATTR_MESSAGE );
-            msgAttr.setValue( parseForMessage( trace ) );
-            errorfailureAttributes.setNamedItem( msgAttr );
-            Attr typeAttr = junitReport.createAttribute( ATTR_TYPE );
-            typeAttr.setValue( parseForException( trace ) );
-            errorfailureAttributes.setNamedItem( typeAttr );
-            currentTestCaseNode.appendChild( errorFailureNode );
+            final Testsuite.Testcase.Error error = new Testsuite.Testcase.Error();
+            error.setValue( trace );
+            error.setMessage( parseForMessage( trace ) );
+            error.setType( parseForException( trace ) );
+            currentTestCase.setError( objectFactory.createTestsuiteTestcaseError( error ) );
         }
     }
 
@@ -319,20 +212,11 @@ public class AndroidTestRunListener implements ITestRunListener
 
         if ( createReport )
         {
-            Node errorFailureNode;
-            NamedNodeMap errorfailureAttributes;
-
-            errorFailureNode = junitReport.createElement( TAG_FAILURE );
-            errorfailureAttributes = errorFailureNode.getAttributes();
-
-            errorFailureNode.setTextContent( trace );
-            Attr msgAttr = junitReport.createAttribute( ATTR_MESSAGE );
-            msgAttr.setValue( parseForMessage( trace ) );
-            errorfailureAttributes.setNamedItem( msgAttr );
-            Attr typeAttr = junitReport.createAttribute( ATTR_TYPE );
-            typeAttr.setValue( parseForException( trace ) );
-            errorfailureAttributes.setNamedItem( typeAttr );
-            currentTestCaseNode.appendChild( errorFailureNode );
+            final Testsuite.Testcase.Failure failure = new Testsuite.Testcase.Failure();
+            failure.setValue( trace );
+            failure.setMessage( parseForMessage( trace ) );
+            failure.setType( parseForException( trace ) );
+            currentTestCase.getFailure().add( failure );
         }
     }
 
@@ -359,19 +243,7 @@ public class AndroidTestRunListener implements ITestRunListener
                 }
             } );
         }
-        catch ( TimeoutException e )
-        {
-            getLog().error( e );
-        }
-        catch ( AdbCommandRejectedException e )
-        {
-            getLog().error( e );
-        }
-        catch ( ShellCommandUnresponsiveException e )
-        {
-            getLog().error( e );
-        }
-        catch ( IOException e )
+        catch ( TimeoutException | AdbCommandRejectedException | IOException | ShellCommandUnresponsiveException e )
         {
             getLog().error( e );
         }
@@ -388,13 +260,9 @@ public class AndroidTestRunListener implements ITestRunListener
 
         if ( createReport )
         {
-            testSuiteNode.appendChild( currentTestCaseNode );
-            NamedNodeMap testCaseAttributes = currentTestCaseNode.getAttributes();
-            Attr timeAttr = junitReport.createAttribute( ATTR_TESTCASE_TIME );
-            long now = new Date().getTime();
-            double seconds = ( now - currentTestCaseStartTime ) / 1000.0;
-            timeAttr.setValue( timeFormatter.format( seconds ) );
-            testCaseAttributes.setNamedItem( timeAttr );
+            double seconds = ( System.currentTimeMillis() - currentTestCaseStartTime ) / 1000.0;
+            currentTestCase.setTime( timeFormatter.format( seconds ) );
+            report.getTestcase().add( currentTestCase );
         }
     }
 
@@ -414,25 +282,11 @@ public class AndroidTestRunListener implements ITestRunListener
 
         if ( createReport )
         {
-            NamedNodeMap testSuiteAttributes = testSuiteNode.getAttributes();
-            Attr testCountAttr = junitReport.createAttribute( ATTR_TESTSUITE_TESTS );
-            testCountAttr.setValue( Integer.toString( testCount ) );
-            testSuiteAttributes.setNamedItem( testCountAttr );
-            Attr testFailuresAttr = junitReport.createAttribute( ATTR_TESTSUITE_FAILURES );
-            testFailuresAttr.setValue( Integer.toString( testFailureCount ) );
-            testSuiteAttributes.setNamedItem( testFailuresAttr );
-            Attr testErrorsAttr = junitReport.createAttribute( ATTR_TESTSUITE_ERRORS );
-            testErrorsAttr.setValue( Integer.toString( testErrorCount ) );
-            testSuiteAttributes.setNamedItem( testErrorsAttr );
-            Attr testIgnoredAttr = junitReport.createAttribute( ATTR_TESTSUITE_IGNORED );
-            testIgnoredAttr.setValue( Integer.toString( testIgnoredCount ) );
-            testSuiteAttributes.setNamedItem( testIgnoredAttr );
-            Attr timeAttr = junitReport.createAttribute( ATTR_TESTSUITE_TIME );
-            timeAttr.setValue( timeFormatter.format( elapsedTime / 1000.0 ) );
-            testSuiteAttributes.setNamedItem( timeAttr );
-            Attr timeStampAttr = junitReport.createAttribute( ATTR_TESTSUITE_TIMESTAMP );
-            timeStampAttr.setValue( new Date().toString() );
-            testSuiteAttributes.setNamedItem( timeStampAttr );
+            report.setTests( Integer.toString( testCount ) );
+            report.setFailures( Integer.toString( testFailureCount ) );
+            report.setErrors( Integer.toString( testErrorCount ) );
+            report.setSkipped( Integer.toString( testIgnoredCount ) );
+            report.setTime( timeFormatter.format( elapsedTime / 1000.0 ) );
         }
 
         logMetrics( runMetrics );
@@ -459,7 +313,7 @@ public class AndroidTestRunListener implements ITestRunListener
     /**
      * Parse a trace string for the message in it. Assumes that the message is located after ":" and before "\r\n".
      *
-     * @param trace
+     * @param trace stack trace from android tests
      * @return message or empty string
      */
     private String parseForMessage( String trace )
@@ -502,7 +356,7 @@ public class AndroidTestRunListener implements ITestRunListener
      * Parse a trace string for the exception class. Assumes that it is the start of the trace and ends at the first
      * ":".
      *
-     * @param trace
+     * @param trace stack trace from android tests
      * @return Exception class as string or empty string
      */
     private String parseForException( String trace )
@@ -522,44 +376,24 @@ public class AndroidTestRunListener implements ITestRunListener
      */
     private void writeJunitReportToFile()
     {
-        TransformerFactory xfactory = TransformerFactory.newInstance();
-        Transformer xformer = null;
         try
         {
-            xformer = xfactory.newTransformer();
-        }
-        catch ( TransformerConfigurationException e )
-        {
-            e.printStackTrace();
-        }
-        Source source = new DOMSource( junitReport );
-
-        FileWriter writer = null;
-        try
-        {
-            String directory = new StringBuilder().append( targetDirectory )
-                    .append( "/surefire-reports" ).toString();
-
-            FileUtils.forceMkdir( new File( directory ) );
-
-            StringBuilder sb = new StringBuilder();
-
-            sb.append( directory ).append( "/TEST-" )
+            final String directory = String.valueOf( targetDirectory ) + "/surefire-reports";
+            FileUtils.forceMkdir( new File ( directory ) );
+            final StringBuilder b = new StringBuilder( directory ).append( "/TEST-" )
                     .append( DeviceHelper.getDescriptiveName( device ) );
 
             if ( StringUtils.isNotBlank( reportSuffix ) )
             {
                 //Safety first
-                sb.append( reportSuffix.replace( "/", "" ).replace( "\\", "" ) );
+                b.append( reportSuffix.replace( "/", "" ).replace( "\\", "" ) );
             }
 
-            String fileName = sb.append( ".xml" ).toString();
+            final File reportFile = new File( b.append( ".xml" ).toString() );
+            final JAXBContext jaxbContext = JAXBContext.newInstance( ObjectFactory.class );
+            final Marshaller marshaller = jaxbContext.createMarshaller();
+            marshaller.marshal( report, reportFile );
 
-            File reportFile = new File( fileName );
-            writer = new FileWriter( reportFile );
-            Result result = new StreamResult( writer );
-
-            xformer.transform( source, result );
             getLog().info( deviceLogLinePrefix + "Report file written to " + reportFile.getAbsolutePath() );
         }
         catch ( IOException e )
@@ -568,22 +402,18 @@ public class AndroidTestRunListener implements ITestRunListener
             exceptionMessages.append( "Failed to write test report file" );
             exceptionMessages.append( e.getMessage() );
         }
-        catch ( TransformerException e )
+        catch ( JAXBException e )
         {
             threwException = true;
-            exceptionMessages.append( "Failed to transform document to write to test report file" );
+            exceptionMessages.append( "Failed to create jaxb context" );
             exceptionMessages.append( e.getMessage() );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( writer );
         }
     }
 
     /**
      * Log all the metrics out in to key: value lines.
      *
-     * @param metrics
+     * @param metrics key-value pairs reported at the end of a test run
      */
     private void logMetrics( Map< String, String > metrics )
     {
