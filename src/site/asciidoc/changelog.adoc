@@ -1,6 +1,8 @@
 = Changelog
 
-== 4.4.3 or higher, Upcoming
+== 4.4.3 - Released 2016-07-14
+
+http://www.simpligility.com/2016/05/android-maven-plugin-4-4-2-released[Release Announcement]
 
 * Fix for quotes problem for dex and multidex
 ** see https://github.com/simpligility/android-maven-plugin/commit/24499f20e5d7061e2e686c873f9f4edb8f0f7bd8
@@ -10,6 +12,17 @@
 * Update to use API level 23 for default Android SDK value
 ** see https://github.com/simpligility/android-maven-plugin/pull/733
 ** contributed by Casey Kulm https://github.com/caseykulm
+* Avoid empty classes.jar output
+** fixes sonar analysis and other things in secondary build execution
+** fixes https://github.com/simpligility/android-maven-plugin/issues/644
+** see https://github.com/simpligility/android-maven-plugin/pull/735
+** contributed by Philip Schiffer https://github.com/hameno
+* Improved surefire test xml output
+** including stack traces
+** fixes https://github.com/simpligility/android-maven-plugin/issues/720
+** see https://github.com/simpligility/android-maven-plugin/pull/734
+** contributed by Evgeny Nacu https://github.com/evgenynacu
+
 
 == 4.4.2 - Released 2016-05-28
 
