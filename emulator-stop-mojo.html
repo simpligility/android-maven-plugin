@@ -215,8 +215,6 @@
 </li>
                                   <li>      <a href="surefire-report.html"  title="Surefire Report">Surefire Report</a>
 </li>
-                                  <li>      <a href="cobertura/index.html"  title="Cobertura Test Coverage">Cobertura Test Coverage</a>
-</li>
                                   <li>      <a href="findbugs.html"  title="FindBugs">FindBugs</a>
 </li>
                               </ul>
@@ -497,7 +495,7 @@
           <span class="icon-chevron-right"></span>
         Project Information</a>
                   </li>
-                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                  
       <li>
   
                           <a href="project-reports.html" title="Project Reports">
@@ -1039,7 +1037,11 @@ to aapt for more help on this.</p><br /><b>User property is</b>: <tt>android.ren
             
 <td><tt>-</tt></td>
             
-<td>The android resources directory.<br /><b>Default value is</b>: <tt>${project.basedir}/src/main/res</tt>.<br /></td>
+<td>The Android resources (src/main/res) directory. Note that this is
+different from the Maven/Java resources directory
+(src/main/resources) and should not be set to be the same since
+different processing is carried out on these folder by different
+plugins and tools.<br /><b>Default value is</b>: <tt>${project.basedir}/src/main/res</tt>.<br /></td>
           </tr>
           
 <tr class="a">
@@ -1674,7 +1676,11 @@ to aapt for more help on this.</p></div>
         </ul><hr />
 <p><b><a name="resourceDirectory">resourceDirectory</a>:</b></p>
         
-<div>The android resources directory.</div>
+<div>The Android resources (src/main/res) directory. Note that this is
+different from the Maven/Java resources directory
+(src/main/resources) and should not be set to be the same since
+different processing is carried out on these folder by different
+plugins and tools.</div>
         
 <ul>
           
