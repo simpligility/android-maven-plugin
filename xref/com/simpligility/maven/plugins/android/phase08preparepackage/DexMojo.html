@@ -642,7 +642,7 @@
 <a class="jxr_linenumber" name="L634" href="#L634">634</a>         
 <a class="jxr_linenumber" name="L635" href="#L635">635</a>         Set&lt; File&gt; inputFiles = getDexInputFiles();  
 <a class="jxr_linenumber" name="L636" href="#L636">636</a>         StringBuilder sb = <strong class="jxr_keyword">new</strong> StringBuilder();
-<a class="jxr_linenumber" name="L637" href="#L637">637</a>         sb.append( '&quot;' ).append( StringUtils.join( inputFiles, File.pathSeparatorChar ) ).append( '&quot;' );
+<a class="jxr_linenumber" name="L637" href="#L637">637</a>         sb.append( StringUtils.join( inputFiles, File.pathSeparatorChar ) );
 <a class="jxr_linenumber" name="L638" href="#L638">638</a>         commands.add( sb.toString() );
 <a class="jxr_linenumber" name="L639" href="#L639">639</a>         
 <a class="jxr_linenumber" name="L640" href="#L640">640</a>         String executable = getAndroidSdk().getMainDexClasses().getAbsolutePath();

@@ -382,7 +382,7 @@
 <a class="jxr_linenumber" name="L374" href="#L374">374</a>                         + parsedInstrumentationPackage );
 <a class="jxr_linenumber" name="L375" href="#L375">375</a>                 <strong class="jxr_keyword">try</strong>
 <a class="jxr_linenumber" name="L376" href="#L376">376</a>                 {
-<a class="jxr_linenumber" name="L377" href="#L377">377</a>                     <a href="../../../../../com/simpligility/maven/plugins/android/AndroidTestRunListener.html">AndroidTestRunListener</a> testRunListener = <strong class="jxr_keyword">new</strong> <a href="../../../../../com/simpligility/maven/plugins/android/AndroidTestRunListener.html">AndroidTestRunListener</a>( project, device, getLog(),
+<a class="jxr_linenumber" name="L377" href="#L377">377</a>                     <a href="../../../../../com/simpligility/maven/plugins/android/AndroidTestRunListener.html">AndroidTestRunListener</a> testRunListener = <strong class="jxr_keyword">new</strong> <a href="../../../../../com/simpligility/maven/plugins/android/AndroidTestRunListener.html">AndroidTestRunListener</a>( device, getLog(),
 <a class="jxr_linenumber" name="L378" href="#L378">378</a>                             parsedCreateReport, false, <span class="jxr_string">""</span>, <span class="jxr_string">""</span>, targetDirectory );
 <a class="jxr_linenumber" name="L379" href="#L379">379</a>                     remoteAndroidTestRunner.run( testRunListener );
 <a class="jxr_linenumber" name="L380" href="#L380">380</a>                     <strong class="jxr_keyword">if</strong> ( testRunListener.hasFailuresOrErrors() &amp;&amp; !testFailSafe )

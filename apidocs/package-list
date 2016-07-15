@@ -15,3 +15,4 @@ com.simpligility.maven.plugins.android.phase12integrationtest
 com.simpligility.maven.plugins.android.phase_prebuild
 com.simpligility.maven.plugins.android.resource
 com.simpligility.maven.plugins.android.standalonemojos
+org.apache.maven.surefire
