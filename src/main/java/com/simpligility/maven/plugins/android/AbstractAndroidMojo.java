@@ -172,7 +172,9 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     protected String finalName;
 
     /**
-     * The android resources directory.
+     * The Android resources (src/main/res) directory. Note that this is different from the 
+     * Maven/Java resources directory (src/main/resources) and should not be set to be the same
+     * since different processing is carried out on these folder by different plugins and tools.
      */
     @Parameter( defaultValue = "${project.basedir}/src/main/res" )
     protected File resourceDirectory;
