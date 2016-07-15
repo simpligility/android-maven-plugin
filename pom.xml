@@ -832,24 +832,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jaxb2-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>xjc</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <sources>
-            <source>src/main/xsd/surefire-test-report.xsd</source>
-          </sources>
-          <packageName>org.apache.maven.surefire</packageName>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 
@@ -918,6 +900,35 @@
   </reporting>
 
   <profiles>
+    <profile>
+      <!--  generate the surefire classes from the source xsd into the generated-sources folder
+      the results is checked into src/main/java since integration of this execution in the 
+      normal build prevented the site build from working -->
+      <id>jaxb</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>jaxb2-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>xjc</id>
+                <goals>
+                  <goal>xjc</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <sources>
+                <source>src/main/xsd/surefire-test-report.xsd</source>
+              </sources>
+              <packageName>org.apache.maven.surefire</packageName>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    
+    </profile>
     <profile>
       <id>it</id>
       <!-- the integration tests require a device or emulator attached via 
