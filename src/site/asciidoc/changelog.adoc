@@ -2,7 +2,7 @@
 
 == 4.4.3 - Released 2016-07-14
 
-http://www.simpligility.com/2016/05/android-maven-plugin-4-4-3-released[Release Announcement]
+http://www.simpligility.com/2016/07/android-maven-plugin-4-4-3-released[Release Announcement]
 
 * Fix for quotes problem for dex and multidex
 ** see https://github.com/simpligility/android-maven-plugin/commit/24499f20e5d7061e2e686c873f9f4edb8f0f7bd8
