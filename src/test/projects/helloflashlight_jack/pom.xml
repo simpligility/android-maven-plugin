@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.simpligility.android</groupId>
-    <artifactId>helloflashlight</artifactId>
+    <artifactId>helloflashlight_jack</artifactId>
     <version>1.0.0</version>
     <packaging>apk</packaging>
 
-    <name>HelloFlashLight</name>
+    <name>HelloFlashLight Jack</name>
     <properties>
         <!-- at test time this will be overridden with snapshot version -->
         <it-plugin.version>4.4.4-SNAPSHOT</it-plugin.version>

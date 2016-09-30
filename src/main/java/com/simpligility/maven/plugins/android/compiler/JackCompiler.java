@@ -48,7 +48,6 @@ public class JackCompiler extends AbstractCompiler
         String[] command =
         
             ( "java -jar " + jackJarPath + " "
-            + " --verbose trace "
             + " -D jack.java.source.version=" + cc.getSourceVersion()
             + " --classpath " + androidJarPath
             + " --output-dex " + cc.getBuildDirectory()
@@ -129,8 +128,8 @@ public class JackCompiler extends AbstractCompiler
 
         cli.setExecutable( executable );
 
-        cli.createArgument().setValue( "@" + file.getAbsolutePath() );
-
+        cli.addArguments( args );
+        
         Writer stringWriter = new StringWriter();
 
         StreamConsumer out = new WriterStreamConsumer( stringWriter );
@@ -156,11 +155,16 @@ public class JackCompiler extends AbstractCompiler
             throw new CompilerException( "Error while executing the external compiler.", e );
         }
 
-        if ( returnCode != 0 && messages.isEmpty() )
-        {            // TODO: exception?
-            messages.add( new CompilerMessage(
-                    "Failure executing the compiler, but could not parse the error:" + EOL + stringWriter.toString(),
-                    true ) );
+        if ( returnCode != 0  )
+        {            
+            StringBuilder errorBuilder = new StringBuilder();
+            for ( CompilerMessage message : messages ) 
+            {
+                errorBuilder.append( message.getMessage() );
+            }
+            
+            
+            throw new CompilerException( errorBuilder.toString() );
         }
 
         return messages;
