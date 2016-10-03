@@ -34,6 +34,8 @@ import org.codehaus.plexus.util.cli.WriterStreamConsumer;
 public class JackCompiler extends AbstractCompiler
 {
 
+    public static final String JACK_COMPILER_ID = "jack";
+    
     public JackCompiler()
     {
         super( CompilerOutputStyle.ONE_OUTPUT_FILE_FOR_ALL_INPUT_FILES, ".java", ".dex", null );

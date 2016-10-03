@@ -14,6 +14,7 @@
     
         <maven.compiler.source>1.8</maven.compiler.source><!-- Not Required for Jack -->
         <maven.compiler.target>1.8</maven.compiler.target><!-- But kind of the point -->
+        <maven.compiler.compilerId>jack</maven.compiler.compilerId>
     </properties>
     <dependencies>
         <dependency>
@@ -39,9 +40,6 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5.1</version>
-                <configuration>
-                    <compilerId>jack</compilerId>
-                </configuration>
                 <dependencies>
                     <dependency>
                         <groupId>com.simpligility.maven.plugins</groupId>
@@ -57,9 +55,6 @@
                     <sdk>
                         <platform>24</platform>
                     </sdk>
-                    <jack>
-                        <enabled>true</enabled>
-                    </jack>
                 </configuration>
             </plugin>
         </plugins>
