@@ -1176,7 +1176,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     {
         if ( jack == null ) 
         {
-            return new Jack();
+            return new Jack( super.getPluginContext() );
         }
         else 
         {
