@@ -8,6 +8,9 @@ public class Jack
 
     private Boolean enabled;
 
+    /**
+     * @parameter expression="${maven.compiler.compilerId}"  default-value=""
+     */
     @Parameter ( property = "maven.compiler.compilerId" , defaultValue = "" )
     private String mavenCompilerId;
     

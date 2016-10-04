@@ -1,5 +1,8 @@
 package com.simpligility.maven.plugins.android.compiler;
 
+import com.google.api.client.repackaged.com.google.common.base.Strings;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -11,6 +14,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.plexus.compiler.AbstractCompiler;
 import org.codehaus.plexus.compiler.CompilerConfiguration;
 import org.codehaus.plexus.compiler.CompilerException;
@@ -34,6 +39,8 @@ import org.codehaus.plexus.util.cli.WriterStreamConsumer;
 public class JackCompiler extends AbstractCompiler
 {
 
+    private static final Log LOG = LogFactory.getLog( JackCompiler.class );
+    
     public static final String JACK_COMPILER_ID = "jack";
     
     public JackCompiler()
@@ -47,15 +54,17 @@ public class JackCompiler extends AbstractCompiler
         String androidHome = System.getenv( "ANDROID_HOME" );
         String jackJarPath = androidHome + "/build-tools/24.0.2/jack.jar";
         String androidJarPath = androidHome + "/platforms/android-24/android.jar";
-        String[] command =
+        String command =
         
             ( "java -jar " + jackJarPath + " "
             + " -D jack.java.source.version=" + cc.getSourceVersion()
             + " --classpath " + androidJarPath
             + " --output-dex " + cc.getBuildDirectory()
-            + " src/main/java/ target/generated-sources/r/" ).split( "\\s" );
+            + " src/main/java/ target/generated-sources/r/" );
 
-        return command;
+        LOG.debug( String.format( " jack command : %s", command ) );
+        
+        return trim( command.split( "\\s" ) ) ;
     }
 
     @Override
@@ -70,8 +79,7 @@ public class JackCompiler extends AbstractCompiler
     {
         String[] commandLine = this.createCommandLine( configuration );
         
-        List<CompilerMessage> messages = new ArrayList<>();
-            messages = compileOutOfProcess( configuration.getWorkingDirectory(), 
+        List<CompilerMessage> messages = compileOutOfProcess( configuration.getWorkingDirectory(), 
                                               configuration.getBuildDirectory(), 
                                               commandLine[ 0 ], 
                                               Arrays.copyOfRange( commandLine, 1, commandLine.length )
@@ -187,6 +195,23 @@ public class JackCompiler extends AbstractCompiler
         }
 
         return messages;
+    }
+
+    private String[] trim( String[] split ) 
+    {
+        Iterable<String> filtered = Iterables.filter( 
+                Arrays.asList( split ), 
+                new Predicate<String>() 
+                {
+                    @Override
+                    public boolean apply( String t ) 
+                    {
+                        return !Strings.isNullOrEmpty( t );
+                    }
+                }
+        );
+        
+        return Iterables.toArray( filtered, String.class );
     }
 
 }
