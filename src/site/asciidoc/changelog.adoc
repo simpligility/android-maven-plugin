@@ -1,5 +1,16 @@
 = Changelog
 
+== 4.4.4 or higher - Upcoming
+
+* Support for compilation with https://source.android.com/source/jack.html[Jack] - currently experimental
+** see https://github.com/simpligility/android-maven-plugin/pull/743
+** https://github.com/simpligility/android-maven-plugin/pull/744
+** and commits in between
+** sponsored by https://www.redhat.com[Red Hat]
+** contributed by Hoyt Summers Pittman https://github.com/secondsun
+** and Manfred Moser http://www.simpligility.com
+** and Benoit Billington https://github.com/Shusshu
+
 == 4.4.3 - Released 2016-07-14
 
 http://www.simpligility.com/2016/07/android-maven-plugin-4-4-3-released[Release Announcement]
