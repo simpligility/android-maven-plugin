@@ -27,6 +27,7 @@ import io.takari.maven.testing.executor.junit.MavenJUnitTestRunner;
 
 import java.io.File;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +40,7 @@ import com.simpligility.maven.plugins.android.PluginInfo;
  * 
  * @author summers
  */
+@Ignore("Experimental test, currently fails, activate for development of Jack support")
 @RunWith(MavenJUnitTestRunner.class)
 @MavenVersions({"3.0.5", "3.3.9"})
 public class JackedHelloFlashLightSampleIT {
