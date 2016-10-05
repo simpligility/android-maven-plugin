@@ -26,9 +26,6 @@ import org.junit.runner.RunWith;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static com.github.rtyley.android.screenshot.celebrity.Screenshots.poseForScreenshot;
-import static com.github.rtyley.android.screenshot.celebrity.Screenshots.poseForScreenshotNamed;
-
 
 @RunWith(AndroidJUnit4.class)
 public class ConfigureMorseActivityTest {
@@ -40,12 +37,8 @@ public class ConfigureMorseActivityTest {
     @Test
     @LargeTest
     public void testAppearance() throws Exception {
-        poseForScreenshot();
         onView(withId(R.id.message)).perform(typeText("s"));
-        poseForScreenshot();
         onView(withId(R.id.message)).perform(typeText("o"));
-        poseForScreenshot();
         onView(withId(R.id.message)).perform(typeText("s"));
-        poseForScreenshotNamed("ConfigureMorseActivity-SOS");
     }
 }
