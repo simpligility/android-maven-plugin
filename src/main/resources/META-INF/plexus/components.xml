@@ -150,6 +150,13 @@
     </component>
 
     <component>
+      <role>org.codehaus.plexus.component.annotations.Component</role>
+      <role-hint>jack</role-hint>
+      <implementation>com.simpligility.maven.plugins.android.compiler.JackCompiler</implementation>
+    </component>
+
+
+    <component>
       <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
       <role-hint>apklib</role-hint>
       <implementation>org.apache.maven.artifact.handler.DefaultArtifactHandler</implementation>

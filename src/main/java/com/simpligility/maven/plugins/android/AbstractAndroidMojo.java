@@ -70,6 +70,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.simpligility.maven.plugins.android.common.AndroidExtension.APK;
+import com.simpligility.maven.plugins.android.configuration.Jack;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
@@ -518,6 +519,13 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     @Parameter( defaultValue = "false" )
     private File disableConflictingDependenciesWarning;
 
+    /**
+    * configure the Jack compiler
+    */    
+    @Parameter
+    private Jack jack;
+
+    
     private UnpackedLibHelper unpackedLibHelper;
     private ArtifactResolverHelper artifactResolverHelper;
     private NativeHelper nativeHelper;
@@ -1164,6 +1172,18 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         return new AndroidSdk( chosenSdkPath, chosenSdkPlatform, buildToolsVersion );
     }
 
+    protected Jack getJack() 
+    {
+        if ( jack == null ) 
+        {
+            return new Jack( super.getPluginContext() );
+        }
+        else 
+        {
+            return jack;
+        }
+    }
+    
     private String getAndroidHomeOrThrow() throws MojoExecutionException
     {
         final String androidHome = System.getenv( ENV_ANDROID_HOME );

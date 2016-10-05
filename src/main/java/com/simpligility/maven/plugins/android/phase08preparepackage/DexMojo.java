@@ -240,6 +240,12 @@ public class DexMojo extends AbstractAndroidMojo
     public void execute() throws MojoExecutionException, MojoFailureException
     {
 
+        if ( getJack().isEnabled() ) 
+        {
+            //Dexxing is handled by Jack
+            return;
+        }
+        
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
 

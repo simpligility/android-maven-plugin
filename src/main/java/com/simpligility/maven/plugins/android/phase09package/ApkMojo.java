@@ -676,7 +676,13 @@ public class ApkMojo extends AbstractAndroidMojo
                                       boolean signWithDebugKeyStore ) throws MojoExecutionException
     {
         getLog().debug( "Building APK with internal APKBuilder" );
-        sourceFolders.add( projectOutputDirectory );
+        
+        //A when jack is running the classes directory will not get filled (usually)
+        // so let's skip it if it wasn't created by something else
+        if ( projectOutputDirectory.exists() || !getJack().isEnabled() ) 
+        {
+            sourceFolders.add( projectOutputDirectory );
+        }
 
         for ( Artifact artifact : filterArtifacts( getRelevantCompileArtifacts(), skipDependencies,
                 artifactTypeSet.getIncludes(), artifactTypeSet.getExcludes(), artifactSet.getIncludes(),
