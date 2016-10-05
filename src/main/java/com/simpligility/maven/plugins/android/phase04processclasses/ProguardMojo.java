@@ -381,6 +381,12 @@ public class ProguardMojo extends AbstractAndroidMojo
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
+        if ( getJack().isEnabled() ) 
+        {
+            //proguard is handled by Jack
+            return;
+        }
+        
         ConfigHandler configHandler = new ConfigHandler( this, this.session, this.execution );
         configHandler.parseConfiguration();
 
