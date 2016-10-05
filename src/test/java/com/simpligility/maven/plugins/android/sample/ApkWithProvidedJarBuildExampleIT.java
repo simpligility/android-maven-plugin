@@ -56,6 +56,6 @@ public class ApkWithProvidedJarBuildExampleIT {
           .forProject(basedir)
           .execute( "clean", "install" );
     result.assertErrorFreeLog();
-    result.assertLogText( "Tests run: 1,  Failures: 0,  Errors: 0" );
+    result.assertLogText( "Failures: 0,  Errors: 0" );
   }
 }
