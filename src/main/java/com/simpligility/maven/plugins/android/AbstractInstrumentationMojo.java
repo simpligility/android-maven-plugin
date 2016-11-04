@@ -355,7 +355,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 
                 remoteAndroidTestRunner.setDebug( parsedDebug );
                 remoteAndroidTestRunner.setCoverage( parsedCoverage );
-                if ( ! "".equals( parsedCoverageFile ) )
+                if ( StringUtils.isNotBlank( parsedCoverageFile ) )
                 {
                     remoteAndroidTestRunner.addInstrumentationArg( "coverageFile", parsedCoverageFile );
                 }
