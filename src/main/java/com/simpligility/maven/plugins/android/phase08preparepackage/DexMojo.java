@@ -34,6 +34,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.shared.utils.Os;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
@@ -240,12 +241,12 @@ public class DexMojo extends AbstractAndroidMojo
     public void execute() throws MojoExecutionException, MojoFailureException
     {
 
-        if ( getJack().isEnabled() ) 
+        if ( getJack().isEnabled() )
         {
             //Dexxing is handled by Jack
             return;
         }
-        
+
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( this.getLog() );
 
@@ -628,33 +629,40 @@ public class DexMojo extends AbstractAndroidMojo
         return new File( javaHome + slash + "bin" + slash + "java" );
     }
 
-    private File generateMainDexClassesFile() throws MojoExecutionException 
+    private File generateMainDexClassesFile() throws MojoExecutionException
     {
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( getLog() );
-        List< String> commands = new ArrayList< String>();
+        List<String> commands = new ArrayList<>();
         commands.add( "--output" );
-        
+
         File mainDexClasses = new File( targetDirectory, "mainDexClasses.txt" );
         commands.add( mainDexClasses.getAbsolutePath() );
-        
-        Set< File> inputFiles = getDexInputFiles();  
+
+        Set<File> inputFiles = getDexInputFiles();
         StringBuilder sb = new StringBuilder();
         sb.append( StringUtils.join( inputFiles, File.pathSeparatorChar ) );
-        commands.add( sb.toString() );
-        
+        if ( Os.isFamily( Os.FAMILY_WINDOWS ) )
+        {
+            commands.add( StringUtils.wrap( sb.toString(), '"' ) );
+        }
+        else
+        {
+            commands.add( sb.toString() );
+        }
+
         String executable = getAndroidSdk().getMainDexClasses().getAbsolutePath();
         try
         {
             executor.executeCommand( executable, commands, project.getBasedir(), false );
-        } 
-        catch ( ExecutionException ex ) 
+        }
+        catch ( ExecutionException ex )
         {
             throw new MojoExecutionException( "Failed to execute mainDexClasses", ex );
         }
         return mainDexClasses;
-    }    
-    
+    }
+
     /**
      * @return
      * @throws MojoExecutionException
