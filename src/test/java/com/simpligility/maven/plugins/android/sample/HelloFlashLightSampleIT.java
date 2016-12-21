@@ -15,24 +15,46 @@
  */
 package com.simpligility.maven.plugins.android.sample;
 
+import com.simpligility.maven.plugins.android.PluginInfo;
+import io.takari.maven.testing.TestResources;
+import io.takari.maven.testing.executor.MavenExecutionResult;
+import io.takari.maven.testing.executor.MavenRuntime;
 import io.takari.maven.testing.executor.MavenVersions;
 import io.takari.maven.testing.executor.MavenRuntime.MavenRuntimeBuilder;
 import io.takari.maven.testing.executor.junit.MavenJUnitTestRunner;
 
+
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.File;
+
 @RunWith(MavenJUnitTestRunner.class)
 @MavenVersions({"3.0.5", "3.3.9"})
-public class HelloFlashLightSampleIT extends AbstractSampleIT {
+public class HelloFlashLightSampleIT {
+
+    @Rule
+    public final TestResources resources = new TestResources();
+
+    public final MavenRuntime mavenRuntime;
 
     public HelloFlashLightSampleIT(MavenRuntimeBuilder builder) throws Exception {
-        super(builder);
+        this.mavenRuntime = builder.build();
     }
 
     @Test
     public void buildDeployAndRun() throws Exception {
-        buildDeployAndRun("helloflashlight", "com.simpligility.android.helloflashlight", "com.simpligility.android.helloflashlight.HelloFlashlight");
+        File basedir = resources.getBasedir( "helloflashlight" );
+        MavenExecutionResult result = mavenRuntime
+            .forProject(basedir)
+            .execute( "clean", PluginInfo.getQualifiedGoal( "undeploy" ),
+                "install", PluginInfo.getQualifiedGoal( "deploy" ),
+                PluginInfo.getQualifiedGoal( "run" ) );
+
+        result.assertErrorFreeLog();
+        result.assertLogText( "Successfully installed" );
+        result.assertLogText( "Attempting to start com.simpligility.android.helloflashlight/com.simpligility.android.helloflashlight.HelloFlashlight" );
     }
 
 }
