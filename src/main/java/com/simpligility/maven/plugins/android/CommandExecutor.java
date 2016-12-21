@@ -349,7 +349,7 @@ public interface CommandExecutor
             {
                 if ( captureStdOut )
                 {
-                    sb.append( line );
+                    sb.append( line ).append( '\n' );
                 }
                 if ( logger != null )
                 {

@@ -53,6 +53,10 @@ public class Dex
      * Mirror of {@link com.simpligility.maven.plugins.android.phase08preparepackage.DexMojo#minimalMainDex}
      */
     private Boolean minimalMainDex;
+    /**
+     * Mirror of {@link com.simpligility.maven.plugins.android.phase08preparepackage.DexMojo#generateMainDexList}
+     */
+    private Boolean generateMainDexList;
 
     private String dexArguments;
 
@@ -112,6 +116,11 @@ public class Dex
         return minimalMainDex;
     }
 
+    public Boolean isGenerateMainDexList()
+    {
+        return generateMainDexList;
+    }
+    
     public String getDexArguments()
     {
         return dexArguments;
