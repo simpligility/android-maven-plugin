@@ -23,11 +23,10 @@ import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.CommandExecutor;
 import com.simpligility.maven.plugins.android.ExecutionException;
 import com.simpligility.maven.plugins.android.common.AaptCommandBuilder;
+import com.simpligility.maven.plugins.android.common.AaptCommandBuilder.AaptPackageCommandBuilder;
 import com.simpligility.maven.plugins.android.common.DependencyResolver;
 import com.simpligility.maven.plugins.android.common.FileRetriever;
-import com.simpligility.maven.plugins.android.common.AaptCommandBuilder.AaptPackageCommandBuilder;
 import com.simpligility.maven.plugins.android.configuration.BuildConfigConstant;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +55,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -262,6 +260,9 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     @Parameter( defaultValue = "true" )
     private boolean failOnNonStandardStructure;
 
+    @Parameter( defaultValue = "${project.basedir}/src/main/google-services.json" )
+    private File googleServicesJson;
+
     /**
      * Which dependency scopes should not be included when unpacking dependencies
      */
@@ -302,6 +303,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
             // Extract the apklib and aar dependencies into unpacked-libs so that they can be referenced in the build.
             extractLibraryDependencies();
+
+            processGoogleServicesJson();
 
             // Copy project assets to combinedAssets so that aapt has a single assets folder to load.
             copyFolder( assetsDirectory, combinedAssets );
@@ -558,6 +561,30 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         }
     }
 
+    private String resolvePackageName()
+    {
+        if ( StringUtils.isNotBlank( customPackage ) )
+        {
+            return customPackage;
+        }
+
+        return getAndroidManifestPackageName();
+    }
+
+    private void processGoogleServicesJson() throws MojoExecutionException
+    {
+        final GoogleServicesProcessor processor =
+                new GoogleServicesProcessor( googleServicesJson, resourceDirectory, resolvePackageName(), getLog() );
+        try
+        {
+            processor.process();
+        }
+        catch ( IOException e )
+        {
+            throw new MojoExecutionException( "Unable to process " + googleServicesJson.getAbsolutePath(), e );
+        }
+    }
+
     /**
      * Extracts ApkLib and adds the assets and apklib sources and resources to the build.
      */
@@ -583,6 +610,29 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     private void extractAarLib( Artifact aarArtifact ) throws MojoExecutionException
     {
         getUnpackedLibHelper().extractAarLib( aarArtifact );
+
+        if ( aarArtifact.getGroupId().equals( "com.google.firebase" )
+                && aarArtifact.getArtifactId().startsWith( "firebase-" ) )
+        {
+            try
+            {
+                final File aarDirectory = getUnpackedLibFolder( aarArtifact );
+                // replace the ${applicationId} placeholders in the AndroidManifest.xml file for this artifact
+                final File file = new File( aarDirectory, "AndroidManifest.xml" );
+
+                String content = FileUtils.readFileToString( file );
+                content = content.replace( "${applicationId}", resolvePackageName() );
+
+                file.setWritable( true );
+                FileUtils.writeStringToFile( file, content );
+            }
+            catch ( IOException e )
+            {
+                throw new MojoExecutionException( "Unable to substitute ${applicationId} in AndroidManifest.xml from "
+                        + aarArtifact + " dependency", e );
+            }
+        }
+
 
         // Copy the assets to the the combinedAssets folder, but only if an APK build.
         // Ie we only want to package assets that we own.

@@ -605,6 +605,21 @@
       <version>3.5.1</version>
       <type>jar</type>
     </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.8.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava-base</artifactId>
+      <version>r03</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava-io</artifactId>
+      <version>r03</version>
+    </dependency>
   </dependencies>
 
   <build>

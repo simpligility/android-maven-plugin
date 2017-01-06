@@ -14,7 +14,6 @@ import com.android.SdkConstants;
 import com.google.common.io.PatternFilenameFilter;
 import com.simpligility.maven.plugins.android.phase09package.AarMojo;
 import com.simpligility.maven.plugins.android.phase09package.ApklibMojo;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
