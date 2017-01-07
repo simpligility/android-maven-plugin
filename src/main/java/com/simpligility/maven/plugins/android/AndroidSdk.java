@@ -125,7 +125,9 @@ public class AndroidSdk
             String hashString = AndroidTargetHash.getPlatformHashString( version );
             IAndroidTarget target = sdkManager.getTargetFromHashString( hashString );
 
-            if ( target != null )
+            // SdkManager may return a non-null IAndroidTarget that references nothing.
+            // I suspect it points to an SDK that has been removed.
+            if ( target != null && target.getLocation() != null )
             {
                 return target;
             }
@@ -365,7 +367,7 @@ public class AndroidSdk
         final String androidJarPath = androidTarget.getPath( IAndroidTarget.ANDROID_JAR );
         if ( androidJarPath == null )
         {
-            throw new MojoExecutionException( "No AndroidJar found for " + androidTarget );
+            throw new MojoExecutionException( "No AndroidJar found for " + androidTarget.getLocation() );
         }
         return new File ( androidJarPath );
     }

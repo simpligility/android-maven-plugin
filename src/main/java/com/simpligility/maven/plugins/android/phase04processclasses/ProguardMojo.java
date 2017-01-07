@@ -55,7 +55,7 @@ public class ProguardMojo extends AbstractAndroidMojo
     /**
      * <p>
      * ProGuard configuration. ProGuard is disabled by default. Set the skip parameter to false to activate proguard.
-     * A complete configuartion can include any of the following:
+     * A complete configuration can include any of the following:
      * </p>
      * <p/>
      * <pre>
