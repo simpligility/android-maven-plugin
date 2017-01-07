@@ -1,5 +1,16 @@
 == ANDROID MAVEN PLUGIN
 
+This is a fork of the https://github.com/simpligility/android-maven-plugin[Android Maven Plugin].
+It adds the following features:
+
+    - it handles substitution (aka filtering) of `${applicationId}` variables in `com.google.firebase` artifacts,
+      when this plugin is active it will always replace such occurrences with the package name as configured in your
+      `AndroidManifest.xml`
+
+    - processing `google-services.json` in the same way the
+      https://developers.google.com/android/guides/google-services-plugin[Google Services Gradle plugin] does
+
+
 A plugin for Android application development with http://maven.apache.org[Apache Maven 3.0.5+] and 
 the http://tools.android.com[Android SDK].
 
