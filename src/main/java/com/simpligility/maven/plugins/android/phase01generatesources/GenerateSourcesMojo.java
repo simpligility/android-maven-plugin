@@ -260,6 +260,11 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     @Parameter( defaultValue = "true" )
     private boolean failOnNonStandardStructure;
 
+    /**
+     * Google Services configuration file. This file is usually downloaded via the Firebase console. The plugin
+     * will generate resources from it and put them in your resources directory, you are free to add them to
+     * source control but they will be overwritten on every build.
+     */
     @Parameter( defaultValue = "${project.basedir}/src/main/google-services.json" )
     private File googleServicesJson;
 
@@ -625,6 +630,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
                 file.setWritable( true );
                 FileUtils.writeStringToFile( file, content );
+                file.setWritable( false );
             }
             catch ( IOException e )
             {

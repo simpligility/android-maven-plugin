@@ -21,7 +21,7 @@ import static com.google.common.base.Charsets.UTF_8;
  * This code is based on the corresponding Gradle plugin. I have tried to keep the differences to a minimum (apart from
  * respecting the checkstyle rules).
  */
-public class GoogleServicesProcessor 
+class GoogleServicesProcessor
 {
     private static final String STATUS_DISABLED = "1";
     private static final String STATUS_ENABLED = "2";
@@ -33,7 +33,7 @@ public class GoogleServicesProcessor
     private String packageName;
     private Log log;
 
-    public GoogleServicesProcessor( File googleServicesJson, File resDirectory, String packageName, Log log )
+    GoogleServicesProcessor( File googleServicesJson, File resDirectory, String packageName, Log log )
     {
         this.googleServicesJson = googleServicesJson;
         this.resDirectory = resDirectory;
