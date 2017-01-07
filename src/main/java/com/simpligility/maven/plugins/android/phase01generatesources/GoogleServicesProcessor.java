@@ -48,10 +48,16 @@ class GoogleServicesProcessor
             throw new IllegalArgumentException( "Parameter packageName must be configured" );
         }
 
+        if ( !googleServicesJson.exists() )
+        {
+            log.info( "No google-services.json found" );
+            return;
+        }
+
         if ( !googleServicesJson.isFile() )
         {
             throw new IOException( String.format( 
-                    "File %s is missing. The Google Services Plugin cannot function without it",
+                    "%s is not a file",
                     googleServicesJson.getAbsolutePath() ) );
         }
 
