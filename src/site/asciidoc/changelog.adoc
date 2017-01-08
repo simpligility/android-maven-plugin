@@ -10,6 +10,9 @@
 ** contributed by Hoyt Summers Pittman https://github.com/secondsun
 ** and Manfred Moser http://www.simpligility.com
 ** and Benoit Billington https://github.com/Shusshu
+* Ensures AARMojo creates correct AAR structure even when AAR has no resources.
+** See https://github.com/simpligility/android-maven-plugin/pull/755
+** contributed by William Ferguson https://github.com/william-ferguson-au
 
 == 4.4.3 - Released 2016-07-14
 
