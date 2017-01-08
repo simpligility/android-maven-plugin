@@ -210,8 +210,15 @@ public class AarMojo extends AbstractAndroidMojo
             zipArchiver.setDestFile( aarLibrary );
 
             zipArchiver.addFile( destinationManifestFile, "AndroidManifest.xml" );
-            addDirectory( zipArchiver, assetsDirectory, "assets" );
-            addDirectory( zipArchiver, resourceDirectory, "res" );
+            addDirectory( zipArchiver, assetsDirectory, "assets", false );
+
+            // res folder must be included in the archive even if empty or non-existent.
+            if ( !resourceDirectory.exists() )
+            {
+                resourceDirectory.mkdir();
+            }
+            addDirectory( zipArchiver, resourceDirectory, "res", true );
+
             zipArchiver.addFile( classesJar, SdkConstants.FN_CLASSES_JAR );
 
             final File[] overlayDirectories = getResourceOverlayDirectories();
@@ -219,7 +226,7 @@ public class AarMojo extends AbstractAndroidMojo
             {
                 if ( resOverlayDir != null && resOverlayDir.exists() )
                 {
-                    addDirectory( zipArchiver, resOverlayDir, "res" );
+                    addDirectory( zipArchiver, resOverlayDir, "res", false );
                 }
             }
 
@@ -292,18 +299,19 @@ public class AarMojo extends AbstractAndroidMojo
         return aarLibrary;
     }
 
-    private void addR( ZipArchiver zipArchiver ) throws MojoExecutionException
+    private void addR( ZipArchiver zipArchiver ) throws MojoExecutionException, IOException
     {
-        final File rFile = new File( targetDirectory + "/R.txt" );
-        if ( rFile.exists() )
+        final File rFile = new File( targetDirectory, "R.txt" );
+        if ( !rFile.exists() )
         {
-            zipArchiver.addFile( rFile, "R.txt" );
-            getLog().debug( "Packaging R.txt in AAR" );
+            getLog().debug( "No resources - creating empty R.txt" );
+            if ( !rFile.createNewFile() )
+            {
+                getLog().warn( "Unable to create R.txt in AAR" );
+            }
         }
-        else
-        {
-            getLog().debug( "Not packaging R.txt in AAR - it does not exist (no resources??)" );
-        }
+        zipArchiver.addFile( rFile, "R.txt" );
+        getLog().debug( "Packaging R.txt in AAR" );
     }
 
     private void addNativeLibraries( final ZipArchiver zipArchiver ) throws MojoExecutionException
@@ -313,7 +321,7 @@ public class AarMojo extends AbstractAndroidMojo
             if ( nativeLibrariesDirectory.exists() )
             {
                 getLog().info( nativeLibrariesDirectory + " exists, adding libraries." );
-                addDirectory( zipArchiver, nativeLibrariesDirectory, NATIVE_LIBRARIES_FOLDER );
+                addDirectory( zipArchiver, nativeLibrariesDirectory, NATIVE_LIBRARIES_FOLDER, false );
             }
             else
             {
@@ -369,14 +377,16 @@ public class AarMojo extends AbstractAndroidMojo
      * @param zipArchiver   ZipArchiver to use to archive the file.
      * @param directory     The directory to add.
      * @param prefix        An optional prefix for where in the Jar file the directory's contents should go.
+     * @param includeEmptyFolders   Whether to include an entry for empty folder in the archive.
      */
-    protected void addDirectory( ZipArchiver zipArchiver, File directory, String prefix )
+    protected void addDirectory( ZipArchiver zipArchiver, File directory, String prefix, boolean includeEmptyFolders )
     {
         if ( directory != null && directory.exists() )
         {
             final DefaultFileSet fileSet = new DefaultFileSet();
             fileSet.setPrefix( endWithSlash( prefix ) );
             fileSet.setDirectory( directory );
+            fileSet.setIncludingEmptyDirectories( includeEmptyFolders );
             zipArchiver.addFileSet( fileSet );
             getLog().debug( "Added files from " + directory );
         }

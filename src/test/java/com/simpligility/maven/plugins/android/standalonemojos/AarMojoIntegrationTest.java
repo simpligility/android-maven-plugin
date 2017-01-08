@@ -61,7 +61,7 @@ public class AarMojoIntegrationTest
     try {
       final Enumeration<? extends ZipEntry> entries = aarFile.entries();
       final Map<String, ? extends ZipEntry> entriesMap = convertEntriesToNamedMap( entries );
-      Assert.assertTrue( "AAR must have res folder", entriesMap.containsKey( "res" ) );
+      Assert.assertTrue( "AAR must have res folder", entriesMap.containsKey( "res/" ) );
       Assert.assertTrue( "AAR must have R.txt", entriesMap.containsKey( "R.txt" ) );
     } finally
     {
