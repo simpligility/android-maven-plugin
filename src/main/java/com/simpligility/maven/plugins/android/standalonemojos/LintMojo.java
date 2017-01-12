@@ -542,7 +542,7 @@ public class LintMojo extends AbstractAndroidMojo
 
         LintCliFlags flags = new LintCliFlags();
 
-        LintCliClient client = new LintCliClient( flags );
+        LintCliClient client = new LintCliClient( flags, "AndroidMaven" );
 
         try
         {
