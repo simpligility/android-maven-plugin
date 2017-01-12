@@ -16,6 +16,7 @@
 
 package com.simpligility.maven.plugins.android.standalonemojos;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -24,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import com.android.sdklib.AndroidVersion;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -285,7 +287,9 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
                     }
 
                     @Override
-                    public void installPackages(List<String> list, int i, boolean b, String... strings) throws InstallException {
+                    public void installPackages (List<File> list, boolean b, List<String> list1, long l, TimeUnit timeUnit ) throws InstallException
+                    {
+
                     }
 
                     @Override
@@ -381,6 +385,11 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
                     }
 
                     @Override
+                    public AndroidVersion getVersion() {
+                        return null;
+                    }
+
+                    @Override
                     public boolean root() throws TimeoutException, AdbCommandRejectedException, IOException,
                         ShellCommandUnresponsiveException {
                       return false;
@@ -391,12 +400,6 @@ public class InternalIntegrationTestMojoTest extends AbstractAndroidMojoTestCase
                         ShellCommandUnresponsiveException {
                       return false;
                     }
-
-                    @Override
-                    public int getApiLevel() {
-                      return 0;
-                    }
-
 
                 });
                 return null;
