@@ -43,8 +43,8 @@
     <asm.version>5.0.4</asm.version>
     <!-- Attention - make sure that the tools version is the versions of 
       the transitive dependencies of the builder version -->
-    <android.builder.version>1.5.0</android.builder.version>
-    <android.tools.version>24.5.0</android.tools.version>
+    <android.builder.version>2.2.3</android.builder.version>
+    <android.tools.version>25.2.3</android.tools.version>
   </properties>
 
   <scm>
@@ -63,6 +63,17 @@
     <system>Travis</system>
     <url>https://travis-ci.org/simpligility/android-maven-plugin</url>
   </ciManagement>
+
+  <repositories>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>bintray-maven</id>
+      <name>bintray</name>
+      <url>https://dl.bintray.com/android/android-tools</url>
+    </repository>
+  </repositories>
 
   <distributionManagement>
     <repository>
