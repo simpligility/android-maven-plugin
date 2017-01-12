@@ -3,8 +3,7 @@ package com.simpligility.maven.plugins.android.standalonemojos;
 import com.android.SdkConstants;
 import com.android.builder.core.AndroidBuilder;
 import com.android.builder.core.ErrorReporter;
-import com.android.builder.dependency.JarDependency;
-import com.android.builder.dependency.LibraryDependency;
+import com.android.builder.dependency.level2.AndroidDependency;
 import com.android.ide.common.process.DefaultProcessExecutor;
 import com.android.manifmerger.ManifestMerger2;
 import com.android.utils.ILogger;
@@ -321,7 +320,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
         {
             versionCode = parsedVersionCode;
         }
-        List<LibraryDependency> manifestDependencies = new ArrayList<>();
+        List<AndroidDependency> manifestDependencies = new ArrayList<>();
 
         if ( parsedMergeLibraries )
         {
@@ -334,29 +333,20 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
                 final File manifestFile = new File( unpackedLibFolder, SdkConstants.FN_ANDROID_MANIFEST_XML );
                 if ( manifestFile.exists() )
                 {
-                    /*File bundle,
-                    File explodedBundle,
-                     List<LibraryDependency> androidDependencies,
-                     Collection<JarDependency> jarDependencies,
+                    /*
+                    File artifactFile,
+                    MavenCoordinates coordinates,
                      String name,
-                     String variantName,
                      String projectPath,
-                     MavenCoordinates requestedCoordinates,
-                     MavenCoordinates resolvedCoordinates,
-                     boolean isProvided) {
-                    */
+                     File extractedFolder
+                    * */
                     // TODO this might not be working just yet....
-                    manifestDependencies.add( new LibraryDependency(
+                    manifestDependencies.add( AndroidDependency.createExplodedAarLibrary(
                             manifestFile,
-                            unpackedLibFolder,
-                            new ArrayList<LibraryDependency>(),
-                            new ArrayList<JarDependency>(),
-                            dependency.getArtifactId(),
+                            null,
                             dependency.getArtifactId(),
                             unpackedLibFolder.getPath(),
-                            null,
-                            null,
-                            false ) );
+                            unpackedLibFolder ) );
                 }
             }
         }

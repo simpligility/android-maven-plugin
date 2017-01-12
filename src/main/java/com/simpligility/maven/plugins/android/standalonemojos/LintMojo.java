@@ -583,7 +583,7 @@ public class LintMojo extends AbstractAndroidMojo
             if ( isNotNullAndTrue( parsedEnableHtml ) )
             {
                 File outHtml = new File( parsedHtmlOutputPath );
-                flags.getReporters().add( new MultiProjectHtmlReporter( client, outHtml ) );
+                flags.getReporters().add( new MultiProjectHtmlReporter( client, outHtml, flags ) );
 
                 getLog().info( "Writing Lint HTML report in " + parsedHtmlOutputPath );
             }
@@ -596,7 +596,7 @@ public class LintMojo extends AbstractAndroidMojo
             if ( isNotNullAndTrue( parsedEnableSimpleHtml ) )
             {
                 File outSimpleHtml = new File( parsedSimpleHtmlOutputPath );
-                flags.getReporters().add( new MultiProjectHtmlReporter( client, outSimpleHtml ) );
+                flags.getReporters().add( new MultiProjectHtmlReporter( client, outSimpleHtml, flags ) );
 
                 getLog().info( "Writing Lint simple HTML report in " + parsedSimpleHtmlOutputPath );
             }

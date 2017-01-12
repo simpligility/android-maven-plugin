@@ -248,7 +248,10 @@ public class AndroidSdk
      */
     public String getAndroidPath()
     {
-        return getPathForTool( SdkConstants.androidCmdName() );
+        String cmd = "android";
+        String ext = SdkConstants.currentPlatform() == 2 ? ".bat" : "";
+
+        return getPathForTool( cmd + ext );
     }
 
     /**

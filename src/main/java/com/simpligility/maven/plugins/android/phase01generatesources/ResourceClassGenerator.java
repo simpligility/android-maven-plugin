@@ -1,8 +1,9 @@
 package com.simpligility.maven.plugins.android.phase01generatesources;
 
 import com.android.builder.core.DefaultManifestParser;
-import com.android.builder.internal.SymbolLoader;
-import com.android.builder.internal.SymbolWriter;
+
+import com.android.sdklib.internal.build.SymbolLoader;
+import com.android.sdklib.internal.build.SymbolWriter;
 import com.android.utils.ILogger;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -76,7 +77,7 @@ final class ResourceClassGenerator
             final Collection<SymbolLoader> symbols = libMap.get( packageName );
 
             final SymbolWriter writer = new SymbolWriter(
-                    genDirectory.getAbsolutePath(), packageName, fullSymbolValues, false ); // TODO flag
+                    genDirectory.getAbsolutePath(), packageName, fullSymbolValues );
             for ( SymbolLoader symbolLoader : symbols )
             {
                 writer.addSymbolsToWrite( symbolLoader );
@@ -87,7 +88,7 @@ final class ResourceClassGenerator
 
     private SymbolLoader loadSymbols( File file ) throws MojoExecutionException
     {
-        final SymbolLoader libSymbols = new SymbolLoader( file, androidUtilsLog );
+        final SymbolLoader libSymbols = new SymbolLoader( file );
         try
         {
             libSymbols.load();
