@@ -386,6 +386,12 @@
     </dependency>
 
     <dependency>
+      <groupId>com.android.tools</groupId>
+      <artifactId>repository</artifactId>
+      <version>${android.tools.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.android.tools.build</groupId>
       <artifactId>manifest-merger</artifactId>
     </dependency>
