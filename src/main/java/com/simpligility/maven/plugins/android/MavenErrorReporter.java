@@ -30,7 +30,7 @@ public class MavenErrorReporter extends ErrorReporter
    }
 
    @Override
-   public SyncIssue handleSyncError( @NonNull String data, int type, @NonNull String msg )
+   public SyncIssue handleIssue( String data, int type, int i1, String msg )
    {
       logger.info( "Sync Error.  Data: " + data + "\tmsg: " + msg );
       return new SyncIssueImpl( 0, type, data, msg );
@@ -42,6 +42,7 @@ public class MavenErrorReporter extends ErrorReporter
      logger.info( message .toString() );
      // TBD anything else to do?
   }
+
 }
 
 class SyncIssueImpl implements SyncIssue
