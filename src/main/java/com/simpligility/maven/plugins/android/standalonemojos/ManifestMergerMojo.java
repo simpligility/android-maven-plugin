@@ -3,6 +3,8 @@ package com.simpligility.maven.plugins.android.standalonemojos;
 import com.android.SdkConstants;
 import com.android.builder.core.AndroidBuilder;
 import com.android.builder.core.ErrorReporter;
+import com.android.builder.dependency.JarDependency;
+import com.android.builder.dependency.LibraryDependency;
 import com.android.ide.common.process.DefaultProcessExecutor;
 import com.android.manifmerger.ManifestMerger2;
 import com.android.utils.ILogger;
@@ -10,7 +12,6 @@ import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.DefaultJavaProcessExecutor;
 import com.simpligility.maven.plugins.android.MavenErrorReporter;
 import com.simpligility.maven.plugins.android.common.AndroidExtension;
-import com.simpligility.maven.plugins.android.common.MavenManifestDependency;
 import com.simpligility.maven.plugins.android.configuration.ManifestMerger;
 import com.simpligility.maven.plugins.android.configuration.UsesSdk;
 import com.simpligility.maven.plugins.android.configuration.VersionGenerator;
@@ -320,7 +321,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
         {
             versionCode = parsedVersionCode;
         }
-        List<MavenManifestDependency> manifestDependencies = new ArrayList<MavenManifestDependency>();
+        List<LibraryDependency> manifestDependencies = new ArrayList<>();
 
         if ( parsedMergeLibraries )
         {
@@ -333,13 +334,52 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
                 final File manifestFile = new File( unpackedLibFolder, SdkConstants.FN_ANDROID_MANIFEST_XML );
                 if ( manifestFile.exists() )
                 {
-                    manifestDependencies.add( new MavenManifestDependency( manifestFile,
-                            manifestFile.getAbsolutePath(), new ArrayList<MavenManifestDependency>() ) );
+                    /*File bundle,
+                    File explodedBundle,
+                     List<LibraryDependency> androidDependencies,
+                     Collection<JarDependency> jarDependencies,
+                     String name,
+                     String variantName,
+                     String projectPath,
+                     MavenCoordinates requestedCoordinates,
+                     MavenCoordinates resolvedCoordinates,
+                     boolean isProvided) {
+                    */
+                    // TODO this might not be working just yet....
+                    manifestDependencies.add( new LibraryDependency(
+                            manifestFile,
+                            unpackedLibFolder,
+                            new ArrayList<LibraryDependency>(),
+                            new ArrayList<JarDependency>(),
+                            dependency.getArtifactId(),
+                            dependency.getArtifactId(),
+                            unpackedLibFolder.getPath(),
+                            null,
+                            null,
+                            false ) );
                 }
             }
         }
+        /**
+         File mainManifest,
+         List<File> manifestOverlays,
+         List<? extends AndroidLibrary> libraries,
+         String packageOverride,
+         int versionCode,
+         String versionName,
+         String minSdkVersion,
+         String targetSdkVersion,
+         Integer maxSdkVersion,
+         String outManifestLocation,
+         String outAaptSafeManifestLocation,
+         String outInstantRunManifestLocation,
+         MergeType mergeType,
+         Map<String, Object> placeHolders,
+         List<Feature> optionalFeatures,
+         File reportFile)
+         */
 
-        builder.mergeManifests(
+        builder.mergeManifestsForApplication(
                   androidManifestFile,     // mainManifest
                   new ArrayList<File>(),   // manifestOverlays
                   manifestDependencies,    // libraries
@@ -351,8 +391,10 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
                   null,                    // maxSdkVersion
                   destinationManifestFile.getPath(),       // outManifestLocation
                   null,                                    // outAaptSafeManifestLocation
+                  null, // outInstantRunManifestLocation,
                   ManifestMerger2.MergeType.APPLICATION,   // mergeType
                   new HashMap<String, Object>(),           // placeHolders
+                  new ArrayList<ManifestMerger2.Invoker.Feature>(),  // optionalFeatures
                   parsedMergeReportFile                    // reportFile
                   );
     }
