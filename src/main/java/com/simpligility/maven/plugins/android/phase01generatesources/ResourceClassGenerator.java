@@ -1,6 +1,6 @@
 package com.simpligility.maven.plugins.android.phase01generatesources;
 
-import com.android.builder.core.VariantConfiguration;
+import com.android.builder.core.DefaultManifestParser;
 import com.android.builder.internal.SymbolLoader;
 import com.android.builder.internal.SymbolWriter;
 import com.android.utils.ILogger;
@@ -51,7 +51,7 @@ final class ResourceClassGenerator
             if ( rFile.isFile() )
             {
                 final File libManifestFile = new File( unpackedLibDirectory, "AndroidManifest.xml" );
-                final String packageName = VariantConfiguration.getManifestPackage( libManifestFile );
+                final String packageName = new DefaultManifestParser( libManifestFile ).getPackage();
                 log.debug( "Reading R for " + packageName  + " at " + rFile );
 
                 // store these symbols by associating them with the package name.
@@ -76,7 +76,7 @@ final class ResourceClassGenerator
             final Collection<SymbolLoader> symbols = libMap.get( packageName );
 
             final SymbolWriter writer = new SymbolWriter(
-                    genDirectory.getAbsolutePath(), packageName, fullSymbolValues );
+                    genDirectory.getAbsolutePath(), packageName, fullSymbolValues, false ); // TODO flag
             for ( SymbolLoader symbolLoader : symbols )
             {
                 writer.addSymbolsToWrite( symbolLoader );
