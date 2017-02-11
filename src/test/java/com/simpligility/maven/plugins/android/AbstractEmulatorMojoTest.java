@@ -26,10 +26,6 @@ import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
-import com.simpligility.maven.plugins.android.AbstractEmulatorMojo;
-import com.simpligility.maven.plugins.android.AndroidSdk;
-import com.simpligility.maven.plugins.android.CommandExecutor;
-import com.simpligility.maven.plugins.android.ExecutionException;
 
 @RunWith( PowerMockRunner.class )
 @PrepareForTest(
