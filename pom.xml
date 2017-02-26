@@ -38,13 +38,13 @@
     <maven.api.version>3.0.4</maven.api.version>
     <takari.test.version>2.9.1</takari.test.version>
     <easymock.version>3.4</easymock.version>
-    <powermock.version>1.6.4</powermock.version>
+    <powermock.version>1.6.6</powermock.version>
     <publisher.version>v2-rev13-1.19.0</publisher.version>
     <asm.version>5.0.4</asm.version>
     <!-- Attention - make sure that the tools version is the versions of 
       the transitive dependencies of the builder version -->
-    <android.builder.version>2.3.0-beta4</android.builder.version>
-    <android.tools.version>25.3.0-beta4</android.tools.version>
+    <android.builder.version>2.3.0</android.builder.version>
+    <android.tools.version>25.3.0</android.tools.version>
   </properties>
 
   <scm>
