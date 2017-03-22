@@ -64,17 +64,6 @@
     <url>https://travis-ci.org/simpligility/android-maven-plugin</url>
   </ciManagement>
 
-  <repositories>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>bintray-maven</id>
-      <name>bintray</name>
-      <url>https://dl.bintray.com/android/android-tools</url>
-    </repository>
-  </repositories>
-
   <distributionManagement>
     <repository>
       <id>ossrh</id>
