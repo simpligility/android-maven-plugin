@@ -10,9 +10,16 @@
 ** contributed by Hoyt Summers Pittman https://github.com/secondsun
 ** and Manfred Moser http://www.simpligility.com
 ** and Benoit Billington https://github.com/Shusshu
+** probably going to be removed again at some stage since Jack was deprecated
 * Ensures AARMojo creates correct AAR structure even when AAR has no resources.
 ** See https://github.com/simpligility/android-maven-plugin/pull/755
 ** contributed by William Ferguson https://github.com/william-ferguson-au
+* Update sdk to version 25, Java 8 and fix ResourceClassGenerator to not write final fields
+** see https://github.com/simpligility/android-maven-plugin/pull/757
+** fixes https://github.com/simpligility/android-maven-plugin/issues/756
+** contributed by Philip Schiffer https://github.com/hameno
+** and Benoit Billington https://github.com/Shusshu
+** sponsored by sprylab https://github.com/sprylab
 
 == 4.4.3 - Released 2016-07-14
 
