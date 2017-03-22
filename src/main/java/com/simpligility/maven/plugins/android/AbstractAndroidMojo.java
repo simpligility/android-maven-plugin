@@ -16,7 +16,7 @@
  */
 package com.simpligility.maven.plugins.android;
 
-import com.android.builder.core.VariantConfiguration;
+import com.android.builder.core.DefaultManifestParser;
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.DdmPreferences;
 import com.android.ddmlib.IDevice;
@@ -1041,7 +1041,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     protected String extractPackageNameFromAndroidManifest( File manifestFile )
     {
-        return VariantConfiguration.getManifestPackage( manifestFile );
+        return new DefaultManifestParser( manifestFile ).getPackage();
     }
 
     /**

@@ -36,15 +36,15 @@
     <!--  upgrade to 3.4 fails build, see https://github.com/simpligility/android-maven-plugin/issues/554 -->
     <maven-plugin-plugin.version>3.3</maven-plugin-plugin.version>
     <maven.api.version>3.0.4</maven.api.version>
-    <takari.test.version>2.8.0</takari.test.version>
+    <takari.test.version>2.9.1</takari.test.version>
     <easymock.version>3.4</easymock.version>
-    <powermock.version>1.6.4</powermock.version>
+    <powermock.version>1.6.6</powermock.version>
     <publisher.version>v2-rev13-1.19.0</publisher.version>
     <asm.version>5.0.4</asm.version>
     <!-- Attention - make sure that the tools version is the versions of 
       the transitive dependencies of the builder version -->
-    <android.builder.version>1.5.0</android.builder.version>
-    <android.tools.version>24.5.0</android.tools.version>
+    <android.builder.version>2.3.0</android.builder.version>
+    <android.tools.version>25.3.0</android.tools.version>
   </properties>
 
   <scm>
@@ -63,6 +63,17 @@
     <system>Travis</system>
     <url>https://travis-ci.org/simpligility/android-maven-plugin</url>
   </ciManagement>
+
+  <repositories>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>bintray-maven</id>
+      <name>bintray</name>
+      <url>https://dl.bintray.com/android/android-tools</url>
+    </repository>
+  </repositories>
 
   <distributionManagement>
     <repository>
@@ -372,6 +383,12 @@
       <artifactId>builder-model</artifactId>
       <version>${android.builder.version}</version>
       <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.android.tools</groupId>
+      <artifactId>repository</artifactId>
+      <version>${android.tools.version}</version>
     </dependency>
 
     <dependency>

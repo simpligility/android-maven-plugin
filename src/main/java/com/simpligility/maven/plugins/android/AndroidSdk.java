@@ -17,13 +17,13 @@ package com.simpligility.maven.plugins.android;
 
 import com.android.SdkConstants;
 import com.android.annotations.Nullable;
+import com.android.repository.Revision;
 import com.android.sdklib.AndroidTargetHash;
 import com.android.sdklib.AndroidVersion;
 import com.android.sdklib.BuildToolInfo;
 import com.android.sdklib.IAndroidTarget;
-import com.android.sdklib.SdkManager;
-import com.android.sdklib.repository.FullRevision;
-import com.android.utils.NullLogger;
+import com.android.sdklib.repository.AndroidSdkHandler;
+import com.android.sdklib.repository.targets.AndroidTargetManager;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.File;
@@ -69,9 +69,10 @@ public class AndroidSdk
     private File toolsPath;
 
     private final IAndroidTarget androidTarget;
-    private SdkManager sdkManager;
+    private AndroidSdkHandler sdkManager;
     private int sdkMajorVersion;
     private String buildToolsVersion;
+    private ProgressIndicatorImpl progressIndicator;
 
     public AndroidSdk( File sdkPath, String apiLevel )
     {
@@ -82,10 +83,11 @@ public class AndroidSdk
     {
         this.sdkPath = sdkPath;
         this.buildToolsVersion = buildToolsVersion;
+        this.progressIndicator = new ProgressIndicatorImpl();
 
         if ( sdkPath != null )
         {
-            sdkManager = SdkManager.createManager( sdkPath.getPath(), new NullLogger() );
+            sdkManager = AndroidSdkHandler.getInstance( sdkPath );
             platformToolsPath = new File( sdkPath, SdkConstants.FD_PLATFORM_TOOLS );
             toolsPath = new File( sdkPath, SdkConstants.FD_TOOLS );
 
@@ -123,7 +125,8 @@ public class AndroidSdk
         {
             version = new AndroidVersion( apiLevel );
             String hashString = AndroidTargetHash.getPlatformHashString( version );
-            IAndroidTarget target = sdkManager.getTargetFromHashString( hashString );
+            IAndroidTarget target = sdkManager.getAndroidTargetManager( progressIndicator )
+                    .getTargetFromHashString( hashString, progressIndicator );
 
             // SdkManager may return a non-null IAndroidTarget that references nothing.
             // I suspect it points to an SDK that has been removed.
@@ -138,7 +141,7 @@ public class AndroidSdk
         }
 
         // fallback to searching for platform on standard Android platforms (isPlatform() is true)
-        for ( IAndroidTarget t: sdkManager.getTargets() )
+        for ( IAndroidTarget t: sdkManager.getAndroidTargetManager( null ).getTargets( null ) )
         {
             if ( t.isPlatform() && t.getVersionName().equals( apiLevel ) )
             {
@@ -245,7 +248,10 @@ public class AndroidSdk
      */
     public String getAndroidPath()
     {
-        return getPathForTool( SdkConstants.androidCmdName() );
+        String cmd = "android";
+        String ext = SdkConstants.currentPlatform() == 2 ? ".bat" : "";
+
+        return getPathForTool( cmd + ext );
     }
 
     /**
@@ -267,7 +273,8 @@ public class AndroidSdk
         //First we use the build tools specified in the pom file
         if ( buildToolsVersion != null && !buildToolsVersion.equals( "" ) )
         {
-            BuildToolInfo buildToolInfo = sdkManager.getBuildTool( FullRevision.parseRevision( buildToolsVersion ) );
+            BuildToolInfo buildToolInfo = sdkManager.getBuildToolInfo( Revision.parseRevision( buildToolsVersion ),
+                    progressIndicator );
             if ( buildToolInfo != null )
             {
                 return buildToolInfo;
@@ -287,7 +294,7 @@ public class AndroidSdk
             }
         }
         // if no valid target is defined, or it has no build tools installed, try to use the latest
-        BuildToolInfo latestBuildToolInfo = sdkManager.getLatestBuildTool();
+        BuildToolInfo latestBuildToolInfo = sdkManager.getLatestBuildTool( progressIndicator, true );
         if ( latestBuildToolInfo == null )
         {
             throw new InvalidSdkException( "Invalid SDK: Build-tools not found. Check the content of '" 
@@ -403,7 +410,8 @@ public class AndroidSdk
         if ( androidTarget == null )
         {
             IAndroidTarget latestTarget = null;
-            for ( IAndroidTarget target:  sdkManager.getTargets() )
+            AndroidTargetManager targetManager = sdkManager.getAndroidTargetManager( progressIndicator );
+            for ( IAndroidTarget target: targetManager.getTargets( progressIndicator ) )
             {
                 if ( target.isPlatform() )
                 {

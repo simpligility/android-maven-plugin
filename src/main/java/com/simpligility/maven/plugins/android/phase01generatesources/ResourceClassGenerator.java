@@ -1,18 +1,17 @@
 package com.simpligility.maven.plugins.android.phase01generatesources;
 
-import com.android.builder.core.VariantConfiguration;
-import com.android.builder.internal.SymbolLoader;
-import com.android.builder.internal.SymbolWriter;
+import com.android.builder.core.DefaultManifestParser;
+import com.android.builder.symbols.RGeneration;
+import com.android.builder.symbols.SymbolIo;
+import com.android.builder.symbols.SymbolTable;
 import com.android.utils.ILogger;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -28,8 +27,8 @@ final class ResourceClassGenerator
     private final Log log;
     private final ILogger androidUtilsLog;
 
-    ResourceClassGenerator( GenerateSourcesMojo mojo, File targetDirectory,
-                                   File genDirectory )
+    ResourceClassGenerator( final GenerateSourcesMojo mojo, final File targetDirectory,
+                            final File genDirectory )
     {
         this.mojo = mojo;
         this.targetDirectory = targetDirectory;
@@ -38,11 +37,19 @@ final class ResourceClassGenerator
         this.androidUtilsLog = new MavenILogger( log );
     }
 
-    public void generateLibraryRs( Set<Artifact> libraries, String libraryType ) throws MojoExecutionException
+    /**
+     * see {@link com.android.builder.core.AndroidBuilder#processResources(com.android.builder.internal.aapt.Aapt,
+     * com.android.builder.internal.aapt.AaptPackageConfig.Builder, boolean)}
+     *
+     * @param libraries
+     * @throws MojoExecutionException
+     */
+    public void generateLibraryRs( final Set<Artifact> libraries ) throws MojoExecutionException
     {
-        // list of all the symbol loaders per package names.
-        final Multimap<String, SymbolLoader> libMap = ArrayListMultimap.create();
+        // list of all the symbol tables
+        final List<SymbolTable> symbolTables = new ArrayList<>( libraries.size() );
 
+        // For each dependency, load its symbol file.
         for ( final Artifact lib : libraries )
         {
             final File unpackedLibDirectory = mojo.getUnpackedLibFolder( lib );
@@ -51,64 +58,26 @@ final class ResourceClassGenerator
             if ( rFile.isFile() )
             {
                 final File libManifestFile = new File( unpackedLibDirectory, "AndroidManifest.xml" );
-                final String packageName = VariantConfiguration.getManifestPackage( libManifestFile );
-                log.debug( "Reading R for " + packageName  + " at " + rFile );
+                final String packageName = new DefaultManifestParser( libManifestFile ).getPackage();
+                log.info( "Reading R for " + packageName + " at " + rFile );
 
-                // store these symbols by associating them with the package name.
-                final SymbolLoader libSymbols = loadSymbols( rFile );
-                libMap.put( packageName, libSymbols );
+                SymbolTable libSymbols = SymbolIo.read( rFile );
+                libSymbols = libSymbols.rename( packageName, libSymbols.getTableName() );
+                symbolTables.add( libSymbols );
             }
         }
 
-        if ( libMap.isEmpty() )
+        if ( symbolTables.isEmpty() )
         {
             return;
         }
 
         // load the full resources values from the R.txt calculated for the project.
         final File projectR = new File( targetDirectory, "R.txt" );
-        final SymbolLoader fullSymbolValues = loadSymbols( projectR );
+        final SymbolTable mainSymbols = SymbolIo.read( projectR );
 
         // now loop on all the package name, merge all the symbols to write, and write them
-        for ( final String packageName : libMap.keySet() )
-        {
-            log.info( "Generating R file for " + libraryType + " : " + packageName );
-            final Collection<SymbolLoader> symbols = libMap.get( packageName );
-
-            final SymbolWriter writer = new SymbolWriter(
-                    genDirectory.getAbsolutePath(), packageName, fullSymbolValues );
-            for ( SymbolLoader symbolLoader : symbols )
-            {
-                writer.addSymbolsToWrite( symbolLoader );
-            }
-            writeSymbols( writer, packageName );
-        }
-    }
-
-    private SymbolLoader loadSymbols( File file ) throws MojoExecutionException
-    {
-        final SymbolLoader libSymbols = new SymbolLoader( file, androidUtilsLog );
-        try
-        {
-            libSymbols.load();
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( "Could not load " + file, e );
-        }
-        return libSymbols;
-    }
-
-    private void writeSymbols( SymbolWriter writer, String packageName ) throws MojoExecutionException
-    {
-        try
-        {
-            writer.write();
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( "Could not write R for " + packageName, e );
-        }
+        RGeneration.generateRForLibraries( mainSymbols, symbolTables, genDirectory.getAbsoluteFile(), false );
     }
 
 }
