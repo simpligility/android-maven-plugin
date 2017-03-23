@@ -32,20 +32,20 @@ import java.io.File;
 
 @RunWith(MavenJUnitTestRunner.class)
 @MavenVersions({"3.0.5", "3.3.9"})
-public class HelloFlashLightSampleIT {
+public class MultiDexSampleIT {
 
     @Rule
     public final TestResources resources = new TestResources();
 
     public final MavenRuntime mavenRuntime;
 
-    public HelloFlashLightSampleIT(MavenRuntimeBuilder builder) throws Exception {
+    public MultiDexSampleIT(MavenRuntimeBuilder builder) throws Exception {
         this.mavenRuntime = builder.build();
     }
 
     @Test
     public void buildDeployAndRun() throws Exception {
-        File basedir = resources.getBasedir( "helloflashlight" );
+        File basedir = resources.getBasedir( "multidexsample" );
         MavenExecutionResult result = mavenRuntime
             .forProject(basedir)
             .execute( "clean", PluginInfo.getQualifiedGoal( "undeploy" ),
@@ -54,7 +54,7 @@ public class HelloFlashLightSampleIT {
 
         result.assertErrorFreeLog();
         result.assertLogText( "Successfully installed" );
-        result.assertLogText( "Attempting to start com.simpligility.android.helloflashlight/com.simpligility.android.helloflashlight.HelloFlashlight" );
+        result.assertLogText( "Attempting to start com.simpligility.android.multidexsample/com.simpligility.android.multidexsample.MultiDexSampleActivity" );
     }
 
 }
