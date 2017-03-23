@@ -15,7 +15,7 @@
   <parent>
     <groupId>com.simpligility.maven</groupId>
     <artifactId>progressive-organization-pom</artifactId>
-    <version>4.1.0</version>
+    <version>6.0.0</version>
   </parent>
 
   <groupId>com.simpligility.maven.plugins</groupId>
@@ -793,8 +793,10 @@
          </executions>
         </plugin>
       <plugin>
+        <!--  hardcoded combo of site and asciidoctor plugin, waiting for asciidoctor plugin 1.6 release -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
+        <version>3.4</version>
         <configuration>
           <skipDeploy>true</skipDeploy><!-- don't deploy site with maven-site-plugin -->
         </configuration>
@@ -802,7 +804,7 @@
           <dependency>
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctor-maven-plugin</artifactId>
-            <version>1.5.3</version>
+            <version>1.5.5</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -937,6 +939,15 @@
     
     </profile>
     <profile>
+        <id>disable-java8-doclint</id>
+        <activation>
+            <jdk>[1.8,)</jdk>
+        </activation>
+        <properties>
+            <additionalparam>-Xdoclint:none</additionalparam>
+        </properties>
+    </profile>
+    <profile>
       <id>it</id>
       <!-- the integration tests require a device or emulator attached via 
         ADB -->
@@ -946,7 +957,7 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
             <configuration>
-             <argLine>-Xms512m -Xmx1024m -XX:MaxPermSize=1024m</argLine>
+             <argLine>-Xms512m -Xmx1024m</argLine>
             </configuration>
             <executions>
               <execution>
