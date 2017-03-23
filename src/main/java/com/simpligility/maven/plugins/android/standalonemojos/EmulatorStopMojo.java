@@ -9,7 +9,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 /**
  * EmulatorStartMojo can stop the Android Emulator with a specified Android Virtual Device (avd).
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 @Mojo( name = "emulator-stop", requiresProject = false )
 public class EmulatorStopMojo extends AbstractEmulatorMojo

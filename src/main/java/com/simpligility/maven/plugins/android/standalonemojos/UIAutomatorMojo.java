@@ -58,7 +58,7 @@ import com.simpligility.maven.plugins.android.configuration.UIAutomator;
  * 
  * @see <a href="http://developer.android.com/tools/testing/testing_ui.html">Android UI testing doc</a>
  * @see <a href="http://developer.android.com/tools/help/uiautomator/index.html">UI Automator manual page</a>
- * @author Stéphane Nicolas <snicolas@octo.com>
+ * @author Stéphane Nicolas - snicolas@octo.com
  */
 @SuppressWarnings( "unused" )
 @Mojo( name = "uiautomator", requiresProject = false )

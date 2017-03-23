@@ -7,7 +7,7 @@ import com.simpligility.maven.plugins.android.common.AndroidExtension;
 /**
  * DeployApk is the configuration pojo for the DeployApk, UndeployApk and RedeployApk mojos.
  * 
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 public class DeployApk
 {

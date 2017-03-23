@@ -4,7 +4,7 @@ package com.simpligility.maven.plugins.android.configuration;
 /**
  * Embedded configuration of {@link com.simpligility.maven.plugins.android.standalonemojos.UnpackMojo}.
  * 
- * @author Pappy STĂNESCU <a href="mailto:pappy.stanescu&#64;gmail.com">&lt;pappy.stanescu&#64;gmail.com&gt;</a>
+ * @author Pappy STĂNESCU - pappy.stanescu@gmail.com
  */
 public class Unpack
 {

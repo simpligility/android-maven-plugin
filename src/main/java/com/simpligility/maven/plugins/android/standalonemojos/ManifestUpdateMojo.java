@@ -49,7 +49,7 @@ import java.util.Properties;
  *
  * @author joakim@erdfelt.com
  * @author nic.strong@gmail.com
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  * @deprecated Use manifest-merger v2 mojo instead
  * {@link com.simpligility.maven.plugins.android.standalonemojos.ManifestMergerMojo}
  */

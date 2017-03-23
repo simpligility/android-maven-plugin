@@ -46,7 +46,7 @@ import java.io.IOException;
  * Copy file or directory from all the attached (or specified)
  * devices/emulators.
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 @Mojo( name = "pull", requiresProject = false )
 public class PullMojo extends AbstractAndroidMojo

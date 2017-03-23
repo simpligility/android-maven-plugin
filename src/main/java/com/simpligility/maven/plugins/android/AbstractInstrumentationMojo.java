@@ -41,7 +41,7 @@ import java.util.Map;
  * tests.
  *
  * @author hugo.josefson@jayway.com
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
 {

@@ -17,7 +17,7 @@ import java.util.Set;
 /**
  * Generates R classes containing appropriate resource values for dependent libraries.
  *
- * @author William Ferguson <william.ferguson@xandar.com.au>
+ * @author William Ferguson - william.ferguson@xandar.com.au
  */
 final class ResourceClassGenerator
 {

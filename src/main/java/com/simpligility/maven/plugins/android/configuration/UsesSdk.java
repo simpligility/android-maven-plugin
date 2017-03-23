@@ -3,7 +3,7 @@ package com.simpligility.maven.plugins.android.configuration;
 /**
  * Abstraction for uses-sdk tag in the Android manifest.
  *
- * @author Francisco Javier Fernandez <fjfernandez@tuenti.com>
+ * @author Francisco Javier Fernandez fjfernandez@tuenti.com
  */
 
 public class UsesSdk

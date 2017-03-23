@@ -32,7 +32,7 @@ import org.junit.Ignore;
  * Excercises the {@link AndroidSdk} class.
  *
  * @author hugo.josefson@jayway.com
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 public class AndroidSdkTest {
     

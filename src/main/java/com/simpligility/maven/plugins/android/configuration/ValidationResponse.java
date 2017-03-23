@@ -4,7 +4,7 @@ package com.simpligility.maven.plugins.android.configuration;
  * allows the using class to decide how to react to a validation 
  * failure.
  * 
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  * @see DeployApk
  */
 public final class ValidationResponse 

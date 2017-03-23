@@ -34,7 +34,7 @@ import org.apache.maven.plugins.annotations.Mojo;
  * (or <code>mvn install</code>) on a project with instrumentation tests.
  *
  * @author hugo.josefson@jayway.com
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 @Mojo( name = "undeploy" )
 public class UndeployMojo extends AbstractAndroidMojo

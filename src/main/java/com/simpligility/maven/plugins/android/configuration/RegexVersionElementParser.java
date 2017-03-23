@@ -10,7 +10,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 /**
  * Regex-based VersionElementParser implementation.
  *
- * @author Wang Xuerui <idontknw.wang@gmail.com>
+ * @author Wang Xuerui idontknw.wang@gmail.com
  *
  */
 public class RegexVersionElementParser implements VersionElementParser

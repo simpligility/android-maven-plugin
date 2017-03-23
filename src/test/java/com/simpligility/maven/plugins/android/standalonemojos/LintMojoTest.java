@@ -29,7 +29,7 @@ import com.simpligility.maven.plugins.android.standalonemojos.LintMojo;
 /**
  * Test the lint mojo. Tests options' default values and parsing. Tests the parameters passed to lint.
  * 
- * @author Stéphane Nicolas <snicolas@octo.com>
+ * @author Stéphane Nicolas - snicolas@octo.com
  * 
  */
 @Ignore("This test has to be migrated to be an IntegrationTest using AbstractAndroidMojoIntegrationTest") 

@@ -34,7 +34,7 @@ import java.util.Set;
  * Manifest Merger V2 <code>AndroidManifest.xml</code> file.
  * http://tools.android.com/tech-docs/new-build-system/user-guide/manifest-merger
  *
- * @author Benoit Billington <benoit.billington@gmail.com>
+ * @author Benoit Billington - benoit.billington@gmail.com
  */
 @Mojo( name = "manifest-merger", defaultPhase = LifecyclePhase.PROCESS_RESOURCES )
 public class ManifestMergerMojo extends AbstractAndroidMojo

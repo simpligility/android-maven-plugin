@@ -23,7 +23,7 @@ import org.apache.maven.plugin.logging.Log;
  * LogSyncProgressMonitor is an implementation of the ISyncProgressMonitor
  * from the Android ddmlib that logs to the Maven Plugin log passed into it.
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 public class LogSyncProgressMonitor implements SyncService.ISyncProgressMonitor
 {

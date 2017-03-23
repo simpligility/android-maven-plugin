@@ -19,7 +19,7 @@ import com.simpligility.maven.plugins.android.standalonemojos.MonkeyRunnerMojo;
 /**
  * Test the monkeyrunner mojo. Tests options' default values and parsing. Tests the parameters passed to monkeyrunner.
  * 
- * @author Stéphane Nicolas <snicolas@octo.com>
+ * @author Stéphane Nicolas - snicolas@octo.com
  * 
  */
 @Ignore("This test has to be migrated to be an IntegrationTest using AbstractAndroidMojoIntegrationTest") 

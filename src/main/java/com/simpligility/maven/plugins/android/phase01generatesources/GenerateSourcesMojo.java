@@ -78,8 +78,8 @@ import static com.simpligility.maven.plugins.android.common.AndroidExtension.APK
  * Generates java files based on aidl files.
  *
  * @author hugo.josefson@jayway.com
- * @author Manfred Moser <manfred@simpligility.com>
- * @author William Ferguson <william.ferguson@xandar.com.au>
+ * @author Manfred Moser - manfred@simpligility.com
+ * @author William Ferguson - william.ferguson@xandar.com.au
  * @author Malachi de AElfweald malachid@gmail.com
  */
 @Mojo(

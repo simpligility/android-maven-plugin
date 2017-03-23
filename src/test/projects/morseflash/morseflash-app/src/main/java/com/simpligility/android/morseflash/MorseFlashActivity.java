@@ -10,7 +10,7 @@ import com.simpligility.android.morse.MorseCodeConverter;
 /**
  * MorseFlashActivity is the actual activity that flashes the screen in morse code.
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 public class MorseFlashActivity extends Activity {
 

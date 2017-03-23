@@ -6,8 +6,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import static java.lang.String.format;
 
 /**
- * @author Pappy STĂNESCU <a href="mailto:pappy.stanescu&#64;gmail.com">&lt;pappy.stanescu&#64;gmail.com&gt;</a>
- * @author Wang Xuerui <idontknw.wang@gmail.com>
+ * @author Pappy STĂNESCU - pappy.stanescu@gmail.com
+ * @author Wang Xuerui  - idontknw.wang@gmail.com
  */
 public class VersionGenerator
 {

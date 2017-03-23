@@ -6,7 +6,7 @@ package com.simpligility.maven.plugins.android.configuration;
  * shadowed in
  * {@link com.simpligility.maven.plugins.android.phase04processclasses.EmmaMojo} and used there.
  *
- * @author Mariusz Saramak <mariusz@saramak.eu>
+ * @author Mariusz Saramak mariusz@saramak.eu
  */
 public class Emma
 {

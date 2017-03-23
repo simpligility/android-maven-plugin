@@ -55,7 +55,7 @@ import java.util.regex.Pattern;
  * 
  * @see <a href="http://developer.android.com/tools/help/monkey.html">Monkey docs by Google</a>
  * @see <a href="http://stackoverflow.com/q/3968064/693752">Stack Over Flow thread for parsing monkey output.</a>
- * @author Stéphane Nicolas <snicolas@octo.com>
+ * @author Stéphane Nicolas - snicolas@octo.com
  */
 @SuppressWarnings( "unused" )
 @Mojo( name = "monkeyrunner" )

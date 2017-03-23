@@ -22,7 +22,7 @@ import com.simpligility.maven.plugins.android.standalonemojos.UIAutomatorMojo;
  * Test the UIAutomator mojo. Tests options' default values and parsing. We do not test the command line that is passed
  * to the adb bridge, it should be possible to mock it though.
  * 
- * @author Stéphane Nicolas <snicolas@octo.com>
+ * @author Stéphane Nicolas - snicolas@octo.com
  * 
  */
 @Ignore("This test has to be migrated to be an IntegrationTest using AbstractAndroidMojoIntegrationTest") 

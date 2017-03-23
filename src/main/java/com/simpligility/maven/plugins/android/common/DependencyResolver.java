@@ -23,7 +23,7 @@ import static com.simpligility.maven.plugins.android.common.AndroidExtension.APK
 /**
  * Resolves the aar and apklib dependencies for an Artifact.
  *
- * @author William Ferguson <william.ferguson@xandar.com.au>
+ * @author William Ferguson - william.ferguson@xandar.com.au
  */
 public final class DependencyResolver
 {

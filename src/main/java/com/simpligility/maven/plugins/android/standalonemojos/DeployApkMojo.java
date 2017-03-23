@@ -36,7 +36,7 @@ import java.io.File;
  * with the device and devices parameters.This goal can be used in non-android 
  * projects and as standalone execution on the command line. <br/>
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 @Mojo( name = "deploy-apk", requiresProject = false )
 public class DeployApkMojo extends AbstractAndroidMojo

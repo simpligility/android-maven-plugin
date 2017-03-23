@@ -8,7 +8,7 @@ import org.junit.Test;
 import com.simpligility.maven.plugins.android.configuration.SimpleVersionElementParser;
 
 /**
- * @author Wang Xuerui <idontknw.wang@gmail.com>
+ * @author Wang Xuerui  - idontknw.wang@gmail.com
  */
 public class SimpleVersionElementParserTest
 {

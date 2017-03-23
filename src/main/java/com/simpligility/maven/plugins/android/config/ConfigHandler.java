@@ -17,7 +17,7 @@ import java.util.Collection;
  * implementation.
  * 
  * @author Adrian Stabiszewski https://github.com/grundid/
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  * @see ConfigPojo
  * @see PullParameter
  */

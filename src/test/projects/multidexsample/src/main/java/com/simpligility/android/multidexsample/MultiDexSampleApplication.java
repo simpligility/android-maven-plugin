@@ -21,7 +21,7 @@ import android.support.multidex.MultiDex;
 
 /**
  *
- * @author Piotr Soróbka <psorobka@gmail.com>
+ * @author Piotr Soróbka - psorobka@gmail.com
  */
 public class MultiDexSampleApplication extends Application {
 

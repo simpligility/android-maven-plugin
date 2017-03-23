@@ -34,8 +34,8 @@ import org.apache.maven.plugins.annotations.Parameter;
  * android.lint.enableLibraries the behavior of this goal will vary depending on the phase where this goal is executed.
  * See android.lint.classpath/lintClassPath and android.lint.libraries/lintLibraries for more details.
  *
- * @author Stéphane Nicolas <snicolas@octo.com>
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Stéphane Nicolas - snicolas@octo.com
+ * @author Manfred Moser - manfred@simpligility.com
  */
 @SuppressWarnings( "unused" )
 @Mojo( name = "lint", requiresProject = false )

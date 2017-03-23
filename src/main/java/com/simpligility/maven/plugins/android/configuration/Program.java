@@ -4,7 +4,7 @@ package com.simpligility.maven.plugins.android.configuration;
  * Configuration element inside MonkeyRunner configuration. It represents both filename and options for a given
  * monkeyrunner program execution.
  * 
- * @author Stéphane Nicolas <snicolas@octo.com>
+ * @author Stéphane Nicolas - snicolas@octo.com
  */
 public class Program
 {

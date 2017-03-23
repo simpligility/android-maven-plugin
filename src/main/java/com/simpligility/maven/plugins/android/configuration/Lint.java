@@ -4,8 +4,8 @@ package com.simpligility.maven.plugins.android.configuration;
  * Configuration for the lint command. This class is only the definition of the parameters that are shadowed in
  * {@link com.simpligility.maven.plugins.android.standalonemojos.LintMojo} and used there.
  * 
- * @author Stéphane Nicolas <snicolas@octo.com>
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Stéphane Nicolas snicolas@octo.com
+ * @author Manfred Moser - manfred@simpligility.com
  * @see com.simpligility.maven.plugins.android.standalonemojos.LintMojo
  */
 public class Lint

@@ -45,7 +45,7 @@ import java.util.Map;
 /**
  * Copy file to all the attached (or specified) devices/emulators.
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 @SuppressWarnings( "unused" )
 @Mojo( name = "push", requiresProject = false )

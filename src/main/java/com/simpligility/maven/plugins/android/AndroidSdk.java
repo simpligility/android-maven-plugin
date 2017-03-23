@@ -35,7 +35,7 @@ import java.util.Properties;
  * Represents an Android SDK.
  * 
  * @author hugo.josefson@jayway.com
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 public class AndroidSdk
 {

@@ -12,7 +12,7 @@ import com.simpligility.maven.plugins.android.configuration.VersionGenerator;
 import static org.junit.Assert.*;
 
 /**
- * @author Pappy STĂNESCU <a href="mailto:pappy.stanescu&#64;gmail.com">&lt;pappy.stanescu&#64;gmail.com&gt;</a>
+ * @author Pappy STĂNESCU - pappy.stanescu@gmail.com
  */
 public class VersionGeneratorTest
 {

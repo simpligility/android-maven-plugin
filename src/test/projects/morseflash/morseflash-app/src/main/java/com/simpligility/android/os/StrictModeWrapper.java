@@ -7,7 +7,7 @@ import android.os.StrictMode;
  * It allows usage of StrictMode class on devices/emulators with Android 2.3 or higher, while providing an availability
  * check so that the code can stay in situ for lower platform versions. See the application class for usage.
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  *
  * @see "http://android-developers.blogspot.com/2009/04/backward-compatibility-for-android.html"
  * @see "http://android-developers.blogspot.com/2010/12/new-gingerbread-api-strictmode.html"

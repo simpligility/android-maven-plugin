@@ -4,7 +4,7 @@ package com.simpligility.maven.plugins.android.configuration;
  * Configuration for the zipalign command. This class is only the definition of the parameters that are shadowed in
  * {@link com.simpligility.maven.plugins.android.standalonemojos.ZipalignMojo} and used there.
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 public class Zipalign
 {

@@ -10,7 +10,7 @@ import android.widget.EditText;
 /**
  *
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 public class ConfigureMorseActivity extends Activity {
 

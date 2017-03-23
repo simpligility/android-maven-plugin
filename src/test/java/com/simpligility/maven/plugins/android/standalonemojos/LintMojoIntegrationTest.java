@@ -17,7 +17,7 @@ import java.io.File;
 /**
  * Test the lint mojo. Tests options' default values and parsing. Tests the parameters passed to lint.
  * 
- * @author Stéphane Nicolas <snicolas@octo.com>
+ * @author Stéphane Nicolas - snicolas@octo.com
  * @author Benoit Billington
  * 
  */

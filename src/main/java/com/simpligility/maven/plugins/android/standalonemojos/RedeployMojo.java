@@ -33,7 +33,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
  * build that do not use packaging apk without terminating.<br/>
  *
  * @author clement.escoffier@akquinet.de
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 @Mojo( name = "redeploy", requiresDependencyResolution = ResolutionScope.RUNTIME )
 public class RedeployMojo extends AbstractAndroidMojo

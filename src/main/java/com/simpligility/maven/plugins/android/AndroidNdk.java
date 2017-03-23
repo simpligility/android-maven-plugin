@@ -24,8 +24,8 @@ import java.util.List;
 /**
  * Represents an Android NDK.
  *
- * @author Johan Lindquist <johanlindquist@gmail.com>
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Johan Lindquist - johanlindquist@gmail.com
+ * @author Manfred Moser - manfred@simpligility.com
  */
 public class AndroidNdk
 {

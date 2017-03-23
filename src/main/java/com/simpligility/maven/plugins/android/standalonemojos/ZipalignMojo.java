@@ -26,7 +26,7 @@ import static com.simpligility.maven.plugins.android.common.AndroidExtension.APK
  * ZipalignMojo can run the zipalign command against the apk. Implements parsing parameters from pom or command line
  * arguments and sets useful defaults as well.
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 @Mojo( name = "zipalign" )
 public class ZipalignMojo extends AbstractAndroidMojo 

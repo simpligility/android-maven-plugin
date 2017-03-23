@@ -38,7 +38,7 @@ import java.io.File;
  * first and then deploy it again. This goal can be used in non-android projects and 
  * as standalone execution on the command line.<br/>
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 @Mojo( name = "redeploy-apk", requiresProject = false )
 public class RedeployApkMojo extends AbstractAndroidMojo

@@ -6,7 +6,7 @@ import java.util.List;
  * Configuration for the monkey runner tests runs. This class is only the definition of the parameters that are shadowed
  * in {@link com.jayway.maven.plugins.android.standalonemojos.MonkeyRunner} and used there.
  * 
- * @author Stéphane Nicolas <snicolas@octo.com>
+ * @author Stéphane Nicolas - snicolas@octo.com
  */
 public class MonkeyRunner
 {

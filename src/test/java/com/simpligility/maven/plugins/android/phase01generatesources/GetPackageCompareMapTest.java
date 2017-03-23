@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Covers method {@link GenerateSourcesMojo#getPackageCompareMap(Set)} with tests
  *
- * @author Oleg Green <olegalex.green@gmail.com>
+ * @author Oleg Green - olegalex.green@gmail.com
  */
 
 @RunWith( PowerMockRunner.class )

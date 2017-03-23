@@ -48,8 +48,8 @@ import java.util.concurrent.Future;
  * AbstractEmulatorMojo contains all code related to the interaction with the Android emulator. At this stage that is
  * starting and stopping the emulator.
  *
- * @author Manfred Moser <manfred@simplgility.com>
- * @author Bryan O'Neil <bryan.oneil@hotmail.com>
+ * @author Manfred Moser - manfred@simpligility.com
+ * @author Bryan O'Neil - bryan.oneil@hotmail.com
  * @see com.simpligility.maven.plugins.android.configuration.Emulator
  * @see com.simpligility.maven.plugins.android.standalonemojos.EmulatorStartMojo
  * @see com.simpligility.maven.plugins.android.standalonemojos.EmulatorStopMojo

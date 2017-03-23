@@ -38,7 +38,7 @@ import java.io.File;
  * application and/or an apk file. This goal can be used in non-android projects and as 
  * standalone execution on the command line.<br/>
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 @Mojo( name = "undeploy-apk", requiresProject = false )
 public class UndeployApkMojo extends AbstractAndroidMojo

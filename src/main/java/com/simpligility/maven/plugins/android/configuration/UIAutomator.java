@@ -4,7 +4,7 @@ package com.simpligility.maven.plugins.android.configuration;
  * Configuration for the ui automator test runs. This class is only the definition of the parameters that are shadowed
  * in {@link com.simpligility.maven.plugins.android.standalonemojos.UIAutomatorMojo} and used there.
  * 
- * @author Stéphane Nicolas <snicolas@octo.com>
+ * @author Stéphane Nicolas - snicolas@octo.com
  */
 public class UIAutomator
 {

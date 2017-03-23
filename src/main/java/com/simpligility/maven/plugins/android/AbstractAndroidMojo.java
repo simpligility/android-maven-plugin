@@ -77,10 +77,10 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  * Contains common fields and methods for android mojos.
  *
  * @author hugo.josefson@jayway.com
- * @author Manfred Moser <manfred@simpligility.com>
- * @author William Ferguson <william.ferguson@xandar.com.au>
+ * @author Manfred Moser - manfred@simpligility.com
+ * @author William Ferguson - william.ferguson@xandar.com.au
  * @author Malachi de AElfweald malachid@gmail.com
- * @author Roy Clarkson <rclarkson@gopivotal.com>
+ * @author Roy Clarkson - rclarkson@gopivotal.com
  */
 public abstract class AbstractAndroidMojo extends AbstractMojo
 {

@@ -6,7 +6,7 @@ import org.junit.Assert;
 /**
  * MorseCodeConverterTest is the unit test suite for {@link com.simpligility.android.morse.MorseCodeConverter}.
  *
-* @author Manfred Moser <manfred@simpligility.com>
+* @author Manfred Moser - manfred@simpligility.com
  */
 public class MorseCodeConverterTest extends TestCase {
 

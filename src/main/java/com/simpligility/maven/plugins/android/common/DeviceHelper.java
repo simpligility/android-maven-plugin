@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * A bunch of helper methods for dealing with IDevice instances.
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 public class DeviceHelper
 {

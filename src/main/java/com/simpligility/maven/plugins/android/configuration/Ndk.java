@@ -20,7 +20,7 @@ import java.io.File;
  * there is no logic in here. Logic is in
  * {@link com.simpligility.maven.plugins.android.AndroidNdk}.
  * 
- * @author Johan Lindquist <johanlindquist@gmail.com>
+ * @author Johan Lindquist - johanlindquist@gmail.com
  */
 public class Ndk
 {

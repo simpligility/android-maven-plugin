@@ -10,7 +10,7 @@ import java.util.Properties;
  * Configuration for the manifest update. This class is only the definition of the parameters that are shadowed in
  * {@link com.simpligility.maven.plugins.android.standalonemojos.ManifestUpdateMojo} and used there.
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  * @deprecated Use ManifestMerger {@link com.simpligility.maven.plugins.android.configuration.ManifestMerger} in 
  * combination
  * with {@link com.simpligility.maven.plugins.android.standalonemojos.ManifestMergerMojo}

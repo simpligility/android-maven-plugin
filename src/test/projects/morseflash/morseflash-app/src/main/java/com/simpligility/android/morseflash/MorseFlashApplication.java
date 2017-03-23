@@ -7,7 +7,7 @@ import com.simpligility.android.os.StrictModeWrapper;
 /**
  * The MorseFlashApplication is a simple way to hold some data and make it accessible to any activity.
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 public class MorseFlashApplication extends Application {
 

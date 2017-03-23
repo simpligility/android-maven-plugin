@@ -5,7 +5,7 @@ package com.simpligility.maven.plugins.android.configuration;
  * shadowed in
  * {@link com.simpligility.maven.plugins.android.phase08preparepackage.DexMojo} and used there.
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 public class Dex
 {

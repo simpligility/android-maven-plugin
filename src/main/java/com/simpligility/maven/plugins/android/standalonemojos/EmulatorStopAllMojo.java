@@ -9,7 +9,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 /**
  * EmulatorStopeAllMojo will stop all attached devices.
  *
- * @author Bryan O'Neil <bryan.oneil@hotmail.com>
+ * @author Bryan O'Neil - bryan.oneil@hotmail.com
  */
 @Mojo( name = "emulator-stop-all", requiresProject = false )
 public class EmulatorStopAllMojo extends AbstractEmulatorMojo

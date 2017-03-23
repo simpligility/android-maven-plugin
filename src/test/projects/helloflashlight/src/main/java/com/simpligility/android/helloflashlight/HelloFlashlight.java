@@ -11,7 +11,7 @@ import android.widget.TableLayout;
  * HelloFlashlight is a sample application for the usage of the Maven Android Plugin.
  * The code is trivial and not the focus of this example and therefore not really documented.
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 public class HelloFlashlight extends Activity {
 

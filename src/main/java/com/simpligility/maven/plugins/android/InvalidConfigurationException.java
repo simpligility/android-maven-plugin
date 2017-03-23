@@ -3,7 +3,7 @@ package com.simpligility.maven.plugins.android;
 /**
  * Exception for notifying about an invalid plugin configuration.
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 public class InvalidConfigurationException  extends RuntimeException
 {

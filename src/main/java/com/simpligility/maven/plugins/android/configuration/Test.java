@@ -7,7 +7,7 @@ import java.util.List;
  * shadowed in
  * {@link com.simpligility.maven.plugins.android.AbstractInstrumentationMojo} and used there.
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 public class Test
 {

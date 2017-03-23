@@ -21,7 +21,7 @@ import roboguice.inject.ContentView;
 
 /**
  *
- * @author Piotr Soróbka <psorobka@gmail.com>
+ * @author Piotr Soróbka - psorobka@gmail.com
  */
 @ContentView(R.layout.main)
 public class MultiDexSampleActivity extends RoboActivity {

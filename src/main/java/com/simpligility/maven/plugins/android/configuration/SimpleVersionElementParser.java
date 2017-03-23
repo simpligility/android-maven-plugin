@@ -5,7 +5,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 /**
  * VersionElementParser implementing the old version generator behavior.
  *
- * @author Wang Xuerui <idontknw.wang@gmail.com>
+ * @author Wang Xuerui  - idontknw.wang@gmail.com
  *
  */
 public class SimpleVersionElementParser implements VersionElementParser

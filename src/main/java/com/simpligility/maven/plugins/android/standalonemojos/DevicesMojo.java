@@ -17,7 +17,7 @@ import org.apache.maven.plugins.annotations.Mojo;
  * TODO The goal is very simple and could be enhanced for better display, a verbose option to display and to take the
  * android.device paramter into account.
  *
- * @author Manfred Moser <manfred@simpligility.com>
+ * @author Manfred Moser - manfred@simpligility.com
  */
 @Mojo( name = "devices", requiresProject = false )
 public class DevicesMojo extends AbstractAndroidMojo
