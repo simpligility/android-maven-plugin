@@ -62,11 +62,6 @@ Located in the +apidemos-android-16+ folder. The example application
 from the Android SDK (API level 16) repackaged to be built with the
 Android Maven Plugin.
 
-== Scala
-
-Located in the +scala+ folder. A simple Android application written
-with the Scala programming language.
-
 == Support4Demos
 
 Located in the +support4demos+ folder. A simple demo application using

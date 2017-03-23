@@ -1,6 +1,6 @@
 = Changelog
 
-== 4.4.4 or higher - Upcoming
+== 4.5.0 - Upcoming
 
 * Support for compilation with https://source.android.com/source/jack.html[Jack] - currently experimental
 ** see https://github.com/simpligility/android-maven-plugin/pull/743
@@ -20,6 +20,10 @@
 ** contributed by Philip Schiffer https://github.com/hameno
 ** and Benoit Billington https://github.com/Shusshu
 ** sponsored by sprylab https://github.com/sprylab
+* Removed Scala example project and IT test
+** rather than trying to fix it for Java 8
+** contributed Manfred Moser http://www.simpligility.com
+
 
 == 4.4.3 - Released 2016-07-14
 
