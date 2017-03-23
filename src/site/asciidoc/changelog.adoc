@@ -26,6 +26,7 @@
 * Removed native test projects and IT tests
 ** all migrated to android-ndk-maven-plugin already
 ** contributed Manfred Moser http://www.simpligility.com
+* Removed NDK related Mojos
 
 
 == 4.4.3 - Released 2016-07-14

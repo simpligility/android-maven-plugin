@@ -98,46 +98,6 @@
       </configuration>
     </component>
 
-      <!-- Adds handling for projects with 'so' packaging. -->
-    <component>
-      <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
-      <role-hint>so</role-hint>
-      <implementation>org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping</implementation>
-      <configuration>
-        <phases>
-          <clean>
-              org.apache.maven.plugins:maven-clean-plugin:clean,
-              com.simpligility.maven.plugins:android-maven-plugin:clean
-          </clean>
-          <generate-sources>com.simpligility.maven.plugins:android-maven-plugin:generate-sources</generate-sources>
-          <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
-          <compile>com.simpligility.maven.plugins:android-maven-plugin:ndk-build</compile>
-          <install>org.apache.maven.plugins:maven-install-plugin:install</install>
-          <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
-        </phases>
-      </configuration>
-    </component>
-
-    <!-- Adds handling for projects with 'a' packaging (static library). -->
-    <component>
-      <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
-      <role-hint>a</role-hint>
-      <implementation>org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping</implementation>
-      <configuration>
-        <phases>
-          <clean>
-              org.apache.maven.plugins:maven-clean-plugin:clean,
-              com.simpligility.maven.plugins:android-maven-plugin:clean
-          </clean>
-          <generate-sources>com.simpligility.maven.plugins:android-maven-plugin:generate-sources</generate-sources>
-          <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
-          <compile>com.simpligility.maven.plugins:android-maven-plugin:ndk-build</compile>
-          <install>org.apache.maven.plugins:maven-install-plugin:install</install>
-          <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
-        </phases>
-      </configuration>
-    </component>
-
     <component>
       <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
       <role-hint>apk</role-hint>

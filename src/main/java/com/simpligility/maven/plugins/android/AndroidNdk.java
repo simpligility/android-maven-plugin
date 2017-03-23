@@ -14,7 +14,6 @@
 package com.simpligility.maven.plugins.android;
 
 import com.simpligility.maven.plugins.android.configuration.NDKArchitectureToolchainMappings;
-import com.simpligility.maven.plugins.android.phase05compile.NdkBuildMojo;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -36,7 +35,7 @@ public class AndroidNdk
     public static final String PROPER_NDK_HOME_DIRECTORY_MESSAGE = "Please provide a proper Android NDK directory path"
             + " as configuration parameter <ndk><path>...</path></ndk> in the plugin <configuration/>. As an "
             + "alternative, you may add the parameter to commandline: -Dandroid.ndk.path=... or set environment "
-            + "variable " + NdkBuildMojo.ENV_ANDROID_NDK_HOME + ".";
+            + "variable ANDROID_ND_HOME.";
 
     public static final String[] NDK_ARCHITECTURES = { "armeabi", "armeabi-v7a", "arm64-v8a", "mips", "mips64",
             "x86", "x86_64" };
