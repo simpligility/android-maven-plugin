@@ -59,35 +59,6 @@ public class NativeHelperTest {
     }
 
     @Test
-    public void invalidVersions()
-    {
-        String[] versions = {"r4", "r5", "r5b", "r5c", "r6", "r6b"};
-
-        for ( final String version : versions ) {
-            try {
-                NativeHelper.validateNDKVersion(7,version);
-                Assert.fail("Version should fail: " + version);
-            } catch (MojoExecutionException e) {
-                // as expected
-            }
-        }
-    }
-
-    @Test
-    public void validVersions()
-    {
-        String[] versions = {"r7", "r8a", "r8z", "r10", "r19b", "r25", "r100", "r100b"};
-
-        for ( final String version : versions ) {
-            try {
-                NativeHelper.validateNDKVersion(7, version);
-            } catch (MojoExecutionException e) {
-                Assert.fail("Version should not fail: " + version);
-            }
-        }
-    }
-
-    @Test
     public void shouldNotIncludeLibsFolderAsNativeDependenciesSourceWhenNoNativeLibsInside() throws Exception {
         new File(apklibDir.getRoot(), "some-apklib/libs").mkdirs();
         new File(apklibDir.getRoot(), "some-apklib/libs/some.jar").createNewFile();

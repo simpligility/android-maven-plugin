@@ -3,9 +3,7 @@ package com.simpligility.maven.plugins.android.common;
 import com.google.common.io.PatternFilenameFilter;
 import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.AndroidNdk;
-import com.simpligility.maven.plugins.android.phase09package.ApklibMojo;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
@@ -23,15 +21,12 @@ import org.apache.maven.shared.dependency.graph.traversal.CollectingDependencyNo
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.simpligility.maven.plugins.android.common.AndroidExtension.AAR;
 import static com.simpligility.maven.plugins.android.common.AndroidExtension.APKLIB;
@@ -55,71 +50,6 @@ public class NativeHelper
         this.log = log;
     }
 
-    public static boolean hasStaticNativeLibraryArtifact( Set<Artifact> resolveNativeLibraryArtifacts, 
-                                                          File unpackDirectory,
-                                                          String ndkArchitecture )
-    {
-        for ( Artifact resolveNativeLibraryArtifact : resolveNativeLibraryArtifacts )
-        {
-            if ( Const.ArtifactType.NATIVE_IMPLEMENTATION_ARCHIVE.equals( resolveNativeLibraryArtifact.getType() ) )
-            {
-                return true;
-            }
-            if ( APKLIB.equals( resolveNativeLibraryArtifact.getType() ) )
-            {
-                File[] aFiles = listNativeFiles( resolveNativeLibraryArtifact, unpackDirectory, 
-                                                 ndkArchitecture, true );
-                if ( aFiles != null && aFiles.length > 0 )
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public static boolean hasSharedNativeLibraryArtifact( Set<Artifact> resolveNativeLibraryArtifacts, 
-                                                          File unpackDirectory,
-                                                          String ndkArchitecture )
-    {
-        for ( Artifact resolveNativeLibraryArtifact : resolveNativeLibraryArtifacts )
-        {
-            if ( Const.ArtifactType.NATIVE_SYMBOL_OBJECT.equals( resolveNativeLibraryArtifact.getType() ) )
-            {
-                return true;
-            }
-            if ( APKLIB.equals( resolveNativeLibraryArtifact.getType() ) )
-            {
-                File[] soFiles = listNativeFiles( resolveNativeLibraryArtifact, unpackDirectory, 
-                                                    ndkArchitecture, false );
-                if ( soFiles != null && soFiles.length > 0 )
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public static File[] listNativeFiles( Artifact a, File unpackDirectory, 
-                                          final String ndkArchitecture, final boolean staticLibrary )
-    {
-        File libsFolder = new File(
-                AbstractAndroidMojo.getLibraryUnpackDirectory( unpackDirectory, a ),
-                ApklibMojo.NATIVE_LIBRARIES_FOLDER + File.separator + ndkArchitecture );
-        if ( libsFolder.exists() )
-        {
-            return libsFolder.listFiles( new FilenameFilter()
-            {
-                public boolean accept( final File dir, final String name )
-                {
-                    return name.startsWith( "lib" ) && name.endsWith( ( staticLibrary ? ".a" : ".so" ) );
-                }
-            } );
-        }
-        return null;
-    }
-    
     public Set<Artifact> getNativeDependenciesArtifacts(
             AbstractAndroidMojo mojo, File unpackDirectory, boolean sharedLibraries )
             throws MojoExecutionException
@@ -295,53 +225,6 @@ public class NativeHelper
         }
     }
 
-    public static void validateNDKVersion( File ndkHomeDir ) throws MojoExecutionException
-    {
-        final File ndkVersionFile = new File( ndkHomeDir, "RELEASE.TXT" );
-
-        if ( ! ndkVersionFile.exists() )
-        {
-            throw new MojoExecutionException(
-                    "Could not locate RELEASE.TXT in the Android NDK base directory '" + ndkHomeDir.getAbsolutePath()
-                            + "'.  Please verify your setup! " + AndroidNdk.PROPER_NDK_HOME_DIRECTORY_MESSAGE );
-        }
-
-        try
-        {
-            String versionStr = FileUtils.readFileToString( ndkVersionFile );
-            validateNDKVersion( NDK_REQUIRED_VERSION, versionStr );
-        }
-        catch ( Exception e )
-        {
-            throw new MojoExecutionException( "Error while extracting NDK version from '"
-                    + ndkVersionFile.getAbsolutePath() + "'. Please verify your setup! "
-                    + AndroidNdk.PROPER_NDK_HOME_DIRECTORY_MESSAGE );
-        }
-    }
-
-    public static void validateNDKVersion( int desiredVersion, String versionStr ) throws MojoExecutionException
-    {
-
-        int version = 0;
-
-        if ( versionStr != null )
-        {
-            versionStr = versionStr.trim();
-            Pattern pattern = Pattern.compile( "[r]([0-9]{1,3})([a-z]{0,1}).*" );
-            Matcher m = pattern.matcher( versionStr );
-            if ( m.matches() )
-            {
-                final String group = m.group( 1 );
-                version = Integer.parseInt( group );
-            }
-        }
-
-        if ( version < desiredVersion )
-        {
-            throw new MojoExecutionException( "You are running an old NDK (version " + versionStr + "), please update "
-                    + "to at least r'" + desiredVersion + "' or later" );
-        }
-    }
 
     public static String[] getAppAbi( File applicationMakefile )
     {
