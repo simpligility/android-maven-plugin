@@ -13,8 +13,6 @@
  */
 package com.simpligility.maven.plugins.android;
 
-import com.simpligility.maven.plugins.android.configuration.NDKArchitectureToolchainMappings;
-
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 
@@ -310,74 +308,5 @@ public class AndroidNdk
             + " does not exist, please double check the toolchain and OS used" );
     }
 
-    /** Retrieves, based on the architecture and possibly toolchain mappings, the toolchain for the architecture.
-     * <br/>
-     * <strong>Note:</strong> This method will return the <strong>default</strong> toolchain as defined by the NDK if
-     * not specified in the <code>NDKArchitectureToolchainMappings</code>.
-     *
-     * @param ndkArchitecture Architecture to resolve toolchain for
-     * @param ndkArchitectureToolchainMappings User mappings of architecture to toolchain
-     *
-     * @return Toolchain to be used for the architecture
-     *
-     * @throws MojoExecutionException If a toolchain can not be resolved
-     */
-    public String getToolchainFromArchitecture( final String ndkArchitecture,
-                                                final NDKArchitectureToolchainMappings ndkArchitectureToolchainMappings
-    ) throws MojoExecutionException
-    {
-        if ( ndkArchitecture.startsWith( "armeabi" ) )
-        {
-            if ( ndkArchitectureToolchainMappings != null )
-            {
-                return ndkArchitectureToolchainMappings.getArmeabi();
-            }
-            return AndroidNdk.ARM_TOOLCHAIN[0];
-        }
-        else if ( ndkArchitecture.startsWith( "arm64" ) )
-        {
-            if ( ndkArchitectureToolchainMappings != null )
-            {
-                return ndkArchitectureToolchainMappings.getArm64();
-            }
-            return AndroidNdk.ARM64_TOOLCHAIN[0];
-        }
-        else if ( ndkArchitecture.startsWith( "x86_64" ) )
-        {
-            if ( ndkArchitectureToolchainMappings != null )
-            {
-                return ndkArchitectureToolchainMappings.getX86_64();
-            }
-            return AndroidNdk.X86_64_TOOLCHAIN[0];
-        }
-        else if ( ndkArchitecture.startsWith( "x86" ) )
-        {
-            if ( ndkArchitectureToolchainMappings != null )
-            {
-                return ndkArchitectureToolchainMappings.getX86();
-            }
-            return AndroidNdk.X86_TOOLCHAIN[0];
-        }
-        else if ( ndkArchitecture.startsWith( "mips64" ) )
-        {
-            if ( ndkArchitectureToolchainMappings != null )
-            {
-                return ndkArchitectureToolchainMappings.getMips64();
-            }
-            return AndroidNdk.MIPS64_TOOLCHAIN[0];
-        }
-        else if ( ndkArchitecture.startsWith( "mips" ) )
-        {
-            if ( ndkArchitectureToolchainMappings != null )
-            {
-                return ndkArchitectureToolchainMappings.getMips();
-            }
-            return AndroidNdk.MIPS_TOOLCHAIN[0];
-        }
-
-        //  if we got here, throw an error
-        throw new MojoExecutionException( "Toolchain for architecture " + ndkArchitecture
-                + " does not exist, please double check the setup" );
-    }
 }
 
