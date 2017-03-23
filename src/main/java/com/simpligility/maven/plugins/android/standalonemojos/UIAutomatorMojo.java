@@ -45,14 +45,14 @@ import com.simpligility.maven.plugins.android.configuration.UIAutomator;
  * Implements parsing parameters from pom or command line arguments and sets useful defaults as well. This goal is meant
  * to execute a special <i>java project</i> dedicated to UI testing via UIAutomator. It will build the jar of the
  * project, dex it and send it to dalvik cache of a rooted device or to an emulator. If you use a rooted device, refer
- * to <a href="http://stackoverflow.com/a/13805869/693752">this thread on stack over flow</a>. <br />
- * <br />
+ * to <a href="http://stackoverflow.com/a/13805869/693752">this thread on stack over flow</a>. <br>
+ * <br>
  * The tests are executed via ui automator. A surefire compatible test report can be generated and its location will be
- * logged during build. <br />
- * <br />
+ * logged during build. <br>
+ * <br>
  * To use this goal, you will need to place the uiautomator.jar file (part of the Android SDK >= 16) on a nexus
- * repository. <br />
- * <br />
+ * repository. <br>
+ * <br>
  * A typical usage of this goal can be found at <a
  * href="https://github.com/stephanenicolas/Quality-Tools-for-Android">Quality tools for Android project</a>.
  * 
@@ -198,17 +198,17 @@ public class UIAutomatorMojo extends AbstractAndroidMojo
 
     /**
      * Create a junit xml format compatible output file containing the test results for each device the instrumentation
-     * tests run on. <br />
-     * <br />
+     * tests run on. <br>
+     * <br>
      * The files are stored in target/surefire-reports and named TEST-deviceid.xml. The deviceid for an emulator is
      * deviceSerialNumber_avdName_manufacturer_model. The serial number is commonly emulator-5554 for the first emulator
      * started with numbers increasing. avdName is as defined in the SDK tool. The manufacturer is typically "unknown"
-     * and the model is typically "sdk".<br />
-     * The deviceid for an actual devices is deviceSerialNumber_manufacturer_model. <br />
-     * <br />
+     * and the model is typically "sdk".<br>
+     * The deviceid for an actual devices is deviceSerialNumber_manufacturer_model. <br>
+     * <br>
      * The file contains system properties from the system running the Android Maven Plugin (JVM) and device properties
-     * from the device/emulator the tests are running on. <br />
-     * <br />
+     * from the device/emulator the tests are running on. <br>
+     * <br>
      * The file contains a single TestSuite for all tests and a TestCase for each test method. Errors and failures are
      * logged in the file and the system log with full stack traces and other details available.
      */

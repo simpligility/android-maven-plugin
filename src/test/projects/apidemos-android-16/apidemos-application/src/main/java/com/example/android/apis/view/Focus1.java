@@ -36,7 +36,7 @@ public class Focus1 extends Activity {
 
         WebView webView = (WebView) findViewById(R.id.rssWebView);
         webView.loadData(
-                        "<html><body>Can I focus?<br /><a href=\"#\">No I cannot!</a>.</body></html>",
+                        "<html><body>Can I focus?<br><a href=\"#\">No I cannot!</a>.</body></html>",
                         "text/html", null);
 
         ListView listView = (ListView) findViewById(R.id.rssListView);

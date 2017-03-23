@@ -171,7 +171,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * Create a junit xml format compatible output file containing
      * the test results for each device the instrumentation tests run
      * on.
-     * <br /><br />
+     * <br><br>
      * The files are stored in target/surefire-reports and named TEST-deviceid.xml.
      * The deviceid for an emulator is deviceSerialNumber_avdName_manufacturer_model.
      * The serial number is commonly emulator-5554 for the first emulator started
@@ -179,11 +179,11 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * manufacturer is typically "unknown" and the model is typically "sdk".
      * The deviceid for an actual devices is
      * deviceSerialNumber_manufacturer_model.
-     * <br /><br />
+     * <br><br>
      * The file contains system properties from the system running
      * the Android Maven Plugin (JVM) and device properties from the
      * device/emulator the tests are running on.
-     * <br /><br />
+     * <br><br>
      * The file contains a single TestSuite for all tests and a
      * TestCase for each test method. Errors and failures are logged
      * in the file and the system log with full stack traces and other

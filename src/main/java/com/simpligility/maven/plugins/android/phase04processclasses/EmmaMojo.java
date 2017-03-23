@@ -35,7 +35,7 @@ public class EmmaMojo extends AbstractAndroidMojo
 
     /**
      * Configuration for the emma command execution. It can be configured in the plugin configuration like so
-     * <p/>
+     * 
      * 
      * <pre>
      * &lt;emma&gt;
@@ -45,7 +45,7 @@ public class EmmaMojo extends AbstractAndroidMojo
      *   &lt;filters&gt;${project}emma filter&lt;/filters&gt;
      * &lt;/emma&gt;
      * </pre>
-     * <p/>
+     * 
      * or via properties emma.* or command line parameters android.emma.*
      */
     @Parameter

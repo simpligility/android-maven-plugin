@@ -95,7 +95,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
      * tree. The combination of aar library including or depending on an apklib has been deprecated and may not be
      * supported by future plugin versions. Traversing the dependency graph is done for all project dependencies
      * present in build classpath.</p>
-     * <p/>
+     * 
      * <p>It is recommended to keep this set to <code>true</code> to catch possible issues as soon as possible.</p>
      */
     @Parameter( defaultValue = "true" )
