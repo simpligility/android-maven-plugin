@@ -91,8 +91,8 @@ import java.net.InetSocketAddress;
  * devices. The application will NOT be deployed and running will silently fail if the application is not deployed.
  * </p>
  *
- * @author Lorenzo Villani <lorenzo@villani.me>
- * @author Manfred Mosr <manfred@simpligility.com>
+ * @author Lorenzo Villani - lorenzo@villani.me
+ * @author Manfred Moser - manfred@simpligility.com
  * @see "http://developer.android.com/guide/topics/fundamentals.html"
  * @see "http://developer.android.com/guide/topics/intents/intents-filters.html"
  */

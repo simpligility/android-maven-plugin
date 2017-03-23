@@ -15,10 +15,10 @@ public class HeaderFilesDirective
 
     /**
      * A list of &lt;include> elements specifying the files (usually C/C++ header files) that should be included in the
-     * header archive. When not specified, the default includes will be <code><br/>
-     * &lt;includes><br/>
-     * &nbsp;&lt;include>**&#47;*.h&lt;/include><br/>
-     * &lt;/includes><br/>
+     * header archive. When not specified, the default includes will be <code><br>
+     * &lt;includes><br>
+     * &nbsp;&lt;include>**&#47;*.h&lt;/include><br>
+     * &lt;/includes><br>
      * </code>
      */
     @Parameter

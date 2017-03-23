@@ -40,7 +40,7 @@ import java.util.jar.JarFile;
 
 /**
  * Unpack libraries code and dependencies into target.
- * <p/>
+ * 
  * This can be useful for using the proguard maven plugin to provide the input jars. Although it is encouraged to use
  * the proguard mojo of the android maven plugin.
  *

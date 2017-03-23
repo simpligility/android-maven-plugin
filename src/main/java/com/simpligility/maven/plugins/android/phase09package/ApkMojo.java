@@ -85,7 +85,7 @@ import static com.simpligility.maven.plugins.android.common.AndroidExtension.APK
 
 
 /**
- * Creates the apk file. By default signs it with debug keystore.<br/>
+ * Creates the apk file. By default signs it with debug keystore.<br>
  * Change that by setting configuration parameter
  * <code>&lt;sign&gt;&lt;debug&gt;false&lt;/debug&gt;&lt;/sign&gt;</code>.
  *
@@ -184,7 +184,7 @@ public class ApkMojo extends AbstractAndroidMojo
      * <p>
      * The APK builder filters these resources and doesn't include them into the apk.
      * This leads to bad behaviour of dependent libraries relying on these resources,
-     * for instance service discovery doesn't work.<br/>
+     * for instance service discovery doesn't work.<br>
      * By specifying this pattern, the android plugin adds these resources to the final apk.
      * </p>
      * <p>The pattern is relative to META-INF, i.e. one must use

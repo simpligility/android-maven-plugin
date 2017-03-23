@@ -47,7 +47,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Can execute monkey runner programs.<br/>
+ * Can execute monkey runner programs.<br>
  * Implements parsing parameters from pom or command line arguments and sets useful defaults as well. This goal will
  * invoke monkey runner scripts. If the application crashes during the exercise, this goal can fail the build. <br />
  * A typical usage of this goal can be found at <a

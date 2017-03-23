@@ -54,7 +54,7 @@ import com.simpligility.maven.plugins.android.config.PullParameter;
 
 
 /**
- * Creates an Android Archive (aar) file.<br/>
+ * Creates an Android Archive (aar) file.<br>
  */
 @Mojo(
         name = "aar",

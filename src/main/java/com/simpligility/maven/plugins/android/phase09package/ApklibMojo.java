@@ -49,7 +49,7 @@ import static com.simpligility.maven.plugins.android.common.AndroidExtension.APK
 
 
 /**
- * Creates the apklib file.<br/>
+ * Creates the apklib file.<br>
  * apklib files do not generate deployable artifacts.
  *
  * @author nmaiorana@gmail.com

@@ -36,7 +36,7 @@ import java.io.File;
  * By default it will undeploy from all, but a subset or single one can be configured 
  * with the device and devices parameters. You can supply the package of the 
  * application and/or an apk file. This goal can be used in non-android projects and as 
- * standalone execution on the command line.<br/>
+ * standalone execution on the command line.<br>
  *
  * @author Manfred Moser - manfred@simpligility.com
  */
@@ -45,7 +45,7 @@ public class UndeployApkMojo extends AbstractAndroidMojo
 {
     /**
      * Configuration for apk file undeployment within a pom file. See {@link #deployapkFilename}. 
-     * <p/>
+     * 
      * <pre>
      * &lt;deployapk&gt;
      *    &lt;filename&gt;yourapk.apk&lt;/filename&gt;

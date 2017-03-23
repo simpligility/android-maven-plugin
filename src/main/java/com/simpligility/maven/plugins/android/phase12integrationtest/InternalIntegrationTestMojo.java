@@ -24,7 +24,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 
 /**
- * Internal. Do not use.<br/>
+ * Internal. Do not use.<br>
  * Called automatically when the lifecycle reaches phase <code>integration-test</code>. Figures out whether to
  * call goals in this phase; and if so, calls <code>android:instrument</code>.
  *

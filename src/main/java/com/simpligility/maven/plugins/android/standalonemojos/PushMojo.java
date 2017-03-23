@@ -79,7 +79,7 @@ public class PushMojo extends AbstractAndroidMojo
     /**
      * The file name of the local filesystem file to push to the emulator or
      * device either as absolute path or relative to the execution folder.
-     * <p/>
+     * 
      * If you specify a directory, all containing files will be pushed recursively.
      */
     @Parameter( property = "android.push.source" )

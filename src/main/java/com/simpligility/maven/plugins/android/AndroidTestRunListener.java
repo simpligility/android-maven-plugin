@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * AndroidTestRunListener produces a nice output for the log for the test run as well as an xml file compatible with
  * the junit xml report file format understood by many tools.
- * <p/>
+ * 
  * It will do so for each device/emulator the tests run on.
  */
 public class AndroidTestRunListener implements ITestRunListener

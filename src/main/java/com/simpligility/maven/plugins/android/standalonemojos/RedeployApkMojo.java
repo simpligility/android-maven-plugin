@@ -36,7 +36,7 @@ import java.io.File;
  * By default it will deploy to all, but a asubset or single one can be configured 
  * with the device and devices parameters. This simply tries to undeploy the APK 
  * first and then deploy it again. This goal can be used in non-android projects and 
- * as standalone execution on the command line.<br/>
+ * as standalone execution on the command line.<br>
  *
  * @author Manfred Moser - manfred@simpligility.com
  */
@@ -45,7 +45,7 @@ public class RedeployApkMojo extends AbstractAndroidMojo
 {
     /**
      * Configuration for apk file redeployment within a pom file. See {@link #deployapkFilename}. 
-     * <p/>
+     * 
      * <pre>
      * &lt;deployapk&gt;
      *    &lt;filename&gt;yourapk.apke&lt;/filename&gt;

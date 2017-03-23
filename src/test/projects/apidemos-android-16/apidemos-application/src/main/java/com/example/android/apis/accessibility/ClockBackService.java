@@ -401,27 +401,27 @@ public class ClockBackService extends AccessibilityService {
      * Configures the service according to a ringer mode. Possible
      * configurations:
      * <p>
-     *   1. {@link AudioManager#RINGER_MODE_SILENT}<br/>
-     *   Goal:     Provide only custom haptic feedback.<br/>
+     *   1. {@link AudioManager#RINGER_MODE_SILENT}<br>
+     *   Goal:     Provide only custom haptic feedback.<br>
      *   Approach: Take over the haptic feedback by configuring this service to provide
      *             such and do so. This way the system will not call the default haptic
-     *             feedback service KickBack.<br/>
+     *             feedback service KickBack.<br>
      *             Take over the audible and spoken feedback by configuring this
      *             service to provide such feedback but not doing so. This way the system
      *             will not call the default spoken feedback service TalkBack and the
      *             default audible feedback service SoundBack.
      * </p>
      * <p>
-     *   2. {@link AudioManager#RINGER_MODE_VIBRATE}<br/>
-     *   Goal:     Provide custom audible and default haptic feedback.<br/>
-     *   Approach: Take over the audible feedback and provide custom one.<br/>
-     *             Take over the spoken feedback but do not provide such.<br/>
+     *   2. {@link AudioManager#RINGER_MODE_VIBRATE}<br>
+     *   Goal:     Provide custom audible and default haptic feedback.<br>
+     *   Approach: Take over the audible feedback and provide custom one.<br>
+     *             Take over the spoken feedback but do not provide such.<br>
      *             Let some other service provide haptic feedback (KickBack).
      * </p>
      * <p>
      *   3. {@link AudioManager#RINGER_MODE_NORMAL}
-     *   Goal:     Provide custom spoken, default audible and default haptic feedback.<br/>
-     *   Approach: Take over the spoken feedback and provide custom one.<br/>
+     *   Goal:     Provide custom spoken, default audible and default haptic feedback.<br>
+     *   Approach: Take over the spoken feedback and provide custom one.<br>
      *             Let some other services provide audible feedback (SounBack) and haptic
      *             feedback (KickBack).
      * </p>

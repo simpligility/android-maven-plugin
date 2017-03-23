@@ -34,7 +34,7 @@ import java.io.File;
  * Deploys a specified Android application apk to attached devices and emulators. 
  * By default it will deploy to all, but a subset or single one can be configured 
  * with the device and devices parameters.This goal can be used in non-android 
- * projects and as standalone execution on the command line. <br/>
+ * projects and as standalone execution on the command line. <br>
  *
  * @author Manfred Moser - manfred@simpligility.com
  */
@@ -43,7 +43,7 @@ public class DeployApkMojo extends AbstractAndroidMojo
 {
     /**
      * Configuration for apk file deployment within a pom file. See {@link #deployapkFilename}. 
-     * <p/>
+     * 
      * <pre>
      * &lt;deployapk&gt;
      *    &lt;filename&gt;yourapk.apke&lt;/filename&gt;

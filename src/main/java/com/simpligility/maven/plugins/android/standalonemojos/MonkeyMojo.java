@@ -38,7 +38,7 @@ import com.simpligility.maven.plugins.android.config.PullParameter;
 import com.simpligility.maven.plugins.android.configuration.Monkey;
 
 /**
- * Can execute tests using UI/Application Exerciser Monkey.<br/>
+ * Can execute tests using UI/Application Exerciser Monkey.<br>
  * Implements parsing parameters from pom or command line arguments and sets useful defaults as well. This goal will
  * invoke Android Monkey exerciser. If the application crashes during the exercise, this goal can fail the build. <br />
  * A typical usage of this goal can be found at <a

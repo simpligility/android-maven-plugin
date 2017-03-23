@@ -51,7 +51,7 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
      * </p>
      * <p>
      * You can configure attributes in the plugin configuration like so
-     * <p/>
+     * 
      * <pre>
      *   &lt;plugin&gt;
      *     &lt;groupId&gt;com.jayway.maven.plugins.android.generation2&lt;/groupId&gt;
@@ -80,11 +80,11 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
      *     &lt;/executions&gt;
      *   &lt;/plugin&gt;
      * </pre>
-     * <p/>
+     * 
      * or use properties set in the pom or settings file or supplied as command line parameter. Add
      * "android." in front of the property name for command line usage. All parameters follow a
      * manifestMerger.* naming convention.
-     * <p/>
+     * 
      */
     @Parameter
     private ManifestMerger manifestMerger;

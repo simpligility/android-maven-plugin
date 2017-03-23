@@ -454,12 +454,12 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     /**
      * <p>Whether to undeploy an apk from the device before deploying it.</p>
-     * <p/>
+     * 
      * <p>Only has effect when running <code>mvn android:deploy</code> in an Android application project manually, or
      * when running <code>mvn integration-test</code> (or <code>mvn install</code>) in a project with instrumentation
      * tests.
      * </p>
-     * <p/>
+     * 
      * <p>It is useful to keep this set to <code>true</code> at all times, because if an apk with the same package was
      * previously signed with a different keystore, and deployed to the device, deployment will fail because your
      * keystore is different.</p>
@@ -1094,10 +1094,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     /**
      * <p>Returns the Android SDK to use.</p>
-     * <p/>
+     * 
      * <p>Current implementation looks for System property <code>android.sdk.path</code>, then
      * <code>&lt;sdk&gt;&lt;path&gt;</code> configuration in pom, then environment variable <code>ANDROID_HOME</code>.
-     * <p/>
+     * 
      * <p>This is where we collect all logic for how to lookup where it is, and which one to choose. The lookup is
      * based on available parameters. This method should be the only one you should need to look at to understand how
      * the Android SDK is chosen, and from where on disk.</p>
@@ -1244,10 +1244,10 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     /**
      * <p>Returns the Android NDK to use.</p>
-     * <p/>
+     * 
      * <p>Current implementation looks for <code>&lt;ndk&gt;&lt;path&gt;</code> configuration in pom, then System
      * property <code>android.ndk.path</code>, then environment variable <code>ANDROID_NDK_HOME</code>.
-     * <p/>
+     * 
      * <p>This is where we collect all logic for how to lookup where it is, and which one to choose. The lookup is
      * based on available parameters. This method should be the only one you should need to look at to understand how
      * the Android NDK is chosen, and from where on disk.</p>

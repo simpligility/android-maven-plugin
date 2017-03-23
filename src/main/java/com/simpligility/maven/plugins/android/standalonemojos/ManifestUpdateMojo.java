@@ -117,12 +117,12 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      * configuration for these elements will be merged with whatever is found in the Manifest file.
      * Values defined in the POM will take precedence.
      * </p>
-     * <p/>
+     * 
      * Note: This process will reformat the <code>AndroidManifest.xml</code> per JAXP
      * {@link Transformer} defaults if updates are made to the manifest.
-     * <p/>
+     * 
      * You can configure attributes in the plugin configuration like so
-     * <p/>
+     * 
      * <pre>
      *   &lt;plugin&gt;
      *     &lt;groupId&gt;com.jayway.maven.plugins.android.generation2&lt;/groupId&gt;
@@ -159,11 +159,11 @@ public class ManifestUpdateMojo extends AbstractAndroidMojo
      *     &lt;/executions&gt;
      *   &lt;/plugin&gt;
      * </pre>
-     * <p/>
+     * 
      * or use properties set in the pom or settings file or supplied as command line parameter. Add
      * "android." in front of the property name for command line usage. All parameters follow a
      * manifest.* naming convention.
-     * <p/>
+     * 
      */
     @Parameter
     private Manifest manifest;

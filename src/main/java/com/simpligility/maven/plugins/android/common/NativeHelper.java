@@ -295,8 +295,8 @@ public class NativeHelper
 
     /** Attempts to extract, from various sources, the applicable list of NDK architectures to support
      * as part of the build.
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * It retrieves the list from the following places:
      * <ul>
      *     <li>ndkArchitecture parameter</li>

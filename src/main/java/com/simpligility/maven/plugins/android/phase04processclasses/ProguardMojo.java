@@ -57,7 +57,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      * ProGuard configuration. ProGuard is disabled by default. Set the skip parameter to false to activate proguard.
      * A complete configuration can include any of the following:
      * </p>
-     * <p/>
+     * 
      * <pre>
      * &lt;proguard&gt;
      *    &lt;skip&gt;true|false&lt;/skip&gt;
@@ -115,7 +115,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      * Path to the proguard jar and therefore version of proguard to be used. By default this will use Proguard
      * from the Central Repository. Overriding it with an absolute path allows you to use a newer or custom proguard
      * version..
-     * <p/>
+     * 
      * You can also reference an external Proguard version as a plugin dependency like this:
      * <pre>
      * &lt;plugin&gt;
@@ -129,7 +129,7 @@ public class ProguardMojo extends AbstractAndroidMojo
      *       &lt;/dependency&gt;
      *     &lt;/dependencies&gt;
      * </pre>
-     * <p/>
+     * 
      * which will download and use Proguard 4.7 as deployed to the Central Repository.
      */
     @Parameter( property = "android.proguard.proguardJarPath" )
@@ -140,14 +140,14 @@ public class ProguardMojo extends AbstractAndroidMojo
 
     /**
      * Path relative to the project's build directory (target) where proguard puts folowing files:
-     * <p/>
+     * 
      * <ul>
      *   <li>dump.txt</li>
      *   <li>seeds.txt</li>
      *   <li>usage.txt</li>
      *   <li>mapping.txt</li>
      * </ul>
-     * <p/>
+     * 
      * You can define the directory like this:
      * <pre>
      * &lt;proguard&gt;
@@ -156,9 +156,9 @@ public class ProguardMojo extends AbstractAndroidMojo
      *   &lt;outputDirectory&gt;my_proguard&lt;/outputDirectory&gt;
      * &lt;/proguard&gt;
      * </pre>
-     * <p/>
+     * 
      * Output directory is defined relatively so it could be also outside of the target directory.
-     * <p/>
+     * 
      */
     @Parameter( property = "android.proguard.outputDirectory" )
     private File outputDirectory;

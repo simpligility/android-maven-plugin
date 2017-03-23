@@ -85,7 +85,7 @@ public class DexMojo extends AbstractAndroidMojo
      *   &lt;minimalMainDex&gt;true|false&lt;/minimalMainDex&gt;
      * &lt;/dex&gt;
      * </pre>
-     * <p/>
+     * 
      * or via properties dex.* or command line parameters android.dex.*
      */
     @Parameter

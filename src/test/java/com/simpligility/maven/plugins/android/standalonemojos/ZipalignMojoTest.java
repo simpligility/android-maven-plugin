@@ -71,7 +71,7 @@ public class ZipalignMojoTest extends AbstractAndroidMojoTestCase<ZipalignMojo>
 
     /**
      * Tests all parameters parsing
-     * <p/>
+     * 
      * Probably not needed since it is like testing maven itself
      *
      * @throws Exception

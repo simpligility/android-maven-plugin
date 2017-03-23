@@ -41,7 +41,7 @@ import com.simpligility.maven.plugins.android.config.PullParameter;
 import com.simpligility.maven.plugins.android.configuration.UIAutomator;
 
 /**
- * Can execute tests using ui uiautomator.<br/>
+ * Can execute tests using ui uiautomator.<br>
  * Implements parsing parameters from pom or command line arguments and sets useful defaults as well. This goal is meant
  * to execute a special <i>java project</i> dedicated to UI testing via UIAutomator. It will build the jar of the
  * project, dex it and send it to dalvik cache of a rooted device or to an emulator. If you use a rooted device, refer

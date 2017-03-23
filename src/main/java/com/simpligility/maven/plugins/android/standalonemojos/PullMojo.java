@@ -85,15 +85,15 @@ public class PullMojo extends AbstractAndroidMojo
 
     /**
      * The path of the destination to copy the file to.
-     * <p/>
+     * 
      * If destination ends with {@link File#separator}, it is supposed to be a
      * directory. Therefore the source - whether it refers to a file or
      * directory - will be copied into the destination directory.
-     * <p/>
+     * 
      * If destination does not end with {@link File#separator}, the last path
      * segment will be assumed as the new file or directory name (depending on
      * the type of source).
-     * <p/>
+     * 
      * Any missing directories will be created.
      */
     @Parameter( property = "android.pull.destination" )
@@ -208,7 +208,7 @@ public class PullMojo extends AbstractAndroidMojo
     /**
      * Retrieves the corresponding {@link FileEntry} on the emulator/device for
      * a given file path.
-     * <p/>
+     * 
      * If the file path starts with the symlink "sdcard", it will be resolved
      * statically to "/mnt/sdcard".
      *
