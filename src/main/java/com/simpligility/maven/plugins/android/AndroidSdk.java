@@ -252,7 +252,7 @@ public class AndroidSdk
             throws InvalidSdkException, NumberFormatException 
     {
         if ( getBuildToolInfo().getRevision().
-                compareTo( FullRevision.parseRevision( version ) ) < 0 )
+                compareTo( Revision.parseRevision( version ) ) < 0 )
         {
             throw new InvalidSdkException( "Version of build tools must be at least " 
                     + version + " for " + feature + " to work" );

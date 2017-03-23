@@ -29,6 +29,13 @@
 * Removed NDK related Mojos
 ** and some other code snippets
 ** contributed Manfred Moser http://www.simpligility.com
+* Improved MultiDex support
+** see https://github.com/simpligility/android-maven-plugin/pull/675
+** see https://github.com/simpligility/android-maven-plugin/pull/753
+** contributed by Piotr Soróbka https://github.com/psorobka
+** and Justin Shapcott https://github.com/MobiDevelop
+** and Manfred Moser http://www.simpligility.com
+
 
 == 4.4.3 - Released 2016-07-14
 
