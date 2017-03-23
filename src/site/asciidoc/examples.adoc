@@ -75,11 +75,6 @@ and a simple application consuming all those including integration
 tests verifying the correct consumption of the dependencies and their
 resources and code.
 
-== Native
-
-Located in the +native+ folder. A number of projects using the Android
-NDK to create libraries and applications using them. 
-
 == AAR Child
 
 Located in the +aar-child+ folder. A test project for AAR usage.

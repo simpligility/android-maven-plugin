@@ -23,6 +23,9 @@
 * Removed Scala example project and IT test
 ** rather than trying to fix it for Java 8
 ** contributed Manfred Moser http://www.simpligility.com
+* Removed native test projects and IT tests
+** all migrated to android-ndk-maven-plugin already
+** contributed Manfred Moser http://www.simpligility.com
 
 
 == 4.4.3 - Released 2016-07-14

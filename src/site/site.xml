@@ -44,7 +44,6 @@
       <item name="Instrumentation Example" href="instrumentation.html"/>
       <item name="Test Code Coverage with Emma" href="emma.html"/>
       <item name="Automated Screenshots" href="screenshots.html"/>
-      <item name="NDK" href="ndk.html"/>
       <item name="Native Dependencies" href="native-deps.html"/>
       <item name="apksources" href="apksources.html"/>
     </menu>
