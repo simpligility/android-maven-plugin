@@ -26,7 +26,7 @@ import java.util.List;
 public class PublishListingMojo extends AbstractPublisherMojo
 {
 
-    private static final int MAX_CHARS_TITLE = 30;
+    private static final int MAX_CHARS_TITLE = 50;
     private static final int MAX_CHARS_SHORT_DESCRIPTION = 80;
     private static final int MAX_CHARS_FULL_DESCRIPTION = 4000;
     private static final int MAX_SCREENSHOTS_SIZE = 8;
