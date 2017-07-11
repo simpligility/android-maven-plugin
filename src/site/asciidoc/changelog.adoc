@@ -39,6 +39,9 @@
 ** see https://github.com/simpligility/android-maven-plugin/pull/760
 ** contributed by Benoit Billington https://github.com/Shusshu
 
+Known issues:
+
+* mojo for emulator start and stop are currently broken
 
 == 4.4.3 - Released 2016-07-14
 
