@@ -93,7 +93,7 @@
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>  <em class="jxr_javadoccomment"> * Creates the apk file. By default signs it with debug keystore.&lt;br/&gt;</em>
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  <em class="jxr_javadoccomment"> * Creates the apk file. By default signs it with debug keystore.&lt;br&gt;</em>
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment"> * Change that by setting configuration parameter</em>
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_javadoccomment"> * &lt;code&gt;&amp;lt;sign&amp;gt;&amp;lt;debug&amp;gt;false&amp;lt;/debug&amp;gt;&amp;lt;/sign&amp;gt;&lt;/code&gt;.</em>
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  <em class="jxr_javadoccomment"> *</em>
@@ -192,7 +192,7 @@
 <a class="jxr_linenumber" name="L184" href="#L184">184</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
 <a class="jxr_linenumber" name="L185" href="#L185">185</a> <em class="jxr_javadoccomment">     * The APK builder filters these resources and doesn't include them into the apk.</em>
 <a class="jxr_linenumber" name="L186" href="#L186">186</a> <em class="jxr_javadoccomment">     * This leads to bad behaviour of dependent libraries relying on these resources,</em>
-<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">     * for instance service discovery doesn't work.&lt;br/&gt;</em>
+<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">     * for instance service discovery doesn't work.&lt;br&gt;</em>
 <a class="jxr_linenumber" name="L188" href="#L188">188</a> <em class="jxr_javadoccomment">     * By specifying this pattern, the android plugin adds these resources to the final apk.</em>
 <a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L190" href="#L190">190</a> <em class="jxr_javadoccomment">     * &lt;p&gt;The pattern is relative to META-INF, i.e. one must use</em>
@@ -684,593 +684,599 @@
 <a class="jxr_linenumber" name="L676" href="#L676">676</a>                                       <strong class="jxr_keyword">boolean</strong> signWithDebugKeyStore ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
 <a class="jxr_linenumber" name="L677" href="#L677">677</a>     {
 <a class="jxr_linenumber" name="L678" href="#L678">678</a>         getLog().debug( <span class="jxr_string">"Building APK with internal APKBuilder"</span> );
-<a class="jxr_linenumber" name="L679" href="#L679">679</a>         sourceFolders.add( projectOutputDirectory );
-<a class="jxr_linenumber" name="L680" href="#L680">680</a> 
-<a class="jxr_linenumber" name="L681" href="#L681">681</a>         <strong class="jxr_keyword">for</strong> ( Artifact artifact : filterArtifacts( getRelevantCompileArtifacts(), skipDependencies,
-<a class="jxr_linenumber" name="L682" href="#L682">682</a>                 artifactTypeSet.getIncludes(), artifactTypeSet.getExcludes(), artifactSet.getIncludes(),
-<a class="jxr_linenumber" name="L683" href="#L683">683</a>                 artifactSet.getExcludes() ) )
-<a class="jxr_linenumber" name="L684" href="#L684">684</a>         {
-<a class="jxr_linenumber" name="L685" href="#L685">685</a>             getLog().debug( <span class="jxr_string">"Found artifact for APK :"</span> + artifact );
-<a class="jxr_linenumber" name="L686" href="#L686">686</a>             <strong class="jxr_keyword">if</strong> ( extractDuplicates )
-<a class="jxr_linenumber" name="L687" href="#L687">687</a>             {
-<a class="jxr_linenumber" name="L688" href="#L688">688</a>                 <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L689" href="#L689">689</a>                 {
-<a class="jxr_linenumber" name="L690" href="#L690">690</a>                     computeDuplicateFiles( artifact.getFile() );
-<a class="jxr_linenumber" name="L691" href="#L691">691</a>                 }
-<a class="jxr_linenumber" name="L692" href="#L692">692</a>                 <strong class="jxr_keyword">catch</strong> ( Exception e )
-<a class="jxr_linenumber" name="L693" href="#L693">693</a>                 {
-<a class="jxr_linenumber" name="L694" href="#L694">694</a>                     getLog().warn( <span class="jxr_string">"Cannot compute duplicates files from "</span> + artifact.getFile().getAbsolutePath(), e );
-<a class="jxr_linenumber" name="L695" href="#L695">695</a>                 }
-<a class="jxr_linenumber" name="L696" href="#L696">696</a>             }
-<a class="jxr_linenumber" name="L697" href="#L697">697</a>             jarFiles.add( artifact.getFile() );
-<a class="jxr_linenumber" name="L698" href="#L698">698</a>         }
-<a class="jxr_linenumber" name="L699" href="#L699">699</a> 
-<a class="jxr_linenumber" name="L700" href="#L700">700</a>         <strong class="jxr_keyword">for</strong> ( File src : sourceFolders )
-<a class="jxr_linenumber" name="L701" href="#L701">701</a>         {
-<a class="jxr_linenumber" name="L702" href="#L702">702</a>             computeDuplicateFilesInSource( src );
-<a class="jxr_linenumber" name="L703" href="#L703">703</a>         }
-<a class="jxr_linenumber" name="L704" href="#L704">704</a> 
-<a class="jxr_linenumber" name="L705" href="#L705">705</a>         <em class="jxr_comment">// Check duplicates.</em>
-<a class="jxr_linenumber" name="L706" href="#L706">706</a>         <strong class="jxr_keyword">if</strong> ( extractDuplicates )
+<a class="jxr_linenumber" name="L679" href="#L679">679</a>         
+<a class="jxr_linenumber" name="L680" href="#L680">680</a>         <em class="jxr_comment">//A when jack is running the classes directory will not get filled (usually)</em>
+<a class="jxr_linenumber" name="L681" href="#L681">681</a>         <em class="jxr_comment">// so let's skip it if it wasn't created by something else</em>
+<a class="jxr_linenumber" name="L682" href="#L682">682</a>         <strong class="jxr_keyword">if</strong> ( projectOutputDirectory.exists() || !getJack().isEnabled() ) 
+<a class="jxr_linenumber" name="L683" href="#L683">683</a>         {
+<a class="jxr_linenumber" name="L684" href="#L684">684</a>             sourceFolders.add( projectOutputDirectory );
+<a class="jxr_linenumber" name="L685" href="#L685">685</a>         }
+<a class="jxr_linenumber" name="L686" href="#L686">686</a> 
+<a class="jxr_linenumber" name="L687" href="#L687">687</a>         <strong class="jxr_keyword">for</strong> ( Artifact artifact : filterArtifacts( getRelevantCompileArtifacts(), skipDependencies,
+<a class="jxr_linenumber" name="L688" href="#L688">688</a>                 artifactTypeSet.getIncludes(), artifactTypeSet.getExcludes(), artifactSet.getIncludes(),
+<a class="jxr_linenumber" name="L689" href="#L689">689</a>                 artifactSet.getExcludes() ) )
+<a class="jxr_linenumber" name="L690" href="#L690">690</a>         {
+<a class="jxr_linenumber" name="L691" href="#L691">691</a>             getLog().debug( <span class="jxr_string">"Found artifact for APK :"</span> + artifact );
+<a class="jxr_linenumber" name="L692" href="#L692">692</a>             <strong class="jxr_keyword">if</strong> ( extractDuplicates )
+<a class="jxr_linenumber" name="L693" href="#L693">693</a>             {
+<a class="jxr_linenumber" name="L694" href="#L694">694</a>                 <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L695" href="#L695">695</a>                 {
+<a class="jxr_linenumber" name="L696" href="#L696">696</a>                     computeDuplicateFiles( artifact.getFile() );
+<a class="jxr_linenumber" name="L697" href="#L697">697</a>                 }
+<a class="jxr_linenumber" name="L698" href="#L698">698</a>                 <strong class="jxr_keyword">catch</strong> ( Exception e )
+<a class="jxr_linenumber" name="L699" href="#L699">699</a>                 {
+<a class="jxr_linenumber" name="L700" href="#L700">700</a>                     getLog().warn( <span class="jxr_string">"Cannot compute duplicates files from "</span> + artifact.getFile().getAbsolutePath(), e );
+<a class="jxr_linenumber" name="L701" href="#L701">701</a>                 }
+<a class="jxr_linenumber" name="L702" href="#L702">702</a>             }
+<a class="jxr_linenumber" name="L703" href="#L703">703</a>             jarFiles.add( artifact.getFile() );
+<a class="jxr_linenumber" name="L704" href="#L704">704</a>         }
+<a class="jxr_linenumber" name="L705" href="#L705">705</a> 
+<a class="jxr_linenumber" name="L706" href="#L706">706</a>         <strong class="jxr_keyword">for</strong> ( File src : sourceFolders )
 <a class="jxr_linenumber" name="L707" href="#L707">707</a>         {
-<a class="jxr_linenumber" name="L708" href="#L708">708</a>             <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L709" href="#L709">709</a>             {
-<a class="jxr_linenumber" name="L710" href="#L710">710</a>                 extractDuplicateFiles( jarFiles, sourceFolders );
-<a class="jxr_linenumber" name="L711" href="#L711">711</a>             }
-<a class="jxr_linenumber" name="L712" href="#L712">712</a>             <strong class="jxr_keyword">catch</strong> ( IOException e )
-<a class="jxr_linenumber" name="L713" href="#L713">713</a>             {
-<a class="jxr_linenumber" name="L714" href="#L714">714</a>                 getLog().error( <span class="jxr_string">"Could not extract duplicates to duplicate-resources.jar"</span>, e );
-<a class="jxr_linenumber" name="L715" href="#L715">715</a>             }
-<a class="jxr_linenumber" name="L716" href="#L716">716</a>         }
-<a class="jxr_linenumber" name="L717" href="#L717">717</a> 
-<a class="jxr_linenumber" name="L718" href="#L718">718</a>         <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L719" href="#L719">719</a>         {
-<a class="jxr_linenumber" name="L720" href="#L720">720</a>             <strong class="jxr_keyword">final</strong> String debugKeyStore = signWithDebugKeyStore ? ApkBuilder.getDebugKeystore() : <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L721" href="#L721">721</a>             <strong class="jxr_keyword">final</strong> ApkBuilder apkBuilder = <strong class="jxr_keyword">new</strong> ApkBuilder( outputFile, zipArchive, dexFile, debugKeyStore, <strong class="jxr_keyword">null</strong> );
-<a class="jxr_linenumber" name="L722" href="#L722">722</a>             <strong class="jxr_keyword">if</strong> ( apkDebug )
-<a class="jxr_linenumber" name="L723" href="#L723">723</a>             {
-<a class="jxr_linenumber" name="L724" href="#L724">724</a>                 apkBuilder.setDebugMode( <strong class="jxr_keyword">true</strong> );
-<a class="jxr_linenumber" name="L725" href="#L725">725</a>             }
-<a class="jxr_linenumber" name="L726" href="#L726">726</a> 
-<a class="jxr_linenumber" name="L727" href="#L727">727</a>             <strong class="jxr_keyword">for</strong> ( File sourceFolder : sourceFolders )
-<a class="jxr_linenumber" name="L728" href="#L728">728</a>             {
-<a class="jxr_linenumber" name="L729" href="#L729">729</a>                 getLog().debug( <span class="jxr_string">"Adding source folder : "</span> + sourceFolder );
-<a class="jxr_linenumber" name="L730" href="#L730">730</a>                 apkBuilder.addSourceFolder( sourceFolder );
+<a class="jxr_linenumber" name="L708" href="#L708">708</a>             computeDuplicateFilesInSource( src );
+<a class="jxr_linenumber" name="L709" href="#L709">709</a>         }
+<a class="jxr_linenumber" name="L710" href="#L710">710</a> 
+<a class="jxr_linenumber" name="L711" href="#L711">711</a>         <em class="jxr_comment">// Check duplicates.</em>
+<a class="jxr_linenumber" name="L712" href="#L712">712</a>         <strong class="jxr_keyword">if</strong> ( extractDuplicates )
+<a class="jxr_linenumber" name="L713" href="#L713">713</a>         {
+<a class="jxr_linenumber" name="L714" href="#L714">714</a>             <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L715" href="#L715">715</a>             {
+<a class="jxr_linenumber" name="L716" href="#L716">716</a>                 extractDuplicateFiles( jarFiles, sourceFolders );
+<a class="jxr_linenumber" name="L717" href="#L717">717</a>             }
+<a class="jxr_linenumber" name="L718" href="#L718">718</a>             <strong class="jxr_keyword">catch</strong> ( IOException e )
+<a class="jxr_linenumber" name="L719" href="#L719">719</a>             {
+<a class="jxr_linenumber" name="L720" href="#L720">720</a>                 getLog().error( <span class="jxr_string">"Could not extract duplicates to duplicate-resources.jar"</span>, e );
+<a class="jxr_linenumber" name="L721" href="#L721">721</a>             }
+<a class="jxr_linenumber" name="L722" href="#L722">722</a>         }
+<a class="jxr_linenumber" name="L723" href="#L723">723</a> 
+<a class="jxr_linenumber" name="L724" href="#L724">724</a>         <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L725" href="#L725">725</a>         {
+<a class="jxr_linenumber" name="L726" href="#L726">726</a>             <strong class="jxr_keyword">final</strong> String debugKeyStore = signWithDebugKeyStore ? ApkBuilder.getDebugKeystore() : <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L727" href="#L727">727</a>             <strong class="jxr_keyword">final</strong> ApkBuilder apkBuilder = <strong class="jxr_keyword">new</strong> ApkBuilder( outputFile, zipArchive, dexFile, debugKeyStore, <strong class="jxr_keyword">null</strong> );
+<a class="jxr_linenumber" name="L728" href="#L728">728</a>             <strong class="jxr_keyword">if</strong> ( apkDebug )
+<a class="jxr_linenumber" name="L729" href="#L729">729</a>             {
+<a class="jxr_linenumber" name="L730" href="#L730">730</a>                 apkBuilder.setDebugMode( <strong class="jxr_keyword">true</strong> );
 <a class="jxr_linenumber" name="L731" href="#L731">731</a>             }
 <a class="jxr_linenumber" name="L732" href="#L732">732</a> 
-<a class="jxr_linenumber" name="L733" href="#L733">733</a>             <strong class="jxr_keyword">for</strong> ( File jarFile : jarFiles )
+<a class="jxr_linenumber" name="L733" href="#L733">733</a>             <strong class="jxr_keyword">for</strong> ( File sourceFolder : sourceFolders )
 <a class="jxr_linenumber" name="L734" href="#L734">734</a>             {
-<a class="jxr_linenumber" name="L735" href="#L735">735</a>                 <strong class="jxr_keyword">boolean</strong> excluded = false;
-<a class="jxr_linenumber" name="L736" href="#L736">736</a> 
-<a class="jxr_linenumber" name="L737" href="#L737">737</a>                 <strong class="jxr_keyword">if</strong> ( excludeJarResourcesPatterns != <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L738" href="#L738">738</a>                 {
-<a class="jxr_linenumber" name="L739" href="#L739">739</a>                     <strong class="jxr_keyword">final</strong> String name = jarFile.getName();
-<a class="jxr_linenumber" name="L740" href="#L740">740</a>                     getLog().debug( <span class="jxr_string">"Checking "</span> + name + <span class="jxr_string">" against patterns"</span> );
-<a class="jxr_linenumber" name="L741" href="#L741">741</a>                     <strong class="jxr_keyword">for</strong> ( Pattern pattern : excludeJarResourcesPatterns )
-<a class="jxr_linenumber" name="L742" href="#L742">742</a>                     {
-<a class="jxr_linenumber" name="L743" href="#L743">743</a>                         <strong class="jxr_keyword">final</strong> Matcher matcher = pattern.matcher( name );
-<a class="jxr_linenumber" name="L744" href="#L744">744</a>                         <strong class="jxr_keyword">if</strong> ( matcher.matches() )
-<a class="jxr_linenumber" name="L745" href="#L745">745</a>                         {
-<a class="jxr_linenumber" name="L746" href="#L746">746</a>                             getLog().debug( <span class="jxr_string">"Jar "</span> + name + <span class="jxr_string">" excluded by pattern "</span> + pattern );
-<a class="jxr_linenumber" name="L747" href="#L747">747</a>                             excluded = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L748" href="#L748">748</a>                             <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L749" href="#L749">749</a>                         }
-<a class="jxr_linenumber" name="L750" href="#L750">750</a>                         <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L735" href="#L735">735</a>                 getLog().debug( <span class="jxr_string">"Adding source folder : "</span> + sourceFolder );
+<a class="jxr_linenumber" name="L736" href="#L736">736</a>                 apkBuilder.addSourceFolder( sourceFolder );
+<a class="jxr_linenumber" name="L737" href="#L737">737</a>             }
+<a class="jxr_linenumber" name="L738" href="#L738">738</a> 
+<a class="jxr_linenumber" name="L739" href="#L739">739</a>             <strong class="jxr_keyword">for</strong> ( File jarFile : jarFiles )
+<a class="jxr_linenumber" name="L740" href="#L740">740</a>             {
+<a class="jxr_linenumber" name="L741" href="#L741">741</a>                 <strong class="jxr_keyword">boolean</strong> excluded = false;
+<a class="jxr_linenumber" name="L742" href="#L742">742</a> 
+<a class="jxr_linenumber" name="L743" href="#L743">743</a>                 <strong class="jxr_keyword">if</strong> ( excludeJarResourcesPatterns != <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L744" href="#L744">744</a>                 {
+<a class="jxr_linenumber" name="L745" href="#L745">745</a>                     <strong class="jxr_keyword">final</strong> String name = jarFile.getName();
+<a class="jxr_linenumber" name="L746" href="#L746">746</a>                     getLog().debug( <span class="jxr_string">"Checking "</span> + name + <span class="jxr_string">" against patterns"</span> );
+<a class="jxr_linenumber" name="L747" href="#L747">747</a>                     <strong class="jxr_keyword">for</strong> ( Pattern pattern : excludeJarResourcesPatterns )
+<a class="jxr_linenumber" name="L748" href="#L748">748</a>                     {
+<a class="jxr_linenumber" name="L749" href="#L749">749</a>                         <strong class="jxr_keyword">final</strong> Matcher matcher = pattern.matcher( name );
+<a class="jxr_linenumber" name="L750" href="#L750">750</a>                         <strong class="jxr_keyword">if</strong> ( matcher.matches() )
 <a class="jxr_linenumber" name="L751" href="#L751">751</a>                         {
-<a class="jxr_linenumber" name="L752" href="#L752">752</a>                             getLog().debug( <span class="jxr_string">"Jar "</span> + name + <span class="jxr_string">" not excluded by pattern "</span> + pattern );
-<a class="jxr_linenumber" name="L753" href="#L753">753</a>                         }
-<a class="jxr_linenumber" name="L754" href="#L754">754</a>                     }
-<a class="jxr_linenumber" name="L755" href="#L755">755</a>                 }
-<a class="jxr_linenumber" name="L756" href="#L756">756</a> 
-<a class="jxr_linenumber" name="L757" href="#L757">757</a>                 <strong class="jxr_keyword">if</strong> ( excluded )
-<a class="jxr_linenumber" name="L758" href="#L758">758</a>                 {
-<a class="jxr_linenumber" name="L759" href="#L759">759</a>                     <strong class="jxr_keyword">continue</strong>;
-<a class="jxr_linenumber" name="L760" href="#L760">760</a>                 }
-<a class="jxr_linenumber" name="L761" href="#L761">761</a> 
-<a class="jxr_linenumber" name="L762" href="#L762">762</a>                 <strong class="jxr_keyword">if</strong> ( jarFile.isDirectory() )
-<a class="jxr_linenumber" name="L763" href="#L763">763</a>                 {
-<a class="jxr_linenumber" name="L764" href="#L764">764</a>                     getLog().debug( <span class="jxr_string">"Adding resources from jar folder : "</span> + jarFile );
-<a class="jxr_linenumber" name="L765" href="#L765">765</a>                     <strong class="jxr_keyword">final</strong> String[] filenames = jarFile.list( <strong class="jxr_keyword">new</strong> FilenameFilter()
-<a class="jxr_linenumber" name="L766" href="#L766">766</a>                     {
-<a class="jxr_linenumber" name="L767" href="#L767">767</a>                         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> accept( File dir, String name )
-<a class="jxr_linenumber" name="L768" href="#L768">768</a>                         {
-<a class="jxr_linenumber" name="L769" href="#L769">769</a>                             <strong class="jxr_keyword">return</strong> PATTERN_JAR_EXT.matcher( name ).matches();
-<a class="jxr_linenumber" name="L770" href="#L770">770</a>                         }
-<a class="jxr_linenumber" name="L771" href="#L771">771</a>                     } );
-<a class="jxr_linenumber" name="L772" href="#L772">772</a> 
-<a class="jxr_linenumber" name="L773" href="#L773">773</a>                     <strong class="jxr_keyword">for</strong> ( String filename : filenames )
-<a class="jxr_linenumber" name="L774" href="#L774">774</a>                     {
-<a class="jxr_linenumber" name="L775" href="#L775">775</a>                         <strong class="jxr_keyword">final</strong> File innerJar = <strong class="jxr_keyword">new</strong> File( jarFile, filename );
-<a class="jxr_linenumber" name="L776" href="#L776">776</a>                         getLog().debug( <span class="jxr_string">"Adding resources from innerJar : "</span> + innerJar );
-<a class="jxr_linenumber" name="L777" href="#L777">777</a>                         apkBuilder.addResourcesFromJar( innerJar );
-<a class="jxr_linenumber" name="L778" href="#L778">778</a>                     }
-<a class="jxr_linenumber" name="L779" href="#L779">779</a>                 }
-<a class="jxr_linenumber" name="L780" href="#L780">780</a>                 <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L781" href="#L781">781</a>                 {
-<a class="jxr_linenumber" name="L782" href="#L782">782</a>                     getLog().debug( <span class="jxr_string">"Adding resources from : "</span> + jarFile );
-<a class="jxr_linenumber" name="L783" href="#L783">783</a>                     apkBuilder.addResourcesFromJar( jarFile );
-<a class="jxr_linenumber" name="L784" href="#L784">784</a>                 }
-<a class="jxr_linenumber" name="L785" href="#L785">785</a>             }
-<a class="jxr_linenumber" name="L786" href="#L786">786</a> 
-<a class="jxr_linenumber" name="L787" href="#L787">787</a>             addSecondaryDexes( dexFile, apkBuilder );
-<a class="jxr_linenumber" name="L788" href="#L788">788</a> 
-<a class="jxr_linenumber" name="L789" href="#L789">789</a>             <strong class="jxr_keyword">for</strong> ( File nativeFolder : nativeFolders )
-<a class="jxr_linenumber" name="L790" href="#L790">790</a>             {
-<a class="jxr_linenumber" name="L791" href="#L791">791</a>                 getLog().debug( <span class="jxr_string">"Adding native library : "</span> + nativeFolder );
-<a class="jxr_linenumber" name="L792" href="#L792">792</a>                 apkBuilder.addNativeLibraries( nativeFolder );
-<a class="jxr_linenumber" name="L793" href="#L793">793</a>             }
-<a class="jxr_linenumber" name="L794" href="#L794">794</a>             apkBuilder.sealApk();
-<a class="jxr_linenumber" name="L795" href="#L795">795</a>         }
-<a class="jxr_linenumber" name="L796" href="#L796">796</a>         <strong class="jxr_keyword">catch</strong> ( ApkCreationException e )
-<a class="jxr_linenumber" name="L797" href="#L797">797</a>         {
-<a class="jxr_linenumber" name="L798" href="#L798">798</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( e.getMessage() );
-<a class="jxr_linenumber" name="L799" href="#L799">799</a>         }
-<a class="jxr_linenumber" name="L800" href="#L800">800</a>         <strong class="jxr_keyword">catch</strong> ( DuplicateFileException e )
-<a class="jxr_linenumber" name="L801" href="#L801">801</a>         {
-<a class="jxr_linenumber" name="L802" href="#L802">802</a>             <strong class="jxr_keyword">final</strong> String msg = String.format( <span class="jxr_string">"Duplicated file: %s, found in archive %s and %s"</span>,
-<a class="jxr_linenumber" name="L803" href="#L803">803</a>                     e.getArchivePath(), e.getFile1(), e.getFile2() );
-<a class="jxr_linenumber" name="L804" href="#L804">804</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( msg, e );
+<a class="jxr_linenumber" name="L752" href="#L752">752</a>                             getLog().debug( <span class="jxr_string">"Jar "</span> + name + <span class="jxr_string">" excluded by pattern "</span> + pattern );
+<a class="jxr_linenumber" name="L753" href="#L753">753</a>                             excluded = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L754" href="#L754">754</a>                             <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L755" href="#L755">755</a>                         }
+<a class="jxr_linenumber" name="L756" href="#L756">756</a>                         <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L757" href="#L757">757</a>                         {
+<a class="jxr_linenumber" name="L758" href="#L758">758</a>                             getLog().debug( <span class="jxr_string">"Jar "</span> + name + <span class="jxr_string">" not excluded by pattern "</span> + pattern );
+<a class="jxr_linenumber" name="L759" href="#L759">759</a>                         }
+<a class="jxr_linenumber" name="L760" href="#L760">760</a>                     }
+<a class="jxr_linenumber" name="L761" href="#L761">761</a>                 }
+<a class="jxr_linenumber" name="L762" href="#L762">762</a> 
+<a class="jxr_linenumber" name="L763" href="#L763">763</a>                 <strong class="jxr_keyword">if</strong> ( excluded )
+<a class="jxr_linenumber" name="L764" href="#L764">764</a>                 {
+<a class="jxr_linenumber" name="L765" href="#L765">765</a>                     <strong class="jxr_keyword">continue</strong>;
+<a class="jxr_linenumber" name="L766" href="#L766">766</a>                 }
+<a class="jxr_linenumber" name="L767" href="#L767">767</a> 
+<a class="jxr_linenumber" name="L768" href="#L768">768</a>                 <strong class="jxr_keyword">if</strong> ( jarFile.isDirectory() )
+<a class="jxr_linenumber" name="L769" href="#L769">769</a>                 {
+<a class="jxr_linenumber" name="L770" href="#L770">770</a>                     getLog().debug( <span class="jxr_string">"Adding resources from jar folder : "</span> + jarFile );
+<a class="jxr_linenumber" name="L771" href="#L771">771</a>                     <strong class="jxr_keyword">final</strong> String[] filenames = jarFile.list( <strong class="jxr_keyword">new</strong> FilenameFilter()
+<a class="jxr_linenumber" name="L772" href="#L772">772</a>                     {
+<a class="jxr_linenumber" name="L773" href="#L773">773</a>                         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> accept( File dir, String name )
+<a class="jxr_linenumber" name="L774" href="#L774">774</a>                         {
+<a class="jxr_linenumber" name="L775" href="#L775">775</a>                             <strong class="jxr_keyword">return</strong> PATTERN_JAR_EXT.matcher( name ).matches();
+<a class="jxr_linenumber" name="L776" href="#L776">776</a>                         }
+<a class="jxr_linenumber" name="L777" href="#L777">777</a>                     } );
+<a class="jxr_linenumber" name="L778" href="#L778">778</a> 
+<a class="jxr_linenumber" name="L779" href="#L779">779</a>                     <strong class="jxr_keyword">for</strong> ( String filename : filenames )
+<a class="jxr_linenumber" name="L780" href="#L780">780</a>                     {
+<a class="jxr_linenumber" name="L781" href="#L781">781</a>                         <strong class="jxr_keyword">final</strong> File innerJar = <strong class="jxr_keyword">new</strong> File( jarFile, filename );
+<a class="jxr_linenumber" name="L782" href="#L782">782</a>                         getLog().debug( <span class="jxr_string">"Adding resources from innerJar : "</span> + innerJar );
+<a class="jxr_linenumber" name="L783" href="#L783">783</a>                         apkBuilder.addResourcesFromJar( innerJar );
+<a class="jxr_linenumber" name="L784" href="#L784">784</a>                     }
+<a class="jxr_linenumber" name="L785" href="#L785">785</a>                 }
+<a class="jxr_linenumber" name="L786" href="#L786">786</a>                 <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L787" href="#L787">787</a>                 {
+<a class="jxr_linenumber" name="L788" href="#L788">788</a>                     getLog().debug( <span class="jxr_string">"Adding resources from : "</span> + jarFile );
+<a class="jxr_linenumber" name="L789" href="#L789">789</a>                     apkBuilder.addResourcesFromJar( jarFile );
+<a class="jxr_linenumber" name="L790" href="#L790">790</a>                 }
+<a class="jxr_linenumber" name="L791" href="#L791">791</a>             }
+<a class="jxr_linenumber" name="L792" href="#L792">792</a> 
+<a class="jxr_linenumber" name="L793" href="#L793">793</a>             addSecondaryDexes( dexFile, apkBuilder );
+<a class="jxr_linenumber" name="L794" href="#L794">794</a> 
+<a class="jxr_linenumber" name="L795" href="#L795">795</a>             <strong class="jxr_keyword">for</strong> ( File nativeFolder : nativeFolders )
+<a class="jxr_linenumber" name="L796" href="#L796">796</a>             {
+<a class="jxr_linenumber" name="L797" href="#L797">797</a>                 getLog().debug( <span class="jxr_string">"Adding native library : "</span> + nativeFolder );
+<a class="jxr_linenumber" name="L798" href="#L798">798</a>                 apkBuilder.addNativeLibraries( nativeFolder );
+<a class="jxr_linenumber" name="L799" href="#L799">799</a>             }
+<a class="jxr_linenumber" name="L800" href="#L800">800</a>             apkBuilder.sealApk();
+<a class="jxr_linenumber" name="L801" href="#L801">801</a>         }
+<a class="jxr_linenumber" name="L802" href="#L802">802</a>         <strong class="jxr_keyword">catch</strong> ( ApkCreationException e )
+<a class="jxr_linenumber" name="L803" href="#L803">803</a>         {
+<a class="jxr_linenumber" name="L804" href="#L804">804</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( e.getMessage() );
 <a class="jxr_linenumber" name="L805" href="#L805">805</a>         }
-<a class="jxr_linenumber" name="L806" href="#L806">806</a>         <strong class="jxr_keyword">catch</strong> ( SealedApkException e )
+<a class="jxr_linenumber" name="L806" href="#L806">806</a>         <strong class="jxr_keyword">catch</strong> ( DuplicateFileException e )
 <a class="jxr_linenumber" name="L807" href="#L807">807</a>         {
-<a class="jxr_linenumber" name="L808" href="#L808">808</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( e.getMessage() );
-<a class="jxr_linenumber" name="L809" href="#L809">809</a>         }
-<a class="jxr_linenumber" name="L810" href="#L810">810</a>     }
-<a class="jxr_linenumber" name="L811" href="#L811">811</a> 
-<a class="jxr_linenumber" name="L812" href="#L812">812</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> addSecondaryDexes( File dexFile, ApkBuilder apkBuilder ) <strong class="jxr_keyword">throws</strong> ApkCreationException,
-<a class="jxr_linenumber" name="L813" href="#L813">813</a>             SealedApkException, DuplicateFileException
-<a class="jxr_linenumber" name="L814" href="#L814">814</a>     {
-<a class="jxr_linenumber" name="L815" href="#L815">815</a>         <strong class="jxr_keyword">int</strong> dexNumber = 2;
-<a class="jxr_linenumber" name="L816" href="#L816">816</a>         String dexFileName = getNextDexFileName( dexNumber );
-<a class="jxr_linenumber" name="L817" href="#L817">817</a>         File secondDexFile = createNextDexFile( dexFile, dexFileName );
-<a class="jxr_linenumber" name="L818" href="#L818">818</a>         <strong class="jxr_keyword">while</strong> ( secondDexFile.exists() )
-<a class="jxr_linenumber" name="L819" href="#L819">819</a>         {
-<a class="jxr_linenumber" name="L820" href="#L820">820</a>             apkBuilder.addFile( secondDexFile, dexFileName );
-<a class="jxr_linenumber" name="L821" href="#L821">821</a>             dexNumber++;
-<a class="jxr_linenumber" name="L822" href="#L822">822</a>             dexFileName = getNextDexFileName( dexNumber );
-<a class="jxr_linenumber" name="L823" href="#L823">823</a>             secondDexFile = createNextDexFile( dexFile, dexFileName );
-<a class="jxr_linenumber" name="L824" href="#L824">824</a>         }
-<a class="jxr_linenumber" name="L825" href="#L825">825</a>     }
-<a class="jxr_linenumber" name="L826" href="#L826">826</a> 
-<a class="jxr_linenumber" name="L827" href="#L827">827</a>     <strong class="jxr_keyword">private</strong> File createNextDexFile( File dexFile, String dexFileName )
-<a class="jxr_linenumber" name="L828" href="#L828">828</a>     {
-<a class="jxr_linenumber" name="L829" href="#L829">829</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File( dexFile.getParentFile(), dexFileName );
-<a class="jxr_linenumber" name="L830" href="#L830">830</a>     }
-<a class="jxr_linenumber" name="L831" href="#L831">831</a> 
-<a class="jxr_linenumber" name="L832" href="#L832">832</a>     <strong class="jxr_keyword">private</strong> String getNextDexFileName( <strong class="jxr_keyword">int</strong> dexNumber )
-<a class="jxr_linenumber" name="L833" href="#L833">833</a>     {
-<a class="jxr_linenumber" name="L834" href="#L834">834</a>         <strong class="jxr_keyword">return</strong> CLASSES + dexNumber + DEX_SUFFIX;
-<a class="jxr_linenumber" name="L835" href="#L835">835</a>     }
-<a class="jxr_linenumber" name="L836" href="#L836">836</a> 
-<a class="jxr_linenumber" name="L837" href="#L837">837</a>     <strong class="jxr_keyword">private</strong> File removeDuplicatesFromJar( File in, List&lt;String&gt; duplicates,
-<a class="jxr_linenumber" name="L838" href="#L838">838</a>                                           Set&lt;String&gt; duplicatesAdded, ZipOutputStream duplicateZos, <strong class="jxr_keyword">int</strong> num )
+<a class="jxr_linenumber" name="L808" href="#L808">808</a>             <strong class="jxr_keyword">final</strong> String msg = String.format( <span class="jxr_string">"Duplicated file: %s, found in archive %s and %s"</span>,
+<a class="jxr_linenumber" name="L809" href="#L809">809</a>                     e.getArchivePath(), e.getFile1(), e.getFile2() );
+<a class="jxr_linenumber" name="L810" href="#L810">810</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( msg, e );
+<a class="jxr_linenumber" name="L811" href="#L811">811</a>         }
+<a class="jxr_linenumber" name="L812" href="#L812">812</a>         <strong class="jxr_keyword">catch</strong> ( SealedApkException e )
+<a class="jxr_linenumber" name="L813" href="#L813">813</a>         {
+<a class="jxr_linenumber" name="L814" href="#L814">814</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( e.getMessage() );
+<a class="jxr_linenumber" name="L815" href="#L815">815</a>         }
+<a class="jxr_linenumber" name="L816" href="#L816">816</a>     }
+<a class="jxr_linenumber" name="L817" href="#L817">817</a> 
+<a class="jxr_linenumber" name="L818" href="#L818">818</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> addSecondaryDexes( File dexFile, ApkBuilder apkBuilder ) <strong class="jxr_keyword">throws</strong> ApkCreationException,
+<a class="jxr_linenumber" name="L819" href="#L819">819</a>             SealedApkException, DuplicateFileException
+<a class="jxr_linenumber" name="L820" href="#L820">820</a>     {
+<a class="jxr_linenumber" name="L821" href="#L821">821</a>         <strong class="jxr_keyword">int</strong> dexNumber = 2;
+<a class="jxr_linenumber" name="L822" href="#L822">822</a>         String dexFileName = getNextDexFileName( dexNumber );
+<a class="jxr_linenumber" name="L823" href="#L823">823</a>         File secondDexFile = createNextDexFile( dexFile, dexFileName );
+<a class="jxr_linenumber" name="L824" href="#L824">824</a>         <strong class="jxr_keyword">while</strong> ( secondDexFile.exists() )
+<a class="jxr_linenumber" name="L825" href="#L825">825</a>         {
+<a class="jxr_linenumber" name="L826" href="#L826">826</a>             apkBuilder.addFile( secondDexFile, dexFileName );
+<a class="jxr_linenumber" name="L827" href="#L827">827</a>             dexNumber++;
+<a class="jxr_linenumber" name="L828" href="#L828">828</a>             dexFileName = getNextDexFileName( dexNumber );
+<a class="jxr_linenumber" name="L829" href="#L829">829</a>             secondDexFile = createNextDexFile( dexFile, dexFileName );
+<a class="jxr_linenumber" name="L830" href="#L830">830</a>         }
+<a class="jxr_linenumber" name="L831" href="#L831">831</a>     }
+<a class="jxr_linenumber" name="L832" href="#L832">832</a> 
+<a class="jxr_linenumber" name="L833" href="#L833">833</a>     <strong class="jxr_keyword">private</strong> File createNextDexFile( File dexFile, String dexFileName )
+<a class="jxr_linenumber" name="L834" href="#L834">834</a>     {
+<a class="jxr_linenumber" name="L835" href="#L835">835</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File( dexFile.getParentFile(), dexFileName );
+<a class="jxr_linenumber" name="L836" href="#L836">836</a>     }
+<a class="jxr_linenumber" name="L837" href="#L837">837</a> 
+<a class="jxr_linenumber" name="L838" href="#L838">838</a>     <strong class="jxr_keyword">private</strong> String getNextDexFileName( <strong class="jxr_keyword">int</strong> dexNumber )
 <a class="jxr_linenumber" name="L839" href="#L839">839</a>     {
-<a class="jxr_linenumber" name="L840" href="#L840">840</a>         String target = targetDirectory.getAbsolutePath();
-<a class="jxr_linenumber" name="L841" href="#L841">841</a>         File tmp = <strong class="jxr_keyword">new</strong> File( target, <span class="jxr_string">"unpacked-embedded-jars"</span> );
-<a class="jxr_linenumber" name="L842" href="#L842">842</a>         tmp.mkdirs();
-<a class="jxr_linenumber" name="L843" href="#L843">843</a>         String jarName = String.format( <span class="jxr_string">"%s-%d.%s"</span>,
-<a class="jxr_linenumber" name="L844" href="#L844">844</a>            Files.getNameWithoutExtension( in.getName() ), num, Files.getFileExtension( in.getName() ) );
-<a class="jxr_linenumber" name="L845" href="#L845">845</a>         File out = <strong class="jxr_keyword">new</strong> File( tmp, jarName );
-<a class="jxr_linenumber" name="L846" href="#L846">846</a> 
-<a class="jxr_linenumber" name="L847" href="#L847">847</a>         <strong class="jxr_keyword">if</strong> ( out.exists() )
-<a class="jxr_linenumber" name="L848" href="#L848">848</a>         {
-<a class="jxr_linenumber" name="L849" href="#L849">849</a>             <strong class="jxr_keyword">return</strong> out;
-<a class="jxr_linenumber" name="L850" href="#L850">850</a>         }
-<a class="jxr_linenumber" name="L851" href="#L851">851</a>         <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L852" href="#L852">852</a>         {
-<a class="jxr_linenumber" name="L853" href="#L853">853</a>             <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L854" href="#L854">854</a>             {
-<a class="jxr_linenumber" name="L855" href="#L855">855</a>                 out.createNewFile();
-<a class="jxr_linenumber" name="L856" href="#L856">856</a>             }
-<a class="jxr_linenumber" name="L857" href="#L857">857</a>             <strong class="jxr_keyword">catch</strong> ( IOException e )
-<a class="jxr_linenumber" name="L858" href="#L858">858</a>             {
-<a class="jxr_linenumber" name="L859" href="#L859">859</a>                 e.printStackTrace();
-<a class="jxr_linenumber" name="L860" href="#L860">860</a>             }
-<a class="jxr_linenumber" name="L861" href="#L861">861</a>         }
-<a class="jxr_linenumber" name="L862" href="#L862">862</a> 
-<a class="jxr_linenumber" name="L863" href="#L863">863</a>         <em class="jxr_comment">// Create a new Jar file</em>
-<a class="jxr_linenumber" name="L864" href="#L864">864</a>         <strong class="jxr_keyword">final</strong> FileOutputStream fos;
-<a class="jxr_linenumber" name="L865" href="#L865">865</a>         <strong class="jxr_keyword">final</strong> ZipOutputStream jos;
-<a class="jxr_linenumber" name="L866" href="#L866">866</a>         <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L867" href="#L867">867</a>         {
-<a class="jxr_linenumber" name="L868" href="#L868">868</a>             fos = <strong class="jxr_keyword">new</strong> FileOutputStream( out );
-<a class="jxr_linenumber" name="L869" href="#L869">869</a>             jos = <strong class="jxr_keyword">new</strong> ZipOutputStream( fos );
-<a class="jxr_linenumber" name="L870" href="#L870">870</a>         }
-<a class="jxr_linenumber" name="L871" href="#L871">871</a>         <strong class="jxr_keyword">catch</strong> ( FileNotFoundException e1 )
-<a class="jxr_linenumber" name="L872" href="#L872">872</a>         {
-<a class="jxr_linenumber" name="L873" href="#L873">873</a>             getLog().error( <span class="jxr_string">"Cannot remove duplicates : the output file "</span> + out.getAbsolutePath() + <span class="jxr_string">" does not found"</span> );
-<a class="jxr_linenumber" name="L874" href="#L874">874</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L875" href="#L875">875</a>         }
-<a class="jxr_linenumber" name="L876" href="#L876">876</a> 
-<a class="jxr_linenumber" name="L877" href="#L877">877</a>         <strong class="jxr_keyword">final</strong> ZipFile inZip;
-<a class="jxr_linenumber" name="L878" href="#L878">878</a>         <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L879" href="#L879">879</a>         {
-<a class="jxr_linenumber" name="L880" href="#L880">880</a>             inZip = <strong class="jxr_keyword">new</strong> ZipFile( in );
-<a class="jxr_linenumber" name="L881" href="#L881">881</a>             Enumeration&lt;? <strong class="jxr_keyword">extends</strong> ZipEntry&gt; entries = inZip.entries();
-<a class="jxr_linenumber" name="L882" href="#L882">882</a>             <strong class="jxr_keyword">while</strong> ( entries.hasMoreElements() )
-<a class="jxr_linenumber" name="L883" href="#L883">883</a>             {
-<a class="jxr_linenumber" name="L884" href="#L884">884</a>                 ZipEntry entry = entries.nextElement();
-<a class="jxr_linenumber" name="L885" href="#L885">885</a>                 <em class="jxr_comment">// If the entry is not a duplicate, copy.</em>
-<a class="jxr_linenumber" name="L886" href="#L886">886</a>                 <strong class="jxr_keyword">if</strong> ( ! duplicates.contains( entry.getName() ) )
-<a class="jxr_linenumber" name="L887" href="#L887">887</a>                 {
-<a class="jxr_linenumber" name="L888" href="#L888">888</a>                     <em class="jxr_comment">// copy the entry header to jos</em>
-<a class="jxr_linenumber" name="L889" href="#L889">889</a>                     jos.putNextEntry( entry );
-<a class="jxr_linenumber" name="L890" href="#L890">890</a>                     InputStream currIn = inZip.getInputStream( entry );
-<a class="jxr_linenumber" name="L891" href="#L891">891</a>                     copyStreamWithoutClosing( currIn, jos );
-<a class="jxr_linenumber" name="L892" href="#L892">892</a>                     currIn.close();
-<a class="jxr_linenumber" name="L893" href="#L893">893</a>                     jos.closeEntry();
-<a class="jxr_linenumber" name="L894" href="#L894">894</a>                 }
-<a class="jxr_linenumber" name="L895" href="#L895">895</a>                 <em class="jxr_comment">//if it is duplicate, check the resource transformers</em>
-<a class="jxr_linenumber" name="L896" href="#L896">896</a>                 <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L897" href="#L897">897</a>                 {
-<a class="jxr_linenumber" name="L898" href="#L898">898</a>                     <strong class="jxr_keyword">boolean</strong> resourceTransformed = false;
-<a class="jxr_linenumber" name="L899" href="#L899">899</a>                     <strong class="jxr_keyword">if</strong> ( transformers != <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L900" href="#L900">900</a>                     {
-<a class="jxr_linenumber" name="L901" href="#L901">901</a>                         <strong class="jxr_keyword">for</strong> ( ResourceTransformer transformer : transformers )
-<a class="jxr_linenumber" name="L902" href="#L902">902</a>                         {
-<a class="jxr_linenumber" name="L903" href="#L903">903</a>                             <strong class="jxr_keyword">if</strong> ( transformer.canTransformResource( entry.getName() ) )
-<a class="jxr_linenumber" name="L904" href="#L904">904</a>                             {
-<a class="jxr_linenumber" name="L905" href="#L905">905</a>                                 getLog().info( <span class="jxr_string">"Transforming "</span> + entry.getName()
-<a class="jxr_linenumber" name="L906" href="#L906">906</a>                                         + <span class="jxr_string">" using "</span> + transformer.getClass().getName() );
-<a class="jxr_linenumber" name="L907" href="#L907">907</a>                                 InputStream currIn = inZip.getInputStream( entry );
-<a class="jxr_linenumber" name="L908" href="#L908">908</a>                                 transformer.processResource( entry.getName(), currIn, <strong class="jxr_keyword">null</strong> );
-<a class="jxr_linenumber" name="L909" href="#L909">909</a>                                 currIn.close();
-<a class="jxr_linenumber" name="L910" href="#L910">910</a>                                 resourceTransformed = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L911" href="#L911">911</a>                                 <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L912" href="#L912">912</a>                             }
-<a class="jxr_linenumber" name="L913" href="#L913">913</a>                         }
-<a class="jxr_linenumber" name="L914" href="#L914">914</a>                     }
-<a class="jxr_linenumber" name="L915" href="#L915">915</a>                     <em class="jxr_comment">//if not handled by transformer, add (once) to duplicates jar</em>
-<a class="jxr_linenumber" name="L916" href="#L916">916</a>                     <strong class="jxr_keyword">if</strong> ( !resourceTransformed )
-<a class="jxr_linenumber" name="L917" href="#L917">917</a>                     {
-<a class="jxr_linenumber" name="L918" href="#L918">918</a>                         <strong class="jxr_keyword">if</strong> ( !duplicatesAdded.contains( entry.getName() ) )
-<a class="jxr_linenumber" name="L919" href="#L919">919</a>                         {
-<a class="jxr_linenumber" name="L920" href="#L920">920</a>                             duplicatesAdded.add( entry.getName() );
-<a class="jxr_linenumber" name="L921" href="#L921">921</a>                             duplicateZos.putNextEntry( entry );
-<a class="jxr_linenumber" name="L922" href="#L922">922</a>                             InputStream currIn = inZip.getInputStream( entry );
-<a class="jxr_linenumber" name="L923" href="#L923">923</a>                             copyStreamWithoutClosing( currIn, duplicateZos );
-<a class="jxr_linenumber" name="L924" href="#L924">924</a>                             currIn.close();
-<a class="jxr_linenumber" name="L925" href="#L925">925</a>                             duplicateZos.closeEntry();
-<a class="jxr_linenumber" name="L926" href="#L926">926</a>                         }
-<a class="jxr_linenumber" name="L927" href="#L927">927</a>                     }
-<a class="jxr_linenumber" name="L928" href="#L928">928</a>                 }
-<a class="jxr_linenumber" name="L929" href="#L929">929</a>             }
-<a class="jxr_linenumber" name="L930" href="#L930">930</a>         }
-<a class="jxr_linenumber" name="L931" href="#L931">931</a>         <strong class="jxr_keyword">catch</strong> ( IOException e )
-<a class="jxr_linenumber" name="L932" href="#L932">932</a>         {
-<a class="jxr_linenumber" name="L933" href="#L933">933</a>             getLog().error( <span class="jxr_string">"Cannot removing duplicates : "</span> + e.getMessage() );
-<a class="jxr_linenumber" name="L934" href="#L934">934</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L935" href="#L935">935</a>         }
-<a class="jxr_linenumber" name="L936" href="#L936">936</a> 
-<a class="jxr_linenumber" name="L937" href="#L937">937</a>         <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L840" href="#L840">840</a>         <strong class="jxr_keyword">return</strong> CLASSES + dexNumber + DEX_SUFFIX;
+<a class="jxr_linenumber" name="L841" href="#L841">841</a>     }
+<a class="jxr_linenumber" name="L842" href="#L842">842</a> 
+<a class="jxr_linenumber" name="L843" href="#L843">843</a>     <strong class="jxr_keyword">private</strong> File removeDuplicatesFromJar( File in, List&lt;String&gt; duplicates,
+<a class="jxr_linenumber" name="L844" href="#L844">844</a>                                           Set&lt;String&gt; duplicatesAdded, ZipOutputStream duplicateZos, <strong class="jxr_keyword">int</strong> num )
+<a class="jxr_linenumber" name="L845" href="#L845">845</a>     {
+<a class="jxr_linenumber" name="L846" href="#L846">846</a>         String target = targetDirectory.getAbsolutePath();
+<a class="jxr_linenumber" name="L847" href="#L847">847</a>         File tmp = <strong class="jxr_keyword">new</strong> File( target, <span class="jxr_string">"unpacked-embedded-jars"</span> );
+<a class="jxr_linenumber" name="L848" href="#L848">848</a>         tmp.mkdirs();
+<a class="jxr_linenumber" name="L849" href="#L849">849</a>         String jarName = String.format( <span class="jxr_string">"%s-%d.%s"</span>,
+<a class="jxr_linenumber" name="L850" href="#L850">850</a>            Files.getNameWithoutExtension( in.getName() ), num, Files.getFileExtension( in.getName() ) );
+<a class="jxr_linenumber" name="L851" href="#L851">851</a>         File out = <strong class="jxr_keyword">new</strong> File( tmp, jarName );
+<a class="jxr_linenumber" name="L852" href="#L852">852</a> 
+<a class="jxr_linenumber" name="L853" href="#L853">853</a>         <strong class="jxr_keyword">if</strong> ( out.exists() )
+<a class="jxr_linenumber" name="L854" href="#L854">854</a>         {
+<a class="jxr_linenumber" name="L855" href="#L855">855</a>             <strong class="jxr_keyword">return</strong> out;
+<a class="jxr_linenumber" name="L856" href="#L856">856</a>         }
+<a class="jxr_linenumber" name="L857" href="#L857">857</a>         <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L858" href="#L858">858</a>         {
+<a class="jxr_linenumber" name="L859" href="#L859">859</a>             <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L860" href="#L860">860</a>             {
+<a class="jxr_linenumber" name="L861" href="#L861">861</a>                 out.createNewFile();
+<a class="jxr_linenumber" name="L862" href="#L862">862</a>             }
+<a class="jxr_linenumber" name="L863" href="#L863">863</a>             <strong class="jxr_keyword">catch</strong> ( IOException e )
+<a class="jxr_linenumber" name="L864" href="#L864">864</a>             {
+<a class="jxr_linenumber" name="L865" href="#L865">865</a>                 e.printStackTrace();
+<a class="jxr_linenumber" name="L866" href="#L866">866</a>             }
+<a class="jxr_linenumber" name="L867" href="#L867">867</a>         }
+<a class="jxr_linenumber" name="L868" href="#L868">868</a> 
+<a class="jxr_linenumber" name="L869" href="#L869">869</a>         <em class="jxr_comment">// Create a new Jar file</em>
+<a class="jxr_linenumber" name="L870" href="#L870">870</a>         <strong class="jxr_keyword">final</strong> FileOutputStream fos;
+<a class="jxr_linenumber" name="L871" href="#L871">871</a>         <strong class="jxr_keyword">final</strong> ZipOutputStream jos;
+<a class="jxr_linenumber" name="L872" href="#L872">872</a>         <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L873" href="#L873">873</a>         {
+<a class="jxr_linenumber" name="L874" href="#L874">874</a>             fos = <strong class="jxr_keyword">new</strong> FileOutputStream( out );
+<a class="jxr_linenumber" name="L875" href="#L875">875</a>             jos = <strong class="jxr_keyword">new</strong> ZipOutputStream( fos );
+<a class="jxr_linenumber" name="L876" href="#L876">876</a>         }
+<a class="jxr_linenumber" name="L877" href="#L877">877</a>         <strong class="jxr_keyword">catch</strong> ( FileNotFoundException e1 )
+<a class="jxr_linenumber" name="L878" href="#L878">878</a>         {
+<a class="jxr_linenumber" name="L879" href="#L879">879</a>             getLog().error( <span class="jxr_string">"Cannot remove duplicates : the output file "</span> + out.getAbsolutePath() + <span class="jxr_string">" does not found"</span> );
+<a class="jxr_linenumber" name="L880" href="#L880">880</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L881" href="#L881">881</a>         }
+<a class="jxr_linenumber" name="L882" href="#L882">882</a> 
+<a class="jxr_linenumber" name="L883" href="#L883">883</a>         <strong class="jxr_keyword">final</strong> ZipFile inZip;
+<a class="jxr_linenumber" name="L884" href="#L884">884</a>         <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L885" href="#L885">885</a>         {
+<a class="jxr_linenumber" name="L886" href="#L886">886</a>             inZip = <strong class="jxr_keyword">new</strong> ZipFile( in );
+<a class="jxr_linenumber" name="L887" href="#L887">887</a>             Enumeration&lt;? <strong class="jxr_keyword">extends</strong> ZipEntry&gt; entries = inZip.entries();
+<a class="jxr_linenumber" name="L888" href="#L888">888</a>             <strong class="jxr_keyword">while</strong> ( entries.hasMoreElements() )
+<a class="jxr_linenumber" name="L889" href="#L889">889</a>             {
+<a class="jxr_linenumber" name="L890" href="#L890">890</a>                 ZipEntry entry = entries.nextElement();
+<a class="jxr_linenumber" name="L891" href="#L891">891</a>                 <em class="jxr_comment">// If the entry is not a duplicate, copy.</em>
+<a class="jxr_linenumber" name="L892" href="#L892">892</a>                 <strong class="jxr_keyword">if</strong> ( ! duplicates.contains( entry.getName() ) )
+<a class="jxr_linenumber" name="L893" href="#L893">893</a>                 {
+<a class="jxr_linenumber" name="L894" href="#L894">894</a>                     <em class="jxr_comment">// copy the entry header to jos</em>
+<a class="jxr_linenumber" name="L895" href="#L895">895</a>                     jos.putNextEntry( entry );
+<a class="jxr_linenumber" name="L896" href="#L896">896</a>                     InputStream currIn = inZip.getInputStream( entry );
+<a class="jxr_linenumber" name="L897" href="#L897">897</a>                     copyStreamWithoutClosing( currIn, jos );
+<a class="jxr_linenumber" name="L898" href="#L898">898</a>                     currIn.close();
+<a class="jxr_linenumber" name="L899" href="#L899">899</a>                     jos.closeEntry();
+<a class="jxr_linenumber" name="L900" href="#L900">900</a>                 }
+<a class="jxr_linenumber" name="L901" href="#L901">901</a>                 <em class="jxr_comment">//if it is duplicate, check the resource transformers</em>
+<a class="jxr_linenumber" name="L902" href="#L902">902</a>                 <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L903" href="#L903">903</a>                 {
+<a class="jxr_linenumber" name="L904" href="#L904">904</a>                     <strong class="jxr_keyword">boolean</strong> resourceTransformed = false;
+<a class="jxr_linenumber" name="L905" href="#L905">905</a>                     <strong class="jxr_keyword">if</strong> ( transformers != <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L906" href="#L906">906</a>                     {
+<a class="jxr_linenumber" name="L907" href="#L907">907</a>                         <strong class="jxr_keyword">for</strong> ( ResourceTransformer transformer : transformers )
+<a class="jxr_linenumber" name="L908" href="#L908">908</a>                         {
+<a class="jxr_linenumber" name="L909" href="#L909">909</a>                             <strong class="jxr_keyword">if</strong> ( transformer.canTransformResource( entry.getName() ) )
+<a class="jxr_linenumber" name="L910" href="#L910">910</a>                             {
+<a class="jxr_linenumber" name="L911" href="#L911">911</a>                                 getLog().info( <span class="jxr_string">"Transforming "</span> + entry.getName()
+<a class="jxr_linenumber" name="L912" href="#L912">912</a>                                         + <span class="jxr_string">" using "</span> + transformer.getClass().getName() );
+<a class="jxr_linenumber" name="L913" href="#L913">913</a>                                 InputStream currIn = inZip.getInputStream( entry );
+<a class="jxr_linenumber" name="L914" href="#L914">914</a>                                 transformer.processResource( entry.getName(), currIn, <strong class="jxr_keyword">null</strong> );
+<a class="jxr_linenumber" name="L915" href="#L915">915</a>                                 currIn.close();
+<a class="jxr_linenumber" name="L916" href="#L916">916</a>                                 resourceTransformed = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L917" href="#L917">917</a>                                 <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L918" href="#L918">918</a>                             }
+<a class="jxr_linenumber" name="L919" href="#L919">919</a>                         }
+<a class="jxr_linenumber" name="L920" href="#L920">920</a>                     }
+<a class="jxr_linenumber" name="L921" href="#L921">921</a>                     <em class="jxr_comment">//if not handled by transformer, add (once) to duplicates jar</em>
+<a class="jxr_linenumber" name="L922" href="#L922">922</a>                     <strong class="jxr_keyword">if</strong> ( !resourceTransformed )
+<a class="jxr_linenumber" name="L923" href="#L923">923</a>                     {
+<a class="jxr_linenumber" name="L924" href="#L924">924</a>                         <strong class="jxr_keyword">if</strong> ( !duplicatesAdded.contains( entry.getName() ) )
+<a class="jxr_linenumber" name="L925" href="#L925">925</a>                         {
+<a class="jxr_linenumber" name="L926" href="#L926">926</a>                             duplicatesAdded.add( entry.getName() );
+<a class="jxr_linenumber" name="L927" href="#L927">927</a>                             duplicateZos.putNextEntry( entry );
+<a class="jxr_linenumber" name="L928" href="#L928">928</a>                             InputStream currIn = inZip.getInputStream( entry );
+<a class="jxr_linenumber" name="L929" href="#L929">929</a>                             copyStreamWithoutClosing( currIn, duplicateZos );
+<a class="jxr_linenumber" name="L930" href="#L930">930</a>                             currIn.close();
+<a class="jxr_linenumber" name="L931" href="#L931">931</a>                             duplicateZos.closeEntry();
+<a class="jxr_linenumber" name="L932" href="#L932">932</a>                         }
+<a class="jxr_linenumber" name="L933" href="#L933">933</a>                     }
+<a class="jxr_linenumber" name="L934" href="#L934">934</a>                 }
+<a class="jxr_linenumber" name="L935" href="#L935">935</a>             }
+<a class="jxr_linenumber" name="L936" href="#L936">936</a>         }
+<a class="jxr_linenumber" name="L937" href="#L937">937</a>         <strong class="jxr_keyword">catch</strong> ( IOException e )
 <a class="jxr_linenumber" name="L938" href="#L938">938</a>         {
-<a class="jxr_linenumber" name="L939" href="#L939">939</a>             inZip.close();
-<a class="jxr_linenumber" name="L940" href="#L940">940</a>             jos.close();
-<a class="jxr_linenumber" name="L941" href="#L941">941</a>             fos.close();
-<a class="jxr_linenumber" name="L942" href="#L942">942</a>         }
-<a class="jxr_linenumber" name="L943" href="#L943">943</a>         <strong class="jxr_keyword">catch</strong> ( IOException e )
+<a class="jxr_linenumber" name="L939" href="#L939">939</a>             getLog().error( <span class="jxr_string">"Cannot removing duplicates : "</span> + e.getMessage() );
+<a class="jxr_linenumber" name="L940" href="#L940">940</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L941" href="#L941">941</a>         }
+<a class="jxr_linenumber" name="L942" href="#L942">942</a> 
+<a class="jxr_linenumber" name="L943" href="#L943">943</a>         <strong class="jxr_keyword">try</strong>
 <a class="jxr_linenumber" name="L944" href="#L944">944</a>         {
-<a class="jxr_linenumber" name="L945" href="#L945">945</a>             <em class="jxr_comment">// ignore it.</em>
-<a class="jxr_linenumber" name="L946" href="#L946">946</a>         }
-<a class="jxr_linenumber" name="L947" href="#L947">947</a>         getLog().info( in.getName() + <span class="jxr_string">" rewritten without duplicates : "</span> + out.getAbsolutePath() );
-<a class="jxr_linenumber" name="L948" href="#L948">948</a>         <strong class="jxr_keyword">return</strong> out;
-<a class="jxr_linenumber" name="L949" href="#L949">949</a>     }
-<a class="jxr_linenumber" name="L950" href="#L950">950</a> 
-<a class="jxr_linenumber" name="L951" href="#L951">951</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> removeDuplicatesFromFolder( File root, File in, List&lt;String&gt; duplicates,
-<a class="jxr_linenumber" name="L952" href="#L952">952</a>        Set&lt;String&gt; duplicatesAdded, ZipOutputStream duplicateZos )
-<a class="jxr_linenumber" name="L953" href="#L953">953</a>     {
-<a class="jxr_linenumber" name="L954" href="#L954">954</a>         String rPath = root.getAbsolutePath();
-<a class="jxr_linenumber" name="L955" href="#L955">955</a>         <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L956" href="#L956">956</a>         {
-<a class="jxr_linenumber" name="L957" href="#L957">957</a>             <strong class="jxr_keyword">for</strong> ( File f : in.listFiles() )
-<a class="jxr_linenumber" name="L958" href="#L958">958</a>             {
-<a class="jxr_linenumber" name="L959" href="#L959">959</a>                 <strong class="jxr_keyword">if</strong> ( f.isDirectory() )
-<a class="jxr_linenumber" name="L960" href="#L960">960</a>                 {
-<a class="jxr_linenumber" name="L961" href="#L961">961</a>                     removeDuplicatesFromFolder( root, f, duplicates, duplicatesAdded, duplicateZos );
-<a class="jxr_linenumber" name="L962" href="#L962">962</a>                 }
-<a class="jxr_linenumber" name="L963" href="#L963">963</a>                 <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L964" href="#L964">964</a>                 {
-<a class="jxr_linenumber" name="L965" href="#L965">965</a>                     String lName = f.getAbsolutePath();
-<a class="jxr_linenumber" name="L966" href="#L966">966</a>                     lName = lName.substring( rPath.length() + 1 ); <em class="jxr_comment">//make relative path</em>
-<a class="jxr_linenumber" name="L967" href="#L967">967</a>                     <strong class="jxr_keyword">if</strong> ( duplicates.contains( lName ) )
-<a class="jxr_linenumber" name="L968" href="#L968">968</a>                     {
-<a class="jxr_linenumber" name="L969" href="#L969">969</a>                         <strong class="jxr_keyword">boolean</strong> resourceTransformed = false;
-<a class="jxr_linenumber" name="L970" href="#L970">970</a>                         <strong class="jxr_keyword">if</strong> ( transformers != <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L971" href="#L971">971</a>                         {
-<a class="jxr_linenumber" name="L972" href="#L972">972</a>                             <strong class="jxr_keyword">for</strong> ( ResourceTransformer transformer : transformers )
-<a class="jxr_linenumber" name="L973" href="#L973">973</a>                             {
-<a class="jxr_linenumber" name="L974" href="#L974">974</a>                                 <strong class="jxr_keyword">if</strong> ( transformer.canTransformResource( lName ) )
-<a class="jxr_linenumber" name="L975" href="#L975">975</a>                                 {
-<a class="jxr_linenumber" name="L976" href="#L976">976</a>                                     getLog().info( <span class="jxr_string">"Transforming "</span> + lName
-<a class="jxr_linenumber" name="L977" href="#L977">977</a>                                        + <span class="jxr_string">" using "</span> + transformer.getClass().getName() );
-<a class="jxr_linenumber" name="L978" href="#L978">978</a>                                     InputStream currIn = <strong class="jxr_keyword">new</strong> FileInputStream( f );
-<a class="jxr_linenumber" name="L979" href="#L979">979</a>                                     transformer.processResource( lName, currIn, <strong class="jxr_keyword">null</strong> );
-<a class="jxr_linenumber" name="L980" href="#L980">980</a>                                     currIn.close();
-<a class="jxr_linenumber" name="L981" href="#L981">981</a>                                     resourceTransformed = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L982" href="#L982">982</a>                                     <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L983" href="#L983">983</a>                                 }
-<a class="jxr_linenumber" name="L984" href="#L984">984</a>                             }
-<a class="jxr_linenumber" name="L985" href="#L985">985</a>                         }
-<a class="jxr_linenumber" name="L986" href="#L986">986</a>                         <em class="jxr_comment">//if not handled by transformer, add (once) to duplicates jar</em>
-<a class="jxr_linenumber" name="L987" href="#L987">987</a>                         <strong class="jxr_keyword">if</strong> ( !resourceTransformed )
-<a class="jxr_linenumber" name="L988" href="#L988">988</a>                         {
-<a class="jxr_linenumber" name="L989" href="#L989">989</a>                             <strong class="jxr_keyword">if</strong> ( !duplicatesAdded.contains( lName ) )
-<a class="jxr_linenumber" name="L990" href="#L990">990</a>                             {
-<a class="jxr_linenumber" name="L991" href="#L991">991</a>                                 duplicatesAdded.add( lName );
-<a class="jxr_linenumber" name="L992" href="#L992">992</a>                                 ZipEntry entry = <strong class="jxr_keyword">new</strong> ZipEntry( lName );
-<a class="jxr_linenumber" name="L993" href="#L993">993</a>                                 duplicateZos.putNextEntry( entry );
-<a class="jxr_linenumber" name="L994" href="#L994">994</a>                                 InputStream currIn = <strong class="jxr_keyword">new</strong> FileInputStream( f );
-<a class="jxr_linenumber" name="L995" href="#L995">995</a>                                 copyStreamWithoutClosing( currIn, duplicateZos );
-<a class="jxr_linenumber" name="L996" href="#L996">996</a>                                 currIn.close();
-<a class="jxr_linenumber" name="L997" href="#L997">997</a>                                 duplicateZos.closeEntry();
-<a class="jxr_linenumber" name="L998" href="#L998">998</a>                             }
-<a class="jxr_linenumber" name="L999" href="#L999">999</a>                         }
-<a class="jxr_linenumber" name="L1000" href="#L1000">1000</a>                         f.delete();
-<a class="jxr_linenumber" name="L1001" href="#L1001">1001</a>                     }
-<a class="jxr_linenumber" name="L1002" href="#L1002">1002</a>                 }
-<a class="jxr_linenumber" name="L1003" href="#L1003">1003</a>             }
-<a class="jxr_linenumber" name="L1004" href="#L1004">1004</a>         }
-<a class="jxr_linenumber" name="L1005" href="#L1005">1005</a>         <strong class="jxr_keyword">catch</strong> ( IOException e )
-<a class="jxr_linenumber" name="L1006" href="#L1006">1006</a>         {
-<a class="jxr_linenumber" name="L1007" href="#L1007">1007</a>             getLog().error( <span class="jxr_string">"Cannot removing duplicates : "</span> + e.getMessage() );
-<a class="jxr_linenumber" name="L1008" href="#L1008">1008</a>         }
-<a class="jxr_linenumber" name="L1009" href="#L1009">1009</a>     }
-<a class="jxr_linenumber" name="L1010" href="#L1010">1010</a> 
-<a class="jxr_linenumber" name="L1011" href="#L1011">1011</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1012" href="#L1012">1012</a> <em class="jxr_javadoccomment">     * Copies an input stream into an output stream but does not close the streams.</em>
-<a class="jxr_linenumber" name="L1013" href="#L1013">1013</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1014" href="#L1014">1014</a> <em class="jxr_javadoccomment">     * @param in  the input stream</em>
-<a class="jxr_linenumber" name="L1015" href="#L1015">1015</a> <em class="jxr_javadoccomment">     * @param out the output stream</em>
-<a class="jxr_linenumber" name="L1016" href="#L1016">1016</a> <em class="jxr_javadoccomment">     * @throws IOException if the stream cannot be copied</em>
-<a class="jxr_linenumber" name="L1017" href="#L1017">1017</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1018" href="#L1018">1018</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> copyStreamWithoutClosing( InputStream in, OutputStream out ) <strong class="jxr_keyword">throws</strong> IOException
-<a class="jxr_linenumber" name="L1019" href="#L1019">1019</a>     {
-<a class="jxr_linenumber" name="L1020" href="#L1020">1020</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> bufferSize = 4096;
-<a class="jxr_linenumber" name="L1021" href="#L1021">1021</a>         byte[] b = <strong class="jxr_keyword">new</strong> byte[ bufferSize ];
-<a class="jxr_linenumber" name="L1022" href="#L1022">1022</a>         <strong class="jxr_keyword">int</strong> n;
-<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a>         <strong class="jxr_keyword">while</strong> ( ( n = in.read( b ) ) != - 1 )
-<a class="jxr_linenumber" name="L1024" href="#L1024">1024</a>         {
-<a class="jxr_linenumber" name="L1025" href="#L1025">1025</a>             out.write( b, 0, n );
-<a class="jxr_linenumber" name="L1026" href="#L1026">1026</a>         }
-<a class="jxr_linenumber" name="L1027" href="#L1027">1027</a>     }
-<a class="jxr_linenumber" name="L1028" href="#L1028">1028</a> 
-<a class="jxr_linenumber" name="L1029" href="#L1029">1029</a>     <strong class="jxr_keyword">private</strong> Collection&lt;File&gt; getNativeLibraryFolders() <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L1030" href="#L1030">1030</a>     {
-<a class="jxr_linenumber" name="L1031" href="#L1031">1031</a>         <strong class="jxr_keyword">final</strong> List&lt;File&gt; natives = <strong class="jxr_keyword">new</strong> ArrayList&lt;File&gt;();
-<a class="jxr_linenumber" name="L1032" href="#L1032">1032</a> 
-<a class="jxr_linenumber" name="L1033" href="#L1033">1033</a>         <strong class="jxr_keyword">if</strong> ( nativeLibrariesDirectory.exists() )
-<a class="jxr_linenumber" name="L1034" href="#L1034">1034</a>         {
-<a class="jxr_linenumber" name="L1035" href="#L1035">1035</a>             <em class="jxr_comment">// If we have prebuilt native libs then copy them over to the native output folder.</em>
-<a class="jxr_linenumber" name="L1036" href="#L1036">1036</a>             <em class="jxr_comment">// NB they will be copied over the top of any native libs generated as part of the NdkBuildMojo</em>
-<a class="jxr_linenumber" name="L1037" href="#L1037">1037</a>             copyLocalNativeLibraries( nativeLibrariesDirectory, ndkOutputDirectory );
-<a class="jxr_linenumber" name="L1038" href="#L1038">1038</a>         }
-<a class="jxr_linenumber" name="L1039" href="#L1039">1039</a> 
-<a class="jxr_linenumber" name="L1040" href="#L1040">1040</a>         <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; artifacts = getNativeLibraryArtifacts();
-<a class="jxr_linenumber" name="L1041" href="#L1041">1041</a>         <strong class="jxr_keyword">for</strong> ( Artifact resolvedArtifact : artifacts )
-<a class="jxr_linenumber" name="L1042" href="#L1042">1042</a>         {
-<a class="jxr_linenumber" name="L1043" href="#L1043">1043</a>             <strong class="jxr_keyword">if</strong> ( APKLIB.equals( resolvedArtifact.getType() ) || AAR.equals( resolvedArtifact.getType() ) )
-<a class="jxr_linenumber" name="L1044" href="#L1044">1044</a>             {
-<a class="jxr_linenumber" name="L1045" href="#L1045">1045</a>                 <em class="jxr_comment">// If the artifact is an AAR or APKLIB then add their native libs folder to the result.</em>
-<a class="jxr_linenumber" name="L1046" href="#L1046">1046</a>                 <strong class="jxr_keyword">final</strong> File folder = getUnpackedLibNativesFolder( resolvedArtifact );
-<a class="jxr_linenumber" name="L1047" href="#L1047">1047</a>                 getLog().debug( <span class="jxr_string">"Adding native library folder "</span> + folder );
-<a class="jxr_linenumber" name="L1048" href="#L1048">1048</a>                 natives.add( folder );
-<a class="jxr_linenumber" name="L1049" href="#L1049">1049</a>             }
-<a class="jxr_linenumber" name="L1050" href="#L1050">1050</a> 
-<a class="jxr_linenumber" name="L1051" href="#L1051">1051</a>             <em class="jxr_comment">// Copy the native lib dependencies into the native lib output folder</em>
-<a class="jxr_linenumber" name="L1052" href="#L1052">1052</a>             <strong class="jxr_keyword">for</strong> ( String ndkArchitecture : AndroidNdk.NDK_ARCHITECTURES )
-<a class="jxr_linenumber" name="L1053" href="#L1053">1053</a>             {
-<a class="jxr_linenumber" name="L1054" href="#L1054">1054</a>                 <strong class="jxr_keyword">if</strong> ( NativeHelper.artifactHasHardwareArchitecture( resolvedArtifact,
-<a class="jxr_linenumber" name="L1055" href="#L1055">1055</a>                         ndkArchitecture, nativeLibrariesDependenciesHardwareArchitectureDefault ) )
-<a class="jxr_linenumber" name="L1056" href="#L1056">1056</a>                 {
-<a class="jxr_linenumber" name="L1057" href="#L1057">1057</a>                     <em class="jxr_comment">// If the artifact is a native lib then copy it into the native libs output folder.</em>
-<a class="jxr_linenumber" name="L1058" href="#L1058">1058</a>                     copyNativeLibraryArtifact( resolvedArtifact, ndkOutputDirectory, ndkArchitecture );
-<a class="jxr_linenumber" name="L1059" href="#L1059">1059</a>                 }
-<a class="jxr_linenumber" name="L1060" href="#L1060">1060</a>             }
-<a class="jxr_linenumber" name="L1061" href="#L1061">1061</a>         }
-<a class="jxr_linenumber" name="L1062" href="#L1062">1062</a> 
-<a class="jxr_linenumber" name="L1063" href="#L1063">1063</a>         <strong class="jxr_keyword">if</strong> ( apkDebug )
-<a class="jxr_linenumber" name="L1064" href="#L1064">1064</a>         {
-<a class="jxr_linenumber" name="L1065" href="#L1065">1065</a>             <em class="jxr_comment">// Copy the gdbserver binary into the native libs output folder (for each architecture).</em>
-<a class="jxr_linenumber" name="L1066" href="#L1066">1066</a>             <strong class="jxr_keyword">for</strong> ( String ndkArchitecture : AndroidNdk.NDK_ARCHITECTURES )
-<a class="jxr_linenumber" name="L1067" href="#L1067">1067</a>             {
-<a class="jxr_linenumber" name="L1068" href="#L1068">1068</a>                 copyGdbServer( ndkOutputDirectory, ndkArchitecture );
-<a class="jxr_linenumber" name="L1069" href="#L1069">1069</a>             }
-<a class="jxr_linenumber" name="L1070" href="#L1070">1070</a>         }
-<a class="jxr_linenumber" name="L1071" href="#L1071">1071</a> 
-<a class="jxr_linenumber" name="L1072" href="#L1072">1072</a>         <strong class="jxr_keyword">if</strong> ( ndkOutputDirectory.exists() )
-<a class="jxr_linenumber" name="L1073" href="#L1073">1073</a>         {
-<a class="jxr_linenumber" name="L1074" href="#L1074">1074</a>             <em class="jxr_comment">// If we have any native libs in the native output folder then add the output folder to the result.</em>
-<a class="jxr_linenumber" name="L1075" href="#L1075">1075</a>             getLog().debug( <span class="jxr_string">"Adding built native library folder "</span> + ndkOutputDirectory );
-<a class="jxr_linenumber" name="L1076" href="#L1076">1076</a>             natives.add( ndkOutputDirectory );
-<a class="jxr_linenumber" name="L1077" href="#L1077">1077</a>         }
-<a class="jxr_linenumber" name="L1078" href="#L1078">1078</a> 
-<a class="jxr_linenumber" name="L1079" href="#L1079">1079</a>         <strong class="jxr_keyword">return</strong> natives;
-<a class="jxr_linenumber" name="L1080" href="#L1080">1080</a>     }
-<a class="jxr_linenumber" name="L1081" href="#L1081">1081</a> 
-<a class="jxr_linenumber" name="L1082" href="#L1082">1082</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1083" href="#L1083">1083</a> <em class="jxr_javadoccomment">     * @return Any native dependencies or attached artifacts. This may include artifacts from the ndk-build MOJO.</em>
-<a class="jxr_linenumber" name="L1084" href="#L1084">1084</a> <em class="jxr_javadoccomment">     * @throws MojoExecutionException</em>
-<a class="jxr_linenumber" name="L1085" href="#L1085">1085</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1086" href="#L1086">1086</a>     <strong class="jxr_keyword">private</strong> Set&lt;Artifact&gt; getNativeLibraryArtifacts() <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L1087" href="#L1087">1087</a>     {
-<a class="jxr_linenumber" name="L1088" href="#L1088">1088</a>         <strong class="jxr_keyword">return</strong> getNativeHelper().getNativeDependenciesArtifacts( <strong class="jxr_keyword">this</strong>, getUnpackedLibsDirectory(), <strong class="jxr_keyword">true</strong> );
-<a class="jxr_linenumber" name="L1089" href="#L1089">1089</a>     }
-<a class="jxr_linenumber" name="L1090" href="#L1090">1090</a> 
-<a class="jxr_linenumber" name="L1091" href="#L1091">1091</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> copyNativeLibraryArtifact( Artifact artifact,
-<a class="jxr_linenumber" name="L1092" href="#L1092">1092</a>                                             File destinationDirectory,
-<a class="jxr_linenumber" name="L1093" href="#L1093">1093</a>                                             String ndkArchitecture ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L1094" href="#L1094">1094</a>     {
-<a class="jxr_linenumber" name="L1095" href="#L1095">1095</a> 
-<a class="jxr_linenumber" name="L1096" href="#L1096">1096</a>         <strong class="jxr_keyword">final</strong> File artifactFile = getArtifactResolverHelper().resolveArtifactToFile( artifact );
-<a class="jxr_linenumber" name="L1097" href="#L1097">1097</a>         <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L1098" href="#L1098">1098</a>         {
-<a class="jxr_linenumber" name="L1099" href="#L1099">1099</a>             <strong class="jxr_keyword">final</strong> String artifactId = artifact.getArtifactId();
-<a class="jxr_linenumber" name="L1100" href="#L1100">1100</a>             String filename = artifactId.startsWith( <span class="jxr_string">"lib"</span> )
-<a class="jxr_linenumber" name="L1101" href="#L1101">1101</a>                     ? artifactId + <span class="jxr_string">".so"</span>
-<a class="jxr_linenumber" name="L1102" href="#L1102">1102</a>                     : <span class="jxr_string">"lib"</span> + artifactId + <span class="jxr_string">".so"</span>;
-<a class="jxr_linenumber" name="L1103" href="#L1103">1103</a>             <strong class="jxr_keyword">if</strong> ( ndkFinalLibraryName != <strong class="jxr_keyword">null</strong>
-<a class="jxr_linenumber" name="L1104" href="#L1104">1104</a>                     &amp;&amp; artifact.getFile().getName().startsWith( <span class="jxr_string">"lib"</span> + ndkFinalLibraryName ) )
-<a class="jxr_linenumber" name="L1105" href="#L1105">1105</a>             {
-<a class="jxr_linenumber" name="L1106" href="#L1106">1106</a>                 <em class="jxr_comment">// The artifact looks like one we built with the NDK in this module</em>
-<a class="jxr_linenumber" name="L1107" href="#L1107">1107</a>                 <em class="jxr_comment">// preserve the name from the NDK build</em>
-<a class="jxr_linenumber" name="L1108" href="#L1108">1108</a>                 filename = artifact.getFile().getName();
-<a class="jxr_linenumber" name="L1109" href="#L1109">1109</a>             }
-<a class="jxr_linenumber" name="L1110" href="#L1110">1110</a> 
-<a class="jxr_linenumber" name="L1111" href="#L1111">1111</a>             <strong class="jxr_keyword">final</strong> File folder = <strong class="jxr_keyword">new</strong> File( destinationDirectory, ndkArchitecture );
-<a class="jxr_linenumber" name="L1112" href="#L1112">1112</a>             <strong class="jxr_keyword">final</strong> File file = <strong class="jxr_keyword">new</strong> File( folder, filename );
-<a class="jxr_linenumber" name="L1113" href="#L1113">1113</a>             getLog().debug( <span class="jxr_string">"Copying native dependency "</span> + artifactId + <span class="jxr_string">" ("</span> + artifact.getGroupId() + <span class="jxr_string">") to "</span> + file );
-<a class="jxr_linenumber" name="L1114" href="#L1114">1114</a>             FileUtils.copyFile( artifactFile, file );
-<a class="jxr_linenumber" name="L1115" href="#L1115">1115</a>         }
-<a class="jxr_linenumber" name="L1116" href="#L1116">1116</a>         <strong class="jxr_keyword">catch</strong> ( IOException e )
-<a class="jxr_linenumber" name="L1117" href="#L1117">1117</a>         {
-<a class="jxr_linenumber" name="L1118" href="#L1118">1118</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"Could not copy native dependency."</span>, e );
-<a class="jxr_linenumber" name="L1119" href="#L1119">1119</a>         }
-<a class="jxr_linenumber" name="L1120" href="#L1120">1120</a>     }
-<a class="jxr_linenumber" name="L1121" href="#L1121">1121</a> 
-<a class="jxr_linenumber" name="L1122" href="#L1122">1122</a> 
-<a class="jxr_linenumber" name="L1123" href="#L1123">1123</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1124" href="#L1124">1124</a> <em class="jxr_javadoccomment">     * Copy the Ndk GdbServer into the architecture output folder if the folder exists but the GdbServer doesn't.</em>
-<a class="jxr_linenumber" name="L1125" href="#L1125">1125</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1126" href="#L1126">1126</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> copyGdbServer( File destinationDirectory, String architecture ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L1127" href="#L1127">1127</a>     {
+<a class="jxr_linenumber" name="L945" href="#L945">945</a>             inZip.close();
+<a class="jxr_linenumber" name="L946" href="#L946">946</a>             jos.close();
+<a class="jxr_linenumber" name="L947" href="#L947">947</a>             fos.close();
+<a class="jxr_linenumber" name="L948" href="#L948">948</a>         }
+<a class="jxr_linenumber" name="L949" href="#L949">949</a>         <strong class="jxr_keyword">catch</strong> ( IOException e )
+<a class="jxr_linenumber" name="L950" href="#L950">950</a>         {
+<a class="jxr_linenumber" name="L951" href="#L951">951</a>             <em class="jxr_comment">// ignore it.</em>
+<a class="jxr_linenumber" name="L952" href="#L952">952</a>         }
+<a class="jxr_linenumber" name="L953" href="#L953">953</a>         getLog().info( in.getName() + <span class="jxr_string">" rewritten without duplicates : "</span> + out.getAbsolutePath() );
+<a class="jxr_linenumber" name="L954" href="#L954">954</a>         <strong class="jxr_keyword">return</strong> out;
+<a class="jxr_linenumber" name="L955" href="#L955">955</a>     }
+<a class="jxr_linenumber" name="L956" href="#L956">956</a> 
+<a class="jxr_linenumber" name="L957" href="#L957">957</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> removeDuplicatesFromFolder( File root, File in, List&lt;String&gt; duplicates,
+<a class="jxr_linenumber" name="L958" href="#L958">958</a>        Set&lt;String&gt; duplicatesAdded, ZipOutputStream duplicateZos )
+<a class="jxr_linenumber" name="L959" href="#L959">959</a>     {
+<a class="jxr_linenumber" name="L960" href="#L960">960</a>         String rPath = root.getAbsolutePath();
+<a class="jxr_linenumber" name="L961" href="#L961">961</a>         <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L962" href="#L962">962</a>         {
+<a class="jxr_linenumber" name="L963" href="#L963">963</a>             <strong class="jxr_keyword">for</strong> ( File f : in.listFiles() )
+<a class="jxr_linenumber" name="L964" href="#L964">964</a>             {
+<a class="jxr_linenumber" name="L965" href="#L965">965</a>                 <strong class="jxr_keyword">if</strong> ( f.isDirectory() )
+<a class="jxr_linenumber" name="L966" href="#L966">966</a>                 {
+<a class="jxr_linenumber" name="L967" href="#L967">967</a>                     removeDuplicatesFromFolder( root, f, duplicates, duplicatesAdded, duplicateZos );
+<a class="jxr_linenumber" name="L968" href="#L968">968</a>                 }
+<a class="jxr_linenumber" name="L969" href="#L969">969</a>                 <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L970" href="#L970">970</a>                 {
+<a class="jxr_linenumber" name="L971" href="#L971">971</a>                     String lName = f.getAbsolutePath();
+<a class="jxr_linenumber" name="L972" href="#L972">972</a>                     lName = lName.substring( rPath.length() + 1 ); <em class="jxr_comment">//make relative path</em>
+<a class="jxr_linenumber" name="L973" href="#L973">973</a>                     <strong class="jxr_keyword">if</strong> ( duplicates.contains( lName ) )
+<a class="jxr_linenumber" name="L974" href="#L974">974</a>                     {
+<a class="jxr_linenumber" name="L975" href="#L975">975</a>                         <strong class="jxr_keyword">boolean</strong> resourceTransformed = false;
+<a class="jxr_linenumber" name="L976" href="#L976">976</a>                         <strong class="jxr_keyword">if</strong> ( transformers != <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L977" href="#L977">977</a>                         {
+<a class="jxr_linenumber" name="L978" href="#L978">978</a>                             <strong class="jxr_keyword">for</strong> ( ResourceTransformer transformer : transformers )
+<a class="jxr_linenumber" name="L979" href="#L979">979</a>                             {
+<a class="jxr_linenumber" name="L980" href="#L980">980</a>                                 <strong class="jxr_keyword">if</strong> ( transformer.canTransformResource( lName ) )
+<a class="jxr_linenumber" name="L981" href="#L981">981</a>                                 {
+<a class="jxr_linenumber" name="L982" href="#L982">982</a>                                     getLog().info( <span class="jxr_string">"Transforming "</span> + lName
+<a class="jxr_linenumber" name="L983" href="#L983">983</a>                                        + <span class="jxr_string">" using "</span> + transformer.getClass().getName() );
+<a class="jxr_linenumber" name="L984" href="#L984">984</a>                                     InputStream currIn = <strong class="jxr_keyword">new</strong> FileInputStream( f );
+<a class="jxr_linenumber" name="L985" href="#L985">985</a>                                     transformer.processResource( lName, currIn, <strong class="jxr_keyword">null</strong> );
+<a class="jxr_linenumber" name="L986" href="#L986">986</a>                                     currIn.close();
+<a class="jxr_linenumber" name="L987" href="#L987">987</a>                                     resourceTransformed = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L988" href="#L988">988</a>                                     <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L989" href="#L989">989</a>                                 }
+<a class="jxr_linenumber" name="L990" href="#L990">990</a>                             }
+<a class="jxr_linenumber" name="L991" href="#L991">991</a>                         }
+<a class="jxr_linenumber" name="L992" href="#L992">992</a>                         <em class="jxr_comment">//if not handled by transformer, add (once) to duplicates jar</em>
+<a class="jxr_linenumber" name="L993" href="#L993">993</a>                         <strong class="jxr_keyword">if</strong> ( !resourceTransformed )
+<a class="jxr_linenumber" name="L994" href="#L994">994</a>                         {
+<a class="jxr_linenumber" name="L995" href="#L995">995</a>                             <strong class="jxr_keyword">if</strong> ( !duplicatesAdded.contains( lName ) )
+<a class="jxr_linenumber" name="L996" href="#L996">996</a>                             {
+<a class="jxr_linenumber" name="L997" href="#L997">997</a>                                 duplicatesAdded.add( lName );
+<a class="jxr_linenumber" name="L998" href="#L998">998</a>                                 ZipEntry entry = <strong class="jxr_keyword">new</strong> ZipEntry( lName );
+<a class="jxr_linenumber" name="L999" href="#L999">999</a>                                 duplicateZos.putNextEntry( entry );
+<a class="jxr_linenumber" name="L1000" href="#L1000">1000</a>                                 InputStream currIn = <strong class="jxr_keyword">new</strong> FileInputStream( f );
+<a class="jxr_linenumber" name="L1001" href="#L1001">1001</a>                                 copyStreamWithoutClosing( currIn, duplicateZos );
+<a class="jxr_linenumber" name="L1002" href="#L1002">1002</a>                                 currIn.close();
+<a class="jxr_linenumber" name="L1003" href="#L1003">1003</a>                                 duplicateZos.closeEntry();
+<a class="jxr_linenumber" name="L1004" href="#L1004">1004</a>                             }
+<a class="jxr_linenumber" name="L1005" href="#L1005">1005</a>                         }
+<a class="jxr_linenumber" name="L1006" href="#L1006">1006</a>                         f.delete();
+<a class="jxr_linenumber" name="L1007" href="#L1007">1007</a>                     }
+<a class="jxr_linenumber" name="L1008" href="#L1008">1008</a>                 }
+<a class="jxr_linenumber" name="L1009" href="#L1009">1009</a>             }
+<a class="jxr_linenumber" name="L1010" href="#L1010">1010</a>         }
+<a class="jxr_linenumber" name="L1011" href="#L1011">1011</a>         <strong class="jxr_keyword">catch</strong> ( IOException e )
+<a class="jxr_linenumber" name="L1012" href="#L1012">1012</a>         {
+<a class="jxr_linenumber" name="L1013" href="#L1013">1013</a>             getLog().error( <span class="jxr_string">"Cannot removing duplicates : "</span> + e.getMessage() );
+<a class="jxr_linenumber" name="L1014" href="#L1014">1014</a>         }
+<a class="jxr_linenumber" name="L1015" href="#L1015">1015</a>     }
+<a class="jxr_linenumber" name="L1016" href="#L1016">1016</a> 
+<a class="jxr_linenumber" name="L1017" href="#L1017">1017</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1018" href="#L1018">1018</a> <em class="jxr_javadoccomment">     * Copies an input stream into an output stream but does not close the streams.</em>
+<a class="jxr_linenumber" name="L1019" href="#L1019">1019</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1020" href="#L1020">1020</a> <em class="jxr_javadoccomment">     * @param in  the input stream</em>
+<a class="jxr_linenumber" name="L1021" href="#L1021">1021</a> <em class="jxr_javadoccomment">     * @param out the output stream</em>
+<a class="jxr_linenumber" name="L1022" href="#L1022">1022</a> <em class="jxr_javadoccomment">     * @throws IOException if the stream cannot be copied</em>
+<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1024" href="#L1024">1024</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> copyStreamWithoutClosing( InputStream in, OutputStream out ) <strong class="jxr_keyword">throws</strong> IOException
+<a class="jxr_linenumber" name="L1025" href="#L1025">1025</a>     {
+<a class="jxr_linenumber" name="L1026" href="#L1026">1026</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> bufferSize = 4096;
+<a class="jxr_linenumber" name="L1027" href="#L1027">1027</a>         byte[] b = <strong class="jxr_keyword">new</strong> byte[ bufferSize ];
+<a class="jxr_linenumber" name="L1028" href="#L1028">1028</a>         <strong class="jxr_keyword">int</strong> n;
+<a class="jxr_linenumber" name="L1029" href="#L1029">1029</a>         <strong class="jxr_keyword">while</strong> ( ( n = in.read( b ) ) != - 1 )
+<a class="jxr_linenumber" name="L1030" href="#L1030">1030</a>         {
+<a class="jxr_linenumber" name="L1031" href="#L1031">1031</a>             out.write( b, 0, n );
+<a class="jxr_linenumber" name="L1032" href="#L1032">1032</a>         }
+<a class="jxr_linenumber" name="L1033" href="#L1033">1033</a>     }
+<a class="jxr_linenumber" name="L1034" href="#L1034">1034</a> 
+<a class="jxr_linenumber" name="L1035" href="#L1035">1035</a>     <strong class="jxr_keyword">private</strong> Collection&lt;File&gt; getNativeLibraryFolders() <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L1036" href="#L1036">1036</a>     {
+<a class="jxr_linenumber" name="L1037" href="#L1037">1037</a>         <strong class="jxr_keyword">final</strong> List&lt;File&gt; natives = <strong class="jxr_keyword">new</strong> ArrayList&lt;File&gt;();
+<a class="jxr_linenumber" name="L1038" href="#L1038">1038</a> 
+<a class="jxr_linenumber" name="L1039" href="#L1039">1039</a>         <strong class="jxr_keyword">if</strong> ( nativeLibrariesDirectory.exists() )
+<a class="jxr_linenumber" name="L1040" href="#L1040">1040</a>         {
+<a class="jxr_linenumber" name="L1041" href="#L1041">1041</a>             <em class="jxr_comment">// If we have prebuilt native libs then copy them over to the native output folder.</em>
+<a class="jxr_linenumber" name="L1042" href="#L1042">1042</a>             <em class="jxr_comment">// NB they will be copied over the top of any native libs generated as part of the NdkBuildMojo</em>
+<a class="jxr_linenumber" name="L1043" href="#L1043">1043</a>             copyLocalNativeLibraries( nativeLibrariesDirectory, ndkOutputDirectory );
+<a class="jxr_linenumber" name="L1044" href="#L1044">1044</a>         }
+<a class="jxr_linenumber" name="L1045" href="#L1045">1045</a> 
+<a class="jxr_linenumber" name="L1046" href="#L1046">1046</a>         <strong class="jxr_keyword">final</strong> Set&lt;Artifact&gt; artifacts = getNativeLibraryArtifacts();
+<a class="jxr_linenumber" name="L1047" href="#L1047">1047</a>         <strong class="jxr_keyword">for</strong> ( Artifact resolvedArtifact : artifacts )
+<a class="jxr_linenumber" name="L1048" href="#L1048">1048</a>         {
+<a class="jxr_linenumber" name="L1049" href="#L1049">1049</a>             <strong class="jxr_keyword">if</strong> ( APKLIB.equals( resolvedArtifact.getType() ) || AAR.equals( resolvedArtifact.getType() ) )
+<a class="jxr_linenumber" name="L1050" href="#L1050">1050</a>             {
+<a class="jxr_linenumber" name="L1051" href="#L1051">1051</a>                 <em class="jxr_comment">// If the artifact is an AAR or APKLIB then add their native libs folder to the result.</em>
+<a class="jxr_linenumber" name="L1052" href="#L1052">1052</a>                 <strong class="jxr_keyword">final</strong> File folder = getUnpackedLibNativesFolder( resolvedArtifact );
+<a class="jxr_linenumber" name="L1053" href="#L1053">1053</a>                 getLog().debug( <span class="jxr_string">"Adding native library folder "</span> + folder );
+<a class="jxr_linenumber" name="L1054" href="#L1054">1054</a>                 natives.add( folder );
+<a class="jxr_linenumber" name="L1055" href="#L1055">1055</a>             }
+<a class="jxr_linenumber" name="L1056" href="#L1056">1056</a> 
+<a class="jxr_linenumber" name="L1057" href="#L1057">1057</a>             <em class="jxr_comment">// Copy the native lib dependencies into the native lib output folder</em>
+<a class="jxr_linenumber" name="L1058" href="#L1058">1058</a>             <strong class="jxr_keyword">for</strong> ( String ndkArchitecture : AndroidNdk.NDK_ARCHITECTURES )
+<a class="jxr_linenumber" name="L1059" href="#L1059">1059</a>             {
+<a class="jxr_linenumber" name="L1060" href="#L1060">1060</a>                 <strong class="jxr_keyword">if</strong> ( NativeHelper.artifactHasHardwareArchitecture( resolvedArtifact,
+<a class="jxr_linenumber" name="L1061" href="#L1061">1061</a>                         ndkArchitecture, nativeLibrariesDependenciesHardwareArchitectureDefault ) )
+<a class="jxr_linenumber" name="L1062" href="#L1062">1062</a>                 {
+<a class="jxr_linenumber" name="L1063" href="#L1063">1063</a>                     <em class="jxr_comment">// If the artifact is a native lib then copy it into the native libs output folder.</em>
+<a class="jxr_linenumber" name="L1064" href="#L1064">1064</a>                     copyNativeLibraryArtifact( resolvedArtifact, ndkOutputDirectory, ndkArchitecture );
+<a class="jxr_linenumber" name="L1065" href="#L1065">1065</a>                 }
+<a class="jxr_linenumber" name="L1066" href="#L1066">1066</a>             }
+<a class="jxr_linenumber" name="L1067" href="#L1067">1067</a>         }
+<a class="jxr_linenumber" name="L1068" href="#L1068">1068</a> 
+<a class="jxr_linenumber" name="L1069" href="#L1069">1069</a>         <strong class="jxr_keyword">if</strong> ( apkDebug )
+<a class="jxr_linenumber" name="L1070" href="#L1070">1070</a>         {
+<a class="jxr_linenumber" name="L1071" href="#L1071">1071</a>             <em class="jxr_comment">// Copy the gdbserver binary into the native libs output folder (for each architecture).</em>
+<a class="jxr_linenumber" name="L1072" href="#L1072">1072</a>             <strong class="jxr_keyword">for</strong> ( String ndkArchitecture : AndroidNdk.NDK_ARCHITECTURES )
+<a class="jxr_linenumber" name="L1073" href="#L1073">1073</a>             {
+<a class="jxr_linenumber" name="L1074" href="#L1074">1074</a>                 copyGdbServer( ndkOutputDirectory, ndkArchitecture );
+<a class="jxr_linenumber" name="L1075" href="#L1075">1075</a>             }
+<a class="jxr_linenumber" name="L1076" href="#L1076">1076</a>         }
+<a class="jxr_linenumber" name="L1077" href="#L1077">1077</a> 
+<a class="jxr_linenumber" name="L1078" href="#L1078">1078</a>         <strong class="jxr_keyword">if</strong> ( ndkOutputDirectory.exists() )
+<a class="jxr_linenumber" name="L1079" href="#L1079">1079</a>         {
+<a class="jxr_linenumber" name="L1080" href="#L1080">1080</a>             <em class="jxr_comment">// If we have any native libs in the native output folder then add the output folder to the result.</em>
+<a class="jxr_linenumber" name="L1081" href="#L1081">1081</a>             getLog().debug( <span class="jxr_string">"Adding built native library folder "</span> + ndkOutputDirectory );
+<a class="jxr_linenumber" name="L1082" href="#L1082">1082</a>             natives.add( ndkOutputDirectory );
+<a class="jxr_linenumber" name="L1083" href="#L1083">1083</a>         }
+<a class="jxr_linenumber" name="L1084" href="#L1084">1084</a> 
+<a class="jxr_linenumber" name="L1085" href="#L1085">1085</a>         <strong class="jxr_keyword">return</strong> natives;
+<a class="jxr_linenumber" name="L1086" href="#L1086">1086</a>     }
+<a class="jxr_linenumber" name="L1087" href="#L1087">1087</a> 
+<a class="jxr_linenumber" name="L1088" href="#L1088">1088</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1089" href="#L1089">1089</a> <em class="jxr_javadoccomment">     * @return Any native dependencies or attached artifacts. This may include artifacts from the ndk-build MOJO.</em>
+<a class="jxr_linenumber" name="L1090" href="#L1090">1090</a> <em class="jxr_javadoccomment">     * @throws MojoExecutionException</em>
+<a class="jxr_linenumber" name="L1091" href="#L1091">1091</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1092" href="#L1092">1092</a>     <strong class="jxr_keyword">private</strong> Set&lt;Artifact&gt; getNativeLibraryArtifacts() <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L1093" href="#L1093">1093</a>     {
+<a class="jxr_linenumber" name="L1094" href="#L1094">1094</a>         <strong class="jxr_keyword">return</strong> getNativeHelper().getNativeDependenciesArtifacts( <strong class="jxr_keyword">this</strong>, getUnpackedLibsDirectory(), <strong class="jxr_keyword">true</strong> );
+<a class="jxr_linenumber" name="L1095" href="#L1095">1095</a>     }
+<a class="jxr_linenumber" name="L1096" href="#L1096">1096</a> 
+<a class="jxr_linenumber" name="L1097" href="#L1097">1097</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> copyNativeLibraryArtifact( Artifact artifact,
+<a class="jxr_linenumber" name="L1098" href="#L1098">1098</a>                                             File destinationDirectory,
+<a class="jxr_linenumber" name="L1099" href="#L1099">1099</a>                                             String ndkArchitecture ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L1100" href="#L1100">1100</a>     {
+<a class="jxr_linenumber" name="L1101" href="#L1101">1101</a> 
+<a class="jxr_linenumber" name="L1102" href="#L1102">1102</a>         <strong class="jxr_keyword">final</strong> File artifactFile = getArtifactResolverHelper().resolveArtifactToFile( artifact );
+<a class="jxr_linenumber" name="L1103" href="#L1103">1103</a>         <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L1104" href="#L1104">1104</a>         {
+<a class="jxr_linenumber" name="L1105" href="#L1105">1105</a>             <strong class="jxr_keyword">final</strong> String artifactId = artifact.getArtifactId();
+<a class="jxr_linenumber" name="L1106" href="#L1106">1106</a>             String filename = artifactId.startsWith( <span class="jxr_string">"lib"</span> )
+<a class="jxr_linenumber" name="L1107" href="#L1107">1107</a>                     ? artifactId + <span class="jxr_string">".so"</span>
+<a class="jxr_linenumber" name="L1108" href="#L1108">1108</a>                     : <span class="jxr_string">"lib"</span> + artifactId + <span class="jxr_string">".so"</span>;
+<a class="jxr_linenumber" name="L1109" href="#L1109">1109</a>             <strong class="jxr_keyword">if</strong> ( ndkFinalLibraryName != <strong class="jxr_keyword">null</strong>
+<a class="jxr_linenumber" name="L1110" href="#L1110">1110</a>                     &amp;&amp; artifact.getFile().getName().startsWith( <span class="jxr_string">"lib"</span> + ndkFinalLibraryName ) )
+<a class="jxr_linenumber" name="L1111" href="#L1111">1111</a>             {
+<a class="jxr_linenumber" name="L1112" href="#L1112">1112</a>                 <em class="jxr_comment">// The artifact looks like one we built with the NDK in this module</em>
+<a class="jxr_linenumber" name="L1113" href="#L1113">1113</a>                 <em class="jxr_comment">// preserve the name from the NDK build</em>
+<a class="jxr_linenumber" name="L1114" href="#L1114">1114</a>                 filename = artifact.getFile().getName();
+<a class="jxr_linenumber" name="L1115" href="#L1115">1115</a>             }
+<a class="jxr_linenumber" name="L1116" href="#L1116">1116</a> 
+<a class="jxr_linenumber" name="L1117" href="#L1117">1117</a>             <strong class="jxr_keyword">final</strong> File folder = <strong class="jxr_keyword">new</strong> File( destinationDirectory, ndkArchitecture );
+<a class="jxr_linenumber" name="L1118" href="#L1118">1118</a>             <strong class="jxr_keyword">final</strong> File file = <strong class="jxr_keyword">new</strong> File( folder, filename );
+<a class="jxr_linenumber" name="L1119" href="#L1119">1119</a>             getLog().debug( <span class="jxr_string">"Copying native dependency "</span> + artifactId + <span class="jxr_string">" ("</span> + artifact.getGroupId() + <span class="jxr_string">") to "</span> + file );
+<a class="jxr_linenumber" name="L1120" href="#L1120">1120</a>             FileUtils.copyFile( artifactFile, file );
+<a class="jxr_linenumber" name="L1121" href="#L1121">1121</a>         }
+<a class="jxr_linenumber" name="L1122" href="#L1122">1122</a>         <strong class="jxr_keyword">catch</strong> ( IOException e )
+<a class="jxr_linenumber" name="L1123" href="#L1123">1123</a>         {
+<a class="jxr_linenumber" name="L1124" href="#L1124">1124</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"Could not copy native dependency."</span>, e );
+<a class="jxr_linenumber" name="L1125" href="#L1125">1125</a>         }
+<a class="jxr_linenumber" name="L1126" href="#L1126">1126</a>     }
+<a class="jxr_linenumber" name="L1127" href="#L1127">1127</a> 
 <a class="jxr_linenumber" name="L1128" href="#L1128">1128</a> 
-<a class="jxr_linenumber" name="L1129" href="#L1129">1129</a>         <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L1130" href="#L1130">1130</a>         {
-<a class="jxr_linenumber" name="L1131" href="#L1131">1131</a>             <strong class="jxr_keyword">final</strong> File destDir = <strong class="jxr_keyword">new</strong> File( destinationDirectory, architecture );
-<a class="jxr_linenumber" name="L1132" href="#L1132">1132</a>             <strong class="jxr_keyword">if</strong> ( destDir.exists() )
-<a class="jxr_linenumber" name="L1133" href="#L1133">1133</a>             {
-<a class="jxr_linenumber" name="L1134" href="#L1134">1134</a>                 <em class="jxr_comment">// Copy the gdbserver binary to libs/&lt;architecture&gt;/</em>
-<a class="jxr_linenumber" name="L1135" href="#L1135">1135</a>                 <strong class="jxr_keyword">final</strong> File gdbServerFile = getAndroidNdk().getGdbServer( architecture );
-<a class="jxr_linenumber" name="L1136" href="#L1136">1136</a>                 <strong class="jxr_keyword">final</strong> File destFile = <strong class="jxr_keyword">new</strong> File( destDir, <span class="jxr_string">"gdbserver"</span> );
-<a class="jxr_linenumber" name="L1137" href="#L1137">1137</a>                 <strong class="jxr_keyword">if</strong> ( ! destFile.exists() )
-<a class="jxr_linenumber" name="L1138" href="#L1138">1138</a>                 {
-<a class="jxr_linenumber" name="L1139" href="#L1139">1139</a>                     getLog().debug( <span class="jxr_string">"Copying gdbServer to "</span> + destFile );
-<a class="jxr_linenumber" name="L1140" href="#L1140">1140</a>                     FileUtils.copyFile( gdbServerFile, destFile );
-<a class="jxr_linenumber" name="L1141" href="#L1141">1141</a>                 }
-<a class="jxr_linenumber" name="L1142" href="#L1142">1142</a>                 <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L1143" href="#L1143">1143</a>                 {
-<a class="jxr_linenumber" name="L1144" href="#L1144">1144</a>                     getLog().info( <span class="jxr_string">"Note: gdbserver binary already exists at destination, will not copy over"</span> );
-<a class="jxr_linenumber" name="L1145" href="#L1145">1145</a>                 }
-<a class="jxr_linenumber" name="L1146" href="#L1146">1146</a>             }
-<a class="jxr_linenumber" name="L1147" href="#L1147">1147</a>         }
-<a class="jxr_linenumber" name="L1148" href="#L1148">1148</a>         <strong class="jxr_keyword">catch</strong> ( Exception e )
-<a class="jxr_linenumber" name="L1149" href="#L1149">1149</a>         {
-<a class="jxr_linenumber" name="L1150" href="#L1150">1150</a>             getLog().error( <span class="jxr_string">"Error while copying gdbserver: "</span> + e.getMessage(), e );
-<a class="jxr_linenumber" name="L1151" href="#L1151">1151</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"Error while copying gdbserver: "</span> + e.getMessage(), e );
-<a class="jxr_linenumber" name="L1152" href="#L1152">1152</a>         }
-<a class="jxr_linenumber" name="L1153" href="#L1153">1153</a> 
-<a class="jxr_linenumber" name="L1154" href="#L1154">1154</a>     }
-<a class="jxr_linenumber" name="L1155" href="#L1155">1155</a> 
-<a class="jxr_linenumber" name="L1156" href="#L1156">1156</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> copyLocalNativeLibraries( <strong class="jxr_keyword">final</strong> File localNativeLibrariesDirectory, <strong class="jxr_keyword">final</strong> File destinationDirectory )
-<a class="jxr_linenumber" name="L1157" href="#L1157">1157</a>             <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L1158" href="#L1158">1158</a>     {
-<a class="jxr_linenumber" name="L1159" href="#L1159">1159</a>         getLog().debug( <span class="jxr_string">"Copying existing native libraries from "</span> + localNativeLibrariesDirectory );
-<a class="jxr_linenumber" name="L1160" href="#L1160">1160</a>         <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L1161" href="#L1161">1161</a>         {
-<a class="jxr_linenumber" name="L1162" href="#L1162">1162</a> 
-<a class="jxr_linenumber" name="L1163" href="#L1163">1163</a>             IOFileFilter libSuffixFilter = FileFilterUtils.suffixFileFilter( <span class="jxr_string">".so"</span> );
-<a class="jxr_linenumber" name="L1164" href="#L1164">1164</a> 
-<a class="jxr_linenumber" name="L1165" href="#L1165">1165</a>             IOFileFilter gdbserverNameFilter = FileFilterUtils.nameFileFilter( <span class="jxr_string">"gdbserver"</span> );
-<a class="jxr_linenumber" name="L1166" href="#L1166">1166</a>             IOFileFilter orFilter = FileFilterUtils.or( libSuffixFilter, gdbserverNameFilter );
-<a class="jxr_linenumber" name="L1167" href="#L1167">1167</a> 
-<a class="jxr_linenumber" name="L1168" href="#L1168">1168</a>             IOFileFilter libFiles = FileFilterUtils.and( FileFileFilter.FILE, orFilter );
-<a class="jxr_linenumber" name="L1169" href="#L1169">1169</a>             FileFilter filter = FileFilterUtils.or( DirectoryFileFilter.DIRECTORY, libFiles );
-<a class="jxr_linenumber" name="L1170" href="#L1170">1170</a>             org.apache.commons.io.FileUtils
-<a class="jxr_linenumber" name="L1171" href="#L1171">1171</a>                     .copyDirectory( localNativeLibrariesDirectory, destinationDirectory, filter );
-<a class="jxr_linenumber" name="L1172" href="#L1172">1172</a> 
-<a class="jxr_linenumber" name="L1173" href="#L1173">1173</a>         }
-<a class="jxr_linenumber" name="L1174" href="#L1174">1174</a>         <strong class="jxr_keyword">catch</strong> ( IOException e )
-<a class="jxr_linenumber" name="L1175" href="#L1175">1175</a>         {
-<a class="jxr_linenumber" name="L1176" href="#L1176">1176</a>             getLog().error( <span class="jxr_string">"Could not copy native libraries: "</span> + e.getMessage(), e );
-<a class="jxr_linenumber" name="L1177" href="#L1177">1177</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"Could not copy native dependency."</span>, e );
-<a class="jxr_linenumber" name="L1178" href="#L1178">1178</a>         }
-<a class="jxr_linenumber" name="L1179" href="#L1179">1179</a>     }
-<a class="jxr_linenumber" name="L1180" href="#L1180">1180</a> 
-<a class="jxr_linenumber" name="L1181" href="#L1181">1181</a> 
-<a class="jxr_linenumber" name="L1182" href="#L1182">1182</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1183" href="#L1183">1183</a> <em class="jxr_javadoccomment">     * Generates an intermediate apk file (actually .ap_) containing the resources and assets.</em>
-<a class="jxr_linenumber" name="L1184" href="#L1184">1184</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1185" href="#L1185">1185</a> <em class="jxr_javadoccomment">     * @throws MojoExecutionException</em>
-<a class="jxr_linenumber" name="L1186" href="#L1186">1186</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1187" href="#L1187">1187</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> generateIntermediateApk() <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L1188" href="#L1188">1188</a>     {
-<a class="jxr_linenumber" name="L1189" href="#L1189">1189</a>         <a href="../../../../../../com/simpligility/maven/plugins/android/CommandExecutor.html">CommandExecutor</a> executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-<a class="jxr_linenumber" name="L1190" href="#L1190">1190</a>         executor.setLogger( <strong class="jxr_keyword">this</strong>.getLog() );
-<a class="jxr_linenumber" name="L1191" href="#L1191">1191</a>         File[] overlayDirectories = getResourceOverlayDirectories();
-<a class="jxr_linenumber" name="L1192" href="#L1192">1192</a> 
-<a class="jxr_linenumber" name="L1193" href="#L1193">1193</a>         File androidJar = getAndroidSdk().getAndroidJar();
-<a class="jxr_linenumber" name="L1194" href="#L1194">1194</a>         File outputFile = <strong class="jxr_keyword">new</strong> File( targetDirectory, finalName + <span class="jxr_string">".ap_"</span> );
-<a class="jxr_linenumber" name="L1195" href="#L1195">1195</a> 
-<a class="jxr_linenumber" name="L1196" href="#L1196">1196</a>         List&lt;File&gt; dependencyArtifactResDirectoryList = <strong class="jxr_keyword">new</strong> ArrayList&lt;File&gt;();
-<a class="jxr_linenumber" name="L1197" href="#L1197">1197</a>         <strong class="jxr_keyword">for</strong> ( Artifact libraryArtifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
-<a class="jxr_linenumber" name="L1198" href="#L1198">1198</a>         {
-<a class="jxr_linenumber" name="L1199" href="#L1199">1199</a>             <strong class="jxr_keyword">final</strong> File libraryResDir = getUnpackedLibResourceFolder( libraryArtifact );
-<a class="jxr_linenumber" name="L1200" href="#L1200">1200</a>             <strong class="jxr_keyword">if</strong> ( libraryResDir.exists() )
-<a class="jxr_linenumber" name="L1201" href="#L1201">1201</a>             {
-<a class="jxr_linenumber" name="L1202" href="#L1202">1202</a>                 dependencyArtifactResDirectoryList.add( libraryResDir );
-<a class="jxr_linenumber" name="L1203" href="#L1203">1203</a>             }
-<a class="jxr_linenumber" name="L1204" href="#L1204">1204</a>         }
-<a class="jxr_linenumber" name="L1205" href="#L1205">1205</a> 
-<a class="jxr_linenumber" name="L1206" href="#L1206">1206</a>         <a href="../../../../../../com/simpligility/maven/plugins/android/common/AaptCommandBuilder.html">AaptCommandBuilder</a> commandBuilder = <a href="../../../../../../com/simpligility/maven/plugins/android/common/AaptCommandBuilder.html">AaptCommandBuilder</a>
-<a class="jxr_linenumber" name="L1207" href="#L1207">1207</a>                 .packageResources( getLog() )
-<a class="jxr_linenumber" name="L1208" href="#L1208">1208</a>                 .forceOverwriteExistingFiles()
-<a class="jxr_linenumber" name="L1209" href="#L1209">1209</a>                 .setPathToAndroidManifest( destinationManifestFile )
-<a class="jxr_linenumber" name="L1210" href="#L1210">1210</a>                 .addResourceDirectoriesIfExists( overlayDirectories )
-<a class="jxr_linenumber" name="L1211" href="#L1211">1211</a>                 .addResourceDirectoryIfExists( resourceDirectory )
-<a class="jxr_linenumber" name="L1212" href="#L1212">1212</a>                 .addResourceDirectoriesIfExists( dependencyArtifactResDirectoryList )
-<a class="jxr_linenumber" name="L1213" href="#L1213">1213</a>                 .autoAddOverlay()
-<a class="jxr_linenumber" name="L1214" href="#L1214">1214</a>                 <em class="jxr_comment">// NB aapt only accepts a single assets parameter - combinedAssets is a merge of all assets</em>
-<a class="jxr_linenumber" name="L1215" href="#L1215">1215</a>                 .addRawAssetsDirectoryIfExists( combinedAssets )
-<a class="jxr_linenumber" name="L1216" href="#L1216">1216</a>                 .renameManifestPackage( renameManifestPackage )
-<a class="jxr_linenumber" name="L1217" href="#L1217">1217</a>                 .renameInstrumentationTargetPackage( renameInstrumentationTargetPackage )
-<a class="jxr_linenumber" name="L1218" href="#L1218">1218</a>                 .addExistingPackageToBaseIncludeSet( androidJar )
-<a class="jxr_linenumber" name="L1219" href="#L1219">1219</a>                 .setOutputApkFile( outputFile )
-<a class="jxr_linenumber" name="L1220" href="#L1220">1220</a>                 .addConfigurations( configurations )
-<a class="jxr_linenumber" name="L1221" href="#L1221">1221</a>                 .setVerbose( aaptVerbose )
-<a class="jxr_linenumber" name="L1222" href="#L1222">1222</a>                 .setDebugMode( !release )
-<a class="jxr_linenumber" name="L1223" href="#L1223">1223</a>                 .addExtraArguments( aaptExtraArgs );
-<a class="jxr_linenumber" name="L1224" href="#L1224">1224</a> 
-<a class="jxr_linenumber" name="L1225" href="#L1225">1225</a>         getLog().debug( getAndroidSdk().getAaptPath() + <span class="jxr_string">" "</span> + commandBuilder.toString() );
-<a class="jxr_linenumber" name="L1226" href="#L1226">1226</a>         <strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L1227" href="#L1227">1227</a>         {
-<a class="jxr_linenumber" name="L1228" href="#L1228">1228</a>             executor.setCaptureStdOut( <strong class="jxr_keyword">true</strong> );
-<a class="jxr_linenumber" name="L1229" href="#L1229">1229</a>             List&lt;String&gt; commands = commandBuilder.build();
-<a class="jxr_linenumber" name="L1230" href="#L1230">1230</a>             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
-<a class="jxr_linenumber" name="L1231" href="#L1231">1231</a>         }
-<a class="jxr_linenumber" name="L1232" href="#L1232">1232</a>         <strong class="jxr_keyword">catch</strong> ( ExecutionException e )
+<a class="jxr_linenumber" name="L1129" href="#L1129">1129</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1130" href="#L1130">1130</a> <em class="jxr_javadoccomment">     * Copy the Ndk GdbServer into the architecture output folder if the folder exists but the GdbServer doesn't.</em>
+<a class="jxr_linenumber" name="L1131" href="#L1131">1131</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1132" href="#L1132">1132</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> copyGdbServer( File destinationDirectory, String architecture ) <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L1133" href="#L1133">1133</a>     {
+<a class="jxr_linenumber" name="L1134" href="#L1134">1134</a> 
+<a class="jxr_linenumber" name="L1135" href="#L1135">1135</a>         <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L1136" href="#L1136">1136</a>         {
+<a class="jxr_linenumber" name="L1137" href="#L1137">1137</a>             <strong class="jxr_keyword">final</strong> File destDir = <strong class="jxr_keyword">new</strong> File( destinationDirectory, architecture );
+<a class="jxr_linenumber" name="L1138" href="#L1138">1138</a>             <strong class="jxr_keyword">if</strong> ( destDir.exists() )
+<a class="jxr_linenumber" name="L1139" href="#L1139">1139</a>             {
+<a class="jxr_linenumber" name="L1140" href="#L1140">1140</a>                 <em class="jxr_comment">// Copy the gdbserver binary to libs/&lt;architecture&gt;/</em>
+<a class="jxr_linenumber" name="L1141" href="#L1141">1141</a>                 <strong class="jxr_keyword">final</strong> File gdbServerFile = getAndroidNdk().getGdbServer( architecture );
+<a class="jxr_linenumber" name="L1142" href="#L1142">1142</a>                 <strong class="jxr_keyword">final</strong> File destFile = <strong class="jxr_keyword">new</strong> File( destDir, <span class="jxr_string">"gdbserver"</span> );
+<a class="jxr_linenumber" name="L1143" href="#L1143">1143</a>                 <strong class="jxr_keyword">if</strong> ( ! destFile.exists() )
+<a class="jxr_linenumber" name="L1144" href="#L1144">1144</a>                 {
+<a class="jxr_linenumber" name="L1145" href="#L1145">1145</a>                     getLog().debug( <span class="jxr_string">"Copying gdbServer to "</span> + destFile );
+<a class="jxr_linenumber" name="L1146" href="#L1146">1146</a>                     FileUtils.copyFile( gdbServerFile, destFile );
+<a class="jxr_linenumber" name="L1147" href="#L1147">1147</a>                 }
+<a class="jxr_linenumber" name="L1148" href="#L1148">1148</a>                 <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L1149" href="#L1149">1149</a>                 {
+<a class="jxr_linenumber" name="L1150" href="#L1150">1150</a>                     getLog().info( <span class="jxr_string">"Note: gdbserver binary already exists at destination, will not copy over"</span> );
+<a class="jxr_linenumber" name="L1151" href="#L1151">1151</a>                 }
+<a class="jxr_linenumber" name="L1152" href="#L1152">1152</a>             }
+<a class="jxr_linenumber" name="L1153" href="#L1153">1153</a>         }
+<a class="jxr_linenumber" name="L1154" href="#L1154">1154</a>         <strong class="jxr_keyword">catch</strong> ( Exception e )
+<a class="jxr_linenumber" name="L1155" href="#L1155">1155</a>         {
+<a class="jxr_linenumber" name="L1156" href="#L1156">1156</a>             getLog().error( <span class="jxr_string">"Error while copying gdbserver: "</span> + e.getMessage(), e );
+<a class="jxr_linenumber" name="L1157" href="#L1157">1157</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"Error while copying gdbserver: "</span> + e.getMessage(), e );
+<a class="jxr_linenumber" name="L1158" href="#L1158">1158</a>         }
+<a class="jxr_linenumber" name="L1159" href="#L1159">1159</a> 
+<a class="jxr_linenumber" name="L1160" href="#L1160">1160</a>     }
+<a class="jxr_linenumber" name="L1161" href="#L1161">1161</a> 
+<a class="jxr_linenumber" name="L1162" href="#L1162">1162</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> copyLocalNativeLibraries( <strong class="jxr_keyword">final</strong> File localNativeLibrariesDirectory, <strong class="jxr_keyword">final</strong> File destinationDirectory )
+<a class="jxr_linenumber" name="L1163" href="#L1163">1163</a>             <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L1164" href="#L1164">1164</a>     {
+<a class="jxr_linenumber" name="L1165" href="#L1165">1165</a>         getLog().debug( <span class="jxr_string">"Copying existing native libraries from "</span> + localNativeLibrariesDirectory );
+<a class="jxr_linenumber" name="L1166" href="#L1166">1166</a>         <strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L1167" href="#L1167">1167</a>         {
+<a class="jxr_linenumber" name="L1168" href="#L1168">1168</a> 
+<a class="jxr_linenumber" name="L1169" href="#L1169">1169</a>             IOFileFilter libSuffixFilter = FileFilterUtils.suffixFileFilter( <span class="jxr_string">".so"</span> );
+<a class="jxr_linenumber" name="L1170" href="#L1170">1170</a> 
+<a class="jxr_linenumber" name="L1171" href="#L1171">1171</a>             IOFileFilter gdbserverNameFilter = FileFilterUtils.nameFileFilter( <span class="jxr_string">"gdbserver"</span> );
+<a class="jxr_linenumber" name="L1172" href="#L1172">1172</a>             IOFileFilter orFilter = FileFilterUtils.or( libSuffixFilter, gdbserverNameFilter );
+<a class="jxr_linenumber" name="L1173" href="#L1173">1173</a> 
+<a class="jxr_linenumber" name="L1174" href="#L1174">1174</a>             IOFileFilter libFiles = FileFilterUtils.and( FileFileFilter.FILE, orFilter );
+<a class="jxr_linenumber" name="L1175" href="#L1175">1175</a>             FileFilter filter = FileFilterUtils.or( DirectoryFileFilter.DIRECTORY, libFiles );
+<a class="jxr_linenumber" name="L1176" href="#L1176">1176</a>             org.apache.commons.io.FileUtils
+<a class="jxr_linenumber" name="L1177" href="#L1177">1177</a>                     .copyDirectory( localNativeLibrariesDirectory, destinationDirectory, filter );
+<a class="jxr_linenumber" name="L1178" href="#L1178">1178</a> 
+<a class="jxr_linenumber" name="L1179" href="#L1179">1179</a>         }
+<a class="jxr_linenumber" name="L1180" href="#L1180">1180</a>         <strong class="jxr_keyword">catch</strong> ( IOException e )
+<a class="jxr_linenumber" name="L1181" href="#L1181">1181</a>         {
+<a class="jxr_linenumber" name="L1182" href="#L1182">1182</a>             getLog().error( <span class="jxr_string">"Could not copy native libraries: "</span> + e.getMessage(), e );
+<a class="jxr_linenumber" name="L1183" href="#L1183">1183</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">"Could not copy native dependency."</span>, e );
+<a class="jxr_linenumber" name="L1184" href="#L1184">1184</a>         }
+<a class="jxr_linenumber" name="L1185" href="#L1185">1185</a>     }
+<a class="jxr_linenumber" name="L1186" href="#L1186">1186</a> 
+<a class="jxr_linenumber" name="L1187" href="#L1187">1187</a> 
+<a class="jxr_linenumber" name="L1188" href="#L1188">1188</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1189" href="#L1189">1189</a> <em class="jxr_javadoccomment">     * Generates an intermediate apk file (actually .ap_) containing the resources and assets.</em>
+<a class="jxr_linenumber" name="L1190" href="#L1190">1190</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1191" href="#L1191">1191</a> <em class="jxr_javadoccomment">     * @throws MojoExecutionException</em>
+<a class="jxr_linenumber" name="L1192" href="#L1192">1192</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1193" href="#L1193">1193</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> generateIntermediateApk() <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L1194" href="#L1194">1194</a>     {
+<a class="jxr_linenumber" name="L1195" href="#L1195">1195</a>         <a href="../../../../../../com/simpligility/maven/plugins/android/CommandExecutor.html">CommandExecutor</a> executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+<a class="jxr_linenumber" name="L1196" href="#L1196">1196</a>         executor.setLogger( <strong class="jxr_keyword">this</strong>.getLog() );
+<a class="jxr_linenumber" name="L1197" href="#L1197">1197</a>         File[] overlayDirectories = getResourceOverlayDirectories();
+<a class="jxr_linenumber" name="L1198" href="#L1198">1198</a> 
+<a class="jxr_linenumber" name="L1199" href="#L1199">1199</a>         File androidJar = getAndroidSdk().getAndroidJar();
+<a class="jxr_linenumber" name="L1200" href="#L1200">1200</a>         File outputFile = <strong class="jxr_keyword">new</strong> File( targetDirectory, finalName + <span class="jxr_string">".ap_"</span> );
+<a class="jxr_linenumber" name="L1201" href="#L1201">1201</a> 
+<a class="jxr_linenumber" name="L1202" href="#L1202">1202</a>         List&lt;File&gt; dependencyArtifactResDirectoryList = <strong class="jxr_keyword">new</strong> ArrayList&lt;File&gt;();
+<a class="jxr_linenumber" name="L1203" href="#L1203">1203</a>         <strong class="jxr_keyword">for</strong> ( Artifact libraryArtifact : getTransitiveDependencyArtifacts( APKLIB, AAR ) )
+<a class="jxr_linenumber" name="L1204" href="#L1204">1204</a>         {
+<a class="jxr_linenumber" name="L1205" href="#L1205">1205</a>             <strong class="jxr_keyword">final</strong> File libraryResDir = getUnpackedLibResourceFolder( libraryArtifact );
+<a class="jxr_linenumber" name="L1206" href="#L1206">1206</a>             <strong class="jxr_keyword">if</strong> ( libraryResDir.exists() )
+<a class="jxr_linenumber" name="L1207" href="#L1207">1207</a>             {
+<a class="jxr_linenumber" name="L1208" href="#L1208">1208</a>                 dependencyArtifactResDirectoryList.add( libraryResDir );
+<a class="jxr_linenumber" name="L1209" href="#L1209">1209</a>             }
+<a class="jxr_linenumber" name="L1210" href="#L1210">1210</a>         }
+<a class="jxr_linenumber" name="L1211" href="#L1211">1211</a> 
+<a class="jxr_linenumber" name="L1212" href="#L1212">1212</a>         <a href="../../../../../../com/simpligility/maven/plugins/android/common/AaptCommandBuilder.html">AaptCommandBuilder</a> commandBuilder = <a href="../../../../../../com/simpligility/maven/plugins/android/common/AaptCommandBuilder.html">AaptCommandBuilder</a>
+<a class="jxr_linenumber" name="L1213" href="#L1213">1213</a>                 .packageResources( getLog() )
+<a class="jxr_linenumber" name="L1214" href="#L1214">1214</a>                 .forceOverwriteExistingFiles()
+<a class="jxr_linenumber" name="L1215" href="#L1215">1215</a>                 .setPathToAndroidManifest( destinationManifestFile )
+<a class="jxr_linenumber" name="L1216" href="#L1216">1216</a>                 .addResourceDirectoriesIfExists( overlayDirectories )
+<a class="jxr_linenumber" name="L1217" href="#L1217">1217</a>                 .addResourceDirectoryIfExists( resourceDirectory )
+<a class="jxr_linenumber" name="L1218" href="#L1218">1218</a>                 .addResourceDirectoriesIfExists( dependencyArtifactResDirectoryList )
+<a class="jxr_linenumber" name="L1219" href="#L1219">1219</a>                 .autoAddOverlay()
+<a class="jxr_linenumber" name="L1220" href="#L1220">1220</a>                 <em class="jxr_comment">// NB aapt only accepts a single assets parameter - combinedAssets is a merge of all assets</em>
+<a class="jxr_linenumber" name="L1221" href="#L1221">1221</a>                 .addRawAssetsDirectoryIfExists( combinedAssets )
+<a class="jxr_linenumber" name="L1222" href="#L1222">1222</a>                 .renameManifestPackage( renameManifestPackage )
+<a class="jxr_linenumber" name="L1223" href="#L1223">1223</a>                 .renameInstrumentationTargetPackage( renameInstrumentationTargetPackage )
+<a class="jxr_linenumber" name="L1224" href="#L1224">1224</a>                 .addExistingPackageToBaseIncludeSet( androidJar )
+<a class="jxr_linenumber" name="L1225" href="#L1225">1225</a>                 .setOutputApkFile( outputFile )
+<a class="jxr_linenumber" name="L1226" href="#L1226">1226</a>                 .addConfigurations( configurations )
+<a class="jxr_linenumber" name="L1227" href="#L1227">1227</a>                 .setVerbose( aaptVerbose )
+<a class="jxr_linenumber" name="L1228" href="#L1228">1228</a>                 .setDebugMode( !release )
+<a class="jxr_linenumber" name="L1229" href="#L1229">1229</a>                 .addExtraArguments( aaptExtraArgs );
+<a class="jxr_linenumber" name="L1230" href="#L1230">1230</a> 
+<a class="jxr_linenumber" name="L1231" href="#L1231">1231</a>         getLog().debug( getAndroidSdk().getAaptPath() + <span class="jxr_string">" "</span> + commandBuilder.toString() );
+<a class="jxr_linenumber" name="L1232" href="#L1232">1232</a>         <strong class="jxr_keyword">try</strong>
 <a class="jxr_linenumber" name="L1233" href="#L1233">1233</a>         {
-<a class="jxr_linenumber" name="L1234" href="#L1234">1234</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">""</span>, e );
-<a class="jxr_linenumber" name="L1235" href="#L1235">1235</a>         }
-<a class="jxr_linenumber" name="L1236" href="#L1236">1236</a>     }
-<a class="jxr_linenumber" name="L1237" href="#L1237">1237</a> 
-<a class="jxr_linenumber" name="L1238" href="#L1238">1238</a>     <strong class="jxr_keyword">protected</strong> <a href="../../../../../../com/simpligility/maven/plugins/android/AndroidSigner.html">AndroidSigner</a> getAndroidSigner()
-<a class="jxr_linenumber" name="L1239" href="#L1239">1239</a>     {
-<a class="jxr_linenumber" name="L1240" href="#L1240">1240</a>         <strong class="jxr_keyword">if</strong> ( sign == <strong class="jxr_keyword">null</strong> )
-<a class="jxr_linenumber" name="L1241" href="#L1241">1241</a>         {
-<a class="jxr_linenumber" name="L1242" href="#L1242">1242</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/simpligility/maven/plugins/android/AndroidSigner.html">AndroidSigner</a>( signDebug );
-<a class="jxr_linenumber" name="L1243" href="#L1243">1243</a>         }
-<a class="jxr_linenumber" name="L1244" href="#L1244">1244</a>         <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L1245" href="#L1245">1245</a>         {
-<a class="jxr_linenumber" name="L1246" href="#L1246">1246</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/simpligility/maven/plugins/android/AndroidSigner.html">AndroidSigner</a>( sign.getDebug() );
-<a class="jxr_linenumber" name="L1247" href="#L1247">1247</a>         }
-<a class="jxr_linenumber" name="L1248" href="#L1248">1248</a>     }
-<a class="jxr_linenumber" name="L1249" href="#L1249">1249</a> 
-<a class="jxr_linenumber" name="L1250" href="#L1250">1250</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1251" href="#L1251">1251</a> <em class="jxr_javadoccomment">     * Used to populated the {@link #apkMetaInf} attribute via reflection.</em>
-<a class="jxr_linenumber" name="L1252" href="#L1252">1252</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1253" href="#L1253">1253</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../../../com/simpligility/maven/plugins/android/configuration/MetaInf.html">MetaInf</a> getDefaultMetaInf()
-<a class="jxr_linenumber" name="L1254" href="#L1254">1254</a>     {
-<a class="jxr_linenumber" name="L1255" href="#L1255">1255</a>         <em class="jxr_comment">// check for deprecated first</em>
-<a class="jxr_linenumber" name="L1256" href="#L1256">1256</a>         <strong class="jxr_keyword">if</strong> ( apkMetaIncludes != <strong class="jxr_keyword">null</strong> &amp;&amp; apkMetaIncludes.length &gt; 0 )
-<a class="jxr_linenumber" name="L1257" href="#L1257">1257</a>         {
-<a class="jxr_linenumber" name="L1258" href="#L1258">1258</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/simpligility/maven/plugins/android/configuration/MetaInf.html">MetaInf</a>().include( apkMetaIncludes );
-<a class="jxr_linenumber" name="L1259" href="#L1259">1259</a>         }
-<a class="jxr_linenumber" name="L1260" href="#L1260">1260</a> 
-<a class="jxr_linenumber" name="L1261" href="#L1261">1261</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.pluginMetaInf;
-<a class="jxr_linenumber" name="L1262" href="#L1262">1262</a>     }
-<a class="jxr_linenumber" name="L1263" href="#L1263">1263</a> }
+<a class="jxr_linenumber" name="L1234" href="#L1234">1234</a>             executor.setCaptureStdOut( <strong class="jxr_keyword">true</strong> );
+<a class="jxr_linenumber" name="L1235" href="#L1235">1235</a>             List&lt;String&gt; commands = commandBuilder.build();
+<a class="jxr_linenumber" name="L1236" href="#L1236">1236</a>             executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
+<a class="jxr_linenumber" name="L1237" href="#L1237">1237</a>         }
+<a class="jxr_linenumber" name="L1238" href="#L1238">1238</a>         <strong class="jxr_keyword">catch</strong> ( ExecutionException e )
+<a class="jxr_linenumber" name="L1239" href="#L1239">1239</a>         {
+<a class="jxr_linenumber" name="L1240" href="#L1240">1240</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException( <span class="jxr_string">""</span>, e );
+<a class="jxr_linenumber" name="L1241" href="#L1241">1241</a>         }
+<a class="jxr_linenumber" name="L1242" href="#L1242">1242</a>     }
+<a class="jxr_linenumber" name="L1243" href="#L1243">1243</a> 
+<a class="jxr_linenumber" name="L1244" href="#L1244">1244</a>     <strong class="jxr_keyword">protected</strong> <a href="../../../../../../com/simpligility/maven/plugins/android/AndroidSigner.html">AndroidSigner</a> getAndroidSigner()
+<a class="jxr_linenumber" name="L1245" href="#L1245">1245</a>     {
+<a class="jxr_linenumber" name="L1246" href="#L1246">1246</a>         <strong class="jxr_keyword">if</strong> ( sign == <strong class="jxr_keyword">null</strong> )
+<a class="jxr_linenumber" name="L1247" href="#L1247">1247</a>         {
+<a class="jxr_linenumber" name="L1248" href="#L1248">1248</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/simpligility/maven/plugins/android/AndroidSigner.html">AndroidSigner</a>( signDebug );
+<a class="jxr_linenumber" name="L1249" href="#L1249">1249</a>         }
+<a class="jxr_linenumber" name="L1250" href="#L1250">1250</a>         <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L1251" href="#L1251">1251</a>         {
+<a class="jxr_linenumber" name="L1252" href="#L1252">1252</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/simpligility/maven/plugins/android/AndroidSigner.html">AndroidSigner</a>( sign.getDebug() );
+<a class="jxr_linenumber" name="L1253" href="#L1253">1253</a>         }
+<a class="jxr_linenumber" name="L1254" href="#L1254">1254</a>     }
+<a class="jxr_linenumber" name="L1255" href="#L1255">1255</a> 
+<a class="jxr_linenumber" name="L1256" href="#L1256">1256</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1257" href="#L1257">1257</a> <em class="jxr_javadoccomment">     * Used to populated the {@link #apkMetaInf} attribute via reflection.</em>
+<a class="jxr_linenumber" name="L1258" href="#L1258">1258</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1259" href="#L1259">1259</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../../../com/simpligility/maven/plugins/android/configuration/MetaInf.html">MetaInf</a> getDefaultMetaInf()
+<a class="jxr_linenumber" name="L1260" href="#L1260">1260</a>     {
+<a class="jxr_linenumber" name="L1261" href="#L1261">1261</a>         <em class="jxr_comment">// check for deprecated first</em>
+<a class="jxr_linenumber" name="L1262" href="#L1262">1262</a>         <strong class="jxr_keyword">if</strong> ( apkMetaIncludes != <strong class="jxr_keyword">null</strong> &amp;&amp; apkMetaIncludes.length &gt; 0 )
+<a class="jxr_linenumber" name="L1263" href="#L1263">1263</a>         {
+<a class="jxr_linenumber" name="L1264" href="#L1264">1264</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/simpligility/maven/plugins/android/configuration/MetaInf.html">MetaInf</a>().include( apkMetaIncludes );
+<a class="jxr_linenumber" name="L1265" href="#L1265">1265</a>         }
+<a class="jxr_linenumber" name="L1266" href="#L1266">1266</a> 
+<a class="jxr_linenumber" name="L1267" href="#L1267">1267</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.pluginMetaInf;
+<a class="jxr_linenumber" name="L1268" href="#L1268">1268</a>     }
+<a class="jxr_linenumber" name="L1269" href="#L1269">1269</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2008&#x2013;2016 <a href="http://www.simpligility.com">simpligility technologies inc.</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2008&#x2013;2017 <a href="http://www.simpligility.com">simpligility technologies inc.</a>. All rights reserved.</div>
 </body>
 </html>

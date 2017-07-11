@@ -2,12 +2,11 @@ com.android.ddmlib.testrunner
 com.simpligility.maven.plugins.android
 com.simpligility.maven.plugins.android.asm
 com.simpligility.maven.plugins.android.common
+com.simpligility.maven.plugins.android.compiler
 com.simpligility.maven.plugins.android.config
 com.simpligility.maven.plugins.android.configuration
-com.simpligility.maven.plugins.android.phase00clean
 com.simpligility.maven.plugins.android.phase01generatesources
 com.simpligility.maven.plugins.android.phase04processclasses
-com.simpligility.maven.plugins.android.phase05compile
 com.simpligility.maven.plugins.android.phase08preparepackage
 com.simpligility.maven.plugins.android.phase09package
 com.simpligility.maven.plugins.android.phase11preintegrationtest

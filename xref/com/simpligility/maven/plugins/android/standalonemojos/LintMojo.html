@@ -42,8 +42,8 @@
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment"> * android.lint.enableLibraries the behavior of this goal will vary depending on the phase where this goal is executed.</em>
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment"> * See android.lint.classpath/lintClassPath and android.lint.libraries/lintLibraries for more details.</em>
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment"> * @author Stéphane Nicolas &lt;snicolas@octo.com&gt;</em>
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment"> * @author Manfred Moser &lt;manfred@simpligility.com&gt;</em>
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment"> * @author Stéphane Nicolas - snicolas@octo.com</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment"> * @author Manfred Moser - manfred@simpligility.com</em>
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  @SuppressWarnings( <span class="jxr_string">"unused"</span> )
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  @Mojo( name = <span class="jxr_string">"lint"</span>, requiresProject = false )
@@ -550,7 +550,7 @@
 <a class="jxr_linenumber" name="L542" href="#L542">542</a> 
 <a class="jxr_linenumber" name="L543" href="#L543">543</a>         LintCliFlags flags = <strong class="jxr_keyword">new</strong> LintCliFlags();
 <a class="jxr_linenumber" name="L544" href="#L544">544</a> 
-<a class="jxr_linenumber" name="L545" href="#L545">545</a>         LintCliClient client = <strong class="jxr_keyword">new</strong> LintCliClient( flags );
+<a class="jxr_linenumber" name="L545" href="#L545">545</a>         LintCliClient client = <strong class="jxr_keyword">new</strong> LintCliClient( flags, <span class="jxr_string">"AndroidMaven"</span> );
 <a class="jxr_linenumber" name="L546" href="#L546">546</a> 
 <a class="jxr_linenumber" name="L547" href="#L547">547</a>         <strong class="jxr_keyword">try</strong>
 <a class="jxr_linenumber" name="L548" href="#L548">548</a>         {
@@ -591,7 +591,7 @@
 <a class="jxr_linenumber" name="L583" href="#L583">583</a>             <strong class="jxr_keyword">if</strong> ( isNotNullAndTrue( parsedEnableHtml ) )
 <a class="jxr_linenumber" name="L584" href="#L584">584</a>             {
 <a class="jxr_linenumber" name="L585" href="#L585">585</a>                 File outHtml = <strong class="jxr_keyword">new</strong> File( parsedHtmlOutputPath );
-<a class="jxr_linenumber" name="L586" href="#L586">586</a>                 flags.getReporters().add( <strong class="jxr_keyword">new</strong> MultiProjectHtmlReporter( client, outHtml ) );
+<a class="jxr_linenumber" name="L586" href="#L586">586</a>                 flags.getReporters().add( <strong class="jxr_keyword">new</strong> MultiProjectHtmlReporter( client, outHtml, flags ) );
 <a class="jxr_linenumber" name="L587" href="#L587">587</a> 
 <a class="jxr_linenumber" name="L588" href="#L588">588</a>                 getLog().info( <span class="jxr_string">"Writing Lint HTML report in "</span> + parsedHtmlOutputPath );
 <a class="jxr_linenumber" name="L589" href="#L589">589</a>             }
@@ -604,7 +604,7 @@
 <a class="jxr_linenumber" name="L596" href="#L596">596</a>             <strong class="jxr_keyword">if</strong> ( isNotNullAndTrue( parsedEnableSimpleHtml ) )
 <a class="jxr_linenumber" name="L597" href="#L597">597</a>             {
 <a class="jxr_linenumber" name="L598" href="#L598">598</a>                 File outSimpleHtml = <strong class="jxr_keyword">new</strong> File( parsedSimpleHtmlOutputPath );
-<a class="jxr_linenumber" name="L599" href="#L599">599</a>                 flags.getReporters().add( <strong class="jxr_keyword">new</strong> MultiProjectHtmlReporter( client, outSimpleHtml ) );
+<a class="jxr_linenumber" name="L599" href="#L599">599</a>                 flags.getReporters().add( <strong class="jxr_keyword">new</strong> MultiProjectHtmlReporter( client, outSimpleHtml, flags ) );
 <a class="jxr_linenumber" name="L600" href="#L600">600</a> 
 <a class="jxr_linenumber" name="L601" href="#L601">601</a>                 getLog().info( <span class="jxr_string">"Writing Lint simple HTML report in "</span> + parsedSimpleHtmlOutputPath );
 <a class="jxr_linenumber" name="L602" href="#L602">602</a>             }
@@ -756,6 +756,6 @@
 <a class="jxr_linenumber" name="L748" href="#L748">748</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2008&#x2013;2016 <a href="http://www.simpligility.com">simpligility technologies inc.</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2008&#x2013;2017 <a href="http://www.simpligility.com">simpligility technologies inc.</a>. All rights reserved.</div>
 </body>
 </html>
