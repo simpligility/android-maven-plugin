@@ -1,6 +1,6 @@
 = Changelog
 
-== 4.5.0 - Upcoming
+== 4.5.0 - Released 2017-07-11
 
 * Support for compilation with https://source.android.com/source/jack.html[Jack] - currently experimental
 ** see https://github.com/simpligility/android-maven-plugin/pull/743
@@ -35,6 +35,9 @@
 ** contributed by Piotr Soróbka https://github.com/psorobka
 ** and Justin Shapcott https://github.com/MobiDevelop
 ** and Manfred Moser http://www.simpligility.com
+* Increased app title limit on play store publishing
+** see https://github.com/simpligility/android-maven-plugin/pull/760
+** contributed by Benoit Billington https://github.com/Shusshu
 
 
 == 4.4.3 - Released 2016-07-14
