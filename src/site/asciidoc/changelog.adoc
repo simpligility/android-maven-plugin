@@ -1,6 +1,13 @@
 = Changelog
 
+
+== 4.5.1 - Upcoming
+
+Your contributions could be here. 
+
 == 4.5.0 - Released 2017-07-11
+
+https://www.simpligility.com/2017/07/android-maven-plugin-4-5-0-released/[Release Announcement]
 
 * Support for compilation with https://source.android.com/source/jack.html[Jack] - currently experimental
 ** see https://github.com/simpligility/android-maven-plugin/pull/743
