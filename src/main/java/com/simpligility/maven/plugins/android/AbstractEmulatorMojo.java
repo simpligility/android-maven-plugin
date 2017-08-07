@@ -213,7 +213,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
 
         try
         {
-            String filename;
+            /** String filename;
             if ( isWindows() )
             {
                 filename = writeEmulatorStartScriptWindows();
@@ -223,6 +223,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                 filename = writeEmulatorStartScriptUnix();
             }
 
+           
             final AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
             if ( androidDebugBridge.isConnected() )
             {
@@ -258,6 +259,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                             existingEmulator.getSerialNumber(), existingEmulator.getAvdName() ) );
                 }
             }
+             */
         }
         catch ( Exception e )
         {
