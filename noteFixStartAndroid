@@ -1,0 +1,9 @@
+
+On the shell:
+emulator -avd *avd-name*
+
+The avd-name is stored in androidAvd string
+
+Insert ANDROID_HOME variable and in the path %ANDROID_HOME%/tools and platform-tools
+
+AFTER THE FIX DELETE THIS FILE!!!
