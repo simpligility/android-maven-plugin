@@ -1,0 +1,14 @@
+----GENERAL INFORMATION AFTER EMULATOR-START GOAL FIX -----
+
+
+1)SET ANDROID_HOME environment variable and in the path %ANDROID_HOME%/tools and platform-tools
+
+2)User properties  _android.devices_  or _android.device_  maybe are not supported because will run always the emulator. 
+3)The default property value of  _android.emulator.avd_  is always _Default_
+4)The timeout for waiting emulator ready is 20000 ms
+
+Example of running on a maven project:
+mvn com.simpligility.maven.plugins:android-maven-plugin:4.5.1:emulator-start  -Dandroid.emulator.avd=Nexus_One_API_19 -Dandroid.emulator.wait=23000
+
+N.B the release will be 4.5.1 of this SNAPSHOT as announced.
+Besides I have disabled the validation errors of maven check plugin to build the project without executing JUnit tests (with -DskipTests)

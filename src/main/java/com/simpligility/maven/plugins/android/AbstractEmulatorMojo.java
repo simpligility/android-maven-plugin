@@ -29,8 +29,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -52,7 +50,8 @@ import java.util.concurrent.Future;
  * @see com.simpligility.maven.plugins.android.configuration.Emulator
  * @see com.simpligility.maven.plugins.android.standalonemojos.EmulatorStartMojo
  * @see com.simpligility.maven.plugins.android.standalonemojos.EmulatorStopMojo
- * @see com.simpligility.maven.plugins.android.standalonemojos.EmulatorStopAllMojo
+ * @see com.simpligility.maven.plugins.android.standalonemojos.
+ *      EmulatorStopAllMojo
  */
 public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
 	/**
@@ -66,7 +65,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
 	 * going on in the background, polling at a higher frequency (un-cached!) is
 	 * most probably useless
 	 */
-	private static final int MILLIS_TO_SLEEP_BETWEEN_SYS_BOOTED_CHECKS = 5000;
+	private static final int MILLIS_TO_SLEEP_BETWEEN_SYS_BOOTED_CHECKS = 20000;
 
 	/**
 	 * Names of device properties related to the boot state
@@ -75,8 +74,8 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
 			"init.svc.bootanim" };
 
 	/**
-	 * Target values for properties listed in
-	 * {@link #BOOT_INDICATOR_PROP_NAMES}, which indicate 'boot completed'
+	 * Target values for properties listed in {@link #BOOT_INDICATOR_PROP_NAMES}
+	 * , which indicate 'boot completed'
 	 */
 	private static final String[] BOOT_INDICATOR_PROP_TARGET_VALUES = { "1", "1", "stopped" };
 
@@ -93,7 +92,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
 	 * Warning threshold for narrow timeout values TODO Improve; e.g. with an
 	 * additional percentage threshold
 	 */
-	private static final long START_TIMEOUT_REMAINING_TIME_WARNING_THRESHOLD = 5000; // [ms]
+	private static final long START_TIMEOUT_REMAINING_TIME_WARNING_THRESHOLD = 20000; // [ms]
 
 	/**
 	 * Configuration for the emulator goals. Either use the plugin configuration
@@ -173,66 +172,120 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
 
 	private String parsedExecutable;
 
-	private static final String START_EMULATOR_MSG = "Starting android emulator with script: ";
-	private static final String START_EMULATOR_WAIT_MSG = "Waiting for emulator start:";
+	private static final String START_EMULATOR_MSG = "Starting android emulator ";
+	private static final String START_EMULATOR_WAIT_MSG = "Waiting for emulator start ";
+	private static final String ANDROID_HOME = System.getenv("ANDROID_HOME");
+	private static final String EMULATOR_PATH = ANDROID_HOME + "/tools/emulator ";
+	private static final String ADB_PATH = ANDROID_HOME + "/platform-tools/adb ";
 
 	/**
-	 * Folder that contains the startup script and the pid file.
-	 */
-	private static final String SCRIPT_FOLDER = System.getProperty("java.io.tmpdir");
-
-	/**
-	 * Are we running on a flavour of Windows.
+	 * Execute a the emulator -avd shell command.
 	 *
 	 * @return
 	 */
-	private boolean isWindows() {
-		boolean result;
-		if (OS_NAME.toLowerCase().contains("windows")) {
-			result = true;
-		} else {
-			result = false;
+	private void runEmulatorShellCommand() throws IOException, InterruptedException {
+
+		String commandEmulator = EMULATOR_PATH + determineOptions() + " -avd ";
+		String emulatorName = determineAvd();
+
+		commandEmulator = commandEmulator + emulatorName;
+
+		getLog().info(START_EMULATOR_MSG + " with '" + commandEmulator + "' shell command");
+
+		getLog().info("-------------------------------------");
+
+		String[] commands = commandEmulator.split("\\s+");
+		Process process = Runtime.getRuntime().exec(commands);
+
+		Thread.sleep(1000);
+
+		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+		String s;
+
+		if (reader.ready()) {
+
+			while ((s = reader.readLine()) != null) {
+				getLog().error(s);
+			}
+			throw new IllegalStateException("error execute shell command: " + commandEmulator);
 		}
-		getLog().debug("isWindows: " + result);
-		return result;
+		process.destroy();
+
+		return;
+
 	}
 
 	/**
-	 * Execute a shell command.
+	 * Execute the adb devices command to wait.
 	 *
-	 * @param completeCommand
 	 * @return
 	 */
-	private List<String> executeShellCommand(String completeCommand) throws IOException, InterruptedException {
+	private void runWaitEmulatorShellCommand() throws IOException, InterruptedException {
 
-		List<String> result = new ArrayList<String>();
+		String commandAdb = ADB_PATH + " devices";
 
-		System.out.println("Execute " + completeCommand + " shell command:");
+		getLog().info(START_EMULATOR_WAIT_MSG + " with" + commandAdb + " shell command");
 
-		System.out.println("-------------------------------------");
+		getLog().info("-------------------------------------");
 
-		String[] commands = completeCommand.split("\\s+");
-		Process process = Runtime.getRuntime().exec(commands);
+		String[] commands = commandAdb.split("\\s+");
+		int timeout = Integer.parseInt(determineWait());
 
-		int exitCode = process.waitFor();
+		while (timeout > 0) {
+			Process process = Runtime.getRuntime().exec(commands);
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-		String s;
+			Thread.sleep(1000);
+			// Sleep for 1 second
+			timeout = timeout - 1000;
 
-		while ((s = reader.readLine()) != null) {
-			result.add(s);
-			System.out.println(s);
+			BufferedReader readerError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+			String sErr;
 
+			if (readerError.ready()) {
+				while ((sErr = readerError.readLine()) != null) {
+					getLog().error(sErr);
+
+				}
+				throw new IllegalStateException("error execute shell command: " + commandAdb);
+			}
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String s;
+
+			while ((s = reader.readLine()) != null) {
+
+				String[] devices = s.split("List of devices");
+				int size = devices.length;
+
+				String str = devices[0];
+
+				if (size == 1) {
+
+					if (!str.contains("device") && timeout != 0) {
+
+						System.out.println("waiting max another " + timeout + " milliseconds..");
+						break;
+					} else if (str.contains("device")) {
+						// end wait
+						timeout = 0;
+						break;
+					} else if (timeout == 0) {
+						throw new IllegalStateException("TIMEOUT EXCEPTION: the device is not running!!");
+					} else {
+						// nothing
+						break;
+					}
+
+				}
+			}
+
+			process.destroy();
 		}
-		if (exitCode != 0) {
-			throw new IllegalStateException(
-					"error execute shell command " + completeCommand + " , the exit code is " + exitCode);
-		}
-		process.destroy();
-		System.out.println("-------------------------------------");
 
-		return result;
+		getLog().info("Emulator is up and running");
+		getLog().info("-------------------------------------");
 
+		return;
 	}
 
 	/**
@@ -253,32 +306,14 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
 		 * executor.setLogger(this.getLog());
 		 */
 
-		String commandPrefix;
-
 		final String ANDROID_HOME = System.getenv("ANDROID_HOME");
 		if (ANDROID_HOME == null) {
 			throw new IllegalStateException("ANDROID_HOME environment variable not defined");
 		}
 
-		String emulatorPath = ANDROID_HOME + "/tools/emulator ";
-
-		if (isWindows()) {
-			commandPrefix = "start cmd /k ";
-		} else {
-			commandPrefix = "xterm -e emulator le_exec"; // review for linux
-		}
-
-		String commandEmulator = commandPrefix + emulatorPath + emulatorOptions + " -avd ";
-		String emulatorName = determineAvd();
-		if (emulatorName.equals("Default")) {
-			List<String> emulatorsName = executeShellCommand(emulatorPath + "-list-avds");
-			emulatorName = emulatorsName.get(0);
-		}
-
-		commandEmulator = commandEmulator + emulatorName;
-
 		try {
-			executeShellCommand(commandEmulator);
+			runEmulatorShellCommand();
+			runWaitEmulatorShellCommand();
 
 			/**
 			 * String filename; if ( isWindows() ) { filename =
@@ -288,11 +323,11 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
 			 * 
 			 * final AndroidDebugBridge androidDebugBridge =
 			 * initAndroidDebugBridge(); if ( androidDebugBridge.isConnected() )
-			 * { waitForInitialDeviceList( androidDebugBridge ); List<IDevice>
-			 * devices = Arrays.asList( androidDebugBridge.getDevices() ); int
-			 * numberOfDevices = devices.size(); getLog().info( "Found " +
-			 * numberOfDevices + " devices connected with the Android Debug
-			 * Bridge" );
+			 * { waitForInitialDeviceList( androidDebugBridge ); List
+			 * <IDevice> devices = Arrays.asList(
+			 * androidDebugBridge.getDevices() ); int numberOfDevices =
+			 * devices.size(); getLog().info( "Found " + numberOfDevices + "
+			 * devices connected with the Android Debug Bridge" );
 			 * 
 			 * IDevice existingEmulator = findExistingEmulator( devices ); if (
 			 * existingEmulator == null ) { getLog().info( START_EMULATOR_MSG +
@@ -487,88 +522,6 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
 	}
 
 	/**
-	 * Writes the script to start the emulator in the background for windows
-	 * based environments.
-	 *
-	 * @return absolute path name of start script
-	 * @throws IOException
-	 * @throws MojoExecutionException
-	 */
-	private String writeEmulatorStartScriptWindows() throws MojoExecutionException {
-
-		String filename = SCRIPT_FOLDER + "\\android-maven-plugin-emulator-start.vbs";
-
-		File file = new File(filename);
-		PrintWriter writer = null;
-		try {
-			writer = new PrintWriter(new FileWriter(file));
-
-			// command needs to be assembled before unique window title since it
-			// parses settings and sets up parsedAvd
-			// and others.
-			String command = assembleStartCommandLine();
-			String uniqueWindowTitle = "AndroidMavenPlugin-AVD" + parsedAvd;
-			writer.println("Dim oShell");
-			writer.println("Set oShell = WScript.CreateObject(\"WScript.shell\")");
-			String cmdPath = System.getenv("COMSPEC");
-			if (cmdPath == null) {
-				cmdPath = "cmd.exe";
-			}
-			String cmd = cmdPath + " /X /C START /SEPARATE \"\"" + uniqueWindowTitle + "\"\"  " + command.trim();
-			writer.println("oShell.run \"" + cmd + "\"");
-		} catch (IOException e) {
-			getLog().error("Failure writing file " + filename);
-		} finally {
-			if (writer != null) {
-				writer.flush();
-				writer.close();
-			}
-		}
-		file.setExecutable(true);
-		return filename;
-	}
-
-	/**
-	 * Writes the script to start the emulator in the background for unix based
-	 * environments.
-	 *
-	 * @return absolute path name of start script
-	 * @throws IOException
-	 * @throws MojoExecutionException
-	 */
-	private String writeEmulatorStartScriptUnix() throws MojoExecutionException {
-		String filename = SCRIPT_FOLDER + "/android-maven-plugin-emulator-start.sh";
-
-		File sh;
-		sh = new File("/bin/bash");
-		if (!sh.exists()) {
-			sh = new File("/usr/bin/bash");
-		}
-		if (!sh.exists()) {
-			sh = new File("/bin/sh");
-		}
-
-		File file = new File(filename);
-		PrintWriter writer = null;
-		try {
-			writer = new PrintWriter(new FileWriter(file));
-			writer.println("#!" + sh.getAbsolutePath());
-			writer.print(assembleStartCommandLine());
-			writer.print(" 1>/dev/null 2>&1 &"); // redirect outputs and run as
-													// background task
-		} catch (IOException e) {
-			getLog().error("Failure writing file " + filename);
-		} finally {
-			if (writer != null) {
-				writer.flush();
-				writer.close();
-			}
-		}
-		file.setExecutable(true);
-		return filename;
-	}
-
-	/**
 	 * Stop the running Android Emulator.
 	 *
 	 * @throws org.apache.maven.plugin.MojoExecutionException
@@ -716,27 +669,6 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
 		return result;
 	}
 
-	/**
-	 * Assemble the command line for starting the emulator based on the
-	 * parameters supplied in the pom file and on the command line. It should
-	 * not be that painful to do work with command line and pom supplied values
-	 * but evidently it is.
-	 *
-	 * @return
-	 * @throws MojoExecutionException
-	 * @see com.simpligility.maven.plugins.android.configuration.Emulator
-	 */
-	private String assembleStartCommandLine() throws MojoExecutionException {
-		String emulatorPath = new File(getAndroidSdk().getToolsPath(), parsedExecutable).getAbsolutePath();
-		StringBuilder startCommandline = new StringBuilder("\"\"").append(emulatorPath).append("\"\"").append(" -avd ")
-				.append(parsedAvd).append(" ");
-		if (!StringUtils.isEmpty(parsedOptions)) {
-			startCommandline.append(parsedOptions);
-		}
-		getLog().info("Android emulator command: " + startCommandline);
-		return startCommandline.toString();
-	}
-
 	private void parseParameters() {
 		// <emulator> exist in pom file
 		if (emulator != null) {
@@ -794,14 +726,14 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo {
 	 * Get wait value for emulator from command line option.
 	 *
 	 * @return if available return command line value otherwise return default
-	 *         value (5000).
+	 *         value (20000).
 	 */
 	String determineWait() {
 		String wait;
 		if (emulatorWait != null) {
 			wait = emulatorWait;
 		} else {
-			wait = "5000";
+			wait = "20000";
 		}
 		return wait;
 	}
