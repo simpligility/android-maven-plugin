@@ -67,7 +67,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      * Even if the device finished booting, there are usually still some things going on in the background,
      * polling at a higher frequency (un-cached!) is most probably useless
      */
-    private static final int MILLIS_TO_SLEEP_BETWEEN_SYS_BOOTED_CHECKS = 5000;
+    private static final int MILLIS_TO_SLEEP_BETWEEN_SYS_BOOTED_CHECKS = 20000;
 
     /**
      * Names of device properties related to the boot state
@@ -92,7 +92,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      * Warning threshold for narrow timeout values
      * TODO Improve; e.g. with an additional percentage threshold
      */
-    private static final long START_TIMEOUT_REMAINING_TIME_WARNING_THRESHOLD = 5000; //[ms]
+    private static final long START_TIMEOUT_REMAINING_TIME_WARNING_THRESHOLD = 20000; //[ms]
 
     /**
      * Configuration for the emulator goals. Either use the plugin configuration like this
@@ -167,8 +167,11 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
 
     private String parsedExecutable;
 
-    private static final String START_EMULATOR_MSG = "Starting android emulator with script: ";
-    private static final String START_EMULATOR_WAIT_MSG = "Waiting for emulator start:";
+    private static final String START_EMULATOR_MSG = "Starting android emulator ";
+	private static final String START_EMULATOR_WAIT_MSG = "Waiting for emulator start ";
+	private static final String ANDROID_HOME = System.getenv("ANDROID_HOME");
+	private static final String EMULATOR_PATH = ANDROID_HOME + "/tools/emulator ";
+	private static final String ADB_PATH = ANDROID_HOME + "/platform-tools/adb ";
 
     /**
      * Folder that contains the startup script and the pid file.
@@ -196,74 +199,177 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     }
 
     /**
-     * Start the Android Emulator with the specified options.
-     *
-     * @throws org.apache.maven.plugin.MojoExecutionException
-     *
-     * @see #emulatorAvd
-     * @see #emulatorWait
-     * @see #emulatorOptions
-     */
-    protected void startAndroidEmulator() throws MojoExecutionException
-    {
-        parseParameters();
+	 * Execute a the emulator -avd shell command.
+	 *
+	 * @return
+	 */
+	private void runEmulatorShellCommand() throws IOException, InterruptedException {
 
-        CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
-        executor.setLogger( this.getLog() );
+		String commandEmulator = EMULATOR_PATH + determineOptions() + " -avd ";
+		String emulatorName = determineAvd();
 
-        try
-        {
-            String filename;
-            if ( isWindows() )
-            {
-                filename = writeEmulatorStartScriptWindows();
-            }
-            else
-            {
-                filename = writeEmulatorStartScriptUnix();
-            }
+		commandEmulator = commandEmulator + emulatorName;
 
-            final AndroidDebugBridge androidDebugBridge = initAndroidDebugBridge();
-            if ( androidDebugBridge.isConnected() )
-            {
-                waitForInitialDeviceList( androidDebugBridge );
-                List<IDevice> devices = Arrays.asList( androidDebugBridge.getDevices() );
-                int numberOfDevices = devices.size();
-                getLog().info( "Found " + numberOfDevices + " devices connected with the Android Debug Bridge" );
+		getLog().info(START_EMULATOR_MSG + " with '" + commandEmulator + "' shell command");
 
-                IDevice existingEmulator = findExistingEmulator( devices );
-                if ( existingEmulator == null )
-                {
-                    getLog().info( START_EMULATOR_MSG + filename );
-                    executor.executeCommand( filename, null );
+		getLog().info("-------------------------------------");
 
-                    getLog().info( START_EMULATOR_WAIT_MSG + parsedWait );
-                    // wait for the emulator to start up
-                    boolean booted = waitUntilDeviceIsBootedOrTimeout( androidDebugBridge );
-                    if ( booted )
-                    {
-                        getLog().info( "Emulator is up and running." );
-                        unlockEmulator( androidDebugBridge );
-                    }
-                    else
-                    {
-                        throw new MojoExecutionException( "Timeout while waiting for emulator to startup." );
-                    }
+		String[] commands = commandEmulator.split("\\s+");
+		Process process = Runtime.getRuntime().exec(commands);
 
-                }
-                else
-                {
-                    getLog().info( String.format(
-                            "Emulator already running [Serial No: '%s', AVD Name '%s']. " + "Skipping start and wait.",
-                            existingEmulator.getSerialNumber(), existingEmulator.getAvdName() ) );
-                }
-            }
-        }
-        catch ( Exception e )
-        {
-            throw new MojoExecutionException( "", e );
-        }
-    }
+		Thread.sleep(1000);
+
+		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+		String s;
+
+		if (reader.ready()) {
+
+			while ((s = reader.readLine()) != null) {
+				getLog().error(s);
+			}
+			throw new IllegalStateException("error execute shell command: " + commandEmulator);
+		}
+		process.destroy();
+
+		return;
+
+	}
+
+	/**
+	 * Execute the adb devices command to wait.
+	 *
+	 * @return
+	 */
+	private void runWaitEmulatorShellCommand() throws IOException, InterruptedException {
+
+		String commandAdb = ADB_PATH + " devices";
+
+		getLog().info(START_EMULATOR_WAIT_MSG + " with" + commandAdb + " shell command");
+
+		getLog().info("-------------------------------------");
+
+		String[] commands = commandAdb.split("\\s+");
+		int timeout = Integer.parseInt(determineWait());
+
+		while (timeout > 0) {
+			Process process = Runtime.getRuntime().exec(commands);
+
+			Thread.sleep(1000);
+			// Sleep for 1 second
+			timeout = timeout - 1000;
+
+			BufferedReader readerError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+			String sErr;
+
+			if (readerError.ready()) {
+				while ((sErr = readerError.readLine()) != null) {
+					getLog().error(sErr);
+
+				}
+				throw new IllegalStateException("error execute shell command: " + commandAdb);
+			}
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String s;
+
+			while ((s = reader.readLine()) != null) {
+
+				String[] devices = s.split("List of devices");
+				int size = devices.length;
+
+				String str = devices[0];
+
+				if (size == 1) {
+
+					if (!str.contains("device") && timeout != 0) {
+
+						System.out.println("waiting max another " + timeout + " milliseconds..");
+						break;
+					} else if (str.contains("device")) {
+						// end wait
+						timeout = 0;
+						break;
+					} else if (timeout == 0) {
+						throw new IllegalStateException("TIMEOUT EXCEPTION: the device is not running!!");
+					} else {
+						// nothing
+						break;
+					}
+
+				}
+			}
+
+			process.destroy();
+		}
+
+		getLog().info("Emulator is up and running");
+		getLog().info("-------------------------------------");
+
+		return;
+	}
+
+	/**
+	 * Start the Android Emulator with the specified options.
+	 *
+	 * @throws org.apache.maven.plugin.MojoExecutionException
+	 *
+	 * @see #emulatorAvd
+	 * @see #emulatorWait
+	 * @see #emulatorOptions
+	 */
+	protected void startAndroidEmulator() throws MojoExecutionException {
+		parseParameters();
+
+		/**
+		 * CommandExecutor executor =
+		 * CommandExecutor.Factory.createDefaultCommmandExecutor();
+		 * executor.setLogger(this.getLog());
+		 */
+
+		final String ANDROID_HOME = System.getenv("ANDROID_HOME");
+		if (ANDROID_HOME == null) {
+			throw new IllegalStateException("ANDROID_HOME environment variable not defined");
+		}
+
+		try {
+			runEmulatorShellCommand();
+			runWaitEmulatorShellCommand();
+
+			/**
+			 * String filename; if ( isWindows() ) { filename =
+			 * writeEmulatorStartScriptWindows(); } else { filename =
+			 * writeEmulatorStartScriptUnix(); }
+			 * 
+			 * 
+			 * final AndroidDebugBridge androidDebugBridge =
+			 * initAndroidDebugBridge(); if ( androidDebugBridge.isConnected() )
+			 * { waitForInitialDeviceList( androidDebugBridge ); List
+			 * <IDevice> devices = Arrays.asList(
+			 * androidDebugBridge.getDevices() ); int numberOfDevices =
+			 * devices.size(); getLog().info( "Found " + numberOfDevices + "
+			 * devices connected with the Android Debug Bridge" );
+			 * 
+			 * IDevice existingEmulator = findExistingEmulator( devices ); if (
+			 * existingEmulator == null ) { getLog().info( START_EMULATOR_MSG +
+			 * filename ); executor.executeCommand( filename, null );
+			 * 
+			 * getLog().info( START_EMULATOR_WAIT_MSG + parsedWait ); // wait
+			 * for the emulator to start up boolean booted =
+			 * waitUntilDeviceIsBootedOrTimeout( androidDebugBridge ); if (
+			 * booted ) { getLog().info( "Emulator is up and running." );
+			 * unlockEmulator( androidDebugBridge ); } else { throw new
+			 * MojoExecutionException( "Timeout while waiting for emulator to
+			 * startup." ); }
+			 * 
+			 * } else { getLog().info( String.format( "Emulator already running
+			 * [Serial No: '%s', AVD Name '%s']. " + "Skipping start and wait.",
+			 * existingEmulator.getSerialNumber(), existingEmulator.getAvdName()
+			 * ) ); } }
+			 */
+		} catch (Exception e) {
+			throw new MojoExecutionException("", e);
+		}
+	}
     
     /**
      * Unlocks the emulator.
@@ -852,7 +958,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     /**
      * Get wait value for emulator from command line option.
      *
-     * @return if available return command line value otherwise return default value (5000).
+     * @return if available return command line value otherwise return default value (20000).
      */
     String determineWait()
     {
@@ -863,7 +969,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
         }
         else
         {
-            wait = "5000";
+            wait = "20000";
         }
         return wait;
     }

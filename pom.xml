@@ -669,6 +669,7 @@
             instead -->
           <configLocation>src/conf/maven_checks.xml</configLocation>
           <enableRulesSummary>false</enableRulesSummary>
+          <failOnViolation>false</failOnViolation>
           <excludes>**/**HelpMojo**,org/apache/maven/surefire/**</excludes>
         </configuration>
 
