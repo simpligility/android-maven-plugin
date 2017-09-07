@@ -156,6 +156,11 @@ public class AarMojo extends AbstractAndroidMojo
             // If there is a classifier specified, attach the artifact using that
             projectHelper.attachArtifact( project, AndroidExtension.AAR, classifier, outputFile );
         }
+        if ( attachJar )
+        {
+            final File jarFile = new File( targetDirectory, finalName + ".jar" );
+            projectHelper.attachArtifact( project, "jar", project.getArtifact().getClassifier(), jarFile );
+        }
     }
 
     /**
