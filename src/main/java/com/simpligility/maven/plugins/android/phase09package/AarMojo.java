@@ -156,11 +156,6 @@ public class AarMojo extends AbstractAndroidMojo
             // If there is a classifier specified, attach the artifact using that
             projectHelper.attachArtifact( project, AndroidExtension.AAR, classifier, outputFile );
         }
-        if ( attachJar )
-        {
-            final File jarFile = new File( targetDirectory, finalName + ".jar" );
-            projectHelper.attachArtifact( project, "jar", project.getArtifact().getClassifier(), jarFile );
-        }
     }
 
     /**
@@ -174,6 +169,7 @@ public class AarMojo extends AbstractAndroidMojo
         final File obfuscatedJarFile = new File( obfuscatedJar );
         if ( obfuscatedJarFile.exists() )
         {
+            attachJar( obfuscatedJarFile );
             return obfuscatedJarFile;
         }
 
@@ -186,6 +182,7 @@ public class AarMojo extends AbstractAndroidMojo
                     classesJarIncludes,
                     classesJarExcludes );
             jarArchiver.createArchive();
+            attachJar( classesJar );
             return classesJar;
         }
         catch ( ArchiverException e )
@@ -197,6 +194,14 @@ public class AarMojo extends AbstractAndroidMojo
             throw new MojoExecutionException( "IOException while creating ." + classesJar + " file.", e );
         }
 
+    }
+
+    private void attachJar( File jarFile )
+    {
+        if ( attachJar )
+        {
+            projectHelper.attachArtifact( project, "jar", project.getArtifact().getClassifier(), jarFile );
+        }
     }
 
     /**
