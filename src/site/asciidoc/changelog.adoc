@@ -3,7 +3,12 @@
 
 == 4.5.1 - Upcoming
 
+* Update plexus-utils dependency for windows cmd support fix
+** see https://github.com/simpligility/android-maven-plugin/pull/766
+** contributed by https://github.com/witekkij
+
 Your contributions could be here. 
+
 
 == 4.5.0 - Released 2017-07-11
 
