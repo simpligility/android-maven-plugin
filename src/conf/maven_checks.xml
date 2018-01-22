@@ -130,7 +130,9 @@ Android Maven Plugin uses the APL v2 but with copyright mentions -->
 
         <!-- Checks for Size Violations.                    -->
         <!-- See http://checkstyle.sf.net/config_sizes.html -->
-        <module name="MethodLength"/>
+        <module name="MethodLength">
+            <property name="countEmpty" value="false"/>
+        </module>
         <module name="ParameterNumber">
             <property name="max" value="10"/>
         </module>

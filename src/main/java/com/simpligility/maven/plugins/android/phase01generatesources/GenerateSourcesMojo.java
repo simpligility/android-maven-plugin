@@ -20,15 +20,15 @@ import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.CommandExecutor;
 import com.simpligility.maven.plugins.android.ExecutionException;
 import com.simpligility.maven.plugins.android.common.AaptCommandBuilder;
+import com.simpligility.maven.plugins.android.common.AaptCommandBuilder.AaptPackageCommandBuilder;
 import com.simpligility.maven.plugins.android.common.DependencyResolver;
 import com.simpligility.maven.plugins.android.common.FileRetriever;
-import com.simpligility.maven.plugins.android.common.AaptCommandBuilder.AaptPackageCommandBuilder;
 import com.simpligility.maven.plugins.android.configuration.BuildConfigConstant;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
@@ -53,7 +53,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -812,12 +811,35 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
             throw new MojoExecutionException( "", e );
         }
 
-        final ResourceClassGenerator resGenerator = new ResourceClassGenerator( this, targetDirectory, genDirectory );
+        final ClassLoader compileClassLoader = getCompileClassLoader();
+        final ResourceClassGenerator resGenerator = new ResourceClassGenerator(
+                this,
+                targetDirectory,
+                genDirectory,
+                compileClassLoader
+        );
         generateCorrectRJavaForApklibDependencies( resGenerator );
         generateCorrectRJavaForAarDependencies( resGenerator );
 
         getLog().info( "Adding R gen folder to compile classpath: " + genDirectory );
         project.addCompileSourceRoot( genDirectory.getAbsolutePath() );
+    }
+
+    /**
+     * @return ClassLoader containing the compile paths.
+     */
+    private ClassLoader getCompileClassLoader()
+    {
+        try
+        {
+            final List<String> runtimeClasspathElements = project.getCompileClasspathElements();
+            final ClassLoaderFactory factory = new ClassLoaderFactory( runtimeClasspathElements );
+            return factory.create();
+        }
+        catch ( DependencyResolutionRequiredException e )
+        {
+            throw new IllegalStateException( "Mojo should have resolved dependencies", e );
+        }
     }
 
     /**
@@ -854,7 +876,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
     /**
      * Generate correct R.java for aar dependencies of a current project
      *
-     * @throws MojoExecutionException
+     * @throws MojoExecutionException if it could not generate the R java for one of the libraries.
      */
     private void generateCorrectRJavaForAarDependencies( ResourceClassGenerator resourceGenerator )
             throws MojoExecutionException
