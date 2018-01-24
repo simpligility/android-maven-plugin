@@ -142,7 +142,7 @@ public class AndroidSdk
         // fallback to searching for platform on standard Android platforms (isPlatform() is true)
         for ( IAndroidTarget t: sdkManager.getAndroidTargetManager( null ).getTargets( null ) )
         {
-            if ( t.isPlatform() && t.getVersionName().equals( apiLevel ) )
+            if ( t.isPlatform() && apiLevel.equals( t.getVersionName() ) )
             {
                 return t;
             }

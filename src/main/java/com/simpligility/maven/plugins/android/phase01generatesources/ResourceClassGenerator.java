@@ -4,9 +4,7 @@ import com.android.builder.core.DefaultManifestParser;
 import com.android.builder.symbols.RGeneration;
 import com.android.builder.symbols.SymbolIo;
 import com.android.builder.symbols.SymbolTable;
-import com.android.utils.ILogger;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
@@ -25,26 +23,34 @@ final class ResourceClassGenerator
     private final File targetDirectory;
     private final File genDirectory;
     private final Log log;
-    private final ILogger androidUtilsLog;
+    private final ClassLoader compileClassLoader;
 
-    ResourceClassGenerator( final GenerateSourcesMojo mojo, final File targetDirectory,
-                            final File genDirectory )
+    ResourceClassGenerator( final GenerateSourcesMojo mojo,
+                            final File targetDirectory,
+                            final File genDirectory,
+                            final ClassLoader compileClassLoader
+    )
     {
         this.mojo = mojo;
         this.targetDirectory = targetDirectory;
         this.genDirectory = genDirectory;
         this.log = mojo.getLog();
-        this.androidUtilsLog = new MavenILogger( log );
+        this.compileClassLoader = compileClassLoader;
     }
 
     /**
-     * see {@link com.android.builder.core.AndroidBuilder#processResources(com.android.builder.internal.aapt.Aapt,
+     * Generates R java files those libraries that do not already have their R java in the compile classpath.
+     *
+     * If we are generating an integration test APK and the APK under test has a reference to a library for which
+     * it generated an R java, then we don't want to generate that R java again for the test APK because otherwise
+     * Proguard will fail when building the test APK because of duplication of the R java in the compile classpath.
+     *
+     * See {@link com.android.builder.core.AndroidBuilder#processResources(com.android.builder.internal.aapt.Aapt,
      * com.android.builder.internal.aapt.AaptPackageConfig.Builder, boolean)}
      *
-     * @param libraries
-     * @throws MojoExecutionException
+     * @param libraries AAR libraries for which to generate R java files.
      */
-    public void generateLibraryRs( final Set<Artifact> libraries ) throws MojoExecutionException
+    public void generateLibraryRs( final Set<Artifact> libraries )
     {
         // list of all the symbol tables
         final List<SymbolTable> symbolTables = new ArrayList<>( libraries.size() );
@@ -59,7 +65,12 @@ final class ResourceClassGenerator
             {
                 final File libManifestFile = new File( unpackedLibDirectory, "AndroidManifest.xml" );
                 final String packageName = new DefaultManifestParser( libManifestFile ).getPackage();
-                log.info( "Reading R for " + packageName + " at " + rFile );
+                if ( rJavaAlreadyExists( packageName ) )
+                {
+                    log.info( "Not creating R for " + packageName + " as it already exists" );
+                    continue;
+                }
+                log.info( "Generating R for " + packageName + " at " + rFile );
 
                 SymbolTable libSymbols = SymbolIo.read( rFile );
                 libSymbols = libSymbols.rename( packageName, libSymbols.getTableName() );
@@ -80,4 +91,18 @@ final class ResourceClassGenerator
         RGeneration.generateRForLibraries( mainSymbols, symbolTables, genDirectory.getAbsoluteFile(), false );
     }
 
+    private boolean rJavaAlreadyExists( String packageName )
+    {
+        final String rJavaClass = packageName + ".R";
+        try
+        {
+            compileClassLoader.loadClass( rJavaClass );
+            return true;
+        }
+        catch ( ClassNotFoundException e )
+        {
+            log.debug( "Could not resolve R java : " + rJavaClass );
+            return false;
+        }
+    }
 }
