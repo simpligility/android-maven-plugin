@@ -115,7 +115,7 @@ public abstract class AbstractInstrumentationMojo extends AbstractAndroidMojo
      * Enables or disables integration safe failure.
      * If <code>true</code> build will not stop on test failure or error.
      */
-    @Parameter( property = "android.test.failsafe", defaultValue = "true" )
+    @Parameter( property = "android.test.failsafe", defaultValue = "false" )
     private Boolean testFailSafe;
 
     /**
