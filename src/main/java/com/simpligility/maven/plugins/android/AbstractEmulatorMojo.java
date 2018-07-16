@@ -102,6 +102,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      *   &lt;wait&gt;20000&lt;/wait&gt;
      *   &lt;options&gt;-no-skin&lt;/options&gt;
      *   &lt;executable&gt;emulator-arm&lt;/executable&gt;
+     *   &lt;location&gt;C:/SDK/emulator&lt;/location&gt;
      * &lt;/emulator&gt;
      * </pre>
      * or configure as properties  on the command line as android.emulator.avd, android.emulator.wait,
@@ -143,7 +144,6 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     @Parameter( property = "android.emulator.options" )
     private String emulatorOptions;
 
-
     /**
      * Override default emulator executable. Default uses just "emulator".
      *
@@ -151,6 +151,12 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      */
     @Parameter( property = "android.emulator.executable" )
     private String emulatorExecutable;
+
+    /**
+     * Override default path to emulator folder.
+     */
+    @Parameter( property = "android.emulator.location" )
+    private String emulatorLocation;
 
     /**
      * parsed value for avd that will be used for the invocation.
@@ -765,9 +771,13 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      * @throws MojoExecutionException
      * @see com.simpligility.maven.plugins.android.configuration.Emulator
      */
-    private String assembleStartCommandLine() throws MojoExecutionException
-    {
-        String emulatorPath = new File ( getAndroidSdk().getToolsPath(), parsedExecutable ).getAbsolutePath();
+    private String assembleStartCommandLine() throws MojoExecutionException{
+        String emulatorPath;
+        if (emulatorLocation != null) {
+            emulatorPath = new File(emulatorLocation, parsedExecutable).getAbsolutePath();
+        } else {
+            emulatorPath = new File(getAndroidSdk().getToolsPath(), parsedExecutable).getAbsolutePath();
+        }
         StringBuilder startCommandline = new StringBuilder( "\"\"" ).append( emulatorPath ).append( "\"\"" )
                 .append( " -avd " ).append( parsedAvd ).append( " " );
         if ( !StringUtils.isEmpty( parsedOptions ) )
