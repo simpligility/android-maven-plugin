@@ -153,19 +153,32 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     private String emulatorExecutable;
 
     /**
+     * Override default path to emulator folder.
+     */
+    @Parameter( property = "android.emulator.location" )
+    private String emulatorLocation;
+
+    /**
      * parsed value for avd that will be used for the invocation.
      */
     private String parsedAvd;
+
     /**
      * parsed value for options that will be used for the invocation.
      */
     private String parsedOptions;
+
     /**
      * parsed value for wait that will be used for the invocation.
      */
     private String parsedWait;
 
     private String parsedExecutable;
+
+    /**
+     * parsed value for location that will be used for the invocation.
+     */
+    private String parsedEmulatorLocation;
 
     private static final String START_EMULATOR_MSG = "Starting android emulator with script: ";
     private static final String START_EMULATOR_WAIT_MSG = "Waiting for emulator start:";
@@ -768,9 +781,9 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     private String assembleStartCommandLine() throws MojoExecutionException
     {
         String emulatorPath;
-        if ( emulator.getLocation() != null )
+        if ( !"SdkTools".equals( parsedEmulatorLocation ) )
         {
-            emulatorPath = new File( emulator.getLocation(), parsedExecutable ).getAbsolutePath();
+            emulatorPath = new File( parsedEmulatorLocation, parsedExecutable ).getAbsolutePath();
         }
         else
         {
@@ -797,7 +810,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                 parsedAvd = emulator.getAvd();
             }
             else
-            {
+                {
                 parsedAvd = determineAvd();
             }
             // <emulator><options> exists in pom file
@@ -806,7 +819,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                 parsedOptions = emulator.getOptions();
             }
             else
-            {
+                {
                 parsedOptions = determineOptions();
             }
             // <emulator><wait> exists in pom file
@@ -815,7 +828,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                 parsedWait = emulator.getWait();
             }
             else
-            {
+                {
                 parsedWait = determineWait();
             }
             // <emulator><emulatorExecutable> exists in pom file
@@ -824,8 +837,17 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                 parsedExecutable = emulator.getExecutable();
             }
             else
-            {
+                {
                 parsedExecutable = determineExecutable();
+            }
+            // <emulator><location> exists in pom file
+            if ( emulator.getLocation() != null )
+            {
+                parsedEmulatorLocation = emulator.getLocation();
+            }
+            else
+            {
+            parsedEmulatorLocation = determineEmulatorLocation();
             }
         }
         // commandline options
@@ -835,6 +857,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
             parsedOptions = determineOptions();
             parsedWait = determineWait();
             parsedExecutable = determineExecutable();
+            parsedEmulatorLocation = determineEmulatorLocation();
         }
     }
 
@@ -913,4 +936,24 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
         }
         return avd;
     }
+
+    /**
+     * Get location value for emulator from command line option.
+     *
+     * @return if available return command line value otherwise return default value ("SdkTools").
+     */
+    String determineEmulatorLocation()
+    {
+        String location;
+        if ( emulatorLocation != null )
+        {
+            location = emulatorLocation;
+        }
+        else
+        {
+            location = "SdkTools";
+        }
+        return location;
+    }
+
 }
