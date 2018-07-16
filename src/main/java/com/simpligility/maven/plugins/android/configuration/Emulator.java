@@ -28,6 +28,13 @@ public class Emulator
      */
     private String executable;
 
+    public String getLocation()
+    {
+        return location;
+    }
+
+    private String location;
+
     public String getAvd()
     {
         return avd;

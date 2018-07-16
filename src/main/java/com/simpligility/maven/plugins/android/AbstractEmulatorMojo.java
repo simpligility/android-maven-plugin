@@ -153,12 +153,6 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     private String emulatorExecutable;
 
     /**
-     * Override default path to emulator folder.
-     */
-    @Parameter( property = "android.emulator.location" )
-    private String emulatorLocation;
-
-    /**
      * parsed value for avd that will be used for the invocation.
      */
     private String parsedAvd;
@@ -270,7 +264,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
             throw new MojoExecutionException( "", e );
         }
     }
-    
+
     /**
      * Unlocks the emulator.
      * @param androidDebugBridge
@@ -771,12 +765,16 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      * @throws MojoExecutionException
      * @see com.simpligility.maven.plugins.android.configuration.Emulator
      */
-    private String assembleStartCommandLine() throws MojoExecutionException{
+    private String assembleStartCommandLine() throws MojoExecutionException
+    {
         String emulatorPath;
-        if (emulatorLocation != null) {
-            emulatorPath = new File(emulatorLocation, parsedExecutable).getAbsolutePath();
-        } else {
-            emulatorPath = new File(getAndroidSdk().getToolsPath(), parsedExecutable).getAbsolutePath();
+        if ( emulator.getLocation() != null )
+        {
+            emulatorPath = new File( emulator.getLocation(), parsedExecutable ).getAbsolutePath();
+        }
+        else
+        {
+            emulatorPath = new File( getAndroidSdk().getToolsPath(), parsedExecutable ).getAbsolutePath();
         }
         StringBuilder startCommandline = new StringBuilder( "\"\"" ).append( emulatorPath ).append( "\"\"" )
                 .append( " -avd " ).append( parsedAvd ).append( " " );
