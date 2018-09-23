@@ -68,6 +68,7 @@ public class DexMojo extends AbstractAndroidMojo
      *
      * <pre>
      * &lt;dex&gt;
+     *   &lt;dexMechanism&gt;d8|dex&lt;/dexMechanism&gt;
      *   &lt;jvmArguments&gt;
      *     &lt;jvmArgument&gt;-Xms256m&lt;/jvmArgument&gt;
      *     &lt;jvmArgument&gt;-Xmx512m&lt;/jvmArgument&gt;
@@ -243,6 +244,7 @@ public class DexMojo extends AbstractAndroidMojo
     private boolean parsedMinimalMainDex;
     private boolean parsedGenerateMainDexList;
     private String parsedDexArguments;
+    private DexMechanism parsedDexMechanism;
 
     /**
      * @throws MojoExecutionException
@@ -251,15 +253,24 @@ public class DexMojo extends AbstractAndroidMojo
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
+        parseConfiguration();
+
+        getLog().debug( "DexMechanism set to " + parsedDexMechanism );
+        if ( parsedDexMechanism != DexMechanism.Dex )
+        {
+            getLog().info( "Not executing DexMojo because DexMechanism set to " + parsedDexMechanism );
+            return;
+        }
+
         if ( getJack().isEnabled() )
         {
             //Dexxing is handled by Jack
             return;
         }
+
         CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( getLog() );
 
-        parseConfiguration();
         File outputFile;
         if ( parsedMultiDex )
         {
@@ -473,6 +484,7 @@ public class DexMojo extends AbstractAndroidMojo
             {
                 parsedDexArguments = dex.getDexArguments();
             }
+            parsedDexMechanism = dex.getDexMechanism();
 
         }
         else
@@ -490,6 +502,7 @@ public class DexMojo extends AbstractAndroidMojo
             parsedMinimalMainDex = dexMinimalMainDex;
             parsedGenerateMainDexList = dexGenerateMainDexList;
             parsedDexArguments = dexArguments;
+            parsedDexMechanism = DexMechanism.D8;
         }
     }
 
