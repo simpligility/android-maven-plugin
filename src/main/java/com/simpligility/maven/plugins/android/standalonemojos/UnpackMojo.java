@@ -77,6 +77,9 @@ public class UnpackMojo extends AbstractAndroidMojo
     @Parameter( defaultValue = "${project.build.directory}/android-classes", readonly = true )
     private File unpackOutputDirectory;
 
+    @Parameter( defaultValue = "false", readonly = true )
+    private boolean includeNonClassFiles;
+
     public void execute() throws MojoExecutionException, MojoFailureException
     {
 
@@ -162,6 +165,11 @@ public class UnpackMojo extends AbstractAndroidMojo
         String entName = jarEntry.getName();
 
         if ( entName.endsWith( ".class" ) )
+        {
+            return true;
+        }
+
+        if ( includeNonClassFiles && !entName.startsWith( "META-INF/" ) )
         {
             return true;
         }
