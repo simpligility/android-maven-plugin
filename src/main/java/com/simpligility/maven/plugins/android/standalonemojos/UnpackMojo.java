@@ -74,6 +74,12 @@ public class UnpackMojo extends AbstractAndroidMojo
     @ConfigPojo( prefix = "unpack" )
     private Unpack unpack;
 
+    @Parameter( defaultValue = "${project.build.directory}/android-classes", readonly = true )
+    private File unpackOutputDirectory;
+
+    @Parameter( defaultValue = "false", readonly = true )
+    private boolean includeNonClassFiles;
+
     public void execute() throws MojoExecutionException, MojoFailureException
     {
 
@@ -89,7 +95,7 @@ public class UnpackMojo extends AbstractAndroidMojo
 
     private File unpackClasses() throws MojoExecutionException
     {
-        File outputDirectory = new File( targetDirectory, "android-classes" );
+        File outputDirectory = unpackOutputDirectory;
         if ( lazyLibraryUnpack && outputDirectory.exists() )
         {
             getLog().info( "skip library unpacking due to lazyLibraryUnpack policy" );
@@ -141,7 +147,10 @@ public class UnpackMojo extends AbstractAndroidMojo
 
         try
         {
-            FileUtils.copyDirectory( projectOutputDirectory, outputDirectory );
+            if ( !projectOutputDirectory.equals( outputDirectory ) )
+            {
+                FileUtils.copyDirectory( projectOutputDirectory, outputDirectory );
+            }
         }
         catch ( IOException e )
         {
@@ -156,6 +165,11 @@ public class UnpackMojo extends AbstractAndroidMojo
         String entName = jarEntry.getName();
 
         if ( entName.endsWith( ".class" ) )
+        {
+            return true;
+        }
+
+        if ( includeNonClassFiles && !entName.startsWith( "META-INF/" ) )
         {
             return true;
         }
