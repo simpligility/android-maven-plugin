@@ -9,7 +9,9 @@
 * Don't generate library R.java if one has already been generated for that package in the compile classpath
 ** See https://github.com/simpligility/android-maven-plugin/pull/769
 ** contributed by https://github.com/william-ferguson-au
-
+* Added unpackOutputDirectory and includeNonClassFiles to the unpack goal.
+** See https://github.com/simpligility/android-maven-plugin/pull/779
+** Contributed by https://github.com/lyubomyr-shaydariv
 Your contributions could be here. 
 
 
