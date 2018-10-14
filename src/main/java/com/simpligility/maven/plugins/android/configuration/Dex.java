@@ -62,7 +62,7 @@ public class Dex
 
     private String dexArguments;
 
-    private DexMechanism dexMechanism = DexMechanism.D8;
+    private DexMechanism dexMechanism = DexMechanism.Dex;
 
     public String[] getJvmArguments()
     {

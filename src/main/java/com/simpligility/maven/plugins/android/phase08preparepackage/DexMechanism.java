@@ -5,6 +5,6 @@ package com.simpligility.maven.plugins.android.phase08preparepackage;
  */
 public enum DexMechanism
 {
-    Dex,
+    Dex, // Default
     D8
 }

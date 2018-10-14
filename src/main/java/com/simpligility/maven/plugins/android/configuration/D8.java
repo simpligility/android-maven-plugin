@@ -36,7 +36,7 @@ public class D8
      */
     private Integer minApi;
 
-    private DexMechanism dexMechanism = DexMechanism.D8;
+    private DexMechanism dexMechanism = DexMechanism.Dex;
 
     public String[] getJvmArguments()
     {

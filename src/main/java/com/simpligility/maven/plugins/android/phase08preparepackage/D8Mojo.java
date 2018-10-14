@@ -340,7 +340,7 @@ public class D8Mojo extends AbstractAndroidMojo
             parsedIntermediate = dexIntermediate;
             parsedMainDexList = dexMainDexList;
             parsedDexArguments = dexArguments;
-            parsedDexMechanism = DexMechanism.D8;
+            parsedDexMechanism = DexMechanism.Dex;
             parsedRelease = dexRelease;
             parsedMinApi = dexMinApi;
         }

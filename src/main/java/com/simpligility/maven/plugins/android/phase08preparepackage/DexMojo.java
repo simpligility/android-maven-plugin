@@ -502,7 +502,7 @@ public class DexMojo extends AbstractAndroidMojo
             parsedMinimalMainDex = dexMinimalMainDex;
             parsedGenerateMainDexList = dexGenerateMainDexList;
             parsedDexArguments = dexArguments;
-            parsedDexMechanism = DexMechanism.D8;
+            parsedDexMechanism = DexMechanism.Dex;
         }
     }
 
