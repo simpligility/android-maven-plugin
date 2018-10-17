@@ -12,6 +12,13 @@
 * Added unpackOutputDirectory and includeNonClassFiles to the unpack goal.
 ** See https://github.com/simpligility/android-maven-plugin/pull/779
 ** Contributed by https://github.com/lyubomyr-shaydariv
+* Added <dex><dexMechanism> element to allow specificaitn of D8 instead of Dex (default).
+** See https://github.com/simpligility/android-maven-plugin/pull/781
+** contributed by https://github.com/william-ferguson-au
+* ApkMojo now includes all Java resources from the project to allow inclusion of META-INF resources.
+** See https://github.com/simpligility/android-maven-plugin/pull/782
+** contributed by https://github.com/william-ferguson-au
+
 Your contributions could be here. 
 
 
