@@ -20,13 +20,13 @@ import com.android.sdklib.build.ApkBuilder;
 import com.android.sdklib.build.ApkCreationException;
 import com.android.sdklib.build.DuplicateFileException;
 import com.android.sdklib.build.SealedApkException;
-import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.google.common.io.Files;
+import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.AndroidNdk;
 import com.simpligility.maven.plugins.android.AndroidSigner;
-import com.simpligility.maven.plugins.android.IncludeExcludeSet;
 import com.simpligility.maven.plugins.android.CommandExecutor;
 import com.simpligility.maven.plugins.android.ExecutionException;
+import com.simpligility.maven.plugins.android.IncludeExcludeSet;
 import com.simpligility.maven.plugins.android.common.AaptCommandBuilder;
 import com.simpligility.maven.plugins.android.common.AndroidExtension;
 import com.simpligility.maven.plugins.android.common.NativeHelper;
@@ -36,7 +36,6 @@ import com.simpligility.maven.plugins.android.config.PullParameter;
 import com.simpligility.maven.plugins.android.configuration.Apk;
 import com.simpligility.maven.plugins.android.configuration.MetaInf;
 import com.simpligility.maven.plugins.android.configuration.Sign;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.FileFileFilter;
@@ -733,7 +732,8 @@ public class ApkMojo extends AbstractAndroidMojo
             for ( File sourceFolder : sourceFolders )
             {
                 getLog().debug( "Adding source folder : " + sourceFolder );
-                apkBuilder.addSourceFolder( sourceFolder );
+                // Use ApkBuilder#addFile() to explicitly add resource files so that we can add META-INF/services.
+                addResourcesFromFolder( apkBuilder, sourceFolder );
             }
 
             for ( File jarFile : jarFiles )
@@ -799,9 +799,9 @@ public class ApkMojo extends AbstractAndroidMojo
             }
             apkBuilder.sealApk();
         }
-        catch ( ApkCreationException e )
+        catch ( ApkCreationException | SealedApkException | IOException e )
         {
-            throw new MojoExecutionException( e.getMessage() );
+            throw new MojoExecutionException( e.getMessage(), e );
         }
         catch ( DuplicateFileException e )
         {
@@ -809,9 +809,53 @@ public class ApkMojo extends AbstractAndroidMojo
                     e.getArchivePath(), e.getFile1(), e.getFile2() );
             throw new MojoExecutionException( msg, e );
         }
-        catch ( SealedApkException e )
+    }
+
+    /**
+     * Collect all Files from Folder (recursively) that are not class files.
+     */
+    private void collectFiles( File folder, final List<File> collectedFiles )
+    {
+        folder.listFiles( new FileFilter()
         {
-            throw new MojoExecutionException( e.getMessage() );
+            @Override
+            public boolean accept( File file )
+            {
+                if ( file.isDirectory() )
+                {
+                    collectFiles( file, collectedFiles );
+                }
+                else if ( file.isFile() )
+                {
+                    if ( !file.getName().endsWith( ".class" ) )
+                    {
+                        collectedFiles.add( file );
+                    }
+                }
+                return false;
+            }
+        } );
+
+    }
+    /**
+     * Adds all non-class files from folder, so that we can add META-INF/services resources.
+     */
+    private void addResourcesFromFolder( ApkBuilder builder,  File folder )
+            throws SealedApkException, DuplicateFileException, ApkCreationException, IOException
+    {
+        final int folderPathLength = folder.getCanonicalPath().length();
+
+        final List<File> resourceFiles = new ArrayList<>(  );
+        collectFiles( folder, resourceFiles );
+
+        for ( final File resourceFile : resourceFiles )
+        {
+            final String resourceName = resourceFile
+                    .getCanonicalPath()
+                    .substring( folderPathLength + 1 )
+                    .replaceAll( "\\\\", "/" );
+            getLog().info( "Adding resource " + resourceFile + " : " + resourceName );
+            builder.addFile( resourceFile,  resourceName );
         }
     }
 
