@@ -189,8 +189,18 @@ public class AndroidSdk
     {
         return getPathForBuildTool( BuildToolInfo.PathId.DX_JAR );
     }
-    
-     /**
+
+    /**
+     * @return the path to the dx.jar
+     */
+    public String getD8JarPath()
+    {
+        final File pathToDexJar = new File( getPathForBuildTool( BuildToolInfo.PathId.DX_JAR ) );
+        final File pathToD8Jar = new File( pathToDexJar.getParent(), "d8.jar" );
+        return pathToD8Jar.getAbsolutePath();
+    }
+
+    /**
      * Get the path for proguard.jar
      * @return
      */
