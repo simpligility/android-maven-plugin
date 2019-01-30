@@ -332,28 +332,11 @@ public class RunMojo extends AbstractAndroidMojo
                     }
                     if ( debugPort > 0 ) 
                     {
-                        CollectingOutputReceiver processOutput = new CollectingOutputReceiver();
-                        device.executeShellCommand( "ps", processOutput );
-                        BufferedReader r = new BufferedReader( new StringReader( processOutput.getOutput() ) );
-                        int pid = -1;
-                        for ( ;; ) 
+                        int pid = findPid( device, "ps" );
+                        if ( pid == -1 )
                         {
-                            String line = r.readLine();
-                            if ( line == null )
-                            {
-                                break;
-                            }
-                            if ( line.endsWith( info.packageName ) )
-                            {
-                                String[] values = line.split( " +" );
-                                if ( values.length > 2 )
-                                {
-                                    pid = Integer.valueOf( values[1] );
-                                    break;
-                                }
-                            }
+                            pid = findPid( device, "ps -Af" );
                         }
-                        r.close();
                         if ( pid == -1 )
                         {
                             throw new MojoFailureException( "Cannot find stated process " + info.packageName );
@@ -393,6 +376,34 @@ public class RunMojo extends AbstractAndroidMojo
                 {
                     throw new MojoFailureException( deviceLogLinePrefix + "Unresponsive command", ex );
                 }
+            }
+
+            private int findPid( IDevice device, final String cmd )
+            throws IOException, TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException
+            {
+                CollectingOutputReceiver processOutput = new CollectingOutputReceiver();
+                device.executeShellCommand( cmd, processOutput );
+                BufferedReader r = new BufferedReader( new StringReader( processOutput.getOutput() ) );
+                int pid = -1;
+                for ( ;; )
+                {
+                    String line = r.readLine();
+                    if ( line == null )
+                    {
+                        break;
+                    }
+                    if ( line.endsWith( info.packageName ) )
+                    {
+                        String[] values = line.split( " +" );
+                        if ( values.length > 2 )
+                        {
+                            pid = Integer.valueOf( values[1] );
+                            break;
+                        }
+                    }
+                }
+                r.close();
+                return pid;
             }
         } );
     }
