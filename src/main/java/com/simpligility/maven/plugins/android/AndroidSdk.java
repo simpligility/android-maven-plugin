@@ -58,6 +58,8 @@ public class AndroidSdk
      */
     private static final String PLATFORMS_FOLDER_NAME = "platforms";
 
+    private static final String BIN_FOLDER_NAME_IN_TOOLS = "bin";
+
     private static final String PARAMETER_MESSAGE = "Please provide a proper Android SDK directory path as "
             + "configuration parameter <sdk><path>...</path></sdk> in the plugin <configuration/>. As an alternative,"
             + " you may add the parameter to commandline: -Dandroid.sdk.path=... or set environment variable "
@@ -296,7 +298,7 @@ public class AndroidSdk
      */
     public String getLintPath()
     {
-        return getPathForTool( "lint" + ext( ".bat", "" ) );
+        return getPathForTool( BIN_FOLDER_NAME_IN_TOOLS + "/" + "lint" + ext( ".bat", "" ) );
     }
 
     /**
@@ -306,7 +308,7 @@ public class AndroidSdk
      */
     public String getMonkeyRunnerPath()
     {
-        return getPathForTool( "monkeyrunner" + ext( ".bat", "" ) );
+        return getPathForTool( BIN_FOLDER_NAME_IN_TOOLS + "/" + "monkeyrunner" + ext( ".bat", "" ) );
     }
 
     /**
