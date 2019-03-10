@@ -102,6 +102,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      *   &lt;wait&gt;20000&lt;/wait&gt;
      *   &lt;options&gt;-no-skin&lt;/options&gt;
      *   &lt;executable&gt;emulator-arm&lt;/executable&gt;
+     *   &lt;location&gt;C:/SDK/emulator&lt;/location&gt;
      * &lt;/emulator&gt;
      * </pre>
      * or configure as properties  on the command line as android.emulator.avd, android.emulator.wait,
@@ -143,7 +144,6 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     @Parameter( property = "android.emulator.options" )
     private String emulatorOptions;
 
-
     /**
      * Override default emulator executable. Default uses just "emulator".
      *
@@ -153,19 +153,32 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
     private String emulatorExecutable;
 
     /**
+     * Override default path to emulator folder.
+     */
+    @Parameter( property = "android.emulator.location" )
+    private String emulatorLocation;
+
+    /**
      * parsed value for avd that will be used for the invocation.
      */
     private String parsedAvd;
+
     /**
      * parsed value for options that will be used for the invocation.
      */
     private String parsedOptions;
+
     /**
      * parsed value for wait that will be used for the invocation.
      */
     private String parsedWait;
 
     private String parsedExecutable;
+
+    /**
+     * parsed value for location that will be used for the invocation.
+     */
+    private String parsedEmulatorLocation;
 
     private static final String START_EMULATOR_MSG = "Starting android emulator with script: ";
     private static final String START_EMULATOR_WAIT_MSG = "Waiting for emulator start:";
@@ -264,7 +277,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
             throw new MojoExecutionException( "", e );
         }
     }
-    
+
     /**
      * Unlocks the emulator.
      * @param androidDebugBridge
@@ -767,7 +780,15 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
      */
     private String assembleStartCommandLine() throws MojoExecutionException
     {
-        String emulatorPath = new File ( getAndroidSdk().getToolsPath(), parsedExecutable ).getAbsolutePath();
+        String emulatorPath;
+        if ( !"SdkTools".equals( parsedEmulatorLocation ) )
+        {
+            emulatorPath = new File( parsedEmulatorLocation, parsedExecutable ).getAbsolutePath();
+        }
+        else
+        {
+            emulatorPath = new File( getAndroidSdk().getToolsPath(), parsedExecutable ).getAbsolutePath();
+        }
         StringBuilder startCommandline = new StringBuilder( "\"\"" ).append( emulatorPath ).append( "\"\"" )
                 .append( " -avd " ).append( parsedAvd ).append( " " );
         if ( !StringUtils.isEmpty( parsedOptions ) )
@@ -789,7 +810,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                 parsedAvd = emulator.getAvd();
             }
             else
-            {
+                {
                 parsedAvd = determineAvd();
             }
             // <emulator><options> exists in pom file
@@ -798,7 +819,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                 parsedOptions = emulator.getOptions();
             }
             else
-            {
+                {
                 parsedOptions = determineOptions();
             }
             // <emulator><wait> exists in pom file
@@ -807,7 +828,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                 parsedWait = emulator.getWait();
             }
             else
-            {
+                {
                 parsedWait = determineWait();
             }
             // <emulator><emulatorExecutable> exists in pom file
@@ -816,8 +837,17 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
                 parsedExecutable = emulator.getExecutable();
             }
             else
-            {
+                {
                 parsedExecutable = determineExecutable();
+            }
+            // <emulator><location> exists in pom file
+            if ( emulator.getLocation() != null )
+            {
+                parsedEmulatorLocation = emulator.getLocation();
+            }
+            else
+            {
+            parsedEmulatorLocation = determineEmulatorLocation();
             }
         }
         // commandline options
@@ -827,6 +857,7 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
             parsedOptions = determineOptions();
             parsedWait = determineWait();
             parsedExecutable = determineExecutable();
+            parsedEmulatorLocation = determineEmulatorLocation();
         }
     }
 
@@ -905,4 +936,24 @@ public abstract class AbstractEmulatorMojo extends AbstractAndroidMojo
         }
         return avd;
     }
+
+    /**
+     * Get location value for emulator from command line option.
+     *
+     * @return if available return command line value otherwise return default value ("SdkTools").
+     */
+    String determineEmulatorLocation()
+    {
+        String location;
+        if ( emulatorLocation != null )
+        {
+            location = emulatorLocation;
+        }
+        else
+        {
+            location = "SdkTools";
+        }
+        return location;
+    }
+
 }
