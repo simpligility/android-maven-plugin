@@ -92,7 +92,7 @@ public class AndroidSdkTest {
     @Test
     public void validPlatformsAndApiLevels25() {
         // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
-        final AndroidSdk sdk25 = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME()), "25", "25.0.2" );
+        final AndroidSdk sdk25 = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME()), "25", "25.0.3" );
         Assert.assertTrue( sdk25.getAaptPath() != null && !sdk25.getAaptPath().equals( "" ) );
     }
 
@@ -100,6 +100,13 @@ public class AndroidSdkTest {
     public void validPlatformsAndApiLevels23() {
         // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
         final AndroidSdk sdk23 = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "23" );
+        Assert.assertTrue( sdk23.getAaptPath() != null && !sdk23.getAaptPath().equals( "" ) );
+    }
+
+    @Test
+    public void validPlatformsAndApiLevels28() {
+        // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
+        final AndroidSdk sdk23 = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "28" );
         Assert.assertTrue( sdk23.getAaptPath() != null && !sdk23.getAaptPath().equals( "" ) );
     }
 
@@ -114,25 +121,24 @@ public class AndroidSdkTest {
         invalid.getAaptPath();
     }
 
-    @Ignore
     @Test
     public void validPlatformsAndApiLevelsWithDiffBuildTools1() {
         // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
-        final AndroidSdk sdk = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "19", "25.0.2" );
+        final AndroidSdk sdk = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "19", "25.0.3" );
         Assert.assertTrue( sdk.getAaptPath() != null && !sdk.getAaptPath().equals( "" ) );
     }
 
     @Test
     public void validPlatformsAndApiLevelsWithDiffBuildTools2() {
         // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
-        final AndroidSdk sdk = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "19", "24.0.1" );
+        final AndroidSdk sdk = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "19", "24.0.3" );
         Assert.assertTrue( sdk.getAaptPath() != null && !sdk.getAaptPath().equals( "" ) );
     }
 
     @Test
-    public void validPlatformsAndApiLevelsWithDiffBuildToolsMinor() {
+    public void validPlatformsAndApiLevelsWithDiffBuildTools3() {
         // Remember to add further platforms to .travis.yml if you add more platforms here, otherwise ci build fails
-        final AndroidSdk sdk = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "19", "24.0.2" );
+        final AndroidSdk sdk = new AndroidSdk( new File( sdkTestSupport.getEnv_ANDROID_HOME() ), "28", "28.0.3" );
         Assert.assertTrue( sdk.getAaptPath() != null && !sdk.getAaptPath().equals( "" ) );
     }
 
