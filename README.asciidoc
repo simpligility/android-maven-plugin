@@ -7,7 +7,6 @@ Please check out our http://simpligility.github.io/android-maven-plugin/[website
 
 === Additional Links
 
-* http://code.google.com/p/maven-android-plugin[Google Code Project site - to be deprecated] 
 * https://github.com/simpligility/android-maven-plugin/issues[Issue tracker]
 * https://groups.google.com/forum/?fromgroups#!forum/maven-android-developers[Mailinglist]
 * https://github.com/simpligility/android-maven-plugin/blob/master/src/site/asciidoc/changelog.adoc[Current Changelog]
