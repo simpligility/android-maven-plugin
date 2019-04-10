@@ -1,7 +1,5 @@
 package com.simpligility.maven.plugins.android.configuration;
 
-import com.simpligility.maven.plugins.android.phase08preparepackage.DexMechanism;
-
 /**
  * Configuration for the dex  test execution. This class is only the definition of the parameters that are
  * shadowed in
@@ -61,8 +59,6 @@ public class Dex
     private Boolean generateMainDexList;
 
     private String dexArguments;
-
-    private DexMechanism dexMechanism = DexMechanism.Dex;
 
     public String[] getJvmArguments()
     {
@@ -129,8 +125,4 @@ public class Dex
         return dexArguments;
     }
 
-    public DexMechanism getDexMechanism()
-    {
-        return dexMechanism;
-    }
 }

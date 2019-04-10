@@ -16,13 +16,17 @@
  */
 package com.simpligility.maven.plugins.android.phase08preparepackage;
 
-import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
-import com.simpligility.maven.plugins.android.IncludeExcludeSet;
-import com.simpligility.maven.plugins.android.CommandExecutor;
-import com.simpligility.maven.plugins.android.ExecutionException;
-import com.simpligility.maven.plugins.android.common.Const;
-import com.simpligility.maven.plugins.android.common.ZipExtractor;
-import com.simpligility.maven.plugins.android.configuration.Dex;
+import static com.simpligility.maven.plugins.android.InclusionExclusionResolver.filterArtifacts;
+import static com.simpligility.maven.plugins.android.common.AndroidExtension.AAR;
+import static com.simpligility.maven.plugins.android.common.AndroidExtension.APK;
+import static com.simpligility.maven.plugins.android.common.AndroidExtension.APKLIB;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,17 +42,13 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static com.simpligility.maven.plugins.android.InclusionExclusionResolver.filterArtifacts;
-import static com.simpligility.maven.plugins.android.common.AndroidExtension.AAR;
-import static com.simpligility.maven.plugins.android.common.AndroidExtension.APK;
-import static com.simpligility.maven.plugins.android.common.AndroidExtension.APKLIB;
+import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
+import com.simpligility.maven.plugins.android.CommandExecutor;
+import com.simpligility.maven.plugins.android.ExecutionException;
+import com.simpligility.maven.plugins.android.IncludeExcludeSet;
+import com.simpligility.maven.plugins.android.common.Const;
+import com.simpligility.maven.plugins.android.common.ZipExtractor;
+import com.simpligility.maven.plugins.android.configuration.Dex;
 
 /**
  * Converts compiled Java classes to the Android dex format.
@@ -67,8 +67,8 @@ public class DexMojo extends AbstractAndroidMojo
      * Configuration for the dex command execution. It can be configured in the plugin configuration like so
      *
      * <pre>
+     * &lt;dexCompiler&gt;dex&lt;/dexCompiler&gt;
      * &lt;dex&gt;
-     *   &lt;dexMechanism&gt;d8|dex&lt;/dexMechanism&gt;
      *   &lt;jvmArguments&gt;
      *     &lt;jvmArgument&gt;-Xms256m&lt;/jvmArgument&gt;
      *     &lt;jvmArgument&gt;-Xmx512m&lt;/jvmArgument&gt;
@@ -86,9 +86,16 @@ public class DexMojo extends AbstractAndroidMojo
      *   &lt;minimalMainDex&gt;true|false&lt;/minimalMainDex&gt;
      * &lt;/dex&gt;
      * </pre>
-     * 
+     *
      * or via properties dex.* or command line parameters android.dex.*
      */
+
+    /**
+     * The dex compiler to use. Allowed values are 'dex' (default) and 'd8'.
+     */
+    @Parameter( property = "android.dex.compiler", defaultValue = "dex" )
+    private String dexCompiler;
+
     @Parameter
     private Dex dex;
 
@@ -244,7 +251,7 @@ public class DexMojo extends AbstractAndroidMojo
     private boolean parsedMinimalMainDex;
     private boolean parsedGenerateMainDexList;
     private String parsedDexArguments;
-    private DexMechanism parsedDexMechanism;
+    private DexCompiler parsedDexCompiler;
 
     /**
      * @throws MojoExecutionException
@@ -255,10 +262,10 @@ public class DexMojo extends AbstractAndroidMojo
     {
         parseConfiguration();
 
-        getLog().debug( "DexMechanism set to " + parsedDexMechanism );
-        if ( parsedDexMechanism != DexMechanism.Dex )
+        getLog().debug( "DexCompiler set to " + parsedDexCompiler );
+        if ( parsedDexCompiler != DexCompiler.DEX )
         {
-            getLog().info( "Not executing DexMojo because DexMechanism set to " + parsedDexMechanism );
+            getLog().info( "Not executing DexMojo because DEX compiler is set to " + parsedDexCompiler );
             return;
         }
 
@@ -484,7 +491,7 @@ public class DexMojo extends AbstractAndroidMojo
             {
                 parsedDexArguments = dex.getDexArguments();
             }
-            parsedDexMechanism = dex.getDexMechanism();
+            parsedDexCompiler = DexCompiler.valueOfIgnoreCase( dexCompiler );
 
         }
         else
@@ -502,7 +509,7 @@ public class DexMojo extends AbstractAndroidMojo
             parsedMinimalMainDex = dexMinimalMainDex;
             parsedGenerateMainDexList = dexGenerateMainDexList;
             parsedDexArguments = dexArguments;
-            parsedDexMechanism = DexMechanism.Dex;
+            parsedDexCompiler = DexCompiler.valueOfIgnoreCase( dexCompiler );
         }
     }
 
