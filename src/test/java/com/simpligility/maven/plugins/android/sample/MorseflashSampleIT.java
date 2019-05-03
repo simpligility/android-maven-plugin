@@ -24,6 +24,7 @@ import io.takari.maven.testing.executor.junit.MavenJUnitTestRunner;
 
 import java.io.File;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +44,7 @@ public class MorseflashSampleIT {
     this.mavenRuntime = builder.build();
   }
   
+  @Ignore
   @Test
   public void buildDeployAndRun() throws Exception {
     File basedir = resources.getBasedir( "morseflash" );

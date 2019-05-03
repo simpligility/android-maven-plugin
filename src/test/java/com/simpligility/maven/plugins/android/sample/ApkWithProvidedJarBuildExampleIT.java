@@ -49,6 +49,7 @@ public class ApkWithProvidedJarBuildExampleIT {
     this.mavenRuntime = builder.build();
   }
   
+  @Ignore
   @Test
   public void buildInstall() throws Exception {
     File basedir = resources.getBasedir( "aar-child" );

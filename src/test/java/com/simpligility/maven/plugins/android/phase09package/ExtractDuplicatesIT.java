@@ -7,6 +7,7 @@ import io.takari.maven.testing.executor.MavenRuntime.MavenRuntimeBuilder;
 import io.takari.maven.testing.executor.MavenVersions;
 import io.takari.maven.testing.executor.junit.MavenJUnitTestRunner;
 import org.codehaus.plexus.util.IOUtil;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +33,7 @@ public class ExtractDuplicatesIT {
         this.mavenRuntime = builder.withCliOptions( "-X" ).build();
     }
 
+    @Ignore 
     @Test
     public void buildDeployAndRun() throws Exception {
         File basedir = resources.getBasedir( "duplicates" );
