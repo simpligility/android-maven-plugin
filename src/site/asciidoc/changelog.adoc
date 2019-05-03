@@ -1,7 +1,8 @@
 = Changelog
 
+When not referenced specifically, changes done by Manfred Moser.
 
-== 4.5.1 - Upcoming
+== 4.6.0-rc.1 - Upcoming
 
 * Update plexus-utils dependency for windows cmd support fix
 ** see https://github.com/simpligility/android-maven-plugin/pull/766
@@ -18,6 +19,19 @@
 * ApkMojo now includes all Java resources from the project to allow inclusion of META-INF resources.
 ** See https://github.com/simpligility/android-maven-plugin/pull/782
 ** contributed by https://github.com/william-ferguson-au
+* Fix path to emulator
+** See https://github.com/simpligility/android-maven-plugin/pull/777
+** contributed by https://github.com/witekkij
+** Fixes https://github.com/simpligility/android-maven-plugin/issues/776
+* Correct process location
+** See https://github.com/simpligility/android-maven-plugin/pull/784
+** contributed by https://github.com/dukescript
+* Fix path to lint and others
+** See https://github.com/simpligility/android-maven-plugin/pull/785
+** contributed by https://github.com/igormartsekha
+* SDK test updates to reference latest patches, include newer versions
+* Travis simplification/update
+* Ignore failing IT tests for now
 
 Your contributions could be here. 
 
