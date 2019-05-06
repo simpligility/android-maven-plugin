@@ -1,7 +1,5 @@
 package com.simpligility.maven.plugins.android.configuration;
 
-import com.simpligility.maven.plugins.android.phase08preparepackage.DexMechanism;
-
 /**
  * Configuration for the D8 execution. This class is only the definition of the parameters that are
  * shadowed in
@@ -12,31 +10,32 @@ import com.simpligility.maven.plugins.android.phase08preparepackage.DexMechanism
 public class D8
 {
     /**
-     * Mirror of {@link com.simpligility.maven.plugins.android.phase08preparepackage.D8Mojo#dexJvmArguments}
+     * Mirror of {@link com.simpligility.maven.plugins.android.phase08preparepackage.D8Mojo#d8JvmArguments}
      */
     private String[] jvmArguments;
     /**
-     * Mirror of {@link com.simpligility.maven.plugins.android.phase08preparepackage.D8Mojo#dexIntermediate}
+     * Mirror of {@link com.simpligility.maven.plugins.android.phase08preparepackage.D8Mojo#d8Intermediate}
      */
     private Boolean intermediate;
     /**
-     * Mirror of {@link com.simpligility.maven.plugins.android.phase08preparepackage.D8Mojo#dexMainDexList}
+     * Mirror of {@link com.simpligility.maven.plugins.android.phase08preparepackage.D8Mojo#d8MainDexList}
      */
     private String mainDexList;
 
-    private String dexArguments;
+    /**
+     * Mirror of {@link com.simpligility.maven.plugins.android.phase08preparepackage.D8Mojo#d8Arguments}
+     */
+    private String[] arguments;
 
     /**
-     * Mirror of {@link com.simpligility.maven.plugins.android.phase08preparepackage.D8Mojo#dexRelease}
+     * Mirror of {@link com.simpligility.maven.plugins.android.phase08preparepackage.D8Mojo#d8Release}
      */
     private Boolean release;
 
     /**
-     * Mirror of {@link com.simpligility.maven.plugins.android.phase08preparepackage.D8Mojo#dexMinApi}
+     * Mirror of {@link com.simpligility.maven.plugins.android.phase08preparepackage.D8Mojo#d8MinApi}
      */
     private Integer minApi;
-
-    private DexMechanism dexMechanism = DexMechanism.Dex;
 
     public String[] getJvmArguments()
     {
@@ -53,14 +52,9 @@ public class D8
         return mainDexList;
     }
 
-    public String getDexArguments()
+    public String[] getArguments()
     {
-        return dexArguments;
-    }
-
-    public DexMechanism getDexMechanism()
-    {
-        return dexMechanism;
+        return arguments;
     }
 
     public Boolean isRelease()

@@ -16,11 +16,15 @@
  */
 package com.simpligility.maven.plugins.android.phase08preparepackage;
 
-import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
-import com.simpligility.maven.plugins.android.CommandExecutor;
-import com.simpligility.maven.plugins.android.ExecutionException;
-import com.simpligility.maven.plugins.android.IncludeExcludeSet;
-import com.simpligility.maven.plugins.android.configuration.D8;
+import static com.simpligility.maven.plugins.android.InclusionExclusionResolver.filterArtifacts;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -35,14 +39,11 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static com.simpligility.maven.plugins.android.InclusionExclusionResolver.filterArtifacts;
+import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
+import com.simpligility.maven.plugins.android.CommandExecutor;
+import com.simpligility.maven.plugins.android.ExecutionException;
+import com.simpligility.maven.plugins.android.IncludeExcludeSet;
+import com.simpligility.maven.plugins.android.configuration.D8;
 
 /**
  * Converts compiled Java classes (including those containing Java 8 syntax) to the Android dex format.
@@ -66,8 +67,8 @@ public class D8Mojo extends AbstractAndroidMojo
      * Configuration for the D8 command execution. It can be configured in the plugin configuration like so
      *
      * <pre>
-     * &lt;dex&gt;
-     *   &lt;dexMechanism&gt;d8|dex&lt;/dexMechanism&gt;
+     * &lt;dexCompiler&gt;d8&lt;/dexCompiler&gt;
+     * &lt;d8&gt;
      *   &lt;jvmArguments&gt;
      *     &lt;jvmArgument&gt;-Xms256m&lt;/jvmArgument&gt;
      *     &lt;jvmArgument&gt;-Xmx512m&lt;/jvmArgument&gt;
@@ -75,54 +76,62 @@ public class D8Mojo extends AbstractAndroidMojo
      *   &lt;intermediate&gt;true|false&lt;/intermediate&gt;
      *   &lt;mainDexList&gt;path to class list file&lt;/mainDexList&gt;
      *   &lt;release&gt;path to class list file&lt;/release&gt;
-     *   &lt;minApi&gt;path to class list file&lt;/minApi&gt;
+     *   &lt;minApi&gt;minimum API level compatibility&lt;/minApi&gt;
      *   &lt;arguments&gt;
-     *     &lt;argument&gt;--someOtherArgA&lt;/argument&gt;
-     *     &lt;argument&gt;--someOtherArgB&lt;/argument&gt;
+     *     &lt;argument&gt;--opt1&lt;/argument&gt;
+     *     &lt;argument&gt;value1A&lt;/argument&gt;
+     *     &lt;argument&gt;--opt2&lt;/argument&gt;
      *   &lt;/arguments&gt;
-     * &lt;/dex&gt;
+     * &lt;/d8&gt;
      * </pre>
-     * 
-     * or via properties dex* or command line parameters android.dex.*
+     *
+     * or via properties d8* or command line parameters android.d8.*
      */
+
+    /**
+     * The dex compiler to use. Allowed values are 'dex' (default) and 'd8'.
+     */
+    @Parameter( property = "android.dex.compiler", defaultValue = "dex" )
+    private String dexCompiler;
+
     @Parameter
-    private D8 dex;
+    private D8 d8;
 
     /**
      * Extra JVM Arguments. Using these you can e.g. increase memory for the jvm running the build.
      */
-    @Parameter( property = "android.dex.jvmArguments", defaultValue = "-Xmx1024M" )
-    private String[] dexJvmArguments;
+    @Parameter( property = "android.d8.jvmArguments", defaultValue = "-Xmx1024M" )
+    private String[] d8JvmArguments;
 
     /**
      * Decides whether to pass the --intermediate flag to d8.
      */
-    @Parameter( property = "android.dex.intermediate", defaultValue = "false" )
-    private boolean dexIntermediate;
+    @Parameter( property = "android.d8.intermediate", defaultValue = "false" )
+    private boolean d8Intermediate;
 
     /**
      * Full path to class list to multi dex
      */
-    @Parameter( property = "android.dex.maindexlist" )
-    private String dexMainDexList;
+    @Parameter( property = "android.d8.mainDexList" )
+    private String d8MainDexList;
 
     /**
      * Whether to pass the --release flag to d8.
      */
-    @Parameter( property = "android.dex.release", defaultValue = "false" )
-    private boolean dexRelease;
+    @Parameter( property = "android.d8.release", defaultValue = "false" )
+    private boolean d8Release;
 
     /**
      * The minApi (if any) to pass to d8.
      */
-    @Parameter( property = "android.dex.release" )
-    private Integer dexMinApi;
+    @Parameter( property = "android.d8.minApi" )
+    private Integer d8MinApi;
 
     /**
      * Additional command line parameters passed to d8.
      */
-    @Parameter( property = "android.dex.dexarguments" )
-    private String dexArguments;
+    @Parameter( property = "android.d8.arguments" )
+    private String[] d8Arguments;
 
     /**
      * The name of the obfuscated JAR.
@@ -181,8 +190,8 @@ public class D8Mojo extends AbstractAndroidMojo
     private String[] parsedJvmArguments;
     private boolean parsedIntermediate;
     private String parsedMainDexList;
-    private String parsedDexArguments;
-    private DexMechanism parsedDexMechanism;
+    private String[] parsedArguments;
+    private DexCompiler parsedDexCompiler;
     private boolean parsedRelease;
     private Integer parsedMinApi;
 
@@ -195,10 +204,10 @@ public class D8Mojo extends AbstractAndroidMojo
     {
         parseConfiguration();
 
-        getLog().debug( "DexMechanism set to " + parsedDexMechanism );
-        if ( parsedDexMechanism != DexMechanism.D8 )
+        getLog().debug( "DexCompiler set to " + parsedDexCompiler );
+        if ( parsedDexCompiler != DexCompiler.D8 )
         {
-            getLog().info( "Not executing D8Mojo because DexMechanism set to " + parsedDexMechanism );
+            getLog().info( "Not executing D8Mojo because DEX compiler is set to " + parsedDexCompiler );
             return;
         }
 
@@ -244,7 +253,7 @@ public class D8Mojo extends AbstractAndroidMojo
     /**
      * @return Set of input files for dex. This is a combination of directories and jar files.
      */
-    private Set< File > getDexInputFiles()
+    private Set< File > getD8InputFiles()
     {
         final Set< File > inputs = new HashSet< File >();
 
@@ -279,70 +288,70 @@ public class D8Mojo extends AbstractAndroidMojo
     private void parseConfiguration()
     {
         // config in pom found
-        if ( dex != null )
+        if ( d8 != null )
         {
             // the if statements make sure that properties/command line
             // parameter overrides configuration
             // and that the dafaults apply in all cases;
-            if ( dex.getJvmArguments() == null )
+            if ( d8.getJvmArguments() == null )
             {
-                parsedJvmArguments = dexJvmArguments;
+                parsedJvmArguments = d8JvmArguments;
             }
             else
             {
-                parsedJvmArguments = dex.getJvmArguments();
+                parsedJvmArguments = d8.getJvmArguments();
             }
-            if ( dex.isIntermediate() == null )
+            if ( d8.isIntermediate() == null )
             {
-                parsedIntermediate = dexIntermediate;
-            }
-            else
-            {
-                parsedIntermediate = dex.isIntermediate();
-            }
-            if ( dex.getMainDexList() == null )
-            {
-                parsedMainDexList = dexMainDexList;
+                parsedIntermediate = d8Intermediate;
             }
             else
             {
-                parsedMainDexList = dex.getMainDexList();
+                parsedIntermediate = d8.isIntermediate();
             }
-            if ( dex.getDexArguments() == null )
+            if ( d8.getMainDexList() == null )
             {
-                parsedDexArguments = dexArguments;
-            }
-            else
-            {
-                parsedDexArguments = dex.getDexArguments();
-            }
-            parsedDexMechanism = dex.getDexMechanism();
-            if ( dex.isRelease() == null )
-            {
-                parsedRelease = dexRelease;
+                parsedMainDexList = d8MainDexList;
             }
             else
             {
-                parsedRelease = dex.isRelease();
+                parsedMainDexList = d8.getMainDexList();
             }
-            if ( dex.getMinApi() == null )
+            if ( d8.getArguments() == null )
             {
-                parsedMinApi = dexMinApi;
+                parsedArguments = d8Arguments;
             }
             else
             {
-                parsedMinApi = dex.getMinApi();
+                parsedArguments = d8.getArguments();
+            }
+            parsedDexCompiler = DexCompiler.valueOfIgnoreCase( dexCompiler );
+            if ( d8.isRelease() == null )
+            {
+                parsedRelease = release;
+            }
+            else
+            {
+                parsedRelease = d8.isRelease();
+            }
+            if ( d8.getMinApi() == null )
+            {
+                parsedMinApi = d8MinApi;
+            }
+            else
+            {
+                parsedMinApi = d8.getMinApi();
             }
         }
         else
         {
-            parsedJvmArguments = dexJvmArguments;
-            parsedIntermediate = dexIntermediate;
-            parsedMainDexList = dexMainDexList;
-            parsedDexArguments = dexArguments;
-            parsedDexMechanism = DexMechanism.Dex;
-            parsedRelease = dexRelease;
-            parsedMinApi = dexMinApi;
+            parsedJvmArguments = d8JvmArguments;
+            parsedIntermediate = d8Intermediate;
+            parsedMainDexList = d8MainDexList;
+            parsedArguments = d8Arguments;
+            parsedDexCompiler = DexCompiler.valueOfIgnoreCase( dexCompiler );
+            parsedRelease = d8Release;
+            parsedMinApi = d8MinApi;
         }
     }
 
@@ -386,18 +395,21 @@ public class D8Mojo extends AbstractAndroidMojo
         throws MojoExecutionException
     {
         final List< String > commands = dexDefaultCommands();
-        final Set< File > inputFiles = getDexInputFiles();
+        final Set< File > inputFiles = getD8InputFiles();
         if ( parsedIntermediate )
         {
             commands.add( "--intermediate" );
         }
         if ( parsedMainDexList != null )
         {
-            commands.add( "--main-dex-list " + parsedMainDexList );
+            commands.add( "--main-dex-list" + parsedMainDexList );
         }
-        if ( parsedDexArguments != null )
+        if ( parsedArguments != null )
         {
-            commands.add( parsedDexArguments );
+            for ( String argument : parsedArguments )
+            {
+                commands.add( argument );
+            }
         }
 
         if ( parsedRelease )
@@ -407,7 +419,7 @@ public class D8Mojo extends AbstractAndroidMojo
 
         if ( parsedMinApi != null )
         {
-            commands.add( "--min api" );
+            commands.add( "--min-api" );
             commands.add( parsedMinApi.toString() );
         }
 
@@ -415,7 +427,7 @@ public class D8Mojo extends AbstractAndroidMojo
         commands.add( targetDirectory.getAbsolutePath() );
 
         final File androidJar = getAndroidSdk().getAndroidJar();
-        commands.add( "--lib "  );
+        commands.add( "--lib" );
         commands.add( androidJar.getAbsolutePath() );
 
         // Add project classpath
