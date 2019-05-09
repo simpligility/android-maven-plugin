@@ -2,7 +2,7 @@
 
 When not referenced specifically, changes done by Manfred Moser.
 
-== 4.6.0-rc.1 - Upcoming
+== 4.6.0 - Released 2019-05-08
 
 * Update plexus-utils dependency for windows cmd support fix
 ** see https://github.com/simpligility/android-maven-plugin/pull/766
@@ -29,12 +29,16 @@ When not referenced specifically, changes done by Manfred Moser.
 * Fix path to lint and others
 ** See https://github.com/simpligility/android-maven-plugin/pull/785
 ** contributed by https://github.com/igormartsekha
+* Fix D8 support
+** See https://github.com/simpligility/android-maven-plugin/pull/787
+** contributed by https://github.com/cfiehe
+
+Other misc changes from Manfred Moser / simpligility technologies inc:
+
 * SDK test updates to reference latest patches, include newer versions
 * Travis simplification/update
 * Ignore failing IT tests for now
-
-Your contributions could be here. 
-
+* Release testing and process
 
 == 4.5.0 - Released 2017-07-11
 
