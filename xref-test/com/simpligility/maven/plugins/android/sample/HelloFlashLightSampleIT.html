@@ -31,7 +31,7 @@
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> io.takari.maven.testing.executor.MavenRuntime.MavenRuntimeBuilder;
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> io.takari.maven.testing.executor.junit.MavenJUnitTestRunner;
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> org.junit.Ignore;
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> org.junit.Rule;
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> org.junit.runner.RunWith;
@@ -51,23 +51,24 @@
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>          <strong class="jxr_keyword">this</strong>.mavenRuntime = builder.build();
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>      }
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>      @Test
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> buildDeployAndRun() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>          File basedir = resources.getBasedir( <span class="jxr_string">"helloflashlight"</span> );
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>          MavenExecutionResult result = mavenRuntime
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>              .forProject(basedir)
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>              .execute( <span class="jxr_string">"clean"</span>, PluginInfo.getQualifiedGoal( <span class="jxr_string">"undeploy"</span> ),
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>                  <span class="jxr_string">"install"</span>, PluginInfo.getQualifiedGoal( <span class="jxr_string">"deploy"</span> ),
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>                  PluginInfo.getQualifiedGoal( <span class="jxr_string">"run"</span> ) );
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>          result.assertErrorFreeLog();
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>          result.assertLogText( <span class="jxr_string">"Successfully installed"</span> );
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>          result.assertLogText( <span class="jxr_string">"Attempting to start com.simpligility.android.helloflashlight/com.simpligility.android.helloflashlight.HelloFlashlight"</span> );
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>      }
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>  
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  }
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>      @Ignore
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>      @Test
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> buildDeployAndRun() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>          File basedir = resources.getBasedir( <span class="jxr_string">"helloflashlight"</span> );
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>          MavenExecutionResult result = mavenRuntime
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>              .forProject(basedir)
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>              .execute( <span class="jxr_string">"clean"</span>, PluginInfo.getQualifiedGoal( <span class="jxr_string">"undeploy"</span> ),
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>                  <span class="jxr_string">"install"</span>, PluginInfo.getQualifiedGoal( <span class="jxr_string">"deploy"</span> ),
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>                  PluginInfo.getQualifiedGoal( <span class="jxr_string">"run"</span> ) );
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          result.assertErrorFreeLog();
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>          result.assertLogText( <span class="jxr_string">"Successfully installed"</span> );
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          result.assertLogText( <span class="jxr_string">"Attempting to start com.simpligility.android.helloflashlight/com.simpligility.android.helloflashlight.HelloFlashlight"</span> );
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>      }
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2008&#x2013;2017 <a href="http://www.simpligility.com">simpligility technologies inc.</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2008&#x2013;2019 <a href="http://www.simpligility.com">simpligility technologies inc.</a>. All rights reserved.</div>
 </body>
 </html>
