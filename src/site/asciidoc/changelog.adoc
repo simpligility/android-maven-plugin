@@ -39,6 +39,7 @@ Other misc changes from Manfred Moser / simpligility technologies inc:
 * Travis simplification/update
 * Ignore failing IT tests for now
 * Release testing and process
+** see https://github.com/simpligility/android-maven-plugin/issues/786
 
 == 4.5.0 - Released 2017-07-11
 
