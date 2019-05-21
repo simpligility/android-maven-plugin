@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">HelloFlashlight</string>
-    <string id="ButtonRed" name="ButtonRed">Red</string>
-	<string id="ButtonBlue" name="ButtonBlue">Blue</string>
-	<string id="ButtonGreen" name="ButtonGreen">Green</string>
-	<string id="ButtongBlack" name="ButtonBlack">Black</string>
-	<string id="ButtonWhite" name="ButtonWhite">White</string>
-</resources>
