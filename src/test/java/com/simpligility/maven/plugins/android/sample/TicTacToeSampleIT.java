@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 import com.simpligility.maven.plugins.android.PluginInfo;
 
 @RunWith(MavenJUnitTestRunner.class)
-@MavenVersions({"3.3.9"})
+@MavenVersions({"3.6.1"})
 public class TicTacToeSampleIT 
 {
   
@@ -44,7 +44,7 @@ public class TicTacToeSampleIT
   {
     this.mavenRuntime = builder.build();
   }
-  
+
   @Test
   public void buildDeployAndRun() throws Exception
   {

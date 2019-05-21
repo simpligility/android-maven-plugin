@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 import java.io.File;
 
 @RunWith(MavenJUnitTestRunner.class)
-@MavenVersions({"3.0.5", "3.3.9"})
+@MavenVersions({"3.6.1"})
 public class HelloFlashLightSampleIT {
 
     @Rule
@@ -43,7 +43,6 @@ public class HelloFlashLightSampleIT {
         this.mavenRuntime = builder.build();
     }
 
-    @Ignore
     @Test
     public void buildDeployAndRun() throws Exception {
         File basedir = resources.getBasedir( "helloflashlight" );

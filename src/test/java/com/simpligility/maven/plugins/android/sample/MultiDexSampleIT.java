@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 import java.io.File;
 
 @RunWith(MavenJUnitTestRunner.class)
-@MavenVersions({"3.3.9"})
+@MavenVersions({"3.6.1"})
 public class MultiDexSampleIT {
 
     @Rule

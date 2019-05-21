@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 import com.simpligility.maven.plugins.android.PluginInfo;
 
 @RunWith(MavenJUnitTestRunner.class)
-@MavenVersions({"3.3.9"})
+@MavenVersions({"3.6.1"})
 public class MorseflashSampleIT {
   
   @Rule
@@ -43,8 +43,7 @@ public class MorseflashSampleIT {
   public MorseflashSampleIT(MavenRuntimeBuilder builder) throws Exception {
     this.mavenRuntime = builder.build();
   }
-  
-  @Ignore
+
   @Test
   public void buildDeployAndRun() throws Exception {
     File basedir = resources.getBasedir( "morseflash" );

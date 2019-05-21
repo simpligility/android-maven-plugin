@@ -19,7 +19,6 @@
  */
 package com.simpligility.maven.plugins.android.sample;
 
-    
 import io.takari.maven.testing.TestResources;
 import io.takari.maven.testing.executor.MavenExecutionResult;
 import io.takari.maven.testing.executor.MavenRuntime;
@@ -29,7 +28,6 @@ import io.takari.maven.testing.executor.junit.MavenJUnitTestRunner;
 
 import java.io.File;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +35,7 @@ import org.junit.runner.RunWith;
 import com.simpligility.maven.plugins.android.PluginInfo;
 
 @RunWith(MavenJUnitTestRunner.class)
-@MavenVersions({"3.3.9"})
+@MavenVersions({"3.6.1"})
 public class ApkWithProvidedJarBuildExampleIT {
 
   @Rule
@@ -48,8 +46,7 @@ public class ApkWithProvidedJarBuildExampleIT {
   public ApkWithProvidedJarBuildExampleIT(MavenRuntimeBuilder builder) throws Exception {
     this.mavenRuntime = builder.build();
   }
-  
-  @Ignore
+
   @Test
   public void buildInstall() throws Exception {
     File basedir = resources.getBasedir( "aar-child" );
