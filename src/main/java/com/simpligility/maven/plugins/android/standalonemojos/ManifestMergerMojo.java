@@ -192,7 +192,6 @@ public class ManifestMergerMojo extends AbstractAndroidMojo
         getLog().debug( "    usesSdk=" + parsedUsesSdk );
         getLog().debug( "    versionName=" + parsedVersionName );
         getLog().debug( "    versionCode=" + parsedVersionCode );
-        getLog().debug( "    usesSdk=" + parsedUsesSdk );
         getLog().debug( "    versionCodeUpdateFromVersion=" + parsedVersionCodeUpdateFromVersion );
         getLog().debug( "    versionNamingPattern=" + parsedVersionNamingPattern );
         getLog().debug( "    versionDigits=" + parsedVersionDigits );
