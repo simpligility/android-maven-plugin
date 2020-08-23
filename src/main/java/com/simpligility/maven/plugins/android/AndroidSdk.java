@@ -232,6 +232,20 @@ public class AndroidSdk
     }
     
     /**
+     * Get the path for build-tools directory
+     * @return
+     */
+    public String getBuildToolsDirectoryPath()
+    {
+        File buildTools = getBuildToolInfo().getLocation();
+        if ( buildTools.exists() )
+        {
+            return buildTools.getAbsolutePath();
+        }
+        throw new InvalidSdkException( "Cannot find " + buildTools );
+    }
+
+    /**
      * Get the path for build-tools lib directory
      * @return
      */

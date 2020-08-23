@@ -134,6 +134,12 @@ public class D8Mojo extends AbstractAndroidMojo
     private String[] d8Arguments;
 
     /**
+     * Additional command line parameters passed to d8.
+     */
+    @Parameter( property = "android.d8.useRunner" )
+    private boolean d8UseRunner;
+
+    /**
      * The name of the obfuscated JAR.
      */
     @Parameter( property = "android.proguard.obfuscatedJar" )
@@ -358,14 +364,20 @@ public class D8Mojo extends AbstractAndroidMojo
     private List< String > dexDefaultCommands() throws MojoExecutionException
     {
         List< String > commands = jarDefaultCommands();
-        commands.add( getAndroidSdk().getD8JarPath() );
+        if ( !d8UseRunner )
+        {
+            commands.add( getAndroidSdk().getD8JarPath() );
+        }
         return commands;
     }
 
     private List<String> jarDefaultCommands()
     {
         List< String > commands = javaDefaultCommands();
-        commands.add( "-jar" );
+        if ( !d8UseRunner )
+        {
+            commands.add( "-jar" );
+        }
         return commands;
     }
 
@@ -382,7 +394,16 @@ public class D8Mojo extends AbstractAndroidMojo
                 // http://code.google.com/p/maven-android-plugin/issues/detail?id=153)
                 if ( !jvmArgument.startsWith( "-" ) )
                 {
-                    jvmArgument = "-" + jvmArgument;
+                    jvmArgument = ( !d8UseRunner ? "-" : "-J" ) + jvmArgument;
+                }
+                else
+                {
+                    if ( d8UseRunner )
+                    {
+                        jvmArgument = jvmArgument.substring( 0, 1 )
+                                + "J"
+                                + jvmArgument.substring( 1 );
+                    }
                 }
                 getLog().debug( "Adding jvm argument " + jvmArgument );
                 commands.add( jvmArgument );
@@ -444,7 +465,14 @@ public class D8Mojo extends AbstractAndroidMojo
         }
 
         getLog().info( "Convert classes to Dex : " + targetDirectory );
-        executeJava( commands, executor );
+        if ( !d8UseRunner )
+        {
+            executeJava( commands, executor );
+        }
+        else
+        {
+            executeD8Runner( commands, executor );
+        }
     }
 
     private String executeJava( final List<String> commands, CommandExecutor executor ) throws MojoExecutionException
@@ -473,6 +501,29 @@ public class D8Mojo extends AbstractAndroidMojo
         final String javaHome = System.getProperty( "java.home" );
         final String slash = File.separator;
         return new File( javaHome + slash + "bin" + slash + "java" );
+    }
+
+    private String executeD8Runner( final List<String> commands, CommandExecutor executor )
+            throws MojoExecutionException
+    {
+        final String d8RunnerExecutable = getD8RunnerExecutable().getAbsolutePath();
+        getLog().debug( d8RunnerExecutable + " " + commands.toString() );
+        try
+        {
+            executor.setCaptureStdOut( true );
+            executor.executeCommand( d8RunnerExecutable, commands, project.getBasedir(), false );
+            return executor.getStandardOut();
+        }
+        catch ( ExecutionException e )
+        {
+            throw new MojoExecutionException( "", e );
+        }
+    }
+
+    private File getD8RunnerExecutable() throws MojoExecutionException
+    {
+        // TODO figure out the .bat file;
+        return new File( getAndroidSdk().getBuildToolsDirectoryPath(), "d8" );
     }
 
     /**
