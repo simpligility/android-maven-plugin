@@ -355,20 +355,6 @@ public class D8Mojo extends AbstractAndroidMojo
         }
     }
 
-    private List< String > dexDefaultCommands() throws MojoExecutionException
-    {
-        List< String > commands = jarDefaultCommands();
-        commands.add( getAndroidSdk().getD8JarPath() );
-        return commands;
-    }
-
-    private List<String> jarDefaultCommands()
-    {
-        List< String > commands = javaDefaultCommands();
-        commands.add( "-jar" );
-        return commands;
-    }
-
     private List<String> javaDefaultCommands()
     {
         List< String > commands = new ArrayList< String > ();
@@ -394,7 +380,13 @@ public class D8Mojo extends AbstractAndroidMojo
     private void runD8( CommandExecutor executor )
         throws MojoExecutionException
     {
-        final List< String > commands = dexDefaultCommands();
+        final List< String > commands = javaDefaultCommands();
+
+        // Add d8 class to be invoked (As of Android 30 the D8 class is not included as a main attribute in the Jar).
+        commands.add( "-classpath" );
+        commands.add( getAndroidSdk().getD8JarPath() );
+        commands.add( "com.android.tools.r8.D8" );
+
         final Set< File > inputFiles = getD8InputFiles();
         if ( parsedIntermediate )
         {
