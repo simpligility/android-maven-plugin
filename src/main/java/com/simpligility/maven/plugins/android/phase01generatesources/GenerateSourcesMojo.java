@@ -20,7 +20,6 @@ import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.CommandExecutor;
 import com.simpligility.maven.plugins.android.ExecutionException;
 import com.simpligility.maven.plugins.android.common.AaptCommandBuilder;
-import com.simpligility.maven.plugins.android.common.AaptCommandBuilder.AaptPackageCommandBuilder;
 import com.simpligility.maven.plugins.android.common.DependencyResolver;
 import com.simpligility.maven.plugins.android.common.FileRetriever;
 import com.simpligility.maven.plugins.android.configuration.BuildConfigConstant;
@@ -620,7 +619,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 {
                     messageBuilder
                             .append( messageBuilder.length() > 0 ? ", " : "    [" )
-                            .append( item.getArtifactId() );
+                            .append( item.getGroupId() )
+                            .append( ":" )
+                            .append( item.getArtifactId() )
+                            .append( ":" )
+                            .append( item.getVersion() )
+                    ;
                 }
                 messageBuilder
                         .append( "] have similar package='" )
@@ -771,7 +775,7 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         genDirectory.mkdirs();
 
-        final AaptPackageCommandBuilder commandBuilder = AaptCommandBuilder
+        final AaptCommandBuilder.AaptPackageCommandBuilder commandBuilder = AaptCommandBuilder
                 .packageResources( getLog() )
                 .makePackageDirectories()
                 .setResourceConstantsFolder( genDirectory )
