@@ -41,6 +41,14 @@ public class AaptCommandBuilder
     /**
      * @return true if the aapt2 executable exists.
      */
+    public boolean aapt2Exists()
+    {
+        return aapt2Exists( androidSdk );
+    }
+
+    /**
+     * @return true if the aapt2 executable exists.
+     */
     private static boolean aapt2Exists( AndroidSdk androidSdk )
     {
         final String aapt2Path = androidSdk.getAapt2Path();
@@ -50,25 +58,25 @@ public class AaptCommandBuilder
     /**
      * Compile the android resources.
      *
-     * @return instance of {@link AaptPackageCommandBuilder}
+     * @return instance of {@link Aapt1PackageCommandBuilder}
      */
     public static AaptCompileCommandBuilder compileResources( AndroidSdk androidSdk, Log log )
     {
         return aapt2Exists( androidSdk )
                 ? new Aapt2CompileCommandBuilder( androidSdk, log )
-                : new AaptPackageCommandBuilder( androidSdk, log );
+                : new Aapt1PackageCommandBuilder( androidSdk, log );
     }
 
     /**
      * Linig (and package) the android resources.
      *
-     * @return instance of {@link AaptPackageCommandBuilder}
+     * @return instance of {@link Aapt1PackageCommandBuilder}
      */
     public static AaptLinkCommandBuilder linkResources( AndroidSdk androidSdk, Log log )
     {
         return aapt2Exists( androidSdk )
                 ? new Aapt2LinkCommandBuilder( androidSdk, log )
-                : new AaptPackageCommandBuilder( androidSdk, log );
+                : new Aapt1PackageCommandBuilder( androidSdk, log );
     }
 
     /**
@@ -78,7 +86,9 @@ public class AaptCommandBuilder
      */
     public static AaptDumpCommandBuilder dump( AndroidSdk androidSdk, Log log )
     {
-        return new AaptDumpCommandBuilder( androidSdk, log );
+        return aapt2Exists( androidSdk )
+                ? new Aapt2DumpCommandBuilder( androidSdk, log )
+                : new Aapt1DumpCommandBuilder( androidSdk, log );
     }
 
     @Override

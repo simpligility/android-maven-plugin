@@ -11,11 +11,11 @@ import java.util.List;
 /**
  * Class that responsible for building appt commands for packaging resources
  */
-public final class AaptPackageCommandBuilder
+public final class Aapt1PackageCommandBuilder
         extends AaptCommandBuilder
         implements AaptCompileCommandBuilder, AaptLinkCommandBuilder
 {
-    public AaptPackageCommandBuilder( AndroidSdk androidSdk, Log log )
+    public Aapt1PackageCommandBuilder( AndroidSdk androidSdk, Log log )
     {
         super( androidSdk, log );
         commands.add( "package" );
@@ -28,9 +28,9 @@ public final class AaptPackageCommandBuilder
      * that does not contain the final value but is used to make reusable compiled
      * libraries that need to access resources.
      *
-     * @return current instance of {@link AaptPackageCommandBuilder}
+     * @return current instance of {@link Aapt1PackageCommandBuilder}
      */
-    public AaptPackageCommandBuilder makeResourcesNonConstant()
+    public Aapt1PackageCommandBuilder makeResourcesNonConstant()
     {
         return makeResourcesNonConstant( true );
     }
@@ -43,9 +43,9 @@ public final class AaptPackageCommandBuilder
      * libraries that need to access resources.
      *
      * @param make if true make resources ID non constant, otherwise ignore
-     * @return current instance of {@link AaptPackageCommandBuilder}
+     * @return current instance of {@link Aapt1PackageCommandBuilder}
      */
-    public AaptPackageCommandBuilder makeResourcesNonConstant( boolean make )
+    public Aapt1PackageCommandBuilder makeResourcesNonConstant( boolean make )
     {
         if ( make )
         {
@@ -60,7 +60,7 @@ public final class AaptPackageCommandBuilder
      *
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptPackageCommandBuilder makePackageDirectories()
+    public Aapt1PackageCommandBuilder makePackageDirectories()
     {
         commands.add( "-m" );
         return this;
@@ -72,7 +72,7 @@ public final class AaptPackageCommandBuilder
      * @param path path to resource constants folder.
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptPackageCommandBuilder setResourceConstantsFolder( File path )
+    public Aapt1PackageCommandBuilder setResourceConstantsFolder( File path )
     {
         commands.add( "-J" );
         commands.add( path.getAbsolutePath() );
@@ -85,7 +85,7 @@ public final class AaptPackageCommandBuilder
      * @param packageName package name which generate R.java into
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptPackageCommandBuilder generateRIntoPackage( String packageName )
+    public Aapt1PackageCommandBuilder generateRIntoPackage( String packageName )
     {
         if ( StringUtils.isNotBlank( packageName ) )
         {
@@ -101,7 +101,7 @@ public final class AaptPackageCommandBuilder
      * @param path Path to AndroidManifest.xml
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptPackageCommandBuilder setPathToAndroidManifest( File path )
+    public Aapt1PackageCommandBuilder setPathToAndroidManifest( File path )
     {
         commands.add( "-M" );
         commands.add( path.getAbsolutePath() );
@@ -116,7 +116,7 @@ public final class AaptPackageCommandBuilder
      * @param resourceDirectory resource directory {@link File}
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptPackageCommandBuilder addResourceDirectoryIfExists( File resourceDirectory )
+    public Aapt1PackageCommandBuilder addResourceDirectoryIfExists( File resourceDirectory )
     {
         if ( resourceDirectory != null && resourceDirectory.exists() )
         {
@@ -134,7 +134,7 @@ public final class AaptPackageCommandBuilder
      * @param resourceDirectories {@link List} of resource directories {@link File}
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptPackageCommandBuilder addResourceDirectoriesIfExists( List<File> resourceDirectories )
+    public Aapt1PackageCommandBuilder addResourceDirectoriesIfExists( List<File> resourceDirectories )
     {
         if ( resourceDirectories != null )
         {
@@ -154,7 +154,7 @@ public final class AaptPackageCommandBuilder
      * @param resourceDirectories array of resource directories {@link File}
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptPackageCommandBuilder addResourceDirectoriesIfExists( File[] resourceDirectories )
+    public Aapt1PackageCommandBuilder addResourceDirectoriesIfExists( File[] resourceDirectories )
     {
         if ( resourceDirectories != null )
         {
@@ -171,7 +171,7 @@ public final class AaptPackageCommandBuilder
      *
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptPackageCommandBuilder autoAddOverlay()
+    public Aapt1PackageCommandBuilder autoAddOverlay()
     {
         commands.add( "--auto-add-overlay" );
         return this;
@@ -183,7 +183,7 @@ public final class AaptPackageCommandBuilder
      * @param assetsFolder Folder containing the combined raw assets to add.
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptPackageCommandBuilder addRawAssetsDirectoryIfExists( File assetsFolder )
+    public Aapt1PackageCommandBuilder addRawAssetsDirectoryIfExists( File assetsFolder )
     {
         if ( assetsFolder != null && assetsFolder.exists() )
         {
@@ -200,7 +200,7 @@ public final class AaptPackageCommandBuilder
      * @param path Path to existing package to add.
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptPackageCommandBuilder addExistingPackageToBaseIncludeSet( File path )
+    public Aapt1PackageCommandBuilder addExistingPackageToBaseIncludeSet( File path )
     {
         commands.add( "-I" );
         commands.add( path.getAbsolutePath() );
@@ -229,7 +229,7 @@ public final class AaptPackageCommandBuilder
      * @param configurations configuration to include in form of {@link String}
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptPackageCommandBuilder addConfigurations( String configurations )
+    public Aapt1PackageCommandBuilder addConfigurations( String configurations )
     {
         if ( StringUtils.isNotBlank( configurations ) )
         {
@@ -246,7 +246,7 @@ public final class AaptPackageCommandBuilder
      * @param extraArguments Array of extra arguments to pass to Aapt.
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptPackageCommandBuilder addExtraArguments( String[] extraArguments )
+    public Aapt1PackageCommandBuilder addExtraArguments( String[] extraArguments )
     {
         if ( extraArguments != null )
         {
@@ -261,7 +261,7 @@ public final class AaptPackageCommandBuilder
      * @param isVerbose if true aapt will be verbose, otherwise - no
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptPackageCommandBuilder setVerbose( boolean isVerbose )
+    public Aapt1PackageCommandBuilder setVerbose( boolean isVerbose )
     {
         if ( isVerbose )
         {
@@ -277,7 +277,7 @@ public final class AaptPackageCommandBuilder
      * @param folderForR folder in which text file will be generated
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptPackageCommandBuilder generateRTextFile( File folderForR )
+    public Aapt1PackageCommandBuilder generateRTextFile( File folderForR )
     {
         commands.add( "--output-text-symbols" );
         commands.add( folderForR.getAbsolutePath() );
@@ -289,7 +289,7 @@ public final class AaptPackageCommandBuilder
      *
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptPackageCommandBuilder forceOverwriteExistingFiles()
+    public Aapt1PackageCommandBuilder forceOverwriteExistingFiles()
     {
         commands.add( "-f" );
         return this;
@@ -300,7 +300,7 @@ public final class AaptPackageCommandBuilder
      *
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptPackageCommandBuilder disablePngCrunching()
+    public Aapt1PackageCommandBuilder disablePngCrunching()
     {
         commands.add( "--no-crunch" );
         return this;
@@ -311,7 +311,7 @@ public final class AaptPackageCommandBuilder
      *
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptPackageCommandBuilder setOutputApkFile( File outputFile )
+    public Aapt1PackageCommandBuilder setOutputApkFile( File outputFile )
     {
         commands.add( "-F" );
         commands.add( outputFile.getAbsolutePath() );
@@ -323,7 +323,7 @@ public final class AaptPackageCommandBuilder
      *
      * @return current instance of {@link AaptCommandBuilder}
      */
-    public AaptPackageCommandBuilder setProguardOptionsOutputFile( File outputFile )
+    public Aapt1PackageCommandBuilder setProguardOptionsOutputFile( File outputFile )
     {
         if ( outputFile != null )
         {
@@ -345,9 +345,9 @@ public final class AaptPackageCommandBuilder
      * so that the code does not need to change.
      *
      * @param manifestPackage new manifest package to apply
-     * @return current instance of {@link AaptPackageCommandBuilder}
+     * @return current instance of {@link Aapt1PackageCommandBuilder}
      */
-    public AaptPackageCommandBuilder renameManifestPackage( String manifestPackage )
+    public Aapt1PackageCommandBuilder renameManifestPackage( String manifestPackage )
     {
         if ( StringUtils.isNotBlank( manifestPackage ) )
         {
@@ -363,9 +363,9 @@ public final class AaptPackageCommandBuilder
      * a package that has been renamed.
      *
      * @param instrumentationPackage new instrumentation target package to apply
-     * @return current instance of {@link AaptPackageCommandBuilder}
+     * @return current instance of {@link Aapt1PackageCommandBuilder}
      */
-    public AaptPackageCommandBuilder renameInstrumentationTargetPackage( String instrumentationPackage )
+    public Aapt1PackageCommandBuilder renameInstrumentationTargetPackage( String instrumentationPackage )
     {
         if ( StringUtils.isNotBlank( instrumentationPackage ) )
         {
@@ -379,9 +379,9 @@ public final class AaptPackageCommandBuilder
      * Inserts android:debuggable="true" into the application node of the
      * manifest, making the application debuggable even on production devices.
      *
-     * @return current instance of {@link AaptPackageCommandBuilder}
+     * @return current instance of {@link Aapt1PackageCommandBuilder}
      */
-    public AaptPackageCommandBuilder setDebugMode( boolean isDebugMode )
+    public Aapt1PackageCommandBuilder setDebugMode( boolean isDebugMode )
     {
         if ( isDebugMode )
         {

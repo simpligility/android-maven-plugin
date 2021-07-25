@@ -29,6 +29,7 @@ import com.simpligility.maven.plugins.android.common.DeviceHelper;
 import com.simpligility.maven.plugins.android.common.MavenToPlexusLogAdapter;
 import com.simpligility.maven.plugins.android.common.NativeHelper;
 import com.simpligility.maven.plugins.android.common.UnpackedLibHelper;
+import com.simpligility.maven.plugins.android.common.aapt.AaptDumpCommandBuilder;
 import com.simpligility.maven.plugins.android.config.ConfigPojo;
 import com.simpligility.maven.plugins.android.configuration.Ndk;
 import com.simpligility.maven.plugins.android.configuration.Sdk;
@@ -234,7 +235,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
 
     /**
      * Path to which to save the result of updating/merging/processing the source <code>AndroidManifest.xml</code>
-     * file ({@link androidManifestFile}).
+     * file ({@link #androidManifestFile}).
      */
     @Parameter( property = "destination.manifestFile", defaultValue = "${project.build.directory}/AndroidManifest.xml" )
     protected File destinationManifestFile;
@@ -272,7 +273,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * <p>Include jars stored in the libs folder of an apklib as dependencies.
      * Do not delete or change name as it is used in the LifeCycleParticipant.</p>
      * 
-     * @see ClasspathModifierLifecycleParticipant
+     * @see com.simpligility.maven.plugins.android.phase_prebuild.ClasspathModifierLifecycleParticipant
      */
     @Parameter( defaultValue = "false" )
     private boolean includeLibsJarsFromApklib;
@@ -281,7 +282,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      * <p>Include jars stored in the libs folder of an aar as dependencies.
      * Do not delete or change name as it is used in the LifeCycleParticipant.</p>
      * 
-     * @see ClasspathModifierLifecycleParticipant
+     * @see com.simpligility.maven.plugins.android.phase_prebuild.ClasspathModifierLifecycleParticipant
      */
     @Parameter( defaultValue = "true" )
     private boolean includeLibsJarsFromAar;
@@ -514,7 +515,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
     /**
      * Whether the plugin should show a warning if conflicting dependencies with the Android provided ones exist.
      * 
-     * @see ClasspathModifierLifecycleParticipant
+     * @see com.simpligility.maven.plugins.android.phase_prebuild.ClasspathModifierLifecycleParticipant
      */
     @Parameter( defaultValue = "false" )
     private File disableConflictingDependenciesWarning;
@@ -577,7 +578,7 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
      *
      * @param types artifact types to be selected
      * @return a {@code List} of all project dependencies. Never {@code null}.
-     *         This excludes artifacts of the {@link ArtifactResolverHelper.EXCLUDE_NON_PACKAGED_SCOPES} scopes.
+     *         This excludes artifacts of the {@link ArtifactResolverHelper#EXCLUDE_NON_PACKAGED_SCOPES} scopes.
      *         This should maintain dependency order to comply with library project resource precedence.
      */
     protected Set<Artifact> getTransitiveDependencyArtifacts( String... types )
@@ -969,18 +970,24 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         executor.setCaptureStdOut( true );
         executor.setCaptureStdErr( true );
 
-        AaptCommandBuilder commandBuilder = AaptCommandBuilder
+        AaptDumpCommandBuilder commandBuilder = AaptCommandBuilder
                 .dump( getAndroidSdk(), getLog() )
-                .xmlTree()
-                .setPathToApk( apkFile.getAbsolutePath() )
-                .addAssetFile( "AndroidManifest.xml" );
+                .packageName()
+                .setPathToApk( apkFile.getAbsolutePath() );
+
+        if ( !commandBuilder.aapt2Exists() )
+        {
+            commandBuilder = commandBuilder.addAssetFile( "AndroidManifest.xml" );
+        }
 
         getLog().info( commandBuilder.getApplicationPath() + " " + commandBuilder.toString() );
         try
         {
             executor.executeCommand( commandBuilder.getApplicationPath(), commandBuilder.build(), false );
-            final String xmlTree = executor.getStandardOut();
-            return extractPackageNameFromAndroidManifestXmlTree( xmlTree );
+            final String output = executor.getStandardOut().trim();
+            return commandBuilder.aapt2Exists()
+                    ? output
+                    : extractPackageNameFromAndroidManifestXmlTree( output );
         }
         catch ( ExecutionException e )
         {
