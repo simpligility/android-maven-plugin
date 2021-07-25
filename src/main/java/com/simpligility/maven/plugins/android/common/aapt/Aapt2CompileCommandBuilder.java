@@ -230,7 +230,7 @@ public final class Aapt2CompileCommandBuilder extends AaptCommandBuilder impleme
     public Aapt2CompileCommandBuilder generateRTextFile( File folderForR )
     {
         commands.add( "--output-text-symbols" );
-        commands.add( new File( folderForR , "R-TextSymbols.txt" ).getAbsolutePath() );
+        commands.add( new File( folderForR , "R.txt" ).getAbsolutePath() );
         return this;
     }
 
