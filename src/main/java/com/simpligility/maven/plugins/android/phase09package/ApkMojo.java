@@ -27,9 +27,10 @@ import com.simpligility.maven.plugins.android.AndroidSigner;
 import com.simpligility.maven.plugins.android.CommandExecutor;
 import com.simpligility.maven.plugins.android.ExecutionException;
 import com.simpligility.maven.plugins.android.IncludeExcludeSet;
-import com.simpligility.maven.plugins.android.common.AaptCommandBuilder;
+import com.simpligility.maven.plugins.android.common.aapt.AaptCommandBuilder;
 import com.simpligility.maven.plugins.android.common.AndroidExtension;
 import com.simpligility.maven.plugins.android.common.NativeHelper;
+import com.simpligility.maven.plugins.android.common.aapt.AaptLinkCommandBuilder;
 import com.simpligility.maven.plugins.android.config.ConfigHandler;
 import com.simpligility.maven.plugins.android.config.ConfigPojo;
 import com.simpligility.maven.plugins.android.config.PullParameter;
@@ -121,7 +122,7 @@ public class ApkMojo extends AbstractAndroidMojo
     /**
      * <p>Parameter designed to pick up <code>-Dandroid.sign.debug</code> in case there is no pom with a
      * <code>&lt;sign&gt;</code> configuration tag.</p>
-     * <p>Corresponds to {@link com.simpligility.maven.plugins.android.configuration.Sign#debug}.</p>
+     * <p>Corresponds to {@link Sign#getDebug()} }.</p>
      */
     @Parameter( property = "android.sign.debug", defaultValue = "auto", readonly = true )
     private String signDebug;
@@ -1253,8 +1254,8 @@ public class ApkMojo extends AbstractAndroidMojo
             }
         }
 
-        AaptCommandBuilder commandBuilder = AaptCommandBuilder
-                .packageResources( getLog() )
+        AaptLinkCommandBuilder commandBuilder = AaptCommandBuilder
+                .linkResources( getAndroidSdk(), getLog() )
                 .forceOverwriteExistingFiles()
                 .setPathToAndroidManifest( destinationManifestFile )
                 .addResourceDirectoriesIfExists( overlayDirectories )
@@ -1272,12 +1273,12 @@ public class ApkMojo extends AbstractAndroidMojo
                 .setDebugMode( !release )
                 .addExtraArguments( aaptExtraArgs );
 
-        getLog().debug( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
+        getLog().debug( commandBuilder.getApplicationPath() + " " + commandBuilder.toString() );
         try
         {
             executor.setCaptureStdOut( true );
             List<String> commands = commandBuilder.build();
-            executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
+            executor.executeCommand( commandBuilder.getApplicationPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
         {

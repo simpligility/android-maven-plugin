@@ -19,9 +19,10 @@ package com.simpligility.maven.plugins.android.phase01generatesources;
 import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.CommandExecutor;
 import com.simpligility.maven.plugins.android.ExecutionException;
-import com.simpligility.maven.plugins.android.common.AaptCommandBuilder;
 import com.simpligility.maven.plugins.android.common.DependencyResolver;
 import com.simpligility.maven.plugins.android.common.FileRetriever;
+import com.simpligility.maven.plugins.android.common.aapt.AaptCommandBuilder;
+import com.simpligility.maven.plugins.android.common.aapt.AaptCompileCommandBuilder;
 import com.simpligility.maven.plugins.android.configuration.BuildConfigConstant;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -775,8 +776,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
         genDirectory.mkdirs();
 
-        final AaptCommandBuilder.AaptPackageCommandBuilder commandBuilder = AaptCommandBuilder
-                .packageResources( getLog() )
+        final AaptCompileCommandBuilder commandBuilder = AaptCommandBuilder
+                .compileResources( getAndroidSdk(), getLog() )
                 .makePackageDirectories()
                 .setResourceConstantsFolder( genDirectory )
                 .forceOverwriteExistingFiles()
@@ -801,14 +802,14 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 .makeResourcesNonConstant( AAR.equals( project.getArtifact().getType() ) )
                 .addExtraArguments( aaptExtraArgs );
 
-        getLog().debug( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
+        getLog().debug( commandBuilder.getApplicationPath() + " " + commandBuilder.toString() );
         try
         {
             final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
             executor.setLogger( getLog() );
             executor.setCaptureStdOut( true );
             final List<String> commands = commandBuilder.build();
-            executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
+            executor.executeCommand( commandBuilder.getApplicationPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
         {
@@ -959,8 +960,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( getLog() );
 
-        final AaptCommandBuilder commandBuilder = AaptCommandBuilder
-                .packageResources( getLog() )
+        final AaptCompileCommandBuilder commandBuilder = AaptCommandBuilder
+                .compileResources( getAndroidSdk(), getLog() )
                 .makeResourcesNonConstant()
                 .makePackageDirectories()
                 .setResourceConstantsFolder( genDirectory )
@@ -978,12 +979,12 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 // It also needs to be consumed when packaging aar.
                 .generateRTextFile( unpackDir );
 
-        getLog().debug( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
+        getLog().debug( commandBuilder.getApplicationPath() + " " + commandBuilder.toString() );
         try
         {
             executor.setCaptureStdOut( true );
             final List<String> commands = commandBuilder.build();
-            executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
+            executor.executeCommand( commandBuilder.getApplicationPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
         {

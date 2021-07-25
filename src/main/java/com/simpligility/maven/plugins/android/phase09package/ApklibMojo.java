@@ -19,9 +19,10 @@ package com.simpligility.maven.plugins.android.phase09package;
 import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.CommandExecutor;
 import com.simpligility.maven.plugins.android.ExecutionException;
-import com.simpligility.maven.plugins.android.common.AaptCommandBuilder;
+import com.simpligility.maven.plugins.android.common.aapt.AaptCommandBuilder;
 import com.simpligility.maven.plugins.android.common.AndroidExtension;
 import com.simpligility.maven.plugins.android.common.NativeHelper;
+import com.simpligility.maven.plugins.android.common.aapt.AaptLinkCommandBuilder;
 import com.simpligility.maven.plugins.android.config.PullParameter;
 
 import org.apache.commons.io.FileUtils;
@@ -365,8 +366,8 @@ public class ApklibMojo extends AbstractAndroidMojo
             }
         }
 
-        AaptCommandBuilder commandBuilder = AaptCommandBuilder
-                .packageResources( getLog() )
+        AaptLinkCommandBuilder commandBuilder = AaptCommandBuilder
+                .linkResources( getAndroidSdk(), getLog() )
                 .forceOverwriteExistingFiles()
                 .setPathToAndroidManifest( destinationManifestFile )
                 .addResourceDirectoriesIfExists( overlayDirectories )
@@ -380,13 +381,13 @@ public class ApklibMojo extends AbstractAndroidMojo
                 .addConfigurations( configurations )
                 .setVerbose( aaptVerbose );
 
-        getLog().debug( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
+        getLog().debug( commandBuilder.getApplicationPath() + " " + commandBuilder.toString() );
         getLog().info( "Generating apklib" );
         try
         {
             executor.setCaptureStdOut( true );
             List<String> commands = commandBuilder.build();
-            executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
+            executor.executeCommand( commandBuilder.getApplicationPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
         {

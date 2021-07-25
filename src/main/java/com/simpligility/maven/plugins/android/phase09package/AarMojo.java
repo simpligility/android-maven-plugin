@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.simpligility.maven.plugins.android.common.aapt.AaptLinkCommandBuilder;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +48,7 @@ import com.android.SdkConstants;
 import com.simpligility.maven.plugins.android.AbstractAndroidMojo;
 import com.simpligility.maven.plugins.android.CommandExecutor;
 import com.simpligility.maven.plugins.android.ExecutionException;
-import com.simpligility.maven.plugins.android.common.AaptCommandBuilder;
+import com.simpligility.maven.plugins.android.common.aapt.AaptCommandBuilder;
 import com.simpligility.maven.plugins.android.common.AndroidExtension;
 import com.simpligility.maven.plugins.android.common.NativeHelper;
 import com.simpligility.maven.plugins.android.config.PullParameter;
@@ -455,8 +456,8 @@ public class AarMojo extends AbstractAndroidMojo
 
         File outputFile = new File( targetDirectory, finalName + ".ap_" );
 
-        final AaptCommandBuilder commandBuilder = AaptCommandBuilder
-                .packageResources( getLog() )
+        final AaptLinkCommandBuilder commandBuilder = AaptCommandBuilder
+                .linkResources( getAndroidSdk(), getLog() )
                 .makePackageDirectories()
                 .forceOverwriteExistingFiles()
                 .setPathToAndroidManifest( destinationManifestFile )
@@ -473,13 +474,13 @@ public class AarMojo extends AbstractAndroidMojo
                 .generateRTextFile( targetDirectory )
                 .setVerbose( aaptVerbose );
 
-        getLog().debug( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
+        getLog().debug( commandBuilder.getApplicationPath() + " " + commandBuilder.toString() );
         getLog().info( "Generating aar" );
         try
         {
             executor.setCaptureStdOut( true );
             final List<String> commands = commandBuilder.build();
-            executor.executeCommand( getAndroidSdk().getAaptPath(), commands, project.getBasedir(), false );
+            executor.executeCommand( commandBuilder.getApplicationPath(), commands, project.getBasedir(), false );
         }
         catch ( ExecutionException e )
         {

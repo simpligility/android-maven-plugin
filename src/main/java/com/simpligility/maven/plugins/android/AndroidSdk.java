@@ -165,13 +165,19 @@ public class AndroidSdk
     }
 
     /**
-     * Get the aapt tool path.
-     *
-     * @return
+     * @return the path to the aapt tool.
      */
     public String getAaptPath()
     {
         return getPathForBuildTool( BuildToolInfo.PathId.AAPT );
+    }
+
+    /**
+     * @return path to the aapt2 tool.
+     */
+    public String getAapt2Path()
+    {
+        return getPathForBuildTool( BuildToolInfo.PathId.AAPT2 );
     }
 
     /**

@@ -21,7 +21,7 @@ import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.DdmPreferences;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.InstallException;
-import com.simpligility.maven.plugins.android.common.AaptCommandBuilder;
+import com.simpligility.maven.plugins.android.common.aapt.AaptCommandBuilder;
 import com.simpligility.maven.plugins.android.common.AndroidExtension;
 import com.simpligility.maven.plugins.android.common.ArtifactResolverHelper;
 import com.simpligility.maven.plugins.android.common.DependencyResolver;
@@ -970,15 +970,15 @@ public abstract class AbstractAndroidMojo extends AbstractMojo
         executor.setCaptureStdErr( true );
 
         AaptCommandBuilder commandBuilder = AaptCommandBuilder
-                .dump( getLog() )
+                .dump( getAndroidSdk(), getLog() )
                 .xmlTree()
                 .setPathToApk( apkFile.getAbsolutePath() )
                 .addAssetFile( "AndroidManifest.xml" );
 
-        getLog().info( getAndroidSdk().getAaptPath() + " " + commandBuilder.toString() );
+        getLog().info( commandBuilder.getApplicationPath() + " " + commandBuilder.toString() );
         try
         {
-            executor.executeCommand( getAndroidSdk().getAaptPath(), commandBuilder.build(), false );
+            executor.executeCommand( commandBuilder.getApplicationPath(), commandBuilder.build(), false );
             final String xmlTree = executor.getStandardOut();
             return extractPackageNameFromAndroidManifestXmlTree( xmlTree );
         }
