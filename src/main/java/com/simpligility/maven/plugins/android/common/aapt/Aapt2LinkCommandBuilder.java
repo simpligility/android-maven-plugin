@@ -11,7 +11,8 @@ import java.util.List;
 /**
  * Responsible for appt commands for linking resources.
  */
-public final class Aapt2LinkCommandBuilder extends AaptCommandBuilder implements AaptLinkCommandBuilder
+public final class Aapt2LinkCommandBuilder extends AaptCommandBuilder
+        implements AaptGenerateSourcesCommandBuilder, AaptLinkCommandBuilder
 {
     public Aapt2LinkCommandBuilder( AndroidSdk androidSdk, Log log )
     {
@@ -73,6 +74,22 @@ public final class Aapt2LinkCommandBuilder extends AaptCommandBuilder implements
     {
         commands.add( "--java" );
         commands.add( path.getAbsolutePath() );
+        return this;
+    }
+
+    /**
+     * Generates R java into a different package.
+     *
+     * @param packageName package name which generate R.java into
+     * @return current instance of {@link AaptCommandBuilder}
+     */
+    public Aapt2LinkCommandBuilder generateRIntoPackage( String packageName )
+    {
+        if ( StringUtils.isNotBlank( packageName ) )
+        {
+            commands.add( "--custom-package" );
+            commands.add( packageName );
+        }
         return this;
     }
 
@@ -284,6 +301,27 @@ public final class Aapt2LinkCommandBuilder extends AaptCommandBuilder implements
     {
         commands.add( "-o" );
         commands.add( outputFile.getAbsolutePath() );
+        return this;
+    }
+
+    /**
+     * Output Proguard options to a File.
+     *
+     * @return current instance of {@link AaptCommandBuilder}
+     */
+    public Aapt2LinkCommandBuilder setProguardOptionsOutputFile( File outputFile )
+    {
+        if ( outputFile != null )
+        {
+            final File parentFolder = outputFile.getParentFile();
+            if ( parentFolder != null )
+            {
+                parentFolder.mkdirs();
+            }
+            log.debug( "Adding proguard file : " + outputFile );
+            commands.add( "-G" );
+            commands.add( outputFile.getAbsolutePath() );
+        }
         return this;
     }
 

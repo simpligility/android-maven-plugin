@@ -4,9 +4,9 @@ import java.io.File;
 import java.util.List;
 
 /**
- * Responsible for appt commands for compiling resources.
+ * Responsible for building the appt command that generates R.Java amd R.txt.
  */
-public interface AaptCompileCommandBuilder
+public interface AaptGenerateSourcesCommandBuilder
 {
     /**
      * @return Path to the version of AAPT to use. This will be AAPT2 if it is available otherwise AAPT.
@@ -26,9 +26,9 @@ public interface AaptCompileCommandBuilder
      * that does not contain the final value but is used to make reusable compiled
      * libraries that need to access resources.
      *
-     * @return current instance of {@link AaptCompileCommandBuilder}
+     * @return current instance of {@link AaptGenerateSourcesCommandBuilder}
      */
-    AaptCompileCommandBuilder makeResourcesNonConstant();
+    AaptGenerateSourcesCommandBuilder makeResourcesNonConstant();
 
     /**
      * Make the resources ID non constant.
@@ -38,16 +38,16 @@ public interface AaptCompileCommandBuilder
      * libraries that need to access resources.
      *
      * @param make if true make resources ID non constant, otherwise ignore
-     * @return current instance of {@link AaptCompileCommandBuilder}
+     * @return current instance of {@link AaptGenerateSourcesCommandBuilder}
      */
-    AaptCompileCommandBuilder makeResourcesNonConstant( boolean make );
+    AaptGenerateSourcesCommandBuilder makeResourcesNonConstant( boolean make );
 
     /**
      * Make package directories under location specified by {@link #setResourceConstantsFolder}.
      *
      * @return current instance of {@link AaptCommandBuilder}
      */
-    AaptCompileCommandBuilder makePackageDirectories();
+    AaptGenerateSourcesCommandBuilder makePackageDirectories();
 
     /**
      * Specify where the R java resource constant definitions should be generated or found.
@@ -55,7 +55,7 @@ public interface AaptCompileCommandBuilder
      * @param path path to resource constants folder.
      * @return current instance of {@link AaptCommandBuilder}
      */
-    AaptCompileCommandBuilder setResourceConstantsFolder( File path );
+    AaptGenerateSourcesCommandBuilder setResourceConstantsFolder( File path );
 
     /**
      * Generates R java into a different package.
@@ -63,7 +63,7 @@ public interface AaptCompileCommandBuilder
      * @param packageName package name which generate R.java into
      * @return current instance of {@link AaptCommandBuilder}
      */
-    AaptCompileCommandBuilder generateRIntoPackage( String packageName );
+    AaptGenerateSourcesCommandBuilder generateRIntoPackage( String packageName );
 
     /**
      * Specify full path to AndroidManifest.xml to include in zip.
@@ -71,7 +71,7 @@ public interface AaptCompileCommandBuilder
      * @param path Path to AndroidManifest.xml
      * @return current instance of {@link AaptCommandBuilder}
      */
-    AaptCompileCommandBuilder setPathToAndroidManifest( File path );
+    AaptGenerateSourcesCommandBuilder setPathToAndroidManifest( File path );
 
     /**
      * Directory in which to find resources.
@@ -81,7 +81,7 @@ public interface AaptCompileCommandBuilder
      * @param resourceDirectory resource directory {@link File}
      * @return current instance of {@link AaptCommandBuilder}
      */
-    AaptCompileCommandBuilder addResourceDirectoryIfExists( File resourceDirectory );
+    AaptGenerateSourcesCommandBuilder addResourceDirectoryIfExists( File resourceDirectory );
 
     /**
      * Directories in which to find resources.
@@ -91,7 +91,7 @@ public interface AaptCompileCommandBuilder
      * @param resourceDirectories {@link List} of resource directories {@link File}
      * @return current instance of {@link AaptCommandBuilder}
      */
-    AaptCompileCommandBuilder addResourceDirectoriesIfExists( List<File> resourceDirectories );
+    AaptGenerateSourcesCommandBuilder addResourceDirectoriesIfExists( List<File> resourceDirectories );
 
     /**
      * Directories in which to find resources.
@@ -101,14 +101,14 @@ public interface AaptCompileCommandBuilder
      * @param resourceDirectories array of resource directories {@link File}
      * @return current instance of {@link AaptCommandBuilder}
      */
-    AaptCompileCommandBuilder addResourceDirectoriesIfExists( File[] resourceDirectories );
+    AaptGenerateSourcesCommandBuilder addResourceDirectoriesIfExists( File[] resourceDirectories );
 
     /**
      * Automatically add resources that are only in overlays.
      *
      * @return current instance of {@link AaptCommandBuilder}
      */
-    AaptCompileCommandBuilder autoAddOverlay();
+    AaptGenerateSourcesCommandBuilder autoAddOverlay();
 
     /**
      * Additional directory in which to find raw asset files.
@@ -116,7 +116,7 @@ public interface AaptCompileCommandBuilder
      * @param assetsFolder Folder containing the combined raw assets to add.
      * @return current instance of {@link AaptCommandBuilder}
      */
-    AaptCompileCommandBuilder addRawAssetsDirectoryIfExists( File assetsFolder );
+    AaptGenerateSourcesCommandBuilder addRawAssetsDirectoryIfExists( File assetsFolder );
 
     /**
      * Add an existing package to base include set.
@@ -124,7 +124,7 @@ public interface AaptCompileCommandBuilder
      * @param path Path to existing package to add.
      * @return current instance of {@link AaptCommandBuilder}
      */
-    AaptCompileCommandBuilder addExistingPackageToBaseIncludeSet( File path );
+    AaptGenerateSourcesCommandBuilder addExistingPackageToBaseIncludeSet( File path );
 
     /**
      * Specify which configurations to include.
@@ -148,7 +148,7 @@ public interface AaptCompileCommandBuilder
      * @param configurations configuration to include in form of {@link String}
      * @return current instance of {@link AaptCommandBuilder}
      */
-    AaptCompileCommandBuilder addConfigurations( String configurations );
+    AaptGenerateSourcesCommandBuilder addConfigurations( String configurations );
 
     /**
      * Adds some additional aapt arguments that are not represented as separate parameters
@@ -157,7 +157,7 @@ public interface AaptCompileCommandBuilder
      * @param extraArguments Array of extra arguments to pass to Aapt.
      * @return current instance of {@link AaptCommandBuilder}
      */
-    AaptCompileCommandBuilder addExtraArguments( String[] extraArguments );
+    AaptGenerateSourcesCommandBuilder addExtraArguments( String[] extraArguments );
 
     /**
      * Makes output verbose.
@@ -165,19 +165,63 @@ public interface AaptCompileCommandBuilder
      * @param isVerbose if true aapt will be verbose, otherwise - no
      * @return current instance of {@link AaptCommandBuilder}
      */
-    AaptCompileCommandBuilder setVerbose( boolean isVerbose );
+    AaptGenerateSourcesCommandBuilder setVerbose( boolean isVerbose );
+
+    /**
+     * Generates a text file containing the resource symbols of the R class in the
+     * specified folder.
+     *
+     * @param folderForR folder in which text file will be generated
+     * @return current instance of {@link AaptCommandBuilder}
+     */
+    AaptGenerateSourcesCommandBuilder generateRTextFile( File folderForR );
 
     /**
      * Force overwrite of existing files.
      *
      * @return current instance of {@link AaptCommandBuilder}
      */
-    AaptCompileCommandBuilder forceOverwriteExistingFiles();
+    AaptGenerateSourcesCommandBuilder forceOverwriteExistingFiles();
 
     /**
-     * Disable PNG crunching.
+     * Specify the apk file to output.
      *
      * @return current instance of {@link AaptCommandBuilder}
      */
-    AaptCompileCommandBuilder disablePngCrunching();
+    AaptGenerateSourcesCommandBuilder setOutputApkFile( File outputFile );
+
+    /**
+     * Rewrite the manifest so that its package name is the package name given here. <br>
+     * Relative class names (for example .Foo) will be changed to absolute names with the old package
+     * so that the code does not need to change.
+     *
+     * @param manifestPackage new manifest package to apply
+     * @return current instance of {@link AaptGenerateSourcesCommandBuilder}
+     */
+    AaptGenerateSourcesCommandBuilder renameManifestPackage( String manifestPackage );
+
+    /**
+     * Rewrite the manifest so that all of its instrumentation components target the given package. <br>
+     * Useful when used in conjunction with --rename-manifest-package to fix tests against
+     * a package that has been renamed.
+     *
+     * @param instrumentationPackage new instrumentation target package to apply
+     * @return current instance of {@link AaptGenerateSourcesCommandBuilder}
+     */
+    AaptGenerateSourcesCommandBuilder renameInstrumentationTargetPackage( String instrumentationPackage );
+
+    /**
+     * Inserts android:debuggable="true" into the application node of the
+     * manifest, making the application debuggable even on production devices.
+     *
+     * @return current instance of {@link AaptGenerateSourcesCommandBuilder}
+     */
+    AaptGenerateSourcesCommandBuilder setDebugMode( boolean isDebugMode );
+
+    /**
+     * Output Proguard options to a File.
+     *
+     * @return current instance of {@link AaptCommandBuilder}
+     */
+    AaptGenerateSourcesCommandBuilder setProguardOptionsOutputFile( File outputFile );
 }

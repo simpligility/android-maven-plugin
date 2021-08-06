@@ -23,6 +23,7 @@ import com.simpligility.maven.plugins.android.common.DependencyResolver;
 import com.simpligility.maven.plugins.android.common.FileRetriever;
 import com.simpligility.maven.plugins.android.common.aapt.AaptCommandBuilder;
 import com.simpligility.maven.plugins.android.common.aapt.AaptCompileCommandBuilder;
+import com.simpligility.maven.plugins.android.common.aapt.AaptGenerateSourcesCommandBuilder;
 import com.simpligility.maven.plugins.android.configuration.BuildConfigConstant;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -237,7 +238,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
 
             checkPackagesForDuplicates();
             checkForConflictingLayouts();
-            generateR();
+            compileResources();
+            generateRAndApk();
             generateBuildConfig();
 
             // When compiling AIDL for this project,
@@ -770,11 +772,25 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         return packageCompareMap;
     }
 
-    private void generateR() throws MojoExecutionException
+    /**
+     * Compile the resources into flat files.
+     *
+     * @throws MojoExecutionException
+     */
+    private void compileResources() throws MojoExecutionException
     {
-        getLog().info( "Generating R file for " + project.getArtifact() );
+        if ( !AaptCommandBuilder.aapt2Exists( getAndroidSdk() ) )
+        {
+            getLog().warn( "Not compiling resources files because using aapt instead of aapt2. "
+                    + " Considering upgrading your build tools" );
+            return;
+        }
 
         genDirectory.mkdirs();
+        getLog().info( "Generating resource files to " + genDirectory );
+
+        final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
+        executor.setLogger( this.getLog() );
 
         final AaptCompileCommandBuilder commandBuilder = AaptCommandBuilder
                 .compileResources( getAndroidSdk(), getLog() )
@@ -782,6 +798,52 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
                 .setResourceConstantsFolder( genDirectory )
                 .forceOverwriteExistingFiles()
                 .disablePngCrunching()
+                .setPathToAndroidManifest( destinationManifestFile )
+                .addResourceDirectoriesIfExists( getResourceOverlayDirectories() )
+                .addResourceDirectoryIfExists( resourceDirectory )
+                // Need to include any AAR or APKLIB dependencies when generating R because if any local
+                // resources directly reference dependent resources then R generation will crash.
+                .addResourceDirectoriesIfExists( getLibraryResourceFolders() )
+                .autoAddOverlay()
+                .addRawAssetsDirectoryIfExists( combinedAssets )
+                .addExistingPackageToBaseIncludeSet( getAndroidSdk().getAndroidJar() )
+                .addConfigurations( configurations )
+                .setVerbose( aaptVerbose )
+                .makeResourcesNonConstant( AAR.equals( project.getArtifact().getType() ) )
+                .addExtraArguments( aaptExtraArgs );
+
+        getLog().debug( commandBuilder.getApplicationPath() + " " + commandBuilder.toString() );
+        getLog().info( "Compiling resource file into flat files." );
+        try
+        {
+            executor.setCaptureStdOut( true );
+            final List<String> commands = commandBuilder.build();
+            executor.executeCommand( commandBuilder.getApplicationPath(), commands, project.getBasedir(), false );
+        }
+        catch ( ExecutionException e )
+        {
+            throw new MojoExecutionException( "Could not compile resources into flat files", e );
+        }
+    }
+
+    /**
+     * Generate the ancillary files for the Android resources, eg R.Java, R.txt, proguard additions etc.
+     *
+     * @throws MojoExecutionException
+     */
+    private void generateRAndApk() throws MojoExecutionException
+    {
+        getLog().info( "Generating R file for " + project.getArtifact() );
+
+        genDirectory.mkdirs();
+        File outputFile = new File( targetDirectory, finalName + ".ap_" );
+
+        final AaptGenerateSourcesCommandBuilder commandBuilder = AaptCommandBuilder
+                .generateSources( getAndroidSdk(), getLog() )
+                .makePackageDirectories()
+                .setOutputApkFile( outputFile )
+                .setResourceConstantsFolder( genDirectory )
+                .forceOverwriteExistingFiles()
                 .generateRIntoPackage( customPackage )
                 .setPathToAndroidManifest( destinationManifestFile )
                 .addResourceDirectoriesIfExists( getResourceOverlayDirectories() )
@@ -960,8 +1022,8 @@ public class GenerateSourcesMojo extends AbstractAndroidMojo
         final CommandExecutor executor = CommandExecutor.Factory.createDefaultCommmandExecutor();
         executor.setLogger( getLog() );
 
-        final AaptCompileCommandBuilder commandBuilder = AaptCommandBuilder
-                .compileResources( getAndroidSdk(), getLog() )
+        final AaptGenerateSourcesCommandBuilder commandBuilder = AaptCommandBuilder
+                .generateSources( getAndroidSdk(), getLog() )
                 .makeResourcesNonConstant()
                 .makePackageDirectories()
                 .setResourceConstantsFolder( genDirectory )

@@ -13,7 +13,7 @@ import java.util.List;
  */
 public final class Aapt1PackageCommandBuilder
         extends AaptCommandBuilder
-        implements AaptCompileCommandBuilder, AaptLinkCommandBuilder
+        implements AaptGenerateSourcesCommandBuilder, AaptLinkCommandBuilder
 {
     public Aapt1PackageCommandBuilder( AndroidSdk androidSdk, Log log )
     {

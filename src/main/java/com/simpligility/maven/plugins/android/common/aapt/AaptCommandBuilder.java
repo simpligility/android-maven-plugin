@@ -49,7 +49,7 @@ public class AaptCommandBuilder
     /**
      * @return true if the aapt2 executable exists.
      */
-    private static boolean aapt2Exists( AndroidSdk androidSdk )
+    public static boolean aapt2Exists( AndroidSdk androidSdk )
     {
         final String aapt2Path = androidSdk.getAapt2Path();
         return new File( aapt2Path ).exists();
@@ -58,17 +58,29 @@ public class AaptCommandBuilder
     /**
      * Compile the android resources.
      *
-     * @return instance of {@link Aapt1PackageCommandBuilder}
+     * @return instance of {@link AaptCompileCommandBuilder}
      */
     public static AaptCompileCommandBuilder compileResources( AndroidSdk androidSdk, Log log )
     {
         return aapt2Exists( androidSdk )
                 ? new Aapt2CompileCommandBuilder( androidSdk, log )
+                : new Aapt1CompileCommandBuilder( androidSdk, log );
+    }
+
+    /**
+     * Generates R.java and R.txt.
+     *
+     * @return instance of {@link AaptGenerateSourcesCommandBuilder}
+     */
+    public static AaptGenerateSourcesCommandBuilder generateSources( AndroidSdk androidSdk, Log log )
+    {
+        return aapt2Exists( androidSdk )
+                ? new Aapt2LinkCommandBuilder( androidSdk, log )
                 : new Aapt1PackageCommandBuilder( androidSdk, log );
     }
 
     /**
-     * Linig (and package) the android resources.
+     * Link (and package) the android resources.
      *
      * @return instance of {@link Aapt1PackageCommandBuilder}
      */
