@@ -394,7 +394,8 @@ public class D8Mojo extends AbstractAndroidMojo
         }
         if ( parsedMainDexList != null )
         {
-            commands.add( "--main-dex-list" + parsedMainDexList );
+            commands.add( "--main-dex-list" );
+            commands.add( parsedMainDexList );
         }
         if ( parsedArguments != null )
         {
