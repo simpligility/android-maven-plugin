@@ -1,6 +1,8 @@
 == ANDROID MAVEN PLUGIN
 
-A plugin for Android application development with http://maven.apache.org[Apache Maven 3.0.5+] and 
+image:https://img.shields.io/maven-central/v/com.simpligility.maven.plugins/android-maven-plugin.svg?label=Maven%20Central["Build Status", link="https://search.maven.org/search?q=g:%22com.simpligility.maven.plugins%22%20AND%20a:%22android-maven-plugin%22"]
+
+A plugin for Android application development with http://maven.apache.org[Apache Maven 3.0.5+] and
 the http://tools.android.com[Android SDK].
 
 Please check out our http://simpligility.github.io/android-maven-plugin/[website] for further information!
@@ -14,6 +16,6 @@ Please check out our http://simpligility.github.io/android-maven-plugin/[website
 
 === Contributions
 
-We welcome all the help we can get! Read more on 
+We welcome all the help we can get! Read more on
 https://github.com/simpligility/android-maven-plugin/blob/master/src/site/asciidoc/contributing.adoc[in the documentation]
 and join the https://github.com/simpligility/android-maven-plugin/graphs/contributors[large list of contributors.]
