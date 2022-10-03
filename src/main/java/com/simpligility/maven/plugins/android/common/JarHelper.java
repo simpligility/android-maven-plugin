@@ -42,6 +42,9 @@ public class JarHelper
         {
             JarEntry entry = ( JarEntry ) en.nextElement();
             File entryFile = new File( outputDirectory, entry.getName() );
+            if (!entryFile.toPath().normalize().startsWith(outputDirectory.toPath().normalize())) {
+                throw new IOException("Bad zip entry");
+            }
             if ( unjarListener.include( entry ) )
             {
                 // Create the output directory if need be
